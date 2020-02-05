@@ -1,5 +1,7 @@
 package ru.smartro.worknote.data.organisations
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.smartro.worknote.data.Result
 import ru.smartro.worknote.domain.models.OrganisationModel
 import ru.smartro.worknote.domain.models.UserModel
@@ -51,4 +53,30 @@ class OrganisationsRepository(
         }
         return Result.Success(_organisations.toList())
     }
+
+    suspend fun getOrganisation(id: Int, userModel: UserModel): Result<OrganisationModel>? {
+        return withContext(Dispatchers.IO) {
+            return@withContext when (val result =
+                organisationsNetworkDataSource.getById(id, userModel = userModel)) {
+                is Result.Success -> {
+                    organisationsDBDataSource.insertOrUpdate(result.data)
+                    result
+                }
+                is Result.Error -> when (result.exception) {
+                    is IOException -> {
+                        val organisation = organisationsDBDataSource.getById(id)
+                        if (organisation == null) {
+                            Result.Error(Exception("Organisation not find"))
+                        } else {
+                            Result.Success(organisation)
+                        }
+                    }
+                    else -> result
+                }
+
+            }
+        }
+
+    }
+
 }

@@ -13,4 +13,7 @@ interface OrganisationDao {
 
     @Query("SELECT * FROM organisations WHERE id IN (:keys)")
     fun getAllByUserId(keys : List<Int>): List<OrganisationEntity>
+
+    @Query("SELECT * FROM organisations WHERE id = :key LIMIT 1")
+    fun getById(key: Int): OrganisationEntity?
 }

@@ -18,4 +18,15 @@ class OrganisationsNetworkDataSource {
         }
     }
 
+    suspend fun getById(id: Int, userModel: UserModel): Result<OrganisationModel> {
+        val getDeferred = AuthNetwork.ORGANISATIONS_ENTRY_POINT
+            .getOrganisation(BearerToken(userModel.token), id)
+        return try {
+            val organisation = getDeferred.await()
+            Result.Success(organisation.asDomainModel())
+        } catch (e: Throwable) {
+            Result.Error(e)
+        }
+    }
+
 }
