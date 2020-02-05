@@ -1,6 +1,5 @@
 package ru.smartro.worknote.ui.login
 
-import android.opengl.Visibility
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +13,6 @@ import ru.smartro.worknote.data.LoginRepository
 import ru.smartro.worknote.data.Result
 import ru.smartro.worknote.domain.models.UserModel
 import java.io.IOException
-import java.util.*
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
@@ -41,7 +39,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     val currentUserHolder : LiveData<UserModel?>
         get() = _currentUserHolder
-    private val _userIsUpdating: MutableLiveData<Boolean> = MutableLiveData(true)
+    private val _userIsUpdating = MutableLiveData<Boolean>(true)
     val userIsUpdating : LiveData<Boolean>
         get() = _userIsUpdating
 
@@ -53,9 +51,6 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         }
     }
 
-    fun login(userModel: UserModel) {
-        //     val result = loginRepository.login(userModel)
-    }
 
     fun login() {
         loginDataChanged()

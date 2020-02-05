@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.smartro.worknote.MainActivity
 import ru.smartro.worknote.R
@@ -28,17 +27,23 @@ class OrganisationSelectActivity : AppCompatActivity() {
             this,
             OrganisationSelectViewModelFactory(application)
         ).get(OrganisationSelectViewModel::class.java)
-        val adapter = OrganisationAdapter(viewModel)
+        val adapter = getAdapter(viewModel)
+
         binding.content.organisationsList.adapter = adapter
+        setObservers(viewModel, adapter)
+
+        val manager =  LinearLayoutManager(this)
+        binding.content.organisationsList.layoutManager = manager
+        binding.lifecycleOwner = this
+    }
+
+    private fun setObservers(viewModel: OrganisationSelectViewModel, adapter: OrganisationAdapter) {
 
         viewModel.organisations.observe(this, Observer {
             it?.let {
                 adapter.submitList(it)
             }
         })
-        val manager =  LinearLayoutManager(this)
-        binding.content.organisationsList.layoutManager = manager
-        binding.lifecycleOwner = this
 
         viewModel.currentOrganisationId.observe(this, Observer {
             if (it !== null) {
@@ -53,7 +58,10 @@ class OrganisationSelectActivity : AppCompatActivity() {
                 finish()
             }
         })
+    }
 
+    private fun getAdapter(viewModel: OrganisationSelectViewModel): OrganisationAdapter {
+        return OrganisationAdapter(viewModel)
     }
 
 }

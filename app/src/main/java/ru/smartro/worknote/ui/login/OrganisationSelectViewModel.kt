@@ -42,7 +42,7 @@ class OrganisationSelectViewModel(private val organisationsRepository: Organisat
     {
         val userId = currentUserHolder.value?.id
         val orgId = currentOrganisationId.value
-        if (userId!==null && orgId !== null) {
+        if (userId !== null && orgId !== null) {
             uiScope.launch {
                 withContext(Dispatchers.IO) {
                     loginRepository.setCurrentOrganisation(userId, organisationId = orgId)

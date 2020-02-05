@@ -9,9 +9,9 @@ import ru.smartro.worknote.database.entities.asDomainModel
 import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.network.auth.responseDto.OwnerData
 import ru.smartro.worknote.network.auth.responseDto.asDomainModel
-import ru.smartro.worknote.utils.TimeConsts.HALF_AN_HOUR
-import ru.smartro.worknote.utils.TimeConsts.ONE_HOUR
 import ru.smartro.worknote.utils.TimeConsts.ONE_MINUTE
+import ru.smartro.worknote.utils.TimeConsts.TOKEN_HALF_LIFE
+import ru.smartro.worknote.utils.TimeConsts.TOKEN_LIFE_TIME
 import java.io.IOException
 
 /**
@@ -87,6 +87,8 @@ class LoginRepository(
         if (userModelRefreshDataResult is Result.Success) {
             userModelRefreshDataResult.data.expired = refreshedUserModel.expired
             userModelRefreshDataResult.data.token = refreshedUserModel.token
+            userModelRefreshDataResult.data.currentOrganisationId =
+                refreshedUserModel.currentOrganisationId
             dbLoginDataSource.insertOrUpdateUser(userModelRefreshDataResult.data)
             dbLoginDataSource.logOutAll()
             dbLoginDataSource.login(userModelRefreshDataResult.data.id)
@@ -96,9 +98,9 @@ class LoginRepository(
             return userModelRefreshDataResult
         } else if (userModelRefreshDataResult is Result.Error) {
             when (userModelRefreshDataResult.exception) {
-                is IOException -> Result.Success(refreshedUserModel)
+                is IOException -> return Result.Success(refreshedUserModel)
                 is HttpException -> {
-                    refreshTokenByCreditionalis(refreshedUserModel)
+                    return refreshTokenByCreditionalis(refreshedUserModel)
                 }
             }
         }
@@ -107,7 +109,7 @@ class LoginRepository(
     }
 
     private suspend fun refreshTokenIfNeed(userModel: UserModel): Result<UserModel> {
-        if (userModel.expired > System.currentTimeMillis() + HALF_AN_HOUR) {
+        if (userModel.expired > System.currentTimeMillis() + TOKEN_HALF_LIFE) {
             return refreshToken(userModel)
         }
         return Result.Success(userModel)
@@ -152,7 +154,7 @@ class LoginRepository(
         userModel: UserModel
     ): Result<UserModel> {
         if (iOResult is Result.Success) {
-            userModel.expired = System.currentTimeMillis() + ONE_HOUR
+            userModel.expired = System.currentTimeMillis() + TOKEN_LIFE_TIME
             userModel.token = iOResult.data.token
             lastRefresh = System.currentTimeMillis()
             dbLoginDataSource.insertOrUpdateUser(userModel)
@@ -191,7 +193,7 @@ class LoginRepository(
         }
     }
 
-    suspend fun setCurrentOrganisation(userId: Int, organisationId: Int) {
+    fun setCurrentOrganisation(userId: Int, organisationId: Int) {
         dbLoginDataSource.updateCurrentOrganisation(userId, organisationId)
         if (currentUser?.id == userId) {
             currentUser?.currentOrganisationId = organisationId
@@ -222,7 +224,7 @@ class LoginRepository(
             ownerData.asDomainModel(
                 password,
                 token,
-                System.currentTimeMillis() + ONE_HOUR,
+                System.currentTimeMillis() + TOKEN_LIFE_TIME,
                 false
             )
         )

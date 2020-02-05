@@ -25,7 +25,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         val modelFactory = LoginViewModelFactory(application)
         loginViewModel = ViewModelProvider(this, modelFactory).get(LoginViewModel::class.java)
