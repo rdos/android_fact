@@ -27,5 +27,6 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="m3">M<sup>3</sup></string>
     <string name="title_activity_select_organisation">Выбор организации</string>
 </resources>

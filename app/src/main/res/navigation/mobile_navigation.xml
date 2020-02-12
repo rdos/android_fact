@@ -3,8 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_vehicle">
 
+    <fragment
+        android:id="@+id/nav_vehicle"
+        android:name="ru.smartro.worknote.ui.workFlow.selectVehicle.VehicleFragment"
+        android:label="Выбор автомобиля"
+        tools:layout="@layout/fragment_vehicle_list" />
     <fragment
         android:id="@+id/nav_home"
         android:name="ru.smartro.worknote.ui.home.HomeFragment"
@@ -12,10 +17,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="ru.smartro.worknote.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_references"
+        android:name="ru.smartro.worknote.ui.references.index.ReferencesFragment"
+        android:label="@string/menu_references"
+        tools:layout="@layout/fragment_references_index" >
+        <action
+            android:id="@+id/action_nav_references_to_conitainerTypeFragment"
+            app:destination="@id/conitainerTypeFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_slideshow"
@@ -40,4 +49,10 @@
         android:name="ru.smartro.worknote.ui.send.SendFragment"
         android:label="@string/menu_send"
         tools:layout="@layout/fragment_send" />
+    <fragment
+        android:id="@+id/conitainerTypeFragment"
+        android:name="ru.smartro.worknote.ui.references.containerTypes.ContainerTypeFragment"
+        android:label="fragment_conitainertype_list"
+        tools:layout="@layout/fragment_containertype_list" />
+
 </navigation>

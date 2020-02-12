@@ -9,10 +9,11 @@ import ru.smartro.worknote.database.entities.asDomainModel
 import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.network.auth.responseDto.OwnerData
 import ru.smartro.worknote.network.auth.responseDto.asDomainModel
-import ru.smartro.worknote.utils.TimeConsts.ONE_MINUTE
+import ru.smartro.worknote.utils.TimeConsts.FIVE_MINUTES
 import ru.smartro.worknote.utils.TimeConsts.TOKEN_HALF_LIFE
 import ru.smartro.worknote.utils.TimeConsts.TOKEN_LIFE_TIME
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -30,7 +31,7 @@ class LoginRepository(
 
     var currentUser: UserModel? = null
 
-    private var lastRefresh = 0L
+    private var lastRefresh = AtomicLong(0L)
 
     init {
         // If user credentials will be cached in local storage, it is recommended it be encrypted
@@ -59,7 +60,7 @@ class LoginRepository(
                         dbLoginDataSource.logOutAll()
                         dbLoginDataSource.login(userModelResult.data.id)
                         currentUser = userModelResult.data
-                        lastRefresh = System.currentTimeMillis()
+                        lastRefresh.set(System.currentTimeMillis())
                     }
                 }
                 userModelResult
@@ -77,13 +78,12 @@ class LoginRepository(
             is Result.Error -> return result
             is Result.Success ->  {refreshedUserModel = result.data}
         }
-       
-        if ((System.currentTimeMillis() - ONE_MINUTE) < lastRefresh) {
+
+        if ((System.currentTimeMillis() - FIVE_MINUTES) < lastRefresh.get()) {
             return Result.Success(refreshedUserModel)
         }
-
         val userModelRefreshDataResult = getUserModelFromOwner(refreshedUserModel.token, refreshedUserModel.password)
-
+        lastRefresh.set(System.currentTimeMillis())
         if (userModelRefreshDataResult is Result.Success) {
             userModelRefreshDataResult.data.expired = refreshedUserModel.expired
             userModelRefreshDataResult.data.token = refreshedUserModel.token
@@ -93,7 +93,6 @@ class LoginRepository(
             dbLoginDataSource.logOutAll()
             dbLoginDataSource.login(userModelRefreshDataResult.data.id)
             currentUser = userModelRefreshDataResult.data
-            lastRefresh = System.currentTimeMillis()
 
             return userModelRefreshDataResult
         } else if (userModelRefreshDataResult is Result.Error) {
@@ -109,7 +108,7 @@ class LoginRepository(
     }
 
     private suspend fun refreshTokenIfNeed(userModel: UserModel): Result<UserModel> {
-        if (userModel.expired > System.currentTimeMillis() + TOKEN_HALF_LIFE) {
+        if (System.currentTimeMillis() > userModel.expired - TOKEN_HALF_LIFE) {
             return refreshToken(userModel)
         }
         return Result.Success(userModel)
@@ -156,7 +155,7 @@ class LoginRepository(
         if (iOResult is Result.Success) {
             userModel.expired = System.currentTimeMillis() + TOKEN_LIFE_TIME
             userModel.token = iOResult.data.token
-            lastRefresh = System.currentTimeMillis()
+            lastRefresh.set(System.currentTimeMillis())
             dbLoginDataSource.insertOrUpdateUser(userModel)
 
             return Result.Success(userModel)
@@ -169,11 +168,9 @@ class LoginRepository(
         return Result.Error(Exception("error refresh token"))
     }
 
-
     suspend fun getLoggedInUser(userHolder: MutableLiveData<UserModel?>) {
         withContext(Dispatchers.IO) {
             val userModel = currentUser ?: dbLoginDataSource.getLoggedIn()?.asDomainModel()
-
             if (userModel === null) {
                 userHolder.postValue(null)
                 currentUser = null

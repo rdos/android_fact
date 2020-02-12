@@ -2,4 +2,7 @@
 <resources>
     <string name="action_logout">Выйти</string>
     <string name="organisation_select_head">Выберете организацию</string>
+    <string name="container_types">Типы контейнеров</string>
+    <string name="references">Справочники</string>
+    <string name="menu_references">Справочники</string>
 </resources>

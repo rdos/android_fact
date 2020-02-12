@@ -1,5 +1,7 @@
 package ru.smartro.worknote
 
+import android.util.Log
+import android.util.SparseArray
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 

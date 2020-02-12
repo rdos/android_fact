@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "703f82f6bb192cddc57708a88d06c813",
+    "identityHash": "b0dd950e05d81f20a80676d09903242c",
     "entities": [
       {
         "tableName": "users",
@@ -97,12 +97,53 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "vehicles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `organisation_id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "organisationId",
+            "columnName": "organisation_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_vehicles_organisation_id",
+            "unique": false,
+            "columnNames": [
+              "organisation_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_vehicles_organisation_id` ON `${TABLE_NAME}` (`organisation_id`)"
+          }
+        ],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '703f82f6bb192cddc57708a88d06c813')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b0dd950e05d81f20a80676d09903242c')"
     ]
   }
 }

@@ -7,6 +7,6 @@ object TimeConsts {
     val ONE_MINUTE = 60000L
     val TEN_SECONDS = 10000L
 
-    val TOKEN_LIFE_TIME = TEN_SECONDS
+    val TOKEN_LIFE_TIME = ONE_MINUTE
     val TOKEN_HALF_LIFE = TOKEN_LIFE_TIME / 2
 }
