@@ -21,11 +21,10 @@ class OrganisationSelectActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_select_organisation)
 
         setSupportActionBar(binding.toolbar)
-        val application = requireNotNull(this).application
 
         val viewModel = ViewModelProvider(
             this,
-            OrganisationSelectViewModelFactory(application)
+            OrganisationSelectViewModelFactory(this)
         ).get(OrganisationSelectViewModel::class.java)
         val adapter = getAdapter(viewModel)
 

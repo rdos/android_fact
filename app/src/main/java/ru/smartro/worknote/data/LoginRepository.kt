@@ -9,11 +9,9 @@ import ru.smartro.worknote.database.entities.asDomainModel
 import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.network.auth.responseDto.OwnerData
 import ru.smartro.worknote.network.auth.responseDto.asDomainModel
-import ru.smartro.worknote.utils.TimeConsts.FIVE_MINUTES
 import ru.smartro.worknote.utils.TimeConsts.TOKEN_HALF_LIFE
 import ru.smartro.worknote.utils.TimeConsts.TOKEN_LIFE_TIME
 import java.io.IOException
-import java.util.concurrent.atomic.AtomicLong
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -22,16 +20,17 @@ import java.util.concurrent.atomic.AtomicLong
 
 class LoginRepository(
     val dataSourceNetwork: NetworkLoginDataSource,
-    val dbLoginDataSource: DbLoginDataSource
+    val dbLoginDataSource: DbLoginDataSource,
+    val networkState: NetworkState
 ) {
+
+    private val NETWORK_STATE_KEY = "current_user"
 
     // in-memory cache of the loggedInUser object
     var userToken: LoggedInUserToken? = null
         private set
 
     var currentUser: UserModel? = null
-
-    private var lastRefresh = AtomicLong(0L)
 
     init {
         // If user credentials will be cached in local storage, it is recommended it be encrypted
@@ -60,7 +59,7 @@ class LoginRepository(
                         dbLoginDataSource.logOutAll()
                         dbLoginDataSource.login(userModelResult.data.id)
                         currentUser = userModelResult.data
-                        lastRefresh.set(System.currentTimeMillis())
+                        networkState.setRefreshedNowOf(NETWORK_STATE_KEY)
                     }
                 }
                 userModelResult
@@ -79,11 +78,11 @@ class LoginRepository(
             is Result.Success ->  {refreshedUserModel = result.data}
         }
 
-        if ((System.currentTimeMillis() - FIVE_MINUTES) < lastRefresh.get()) {
+        if (networkState.requestIsNotNeed(NETWORK_STATE_KEY)) {
             return Result.Success(refreshedUserModel)
         }
         val userModelRefreshDataResult = getUserModelFromOwner(refreshedUserModel.token, refreshedUserModel.password)
-        lastRefresh.set(System.currentTimeMillis())
+        networkState.setRefreshedNowOf(NETWORK_STATE_KEY)
         if (userModelRefreshDataResult is Result.Success) {
             userModelRefreshDataResult.data.expired = refreshedUserModel.expired
             userModelRefreshDataResult.data.token = refreshedUserModel.token
@@ -97,7 +96,10 @@ class LoginRepository(
             return userModelRefreshDataResult
         } else if (userModelRefreshDataResult is Result.Error) {
             when (userModelRefreshDataResult.exception) {
-                is IOException -> return Result.Success(refreshedUserModel)
+                is IOException -> {
+                    networkState.isErrorCoolDown = true
+                    return Result.Success(refreshedUserModel)
+                }
                 is HttpException -> {
                     return refreshTokenByCreditionalis(refreshedUserModel)
                 }
@@ -115,18 +117,35 @@ class LoginRepository(
     }
 
     private suspend fun refreshToken(userModel: UserModel): Result<UserModel> {
+        if (networkState.isErrorCoolDown) {
+            return Result.Success(userModel)
+        }
         when (val result = refreshTokenByToken(userModel)) {
-            is Result.Success -> return result
+            is Result.Success -> {
+                networkState.isErrorCoolDown = false
+                return result
+            }
             is Result.Error -> {
                 when (result.exception) {
-                    is IOException -> return Result.Success(userModel)
+                    is IOException -> {
+                        networkState.isErrorCoolDown = true
+
+                        return Result.Success(userModel)
+                    }
                 }
             }
         }
         when (val result = refreshTokenByCreditionalis(userModel)) {
-            is Result.Success -> return result
+            is Result.Success -> {
+                networkState.isErrorCoolDown = false
+                return result
+            }
             is Result.Error -> when (result.exception) {
-                is IOException -> return Result.Success(userModel)
+                is IOException -> {
+                    networkState.isErrorCoolDown = true
+
+                    return Result.Success(userModel)
+                }
                 is HttpException -> return result
             }
         }
@@ -155,7 +174,7 @@ class LoginRepository(
         if (iOResult is Result.Success) {
             userModel.expired = System.currentTimeMillis() + TOKEN_LIFE_TIME
             userModel.token = iOResult.data.token
-            lastRefresh.set(System.currentTimeMillis())
+            networkState.setRefreshedNowOf(NETWORK_STATE_KEY)
             dbLoginDataSource.insertOrUpdateUser(userModel)
 
             return Result.Success(userModel)

@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        val currentUserViewModelFactory = CurrentUserViewModelFactory(application)
+        val currentUserViewModelFactory = CurrentUserViewModelFactory(this)
         currentUserViewModel = ViewModelProvider(this, currentUserViewModelFactory)
             .get(CurrentUserViewModel::class.java)
 

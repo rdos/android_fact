@@ -26,7 +26,8 @@ class VehicleViewModelFactory(val activity: Activity) : ViewModelProvider.Factor
                     dataSourceNetwork = NetworkLoginDataSource(),
                     dbLoginDataSource = DbLoginDataSource(
                         getDatabase(activity.application)
-                    )
+                    ),
+                    networkState = NetworkState(activity)
                 )
             ) as T
         }

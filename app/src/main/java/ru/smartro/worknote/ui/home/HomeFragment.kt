@@ -15,7 +15,7 @@ class HomeFragment : Fragment() {
     private val homeViewModel: HomeViewModel by lazy {
         val activity = requireNotNull(this.activity)
 
-        val modelFactory = HomeViewModelFactory(activity.application)
+        val modelFactory = HomeViewModelFactory(activity)
         ViewModelProvider(this, modelFactory).get(HomeViewModel::class.java)
     }
 

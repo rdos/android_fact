@@ -26,7 +26,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-        val modelFactory = LoginViewModelFactory(application)
+        val modelFactory = LoginViewModelFactory(this)
         loginViewModel = ViewModelProvider(this, modelFactory).get(LoginViewModel::class.java)
         binding.viewModel = loginViewModel
         binding.lifecycleOwner = this

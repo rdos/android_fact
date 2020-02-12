@@ -1,17 +1,18 @@
 package ru.smartro.worknote.utils.commonViewModels
 
-import android.app.Application
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ru.smartro.worknote.data.DbLoginDataSource
 import ru.smartro.worknote.data.LoginRepository
 import ru.smartro.worknote.data.NetworkLoginDataSource
+import ru.smartro.worknote.data.NetworkState
 import ru.smartro.worknote.data.organisations.OrganisationsDBDataSource
 import ru.smartro.worknote.data.organisations.OrganisationsNetworkDataSource
 import ru.smartro.worknote.data.organisations.OrganisationsRepository
 import ru.smartro.worknote.database.getDatabase
 
-class CurrentUserViewModelFactory(val app: Application) :
+class CurrentUserViewModelFactory(val activity: Activity) :
     ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -19,15 +20,16 @@ class CurrentUserViewModelFactory(val app: Application) :
             return CurrentUserViewModel(
                 organisationsRepository = OrganisationsRepository(
                     organisationsNetworkDataSource = OrganisationsNetworkDataSource(),
-                    organisationsDBDataSource = OrganisationsDBDataSource(getDatabase(app))
+                    organisationsDBDataSource = OrganisationsDBDataSource(getDatabase(activity.application))
                 ),
                 loginRepository = LoginRepository(
                     dataSourceNetwork = NetworkLoginDataSource(),
                     dbLoginDataSource = DbLoginDataSource(
-                        getDatabase(app)
-                    )
+                        getDatabase(activity.application)
+                    ),
+                    networkState = NetworkState(activity)
                 ),
-                application = app
+                application = activity.application
 
             ) as T
         }
