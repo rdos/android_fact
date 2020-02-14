@@ -10,6 +10,8 @@ import ru.smartro.worknote.data.NetworkState
 import ru.smartro.worknote.data.vehicle.VehicleDBDataSource
 import ru.smartro.worknote.data.vehicle.VehicleNetworkDataSource
 import ru.smartro.worknote.data.vehicle.VehicleRepository
+import ru.smartro.worknote.data.workflow.WorkflowDBDataSource
+import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.database.getDatabase
 
 class VehicleViewModelFactory(val activity: Activity) : ViewModelProvider.Factory {
@@ -28,6 +30,9 @@ class VehicleViewModelFactory(val activity: Activity) : ViewModelProvider.Factor
                         getDatabase(activity.application)
                     ),
                     networkState = NetworkState(activity)
+                ),
+                workflowRepository = WorkflowRepository(
+                    workflowDBDataSource = WorkflowDBDataSource(getDatabase(activity.application))
                 )
             ) as T
         }

@@ -35,6 +35,11 @@ class VehicleRepository(
 
     }
 
+    fun dropAllCD() {
+        networkState.isErrorCoolDown = false
+        networkState.reset(NETWORK_STATE_KEY)
+    }
+
     private suspend fun getFromNetByUser(currentUser: UserModel): Result<List<VehicleModel>> {
         val networkResult = vehicleNetworkDataSource.getAllByOrganisation(
             currentUser.currentOrganisationId ?: 0,

@@ -9,7 +9,11 @@
         android:id="@+id/nav_vehicle"
         android:name="ru.smartro.worknote.ui.workFlow.selectVehicle.VehicleFragment"
         android:label="Выбор автомобиля"
-        tools:layout="@layout/fragment_vehicle_list" />
+        tools:layout="@layout/fragment_vehicle_list" >
+        <action
+            android:id="@+id/action_nav_vehicle_to_waybillFragment"
+            app:destination="@id/waybillFragment" />
+    </fragment>
     <fragment
         android:id="@+id/nav_home"
         android:name="ru.smartro.worknote.ui.home.HomeFragment"
@@ -54,5 +58,10 @@
         android:name="ru.smartro.worknote.ui.references.containerTypes.ContainerTypeFragment"
         android:label="fragment_conitainertype_list"
         tools:layout="@layout/fragment_containertype_list" />
+    <fragment
+        android:id="@+id/waybillFragment"
+        android:name="ru.smartro.worknote.ui.workFlow.waybill.WaybillFragment"
+        android:label="fragment_waybill_list"
+        tools:layout="@layout/fragment_waybill_list" />
 
 </navigation>

@@ -17,12 +17,12 @@ class NetworkState(activity: Activity) {
         }
         set(value) {
             when (value) {
-                true -> sharedPreferences.edit().putLong(
+                equals(true) -> sharedPreferences.edit().putLong(
                     KEY_NETWORK_ERROR_COODDOWN_EXPIRED,
                     System.currentTimeMillis() + NETWORK_ERROR_COOLDOWN_MILLIS
                 )
                     .apply()
-                false -> sharedPreferences.edit().putLong(
+                equals(false) -> sharedPreferences.edit().putLong(
                     KEY_NETWORK_ERROR_COODDOWN_EXPIRED,
                     0L
                 )
@@ -41,6 +41,11 @@ class NetworkState(activity: Activity) {
 
     fun setRefreshedNowOf(key: String) {
         sharedPreferences.edit().putLong(key, System.currentTimeMillis())
+            .apply()
+    }
+
+    fun reset(key: String) {
+        sharedPreferences.edit().putLong(key, 0L)
             .apply()
     }
 

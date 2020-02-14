@@ -11,6 +11,7 @@ import ru.smartro.worknote.network.auth.responseDto.OwnerData
 import ru.smartro.worknote.network.auth.responseDto.asDomainModel
 import ru.smartro.worknote.utils.TimeConsts.TOKEN_HALF_LIFE
 import ru.smartro.worknote.utils.TimeConsts.TOKEN_LIFE_TIME
+
 import java.io.IOException
 
 /**
@@ -36,6 +37,11 @@ class LoginRepository(
         // If user credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore
         userToken = null
+    }
+
+    fun dropAllCD() {
+        networkState.isErrorCoolDown = false
+        networkState.reset(NETWORK_STATE_KEY)
     }
 
     suspend fun logout(userHolder: MutableLiveData<UserModel?>) {

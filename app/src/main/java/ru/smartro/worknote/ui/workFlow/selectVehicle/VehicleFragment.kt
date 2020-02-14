@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.fragment_vehicle_list.*
 import kotlinx.android.synthetic.main.fragment_vehicle_list.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.domain.models.VehicleModel
@@ -53,12 +55,32 @@ class VehicleFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_vehicle_list, container, false)
-        vehicleAdapter = MyVehicleRecyclerViewAdapter(listener)
+        vehicleAdapter = MyVehicleRecyclerViewAdapter(vehicleViewModel.lastSelected)
 
         view.list.layoutManager = LinearLayoutManager(context)
         view.list.adapter = vehicleAdapter
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vehicleViewModel.isUpdating.observe(viewLifecycleOwner, Observer {
+            swipe_refresh_layout.isRefreshing = it
+        })
+
+        swipe_refresh_layout.setOnRefreshListener {
+            vehicleViewModel.refresh(true)
+        }
+        vehicleViewModel.workDone.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                this.findNavController().navigate(R.id.action_nav_vehicle_to_waybillFragment)
+            }
+        })
+        vehicleViewModel.lastSelected.observe(viewLifecycleOwner, Observer {
+            button3.isEnabled = it !== null
+        })
+        button3.setOnClickListener(vehicleViewModel.getListener())
     }
 
     override fun onAttach(context: Context) {
