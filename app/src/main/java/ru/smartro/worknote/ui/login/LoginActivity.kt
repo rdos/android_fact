@@ -5,12 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.EventLog
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ru.smartro.worknote.MainActivity
@@ -25,94 +26,97 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        binding.lifecycleOwner = this
         val modelFactory = LoginViewModelFactory(this)
         loginViewModel = ViewModelProvider(this, modelFactory).get(LoginViewModel::class.java)
-        binding.viewModel = loginViewModel
-        binding.lifecycleOwner = this
+        setViewListeners()
+        setModelListeners()
+        setContentView(binding.root)
+    }
 
-        val username = binding.username
-        val password = binding.password
-        val login = binding.login
-        val loading = binding.loading
+    private fun showLoginFailed(errorString: Int, arg: String? = null) {
+        Toast.makeText(applicationContext, getString(errorString, arg), Toast.LENGTH_LONG).show()
+    }
 
+    private fun setViewListeners() {
+        binding.login.setOnClickListener {
+            binding.loading.visibility = View.VISIBLE
+            loginViewModel.login()
+        }
+        binding.username.afterTextChanged {
+            loginViewModel.username.value = it
+        }
 
-        loginViewModel.currentUserHolder.observe(this@LoginActivity, Observer {
-            if (it !== null) {
-                if (it.currentOrganisationId === null) {
-                    setResult(Activity.RESULT_OK)
-                    val intent = Intent(this, OrganisationSelectActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                    return@Observer
+        binding.password.apply {
+            setOnEditorActionListener { v, actionId, _ ->
+                when (actionId) {
+                    EditorInfo.IME_ACTION_DONE -> {
+                        loginViewModel.password.value = v.text.toString()
+                        loginViewModel.login()
+                    }
                 }
-                setResult(Activity.RESULT_OK)
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+                false
             }
-        })
+        }
+    }
 
-
+    private fun setModelListeners() {
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
             if (loginState.usernameError != null) {
-                username.error = getString(loginState.usernameError)
+                binding.username.error = getString(loginState.usernameError)
             }
             if (loginState.passwordError != null) {
-                password.error = getString(loginState.passwordError)
+                binding.password.error = getString(loginState.passwordError)
             }
         })
 
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
-            loading.visibility = View.GONE
+            binding.loading.visibility = View.GONE
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error, loginResult.errorParam)
                 return@Observer
             }
-            if (loginResult.success != null) {
-                val intent = Intent(this, OrganisationSelectActivity::class.java)
-                startActivity(intent)
-            }
-            setResult(Activity.RESULT_OK)
-
-            //Complete and destroy login activity once successful
-            finish()
         })
 
-        password.apply {
-            setOnEditorActionListener { _, actionId, _ ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login()
+        //UI side effects
+        loginViewModel.state.observe(this, Observer {
+            when (it) {
+                is LoginViewModel.State.SoftInProgress -> {
+                    binding.loading.visibility = View.VISIBLE
+                    binding.progressBarInclude.progressBarLayout.visibility = View.GONE
                 }
-                false
+                is LoginViewModel.State.ModalInProgress -> {
+                    binding.progressBarInclude.progressBarLayout.visibility = View.VISIBLE
+                    binding.loading.visibility = View.GONE
+                }
+                else -> {
+                    binding.loading.visibility = View.GONE
+                    binding.progressBarInclude.progressBarLayout.visibility = View.GONE
+                }
+
             }
-        }
-
-        login.setOnClickListener {
-            loading.visibility = View.VISIBLE
-            loginViewModel.login()
-        }
-
-    }
-
-    private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
-        // TODO : initiate successful logged in experience
-        Toast.makeText(
-            applicationContext,
-            "$welcome $displayName",
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    private fun showLoginFailed(errorString: Int, arg: String? = null) {
-        Toast.makeText(applicationContext, getString(errorString, arg), Toast.LENGTH_LONG).show()
+            when (it) {
+                is LoginViewModel.State.CanSetOrganisation -> {
+                    setResult(Activity.RESULT_OK)
+                    val intent = Intent(this, OrganisationSelectActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    return@Observer
+                }
+                is LoginViewModel.State.CanGoToWorkflow -> {
+                    setResult(Activity.RESULT_OK)
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    return@Observer
+                }
+            }
+        })
     }
 }
 

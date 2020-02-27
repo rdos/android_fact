@@ -15,8 +15,7 @@ data class UserEntity constructor(
     val token: String,
     val expired: Long,
     val organisationIds: String = "[]",
-    val isLoggedIn: Boolean = false,
-    val currentOrganisationId: Int? = null
+    val isLoggedIn: Boolean = false
 )
 
 
@@ -29,7 +28,6 @@ fun UserEntity.asDomainModel(): UserModel {
         id = id, email = email, password = password,
         token = token, expired = expired, name = name,
         organisationIds = organisationIdsList,
-        isLoggedIn = isLoggedIn,
-        currentOrganisationId = currentOrganisationId
+        isLoggedIn = isLoggedIn
     )
 }

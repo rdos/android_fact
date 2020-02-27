@@ -11,8 +11,7 @@ data class UserModel(
     var token: String,
     var expired: Long,
     val organisationIds: ArrayList<Int>,
-    val isLoggedIn: Boolean,
-    var currentOrganisationId: Int? = null
+    val isLoggedIn: Boolean
 ) {
     fun asDataBaseModel(): UserEntity {
 
@@ -24,8 +23,7 @@ data class UserModel(
             token = token,
             expired = expired,
             organisationIds = Gson().toJson(organisationIds).toString(),
-            isLoggedIn = isLoggedIn,
-            currentOrganisationId = currentOrganisationId
+            isLoggedIn = isLoggedIn
         )
     }
 }

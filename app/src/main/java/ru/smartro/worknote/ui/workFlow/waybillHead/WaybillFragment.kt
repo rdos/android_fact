@@ -1,17 +1,26 @@
-package ru.smartro.worknote.ui.workFlow.waybill
+package ru.smartro.worknote.ui.workFlow.waybillHead
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.app_bar_main.view.*
+import ru.smartro.worknote.MainActivity
 import ru.smartro.worknote.R
-import ru.smartro.worknote.ui.workFlow.waybill.dummy.DummyContent
-import ru.smartro.worknote.ui.workFlow.waybill.dummy.DummyContent.DummyItem
+import ru.smartro.worknote.databinding.FragmentWaybillListBinding
+
+import ru.smartro.worknote.ui.workFlow.waybillHead.dummy.DummyContent
+import ru.smartro.worknote.ui.workFlow.waybillHead.dummy.DummyContent.DummyItem
+import timber.log.Timber
 
 /**
  * A fragment representing a list of Items.
@@ -20,36 +29,55 @@ import ru.smartro.worknote.ui.workFlow.waybill.dummy.DummyContent.DummyItem
  */
 class WaybillFragment : Fragment() {
 
-    // TODO: Customize parameters
-    private var columnCount = 1
 
     private var listener: OnListFragmentInteractionListener? = null
 
+    private lateinit var waybillHeadViewModel: WaybillHeadViewModel
+
+    private var waybillAdapter: WaybillRecyclerViewAdapter? = null
+
+    private lateinit var binding: FragmentWaybillListBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_waybill_list, container, false)
 
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-                adapter = WaybillRecyclerViewAdapter(DummyContent.ITEMS, listener)
-            }
+        waybillHeadViewModel = ViewModelProvider(
+            this,
+            WaybillHeadViewModelFactory(requireActivity())
+        )
+            .get(WaybillHeadViewModel::class.java)
+
+        binding = FragmentWaybillListBinding.inflate(inflater)
+
+        waybillAdapter = WaybillRecyclerViewAdapter(DummyContent.ITEMS, listener)
+        binding.root.findViewById<RecyclerView>(R.id.list).apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = waybillAdapter
         }
-        return view
+
+        waybillHeadViewModel.authError.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                requireActivity().setResult(Activity.RESULT_OK)
+                val intent = Intent(this.context, MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+            }
+        })
+
+        val toolbar = requireActivity().container?.toolbar
+        toolbar?.setNavigationOnClickListener {
+            Timber.e("back!!!!")
+            activity?.onBackPressed()
+        }
+
+
+        return binding.root
     }
 
     override fun onAttach(context: Context) {

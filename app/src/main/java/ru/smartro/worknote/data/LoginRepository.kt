@@ -92,8 +92,7 @@ class LoginRepository(
         if (userModelRefreshDataResult is Result.Success) {
             userModelRefreshDataResult.data.expired = refreshedUserModel.expired
             userModelRefreshDataResult.data.token = refreshedUserModel.token
-            userModelRefreshDataResult.data.currentOrganisationId =
-                refreshedUserModel.currentOrganisationId
+
             dbLoginDataSource.insertOrUpdateUser(userModelRefreshDataResult.data)
             dbLoginDataSource.logOutAll()
             dbLoginDataSource.login(userModelRefreshDataResult.data.id)
@@ -193,32 +192,19 @@ class LoginRepository(
         return Result.Error(Exception("error refresh token"))
     }
 
-    suspend fun getLoggedInUser(userHolder: MutableLiveData<UserModel?>) {
-        withContext(Dispatchers.IO) {
+    suspend fun getLoggedInUser(): UserModel? {
+        return withContext(Dispatchers.IO) {
             val userModel = currentUser ?: dbLoginDataSource.getLoggedIn()?.asDomainModel()
             if (userModel === null) {
-                userHolder.postValue(null)
                 currentUser = null
 
-                return@withContext
+                return@withContext null
             }
             currentUser = when (checkRefreshUser(userModel)) {
-                is Result.Success -> {
-                    userHolder.postValue(userModel)
-                    userModel
-                }
-                is Result.Error -> {
-                    userHolder.postValue(null)
-                    null
-                }
+                is Result.Success -> userModel
+                is Result.Error -> null
             }
-        }
-    }
-
-    fun setCurrentOrganisation(userId: Int, organisationId: Int) {
-        dbLoginDataSource.updateCurrentOrganisation(userId, organisationId)
-        if (currentUser?.id == userId) {
-            currentUser?.currentOrganisationId = organisationId
+            return@withContext currentUser
         }
     }
 

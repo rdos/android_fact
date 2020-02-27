@@ -11,14 +11,11 @@ interface UserDao {
     @Update
     fun update(userEntity: UserEntity)
 
-    @Query("UPDATE users SET currentOrganisationId = :organisationId WHERE id = :userId")
-    fun setCurrentOrganisationId(userId: Int, organisationId: Int)
-
     @Query("SELECT EXISTS(SELECT *  FROM users WHERE email = :email AND password = :password LIMIT 1)")
     fun checkAuth(email: String, password: String): Boolean
 
-    @Query("SELECT * FROM users WHERE id = :key")
-    fun get(key: Int): UserEntity
+    @Query("SELECT * FROM users WHERE id = :key LIMIT 1")
+    fun get(key: Int): UserEntity?
 
     @Query("UPDATE users SET isLoggedIn = 0")
     fun logOutAll()

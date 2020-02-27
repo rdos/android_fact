@@ -24,11 +24,7 @@ class VehicleFragment : Fragment() {
 
     private var listener: OnListFragmentInteractionListener? = null
 
-    private val vehicleViewModel: VehicleViewModel by lazy {
-        ViewModelProvider(this, VehicleViewModelFactory(requireActivity()))
-            .get(VehicleViewModel::class.java)
-
-    }
+    private lateinit var vehicleViewModel: VehicleViewModel
 
     private var vehicleAdapter: MyVehicleRecyclerViewAdapter? = null
 
@@ -46,7 +42,7 @@ class VehicleFragment : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        vehicleViewModel.refresh()
+
         super.onCreate(savedInstanceState)
     }
 
@@ -54,6 +50,14 @@ class VehicleFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
+        vehicleViewModel = ViewModelProvider(this, VehicleViewModelFactory(requireActivity()))
+            .get(VehicleViewModel::class.java)
+
+        vehicleViewModel.refresh()
+
+
         val view = inflater.inflate(R.layout.fragment_vehicle_list, container, false)
         vehicleAdapter = MyVehicleRecyclerViewAdapter(vehicleViewModel.lastSelected)
 
@@ -79,6 +83,11 @@ class VehicleFragment : Fragment() {
         })
         vehicleViewModel.lastSelected.observe(viewLifecycleOwner, Observer {
             button3.isEnabled = it !== null
+        })
+        vehicleViewModel.authError.observe(viewLifecycleOwner, Observer {
+            if (it) {
+
+            }
         })
         button3.setOnClickListener(vehicleViewModel.getListener())
     }

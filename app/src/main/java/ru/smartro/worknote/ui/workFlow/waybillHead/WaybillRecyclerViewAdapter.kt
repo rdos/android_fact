@@ -1,15 +1,13 @@
-package ru.smartro.worknote.ui.workFlow.waybill
+package ru.smartro.worknote.ui.workFlow.waybillHead
 
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_waybill.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.ui.workFlow.waybill.WaybillFragment.OnListFragmentInteractionListener
-import ru.smartro.worknote.ui.workFlow.waybill.dummy.DummyContent.DummyItem
+import ru.smartro.worknote.ui.workFlow.waybillHead.WaybillFragment.OnListFragmentInteractionListener
+import ru.smartro.worknote.ui.workFlow.waybillHead.dummy.DummyContent.DummyItem
 
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
@@ -40,8 +38,8 @@ class WaybillRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
-        holder.mIdView.text = item.id
-        holder.mContentView.text = item.content
+//        holder.mIdView.text = item.id
+//        holder.mContentView.text = item.content
 
         with(holder.mView) {
             tag = item
@@ -52,11 +50,11 @@ class WaybillRecyclerViewAdapter(
     override fun getItemCount(): Int = mValues.size
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mIdView: TextView = mView.item_number
-        val mContentView: TextView = mView.content
+//        val mIdView: TextView = mView.item_number
+//        val mContentView: TextView = mView.content
 
         override fun toString(): String {
-            return super.toString() + " '" + mContentView.text + "'"
+            return super.toString()
         }
     }
 }

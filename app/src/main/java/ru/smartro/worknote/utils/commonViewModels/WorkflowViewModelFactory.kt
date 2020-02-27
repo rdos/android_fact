@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.home
+package ru.smartro.worknote.utils.commonViewModels
 
 import android.app.Activity
 import androidx.lifecycle.ViewModel
@@ -7,32 +7,30 @@ import ru.smartro.worknote.data.DbLoginDataSource
 import ru.smartro.worknote.data.LoginRepository
 import ru.smartro.worknote.data.NetworkLoginDataSource
 import ru.smartro.worknote.data.NetworkState
-import ru.smartro.worknote.data.organisations.OrganisationsDBDataSource
-import ru.smartro.worknote.data.organisations.OrganisationsNetworkDataSource
-import ru.smartro.worknote.data.organisations.OrganisationsRepository
+import ru.smartro.worknote.data.workflow.WorkflowDBDataSource
+import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.database.getDatabase
 
-class HomeViewModelFactory(val activity: Activity) : ViewModelProvider.Factory {
-
+class WorkflowViewModelFactory(
+    private val activity: Activity
+) :
+    ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(
+        if (modelClass.isAssignableFrom(WorkflowViewModel::class.java)) {
+            return WorkflowViewModel(
+                workflowRepository = WorkflowRepository(
+                    WorkflowDBDataSource(dataBase = getDatabase(activity.application))
+                ),
                 loginRepository = LoginRepository(
+                    networkState = NetworkState(activity = activity),
                     dataSourceNetwork = NetworkLoginDataSource(),
                     dbLoginDataSource = DbLoginDataSource(
                         getDatabase(activity.application)
-                    ),
-                    networkState = NetworkState(activity)
-                ),
-                organisationsRepository = OrganisationsRepository(
-                    organisationsNetworkDataSource = OrganisationsNetworkDataSource(),
-                    organisationsDBDataSource = OrganisationsDBDataSource(getDatabase(activity.application))
+                    )
                 )
-
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
-
 }

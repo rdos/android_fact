@@ -20,6 +20,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import ru.smartro.worknote.ui.login.LoginActivity
 import ru.smartro.worknote.ui.login.LoginViewModel
+import ru.smartro.worknote.ui.login.LoginViewModelFactory
 import ru.smartro.worknote.ui.login.OrganisationSelectActivity
 import ru.smartro.worknote.utils.commonViewModels.CurrentUserViewModel
 import ru.smartro.worknote.utils.commonViewModels.CurrentUserViewModelFactory
@@ -28,18 +29,24 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var loginViewModel: LoginViewModel
+
     private lateinit var currentUserViewModel: CurrentUserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         val currentUserViewModelFactory = CurrentUserViewModelFactory(this)
         currentUserViewModel = ViewModelProvider(this, currentUserViewModelFactory)
             .get(CurrentUserViewModel::class.java)
-
+        loginViewModel = ViewModelProvider(
+            this,
+            LoginViewModelFactory(this)
+        )
+            .get(LoginViewModel::class.java)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
 
@@ -67,7 +74,11 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_logout -> {
-                loginViewModel.logut()
+                loginViewModel.logout()
+                setResult(Activity.RESULT_OK)
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
                 return true
             }
         }
@@ -92,13 +103,13 @@ class MainActivity : AppCompatActivity() {
                 finish()
                 return@Observer
             }
-            if (it.currentOrganisationId === null) {
-                setResult(Activity.RESULT_OK)
-                val intent = Intent(this, OrganisationSelectActivity::class.java)
-                startActivity(intent)
-                finish()
-                return@Observer
-            }
+//            if (it.currentOrganisationId === null) {
+//                setResult(Activity.RESULT_OK)
+//                val intent = Intent(this, OrganisationSelectActivity::class.java)
+//                startActivity(intent)
+//                finish()
+//                return@Observer
+//            }
             userEmailText.text = it.email
 
 

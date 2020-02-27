@@ -45,7 +45,7 @@ class OrganisationSelectViewModel(private val organisationsRepository: Organisat
         if (userId !== null && orgId !== null) {
             uiScope.launch {
                 withContext(Dispatchers.IO) {
-                    loginRepository.setCurrentOrganisation(userId, organisationId = orgId)
+                   // loginRepository.setCurrentOrganisation(userId, organisationId = orgId)
                     selectDone.postValue(true)
                 }
             }

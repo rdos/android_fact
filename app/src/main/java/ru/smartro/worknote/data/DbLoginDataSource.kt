@@ -11,13 +11,6 @@ class DbLoginDataSource(private val dataBase: DataBase) {
         dataBase.userDao.insert(dbModel)
     }
 
-    fun updateCurrentOrganisation(userId: Int, organisationId: Int) {
-        dataBase.userDao.setCurrentOrganisationId(userId, organisationId)
-    }
-
-    fun updateToken(userModel: UserModel) {
-
-    }
 
     fun login(userId: Int) {
         dataBase.userDao.login(userId)

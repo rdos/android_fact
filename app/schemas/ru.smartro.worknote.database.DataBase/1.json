@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ada96c28543276d44cddfd32fddc28d3",
+    "identityHash": "29d17e7201f7f067611fab9418962ab9",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `email` TEXT NOT NULL, `name` TEXT NOT NULL, `password` TEXT NOT NULL, `token` TEXT NOT NULL, `expired` INTEGER NOT NULL, `organisationIds` TEXT NOT NULL, `isLoggedIn` INTEGER NOT NULL, `currentOrganisationId` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `email` TEXT NOT NULL, `name` TEXT NOT NULL, `password` TEXT NOT NULL, `token` TEXT NOT NULL, `expired` INTEGER NOT NULL, `organisationIds` TEXT NOT NULL, `isLoggedIn` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -55,12 +55,6 @@
             "columnName": "isLoggedIn",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "currentOrganisationId",
-            "columnName": "currentOrganisationId",
-            "affinity": "INTEGER",
-            "notNull": false
           }
         ],
         "primaryKey": {
@@ -141,7 +135,7 @@
       },
       {
         "tableName": "workflow",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `is_in_progress` INTEGER NOT NULL, `vehicle_id` INTEGER, `way_bill_id` INTEGER, PRIMARY KEY(`user_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `is_in_progress` INTEGER NOT NULL, `vehicle_id` INTEGER, `way_bill_id` INTEGER, `organisation_id` INTEGER, PRIMARY KEY(`user_id`))",
         "fields": [
           {
             "fieldPath": "userId",
@@ -166,6 +160,12 @@
             "columnName": "way_bill_id",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "organisationId",
+            "columnName": "organisation_id",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -176,12 +176,59 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "way_bill_heads",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `number` INTEGER NOT NULL, `organisation_id` INTEGER NOT NULL, `date` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "number",
+            "columnName": "number",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "organisationId",
+            "columnName": "organisation_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_way_bill_heads_date",
+            "unique": false,
+            "columnNames": [
+              "date"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_way_bill_heads_date` ON `${TABLE_NAME}` (`date`)"
+          }
+        ],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ada96c28543276d44cddfd32fddc28d3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '29d17e7201f7f067611fab9418962ab9')"
     ]
   }
 }

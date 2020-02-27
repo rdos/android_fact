@@ -6,14 +6,16 @@ data class WorkflowModel(
     val userId: Int,
     var isInProgress: Boolean,
     var vehicleId: Int?,
-    var wayBillId: Int?
+    var wayBillId: Int?,
+    var organisationId: Int?
 ) {
     fun asDataBaseModel(): WorkflowEntity {
         return WorkflowEntity(
             userId = userId,
             isInProgress = isInProgress,
             vehicleId = vehicleId,
-            wayBillId = wayBillId
+            wayBillId = wayBillId,
+            organisationId = organisationId
         )
     }
 }

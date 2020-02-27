@@ -38,4 +38,10 @@ object WnNetwork {
         )
     }
 
+    val WAY_BILL_ENTRY_POINT: WaybillService by lazy {
+        retrofit.create(
+            WaybillService::class.java
+        )
+    }
+
 }

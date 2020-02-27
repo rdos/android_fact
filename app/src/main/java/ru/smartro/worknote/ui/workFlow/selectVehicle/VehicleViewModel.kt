@@ -35,6 +35,7 @@ class VehicleViewModel(
 
     private val _isUpdating = MutableLiveData<Boolean>(false)
 
+
     val lastSelected = MutableLiveData<Int?>(null)
 
     val authError: LiveData<Boolean>
@@ -51,8 +52,9 @@ class VehicleViewModel(
 
     val workDone = MutableLiveData<Boolean>(false)
 
-    init {
-        refresh()
+
+    private fun logout() {
+
     }
 
     fun refresh(force: Boolean = false) {
@@ -63,11 +65,12 @@ class VehicleViewModel(
         modelScope.launch {
             _isUpdating.postValue(true)
             loginRepository.getLoggedInUser(_currentUserHolder)
-            val currentUser = _currentUserHolder.value
-            if (currentUser?.currentOrganisationId == null) {
-                _authError.postValue(true)
-                return@launch
-            }
+            val currentUser = _currentUserHolder.value ?: return@launch
+            //            if (currentUser?.currentOrganisationId == null) {
+//                _authError.postValue(true)
+//                _isUpdating.postValue(false)
+//                return@launch
+//            }
             val middleResult = vehicleRepository.getAllVehiclesByUser(currentUser)
             if (middleResult is Result.Success) {
                 if (middleResult.data.isNotEmpty() && _vehicles.value?.equals(middleResult.data) != true) {
@@ -75,10 +78,12 @@ class VehicleViewModel(
                 }
             } else {
                 _authError.postValue(true)
+                _isUpdating.postValue(false)
                 return@launch
             }
             val workflowModel = workflowRepository.getWorkFlowForUser(currentUser.id)
-                ?: WorkflowModel(currentUser.id, true, null, null)
+                ?: WorkflowModel(currentUser.id, true, null, null, null)
+
             _workflow.postValue(workflowModel)
             _isUpdating.postValue(false)
             workDone.postValue(workflowModel.vehicleId !== null)

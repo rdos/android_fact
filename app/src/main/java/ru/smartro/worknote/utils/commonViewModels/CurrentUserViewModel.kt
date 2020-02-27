@@ -29,7 +29,7 @@ class CurrentUserViewModel(
 
     private val _isUpdating = MutableLiveData<Boolean>(false)
 
-    val isInProgress: LiveData<Boolean>
+    val isUpdating: LiveData<Boolean>
         get() = _isUpdating
 
     val currentUser: LiveData<UserModel?>
@@ -39,6 +39,14 @@ class CurrentUserViewModel(
         get() = _currentOrganisation
 
     init {
+        update()
+    }
+
+    fun refresh() {
+        update()
+    }
+
+    private fun update() {
         modelScope.launch {
             _isUpdating.value = true
             loginRepository.getLoggedInUser(_currentUserHolder)
@@ -47,16 +55,16 @@ class CurrentUserViewModel(
                 _isUpdating.value = false
                 return@launch
             }
-            val currentOrgId = currentUserModel.currentOrganisationId
-            if (currentOrgId === null) {
-                _isUpdating.value = false
-                return@launch
-            }
-            when (val orgResult =
-                organisationsRepository.getOrganisation(currentOrgId, currentUserModel)) {
-                is Result.Success -> _currentOrganisation.value = orgResult.data
-            }
-
+//            val currentOrgId = currentUserModel.currentOrganisationId
+//            if (currentOrgId === null) {
+//                _isUpdating.value = false
+//                return@launch
+//            }
+//            when (val orgResult =
+//                organisationsRepository.getOrganisation(currentOrgId, currentUserModel)) {
+//                is Result.Success -> _currentOrganisation.value = orgResult.data
+//            }
+//
 
             _isUpdating.setValue(false)
         }

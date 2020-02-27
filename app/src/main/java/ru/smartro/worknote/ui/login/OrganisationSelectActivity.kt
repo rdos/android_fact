@@ -18,8 +18,7 @@ class OrganisationSelectActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_select_organisation)
-
+        binding = ActivitySelectOrganisationBinding.inflate(layoutInflater)
         setSupportActionBar(binding.toolbar)
 
         val viewModel = ViewModelProvider(
@@ -34,6 +33,7 @@ class OrganisationSelectActivity : AppCompatActivity() {
         val manager =  LinearLayoutManager(this)
         binding.content.organisationsList.layoutManager = manager
         binding.lifecycleOwner = this
+        setContentView(binding.root)
     }
 
     private fun setObservers(viewModel: OrganisationSelectViewModel, adapter: OrganisationAdapter) {

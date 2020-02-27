@@ -14,11 +14,6 @@
             android:id="@+id/action_nav_vehicle_to_waybillFragment"
             app:destination="@id/waybillFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/nav_home"
-        android:name="ru.smartro.worknote.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_references"
@@ -60,7 +55,7 @@
         tools:layout="@layout/fragment_containertype_list" />
     <fragment
         android:id="@+id/waybillFragment"
-        android:name="ru.smartro.worknote.ui.workFlow.waybill.WaybillFragment"
+        android:name="ru.smartro.worknote.ui.workFlow.waybillHead.WaybillFragment"
         android:label="fragment_waybill_list"
         tools:layout="@layout/fragment_waybill_list" />
 

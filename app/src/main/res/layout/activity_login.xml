@@ -2,14 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
-
-    <data>
-
-        <variable
-            name="viewModel"
-            type="ru.smartro.worknote.ui.login.LoginViewModel" />
-    </data>
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
@@ -48,10 +41,10 @@
             android:hint="@string/prompt_email"
             android:inputType="textEmailAddress"
             android:selectAllOnFocus="true"
-            android:text="@={viewModel.username}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/password"
@@ -66,10 +59,11 @@
             android:imeOptions="actionDone"
             android:inputType="textWebPassword"
             android:selectAllOnFocus="true"
-            android:text="@={viewModel.password}"
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/username" />
+            app:layout_constraintTop_toBottomOf="@+id/username"
+            android:importantForAutofill="no" />
 
         <ProgressBar
             android:id="@+id/loading"
@@ -87,12 +81,9 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.3" />
 
-        <include
-            bind:isInProgress="@{viewModel.userIsUpdating.booleanValue()}"
-            layout="@layout/loading_placeholder"
-
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="16dp" />
+        <include layout="@layout/loading_placeholder"
+            android:id="@+id/progress_bar_include"
+            />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

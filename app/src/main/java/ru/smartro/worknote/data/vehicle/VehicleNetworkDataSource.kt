@@ -1,6 +1,7 @@
 package ru.smartro.worknote.data.vehicle
 
 import ru.smartro.worknote.data.Result
+import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.domain.models.VehicleModel
 import ru.smartro.worknote.network.BearerToken
 import ru.smartro.worknote.network.workNote.WnNetwork
@@ -9,9 +10,8 @@ import ru.smartro.worknote.network.workNote.responseDTO.VehiclesDTO
 class VehicleNetworkDataSource {
 
 
-    suspend fun getAllByOrganisation(
-        organisationId: Int,
-        token: String
+    suspend fun getListBy(
+        params: UserModel
     ): Result<List<VehicleModel>> {
 
         val resultModels = mutableListOf<VehicleModel>()
@@ -20,8 +20,8 @@ class VehicleNetworkDataSource {
 
         val middleErrorOrMetaResult = processGetAllSinglePage(
             GetAllQueryData(
-                organisationId = organisationId,
-                token = token,
+                organisationId = /*params.currentOrganisationId ?:*/ 0,
+                token = params.token,
                 page = firstPage
             ),
             carry = resultModels
@@ -36,8 +36,8 @@ class VehicleNetworkDataSource {
         val lastPage = middleErrorOrMetaResult.meta.lastPage
         val nthPagesMiddleResult = processGetAllNthPages(
             queryData = GetAllQueryData(
-                organisationId = organisationId,
-                token = token,
+                organisationId = /*params.currentOrganisationId ?:*/ 0,
+                token = params.token,
                 page = secondPage
             ),
             lastPage = lastPage,
