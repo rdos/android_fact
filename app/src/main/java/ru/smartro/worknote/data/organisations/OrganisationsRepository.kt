@@ -2,6 +2,7 @@ package ru.smartro.worknote.data.organisations
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.smartro.worknote.data.NetworkState
 import ru.smartro.worknote.data.Result
 import ru.smartro.worknote.domain.models.OrganisationModel
 import ru.smartro.worknote.domain.models.UserModel
@@ -10,16 +11,17 @@ import java.io.IOException
 
 class OrganisationsRepository(
     private val organisationsNetworkDataSource: OrganisationsNetworkDataSource,
-    private val organisationsDBDataSource: OrganisationsDBDataSource
+    private val organisationsDBDataSource: OrganisationsDBDataSource,
+    private val networkState: NetworkState
 ) {
     private var _organisations: Map<Int, OrganisationModel> = HashMap()
 
-    private var lastRefresh: Long = 0L
+    private val NETWORK_STATE_KEY = "organisations"
 
     suspend fun refresh(currentUserModel: UserModel): Result<List<OrganisationModel>> {
         return when (val organisationsFromNetResult = organisationsNetworkDataSource.getByUser(currentUserModel)) {
             is Result.Success -> {
-                lastRefresh = System.currentTimeMillis()
+                networkState.setRefreshedNowOf(NETWORK_STATE_KEY)
                 val netOrganisations = organisationsFromNetResult.data.map { it.id to it }.toMap()
                 organisationsDBDataSource.insertAll(netOrganisations.values.toList())
                 _organisations = netOrganisations.filterKeys { currentUserModel.organisationIds.contains(it) }
@@ -29,6 +31,11 @@ class OrganisationsRepository(
         }
     }
 
+
+    fun dropAllCD() {
+        networkState.isErrorCoolDown = false
+        networkState.reset(NETWORK_STATE_KEY)
+    }
 
     private fun handleNetworkGetError(
         currentUserModel: UserModel,
@@ -47,18 +54,18 @@ class OrganisationsRepository(
         }
     }
 
-    suspend fun getOrganisations(currentUserModel: UserModel): Result<List<OrganisationModel>> {
-        val now = System.currentTimeMillis()
-        if (now - lastRefresh > FIVE_MINUTES) {
-            return refresh(currentUserModel)
+    suspend fun getOrganisations(
+        currentUserModel: UserModel
+    ): Result<List<OrganisationModel>> {
+        if (networkState.requestIsNotNeed(NETWORK_STATE_KEY)) {
+            return Result.Success(_organisations.values.toList())
         }
-        return Result.Success(_organisations.values.toList())
+        return refresh(currentUserModel)
     }
 
     suspend fun getOrganisation(id: Int, userModel: UserModel): Result<OrganisationModel>? {
         return withContext(Dispatchers.IO) {
-            val now = System.currentTimeMillis()
-            if (now - lastRefresh > FIVE_MINUTES) {
+            if (networkState.requestIsNotNeed(NETWORK_STATE_KEY)) {
                 return@withContext when (val organisation = _organisations[id]
                     ?: organisationsDBDataSource.getById(id)) {
                     null -> {
@@ -71,12 +78,13 @@ class OrganisationsRepository(
             return@withContext when (val result =
                 organisationsNetworkDataSource.getById(id, userModel = userModel)) {
                 is Result.Success -> {
-                    lastRefresh = now
+                    networkState.setRefreshedNowOf(NETWORK_STATE_KEY)
                     organisationsDBDataSource.insertOrUpdate(result.data)
                     result
                 }
                 is Result.Error -> when (result.exception) {
                     is IOException -> {
+                        networkState.isErrorCoolDown = true
                         val organisation =
                             _organisations[id] ?: organisationsDBDataSource.getById(id)
                         if (organisation == null) {

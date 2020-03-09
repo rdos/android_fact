@@ -23,7 +23,8 @@ class OrganisationSelectViewModelFactory(val activity: Activity) :
             return OrganisationSelectViewModel(
                 organisationsRepository = OrganisationsRepository(
                     organisationsNetworkDataSource = OrganisationsNetworkDataSource(),
-                    organisationsDBDataSource = OrganisationsDBDataSource(db)
+                    organisationsDBDataSource = OrganisationsDBDataSource(db),
+                    networkState = NetworkState(activity)
                 ),
                 loginRepository = LoginRepository(
                     dataSourceNetwork = NetworkLoginDataSource(),

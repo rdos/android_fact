@@ -17,17 +17,18 @@ class CurrentUserViewModelFactory(val activity: Activity) :
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CurrentUserViewModel::class.java)) {
+            val networkState = NetworkState(activity)
+            val db = getDatabase(activity.application)
             return CurrentUserViewModel(
                 organisationsRepository = OrganisationsRepository(
                     organisationsNetworkDataSource = OrganisationsNetworkDataSource(),
-                    organisationsDBDataSource = OrganisationsDBDataSource(getDatabase(activity.application))
+                    organisationsDBDataSource = OrganisationsDBDataSource(db),
+                    networkState = networkState
                 ),
                 loginRepository = LoginRepository(
                     dataSourceNetwork = NetworkLoginDataSource(),
-                    dbLoginDataSource = DbLoginDataSource(
-                        getDatabase(activity.application)
-                    ),
-                    networkState = NetworkState(activity)
+                    dbLoginDataSource = DbLoginDataSource(db),
+                    networkState = networkState
                 ),
                 application = activity.application
 

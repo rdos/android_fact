@@ -31,8 +31,6 @@ class OrganisationSelectViewModel(
     val state: LiveData<State>
         get() = _state
 
-    val selectDone = MutableLiveData<Boolean>(false)
-
     val currentOrganisationId = MutableLiveData<Int?>()
 
     private val _organisations = MutableLiveData<List<OrganisationModel>>()
@@ -48,15 +46,16 @@ class OrganisationSelectViewModel(
     }
 
     //region events
-    fun onRefresh() {
+    fun onRefresh(force : Boolean = false) {
         setState(State.SoftInProgress.Refresh(this))
         uiScope.launch {
             loadUser()?.let {
                 return@let loadWorkflow(it)
             }?.let {
-                return@let loadOrganisations(it)
-            }?.let {
-                setState(State.AwaitSelect(this@OrganisationSelectViewModel))
+                if (force) {
+                    organisationsRepository.dropAllCD()
+                }
+                loadOrganisations(it)
             }
         }
     }
@@ -87,7 +86,9 @@ class OrganisationSelectViewModel(
         when (val organisationsResult = getOrganisations(currentUser)) {
             is Result.Success -> {
                 _organisations.postValue(organisationsResult.data)
-                return _organisations.value
+                setState(State.AwaitSelect(this))
+
+                return organisationsResult.data
             }
             is Result.Error -> {
                 if (organisationsResult.isAuthError) {
@@ -96,6 +97,7 @@ class OrganisationSelectViewModel(
                 } else if (organisationsResult.isIOError) {
                     setState(State.Error.NetworkError(this))
                 }
+                setState(State.AwaitSelect(this))
 
                 return _organisations.value
             }
@@ -121,20 +123,28 @@ class OrganisationSelectViewModel(
         setState(State.Error.AuthError(this))
     }
 
-    fun setCommitCurrentOrganisation() {
+    fun onCommitCurrentOrganisation() {
+        setState(State.SoftInProgress.SendOrganisation(this))
         val userId = currentUserHolder.value?.id
         val orgId = currentOrganisationId.value
-        if (userId !== null && orgId !== null) {
+        val workflowModel = workflowHolder.value
+        if (userId !== null && orgId !== null && workflowModel !== null) {
             uiScope.launch {
                 withContext(Dispatchers.IO) {
-                    // loginRepository.setCurrentOrganisation(userId, organisationId = orgId)
-                    selectDone.postValue(true)
+                    workflowModel.organisationId = orgId
+                    workflowRepository.save(workflowModel)
+                    setState(State.Done(this@OrganisationSelectViewModel))
                 }
             }
+        } else {
+            setState(State.Error.AppError(this))
+            Timber.e("unexpected state. User id: $userId, orgId: $orgId, workflow model: $workflowModel")
         }
     }
 
-    private suspend fun getOrganisations(userModel: UserModel): Result<List<OrganisationModel>> {
+    private suspend fun getOrganisations(
+        userModel: UserModel
+    ): Result<List<OrganisationModel>> {
         return withContext(Dispatchers.IO) {
             return@withContext organisationsRepository.getOrganisations(userModel)
         }
@@ -145,6 +155,7 @@ class OrganisationSelectViewModel(
     }
 
     private fun setState(toState: State) {
+        Timber.d("state: ${state.value}  >>>  $toState")
         if (isTransitionValid(toState)) {
             _state.postValue(toState)
             return
@@ -167,7 +178,6 @@ class OrganisationSelectViewModel(
             class AuthError(subject: OrganisationSelectViewModel) : Error(subject)
             class NetworkError(subject: OrganisationSelectViewModel) : Error(subject)
             class NotFindError(subject: OrganisationSelectViewModel) : Error(subject)
-            class ServerError(subject: OrganisationSelectViewModel) : Error(subject)
             class AppError(subject: OrganisationSelectViewModel) : Error(subject)
         }
 
@@ -215,13 +225,6 @@ class OrganisationSelectViewModel(
                 is State.AwaitSelect -> true
                 else -> false
             }
-
-            is State.Error.ServerError -> when (toState) {
-                is State.AwaitSelect -> true
-                else -> false
-            }
-
-
 
             is State.Done -> false
 

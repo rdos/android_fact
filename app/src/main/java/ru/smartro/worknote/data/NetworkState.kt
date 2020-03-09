@@ -35,6 +35,10 @@ class NetworkState(activity: Activity) {
         return isErrorCoolDown || DTOIsCoolDown(key)
     }
 
+    fun requestIsNeed(key: String): Boolean {
+        return !requestIsNotNeed(key)
+    }
+
     fun getLastRefreshOf(key: String): Long {
         return sharedPreferences.getLong(key, 0L)
     }
