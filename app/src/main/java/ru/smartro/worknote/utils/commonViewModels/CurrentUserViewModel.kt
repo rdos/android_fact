@@ -49,7 +49,7 @@ class CurrentUserViewModel(
     private fun update() {
         modelScope.launch {
             _isUpdating.value = true
-            loginRepository.getLoggedInUser(_currentUserHolder)
+            _currentUserHolder.postValue(loginRepository.getLoggedInUser())
             val currentUserModel = _currentUserHolder.value
             if (currentUserModel == null) {
                 _isUpdating.value = false
@@ -72,7 +72,8 @@ class CurrentUserViewModel(
 
     fun logut() {
         modelScope.launch {
-            loginRepository.logout(userHolder = _currentUserHolder)
+            loginRepository.logout()
+            _currentUserHolder.postValue(null)
         }
     }
 

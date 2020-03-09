@@ -11,6 +11,7 @@
     <string name="login_failed">"Login failed"</string>
     <string name="api_error">"Возникла ошибка: %1$s"</string>
     <string name="api_error_no_connection">"Нет интернета или сервер недоступен"</string>
+    <string name="app_error">"Возникла ошибка, попробуйте позднее или обратитесь к администратору"</string>
 
     <string name="login_validation_err">"Не верно введены логин или пароль"</string>
     <string name="title_activity_main">MainActivity</string>

@@ -64,7 +64,7 @@ class VehicleViewModel(
         }
         modelScope.launch {
             _isUpdating.postValue(true)
-            loginRepository.getLoggedInUser(_currentUserHolder)
+            _currentUserHolder.postValue(loginRepository.getLoggedInUser())
             val currentUser = _currentUserHolder.value ?: return@launch
             //            if (currentUser?.currentOrganisationId == null) {
 //                _authError.postValue(true)

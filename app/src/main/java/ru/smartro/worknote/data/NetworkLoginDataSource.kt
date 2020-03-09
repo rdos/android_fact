@@ -3,12 +3,14 @@ package ru.smartro.worknote.data
 import android.util.Log
 import org.json.JSONObject
 import retrofit2.HttpException
+import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.data.model.LoggedInUserToken
 import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.network.BearerToken
 import ru.smartro.worknote.network.auth.AuthNetwork
 import ru.smartro.worknote.network.auth.requestDto.AuthBody
 import ru.smartro.worknote.network.auth.responseDto.OwnerData
+import timber.log.Timber
 import java.io.IOException
 
 /**

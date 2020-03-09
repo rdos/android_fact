@@ -65,7 +65,7 @@ class WaybillHeadViewModel(
         }
         modelScope.launch {
             _isUpdating.postValue(true)
-            loginRepository.getLoggedInUser(_currentUserHolder)
+            _currentUserHolder.postValue(loginRepository.getLoggedInUser())
             val currentUser = _currentUserHolder.value
 //            if (currentUser?.currentOrganisationId == null) {
 //                _authError.postValue(true)

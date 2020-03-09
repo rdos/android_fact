@@ -10,7 +10,7 @@ import ru.smartro.worknote.databinding.ListItemSelectOrganisationBinding
 import ru.smartro.worknote.domain.models.OrganisationModel
 
 
-class OrganisationAdapter(val viewModel: OrganisationSelectViewModel) : ListAdapter<OrganisationModel, OrganisationAdapter.ViewHolder>(OrganisationDiffCallback()) {
+class OrganisationAdapter(private val viewModel: OrganisationSelectViewModel) : ListAdapter<OrganisationModel, OrganisationAdapter.ViewHolder>(OrganisationDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return  ViewHolder.from(parent)
@@ -25,9 +25,8 @@ class OrganisationAdapter(val viewModel: OrganisationSelectViewModel) : ListAdap
     class ViewHolder private constructor(val binding: ListItemSelectOrganisationBinding) : RecyclerView.ViewHolder(binding.root) {
         
         fun bind(item: OrganisationModel, viewModel: OrganisationSelectViewModel) {
-            binding.organisation = item
-            binding.viewModel = viewModel
-            binding.button.setOnClickListener {
+            binding.buttonOrganisation.text = item.name
+            binding.buttonOrganisation.setOnClickListener {
                 viewModel.currentOrganisationId.value = item.id
             }
             binding.executePendingBindings()

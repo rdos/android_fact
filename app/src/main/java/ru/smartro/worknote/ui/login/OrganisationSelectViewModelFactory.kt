@@ -10,6 +10,8 @@ import ru.smartro.worknote.data.NetworkState
 import ru.smartro.worknote.data.organisations.OrganisationsDBDataSource
 import ru.smartro.worknote.data.organisations.OrganisationsNetworkDataSource
 import ru.smartro.worknote.data.organisations.OrganisationsRepository
+import ru.smartro.worknote.data.workflow.WorkflowDBDataSource
+import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.database.getDatabase
 
 class OrganisationSelectViewModelFactory(val activity: Activity) :
@@ -17,19 +19,18 @@ class OrganisationSelectViewModelFactory(val activity: Activity) :
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(OrganisationSelectViewModel::class.java)) {
+            val db = getDatabase(activity.application)
             return OrganisationSelectViewModel(
                 organisationsRepository = OrganisationsRepository(
                     organisationsNetworkDataSource = OrganisationsNetworkDataSource(),
-                    organisationsDBDataSource = OrganisationsDBDataSource(getDatabase(activity.application))
+                    organisationsDBDataSource = OrganisationsDBDataSource(db)
                 ),
                 loginRepository = LoginRepository(
                     dataSourceNetwork = NetworkLoginDataSource(),
-                    dbLoginDataSource = DbLoginDataSource(
-                        getDatabase(activity.application)
-                    ),
+                    dbLoginDataSource = DbLoginDataSource(db),
                     networkState = NetworkState(activity = activity)
-                )
-
+                ),
+                workflowRepository = WorkflowRepository(WorkflowDBDataSource(db))
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

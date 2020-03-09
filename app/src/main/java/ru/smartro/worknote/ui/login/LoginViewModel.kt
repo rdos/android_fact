@@ -3,7 +3,6 @@ package ru.smartro.worknote.ui.login
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +14,7 @@ import ru.smartro.worknote.data.Result
 import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.domain.models.WorkflowModel
+import timber.log.Timber
 import java.io.IOException
 
 class LoginViewModel(
@@ -36,9 +36,6 @@ class LoginViewModel(
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
-    private val _loginResult = MutableLiveData<LoginResult>()
-    val loginResult: LiveData<LoginResult> = _loginResult
-
     val username = MutableLiveData<String>()
     val usernameStr: String
         get() = username.value ?: ""
@@ -50,9 +47,6 @@ class LoginViewModel(
 
     private val _currentUserHolder: MutableLiveData<UserModel?> = MutableLiveData()
 
-    val currentUserHolder : LiveData<UserModel?>
-        get() = _currentUserHolder
-
     init {
         when (_state.value) {
             is State.Created -> onLoadData()
@@ -62,7 +56,7 @@ class LoginViewModel(
 
     //region  events
     fun onLoadData() {
-        setState(State.ProcessInit(this))
+        setState(State.ModalInProgress.ProcessInit(this))
         viewModelScope.launch {
             val userModel = loginRepository.getLoggedInUser()
             if (userModel != null) {
@@ -74,44 +68,37 @@ class LoginViewModel(
         }
     }
 
-
-
-
-
-
     fun onUserSet(userModel: UserModel) {
-        _currentUserHolder.value = userModel
-        setState(State.InitWorkflow(this))
+        _currentUserHolder.postValue(userModel)
         viewModelScope.launch {
             var workflowModel = workflowRepository.getWorkFlowForUser(userModel.id)
             if (workflowModel == null) {
                 workflowModel = WorkflowModel(userModel.id, false, null, null, null)
                 workflowRepository.save(workflowModel)
             }
-            workflowHolder.postValue(workflowModel)
-
+            workflowHolder.value = workflowModel
+            onDone()
         }
+
     }
 
-
-
+    fun onDone() {
+        val workflow = workflowHolder.value
+        when {
+            workflow == null -> throw  Exception("workflow must be set")
+            workflow.organisationId == null -> setState(State.Done.NeedsOrganisation(this))
+            workflow.vehicleId == null -> setState(State.Done.NeedsVehicle(this))
+            workflow.wayBillId == null -> setState(State.Done.NeedsWaybill(this))
+        }
+    }
 
     fun onAwaitCredentials() {
         setState(State.AwaitCredentials(this))
     }
 
 
-    fun onWorkflowSet(workflowModel: WorkflowModel) {
-
-    }
-
-    fun onWorkDone() {
-        setState(State.Done(this))
-    }
-
-
     fun onLogin() {
-        setState(State.SendCredentials(this))
+        setState(State.SoftInProgress.SendCredentials(this))
         loginDataChanged()
         if (_loginForm.value?.isDataValid != true) {
             setState(State.CredentialsError(this, R.string.login_validation_err, null))
@@ -139,7 +126,8 @@ class LoginViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            loginRepository.logout(userHolder = _currentUserHolder)
+            loginRepository.logout()
+            _currentUserHolder.postValue(null)
         }
     }
 
@@ -171,20 +159,24 @@ class LoginViewModel(
 
         class Created(subject: LoginViewModel) : State(subject)
 
-        open class SoftInProgress(subject: LoginViewModel) : State(subject)
-        open class ModalInProgress(subject: LoginViewModel) : State(subject)
+        open class SoftInProgress(subject: LoginViewModel) : State(subject) {
+            class SendCredentials(subject: LoginViewModel): SoftInProgress(subject)
+        }
 
-        class ProcessInit(subject: LoginViewModel) : ModalInProgress(subject)
-
-        class InitWorkflow(subject: LoginViewModel) : ModalInProgress(subject)
-
+        open class ModalInProgress(subject: LoginViewModel) : State(subject) {
+            class ProcessInit(subject: LoginViewModel) : ModalInProgress(subject)
+        }
 
 
         class AwaitCredentials(subject: LoginViewModel): State(subject)
-        class SendCredentials(subject: LoginViewModel): SoftInProgress(subject)
+
         class CredentialsError(subject: LoginViewModel, val error: Int, val message: String? = null): State(subject)
 
-        class Done(subject: LoginViewModel): State(subject)
+        open class Done(subject: LoginViewModel): State(subject) {
+            class NeedsOrganisation(subject: LoginViewModel): Done(subject)
+            class NeedsVehicle(subject: LoginViewModel): Done(subject)
+            class NeedsWaybill(subject: LoginViewModel): Done(subject)
+        }
     }
 
     private fun setState(toState: State) {
@@ -192,29 +184,39 @@ class LoginViewModel(
             _state.postValue(toState)
             return
         }
-        throw Exception("$toState - state not applicable")
+        val exception = Exception("from ${state.value} -TO- $toState - state is not applicable")
+        Timber.e(exception)
+
+        throw exception
     }
 
     private fun isTransitionValid(toState: State): Boolean {
         return when (state.value) {
             is State.Created -> when (toState) {
-                is State.ProcessInit -> true
+                is State.ModalInProgress.ProcessInit -> true
 
                 else -> false
             }
-            is State.ProcessInit -> when (toState) {
+            is State.ModalInProgress.ProcessInit -> when (toState) {
                 is State.Done -> true
                 is State.AwaitCredentials -> true
 
                 else -> false
             }
             is State.AwaitCredentials -> when (toState) {
-                is State.SendCredentials -> true
+                is State.SoftInProgress.SendCredentials -> true
+                is State.CredentialsError -> true
 
                 else -> false
             }
-            is State.SendCredentials -> when (toState) {
-                is State.AwaitCredentials -> true
+            is State.CredentialsError -> when (toState) {
+                is State.SoftInProgress.SendCredentials -> true
+                is State.CredentialsError -> true
+                else -> false
+            }
+
+            is State.SoftInProgress.SendCredentials -> when (toState) {
+                is State.CredentialsError -> true
                 is State.Done -> true
                 else -> false
             }

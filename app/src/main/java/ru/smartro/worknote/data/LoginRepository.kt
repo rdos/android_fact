@@ -44,12 +44,10 @@ class LoginRepository(
         networkState.reset(NETWORK_STATE_KEY)
     }
 
-    suspend fun logout(userHolder: MutableLiveData<UserModel?>) {
+    suspend fun logout() {
         userToken = null
         withContext(Dispatchers.IO) {
             dbLoginDataSource.logOutAll()
-            userHolder.postValue(null)
-            currentUser = null
         }
     }
 

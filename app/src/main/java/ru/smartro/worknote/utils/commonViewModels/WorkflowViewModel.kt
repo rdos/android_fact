@@ -41,7 +41,7 @@ class WorkflowViewModel(
     init {
         viewModelScope.launch {
             _isUpdating.postValue(true)
-            loginRepository.getLoggedInUser(currentUserHolder)
+            currentUserHolder.postValue(loginRepository.getLoggedInUser())
             if (currentUserHolder.value == null) {
                 authError.postValue(true)
                 _isUpdating.postValue(false)

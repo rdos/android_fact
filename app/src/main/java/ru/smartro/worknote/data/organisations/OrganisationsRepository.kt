@@ -20,8 +20,9 @@ class OrganisationsRepository(
         return when (val organisationsFromNetResult = organisationsNetworkDataSource.getByUser(currentUserModel)) {
             is Result.Success -> {
                 lastRefresh = System.currentTimeMillis()
-                _organisations = organisationsFromNetResult.data.map { it.id to it }.toMap()
-                organisationsDBDataSource.insertAll(_organisations.values.toList())
+                val netOrganisations = organisationsFromNetResult.data.map { it.id to it }.toMap()
+                organisationsDBDataSource.insertAll(netOrganisations.values.toList())
+                _organisations = netOrganisations.filterKeys { currentUserModel.organisationIds.contains(it) }
                 Result.Success(_organisations.values.toList())
             }
             is Result.Error -> handleNetworkGetError(currentUserModel, organisationsFromNetResult)

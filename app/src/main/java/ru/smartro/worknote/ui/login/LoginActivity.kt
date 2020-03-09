@@ -5,17 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.EventLog
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ru.smartro.worknote.MainActivity
-import ru.smartro.worknote.R
 import ru.smartro.worknote.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
@@ -41,19 +38,21 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setViewListeners() {
         binding.login.setOnClickListener {
-            binding.loading.visibility = View.VISIBLE
-            loginViewModel.login()
+            loginViewModel.onLogin()
         }
         binding.username.afterTextChanged {
             loginViewModel.username.value = it
         }
 
         binding.password.apply {
+            afterTextChanged {
+                loginViewModel.password.value = it
+            }
             setOnEditorActionListener { v, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE -> {
                         loginViewModel.password.value = v.text.toString()
-                        loginViewModel.login()
+                        loginViewModel.onLogin()
                     }
                 }
                 false
@@ -62,6 +61,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setModelListeners() {
+        //validation
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
@@ -73,18 +73,8 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
-            val loginResult = it ?: return@Observer
-
-            binding.loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error, loginResult.errorParam)
-                return@Observer
-            }
-        })
-
-        //UI side effects
         loginViewModel.state.observe(this, Observer {
+            //in progress
             when (it) {
                 is LoginViewModel.State.SoftInProgress -> {
                     binding.loading.visibility = View.VISIBLE
@@ -100,23 +90,44 @@ class LoginActivity : AppCompatActivity() {
                 }
 
             }
+
+            // login button
             when (it) {
-                is LoginViewModel.State.CanSetOrganisation -> {
-                    setResult(Activity.RESULT_OK)
-                    val intent = Intent(this, OrganisationSelectActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                    return@Observer
-                }
-                is LoginViewModel.State.CanGoToWorkflow -> {
-                    setResult(Activity.RESULT_OK)
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                    return@Observer
+                is LoginViewModel.State.AwaitCredentials -> binding.login.visibility = View.VISIBLE
+                is LoginViewModel.State.CredentialsError -> binding.login.visibility = View.VISIBLE
+                else -> binding.login.visibility = View.GONE
+            }
+
+            //errors
+            when (it) {
+                is LoginViewModel.State.CredentialsError -> {
+                    showLoginFailed(it.error, it.message)
                 }
             }
+
+            //redirect
+            when (it) {
+                is LoginViewModel.State.Done.NeedsOrganisation -> redirectToSelectOrganisation()
+                is LoginViewModel.State.Done.NeedsVehicle -> redirectToWorkflow()
+                is LoginViewModel.State.Done.NeedsWaybill -> redirectToWorkflow()
+            }
         })
+    }
+
+    private fun redirectToSelectOrganisation() {
+        setResult(Activity.RESULT_OK)
+        val intent = Intent(this, OrganisationSelectActivity::class.java)
+        startActivity(intent)
+        finish()
+        return
+    }
+
+    private fun redirectToWorkflow() {
+        setResult(Activity.RESULT_OK)
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+        return
     }
 }
 

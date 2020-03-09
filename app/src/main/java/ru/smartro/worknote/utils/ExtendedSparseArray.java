@@ -8,7 +8,7 @@ import java.util.List;
 public class ExtendedSparseArray<E> extends SparseArray<E> {
 
     public List<E> asList() {
-        List<E> arrayList = new ArrayList<E>(this.size());
+        List<E> arrayList = new ArrayList<>(this.size());
         for (int i = 0; i < this.size(); i++)
             arrayList.add(this.valueAt(i));
         return arrayList;
