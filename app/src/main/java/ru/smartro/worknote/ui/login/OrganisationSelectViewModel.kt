@@ -12,7 +12,6 @@ import ru.smartro.worknote.domain.models.OrganisationModel
 import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.domain.models.WorkflowModel
 import timber.log.Timber
-import java.time.temporal.ChronoUnit
 
 class OrganisationSelectViewModel(
     private val organisationsRepository: OrganisationsRepository,
@@ -124,7 +123,7 @@ class OrganisationSelectViewModel(
     }
 
     fun onCommitCurrentOrganisation() {
-        setState(State.SoftInProgress.SendOrganisation(this))
+        setState(State.SoftInProgress.SetOrganisation(this))
         val userId = currentUserHolder.value?.id
         val orgId = currentOrganisationId.value
         val workflowModel = workflowHolder.value
@@ -170,7 +169,7 @@ class OrganisationSelectViewModel(
         class Created(subject: OrganisationSelectViewModel) : State(subject)
 
         open class SoftInProgress(subject: OrganisationSelectViewModel) : State(subject) {
-            class SendOrganisation(subject: OrganisationSelectViewModel) : SoftInProgress(subject)
+            class SetOrganisation(subject: OrganisationSelectViewModel) : SoftInProgress(subject)
             class Refresh(subject: OrganisationSelectViewModel) : SoftInProgress(subject)
         }
 
@@ -195,12 +194,12 @@ class OrganisationSelectViewModel(
             }
             is State.AwaitSelect -> when (toState) {
                 is State.SoftInProgress.Refresh -> true
-                is State.SoftInProgress.SendOrganisation -> true
+                is State.SoftInProgress.SetOrganisation -> true
                 is State.Done -> true
                 else -> false
             }
 
-            is State.SoftInProgress.SendOrganisation -> when (toState) {
+            is State.SoftInProgress.SetOrganisation -> when (toState) {
                 is State.Done -> true
                 else -> false
             }

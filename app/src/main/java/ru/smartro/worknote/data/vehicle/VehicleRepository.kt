@@ -17,17 +17,20 @@ class VehicleRepository(
     private val NETWORK_STATE_KEY = "vehicle"
 
 
-    suspend fun getAllVehiclesByUser(currentUser: UserModel): Result<List<VehicleModel>> {
+    suspend fun getAllVehiclesByUser(
+        currentUser: UserModel,
+        organisationId: Int
+    ): Result<List<VehicleModel>> {
         return withContext(Dispatchers.IO) {
             return@withContext if (networkState.requestIsNotNeed(NETWORK_STATE_KEY)) {
-                val models = getAllCachedByOrganisation(/*currentUser.currentOrganisationId ?:*/ 0)
+                val models = getAllCachedByOrganisation(organisationId)
                 if (models.isEmpty()) {
-                    getFromNetByUser(currentUser)
+                    getFromNetByUser(currentUser, organisationId)
                 } else {
                     Result.Success(models)
                 }
             } else {
-                getFromNetByUser(currentUser)
+                getFromNetByUser(currentUser, organisationId)
             }
         }
 
@@ -38,8 +41,13 @@ class VehicleRepository(
         networkState.reset(NETWORK_STATE_KEY)
     }
 
-    private suspend fun getFromNetByUser(currentUser: UserModel): Result<List<VehicleModel>> {
-        return when (val networkResult = vehicleNetworkDataSource.getListBy(currentUser)) {
+    private suspend fun getFromNetByUser(
+        currentUser: UserModel,
+        organisationId: Int
+    ): Result<List<VehicleModel>> {
+        return when (val networkResult = vehicleNetworkDataSource.getListBy(
+            VehicleNetworkDataSource.ParamsGetList(currentUser, organisationId)
+        )) {
             is Result.Success -> {
                 networkState.setRefreshedNowOf(NETWORK_STATE_KEY)
                 networkState.isErrorCoolDown = false

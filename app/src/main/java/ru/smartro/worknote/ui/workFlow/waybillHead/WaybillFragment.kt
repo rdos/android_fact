@@ -1,7 +1,6 @@
 package ru.smartro.worknote.ui.workFlow.waybillHead
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -56,6 +55,7 @@ class WaybillFragment : Fragment() {
         binding = FragmentWaybillListBinding.inflate(inflater)
 
         waybillAdapter = WaybillRecyclerViewAdapter(DummyContent.ITEMS, listener)
+
         binding.root.findViewById<RecyclerView>(R.id.list).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = waybillAdapter
@@ -80,14 +80,6 @@ class WaybillFragment : Fragment() {
         return binding.root
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnListFragmentInteractionListener) {
-            listener = context
-        } else {
-            //    throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
-        }
-    }
 
     override fun onDetach() {
         super.onDetach()
@@ -108,20 +100,5 @@ class WaybillFragment : Fragment() {
     interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onListFragmentInteraction(item: DummyItem?)
-    }
-
-    companion object {
-
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
-
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-            WaybillFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
-                }
-            }
     }
 }
