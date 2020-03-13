@@ -71,6 +71,7 @@ class WaybillFragment : Fragment() {
         })
 
         val toolbar = requireActivity().container?.toolbar
+
         toolbar?.setNavigationOnClickListener {
             Timber.e("back!!!!")
             activity?.onBackPressed()

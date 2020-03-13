@@ -37,8 +37,6 @@ class VehicleFragment : Fragment() {
             Toast.LENGTH_LONG
         ).show()
         Timber.d("Fragment 1 \"onActivityCreated\"")
-
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

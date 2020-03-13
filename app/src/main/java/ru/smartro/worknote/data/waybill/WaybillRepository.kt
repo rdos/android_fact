@@ -23,8 +23,10 @@ class WaybillRepository(
         val user: UserModel
     )
 
-    private val localCache = HashMap<LocalDate, MutableList<WaybillHeadModel>>()
+    private var localCache = listOf<WaybillHeadModel>()
     private var currentOrganisationId: Int? = null
+    private var currentDate: LocalDate? = null
+
     private val NETWORK_STATE_KEY = "way_bill_head"
 
 
@@ -64,7 +66,7 @@ class WaybillRepository(
                 networkState.setRefreshedNowOf(NETWORK_STATE_KEY)
                 networkState.isErrorCoolDown = false
                 currentOrganisationId = criteria.organisationId
-                updateLocalDataSources(networkResult.data)
+                updateLocalDataSources(networkResult.data, criteria.organisationId, criteria.date)
 
                 networkResult
             }
@@ -84,29 +86,29 @@ class WaybillRepository(
     private fun getAllCachedByCriteria(criteria: WaybillCriteria): List<WaybillHeadModel> {
 
         return if (currentOrganisationId == criteria.organisationId
-            && localCache[criteria.date]?.isNotEmpty() == true
+            && currentDate?.equals(criteria.date) == true
+            && localCache.isNotEmpty()
         ) {
-            localCache[criteria.date] ?: mutableListOf()
+            localCache
         } else {
-            localCache[criteria.date] = waybillDBDataSource.getAllByOrganisationIdAndDate(
+            localCache = waybillDBDataSource.getAllByOrganisationIdAndDate(
                 criteria.organisationId,
                 criteria.date
-            ) as MutableList<WaybillHeadModel>
-
+            )
             currentOrganisationId = criteria.organisationId
-            localCache[criteria.date] ?: mutableListOf()
+            currentDate = criteria.date
+            localCache
         }
     }
 
-    private fun updateLocalDataSources(models: List<WaybillHeadModel>) {
+    private fun updateLocalDataSources(
+        models: List<WaybillHeadModel>,
+        organisationId: Int,
+        date: LocalDate
+    ) {
         waybillDBDataSource.insertAll(models)
-        models.forEach {
-            if (localCache[it.date] === null) {
-                localCache[it.date] = mutableListOf()
-            }
-            localCache[it.date]?.add(it)
-        }
-
-
+        localCache = models
+        currentOrganisationId = organisationId
+        currentDate = date
     }
 }

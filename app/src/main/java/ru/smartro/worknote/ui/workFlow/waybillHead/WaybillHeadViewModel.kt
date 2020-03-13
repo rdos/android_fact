@@ -13,6 +13,7 @@ import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.domain.models.WaybillHeadModel
 import ru.smartro.worknote.domain.models.WorkflowModel
+import timber.log.Timber
 import java.time.LocalDate
 
 class WaybillHeadViewModel(
@@ -21,42 +22,42 @@ class WaybillHeadViewModel(
     private val loginRepository: LoginRepository
 ) : ViewModel() {
 
-    private val _currentUserHolder = MutableLiveData<UserModel?>()
-
-    private val _authError = MutableLiveData<Boolean>(false)
+    private lateinit var currentUserHolder: MutableLiveData<UserModel?>
+    private lateinit var workflowHolder: MutableLiveData<WorkflowModel?>
 
     private val _waybills = MutableLiveData<List<WaybillHeadModel>>()
-
-    private val _workflow = MutableLiveData<WorkflowModel?>()
 
     private val viewModelJob = Job()
 
     private val modelScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val _isUpdating = MutableLiveData<Boolean>(false)
+    private val _lastSelected = MutableLiveData<WaybillHeadViewModel?>(null)
 
-    val lastSelected = MutableLiveData<Int?>(null)
+    private val _state = MutableLiveData<State>(
+        State.Created
+    )
 
-    val authError: LiveData<Boolean>
-        get() = _authError
+    val state: LiveData<State>
+        get() = _state
+
+    val lastSelected: LiveData<WaybillHeadViewModel?>
+        get() = _lastSelected
+
 
     val waybills: LiveData<List<WaybillHeadModel>>
         get() = _waybills
 
-    val isUpdating: LiveData<Boolean>
-        get() = _isUpdating
-
-    val workflow: LiveData<WorkflowModel?>
-        get() = _workflow
-
-    val workDone = MutableLiveData<Boolean>(false)
-
     private val _date: MutableLiveData<LocalDate> = MutableLiveData(LocalDate.now())
 
 
-    init {
-        refresh()
+    //region events
+    private suspend fun onAuthError() {
+        currentUserHolder.postValue(null)
+        loginRepository.logout()
+        setState(State.Error.AuthError)
     }
+    //endregion
+
 
     fun refresh(force: Boolean = false) {
         if (force) {
@@ -64,9 +65,9 @@ class WaybillHeadViewModel(
             waybillRepository.dropAllCD()
         }
         modelScope.launch {
-            _isUpdating.postValue(true)
-            _currentUserHolder.postValue(loginRepository.getLoggedInUser())
-            val currentUser = _currentUserHolder.value
+//            _isUpdating.postValue(true)
+//            _currentUserHolder.postValue(loginRepository.getLoggedInUser())
+//            val currentUser = _currentUserHolder.value
 //            if (currentUser?.currentOrganisationId == null) {
 //                _authError.postValue(true)
 //                return@launch
@@ -109,6 +110,133 @@ class WaybillHeadViewModel(
 //            return LocalDate.parse(value, formatter)
 //        }
 //    }
+private suspend fun loadUser(): UserModel? {
+    val currentUser = getCurrentUser()
+    if (currentUser == null) {
+        onAuthError()
+        return null
+    }
+    currentUserHolder = MutableLiveData(currentUser)
 
+    return currentUser
+}
+
+    private suspend fun loadWorkflow(user: UserModel): UserModel? {
+        val workflowModel = getWorkflow(user)
+        if (workflowModel == null) {
+            setState(State.Error.AppError)
+            return null
+        }
+        workflowHolder = MutableLiveData(workflowModel)
+
+        return user
+    }
+
+    private suspend fun getCurrentUser(): UserModel? {
+        return loginRepository.getLoggedInUser()
+    }
+
+    private suspend fun getWorkflow(userModel: UserModel): WorkflowModel? {
+        return workflowRepository.getWorkFlowForUser(userModel.id)
+    }
+
+    private fun getOrganisationId(): Int {
+        return workflowHolder.value?.organisationId
+            ?: throw Exception("workflow and their organisation must be set")
+    }
+
+    private fun setState(toState: State) {
+        Timber.d("state: ${state.value}  >>>  $toState")
+        if (isTransitionValid(toState)) {
+            _state.postValue(toState)
+            return
+        }
+        val exception = Exception("from ${state.value} -TO- $toState - state is not applicable")
+        Timber.e(exception)
+
+        throw exception
+    }
+
+    sealed class State() {
+
+        object Created : State()
+
+        sealed class SoftInProgress : State() {
+            object SetWaybill : SoftInProgress()
+            object Refresh : SoftInProgress()
+        }
+
+        sealed class Error() : State() {
+            object AuthError : Error()
+            object NetworkError : Error()
+            object NotFindError : Error()
+            object AppError : Error()
+        }
+
+        object AwaitSelect : State()
+
+        object ItChoseSomeWayBill : State()
+
+        object Done : State()
+    }
+
+
+    private fun isTransitionValid(toState: State): Boolean {
+        return when (state.value) {
+            is State.Created -> when (toState) {
+                is State.SoftInProgress.Refresh -> true
+                else -> false
+            }
+            is State.AwaitSelect -> when (toState) {
+                is State.SoftInProgress.Refresh -> true
+                is State.ItChoseSomeWayBill -> true
+                else -> false
+            }
+
+            is State.ItChoseSomeWayBill -> when (toState) {
+                is State.SoftInProgress.Refresh -> true
+                is State.SoftInProgress.SetWaybill -> true
+                is State.ItChoseSomeWayBill -> true
+                is State.AwaitSelect -> true
+                is State.Done -> true
+                else -> false
+            }
+
+            is State.SoftInProgress.SetWaybill -> when (toState) {
+                is State.Done -> true
+                else -> false
+            }
+
+            is State.SoftInProgress.Refresh -> when (toState) {
+                is State.AwaitSelect -> true
+                is State.Error -> true
+                else -> false
+            }
+
+            is State.Error.AuthError -> false
+
+            is State.Error.AppError -> false
+
+            is State.Error.NetworkError -> when (toState) {
+                is State.SoftInProgress.Refresh -> true
+                is State.AwaitSelect -> true
+                else -> false
+            }
+
+            is State.Error.NotFindError -> when (toState) {
+                is State.AwaitSelect -> true
+                else -> false
+            }
+
+            is State.Done -> false
+
+            else -> false
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
 
 }
