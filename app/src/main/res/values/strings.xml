@@ -37,4 +37,6 @@
     <string name="container_types">Типы контейнеров</string>
     <string name="references">Справочники</string>
     <string name="menu_references">Справочники</string>
+
+    <string name="way_bill">Путевой лист</string>
 </resources>

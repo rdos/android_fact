@@ -1,6 +1,5 @@
 package ru.smartro.worknote.ui.workFlow.selectVehicle
 
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_vehicle.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.domain.models.VehicleModel
-
 
 class MyVehicleRecyclerViewAdapter(
     private val onSelectListener: (VehicleModel) -> Unit,
@@ -42,12 +40,10 @@ class MyVehicleRecyclerViewAdapter(
             lastCheckBox = holder.checkBox
             holder.checkBox.isChecked = true
         } else {
-            lastCheckBox = null
             holder.checkBox.isChecked = false
         }
 
         with(holder.mView) {
-            /** @todo */
             this.checkBox.setOnClickListener {
                 if (!enabled) {
                     return@setOnClickListener
