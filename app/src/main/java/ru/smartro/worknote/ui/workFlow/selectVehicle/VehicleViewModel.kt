@@ -28,9 +28,9 @@ class VehicleViewModel(
 
     private val modelScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val _lastSelected = MutableLiveData<VehicleModel?>(null)
+    private val _lastSelected = MutableLiveData<Int?>(null)
 
-    val lastSelected: LiveData<VehicleModel?>
+    val lastSelected: LiveData<Int?>
         get() = _lastSelected
 
     val vehicles: LiveData<List<VehicleModel>>
@@ -69,14 +69,26 @@ class VehicleViewModel(
         setState(State.SoftInProgress.Refresh(this))
         modelScope.launch {
             loadUser()?.let {
-                return@let loadWorkflow(it)
+                return@let loadWorkflow()
+            }?.let{
+                if (lastSelected.value == null) {
+                    loadSelected()
+                }
             }?.let {
                 if (force) {
                     vehicleRepository.dropAllCD()
                 }
-                loadVehicles(it)
+                return@let loadVehicles()
+            }?.let {
+                setAwaitOrChose()
             }
         }
+    }
+
+    fun onReset() {
+        _lastSelected.postValue(null)
+        _vehicles.postValue(null)
+        _state.postValue(State.Created(this))
     }
 
     fun onChose(vehicle: VehicleModel) {
@@ -84,7 +96,7 @@ class VehicleViewModel(
             setState(State.Error.AppError(this))
             return
         }
-        _lastSelected.postValue(vehicle)
+        _lastSelected.postValue(vehicle.id)
         setState(State.ItChoseSomeVehicle(this))
     }
 
@@ -94,10 +106,10 @@ class VehicleViewModel(
     }
 
     fun onConfirmChoice() {
-        val vehicle = _lastSelected.value ?: throw Exception("vehicle must be set")
+        val vehicleId = _lastSelected.value ?: throw Exception("vehicle must be set")
         val workflow = workflowHolder.value ?: throw Exception("workflow must be set")
         modelScope.launch {
-            workflow.vehicleId = vehicle.id
+            workflow.vehicleId = vehicleId
             workflowRepository.save(workflow)
             setState(State.Done(this@VehicleViewModel))
         }
@@ -111,6 +123,14 @@ class VehicleViewModel(
 
     //endregion
 
+    private fun loadSelected() {
+        val workflow = workflowHolder.value ?: return
+        _lastSelected.value = workflow.vehicleId
+        if (_lastSelected.value != null) {
+            setState(State.ItChoseSomeVehicle(this))
+        }
+    }
+
     private suspend fun loadUser(): UserModel? {
         val currentUser = getCurrentUser()
         if (currentUser == null) {
@@ -122,24 +142,34 @@ class VehicleViewModel(
         return currentUser
     }
 
-    private suspend fun loadWorkflow(user: UserModel): UserModel? {
-        val workflowModel = getWorkflow(user)
+    private suspend fun loadWorkflow(): Boolean? {
+        val userModel = currentUserHolder.value?: throw Exception("current user must be set")
+        val workflowModel = getWorkflow(userModel)
         if (workflowModel == null) {
             setState(State.Error.AppError(this))
             return null
         }
         workflowHolder = MutableLiveData(workflowModel)
 
-        return user
+        return true
     }
 
-    private suspend fun loadVehicles(currentUser: UserModel): List<VehicleModel>? {
-        when (val vehiclesResult = getVehicles(currentUser)) {
+    private fun setAwaitOrChose()
+    {
+        if (lastSelected.value != null) {
+            setState(State.ItChoseSomeVehicle(this))
+        } else {
+            setState(State.AwaitSelect(this))
+        }
+    }
+
+    private suspend fun loadVehicles(): Boolean? {
+        when (val vehiclesResult = getVehicles()) {
             is Result.Success -> {
                 _vehicles.postValue(vehiclesResult.data)
                 setState(State.AwaitSelect(this))
 
-                return vehiclesResult.data
+                return true
             }
             is Result.Error -> {
                 if (vehiclesResult.isAuthError) {
@@ -150,7 +180,7 @@ class VehicleViewModel(
                 }
                 setState(State.AwaitSelect(this))
 
-                return _vehicles.value
+                return true
             }
         }
     }
@@ -164,11 +194,18 @@ class VehicleViewModel(
         return workflowRepository.getWorkFlowForUser(userModel.id)
     }
 
-    private suspend fun getVehicles(
-        userModel: UserModel
-    ): Result<List<VehicleModel>> {
+    private suspend fun getVehicles(): Result<List<VehicleModel>> {
+        var userModel = currentUserHolder.value?: throw Exception("current user must be set")
         return withContext(Dispatchers.IO) {
-            loginRepository.checkRefreshUser(userModel)
+            when (val result = loginRepository.checkRefreshUser(userModel)) {
+                is Result.Error -> {
+                    return@withContext Result.Error(result.exception)
+                }
+                is Result.Success -> {
+                    userModel = result.data
+                    currentUserHolder.postValue(userModel)
+                }
+            }
 
             return@withContext vehicleRepository.getAllVehiclesByUser(
                 userModel,
@@ -246,6 +283,7 @@ class VehicleViewModel(
 
             is State.SoftInProgress.Refresh -> when (toState) {
                 is State.AwaitSelect -> true
+                is State.ItChoseSomeVehicle -> true
                 is State.Error -> true
                 else -> false
             }

@@ -18,7 +18,7 @@ class WaybillRepository(
 
     data class WaybillCriteria(
         val date: LocalDate,
-        val VehicleId: Int,
+        val vehicleId: Int,
         val organisationId: Int,
         val user: UserModel
     )
@@ -26,6 +26,7 @@ class WaybillRepository(
     private var localCache = listOf<WaybillHeadModel>()
     private var currentOrganisationId: Int? = null
     private var currentDate: LocalDate? = null
+    private var currentVehicleId : Int? = null
 
     private val NETWORK_STATE_KEY = "way_bill_head"
 
@@ -56,7 +57,7 @@ class WaybillRepository(
         return when (val networkResult = waybillNetworkDataSource.getListBy(
             WaybillHeadRequest(
                 criteria.date.format(formatter),
-                criteria.VehicleId,
+                criteria.vehicleId,
                 criteria.organisationId
             ),
             criteria.user,
@@ -66,7 +67,7 @@ class WaybillRepository(
                 networkState.setRefreshedNowOf(NETWORK_STATE_KEY)
                 networkState.isErrorCoolDown = false
                 currentOrganisationId = criteria.organisationId
-                updateLocalDataSources(networkResult.data, criteria.organisationId, criteria.date)
+                updateLocalDataSources(networkResult.data, criteria.organisationId, criteria.date, criteria.vehicleId)
 
                 networkResult
             }
@@ -87,6 +88,7 @@ class WaybillRepository(
 
         return if (currentOrganisationId == criteria.organisationId
             && currentDate?.equals(criteria.date) == true
+            && criteria.vehicleId == currentVehicleId
             && localCache.isNotEmpty()
         ) {
             localCache
@@ -97,6 +99,7 @@ class WaybillRepository(
             )
             currentOrganisationId = criteria.organisationId
             currentDate = criteria.date
+            currentVehicleId = criteria.vehicleId
             localCache
         }
     }
@@ -104,11 +107,13 @@ class WaybillRepository(
     private fun updateLocalDataSources(
         models: List<WaybillHeadModel>,
         organisationId: Int,
-        date: LocalDate
+        date: LocalDate,
+        vehicleId: Int
     ) {
         waybillDBDataSource.insertAll(models)
         localCache = models
         currentOrganisationId = organisationId
         currentDate = date
+        currentVehicleId = vehicleId
     }
 }

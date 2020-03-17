@@ -32,31 +32,19 @@ class VehicleFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Toast.makeText(
-            activity, "FirstFragment.onActivityCreated()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onActivityCreated\"")
+        Timber.d("VehicleFragment \"onActivityCreated\"")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Toast.makeText(
-            activity, "FirstFragment.onCreate()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onCreate\"")
+        Timber.d("VehicleFragment \"onCreate\"")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Toast.makeText(
-            activity, "FirstFragment.onCreateView()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onCreateView\"")
+        Timber.d("VehicleFragment \"onCreateView\"")
 
 
         binding = FragmentVehicleListBinding.inflate(inflater)
@@ -95,6 +83,7 @@ class VehicleFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         vehicleViewModel.state.observe(viewLifecycleOwner, Observer {
             //progress bar
             when (it) {
@@ -110,8 +99,11 @@ class VehicleFragment : Fragment() {
 
             // work done
             when (it) {
-                is VehicleViewModel.State.Done -> this.findNavController()
+                is VehicleViewModel.State.Done -> {
+                    this.findNavController()
                     .navigate(R.id.action_nav_vehicle_to_waybillFragment)
+                    vehicleViewModel.onReset()
+                }
             }
             //errors
             when (it) {
@@ -160,75 +152,42 @@ class VehicleFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Toast.makeText(
-            activity, "FirstFragment.onAttach()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onAttach\"")
+        Timber.d("VehicleFragment \"onAttach\"")
     }
 
     override fun onStart() {
         super.onStart()
-        Toast.makeText(
-            activity, "FirstFragment.onStart()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onStart\"")
+        Timber.d("VehicleFragment \"onStart\"")
     }
 
     override fun onResume() {
         super.onResume()
-        Toast.makeText(
-            activity, "FirstFragment.onResume()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onResume\"")
+        Timber.d("VehicleFragment \"onResume\"")
     }
 
     override fun onPause() {
         super.onPause()
-        Toast.makeText(
-            activity, "FirstFragment.onPause()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onPause\"")
+        Timber.d("VehicleFragment \"onPause\"")
     }
 
     override fun onStop() {
         super.onStop()
-        Toast.makeText(
-            activity, "FirstFragment.onStop()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onStop\"")
+        Timber.d("VehicleFragment \"onStop\"")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Toast.makeText(
-            activity, "FirstFragment.onDestroyView()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onDestroyView\"")
+        Timber.d("VehicleFragment \"onDestroyView\"")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Toast.makeText(
-            activity, "FirstFragment.onDestroy()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 \"onDestroy\"")
+        Timber.d("VehicleFragment \"onDestroy\"")
     }
 
     override fun onDetach() {
         super.onDetach()
-        //mListener = null;
-        Toast.makeText(
-            activity, "FirstFragment.onDetach()",
-            Toast.LENGTH_LONG
-        ).show()
-        Timber.d("Fragment 1 onDetach")
+        Timber.d("VehicleFragment onDetach")
     }
 
 

@@ -3,11 +3,9 @@ package ru.smartro.worknote.ui.workFlow.waybillHead
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import ru.smartro.worknote.data.LoginRepository
+import ru.smartro.worknote.data.Result
 import ru.smartro.worknote.data.waybill.WaybillRepository
 import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.domain.models.UserModel
@@ -22,8 +20,9 @@ class WaybillHeadViewModel(
     private val loginRepository: LoginRepository
 ) : ViewModel() {
 
-    private lateinit var currentUserHolder: MutableLiveData<UserModel?>
-    private lateinit var workflowHolder: MutableLiveData<WorkflowModel?>
+    private lateinit var currentUserHolder: MutableLiveData<UserModel>
+    private lateinit var workflowHolder: MutableLiveData<WorkflowModel>
+    private lateinit var currentVehicleId: MutableLiveData<Int>
 
     private val _waybills = MutableLiveData<List<WaybillHeadModel>>()
 
@@ -31,7 +30,7 @@ class WaybillHeadViewModel(
 
     private val modelScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val _lastSelected = MutableLiveData<WaybillHeadViewModel?>(null)
+    private val _lastSelected = MutableLiveData<Int?>(null)
 
     private val _state = MutableLiveData<State>(
         State.Created
@@ -40,7 +39,7 @@ class WaybillHeadViewModel(
     val state: LiveData<State>
         get() = _state
 
-    val lastSelected: LiveData<WaybillHeadViewModel?>
+    val lastSelected: LiveData<Int?>
         get() = _lastSelected
 
 
@@ -50,7 +49,81 @@ class WaybillHeadViewModel(
     private val _date: MutableLiveData<LocalDate> = MutableLiveData(LocalDate.now())
 
 
+    fun canRefresh(): Boolean {
+        return isTransitionValid(State.SoftInProgress.Refresh)
+    }
+
+    fun canConfirmChoice(): Boolean {
+        return state.value is State.ItChoseSomeWayBill
+    }
+
+    fun canSelect(): Boolean {
+        return state.value is State.AwaitSelect
+                || state.value is State.ItChoseSomeWayBill
+    }
+
     //region events
+
+    fun onReset() {
+        _lastSelected.postValue(null)
+        _waybills.postValue(null)
+        _state.postValue(State.Created)
+    }
+
+    fun onInit() {
+        if (state.value is State.Created) {
+            onRefresh()
+        }
+    }
+
+
+    fun onRefresh(force: Boolean = false) {
+        setState(State.SoftInProgress.Refresh)
+        modelScope.launch {
+            loadUser()?.let {
+                return@let loadWorkflow()
+            }?.let{
+                loadVehicle()
+            }?.let {
+                if (lastSelected.value == null) {
+                    loadSelected()
+                }
+                return@let it
+            }?.let {
+                if (force) {
+                    waybillRepository.dropAllCD()
+                }
+                return@let loadWaybills()
+            }?.let {
+                setAwaitOrChose()
+            }
+        }
+    }
+
+    fun onChose(waybill: WaybillHeadModel) {
+        if (!waybills.value!!.contains(waybill)) {
+            setState(State.Error.AppError)
+            return
+        }
+        _lastSelected.postValue(waybill.id)
+        setState(State.ItChoseSomeWayBill)
+    }
+
+    fun onCancelChose() {
+        _lastSelected.postValue(null)
+        setState(State.AwaitSelect)
+    }
+
+    fun onConfirmChoice() {
+        val waybillId = _lastSelected.value ?: throw Exception("waybill must be set")
+        val workflow = workflowHolder.value ?: throw Exception("workflow must be set")
+        modelScope.launch {
+            workflow.wayBillId = waybillId
+            workflowRepository.save(workflow)
+            setState(State.Done)
+        }
+    }
+
     private suspend fun onAuthError() {
         currentUserHolder.postValue(null)
         loginRepository.logout()
@@ -59,77 +132,77 @@ class WaybillHeadViewModel(
     //endregion
 
 
-    fun refresh(force: Boolean = false) {
-        if (force) {
-            loginRepository.dropAllCD()
-            waybillRepository.dropAllCD()
-        }
-        modelScope.launch {
-//            _isUpdating.postValue(true)
-//            _currentUserHolder.postValue(loginRepository.getLoggedInUser())
-//            val currentUser = _currentUserHolder.value
-//            if (currentUser?.currentOrganisationId == null) {
-//                _authError.postValue(true)
-//                return@launch
-//            }
-
-//
-//            val middleResult = waybillRepository.getAllWaybillsByCriteria(currentUser)
-//            if (middleResult is Result.Success) {
-//                if (middleResult.data.isNotEmpty() && _vehicles.value?.equals(middleResult.data) != true) {
-//                    _vehicles.postValue(middleResult.data)
-//                }
-//            } else {
-//                _authError.postValue(true)
-//                return@launch
-//            }
-//            val workflowModel = workflowRepository.getWorkFlowForUser(currentUser.id)
-//                ?: WorkflowModel(currentUser.id, true, null, null)
-//
-//            _workflow.postValue(workflowModel)
-//            _isUpdating.postValue(false)
-//            workDone.postValue(workflowModel.vehicleId !== null)
+    private fun loadSelected() {
+        val workflow = workflowHolder.value ?: return
+        _lastSelected.value =  workflow.wayBillId
+        if (_lastSelected.value != null) {
+            setState(State.ItChoseSomeWayBill)
         }
     }
 
+    private suspend fun loadWaybills(): Boolean? {
+        when (val waybillsResult = getWaybills()) {
+            is Result.Success -> {
+                _waybills.postValue(waybillsResult.data)
+                setState(State.AwaitSelect)
 
-//    object Converter {
-//        val formatter = DateTimeFormatter.ISO_LOCAL_DATE
-//        @InverseMethod("stringToDate")
-//        fun dateToString(
-//            view: EditText, oldValue: LocalDate,
-//            value: LocalDate
-//        ): String {
-//            return value.format(formatter)
-//        }
-//
-//        fun stringToDate(
-//            view: EditText, oldValue: String,
-//            value: String
-//        ): LocalDate {
-//            return LocalDate.parse(value, formatter)
-//        }
-//    }
-private suspend fun loadUser(): UserModel? {
-    val currentUser = getCurrentUser()
-    if (currentUser == null) {
-        onAuthError()
-        return null
+                return true
+            }
+            is Result.Error -> {
+                if (waybillsResult.isAuthError) {
+                    onAuthError()
+                    return null
+                } else if (waybillsResult.isIOError) {
+                    setState(State.Error.NetworkError)
+                }
+                setState(State.AwaitSelect)
+
+                return true
+            }
+        }
     }
-    currentUserHolder = MutableLiveData(currentUser)
 
-    return currentUser
+    private fun setAwaitOrChose()
+    {
+        if (lastSelected.value != null) {
+            setState(State.ItChoseSomeWayBill)
+        } else {
+            setState(State.AwaitSelect)
+        }
+    }
+
+    private suspend fun loadUser(): Boolean? {
+        val currentUser = getCurrentUser()
+        if (currentUser == null) {
+            onAuthError()
+            return null
+        }
+        currentUserHolder = MutableLiveData(currentUser)
+
+    return true
 }
 
-    private suspend fun loadWorkflow(user: UserModel): UserModel? {
-        val workflowModel = getWorkflow(user)
+    private suspend fun loadWorkflow(): Boolean? {
+        val userModel = currentUserHolder.value?: throw Exception("current user must be set")
+        val workflowModel = getWorkflow(userModel)
         if (workflowModel == null) {
             setState(State.Error.AppError)
             return null
         }
         workflowHolder = MutableLiveData(workflowModel)
 
-        return user
+        return true
+    }
+
+    private fun loadVehicle(): Boolean? {
+        val vehicleId = workflowHolder.value?.vehicleId
+        if (vehicleId == null) {
+            setState(State.Error.AppError)
+            return null
+        }
+        currentVehicleId = MutableLiveData(vehicleId)
+
+        return true
     }
 
     private suspend fun getCurrentUser(): UserModel? {
@@ -140,9 +213,33 @@ private suspend fun loadUser(): UserModel? {
         return workflowRepository.getWorkFlowForUser(userModel.id)
     }
 
-    private fun getOrganisationId(): Int {
-        return workflowHolder.value?.organisationId
+    private suspend fun getWaybills(): Result<List<WaybillHeadModel>> {
+        val date = _date.value ?: throw Exception("current date must be not null")
+        val vehicleId = currentVehicleId.value ?: throw Exception("current vehicle id must be not null")
+        val organisationId = workflowHolder.value?.organisationId
             ?: throw Exception("workflow and their organisation must be set")
+        var userModel = currentUserHolder.value?: throw Exception("current user must be set")
+
+        return withContext(Dispatchers.IO) {
+            when (val result = loginRepository.checkRefreshUser(userModel)) {
+                is Result.Error -> {
+                    return@withContext Result.Error(result.exception)
+                }
+                is Result.Success -> {
+                    userModel = result.data
+                    currentUserHolder.postValue(userModel)
+                }
+            }
+
+            return@withContext waybillRepository.getAllWaybillsByCriteria(
+                criteria = WaybillRepository.WaybillCriteria(
+                    date = date,
+                    vehicleId = vehicleId,
+                    organisationId = organisationId,
+                    user = userModel
+                )
+            )
+        }
     }
 
     private fun setState(toState: State) {

@@ -49,17 +49,17 @@ class OrganisationSelectViewModel(
         setState(State.SoftInProgress.Refresh(this))
         uiScope.launch {
             loadUser()?.let {
-                return@let loadWorkflow(it)
+                return@let loadWorkflow()
             }?.let {
                 if (force) {
                     organisationsRepository.dropAllCD()
                 }
-                loadOrganisations(it)
+                loadOrganisations()
             }
         }
     }
 
-    private suspend fun loadUser(): UserModel? {
+    private suspend fun loadUser(): Boolean? {
         val currentUser = getCurrentUser()
         if (currentUser == null) {
             onAuthError()
@@ -67,22 +67,23 @@ class OrganisationSelectViewModel(
         }
         currentUserHolder = MutableLiveData(currentUser)
 
-        return  currentUser
+        return  true
     }
 
-    private suspend fun loadWorkflow(user: UserModel): UserModel? {
-        val workflowModel = getWorkflow(user)
+    private suspend fun loadWorkflow(): Boolean? {
+        val userModel = currentUserHolder.value?: throw Exception("current user must be set")
+        val workflowModel = getWorkflow(userModel)
         if(workflowModel == null) {
             setState(State.Error.AppError(this))
             return null
         }
         workflowHolder = MutableLiveData(workflowModel)
 
-        return user
+        return true
     }
 
-    private suspend fun loadOrganisations(currentUser: UserModel): List<OrganisationModel>? {
-        when (val organisationsResult = getOrganisations(currentUser)) {
+    private suspend fun loadOrganisations(): List<OrganisationModel>? {
+        when (val organisationsResult = getOrganisations()) {
             is Result.Success -> {
                 _organisations.postValue(organisationsResult.data)
                 setState(State.AwaitSelect(this))
@@ -141,10 +142,18 @@ class OrganisationSelectViewModel(
         }
     }
 
-    private suspend fun getOrganisations(
-        userModel: UserModel
-    ): Result<List<OrganisationModel>> {
+    private suspend fun getOrganisations(): Result<List<OrganisationModel>> {
+        var userModel = currentUserHolder.value?: throw Exception("current user must be set")
         return withContext(Dispatchers.IO) {
+            when (val result = loginRepository.checkRefreshUser(userModel)) {
+                is Result.Error -> {
+                    return@withContext Result.Error(result.exception)
+                }
+                is Result.Success -> {
+                    userModel = result.data
+                    currentUserHolder.postValue(userModel)
+                }
+            }
             return@withContext organisationsRepository.getOrganisations(userModel)
         }
     }
@@ -229,6 +238,11 @@ class OrganisationSelectViewModel(
 
             else -> false
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 
 }

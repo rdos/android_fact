@@ -12,7 +12,7 @@ import java.time.LocalDate
 data class WayBillHeadEntity constructor(
     @PrimaryKey(autoGenerate = false)
     val id: Int,
-    val number: Int,
+    val number: String,
     @ColumnInfo(name = "organisation_id") val organisationId: Int,
     @TypeConverters(DateConverter::class)
     @ColumnInfo(index = true) val date: LocalDate

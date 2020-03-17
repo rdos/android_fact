@@ -12,7 +12,7 @@ data class WaybillHeadDTO(val data: List<WaybillHeadDTOData>, val success: Boole
     @JsonClass(generateAdapter = true)
     data class WaybillHeadDTOData(
         val id: Int,
-        val number: Int,
+        val number: String,
         @Json(name = "organisation_id") val organisationId: Int
     )
 

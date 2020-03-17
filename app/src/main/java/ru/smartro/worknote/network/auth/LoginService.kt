@@ -16,6 +16,7 @@ import ru.smartro.worknote.network.BearerToken
 import ru.smartro.worknote.network.auth.requestDto.AuthBody
 import ru.smartro.worknote.network.auth.responseDto.LoginData
 import ru.smartro.worknote.network.auth.responseDto.OwnerData
+import okhttp3.logging.HttpLoggingInterceptor
 
 private const val BASE_URL = BuildConfig.AUTH_URL
 
@@ -36,6 +37,12 @@ private val moshi = Moshi.Builder()
 
 
 object AuthNetwork {
+    private val logInterceptor by lazy {
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BASIC
+
+        return@lazy interceptor
+    }
 
     private val clientBuilder = OkHttpClient.Builder().addInterceptor {
         val request = it.request()
@@ -44,7 +51,7 @@ object AuthNetwork {
             .addHeader("Content-Type", "application/json")
             .build()
         it.proceed(request)
-    }
+    }.addInterceptor(logInterceptor)
 
     private val retrofit = Retrofit.Builder()
         .addConverterFactory(MoshiConverterFactory.create(moshi))

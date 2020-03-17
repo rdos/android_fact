@@ -27,9 +27,9 @@ class LoginViewModel(
     val state: LiveData<State>
         get() = _state
 
-    private val job = Job()
+    private val viewModelJob = Job()
 
-    private val viewModelScope = CoroutineScope(job + Dispatchers.Main)
+    private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     private val workflowHolder = MutableLiveData<WorkflowModel?>()
 
@@ -225,5 +225,10 @@ class LoginViewModel(
 
             else -> false
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "29d17e7201f7f067611fab9418962ab9",
+    "identityHash": "fcd33fa55e44ac516c57e7d98c7c07df",
     "entities": [
       {
         "tableName": "users",
@@ -179,7 +179,7 @@
       },
       {
         "tableName": "way_bill_heads",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `number` INTEGER NOT NULL, `organisation_id` INTEGER NOT NULL, `date` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `number` TEXT NOT NULL, `organisation_id` INTEGER NOT NULL, `date` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -190,7 +190,7 @@
           {
             "fieldPath": "number",
             "columnName": "number",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -228,7 +228,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '29d17e7201f7f067611fab9418962ab9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fcd33fa55e44ac516c57e7d98c7c07df')"
     ]
   }
 }

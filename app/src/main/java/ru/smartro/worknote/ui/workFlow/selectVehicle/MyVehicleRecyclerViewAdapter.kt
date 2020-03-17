@@ -36,7 +36,7 @@ class MyVehicleRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = vehiclesModels[position]
         holder.checkBox.text = item.name
-        if (item.id == viewModel.lastSelected.value?.id) {
+        if (viewModel.lastSelected.value != null && item.id == viewModel.lastSelected.value) {
             lastCheckBox = holder.checkBox
             holder.checkBox.isChecked = true
         } else {

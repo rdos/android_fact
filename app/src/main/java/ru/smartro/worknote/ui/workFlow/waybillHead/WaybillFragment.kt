@@ -6,19 +6,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.app_bar_main.view.*
-import ru.smartro.worknote.MainActivity
+import kotlinx.android.synthetic.main.fragment_waybill_list.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.databinding.FragmentWaybillListBinding
+import ru.smartro.worknote.ui.login.LoginActivity
 
 import ru.smartro.worknote.ui.workFlow.waybillHead.dummy.DummyContent
-import ru.smartro.worknote.ui.workFlow.waybillHead.dummy.DummyContent.DummyItem
 import timber.log.Timber
 
 /**
@@ -28,24 +30,27 @@ import timber.log.Timber
  */
 class WaybillFragment : Fragment() {
 
-
-    private var listener: OnListFragmentInteractionListener? = null
-
     private lateinit var waybillHeadViewModel: WaybillHeadViewModel
-
-    private var waybillAdapter: WaybillRecyclerViewAdapter? = null
 
     private lateinit var binding: FragmentWaybillListBinding
 
+    private var waybillAdapter: WaybillRecyclerViewAdapter? = null
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        Timber.d("WaybillFragment \"onActivityCreated\"")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.d("WaybillFragment \"onCreate\"")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        Timber.d("WaybillFragment \"onCreateView\"")
         waybillHeadViewModel = ViewModelProvider(
             this,
             WaybillHeadViewModelFactory(requireActivity())
@@ -54,52 +59,111 @@ class WaybillFragment : Fragment() {
 
         binding = FragmentWaybillListBinding.inflate(inflater)
 
-        waybillAdapter = WaybillRecyclerViewAdapter(DummyContent.ITEMS, listener)
+        waybillAdapter = WaybillRecyclerViewAdapter(
+            onSelectListener = {
+                waybillHeadViewModel.onChose(it)
+            },
+            onDeselectListener = {
+                waybillHeadViewModel.onCancelChose()
+            },
+            viewModel = waybillHeadViewModel
+        )
+
 
         binding.root.findViewById<RecyclerView>(R.id.list).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = waybillAdapter
         }
 
-        waybillHeadViewModel.authError.observe(viewLifecycleOwner, Observer {
-            if (it) {
-                requireActivity().setResult(Activity.RESULT_OK)
-                val intent = Intent(this.context, MainActivity::class.java)
-                startActivity(intent)
-                requireActivity().finish()
-            }
-        })
-
         val toolbar = requireActivity().container?.toolbar
 
         toolbar?.setNavigationOnClickListener {
             Timber.e("back!!!!")
-            activity?.onBackPressed()
+         //   activity?.onBackPressed()
+        }
+
+        waybillHeadViewModel.waybills.observe(
+            viewLifecycleOwner,
+            Observer {
+                it?.apply {
+                    waybillAdapter?.waybillHeadModels = it
+                }
+            }
+        )
+
+        waybillHeadViewModel.onInit()
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        waybillHeadViewModel.state.observe(viewLifecycleOwner, Observer {
+            //progress bar
+            when (it) {
+                is WaybillHeadViewModel.State.SoftInProgress -> swipe_refresh_layout.isRefreshing = true
+                else -> swipe_refresh_layout.isRefreshing = false
+
+            }
+            //button
+            button3.isEnabled = waybillHeadViewModel.canConfirmChoice()
+
+            //check boxes
+            waybillAdapter?.enabled = waybillHeadViewModel.canSelect()
+
+            // work done todo implement
+//            when (it) {
+//                is WaybillHeadViewModel.State.Done -> this.findNavController()
+//                    .navigate(R.id.action_nav_vehicle_to_waybillFragment)
+//            }
+            //errors
+            when (it) {
+                is WaybillHeadViewModel.State.Error.AuthError -> {
+                    showFailed(R.string.app_auth_error)
+                    requireActivity().setResult(Activity.RESULT_OK)
+                    val intent = Intent(context, LoginActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+                is WaybillHeadViewModel.State.Error.AppError -> {
+                    showFailed(R.string.app_error)
+                    requireActivity().setResult(Activity.RESULT_OK)
+                    val intent = Intent(context, LoginActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+                is WaybillHeadViewModel.State.Error.NetworkError -> {
+                    showFailed(R.string.api_error_no_connection)
+                }
+                is WaybillHeadViewModel.State.Error.NotFindError -> {
+                    showFailed(R.string.api_error_not_find)
+                }
+            }
+
+        })
+
+        // refresh
+        swipe_refresh_layout.setOnRefreshListener {
+            if (waybillHeadViewModel.canRefresh()) {
+                waybillHeadViewModel.onRefresh(true)
+            }
+        }
+
+        //choice done
+        button3.setOnClickListener {
+            waybillHeadViewModel.onConfirmChoice()
         }
 
 
-        return binding.root
+    }
+
+    private fun showFailed(errorString: Int, arg: String? = null) {
+        Toast.makeText(context, getString(errorString, arg), Toast.LENGTH_LONG).show()
     }
 
 
     override fun onDetach() {
         super.onDetach()
-        listener = null
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson
-     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onListFragmentInteraction(item: DummyItem?)
-    }
 }

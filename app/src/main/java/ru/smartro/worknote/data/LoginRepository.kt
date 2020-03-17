@@ -82,6 +82,7 @@ class LoginRepository(
             is Result.Success ->  {refreshedUserModel = result.data}
         }
 
+
         if (networkState.requestIsNotNeed(NETWORK_STATE_KEY)) {
             return Result.Success(refreshedUserModel)
         }

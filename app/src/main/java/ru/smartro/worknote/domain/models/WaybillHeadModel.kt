@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 data class WaybillHeadModel(
     val id: Int,
-    val number: Int,
+    val number: String,
     val organisationId: Int,
     val date: LocalDate
 ) {
