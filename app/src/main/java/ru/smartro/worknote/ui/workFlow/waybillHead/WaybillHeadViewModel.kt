@@ -180,7 +180,7 @@ class WaybillHeadViewModel(
         currentUserHolder = MutableLiveData(currentUser)
 
     return true
-}
+    }
 
     private suspend fun loadWorkflow(): Boolean? {
         val userModel = currentUserHolder.value?: throw Exception("current user must be set")

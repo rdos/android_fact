@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.workFlow.waybillHead.dummy
+package ru.smartro.worknote.ui.workFlow.dummy
 
 import java.util.*
 

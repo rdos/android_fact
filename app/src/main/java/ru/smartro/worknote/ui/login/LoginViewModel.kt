@@ -89,6 +89,7 @@ class LoginViewModel(
             workflow.organisationId == null -> setState(State.Done.NeedsOrganisation(this))
             workflow.vehicleId == null -> setState(State.Done.NeedsVehicle(this))
             workflow.wayBillId == null -> setState(State.Done.NeedsWaybill(this))
+            else -> setState(State.Done(this))
         }
     }
 

@@ -110,6 +110,7 @@ class LoginActivity : AppCompatActivity() {
                 is LoginViewModel.State.Done.NeedsOrganisation -> redirectToSelectOrganisation()
                 is LoginViewModel.State.Done.NeedsVehicle -> redirectToWorkflow()
                 is LoginViewModel.State.Done.NeedsWaybill -> redirectToWorkflow()
+                is LoginViewModel.State.Done -> redirectToWorkflow()
             }
         })
     }

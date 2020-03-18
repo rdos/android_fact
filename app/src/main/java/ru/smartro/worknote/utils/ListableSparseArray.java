@@ -5,7 +5,7 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExtendedSparseArray<E> extends SparseArray<E> {
+public class ListableSparseArray<E> extends SparseArray<E> {
 
     public List<E> asList() {
         List<E> arrayList = new ArrayList<>(this.size());

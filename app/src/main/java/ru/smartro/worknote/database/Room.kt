@@ -15,7 +15,12 @@ import ru.smartro.worknote.database.entities.*
         OrganisationEntity::class,
         VehicleEntity::class,
         WorkflowEntity::class,
-        WayBillHeadEntity::class
+        WayBillHeadEntity::class,
+        SrpContainerEntity::class,
+        SrpContainerTypeEntity::class,
+        SrpPlatformEntity::class,
+        WayBillBodyEntity::class,
+        WorkOrderEntity::class
     ], version = 1
 )
 @TypeConverters(DateConverter::class)
@@ -25,6 +30,11 @@ abstract class DataBase : RoomDatabase() {
     abstract val vehicleDao: VehicleDao
     abstract val workflowDao: WorkflowDao
     abstract val wayBillHeadDao: WayBillHeadDao
+    abstract val srpContainerDao: SrpContainerDao
+    abstract val srpContainerTypeDao: SrpContainerTypeDao
+    abstract val srpPlatformDao: SrpPlatformDao
+    abstract val wayBillBodyDAO: WayBillBodyDAO
+    abstract val workOrderDAO: WorkOrderDAO
 }
 
 

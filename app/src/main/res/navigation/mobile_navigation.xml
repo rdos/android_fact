@@ -57,6 +57,15 @@
         android:id="@+id/waybillFragment"
         android:name="ru.smartro.worknote.ui.workFlow.waybillHead.WaybillFragment"
         android:label="fragment_waybill_list"
-        tools:layout="@layout/fragment_waybill_list" />
+        tools:layout="@layout/fragment_waybill_list" >
+        <action
+            android:id="@+id/action_waybillFragment_to_workOrderFragment"
+            app:destination="@id/workOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/workOrderFragment"
+        android:name="ru.smartro.worknote.ui.workFlow.workorder.WorkOrderFragment"
+        android:label="fragment_work_order_list"
+        tools:layout="@layout/fragment_work_order_list" />
 
 </navigation>

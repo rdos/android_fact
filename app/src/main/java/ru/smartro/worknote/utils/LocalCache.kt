@@ -7,7 +7,7 @@ import androidx.core.util.set
  * [resolver] should returns [Pair] that contains first and second key values of [MODEL] for [load].
  */
 class Local2KeysArrayCache<MODEL>(private val resolver: (MODEL) -> Pair<Int, Int>) {
-    private val store = SparseArray<ExtendedSparseArray<MODEL>>()
+    private val store = SparseArray<ListableSparseArray<MODEL>>()
 
     fun getAllByFirstKey(firstKey: Int): List<MODEL> {
         return store[firstKey]?.asList() ?: emptyList()
@@ -15,7 +15,7 @@ class Local2KeysArrayCache<MODEL>(private val resolver: (MODEL) -> Pair<Int, Int
 
     fun set(firstKey: Int, secondKey: Int, model: MODEL) {
         if (store.get(firstKey) == null) {
-            store[firstKey] = ExtendedSparseArray()
+            store[firstKey] = ListableSparseArray()
         }
         store[firstKey][secondKey] = model
     }

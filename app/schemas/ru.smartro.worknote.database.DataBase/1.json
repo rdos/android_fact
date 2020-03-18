@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "fcd33fa55e44ac516c57e7d98c7c07df",
+    "identityHash": "9ada876859d7e76d03b6d353fd4291b7",
     "entities": [
       {
         "tableName": "users",
@@ -223,12 +223,275 @@
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "srp_containers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`srp_point_details_id` INTEGER NOT NULL, `platform_srp_id` INTEGER NOT NULL, `inv_number` TEXT, `srp_type_id` INTEGER NOT NULL, `is_active` INTEGER NOT NULL, PRIMARY KEY(`srp_point_details_id`))",
+        "fields": [
+          {
+            "fieldPath": "srpPointDetailsId",
+            "columnName": "srp_point_details_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "platformSrpId",
+            "columnName": "platform_srp_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "invNumber",
+            "columnName": "inv_number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "srpTypeId",
+            "columnName": "srp_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "srp_point_details_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_srp_containers_platform_srp_id",
+            "unique": false,
+            "columnNames": [
+              "platform_srp_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_srp_containers_platform_srp_id` ON `${TABLE_NAME}` (`platform_srp_id`)"
+          },
+          {
+            "name": "index_srp_containers_srp_type_id",
+            "unique": false,
+            "columnNames": [
+              "srp_type_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_srp_containers_srp_type_id` ON `${TABLE_NAME}` (`srp_type_id`)"
+          },
+          {
+            "name": "index_srp_containers_is_active",
+            "unique": false,
+            "columnNames": [
+              "is_active"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_srp_containers_is_active` ON `${TABLE_NAME}` (`is_active`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "srp_container_types",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`srp_id` INTEGER NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`srp_id`))",
+        "fields": [
+          {
+            "fieldPath": "srpId",
+            "columnName": "srp_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "srp_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "srp_platforms",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`srp_id` INTEGER NOT NULL, `work_order_srp_id` INTEGER NOT NULL, `address` TEXT NOT NULL, `kgo_norma` INTEGER, `name` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, PRIMARY KEY(`srp_id`))",
+        "fields": [
+          {
+            "fieldPath": "srpId",
+            "columnName": "srp_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "workOrderSrpId",
+            "columnName": "work_order_srp_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kgoNorma",
+            "columnName": "kgo_norma",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "srp_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_srp_platforms_work_order_srp_id",
+            "unique": false,
+            "columnNames": [
+              "work_order_srp_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_srp_platforms_work_order_srp_id` ON `${TABLE_NAME}` (`work_order_srp_id`)"
+          },
+          {
+            "name": "index_srp_platforms_latitude",
+            "unique": false,
+            "columnNames": [
+              "latitude"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_srp_platforms_latitude` ON `${TABLE_NAME}` (`latitude`)"
+          },
+          {
+            "name": "index_srp_platforms_longitude",
+            "unique": false,
+            "columnNames": [
+              "longitude"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_srp_platforms_longitude` ON `${TABLE_NAME}` (`longitude`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "way_bill_bodies",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`srp_id` INTEGER NOT NULL, `organisation_id` INTEGER NOT NULL, `srp_vehicle_id` INTEGER NOT NULL, `srp_driver_id` INTEGER NOT NULL, `date` TEXT NOT NULL, PRIMARY KEY(`srp_id`))",
+        "fields": [
+          {
+            "fieldPath": "srpId",
+            "columnName": "srp_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "organisationId",
+            "columnName": "organisation_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "srpVehicleId",
+            "columnName": "srp_vehicle_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "srpDriverId",
+            "columnName": "srp_driver_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "srp_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_way_bill_bodies_organisation_id",
+            "unique": false,
+            "columnNames": [
+              "organisation_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_way_bill_bodies_organisation_id` ON `${TABLE_NAME}` (`organisation_id`)"
+          },
+          {
+            "name": "index_way_bill_bodies_date",
+            "unique": false,
+            "columnNames": [
+              "date"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_way_bill_bodies_date` ON `${TABLE_NAME}` (`date`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "work_orders",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`srp_id` INTEGER NOT NULL, `way_bill_srp_id` INTEGER NOT NULL, PRIMARY KEY(`srp_id`))",
+        "fields": [
+          {
+            "fieldPath": "srpId",
+            "columnName": "srp_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "waybillId",
+            "columnName": "way_bill_srp_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "srp_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fcd33fa55e44ac516c57e7d98c7c07df')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ada876859d7e76d03b6d353fd4291b7')"
     ]
   }
 }

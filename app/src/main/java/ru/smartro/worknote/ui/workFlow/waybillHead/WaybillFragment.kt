@@ -19,8 +19,6 @@ import kotlinx.android.synthetic.main.fragment_waybill_list.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.databinding.FragmentWaybillListBinding
 import ru.smartro.worknote.ui.login.LoginActivity
-
-import ru.smartro.worknote.ui.workFlow.waybillHead.dummy.DummyContent
 import timber.log.Timber
 
 /**
@@ -111,11 +109,15 @@ class WaybillFragment : Fragment() {
             //check boxes
             waybillAdapter?.enabled = waybillHeadViewModel.canSelect()
 
-            // work done todo implement
-//            when (it) {
-//                is WaybillHeadViewModel.State.Done -> this.findNavController()
-//                    .navigate(R.id.action_nav_vehicle_to_waybillFragment)
-//            }
+            // work done
+            when (it) {
+                is WaybillHeadViewModel.State.Done -> {
+                    this.findNavController()
+                        .navigate(R.id.action_waybillFragment_to_workOrderFragment)
+                    waybillHeadViewModel.onReset()
+                }
+            }
+
             //errors
             when (it) {
                 is WaybillHeadViewModel.State.Error.AuthError -> {
