@@ -7,14 +7,16 @@ data class WaybillHeadModel(
     val id: Int,
     val number: String,
     val organisationId: Int,
-    val date: LocalDate
+    val date: LocalDate,
+    val vehicleId: Int
 ) {
     fun asDataBaseModel(): WayBillHeadEntity {
         return WayBillHeadEntity(
             id = id,
             number = number,
             organisationId = organisationId,
-            date = date
+            date = date,
+            vehicleId = vehicleId
         )
     }
 }

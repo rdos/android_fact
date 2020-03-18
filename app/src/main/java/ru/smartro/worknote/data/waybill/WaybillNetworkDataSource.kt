@@ -20,7 +20,7 @@ class WaybillNetworkDataSource {
         return try {
             val waybillResponse = getDeferred.await()
 
-            Result.Success(waybillResponse.asDomainModel(date))
+            Result.Success(waybillResponse.asDomainModel(date, waybillHeadRequest.vehicleId))
         } catch (e: Throwable) {
             Result.Error(e)
         }

@@ -95,7 +95,8 @@ class WaybillRepository(
         } else {
             localCache = waybillDBDataSource.getAllByOrganisationIdAndDate(
                 criteria.organisationId,
-                criteria.date
+                criteria.date,
+                criteria.vehicleId
             )
             currentOrganisationId = criteria.organisationId
             currentDate = criteria.date

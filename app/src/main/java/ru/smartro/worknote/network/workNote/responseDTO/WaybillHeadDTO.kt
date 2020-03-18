@@ -17,13 +17,14 @@ data class WaybillHeadDTO(val data: List<WaybillHeadDTOData>, val success: Boole
     )
 
 
-    fun asDomainModel(date: LocalDate): List<WaybillHeadModel> {
+    fun asDomainModel(date: LocalDate, vehicleId: Int): List<WaybillHeadModel> {
         return data.map {
             WaybillHeadModel(
                 id = it.id,
                 number = it.number,
                 organisationId = it.organisationId,
-                date = date
+                date = date,
+                vehicleId = vehicleId
             )
         }
     }

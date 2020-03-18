@@ -15,7 +15,8 @@ data class WayBillHeadEntity constructor(
     val number: String,
     @ColumnInfo(name = "organisation_id") val organisationId: Int,
     @TypeConverters(DateConverter::class)
-    @ColumnInfo(index = true) val date: LocalDate
+    @ColumnInfo(index = true) val date: LocalDate,
+    @ColumnInfo(name = "vehicle_id") val vehicleId: Int
 )
 
 fun WayBillHeadEntity.toDomainModel(): WaybillHeadModel {
@@ -23,7 +24,8 @@ fun WayBillHeadEntity.toDomainModel(): WaybillHeadModel {
         id = id,
         number = number,
         organisationId = organisationId,
-        date = date
+        date = date,
+        vehicleId = vehicleId
 
     )
 }

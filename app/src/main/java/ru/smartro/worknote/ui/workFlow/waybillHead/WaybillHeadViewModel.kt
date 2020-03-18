@@ -177,7 +177,11 @@ class WaybillHeadViewModel(
             onAuthError()
             return null
         }
-        currentUserHolder = MutableLiveData(currentUser)
+        if (::currentUserHolder.isInitialized) {
+            currentUserHolder.postValue(currentUser)
+        } else {
+            currentUserHolder = MutableLiveData(currentUser)
+        }
 
     return true
     }
@@ -189,7 +193,12 @@ class WaybillHeadViewModel(
             setState(State.Error.AppError)
             return null
         }
-        workflowHolder = MutableLiveData(workflowModel)
+        if (::workflowHolder.isInitialized) {
+            workflowHolder.postValue(workflowModel)
+        } else {
+            workflowHolder = MutableLiveData(workflowModel)
+        }
+
 
         return true
     }
@@ -200,7 +209,12 @@ class WaybillHeadViewModel(
             setState(State.Error.AppError)
             return null
         }
-        currentVehicleId = MutableLiveData(vehicleId)
+        if (::currentVehicleId.isInitialized) {
+            currentVehicleId.postValue(vehicleId)
+        } else {
+            currentVehicleId = MutableLiveData(vehicleId)
+        }
+
 
         return true
     }
@@ -306,6 +320,7 @@ class WaybillHeadViewModel(
 
             is State.SoftInProgress.Refresh -> when (toState) {
                 is State.AwaitSelect -> true
+                is State.ItChoseSomeWayBill -> true
                 is State.Error -> true
                 else -> false
             }

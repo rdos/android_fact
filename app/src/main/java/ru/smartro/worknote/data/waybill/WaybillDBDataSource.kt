@@ -16,10 +16,11 @@ class WaybillDBDataSource(val dataBase: DataBase) {
 
     fun getAllByOrganisationIdAndDate(
         organisationId: Int,
-        date: LocalDate
+        date: LocalDate,
+        vehicleId: Int
     ): List<WaybillHeadModel> {
         return dataBase.wayBillHeadDao
-            .getAllByDataAndOrganisationId(organisationId, date)
+            .getAllByDataAndOrganisationId(organisationId, date, vehicleId)
             .toDomainModel()
     }
 }

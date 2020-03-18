@@ -15,8 +15,8 @@ interface WayBillHeadDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(entities: List<WayBillHeadEntity>)
 
-    @Query("SELECT * FROM way_bill_heads WHERE organisation_id = :organisationId and date = :date")
-    fun getAllByDataAndOrganisationId(organisationId: Int, date: LocalDate): List<WayBillHeadEntity>
+    @Query("SELECT * FROM way_bill_heads WHERE organisation_id = :organisationId and date = :date and vehicle_id = :vehicleId")
+    fun getAllByDataAndOrganisationId(organisationId: Int, date: LocalDate, vehicleId: Int): List<WayBillHeadEntity>
 
     @Query("SELECT * FROM way_bill_heads WHERE id = :key LIMIT 1")
     fun getById(key: Int): WayBillHeadEntity?
