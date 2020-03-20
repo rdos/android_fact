@@ -13,6 +13,7 @@ data class WorkflowEntity constructor(
     @ColumnInfo(name = "is_in_progress") val isInProgress: Boolean,
     @ColumnInfo(name = "vehicle_id") val vehicleId: Int?,
     @ColumnInfo(name = "way_bill_id") val wayBillId: Int?,
+    @ColumnInfo(name = "work_order_id") val workOrderId: Int?,
     @ColumnInfo(name = "organisation_id") val organisationId: Int?
 )
 
@@ -22,6 +23,7 @@ fun WorkflowEntity.toDomainModel(): WorkflowModel {
         isInProgress = isInProgress,
         vehicleId = vehicleId,
         wayBillId = wayBillId,
-        organisationId = organisationId
+        organisationId = organisationId,
+        workOrderId = workOrderId
     )
 }

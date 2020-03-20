@@ -49,7 +49,7 @@ class WorkflowViewModel(
             }
 
             workflowModel = workflowRepository.getWorkFlowForUser(currentUser.id)
-                ?: WorkflowModel(currentUser.id, false, null, null, null)
+                ?: WorkflowModel(currentUser.id, false, null, null, null, null)
             _isUpdating.postValue(false)
         }
     }

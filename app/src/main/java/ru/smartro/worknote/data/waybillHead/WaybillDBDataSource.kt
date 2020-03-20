@@ -1,4 +1,4 @@
-package ru.smartro.worknote.data.waybill
+package ru.smartro.worknote.data.waybillHead
 
 import ru.smartro.worknote.database.DataBase
 import ru.smartro.worknote.database.entities.toDomainModel

@@ -1,41 +1,38 @@
 package ru.smartro.worknote.ui.workFlow.workorder
 
-import android.content.Context
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.app_bar_main.view.*
+import kotlinx.android.synthetic.main.fragment_work_order_list.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.ui.workFlow.dummy.DummyContent
-import ru.smartro.worknote.ui.workFlow.dummy.DummyContent.DummyItem
+import ru.smartro.worknote.databinding.FragmentWorkOrderListBinding
+import ru.smartro.worknote.ui.login.LoginActivity
 import timber.log.Timber
 
-/**
- * A fragment representing a list of Items.
- * Activities containing this fragment MUST implement the
- * [WorkOrderFragment.OnListFragmentInteractionListener] interface.
- */
 class WorkOrderFragment : Fragment() {
 
-    // TODO: Customize parameters
-    private var columnCount = 1
+    private lateinit var binding: FragmentWorkOrderListBinding
 
-    private var listener: OnListFragmentInteractionListener? = null
+    private var workOrderAdapter: WorkOrderRecyclerViewAdapter? = null
 
     private lateinit var workOrderViewModel: WorkOrderViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
+        Timber.d("WorkOrderFragment \"onCreate\"")
     }
 
     override fun onCreateView(
@@ -48,69 +45,122 @@ class WorkOrderFragment : Fragment() {
             WorkOrderViewModelFactory(requireActivity())
         )
             .get(WorkOrderViewModel::class.java)
+        binding = FragmentWorkOrderListBinding.inflate(inflater)
+        workOrderAdapter = WorkOrderRecyclerViewAdapter(
+            onSelectListener = {
+                workOrderViewModel.onChose(it)
+            },
+            onDeselectListener = {
+                workOrderViewModel.onCancelChose()
+            },
+            viewModel = workOrderViewModel,
+            onClickInfo = {
+                val actionDetail = WorkOrderFragmentDirections
+                    .actionWorkOrderFragmentToSrpPlatformShowFragment(it.srpId)
+                this.findNavController()
+                    .navigate(actionDetail)
+            }
+        )
 
-        val view = inflater.inflate(R.layout.fragment_work_order_list, container, false)
+        binding.root.findViewById<RecyclerView>(R.id.list).apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = workOrderAdapter
+        }
 
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
+        val toolbar = requireActivity().container?.toolbar
+
+        toolbar?.setNavigationOnClickListener {
+            Timber.e("back!!!!")
+        }
+
+        workOrderViewModel.workOrders.observe(
+            viewLifecycleOwner,
+            Observer {
+                it?.apply {
+                    workOrderAdapter?.workOrders = it
                 }
-                adapter =
-                    MyWorkOrderRecyclerViewAdapter(
-                        DummyContent.ITEMS,
-                        listener
-                    )
+            }
+        )
+        workOrderViewModel.onInit()
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Timber.d("WorkOrderFragment \"onViewCreated\"")
+        workOrderViewModel.state.observe(viewLifecycleOwner, Observer {
+            //progress bar
+            when (it) {
+                is WorkOrderViewModel.State.SoftInProgress -> swipe_refresh_layout.isRefreshing =
+                    true
+                else -> swipe_refresh_layout.isRefreshing = false
+
+            }
+            //button
+            button3.isEnabled = workOrderViewModel.canConfirmChoice()
+
+
+            //check boxes
+            workOrderAdapter?.enabled = workOrderViewModel.canSelect()
+
+            // work done
+            when (it) {
+                is WorkOrderViewModel.State.Done -> {
+                    this.findNavController()
+                        .navigate(R.id.action_waybillFragment_to_workOrderFragment)
+                    workOrderViewModel.onReset()
+                }
+            }
+
+            //errors
+            when (it) {
+                is WorkOrderViewModel.State.Error.AuthError -> {
+                    showFailed(R.string.app_auth_error)
+                    requireActivity().setResult(Activity.RESULT_OK)
+                    val intent = Intent(context, LoginActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+                is WorkOrderViewModel.State.Error.AppError -> {
+                    showFailed(R.string.app_error)
+                    requireActivity().setResult(Activity.RESULT_OK)
+                    val intent = Intent(context, LoginActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+                is WorkOrderViewModel.State.Error.NetworkError -> {
+                    showFailed(R.string.api_error_no_connection)
+                }
+                is WorkOrderViewModel.State.Error.NotFindError -> {
+                    showFailed(R.string.api_error_not_find)
+                }
+            }
+
+        })
+
+        // refresh
+        swipe_refresh_layout.setOnRefreshListener {
+            if (workOrderViewModel.canRefresh()) {
+                workOrderViewModel.onRefresh(true)
             }
         }
-        workOrderViewModel.onInit()
-        return view
+
+        //choice done
+        button3.setOnClickListener {
+            workOrderViewModel.onConfirmChoice()
+        }
+
+
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnListFragmentInteractionListener) {
-            listener = context
-        } else {
-            //  throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
-        }
+    private fun showFailed(errorString: Int, arg: String? = null) {
+        Toast.makeText(context, getString(errorString, arg), Toast.LENGTH_LONG).show()
     }
+
 
     override fun onDetach() {
+        Timber.d("WorkOrderFragment \"onDetach\"")
         super.onDetach()
-        listener = null
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson
-     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onListFragmentInteraction(item: DummyItem?)
-    }
-
-    companion object {
-
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
-
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-            WorkOrderFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
-                }
-            }
     }
 }

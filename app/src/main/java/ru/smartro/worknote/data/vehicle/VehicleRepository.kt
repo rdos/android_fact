@@ -58,8 +58,7 @@ class VehicleRepository(
             is Result.Error -> when {
                 networkResult.isIOError -> {
                     networkState.isErrorCoolDown = true
-
-                    Result.Success(emptyList())
+                    Result.Success(getAllCachedByOrganisation(organisationId))
                 }
                 networkResult.isAuthError -> networkResult
                 else -> networkResult

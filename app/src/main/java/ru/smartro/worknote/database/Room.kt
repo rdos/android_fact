@@ -33,8 +33,8 @@ abstract class DataBase : RoomDatabase() {
     abstract val srpContainerDao: SrpContainerDao
     abstract val srpContainerTypeDao: SrpContainerTypeDao
     abstract val srpPlatformDao: SrpPlatformDao
-    abstract val wayBillBodyDAO: WayBillBodyDAO
-    abstract val workOrderDAO: WorkOrderDAO
+    abstract val wayBillBodyDao: WayBillBodyDAO
+    abstract val workOrderDao: WorkOrderDAO
 }
 
 

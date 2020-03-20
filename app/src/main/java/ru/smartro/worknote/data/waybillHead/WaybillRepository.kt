@@ -1,4 +1,4 @@
-package ru.smartro.worknote.data.waybill
+package ru.smartro.worknote.data.waybillHead
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -75,7 +75,7 @@ class WaybillRepository(
                 networkResult.isIOError -> {
                     networkState.isErrorCoolDown = true
 
-                    Result.Success(emptyList())
+                    Result.Success(getAllCachedByCriteria(criteria))
                 }
                 networkResult.isAuthError -> networkResult
                 else -> networkResult

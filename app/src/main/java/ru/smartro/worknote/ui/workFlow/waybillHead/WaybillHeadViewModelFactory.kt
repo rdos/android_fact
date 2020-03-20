@@ -7,9 +7,9 @@ import ru.smartro.worknote.data.DbLoginDataSource
 import ru.smartro.worknote.data.LoginRepository
 import ru.smartro.worknote.data.NetworkLoginDataSource
 import ru.smartro.worknote.data.NetworkState
-import ru.smartro.worknote.data.waybill.WaybillDBDataSource
-import ru.smartro.worknote.data.waybill.WaybillNetworkDataSource
-import ru.smartro.worknote.data.waybill.WaybillRepository
+import ru.smartro.worknote.data.waybillHead.WaybillDBDataSource
+import ru.smartro.worknote.data.waybillHead.WaybillNetworkDataSource
+import ru.smartro.worknote.data.waybillHead.WaybillRepository
 import ru.smartro.worknote.data.workflow.WorkflowDBDataSource
 import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.database.getDatabase

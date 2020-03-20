@@ -2,24 +2,31 @@ package ru.smartro.worknote.data.waybillBody
 
 import ru.smartro.worknote.database.DataBase
 import ru.smartro.worknote.database.entities.*
+import ru.smartro.worknote.domain.models.WorkOrderModel
 import ru.smartro.worknote.domain.models.complex.SrpContainerWithRelations
 import ru.smartro.worknote.domain.models.complex.WaybillWithRelations
 
 class WaybillBodyDBDataSource(
-    val dataBase: DataBase,
-    val dbWaybillWIthRelationsConverter: DbWaybillWIthRelationsConverter
+    private val dataBase: DataBase,
+    private val dbWaybillWIthRelationsConverter: DbWaybillWIthRelationsConverter
 ) {
+
+
+    fun getWorkOrders(waybillId: Int): List<WorkOrderModel> {
+        return dataBase.workOrderDao.getByWayBillId(waybillId).toDomainModel()
+    }
 
     fun insert(waybillWithRelations: WaybillWithRelations) {
         val entities = makeEntities(waybillWithRelations)
         dataBase.runInTransaction {
-            dataBase.wayBillBodyDAO.insert(entities.waybillBody)
-            dataBase.workOrderDAO.insertAll(entities.workOrderEntities)
+            dataBase.wayBillBodyDao.insert(entities.waybillBody)
+            dataBase.workOrderDao.insertAll(entities.workOrderEntities)
             dataBase.srpPlatformDao.insertAll(entities.platformEntities)
             dataBase.srpContainerDao.insertAll(entities.containerEntities)
             dataBase.srpContainerTypeDao.insertAll(entities.containerTypeEntities)
         }
     }
+
 
     private fun makeEntities(waybillWithRelations: WaybillWithRelations): WaybillSeparateEntities {
         val waybillEntity =
@@ -62,8 +69,8 @@ class WaybillBodyDBDataSource(
         op: (container: SrpContainerWithRelations, platformId: Int) -> ACC_ITEM
     ): MutableList<ACC_ITEM> {
         return waybillWithRelations.workOrders
-            .fold(mutableListOf<ACC_ITEM>()) { acc, workOrderWithRelations ->
-                acc.addAll(workOrderWithRelations.platforms.fold(mutableListOf<ACC_ITEM>()) { accSecond, srpPlatformWithRelations ->
+            .fold(mutableListOf()) { acc, workOrderWithRelations ->
+                acc.addAll(workOrderWithRelations.platforms.fold(mutableListOf()) { accSecond, srpPlatformWithRelations ->
                     accSecond.addAll(srpPlatformWithRelations.containers.map {
                         op(it, srpPlatformWithRelations.srpId)
                     })

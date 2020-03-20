@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "7d71e2e875072fc2ddc69ebdc454c09d",
+    "identityHash": "0d7f97190db980bb563df6fdf1ffd2c6",
     "entities": [
       {
         "tableName": "users",
@@ -135,7 +135,7 @@
       },
       {
         "tableName": "workflow",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `is_in_progress` INTEGER NOT NULL, `vehicle_id` INTEGER, `way_bill_id` INTEGER, `organisation_id` INTEGER, PRIMARY KEY(`user_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `is_in_progress` INTEGER NOT NULL, `vehicle_id` INTEGER, `way_bill_id` INTEGER, `work_order_id` INTEGER, `organisation_id` INTEGER, PRIMARY KEY(`user_id`))",
         "fields": [
           {
             "fieldPath": "userId",
@@ -158,6 +158,12 @@
           {
             "fieldPath": "wayBillId",
             "columnName": "way_bill_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "workOrderId",
+            "columnName": "work_order_id",
             "affinity": "INTEGER",
             "notNull": false
           },
@@ -497,7 +503,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7d71e2e875072fc2ddc69ebdc454c09d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0d7f97190db980bb563df6fdf1ffd2c6')"
     ]
   }
 }

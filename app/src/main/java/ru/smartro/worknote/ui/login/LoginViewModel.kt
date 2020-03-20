@@ -73,7 +73,7 @@ class LoginViewModel(
         viewModelScope.launch {
             var workflowModel = workflowRepository.getWorkFlowForUser(userModel.id)
             if (workflowModel == null) {
-                workflowModel = WorkflowModel(userModel.id, false, null, null, null)
+                workflowModel = WorkflowModel(userModel.id, false, null, null, null, null)
                 workflowRepository.save(workflowModel)
             }
             workflowHolder.value = workflowModel

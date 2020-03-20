@@ -196,10 +196,13 @@ class VehicleViewModel(
 
     private suspend fun getVehicles(): Result<List<VehicleModel>> {
         var userModel = currentUserHolder.value?: throw Exception("current user must be set")
+
         return withContext(Dispatchers.IO) {
             when (val result = loginRepository.checkRefreshUser(userModel)) {
                 is Result.Error -> {
-                    return@withContext Result.Error(result.exception)
+                    if (result.isAuthError) {
+                        return@withContext Result.Error(result.exception)
+                    }
                 }
                 is Result.Success -> {
                     userModel = result.data

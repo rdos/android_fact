@@ -66,6 +66,20 @@
         android:id="@+id/workOrderFragment"
         android:name="ru.smartro.worknote.ui.workFlow.workorder.WorkOrderFragment"
         android:label="fragment_work_order_list"
-        tools:layout="@layout/fragment_work_order_list" />
+        tools:layout="@layout/fragment_work_order_list" >
+        <action
+            android:id="@+id/action_workOrderFragment_to_srpPlatformShowFragment"
+            app:destination="@id/srpPlatformShowFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/srpPlatformShowFragment"
+        android:name="ru.smartro.worknote.ui.workFlow.showSrpPlatform.SrpPlatformShowFragment"
+        android:label="fragment_srp_platform_show_list"
+        tools:layout="@layout/fragment_srp_platform_show_list">
+        <argument
+            android:name="workOrderId"
+            app:argType="integer" />
+    </fragment>
+
 
 </navigation>

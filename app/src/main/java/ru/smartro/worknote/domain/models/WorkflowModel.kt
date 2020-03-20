@@ -7,7 +7,8 @@ data class WorkflowModel(
     var isInProgress: Boolean,
     var vehicleId: Int?,
     var wayBillId: Int?,
-    var organisationId: Int?
+    var organisationId: Int?,
+    var workOrderId: Int?
 ) {
     fun asDataBaseModel(): WorkflowEntity {
         return WorkflowEntity(
@@ -15,7 +16,8 @@ data class WorkflowModel(
             isInProgress = isInProgress,
             vehicleId = vehicleId,
             wayBillId = wayBillId,
-            organisationId = organisationId
+            organisationId = organisationId,
+            workOrderId = workOrderId
         )
     }
 }

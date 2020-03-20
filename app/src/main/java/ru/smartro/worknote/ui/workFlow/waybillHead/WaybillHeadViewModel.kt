@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import ru.smartro.worknote.data.LoginRepository
 import ru.smartro.worknote.data.Result
-import ru.smartro.worknote.data.waybill.WaybillRepository
+import ru.smartro.worknote.data.waybillHead.WaybillRepository
 import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.domain.models.WaybillHeadModel
@@ -237,7 +237,9 @@ class WaybillHeadViewModel(
         return withContext(Dispatchers.IO) {
             when (val result = loginRepository.checkRefreshUser(userModel)) {
                 is Result.Error -> {
-                    return@withContext Result.Error(result.exception)
+                    if (result.isAuthError) {
+                        return@withContext Result.Error(result.exception)
+                    }
                 }
                 is Result.Success -> {
                     userModel = result.data
