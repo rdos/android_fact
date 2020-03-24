@@ -12,7 +12,7 @@ class VehicleRepository(
     private val vehicleNetworkDataSource: VehicleNetworkDataSource,
     private val networkState: NetworkState
 ) {
-    private var localCache = listOf<VehicleModel>()
+    private var localCache = mutableListOf<VehicleModel>()
     private var currentOrganisationId: Int? = null
     private val NETWORK_STATE_KEY = "vehicle"
 
@@ -33,7 +33,28 @@ class VehicleRepository(
                 getFromNetByUser(currentUser, organisationId)
             }
         }
+    }
 
+    suspend fun getVehicle(
+        currentUser: UserModel,
+        organisationId: Int,
+        id: Int
+    ): Result<VehicleModel> {
+        when (val result = getAllVehiclesByUser(currentUser, organisationId)) {
+            is Result.Error -> return result
+            is Result.Success -> {
+                val vehicle: VehicleModel? = result.data.find {
+                    return@find it.id == id
+                }
+                return Result.Success(
+                    vehicle ?: VehicleModel(
+                        id,
+                        "not find",
+                        organisationId
+                    )
+                ) //todo придумать что то полутше
+            }
+        }
     }
 
     fun dropAllCD() {
@@ -67,11 +88,36 @@ class VehicleRepository(
     }
 
 
+    private fun getCachedByOrganisation(organisationId: Int, id: Int): VehicleModel? {
+        var result: VehicleModel?
+        if (currentOrganisationId == organisationId && localCache.isNotEmpty()) {
+            result = getFromCacheById(id)
+            if (result != null) {
+                return result
+            }
+        }
+        result = vehicleDBDataSource.get(id)
+        if (result != null) {
+            localCache.add(result)
+        }
+        currentOrganisationId = organisationId
+
+        return result
+
+    }
+
+    private fun getFromCacheById(id: Int): VehicleModel? {
+        return localCache.find {
+            it.id == id
+        }
+    }
+
     private fun getAllCachedByOrganisation(organisationId: Int): List<VehicleModel> {
         return if (currentOrganisationId == organisationId && localCache.isNotEmpty()) {
             localCache
         } else {
-            localCache = vehicleDBDataSource.getAllByOrganisationId(organisationId)
+            localCache.clear()
+            localCache.addAll(vehicleDBDataSource.getAllByOrganisationId(organisationId))
             currentOrganisationId = organisationId
             localCache
         }
@@ -79,6 +125,7 @@ class VehicleRepository(
 
     private fun updateLocalDataSources(models: List<VehicleModel>) {
         vehicleDBDataSource.insertAll(models)
-        localCache = models
+        localCache.clear()
+        localCache.addAll(models)
     }
 }

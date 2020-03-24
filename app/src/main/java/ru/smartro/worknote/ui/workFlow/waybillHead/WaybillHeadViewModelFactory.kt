@@ -7,6 +7,9 @@ import ru.smartro.worknote.data.DbLoginDataSource
 import ru.smartro.worknote.data.LoginRepository
 import ru.smartro.worknote.data.NetworkLoginDataSource
 import ru.smartro.worknote.data.NetworkState
+import ru.smartro.worknote.data.vehicle.VehicleDBDataSource
+import ru.smartro.worknote.data.vehicle.VehicleNetworkDataSource
+import ru.smartro.worknote.data.vehicle.VehicleRepository
 import ru.smartro.worknote.data.waybillHead.WaybillDBDataSource
 import ru.smartro.worknote.data.waybillHead.WaybillNetworkDataSource
 import ru.smartro.worknote.data.waybillHead.WaybillRepository
@@ -40,6 +43,11 @@ class WaybillHeadViewModelFactory(private val activity: Activity) : ViewModelPro
                         db
                     ),
                     networkState = networkState
+                )
+                , vehicleRepository = VehicleRepository(
+                    VehicleDBDataSource(db),
+                    VehicleNetworkDataSource(),
+                    networkState
                 )
             ) as T
         }

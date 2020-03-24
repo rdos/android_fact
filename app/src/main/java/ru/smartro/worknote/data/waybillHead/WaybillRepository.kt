@@ -31,6 +31,13 @@ class WaybillRepository(
     private val NETWORK_STATE_KEY = "way_bill_head"
 
 
+    suspend fun get(id: Int): WaybillHeadModel? {
+        return withContext(Dispatchers.IO) {
+            return@withContext waybillDBDataSource.get(id)
+        }
+    }
+
+
     suspend fun getAllWaybillsByCriteria(criteria: WaybillCriteria): Result<List<WaybillHeadModel>> {
         return withContext(Dispatchers.IO) {
             return@withContext if (networkState.requestIsNotNeed(NETWORK_STATE_KEY)) {

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -88,7 +89,7 @@ class WaybillFragment : Fragment() {
                 }
             }
         )
-
+        initModelObservers()
         waybillHeadViewModel.onInit()
 
         return binding.root
@@ -96,6 +97,21 @@ class WaybillFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initUiObservers()
+    }
+
+
+    private fun initModelObservers() {
+        waybillHeadViewModel.vehicleNumber.observe(viewLifecycleOwner, Observer {
+            if (it == null) {
+                (requireActivity() as AppCompatActivity).supportActionBar!!.title =
+                    getString(R.string.way_bill)
+            } else {
+                (requireActivity() as AppCompatActivity).supportActionBar!!.title =
+                    getString(R.string.way_bill_for, it)
+            }
+        })
+
         waybillHeadViewModel.state.observe(viewLifecycleOwner, Observer {
             //progress bar
             when (it) {
@@ -143,7 +159,9 @@ class WaybillFragment : Fragment() {
             }
 
         })
+    }
 
+    private fun initUiObservers() {
         // refresh
         swipe_refresh_layout.setOnRefreshListener {
             if (waybillHeadViewModel.canRefresh()) {
@@ -155,17 +173,9 @@ class WaybillFragment : Fragment() {
         button3.setOnClickListener {
             waybillHeadViewModel.onConfirmChoice()
         }
-
-
     }
 
     private fun showFailed(errorString: Int, arg: String? = null) {
         Toast.makeText(context, getString(errorString, arg), Toast.LENGTH_LONG).show()
     }
-
-
-    override fun onDetach() {
-        super.onDetach()
-    }
-
 }

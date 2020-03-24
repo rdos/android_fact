@@ -7,8 +7,10 @@ import kotlinx.coroutines.*
 import ru.smartro.worknote.data.LoginRepository
 import ru.smartro.worknote.data.Result
 import ru.smartro.worknote.data.waybillBody.WaybillBodyRepository
+import ru.smartro.worknote.data.waybillHead.WaybillRepository
 import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.domain.models.UserModel
+import ru.smartro.worknote.domain.models.WaybillHeadModel
 import ru.smartro.worknote.domain.models.WorkOrderModel
 import ru.smartro.worknote.domain.models.WorkflowModel
 import timber.log.Timber
@@ -16,11 +18,14 @@ import timber.log.Timber
 class WorkOrderViewModel(
     private val workflowRepository: WorkflowRepository,
     private val waybillBodyRepository: WaybillBodyRepository,
+    private val waybillHeadRepository: WaybillRepository,
     private val loginRepository: LoginRepository
 ) : ViewModel() {
 
     private lateinit var currentUserHolder: MutableLiveData<UserModel>
     private lateinit var workflowHolder: MutableLiveData<WorkflowModel>
+
+    val wayBillHead = MutableLiveData<WaybillHeadModel?>(null)
 
     private val _workOrders = MutableLiveData<List<WorkOrderModel>>()
 
@@ -79,6 +84,8 @@ class WorkOrderViewModel(
             loadUser()?.let {
                 return@let loadWorkflow()
             }?.let {
+                return@let loadWayBillName()
+            }?.let {
                 if (lastSelected.value == null) {
                     loadSelected()
                 }
@@ -113,6 +120,7 @@ class WorkOrderViewModel(
         val workflow = workflowHolder.value ?: throw Exception("workflow must be set")
         modelScope.launch {
             workflow.workOrderId = workOrderId
+            workflow.isInProgress = true
             workflowRepository.save(workflow)
             setState(State.Done)
         }
@@ -192,6 +200,15 @@ class WorkOrderViewModel(
             workflowHolder = MutableLiveData(workflowModel)
         }
 
+
+        return true
+    }
+
+    private suspend fun loadWayBillName(): Boolean? {
+        val wayBillHeadModel = waybillHeadRepository.get(
+            workflowHolder.value?.wayBillId!!
+        )
+        wayBillHead.postValue(wayBillHeadModel)
 
         return true
     }

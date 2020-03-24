@@ -11,6 +11,9 @@ import ru.smartro.worknote.data.waybillBody.DbWaybillWIthRelationsConverter
 import ru.smartro.worknote.data.waybillBody.WaybillBodyDBDataSource
 import ru.smartro.worknote.data.waybillBody.WaybillBodyNetworkDataSource
 import ru.smartro.worknote.data.waybillBody.WaybillBodyRepository
+import ru.smartro.worknote.data.waybillHead.WaybillDBDataSource
+import ru.smartro.worknote.data.waybillHead.WaybillNetworkDataSource
+import ru.smartro.worknote.data.waybillHead.WaybillRepository
 import ru.smartro.worknote.data.workflow.WorkflowDBDataSource
 import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.database.getDatabase
@@ -42,6 +45,10 @@ class WorkOrderViewModelFactory(private val activity: Activity) : ViewModelProvi
                         DbWaybillWIthRelationsConverter()
                     ),
                     waybillNetworkDataSource = WaybillBodyNetworkDataSource()
+                ), waybillHeadRepository = WaybillRepository(
+                    waybillNetworkDataSource = WaybillNetworkDataSource(),
+                    waybillDBDataSource = WaybillDBDataSource(db),
+                    networkState = networkState
                 )
             ) as T
         }

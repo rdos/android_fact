@@ -16,6 +16,10 @@ class VehicleDBDataSource(private val dataBase: DataBase) {
         return dataBase.vehicleDao.getByOrganisationId(organisationId).toDomainModel()
     }
 
+    fun get(id: Int): VehicleModel? {
+        return dataBase.vehicleDao.get(id)?.toDomainModel()
+    }
+
 //    fun clearByOrganisation(organisationId: Int) {
 //        dataBase.vehicleDao.clearByOrganisationId(organisationId)
 //    }

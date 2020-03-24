@@ -15,7 +15,7 @@ interface VehicleDao {
     fun update(vehicleEntity: VehicleEntity)
 
     @Query("SELECT * FROM vehicles WHERE id = :key LIMIT 1")
-    fun get(key: Int): VehicleEntity
+    fun get(key: Int): VehicleEntity?
 
     @Query("DELETE FROM vehicles WHERE organisation_id = :organisationId")
     fun clearByOrganisationId(organisationId: Int)

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import ru.smartro.worknote.data.LoginRepository
 import ru.smartro.worknote.data.Result
+import ru.smartro.worknote.data.vehicle.VehicleRepository
 import ru.smartro.worknote.data.waybillHead.WaybillRepository
 import ru.smartro.worknote.data.workflow.WorkflowRepository
 import ru.smartro.worknote.domain.models.UserModel
@@ -17,7 +18,8 @@ import java.time.LocalDate
 class WaybillHeadViewModel(
     private val workflowRepository: WorkflowRepository,
     private val waybillRepository: WaybillRepository,
-    private val loginRepository: LoginRepository
+    private val loginRepository: LoginRepository,
+    private val vehicleRepository: VehicleRepository
 ) : ViewModel() {
 
     private lateinit var currentUserHolder: MutableLiveData<UserModel>
@@ -35,6 +37,8 @@ class WaybillHeadViewModel(
     private val _state = MutableLiveData<State>(
         State.Created
     )
+
+    var vehicleNumber = MutableLiveData<String?>(null)
 
     val state: LiveData<State>
         get() = _state
@@ -203,7 +207,7 @@ class WaybillHeadViewModel(
         return true
     }
 
-    private fun loadVehicle(): Boolean? {
+    private suspend fun loadVehicle(): Boolean? {
         val vehicleId = workflowHolder.value?.vehicleId
         if (vehicleId == null) {
             setState(State.Error.AppError)
@@ -214,9 +218,24 @@ class WaybillHeadViewModel(
         } else {
             currentVehicleId = MutableLiveData(vehicleId)
         }
-
+        loadVehicleName(vehicleId)
 
         return true
+    }
+
+    private suspend fun loadVehicleName(vehicleId: Int) {
+        val vehicleModel = vehicleRepository.getVehicle(
+            currentUserHolder.value!!,
+            workflowHolder.value?.organisationId!!,
+            vehicleId
+        )
+        when (vehicleModel) {
+            is Result.Error -> {
+                onAuthError()
+                return
+            }
+            is Result.Success -> vehicleNumber.postValue(vehicleModel.data.name)
+        }
     }
 
     private suspend fun getCurrentUser(): UserModel? {

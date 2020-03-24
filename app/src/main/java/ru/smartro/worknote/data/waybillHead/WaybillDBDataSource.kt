@@ -23,4 +23,8 @@ class WaybillDBDataSource(val dataBase: DataBase) {
             .getAllByDataAndOrganisationId(organisationId, date, vehicleId)
             .toDomainModel()
     }
+
+    fun get(id: Int): WaybillHeadModel? {
+        return dataBase.wayBillHeadDao.getById(id)?.toDomainModel()
+    }
 }

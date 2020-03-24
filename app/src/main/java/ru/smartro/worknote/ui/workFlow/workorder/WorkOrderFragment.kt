@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +21,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.databinding.FragmentWorkOrderListBinding
 import ru.smartro.worknote.ui.login.LoginActivity
 import timber.log.Timber
+import java.time.format.DateTimeFormatter
 
 class WorkOrderFragment : Fragment() {
 
@@ -81,6 +83,7 @@ class WorkOrderFragment : Fragment() {
                 }
             }
         )
+        initModelObservers()
         workOrderViewModel.onInit()
 
         return binding.root
@@ -89,6 +92,23 @@ class WorkOrderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Timber.d("WorkOrderFragment \"onViewCreated\"")
+        initUiObservers()
+    }
+
+    private fun initModelObservers() {
+        workOrderViewModel.wayBillHead.observe(viewLifecycleOwner, Observer {
+            if (it == null) {
+                (requireActivity() as AppCompatActivity).supportActionBar!!.title =
+                    getString(R.string.work_order)
+            } else {
+                (requireActivity() as AppCompatActivity).supportActionBar!!.title = getString(
+                    R.string.work_order_for,
+                    it.number,
+                    it.date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                )
+            }
+        })
+
         workOrderViewModel.state.observe(viewLifecycleOwner, Observer {
             //progress bar
             when (it) {
@@ -108,7 +128,7 @@ class WorkOrderFragment : Fragment() {
             when (it) {
                 is WorkOrderViewModel.State.Done -> {
                     this.findNavController()
-                        .navigate(R.id.action_waybillFragment_to_workOrderFragment)
+                        .navigate(R.id.action_waybillFragment_to_workOrderFragment) //todo next
                     workOrderViewModel.onReset()
                 }
             }
@@ -139,6 +159,9 @@ class WorkOrderFragment : Fragment() {
 
         })
 
+    }
+
+    private fun initUiObservers() {
         // refresh
         swipe_refresh_layout.setOnRefreshListener {
             if (workOrderViewModel.canRefresh()) {
@@ -150,7 +173,6 @@ class WorkOrderFragment : Fragment() {
         button3.setOnClickListener {
             workOrderViewModel.onConfirmChoice()
         }
-
 
     }
 

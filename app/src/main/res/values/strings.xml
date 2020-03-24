@@ -39,4 +39,10 @@
     <string name="menu_references">Справочники</string>
 
     <string name="way_bill">Путевой лист</string>
+    <string name="way_bill_for">Путевой лист для %1$s</string>
+
+    <string name="work_order">Сменное задание</string>
+    <string name="work_order_for">Сменное задание для %1$s на %2$s </string>
+
+
 </resources>
