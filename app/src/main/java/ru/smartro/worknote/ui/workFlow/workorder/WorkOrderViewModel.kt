@@ -200,7 +200,6 @@ class WorkOrderViewModel(
             workflowHolder = MutableLiveData(workflowModel)
         }
 
-
         return true
     }
 

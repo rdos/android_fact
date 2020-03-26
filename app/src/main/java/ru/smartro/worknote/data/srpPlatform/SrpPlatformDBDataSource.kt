@@ -1,13 +1,13 @@
 package ru.smartro.worknote.data.srpPlatform
 
+import ru.smartro.worknote.data.model.PlatformWithContainerCount
 import ru.smartro.worknote.database.DataBase
-import ru.smartro.worknote.ui.workFlow.showSrpPlatform.PlatformToShow
 
 class SrpPlatformDBDataSource(
     private val dataBase: DataBase
 ) {
 
-    fun getPlatformsToView(workOrderId: Int): List<PlatformToShow> {
+    fun getPlatformsWithContainerCount(workOrderId: Int): List<PlatformWithContainerCount> {
         return dataBase.srpPlatformDao.getWithContainerCount(workOrderId)
     }
 }

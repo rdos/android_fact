@@ -128,7 +128,7 @@ class WorkOrderFragment : Fragment() {
             when (it) {
                 is WorkOrderViewModel.State.Done -> {
                     this.findNavController()
-                        .navigate(R.id.action_waybillFragment_to_workOrderFragment) //todo next
+                        .navigate(R.id.action_workOrderFragment_to_routePlatformsFragment)
                     workOrderViewModel.onReset()
                 }
             }

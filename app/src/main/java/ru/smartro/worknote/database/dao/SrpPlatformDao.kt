@@ -1,8 +1,8 @@
 package ru.smartro.worknote.database.dao
 
 import androidx.room.*
+import ru.smartro.worknote.data.model.PlatformWithContainerCount
 import ru.smartro.worknote.database.entities.SrpPlatformEntity
-import ru.smartro.worknote.ui.workFlow.showSrpPlatform.PlatformToShow
 
 @Dao
 interface SrpPlatformDao {
@@ -27,6 +27,8 @@ interface SrpPlatformDao {
         """SELECT
                     srp_platforms.name as name
                     , srp_platforms.address as address
+                    , srp_platforms.latitude as latitude
+                    , srp_platforms.longitude as longitude
                     , count(srp_containers.srp_point_details_id) as containersCount
                 FROM
                     srp_platforms
@@ -34,7 +36,7 @@ interface SrpPlatformDao {
                 WHERE
                     work_order_srp_id = :workOrderId
                 GROUP BY
-                    srp_platforms.name, srp_platforms.address"""
+                    srp_platforms.name, srp_platforms.address, srp_platforms.latitude, srp_platforms.longitude"""
     )
-    fun getWithContainerCount(workOrderId: Int): List<PlatformToShow>
+    fun getWithContainerCount(workOrderId: Int): List<PlatformWithContainerCount>
 }

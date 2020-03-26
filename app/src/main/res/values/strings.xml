@@ -43,6 +43,8 @@
 
     <string name="work_order">Сменное задание</string>
     <string name="work_order_for">Сменное задание для %1$s на %2$s </string>
+    <string name="begin_maintenance">Начать обслуживание</string>
+    <string name="i_cannot_get">Не могу забрать</string>
 
 
 </resources>

@@ -1,6 +1,5 @@
 package ru.smartro.worknote.data
 
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -11,7 +10,7 @@ import ru.smartro.worknote.network.auth.responseDto.OwnerData
 import ru.smartro.worknote.network.auth.responseDto.asDomainModel
 import ru.smartro.worknote.utils.TimeConsts.TOKEN_HALF_LIFE
 import ru.smartro.worknote.utils.TimeConsts.TOKEN_LIFE_TIME
-
+import timber.log.Timber
 import java.io.IOException
 
 /**
@@ -158,6 +157,7 @@ class LoginRepository(
     }
 
     private suspend fun refreshTokenByCreditionalis(userModel: UserModel): Result<UserModel> {
+        Timber.d("auth: refreshTokenByCreditionalis")
         return handleRefreshResult(
             dataSourceNetwork.login(userModel.email, userModel.password),
             userModel

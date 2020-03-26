@@ -10,7 +10,7 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "ru.smartro.worknote"
         minSdkVersion 26
@@ -118,7 +118,7 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
 
     // Room dependency
-    def room_version = '2.2.4'
+    def room_version = '2.2.5'
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
@@ -139,5 +139,12 @@ dependencies {
 
     //icons
     implementation 'net.steamcrafted:materialiconlib:1.1.5'
+
+    //map
+    implementation 'com.carto:carto-mobile-sdk:4.2.2@aar'
+
+    //effects
+    implementation 'com.balysv:material-ripple:1.0.2'
+
 
 }

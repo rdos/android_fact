@@ -1,9 +1,7 @@
 package ru.smartro.worknote.data
 
-import android.util.Log
 import org.json.JSONObject
 import retrofit2.HttpException
-import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.data.model.LoggedInUserToken
 import ru.smartro.worknote.domain.models.UserModel
 import ru.smartro.worknote.network.BearerToken
@@ -31,13 +29,13 @@ class NetworkLoginDataSource {
                 val jsonParsedBody = JSONObject((json ?: ""))
                 result = Result.Error(e, jsonParsedBody.getString("message"))
             } catch (e: Throwable) {
-                Log.e("login json", e.stackTrace.toString())
+                Timber.e(e, "auth")
                 result = Result.Error(e)
             }
         } catch (e: IOException) {
             result = Result.Error(e)
         } catch (e: Throwable) {
-            Log.e("login", e.stackTrace.toString())
+            Timber.e(e, "auth")
             result = Result.Error(e)
         }
         return result
@@ -52,7 +50,7 @@ class NetworkLoginDataSource {
         } catch (e: IOException) {
             Result.Error(e)
         } catch (e: Throwable) {
-            Log.e("owner", e.stackTrace.toString())
+            Timber.e(e, "auth")
             Result.Error(e)
         }
         return result
@@ -70,13 +68,13 @@ class NetworkLoginDataSource {
                 val jsonParsedBody = JSONObject((json ?: ""))
                 result = Result.Error(e, jsonParsedBody.getString("message"))
             } catch (e: Throwable) {
-                Log.e("refresh json", e.stackTrace.toString())
+                Timber.e(e, "auth")
                 result = Result.Error(e)
             }
         } catch (e: IOException) {
             result = Result.Error(e)
         } catch (e: Throwable) {
-            Log.e("refresh", e.stackTrace.toString())
+            Timber.e(e, "auth")
             result = Result.Error(e)
         }
         return result

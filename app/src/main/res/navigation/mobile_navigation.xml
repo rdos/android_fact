@@ -70,6 +70,10 @@
         <action
             android:id="@+id/action_workOrderFragment_to_srpPlatformShowFragment"
             app:destination="@id/srpPlatformShowFragment" />
+        <action
+            android:id="@+id/action_workOrderFragment_to_routePlatformsFragment"
+            app:destination="@id/routePlatformsFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/srpPlatformShowFragment"
@@ -80,6 +84,10 @@
             android:name="workOrderId"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/routePlatformsFragment"
+        android:name="ru.smartro.worknote.ui.workFlow.onTheRoute.RoutePlatformsFragment"
+        android:label="RoutePlatformsFragment" />
 
 
 </navigation>
