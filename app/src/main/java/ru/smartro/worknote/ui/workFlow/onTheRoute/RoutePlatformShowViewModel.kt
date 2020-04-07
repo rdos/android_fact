@@ -47,6 +47,9 @@ class RoutePlatformShowViewModel(
 
     fun onRefresh(force: Boolean = false) {
         modelScope.launch {
+            if (force) {
+                loginRepository.dropAllCD()
+            }
             loadUser()?.let {
                 return@let loadWorkflow()
             }?.let {
@@ -108,6 +111,7 @@ class RoutePlatformShowViewModel(
     private suspend fun getPlatforms(workOrderId: Int): List<PlatformToShow> {
         return srpPlatformRepository.getPlatformsWithContainerCount(workOrderId = workOrderId).map {
             PlatformToShow(
+                id = it.id,
                 name = it.name,
                 address = it.address,
                 containersCount = it.containersCount

@@ -12,7 +12,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.utils.Animations
 
 
-class RoutePlatformRecyclerViewAdapter(private val model: RoutePlatformShowViewModel) :
+class RoutePlatformRecyclerViewAdapter(private val model: RoutePlatformShowViewModel, private val onMaintenance: (PlatformToShow)->Unit) :
     RecyclerView.Adapter<RoutePlatformRecyclerViewAdapter.ViewHolder>() {
 
     val lastExpended: MutableLiveData<LinearLayout?> = MutableLiveData(null)
@@ -40,6 +40,9 @@ class RoutePlatformRecyclerViewAdapter(private val model: RoutePlatformShowViewM
             holder.view.layout_expand.visibility = View.VISIBLE
         } else {
             holder.view.layout_expand.visibility = View.GONE
+        }
+        holder.view.maintenance_button.setOnClickListener {
+            onMaintenance(item)
         }
         holder.view.setOnClickListener {
             if (model.lastExpendedPosition.value == position) {

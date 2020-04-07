@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,8 +36,15 @@ class RoutePlatformsFragment : Fragment() {
             this,
             RoutePlatformShowViewModelFactory(requireActivity())
         ).get(RoutePlatformShowViewModel::class.java)
+
         srpPlatformRecyclerViewAdapter =
-            RoutePlatformRecyclerViewAdapter(routePlatformShowViewModel)
+            RoutePlatformRecyclerViewAdapter(routePlatformShowViewModel) {
+                val actionDetails = RoutePlatformsFragmentDirections
+                    .actionRoutePlatformsFragmentToMaintenanceFragment(it.id)
+                this.findNavController()
+                    .navigate(actionDetails)
+            }
+
         binding.root.findViewById<RecyclerView>(R.id.list).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = srpPlatformRecyclerViewAdapter
