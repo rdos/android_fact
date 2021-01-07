@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/change_role"
+        android:title="@string/change_role" />
+    <item
+        android:id="@+id/change_owner"
+        android:title="@string/change_owner" />
+    <item
+        android:id="@+id/logout"
+        android:title="@string/login" />
+</menu>
