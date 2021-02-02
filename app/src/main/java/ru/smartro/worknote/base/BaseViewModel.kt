@@ -13,7 +13,7 @@ import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application),
     CoroutineScope {
-    protected val network = NetworkRepository()
+    protected val network = NetworkRepository(application.applicationContext)
     protected val db = RoomRepository(AppDatabase.instance(application).dbDao())
 
     private val job: Job = SupervisorJob()

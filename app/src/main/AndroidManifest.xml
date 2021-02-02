@@ -3,18 +3,58 @@
     package="ru.smartro.worknote">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_app"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_app"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.car_3.CarActivity"></activity>
-        <activity android:name=".ui.type_2.TypeAppActivity" />
-        <activity android:name=".ui.owner_1.OwnerActivity" />
+        <activity
+            android:name=".ui.point_service.EnterContainerInfoActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/AppThemeMaterial" />
+        <activity android:name=".ui.camera.CameraActivity">
+            <intent-filter>
+                <action android:name="android.media.action.IMAGE_CAPTURE" />
+                <action android:name="android.media.action.STILL_IMAGE_CAMERA" />
+                <action android:name="android.media.action.VIDEO_CAMERA" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="example.android.com" />
+                <data android:pathPattern="/camerax" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.notch_support"
+                android:value="true" />
+        </activity>
+        <activity android:name=".ui.point_service.PointServiceActivity" />
+        <activity
+            android:name=".ui.map.MapActivity"
+            android:theme="@style/NoToolbar" />
+        <activity android:name=".ui.choose.way_task_4.WayTaskActivity" />
+        <activity android:name=".ui.choose.way_list_3.WayListActivity" />
+        <activity android:name=".ui.choose.vehicle_2.VehicleActivity" />
+        <activity android:name=".ui.choose.owner_1.OrganisationActivity" />
         <activity android:name=".ui.auth.AuthActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +62,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="ru.smartro.worknote.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <!-- resource file to create -->
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

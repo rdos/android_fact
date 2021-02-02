@@ -1,6 +1,5 @@
 package ru.smartro.worknote.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.choose_item.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.response.owner.Organisation
+import ru.smartro.worknote.service.response.organisation.Organisation
 
 class OwnerAdapter(private val items: ArrayList<Organisation>) :
     RecyclerView.Adapter<OwnerAdapter.OwnerViewHolder>() {
@@ -29,12 +28,14 @@ class OwnerAdapter(private val items: ArrayList<Organisation>) :
 
             if (checkedPosition == -1){
                 holder.itemView.choose_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
+                holder.itemView.choose_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
             }else{
-                if (checkedPosition == holder.adapterPosition){
+                if (checkedPosition == holder.adapterPosition) {
                     holder.itemView.choose_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.colorPrimary))
-                }
-                else{
+                    holder.itemView.choose_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
+                } else {
                     holder.itemView.choose_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
+                    holder.itemView.choose_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
                 }
             }
 
@@ -43,6 +44,7 @@ class OwnerAdapter(private val items: ArrayList<Organisation>) :
                 holder.itemView.choose_cardview.isVisible = true
                 if (checkedPosition != holder.adapterPosition){
                     holder.itemView.choose_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.colorPrimary))
+                    holder.itemView.choose_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
                     notifyItemChanged(checkedPosition)
                     checkedPosition = holder.adapterPosition
                 }
@@ -53,7 +55,7 @@ class OwnerAdapter(private val items: ArrayList<Organisation>) :
         return if (checkedPosition != -1){
             items[checkedPosition].id
         }else{
-            0
+            -1
         }
 
     }

@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.car_3.CarActivity">
+    tools:context=".ui.choose.vehicle_2.VehicleActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

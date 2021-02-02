@@ -9,7 +9,6 @@ data class Resource<out T>(val status: Status, val data: T?, val msg: String?) {
         fun <T> error(msg: String = "", data: T? = null): Resource<T> {
             return Resource(Status.ERROR, data, msg)
         }
-
         fun <T> network(msg: String = "", data: T? = null): Resource<T> {
             return Resource(Status.NETWORK, data, msg)
         }
@@ -19,5 +18,5 @@ data class Resource<out T>(val status: Status, val data: T?, val msg: String?) {
 enum class Status {
     SUCCESS,
     ERROR,
-    NETWORK
+    NETWORK,
 }

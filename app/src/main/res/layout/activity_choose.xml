@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.owner_1.OwnerActivity">
+    tools:context=".ui.choose.owner_1.OrganisationActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/choose_rv"
@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:backgroundTint="@color/colorPrimary"
         android:textColor="@color/white"
-        android:text="Выбрать"
+        android:text="@string/choose"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
 

@@ -4,5 +4,14 @@
     <color name="colorPrimaryDark">#0F7E05</color>
     <color name="colorAccent">#0A5503</color>
     <color name="white">#fff</color>
+    <color name="gray">#EAEAEA</color>
     <color name="black">#000</color>
+    <color name="dark_red">#BC0404</color>
+
+    <color name="icFocused">#DDFFFFFF</color>
+    <color name="blue">#ABC0D1</color>
+    <color name="icPressed">#AAFFFFFF</color>
+    <color name="icActive">#FFFFFFFF</color>
+    <color name="light_green">#CDFFC9</color>
+
 </resources>

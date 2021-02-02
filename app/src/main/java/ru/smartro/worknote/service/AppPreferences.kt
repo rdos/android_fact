@@ -26,21 +26,53 @@ object AppPreferences {
             it.putString("accessToken", value)
         }
 
+    var userLogin: String
+        get() = preferences.getString("userLogin", "")!!
+        set(value) = preferences.edit {
+            it.putString("userLogin", value)
+        }
+
     var isLogined: Boolean
         get() = preferences.getBoolean("isLogined", false)
         set(value) = preferences.edit {
             it.putBoolean("isLogined", value)
         }
 
-    var ownerId: Int?
-        get() = preferences.getInt("ownerId", 0)
+    var organisationId: Int
+        get() = preferences.getInt("organisationId", 0)
         set(value) = preferences.edit {
-            it.putInt("ownerId", value!!)
+            it.putInt("organisationId", value)
         }
 
-    fun clear (){
+    var vehicleId: Int
+        get() = preferences.getInt("vehicleId", 0)
+        set(value) = preferences.edit {
+            it.putInt("vehicleId", value)
+        }
+
+    var wayListId: Int
+        get() = preferences.getInt("wayListId", 0)
+        set(value) = preferences.edit {
+            it.putInt("wayListId", value)
+        }
+
+    var wayTaskId: Int
+        get() = preferences.getInt("wayTaskId", 0)
+        set(value) = preferences.edit {
+            it.putInt("wayTaskId", value)
+        }
+
+    var thisUserHasTask: Boolean
+        get() = preferences.getBoolean("thisUserHasTask", false)
+        set(value) = preferences.edit {
+            it.putBoolean("thisUserHasTask", value)
+        }
+
+    fun clear() {
         isLogined = false
         accessToken = ""
+        vehicleId = 0
+        organisationId = 0
     }
 
 }

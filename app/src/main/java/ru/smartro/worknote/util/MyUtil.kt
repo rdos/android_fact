@@ -6,20 +6,30 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.os.Environment
 import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.ui.auth.AuthActivity
+import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import java.io.ByteArrayOutputStream
 import java.io.File
 
 
-class MyUtil {
+object MyUtil {
+    private const val PERMISSIONS_REQUEST_CODE = 10
+    private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
+
+    /** Convenience method used to check if all permissions required by this app are granted */
+    fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
+        ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+    }
 
     fun deleteFileFromStorage(filePath: String) {
         val file = File(filePath)
@@ -27,6 +37,15 @@ class MyUtil {
             Log.d("Delete image after send", "DELETED $filePath ")
         else
             Log.d("Delete image after send", "NOT DELETED $filePath ")
+    }
+
+    fun createCardFolder(context: Context) {
+        val folderPath = context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.path + "/images"
+        val folder = File(folderPath)
+        if (!folder.exists()) {
+            val cardsDirectory = File(folderPath)
+            cardsDirectory.mkdirs()
+        }
     }
 
     fun askPermissionForCamera(context: Activity, code: Int) {
@@ -57,10 +76,7 @@ class MyUtil {
 
     fun hasPermissions(context: Context, vararg permissions: Array<String>): Boolean =
         permissions.all {
-            ActivityCompat.checkSelfPermission(
-                context,
-                it.toString()
-            ) == PackageManager.PERMISSION_GRANTED
+            ActivityCompat.checkSelfPermission(context, it.toString()) == PackageManager.PERMISSION_GRANTED
         }
 
     fun hideKeyboard(activity: Activity) {
@@ -75,20 +91,33 @@ class MyUtil {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    fun convertImageToBase64(imagePath: String): String {
-        val bmp: Bitmap?
-        val bos: ByteArrayOutputStream?
-        val bt: ByteArray?
-        var encodeString: String? = null
-        try {
-            bmp = BitmapFactory.decodeFile(imagePath)
-            bos = ByteArrayOutputStream()
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos)
-            bt = bos.toByteArray()
-            encodeString = Base64.encodeToString(bt, Base64.DEFAULT)
-        } catch (e: Exception) {
-            e.printStackTrace()
+    fun onMenuOptionClicked(context: Context, id: Int) {
+        when (id) {
+            R.id.change_organisation -> {
+                context.startActivity(Intent(context, OrganisationActivity::class.java))
+            }
+            R.id.logout -> {
+                logout(context)
+            }
         }
-        return encodeString!!
     }
+
+    fun enableBackButton(context: AppCompatActivity) {
+
+    }
+
+    fun logout(context: Context) {
+        val intent = Intent(context, AuthActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
+        AppPreferences.clear()
+    }
+
+    fun encodeImage(bm: Bitmap): String? {
+        val baos = ByteArrayOutputStream()
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val b: ByteArray = baos.toByteArray()
+        return Base64.encodeToString(b, Base64.DEFAULT)
+    }
+
 }

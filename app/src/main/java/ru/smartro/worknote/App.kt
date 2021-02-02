@@ -9,7 +9,6 @@ import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.service.AppPreferences
 
 class App : Application() {
-
     override fun onCreate() {
         super.onCreate()
         AppPreferences.init(this)

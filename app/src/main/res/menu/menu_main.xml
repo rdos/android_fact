@@ -4,7 +4,7 @@
         android:id="@+id/change_role"
         android:title="@string/change_role" />
     <item
-        android:id="@+id/change_owner"
+        android:id="@+id/change_organisation"
         android:title="@string/change_owner" />
     <item
         android:id="@+id/logout"

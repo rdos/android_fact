@@ -11,7 +11,8 @@ import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.Status
 import ru.smartro.worknote.service.body.AuthBody
-import ru.smartro.worknote.ui.owner_1.OwnerActivity
+import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
+import ru.smartro.worknote.ui.map.MapActivity
 
 class AuthActivity : AppCompatActivity() {
     private val viewModel: AuthViewModel by viewModel()
@@ -19,10 +20,16 @@ class AuthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
-        supportActionBar?.title = "Вход в систему"
+        actionBar?.title = "Вход в систему"
+
         if (AppPreferences.isLogined) {
-            startActivity(Intent(this, OwnerActivity::class.java))
-            finish()
+            if (AppPreferences.thisUserHasTask) {
+                startActivity(Intent(this, MapActivity::class.java))
+                finish()
+            } else {
+                startActivity(Intent(this, OrganisationActivity::class.java))
+                finish()
+            }
         } else {
             initViews()
         }
@@ -38,8 +45,9 @@ class AuthActivity : AppCompatActivity() {
                             Status.SUCCESS -> {
                                 toast("Вы авторизованы")
                                 AppPreferences.isLogined = true
+                                AppPreferences.userLogin = auth_login.text.toString()
                                 AppPreferences.accessToken = data!!.data.token
-                                startActivity(Intent(this, OwnerActivity::class.java))
+                                startActivity(Intent(this, OrganisationActivity::class.java))
                                 finish()
                             }
                             Status.ERROR -> {
