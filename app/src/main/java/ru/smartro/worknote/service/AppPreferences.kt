@@ -44,6 +44,12 @@ object AppPreferences {
             it.putInt("organisationId", value)
         }
 
+    var serviceStartedAt: Long
+        get() = preferences.getLong("serviceStartedAt", 0L)
+        set(value) = preferences.edit {
+            it.putLong("serviceStartedAt", value)
+        }
+
     var vehicleId: Int
         get() = preferences.getInt("vehicleId", 0)
         set(value) = preferences.edit {

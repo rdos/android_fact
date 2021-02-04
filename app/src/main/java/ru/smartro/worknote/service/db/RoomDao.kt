@@ -5,10 +5,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import ru.smartro.worknote.service.db.entity.co_service.PhotoAfterEntity
-import ru.smartro.worknote.service.db.entity.co_service.PhotoBeforeEntity
 import ru.smartro.worknote.service.db.entity.container_info.ContainerInfoEntity
 import ru.smartro.worknote.service.db.entity.container_info.WayPointEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoAfterEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoBeforeEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoProblemEntity
 import ru.smartro.worknote.service.db.entity.way_task.WayTaskJsonEntity
 
 @Dao
@@ -31,6 +32,9 @@ interface RoomDao {
     @Query("SELECT * FROM ContainerInfoEntity")
     fun findContainerInfo(): LiveData<List<ContainerInfoEntity>>
 
+    @Query("SELECT * FROM ContainerInfoEntity")
+    suspend fun findContainerInfoNOLV(): List<ContainerInfoEntity>
+
     @Query("SELECT * FROM WayTaskJsonEntity WHERE userLogin =:userLogin")
     fun findWayTaskJsonByUser(userLogin: String): LiveData<WayTaskJsonEntity>
 
@@ -43,17 +47,26 @@ interface RoomDao {
     @Query("SELECT * FROM PhotoBeforeEntity WHERE id =:id")
     fun find1BeforePhotoById(id: Int): LiveData<PhotoBeforeEntity>
 
-    @Query("DELETE FROM PhotoBeforeEntity WHERE photo =:photoPath")
+    @Query("DELETE FROM PhotoBeforeEntity WHERE photoPath =:photoPath")
     fun delete1BeforePhoto(photoPath: String)
 
-    @Query("DELETE FROM PhotoAfterEntity WHERE photo =:photoPath")
+    @Query("DELETE FROM PhotoAfterEntity WHERE photoPath =:photoPath")
     fun delete1AfterPhoto(photoPath: String)
 
-    @Query("DELETE FROM PhotoBeforeEntity WHERE photo =:photoPath")
+    @Query("DELETE FROM PhotoBeforeEntity WHERE photoPath =:photoPath")
     fun delete1ProblemPhoto(photoPath: String)
 
     @Query("SELECT * FROM PhotoAfterEntity WHERE pointID =:id")
     fun findAfterPhotosById(id: Int): LiveData<List<PhotoAfterEntity>>
+
+    @Query("SELECT * FROM PhotoAfterEntity WHERE pointID =:id")
+    suspend fun findAfterPhotosByIdNoLv(id: Int): List<PhotoAfterEntity>
+
+    @Query("SELECT * FROM PhotoBeforeEntity WHERE pointID =:id")
+    suspend fun findBeforePhotosByIdNoLv(id: Int): List<PhotoBeforeEntity>
+
+    @Query("SELECT * FROM PhotoBeforeEntity WHERE pointID =:id")
+    suspend fun findProblemPhotosByIdNoLv(id: Int): List<PhotoProblemEntity>
 
     @Query("SELECT * FROM PhotoAfterEntity WHERE id =:id")
     fun find1AfterPhotoById(id: Int): LiveData<PhotoAfterEntity>

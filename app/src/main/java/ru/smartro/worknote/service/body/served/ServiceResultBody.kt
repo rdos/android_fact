@@ -6,5 +6,5 @@ import com.google.gson.annotations.SerializedName
 
 data class ServiceResultBody(
     @SerializedName("ps")
-    val ps: List<ContainerPoint>
+    val ps: List<ContainerPointServed>
 )

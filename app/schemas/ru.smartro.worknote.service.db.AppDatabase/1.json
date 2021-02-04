@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3ad0b3b815055dd2b3fc060d68727e58",
+    "identityHash": "16a5f528fa7154acdff9603f9c6daa31",
     "entities": [
       {
         "tableName": "TaskEntity",
@@ -58,7 +58,7 @@
       },
       {
         "tableName": "PhotoBeforeEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `pointID` INTEGER NOT NULL, `photo` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `pointID` INTEGER NOT NULL, `photoPath` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -73,8 +73,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "photo",
-            "columnName": "photo",
+            "fieldPath": "photoPath",
+            "columnName": "photoPath",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -90,7 +90,7 @@
       },
       {
         "tableName": "PhotoAfterEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `pointID` INTEGER NOT NULL, `photo` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `pointID` INTEGER NOT NULL, `photoPath` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -105,8 +105,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "photo",
-            "columnName": "photo",
+            "fieldPath": "photoPath",
+            "columnName": "photoPath",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -122,7 +122,7 @@
       },
       {
         "tableName": "ContainerInfoEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `containerId` INTEGER NOT NULL, `wo_id` INTEGER NOT NULL, `volume` INTEGER NOT NULL, `comment` TEXT NOT NULL, `o_id` INTEGER NOT NULL, `wayPointId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `containerId` INTEGER NOT NULL, `wo_id` INTEGER NOT NULL, `volume` REAL NOT NULL, `comment` TEXT NOT NULL, `o_id` INTEGER NOT NULL, `wayPointId` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -145,7 +145,7 @@
           {
             "fieldPath": "volume",
             "columnName": "volume",
-            "affinity": "INTEGER",
+            "affinity": "REAL",
             "notNull": true
           },
           {
@@ -224,7 +224,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3ad0b3b815055dd2b3fc060d68727e58')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '16a5f528fa7154acdff9603f9c6daa31')"
     ]
   }
 }

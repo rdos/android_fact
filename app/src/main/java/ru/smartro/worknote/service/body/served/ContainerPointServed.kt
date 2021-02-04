@@ -4,15 +4,15 @@ package ru.smartro.worknote.service.body.served
 import com.google.gson.annotations.SerializedName
 
 
-data class ContainerPoint(
+data class ContainerPointServed(
     @SerializedName("beginned_at")
-    val beginnedAt: Int,
+    val beginnedAt: Long,
     @SerializedName("co")
     val co: List<Double>,
     @SerializedName("cs")
-    val cs: List<ContainerInfo>,
+    val cs: List<ContainerInfoServed>,
     @SerializedName("finished_at")
-    val finishedAt: Int,
+    val finishedAt: Long,
     @SerializedName("media_after")
     val mediaAfter: ArrayList<String>,
     @SerializedName("media_before")

@@ -12,18 +12,9 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/end_task_btn"
+        app:layout_constraintBottom_toTopOf="@id/complete_task_btn"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/choose_item" />
-
-    <Button
-        android:id="@+id/end_task_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_red_dark"
-        android:text="@string/end_task"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toTopOf="@id/complete_task_btn" />
 
     <Button
         android:id="@+id/complete_task_btn"

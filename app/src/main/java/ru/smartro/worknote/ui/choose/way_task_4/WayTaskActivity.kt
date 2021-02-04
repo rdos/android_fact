@@ -78,7 +78,6 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                         .observe(this, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
-                                    val wayPoints = ArrayList<WayPoint>()
                                     loadingHide()
                                     AppPreferences.thisUserHasTask = true
                                     val wayTaskJsonString = Gson().toJson(selectedWayInfo)

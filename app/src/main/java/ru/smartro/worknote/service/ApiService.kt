@@ -6,9 +6,11 @@ import ru.smartro.worknote.service.body.AuthBody
 import ru.smartro.worknote.service.body.ProgressBody
 import ru.smartro.worknote.service.body.WayListBody
 import ru.smartro.worknote.service.body.WayTaskBody
+import ru.smartro.worknote.service.body.served.ServiceResultBody
 import ru.smartro.worknote.service.response.EmptyResponse
 import ru.smartro.worknote.service.response.auth.AuthResponse
 import ru.smartro.worknote.service.response.organisation.OrganisationResponse
+import ru.smartro.worknote.service.response.served.ServedResponse
 import ru.smartro.worknote.service.response.vehicle.VehicleResponse
 import ru.smartro.worknote.service.response.way_list.WayListResponse
 import ru.smartro.worknote.service.response.way_task.WayTaskResponse
@@ -21,16 +23,19 @@ interface ApiService {
     @GET("owner")
     suspend fun getOwners(): Response<OrganisationResponse>
 
-    @GET("fact/vehicle")
+    @GET("vehicle")
     suspend fun getVehicle(@Query("o") organisationId: Int): Response<VehicleResponse>
 
-    @POST("fact/waybill")
+    @POST("waybill")
     suspend fun getWayList(@Body body: WayListBody): Response<WayListResponse>
 
-    @POST("fact/waybill/{id}")
+    @POST("waybill/{id}")
     suspend fun getWayTask(@Path("id") wayId: Int, @Body wayTaskBody: WayTaskBody): Response<WayTaskResponse>
 
-    @POST("fact/workorder/{id}/progress")
+    @POST("served")
+    suspend fun served(@Body body: ServiceResultBody): Response<ServedResponse>
+
+    @POST("workorder/{id}/progress")
     suspend fun progress(@Path("id") id: Int, @Body time: ProgressBody): Response<EmptyResponse>
 
     /* @Multipart

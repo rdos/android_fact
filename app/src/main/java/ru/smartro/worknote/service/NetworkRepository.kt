@@ -7,6 +7,7 @@ import ru.smartro.worknote.service.body.AuthBody
 import ru.smartro.worknote.service.body.ProgressBody
 import ru.smartro.worknote.service.body.WayListBody
 import ru.smartro.worknote.service.body.WayTaskBody
+import ru.smartro.worknote.service.body.served.ServiceResultBody
 
 class NetworkRepository(private val context: Context) {
     fun auth(model: AuthBody) = liveData(Dispatchers.IO) {
@@ -18,6 +19,22 @@ class NetworkRepository(private val context: Context) {
                 }
                 else -> {
                     emit(Resource.error("Неверный логин или пароль", null))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
+    fun served(body: ServiceResultBody) = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context).apiService(true).served(body)
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body()))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
         } catch (e: Exception) {

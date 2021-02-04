@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.activity_enter_container_info_acitivty.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.PercentAdapter
+import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.db.entity.container_info.ContainerInfoEntity
 import ru.smartro.worknote.service.response.way_task.ContainerInfo
@@ -33,16 +34,20 @@ class EnterContainerInfoActivity : AppCompatActivity() {
             finish()
         }
         save_btn.setOnClickListener {
-            saveContainerInfo()
-            val intent = Intent()
-            intent.putExtra("filledContainer", 1)
-            setResult(Activity.RESULT_OK, intent)
-            finish()
+            if (percentAdapter.getSelectedCount() != -1.00) {
+                saveContainerInfo()
+                val intent = Intent()
+                intent.putExtra("filledContainer", 1)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            } else {
+                toast("Выберите один из вариантов заполненности")
+            }
         }
     }
 
     private fun saveContainerInfo() {
-        val container = ContainerInfoEntity(id = 0, containerId = containerInfo.id, comment = comment_et.text.toString(), o_id = AppPreferences.organisationId, volume = percentAdapter.getSelectedCount(), wo_id = AppPreferences.wayTaskId, wayPointId = wayPointId)
+        val container = ContainerInfoEntity(id = 0, containerId = containerInfo.id, comment = comment_et.text.toString(), o_id = AppPreferences.organisationId, volume = percentAdapter.getSelectedCount(), wo_id = AppPreferences.wayListId, wayPointId = wayPointId)
         viewModel.insertContainer(container)
     }
 

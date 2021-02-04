@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin_default"
@@ -23,14 +24,14 @@
             android:id="@+id/title_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="28dp"
             android:gravity="center"
             android:text="Досрочное завершение"
             android:textColor="@color/black"
             android:textSize="24sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/image_view" />
-
+            app:layout_constraintTop_toBottomOf="@id/image_view"
+            tools:layout_editor_absoluteX="0dp" />
 
         <TextView
             android:id="@+id/content_tv"
@@ -39,7 +40,7 @@
             android:layout_marginHorizontal="@dimen/margin_default"
             android:layout_marginTop="@dimen/margin_default"
             android:gravity="center"
-            android:text="@string/accept_task"
+            android:text="@string/early_complate"
             android:textColor="@color/black"
             android:textSize="18sp"
             app:layout_constraintTop_toBottomOf="@id/title_tv" />

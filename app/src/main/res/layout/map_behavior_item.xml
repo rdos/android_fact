@@ -20,6 +20,7 @@
             android:layout_height="56dp"
             android:layout_margin="@dimen/margin_default"
             android:alpha="0.4"
+            android:visibility="gone"
             android:src="@drawable/ic_check"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

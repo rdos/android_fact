@@ -28,8 +28,6 @@ class PercentAdapter(private val context: Context, private val items: ArrayList<
     }
 
     override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
-        val organisation = items[position]
-
         @Suppress("DEPRECATION")
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             val display = context.display
@@ -66,11 +64,22 @@ class PercentAdapter(private val context: Context, private val items: ArrayList<
         }
     }
 
-    fun getSelectedCount(): Int {
-        return if (checkedPosition != -1) {
-            items[checkedPosition]
+    fun getSelectedCount(): Double {
+        return (if (checkedPosition != -1) {
+            toPercent(items[checkedPosition])
         } else {
-            -1
+            -1.00
+        })
+    }
+
+    private fun toPercent(percent: Int): Double {
+        return when (percent) {
+            0 -> 0.00
+            25 -> 0.25
+            50 -> 0.50
+            75 -> 0.75
+            100 -> 1.00
+            else -> 1.25
         }
     }
 

@@ -12,7 +12,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.listener.ImageClickListener
 import ru.smartro.worknote.base.GenericRecyclerAdapter
 import ru.smartro.worknote.base.ViewHolder
-import ru.smartro.worknote.service.db.entity.co_service.PhotoBeforeEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoBeforeEntity
 
 
 class PhotoBeforeAdapter(private val listener: ImageClickListener, val context: Context, items: ArrayList<PhotoBeforeEntity>) : GenericRecyclerAdapter<PhotoBeforeEntity>(items) {
@@ -32,15 +32,15 @@ class PhotoBeforeAdapter(private val listener: ImageClickListener, val context: 
         holder.itemView.item_imageview.layoutParams.width = outMetrics.widthPixels / 3
 
         holder.itemView.item_remove.setOnClickListener {
-            listener.imageRemoveClicked(item.photo)
+            listener.imageRemoveClicked(item.photoPath)
         }
 
         holder.itemView.item_imageview.setOnClickListener {
-            listener.imageDetailClicked(item.photo)
+            listener.imageDetailClicked(item.photoPath)
         }
         val myOptions = RequestOptions().override(100, 100)
 
-        Glide.with(holder.itemView).asBitmap().apply(myOptions).load(item.photo)
+        Glide.with(holder.itemView).asBitmap().apply(myOptions).load(item.photoPath)
             .into(holder.itemView.item_imageview)
     }
 

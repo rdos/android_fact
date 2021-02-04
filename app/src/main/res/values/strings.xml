@@ -40,4 +40,5 @@
     <string name="service_after">Фотографии после обслуживания КП</string>
     <string name="end_task">Досрочное завершение</string>
     <string name="problem">Проблема</string>
+    <string name="early_complate">При досрочном завершении рейса все оставшиеся контейнерые площадки будут отмечены как невывезенные</string>
 </resources>

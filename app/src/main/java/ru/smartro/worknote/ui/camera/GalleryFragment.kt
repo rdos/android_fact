@@ -18,7 +18,7 @@ import ru.smartro.worknote.adapter.listener.ImageClickListener
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningDelete
-import ru.smartro.worknote.service.db.entity.co_service.PhotoBeforeEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoBeforeEntity
 import ru.smartro.worknote.ui.point_service.PointServiceViewModel
 import ru.smartro.worknote.util.PhotoTypeEnum
 

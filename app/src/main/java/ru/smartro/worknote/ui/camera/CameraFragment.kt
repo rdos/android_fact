@@ -18,6 +18,7 @@ package ru.smartro.worknote.ui.camera
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -46,15 +47,19 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.db.entity.co_service.PhotoAfterEntity
-import ru.smartro.worknote.service.db.entity.co_service.PhotoBeforeEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoAfterEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoBeforeEntity
 import ru.smartro.worknote.service.response.way_task.WayPoint
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
@@ -306,28 +311,44 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) 
 
         val controls = View.inflate(requireContext(), R.layout.camera_ui_container, hostLayout)
 
+        //кнопка отправить в камере. Определения для чего делается фото
         controls.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
-            when (photoFor) {
-                PhotoTypeEnum.forBeforeMedia -> {
-                    viewModel.findBeforePhoto(wayPoint.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                            if (it.isNullOrEmpty()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                when (photoFor) {
+                    PhotoTypeEnum.forBeforeMedia -> {
+                        if (viewModel.findBeforePhotosByIdNoLv(wayPoint.id).isNullOrEmpty()) {
+                            withContext(Dispatchers.Main) {
                                 toast("Сделайте фото")
-                            } else {
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
                                 requireActivity().finish()
                             }
-                        })
-                }
-                PhotoTypeEnum.forAfterMedia -> {
-                    viewModel.findAfterPhoto(wayPoint.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                            if (it.isNullOrEmpty()) {
+                        }
+                    }
+                    PhotoTypeEnum.forAfterMedia -> {
+                        if (viewModel.findAfterPhotosByIdNoLv(wayPoint.id).isNullOrEmpty()) {
+                            withContext(Dispatchers.Main) {
                                 toast("Сделайте фото")
-                            } else {
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                requireActivity().setResult(Activity.RESULT_OK)
                                 requireActivity().finish()
                             }
-                        })
-                }
-                PhotoTypeEnum.forProblemMedia -> {
-
+                        }
+                    }
+                    PhotoTypeEnum.forProblemMedia -> {
+                        if (viewModel.findProblemPhotosByIdNoLv(wayPoint.id).isNullOrEmpty()) {
+                            withContext(Dispatchers.Main) {
+                                toast("Сделайте фото")
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                requireActivity().finish()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -358,11 +379,11 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) 
 
                             when (photoFor) {
                                 PhotoTypeEnum.forAfterMedia -> {
-                                    val afterPhoto = PhotoAfterEntity(id = 0, photo = photoFile.absolutePath, pointID = wayPoint.id)
+                                    val afterPhoto = PhotoAfterEntity(id = 0, photoPath = photoFile.absolutePath, pointID = wayPoint.id)
                                     viewModel.insertAfterPhoto(afterPhoto)
                                 }
                                 PhotoTypeEnum.forBeforeMedia -> {
-                                    val beforePhoto = PhotoBeforeEntity(id = 0, photo = photoFile.absolutePath, pointID = wayPoint.id)
+                                    val beforePhoto = PhotoBeforeEntity(id = 0, photoPath = photoFile.absolutePath, pointID = wayPoint.id)
                                     viewModel.insertBeforePhoto(beforePhoto)
                                 }
                                 PhotoTypeEnum.forProblemMedia -> {

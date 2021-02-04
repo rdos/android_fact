@@ -4,10 +4,11 @@ import androidx.lifecycle.LiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.smartro.worknote.service.db.entity.co_service.PhotoAfterEntity
-import ru.smartro.worknote.service.db.entity.co_service.PhotoBeforeEntity
 import ru.smartro.worknote.service.db.entity.container_info.ContainerInfoEntity
 import ru.smartro.worknote.service.db.entity.container_info.WayPointEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoAfterEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoBeforeEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoProblemEntity
 import ru.smartro.worknote.service.db.entity.way_task.WayTaskJsonEntity
 import java.io.File
 
@@ -55,8 +56,26 @@ class RoomRepository(private val dao: RoomDao) {
         return dao.findContainerInfo()
     }
 
+    suspend fun findContainerInfoNOLV(): List<ContainerInfoEntity> {
+        return dao.findContainerInfoNOLV()
+    }
+
     fun findBeforePhotosById(id: Int): LiveData<List<PhotoBeforeEntity>> {
         return dao.findBeforePhotosById(id)
+    }
+
+    suspend fun findBeforePhotosByIdNoLv(id: Int): List<PhotoBeforeEntity> {
+        return dao.findBeforePhotosByIdNoLv(id)
+
+    }
+
+    suspend fun findProblemPhotosByIdNoLv(id: Int): List<PhotoProblemEntity> {
+        return dao.findProblemPhotosByIdNoLv(id)
+    }
+
+
+    suspend fun findAfterPhotosByIdNoLv(id: Int): List<PhotoAfterEntity> {
+        return dao.findAfterPhotosByIdNoLv(id)
     }
 
     fun find1BeforePhotoById(id: Int): LiveData<PhotoBeforeEntity> {

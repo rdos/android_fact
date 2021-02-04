@@ -6,12 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Environment
 import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import ru.smartro.worknote.R
@@ -102,10 +102,6 @@ object MyUtil {
         }
     }
 
-    fun enableBackButton(context: AppCompatActivity) {
-
-    }
-
     fun logout(context: Context) {
         val intent = Intent(context, AuthActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -118,6 +114,23 @@ object MyUtil {
         bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val b: ByteArray = baos.toByteArray()
         return Base64.encodeToString(b, Base64.DEFAULT)
+    }
+
+    fun getFileToByte(filePath: String?): String {
+        val bmp: Bitmap?
+        val bos: ByteArrayOutputStream?
+        val bt: ByteArray?
+        var encodeString = ""
+        try {
+            bmp = BitmapFactory.decodeFile(filePath)
+            bos = ByteArrayOutputStream()
+            bmp.compress(Bitmap.CompressFormat.JPEG, 30, bos)
+            bt = bos.toByteArray()
+            encodeString = Base64.encodeToString(bt, Base64.DEFAULT)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return "data:image/png;base64,$encodeString"
     }
 
 }

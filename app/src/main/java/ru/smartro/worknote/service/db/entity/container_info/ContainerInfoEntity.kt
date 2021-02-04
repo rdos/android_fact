@@ -9,7 +9,7 @@ class ContainerInfoEntity(
     val id : Int,
     val containerId: Int,
     val wo_id: Int,
-    val volume: Int,
+    val volume: Double,
     val comment: String,
     val o_id: Int,
     val wayPointId : Int

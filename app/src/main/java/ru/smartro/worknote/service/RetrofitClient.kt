@@ -58,7 +58,7 @@ class RetrofitClient(context: Context) {
 
     fun apiService(isWorkNote: Boolean): ApiService {
         return if (isWorkNote)
-            retrofit("https://worknote-back.stage.smartro.ru/api/").create(ApiService::class.java)
+            retrofit("https://worknote-back.stage.smartro.ru/api/fact/").create(ApiService::class.java)
         else
             retrofit("https://auth.stage.smartro.ru/api/").create(ApiService::class.java)
     }

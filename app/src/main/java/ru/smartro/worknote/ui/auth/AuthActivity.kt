@@ -21,7 +21,6 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
         actionBar?.title = "Вход в систему"
-
         if (AppPreferences.isLogined) {
             if (AppPreferences.thisUserHasTask) {
                 startActivity(Intent(this, MapActivity::class.java))

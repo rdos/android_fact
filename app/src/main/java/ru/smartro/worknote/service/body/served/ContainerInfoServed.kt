@@ -4,13 +4,13 @@ package ru.smartro.worknote.service.body.served
 import com.google.gson.annotations.SerializedName
 
 
-data class ContainerInfo(
+data class ContainerInfoServed(
     @SerializedName("c_id")
     val cId: Int,
     @SerializedName("comment")
     val comment: String,
     @SerializedName("oid")
-    val oid: String,
+    val oid: Int,
     @SerializedName("volume")
     val volume: Double,
     @SerializedName("wo_id")
