@@ -38,6 +38,9 @@ interface ApiService {
     @POST("workorder/{id}/progress")
     suspend fun progress(@Path("id") id: Int, @Body time: ProgressBody): Response<EmptyResponse>
 
+    @POST("workorder/{id}/progress")
+    suspend fun complete(@Path("id") id: Int, @Body time: ProgressBody): Response<EmptyResponse>
+
     /* @Multipart
      @POST("card/file/{id}")
      suspend fun sendImage(

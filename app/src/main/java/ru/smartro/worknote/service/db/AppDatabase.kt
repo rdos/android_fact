@@ -4,11 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ru.smartro.worknote.service.db.entity.container_service.PhotoAfterEntity
-import ru.smartro.worknote.service.db.entity.container_service.PhotoBeforeEntity
 import ru.smartro.worknote.service.db.entity.container_info.ContainerInfoEntity
 import ru.smartro.worknote.service.db.entity.container_info.WayPointEntity
-
+import ru.smartro.worknote.service.db.entity.container_service.PhotoAfterEntity
+import ru.smartro.worknote.service.db.entity.container_service.PhotoBeforeEntity
 import ru.smartro.worknote.service.db.entity.task.TaskEntity
 import ru.smartro.worknote.service.db.entity.way_task.WayTaskJsonEntity
 
@@ -23,6 +22,7 @@ import ru.smartro.worknote.service.db.entity.way_task.WayTaskJsonEntity
         WayPointEntity::class
     ], version = 1
 )
+
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dbDao(): RoomDao
 

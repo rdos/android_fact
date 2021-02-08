@@ -108,7 +108,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
             val afterMedia = arrayListOf<String>()
 
             for (containerInfoEntity in viewModel.findContainerInfoNOLV()) {
-                cs.add(ContainerInfoServed(cId = containerInfoEntity.id, volume = containerInfoEntity.volume, comment = containerInfoEntity.comment, oid = containerInfoEntity.o_id, woId = containerInfoEntity.wo_id))
+                cs.add(ContainerInfoServed(cId = containerInfoEntity.containerId, volume = containerInfoEntity.volume, comment = containerInfoEntity.comment, oid = containerInfoEntity.o_id, woId = AppPreferences.wayTaskId))
             }
             for (photoBeforeEntity in viewModel.findBeforePhotosByIdNoLv(wayPoint.id)) {
                 beforeMedia.add(MyUtil.getFileToByte(photoBeforeEntity.photoPath))
@@ -117,7 +117,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
                 afterMedia.add(MyUtil.getFileToByte(photoAfterEntity.photoPath))
             }
             val servedPoint = ContainerPointServed(
-                beginnedAt = AppPreferences.serviceStartedAt, co = wayPoint.coordinate, cs = cs, woId = AppPreferences.wayListId,
+                beginnedAt = AppPreferences.serviceStartedAt, co = wayPoint.coordinate, cs = cs, woId = AppPreferences.wayTaskId,
                 oid = AppPreferences.organisationId, finishedAt = System.currentTimeMillis() / 1000L, mediaAfter = afterMedia, mediaBefore = beforeMedia, pId = wayPoint.id
             )
             val ps = ArrayList<ContainerPointServed>()
@@ -130,7 +130,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
                     .observe(this@PointServiceActivity, Observer { result ->
                         when (result.status) {
                             Status.SUCCESS -> {
-                                toast("Заверешено!")
+                                toast("Успешно отправлен!")
                                 loadingHide()
                                 finish()
                             }

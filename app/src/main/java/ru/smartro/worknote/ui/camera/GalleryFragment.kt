@@ -46,6 +46,7 @@ class GalleryFragment(private val containerId: Int, private val photoFor: Int) :
                     Log.d(TAG, "findBeforePhoto: ${Gson().toJson(it)}")
                 })
             }
+
             PhotoTypeEnum.forAfterMedia -> {
                 activity?.actionBar?.title = getString(R.string.service_after)
                 image_title.text = getString(R.string.service_after)
@@ -54,6 +55,7 @@ class GalleryFragment(private val containerId: Int, private val photoFor: Int) :
                     Log.d(TAG, "findAfterPhoto: ${Gson().toJson(it)}")
                 })
             }
+
             PhotoTypeEnum.forProblemMedia -> {
                 activity?.actionBar?.title = getString(R.string.service_before)
                 image_title.text = getString(R.string.service_before)
@@ -62,6 +64,7 @@ class GalleryFragment(private val containerId: Int, private val photoFor: Int) :
                     Log.d(TAG, "findBeforePhoto: ${Gson().toJson(it)}")
                 })
             }
+
         }
     }
 
