@@ -5,17 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import io.realm.RealmList
 import kotlinx.android.synthetic.main.activity_enter_container_info_acitivty.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.PercentAdapter
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.db.entity.container_info.ContainerInfoEntity
-import ru.smartro.worknote.service.response.way_task.ContainerInfo
+import ru.smartro.worknote.service.db.entity.container_service.ServedContainerInfoEntity
+import ru.smartro.worknote.service.db.entity.way_task.ContainerInfoEntity
 
 class EnterContainerInfoActivity : AppCompatActivity() {
-    private lateinit var containerInfo: ContainerInfo
+    private lateinit var containerInfo: ContainerInfoEntity
     private lateinit var percentAdapter: PercentAdapter
     private val viewModel: PointServiceViewModel by viewModel()
     private var wayPointId = 0
@@ -24,7 +25,7 @@ class EnterContainerInfoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_enter_container_info_acitivty)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.let {
-            containerInfo = it.getSerializableExtra("container_info") as ContainerInfo
+            containerInfo = it.getSerializableExtra("container_info") as ContainerInfoEntity
             wayPointId = it.getIntExtra("wayPointId", 0)
         }
         supportActionBar?.title = containerInfo.number
@@ -47,8 +48,19 @@ class EnterContainerInfoActivity : AppCompatActivity() {
     }
 
     private fun saveContainerInfo() {
-        val container = ContainerInfoEntity(id = 0, containerId = containerInfo.id, comment = comment_et.text.toString(), o_id = AppPreferences.organisationId, volume = percentAdapter.getSelectedCount(), wo_id = AppPreferences.wayListId, wayPointId = wayPointId)
-        viewModel.insertContainer(container)
+        viewModel.beginTransaction()
+        val servedContainerInfoEntity = viewModel.findServedPointEntity(wayPointId)
+        val container = ServedContainerInfoEntity(
+            cId = containerInfo.id, comment = comment_et.text.toString(), oid = AppPreferences.organisationId,
+            volume = percentAdapter.getSelectedCount(), woId = AppPreferences.wayListId
+        )
+        if (servedContainerInfoEntity.cs == null) {
+            servedContainerInfoEntity.cs = RealmList<ServedContainerInfoEntity>()
+            servedContainerInfoEntity.cs!!.add(container)
+        } else {
+            servedContainerInfoEntity.cs!!.add(container)
+        }
+        viewModel.commitTransaction()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

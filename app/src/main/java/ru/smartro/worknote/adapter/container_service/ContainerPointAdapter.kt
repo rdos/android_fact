@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import io.realm.RealmList
 import kotlinx.android.synthetic.main.choose_item.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.db.entity.container_info.ContainerInfoEntity
-import ru.smartro.worknote.service.response.way_task.ContainerInfo
+import ru.smartro.worknote.service.db.entity.way_task.ContainerInfoEntity
 
-class ContainerPointAdapter(private val listener: ContainerPointClickListener, private val items: ArrayList<ContainerInfo>, private val filletContainers: List<ContainerInfoEntity>) :
+class ContainerPointAdapter(private val listener: ContainerPointClickListener, private val items: RealmList<ContainerInfoEntity>) :
     RecyclerView.Adapter<ContainerPointAdapter.OwnerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
@@ -25,16 +25,16 @@ class ContainerPointAdapter(private val listener: ContainerPointClickListener, p
 
     override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
         val data = items[position]
-        holder.itemView.choose_title.text = data.number
+        holder.itemView.choose_title.text = data!!.number
 
-        if (equal(filletContainers, items[position])) {
+        if (data.isComplete) {
             holder.itemView.choose_status.isVisible = true
             holder.itemView.setOnClickListener {
                 Log.d("ContainerPointAdapter", "onBindViewHolder: true")
             }
         } else {
             holder.itemView.setOnClickListener {
-                listener.startContainerPointService(item = items[position])
+                listener.startContainerPointService(item = items[position]!!)
                 Log.d("ContainerPointAdapter", "onBindViewHolder: false")
             }
         }
@@ -45,15 +45,7 @@ class ContainerPointAdapter(private val listener: ContainerPointClickListener, p
 
     }
 
-    private fun equal(filletContainers: List<ContainerInfoEntity>, item: ContainerInfo): Boolean {
-        var bool = false
-        for (filletContainer in filletContainers) {
-            bool = filletContainer.containerId == item.id
-        }
-        return bool
-    }
-
     interface ContainerPointClickListener {
-        fun startContainerPointService(item: ContainerInfo)
+        fun startContainerPointService(item: ContainerInfoEntity)
     }
 }

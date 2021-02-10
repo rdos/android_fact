@@ -51,6 +51,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import io.realm.RealmList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,9 +59,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.db.entity.container_service.PhotoAfterEntity
-import ru.smartro.worknote.service.db.entity.container_service.PhotoBeforeEntity
-import ru.smartro.worknote.service.response.way_task.WayPoint
+import ru.smartro.worknote.service.db.entity.way_task.WayPointEntity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
@@ -73,7 +72,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) : Fragment() {
+class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEntity) : Fragment() {
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
     private val IMMERSIVE_FLAG_TIMEOUT = 500L
@@ -226,57 +225,37 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) 
         // Get screen metrics used to setup camera for full screen resolution
         val metrics = DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }
         Log.d(TAG, "Screen metrics: ${metrics.widthPixels} x ${metrics.heightPixels}")
-
         val screenAspectRatio = aspectRatio(metrics.widthPixels, metrics.heightPixels)
         Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
-
         val rotation = viewFinder.display.rotation
-
-        // CameraProvider
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
 
-        // CameraSelector
         val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
-        // Preview
         preview = Preview.Builder()
-            // We request aspect ratio but no resolution
             .setTargetAspectRatio(screenAspectRatio)
-            // Set initial target rotation
             .setTargetRotation(rotation)
             .build()
 
         // ImageCapture
         imageCapture = ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-            // We request aspect ratio but no resolution to match preview config, but letting
-            // CameraX optimize for whatever specific resolution best fits our use cases
             .setTargetAspectRatio(screenAspectRatio)
-            // Set initial target rotation, we will have to call this again if rotation changes
-            // during the lifecycle of this use case
             .setTargetRotation(rotation)
             .build()
 
         // ImageAnalysis
         imageAnalyzer = ImageAnalysis.Builder()
-            // We request aspect ratio but no resolution
             .setTargetAspectRatio(screenAspectRatio)
-            // Set initial target rotation, we will have to call this again if rotation changes
-            // during the lifecycle of this use case
             .setTargetRotation(rotation)
             .build()
-        // The analyzer can then be assigned to the instance
-        // Must unbind the use-cases before rebinding them
         cameraProvider.unbindAll()
 
         try {
-            // A variable number of use-cases can be passed here -
-            // camera provides access to CameraControl & CameraInfo
             camera = cameraProvider.bindToLifecycle(
                 this, cameraSelector, preview, imageCapture, imageAnalyzer
             )
-
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(viewFinder.surfaceProvider)
         } catch (exc: Exception) {
@@ -284,17 +263,6 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) 
         }
     }
 
-    /**
-     *  [androidx.camera.core.ImageAnalysisConfig] requires enum value of
-     *  [androidx.camera.core.AspectRatio]. Currently it has values of 4:3 & 16:9.
-     *
-     *  Detecting the most suitable ratio for dimensions provided in @params by counting absolute
-     *  of preview ratio to one of the provided values.
-     *
-     *  @param width - preview width
-     *  @param height - preview height
-     *  @return suitable aspect ratio
-     */
     private fun aspectRatio(width: Int, height: Int): Int {
         val previewRatio = max(width, height).toDouble() / min(width, height)
         if (abs(previewRatio - RATIO_4_3_VALUE) <= abs(previewRatio - RATIO_16_9_VALUE)) {
@@ -312,11 +280,12 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) 
         val controls = View.inflate(requireContext(), R.layout.camera_ui_container, hostLayout)
 
         //кнопка отправить в камере. Определения для чего делается фото
+        val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
         controls.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 when (photoFor) {
                     PhotoTypeEnum.forBeforeMedia -> {
-                        if (viewModel.findBeforePhotosByIdNoLv(wayPoint.id).isNullOrEmpty()) {
+                        if (servedPointEntity.mediaBefore == null) {
                             withContext(Dispatchers.Main) {
                                 toast("Сделайте фото")
                             }
@@ -327,7 +296,7 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) 
                         }
                     }
                     PhotoTypeEnum.forAfterMedia -> {
-                        if (viewModel.findAfterPhotosByIdNoLv(wayPoint.id).isNullOrEmpty()) {
+                        if (servedPointEntity.mediaAfter == null) {
                             withContext(Dispatchers.Main) {
                                 toast("Сделайте фото")
                             }
@@ -339,15 +308,16 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) 
                         }
                     }
                     PhotoTypeEnum.forProblemMedia -> {
-                        if (viewModel.findProblemPhotosByIdNoLv(wayPoint.id).isNullOrEmpty()) {
-                            withContext(Dispatchers.Main) {
-                                toast("Сделайте фото")
-                            }
-                        } else {
-                            withContext(Dispatchers.Main) {
-                                requireActivity().finish()
-                            }
-                        }
+                        //Проблемы
+                        /*         if (viewModel.findProblemPhotosByIdNoLv(wayPoint.id).isNullOrEmpty()) {
+                                     withContext(Dispatchers.Main) {
+                                         toast("Сделайте фото")
+                                     }
+                                 } else {
+                                     withContext(Dispatchers.Main) {
+                                         requireActivity().finish()
+                                     }
+                                 }*/
                     }
                 }
             }
@@ -376,20 +346,26 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 setGalleryThumbnail(savedUri)
                             }
-
+                            val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
+                            viewModel.beginTransaction()
                             when (photoFor) {
                                 PhotoTypeEnum.forAfterMedia -> {
-                                    val afterPhoto = PhotoAfterEntity(id = 0, photoPath = photoFile.absolutePath, pointID = wayPoint.id)
-                                    viewModel.insertAfterPhoto(afterPhoto)
+                                    if (servedPointEntity.mediaAfter == null) {
+                                        servedPointEntity.mediaAfter = RealmList()
+                                    }
+                                    servedPointEntity.mediaAfter!!.add(photoFile.absolutePath)
                                 }
                                 PhotoTypeEnum.forBeforeMedia -> {
-                                    val beforePhoto = PhotoBeforeEntity(id = 0, photoPath = photoFile.absolutePath, pointID = wayPoint.id)
-                                    viewModel.insertBeforePhoto(beforePhoto)
+                                    if (servedPointEntity.mediaBefore == null) {
+                                        servedPointEntity.mediaBefore = RealmList()
+                                    }
+                                    servedPointEntity.mediaBefore!!.add(photoFile.absolutePath)
                                 }
                                 PhotoTypeEnum.forProblemMedia -> {
 
                                 }
                             }
+                            viewModel.commitTransaction()
                         }
                     })
 
@@ -409,15 +385,15 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPoint) 
             val fragment: GalleryFragment
             when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
-                    fragment = GalleryFragment(containerId = wayPoint.id, photoFor = PhotoTypeEnum.forBeforeMedia)
+                    fragment = GalleryFragment(wayPointId = wayPoint.id!!, photoFor = PhotoTypeEnum.forBeforeMedia)
                     fragment.show(childFragmentManager, "GalleryFragment")
                 }
                 PhotoTypeEnum.forAfterMedia -> {
-                    fragment = GalleryFragment(containerId = wayPoint.id, photoFor = PhotoTypeEnum.forAfterMedia)
+                    fragment = GalleryFragment(wayPointId = wayPoint.id!!, photoFor = PhotoTypeEnum.forAfterMedia)
                     fragment.show(childFragmentManager, "GalleryFragment")
                 }
                 PhotoTypeEnum.forProblemMedia -> {
-                    fragment = GalleryFragment(containerId = wayPoint.id, photoFor = PhotoTypeEnum.forProblemMedia)
+                    fragment = GalleryFragment(wayPointId = wayPoint.id!!, photoFor = PhotoTypeEnum.forProblemMedia)
                     fragment.show(childFragmentManager, "GalleryFragment")
                 }
             }

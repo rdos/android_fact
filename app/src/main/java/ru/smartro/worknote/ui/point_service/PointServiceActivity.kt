@@ -22,30 +22,45 @@ import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningCameraShow
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.Status
-import ru.smartro.worknote.service.body.served.ContainerInfoServed
-import ru.smartro.worknote.service.body.served.ContainerPointServed
-import ru.smartro.worknote.service.body.served.ServiceResultBody
-import ru.smartro.worknote.service.response.way_task.ContainerInfo
-import ru.smartro.worknote.service.response.way_task.WayPoint
+import ru.smartro.worknote.service.db.entity.container_service.ServedPointEntity
+import ru.smartro.worknote.service.db.entity.way_task.ContainerInfoEntity
+import ru.smartro.worknote.service.db.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.network.Status
+import ru.smartro.worknote.service.network.body.served.ContainerInfoServed
+import ru.smartro.worknote.service.network.body.served.ContainerPointServed
+import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 
 
 class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.ContainerPointClickListener {
-    private lateinit var wayPoint: WayPoint
+    private val TAG = "PointServiceActivity"
+    private lateinit var wayPoint: WayPointEntity
     private val viewModel: PointServiceViewModel by viewModel()
+    private var pointEntityId: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_container_service)
         intent.let {
-            wayPoint = it.getSerializableExtra("container") as WayPoint
+            wayPoint = it.getSerializableExtra("container") as WayPointEntity
         }
         supportActionBar?.title = "${wayPoint.address}"
+        createPointEntity()
         initContainer()
         initBeforeMedia()
         initAfterMedia()
+    }
+
+    private fun createPointEntity() {
+        pointEntityId = viewModel.findLastId(ServedPointEntity::class.java, "id")!!
+        val emptyPointEntity = ServedPointEntity(
+            beginnedAt = System.currentTimeMillis() / 1000L, finishedAt = null,
+            mediaBefore = null, mediaAfter = null, oid = AppPreferences.organisationId, woId = AppPreferences.wayTaskId,
+            cs = null, co = wayPoint.coordinate, pId = wayPoint.id
+        )
+        viewModel.insertOrUpdateServedPoint(emptyPointEntity)
     }
 
     private fun initBeforeMedia() {
@@ -62,9 +77,6 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
     }
 
     private fun initAfterMedia() {
-        viewModel.findContainerInfo().observe(this, Observer {
-            Log.d("8r8f", "initContainer: ${Gson().toJson(it)}")
-            if (it.size == wayPoint.containerInfo.size) {
                 complete_task_btn.isVisible = true
                 complete_task_btn.setOnClickListener {
                     warningCameraShow("Сделайте фото КП после обслуживания").run {
@@ -75,20 +87,15 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
                             startActivityForResult(intent, 13)
                             loadingHide()
                         }
-                    }
                 }
             }
-        })
     }
 
     private fun initContainer() {
-        viewModel.findContainerInfo().observe(this, Observer {
-            Log.d("8r8f", "initContainer: ${Gson().toJson(it)}")
-            point_service_rv.adapter = ContainerPointAdapter(this, wayPoint.containerInfo as ArrayList<ContainerInfo>, it)
-        })
+        point_service_rv.adapter = ContainerPointAdapter(this, wayPoint.containerInfo!!)
     }
 
-    override fun startContainerPointService(item: ContainerInfo) {
+    override fun startContainerPointService(item: ContainerInfoEntity) {
         val intent = Intent(this, EnterContainerInfoActivity::class.java)
         intent.putExtra("container_info", item)
         intent.putExtra("wayPointId", wayPoint.id)
@@ -103,25 +110,26 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
     private fun sendServedPoint() {
         loadingShow()
         lifecycleScope.launch(Dispatchers.IO) {
+            val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
             val cs = ArrayList<ContainerInfoServed>()
             val beforeMedia = arrayListOf<String>()
             val afterMedia = arrayListOf<String>()
 
-            for (containerInfoEntity in viewModel.findContainerInfoNOLV()) {
-                cs.add(ContainerInfoServed(cId = containerInfoEntity.containerId, volume = containerInfoEntity.volume, comment = containerInfoEntity.comment, oid = containerInfoEntity.o_id, woId = AppPreferences.wayTaskId))
+            for (photoBeforeEntity in servedPointEntity.mediaAfter!!) {
+                beforeMedia.add(MyUtil.getFileToByte(photoBeforeEntity))
             }
-            for (photoBeforeEntity in viewModel.findBeforePhotosByIdNoLv(wayPoint.id)) {
-                beforeMedia.add(MyUtil.getFileToByte(photoBeforeEntity.photoPath))
+
+            for (photoAfterEntity in servedPointEntity.mediaAfter!!) {
+                afterMedia.add(MyUtil.getFileToByte(photoAfterEntity))
             }
-            for (photoAfterEntity in viewModel.findAfterPhotosByIdNoLv(wayPoint.id)) {
-                afterMedia.add(MyUtil.getFileToByte(photoAfterEntity.photoPath))
-            }
+
             val servedPoint = ContainerPointServed(
-                beginnedAt = AppPreferences.serviceStartedAt, co = wayPoint.coordinate, cs = cs, woId = AppPreferences.wayTaskId,
-                oid = AppPreferences.organisationId, finishedAt = System.currentTimeMillis() / 1000L, mediaAfter = afterMedia, mediaBefore = beforeMedia, pId = wayPoint.id
+                beginnedAt = AppPreferences.serviceStartedAt, co = wayPoint.coordinate!!, cs = cs, woId = AppPreferences.wayTaskId,
+                oid = AppPreferences.organisationId, finishedAt = System.currentTimeMillis() / 1000L, mediaAfter = afterMedia, mediaBefore = beforeMedia, pId = wayPoint.id!!
             )
             val ps = ArrayList<ContainerPointServed>()
             ps.add(servedPoint)
+
             val serviceResultBody = ServiceResultBody(ps)
 
             withContext(Dispatchers.Main) {

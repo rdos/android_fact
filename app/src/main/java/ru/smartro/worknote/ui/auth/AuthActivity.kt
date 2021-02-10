@@ -9,8 +9,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.Status
-import ru.smartro.worknote.service.body.AuthBody
+import ru.smartro.worknote.service.network.Status
+import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import ru.smartro.worknote.ui.map.MapActivity
 

@@ -5,13 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import io.realm.RealmList
 import kotlinx.android.synthetic.main.map_behavior_item.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.db.entity.container_info.ContainerInfoEntity
-import ru.smartro.worknote.service.response.way_task.WayPoint
+import ru.smartro.worknote.service.db.entity.way_task.WayPointEntity
 
-class WayPointAdapter(private val listener: ContainerClickListener, private val items: ArrayList<WayPoint>, private val filledContainers: List<ContainerInfoEntity>) :
-    RecyclerView.Adapter<WayPointAdapter.OwnerViewHolder>() {
+class WayPointAdapter(private val listener: ContainerClickListener, private val items: RealmList<WayPointEntity>) : RecyclerView.Adapter<WayPointAdapter.OwnerViewHolder>() {
     private var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
@@ -36,19 +35,13 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
             }
         }
 
-        holder.itemView.map_behavior_address.text = item.name
+        holder.itemView.map_behavior_address.text = item!!.name
         holder.itemView.map_behavior_scrp_id.text = item.srpId.toString()
-        holder.itemView.map_behavior_container_count.text = "${item.containerInfo.size} контейнер"
+        holder.itemView.map_behavior_container_count.text = "${item!!.containerInfo!!.size} контейнер"
 
-        //получаем все контейнеры по этой точке
-        val currentPointFilledContainers = ArrayList<ContainerInfoEntity>()
-        for (filledContainer in filledContainers) {
-            if (filledContainer.wayPointId == items[position].id)
-                currentPointFilledContainers.add(filledContainer)
-        }
 
         //сравниваем заполненные контейнеры с сохраненными с сервера. Если кол-во совпадает, значит данная точка заполнена
-        if (currentPointFilledContainers.size == items[position].containerInfo.size) {
+        if (items[position]!!.isComplete) {
             holder.itemView.map_behavior_status.isVisible = true
             holder.itemView.setOnClickListener {
                 //nothing
@@ -58,7 +51,7 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
                 if (checkedPosition != holder.adapterPosition) {
                     holder.itemView.map_behavior_expl.expand()
                     holder.itemView.map_behavior_start_service.setOnClickListener {
-                        listener.startPointService(item)
+                        listener.startPointService(item!!)
                     }
                     notifyItemChanged(checkedPosition)
                     checkedPosition = holder.adapterPosition
@@ -72,6 +65,6 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
 
 
     interface ContainerClickListener {
-        fun startPointService(item: WayPoint)
+        fun startPointService(item: WayPointEntity)
     }
 }

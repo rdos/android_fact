@@ -8,7 +8,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.choose_item.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.response.way_task.WayInfo
+import ru.smartro.worknote.service.network.response.way_task.WayInfo
 
 class WayTaskAdapter(private val items: ArrayList<WayInfo>, val listener: SelectListener) :
     RecyclerView.Adapter<WayTaskAdapter.OwnerViewHolder>() {

@@ -1,6 +1,6 @@
 package ru.smartro.worknote.util
 
-import ru.smartro.worknote.service.response.way_task.WayPoint
+import ru.smartro.worknote.service.network.response.way_task.WayPoint
 
 class ArrayUtil {
     fun getContainerFromArray(x: Double, y: Double, list: List<WayPoint>): WayPoint? {

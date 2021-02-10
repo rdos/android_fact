@@ -8,7 +8,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.choose_item.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.response.vehicle.Vehicle
+import ru.smartro.worknote.service.network.response.vehicle.Vehicle
 
 class VehicleAdapter(private val items: ArrayList<Vehicle>) :
     RecyclerView.Adapter<VehicleAdapter.OwnerViewHolder>() {

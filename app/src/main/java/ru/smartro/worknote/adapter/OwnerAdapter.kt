@@ -8,7 +8,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.choose_item.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.response.organisation.Organisation
+import ru.smartro.worknote.service.network.response.organisation.Organisation
 
 class OwnerAdapter(private val items: ArrayList<Organisation>) :
     RecyclerView.Adapter<OwnerAdapter.OwnerViewHolder>() {

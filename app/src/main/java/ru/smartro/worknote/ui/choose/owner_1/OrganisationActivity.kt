@@ -17,8 +17,8 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.Status
-import ru.smartro.worknote.service.response.organisation.Organisation
+import ru.smartro.worknote.service.network.Status
+import ru.smartro.worknote.service.network.response.organisation.Organisation
 import ru.smartro.worknote.ui.choose.vehicle_2.VehicleActivity
 import ru.smartro.worknote.util.MyUtil
 

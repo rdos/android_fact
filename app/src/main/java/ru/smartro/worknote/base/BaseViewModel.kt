@@ -6,15 +6,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import ru.smartro.worknote.service.NetworkRepository
-import ru.smartro.worknote.service.db.AppDatabase
-import ru.smartro.worknote.service.db.RoomRepository
+import ru.smartro.worknote.service.db.RealmRepository
+import ru.smartro.worknote.service.network.NetworkRepository
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application),
     CoroutineScope {
     protected val network = NetworkRepository(application.applicationContext)
-    protected val db = RoomRepository(AppDatabase.instance(application).dbDao())
+    protected val db = RealmRepository(application.applicationContext)
 
     private val job: Job = SupervisorJob()
 

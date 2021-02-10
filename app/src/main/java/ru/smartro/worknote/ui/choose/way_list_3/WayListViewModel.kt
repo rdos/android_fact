@@ -3,9 +3,9 @@ package ru.smartro.worknote.ui.choose.way_list_3
 import android.app.Application
 import androidx.lifecycle.LiveData
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.Resource
-import ru.smartro.worknote.service.body.WayListBody
-import ru.smartro.worknote.service.response.way_list.WayListResponse
+import ru.smartro.worknote.service.network.body.WayListBody
+import ru.smartro.worknote.service.network.Resource
+import ru.smartro.worknote.service.network.response.way_list.WayListResponse
 
 class WayListViewModel(application: Application) : BaseViewModel(application) {
 

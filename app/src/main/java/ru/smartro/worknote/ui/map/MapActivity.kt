@@ -5,11 +5,8 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.gson.Gson
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
@@ -20,21 +17,23 @@ import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.image.ImageProvider
+import io.realm.RealmList
+import io.realm.RealmObjectChangeListener
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.behavior_points.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.WayPointAdapter
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.response.way_task.WayInfo
-import ru.smartro.worknote.service.response.way_task.WayPoint
+import ru.smartro.worknote.service.db.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.db.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.ui.point_service.PointServiceActivity
 
 
 class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, UserLocationObjectListener, MapObjectTapListener, WayPointAdapter.ContainerClickListener {
     private val TAG = "MapActivity"
     private val viewModel: MapViewModel by viewModel()
+    private lateinit var wayTaskEntity: WayTaskEntity
     private lateinit var userLocationLayer: UserLocationLayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,11 +41,10 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
         setContentView(R.layout.activity_map)
-        viewModel.findWayTaskJsonByUser(AppPreferences.userLogin).observe(this, Observer {
-            val wayInfo = Gson().fromJson(it.wayTaskJson, WayInfo::class.java)
-            Log.d(TAG, it.wayTaskJson)
-            initMapView(wayInfo)
-            initBottomBehavior(wayInfo)
+        wayTaskEntity = viewModel.findWayTask()
+        wayTaskEntity.addChangeListener(RealmObjectChangeListener<WayTaskEntity> { it, changeSet ->
+            initMapView(it)
+            initBottomBehavior(it)
         })
         initUserLocation()
     }
@@ -81,19 +79,18 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         }
     }
 
-    private fun initMapView(wayInfo: WayInfo) {
-        val clusterizedCollection: ClusterizedPlacemarkCollection =
-            map_view.map.mapObjects.addClusterizedPlacemarkCollection(this)
+    private fun initMapView(wayInfo: WayTaskEntity) {
+        val clusterizedCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(this)
         val imageProvider = ImageProvider.fromResource(this, R.drawable.search_result)
-        clusterizedCollection.addPlacemarks(createPoints(wayInfo.points), imageProvider, IconStyle())
+        clusterizedCollection.addPlacemarks(createPoints(wayInfo.points!!), imageProvider, IconStyle())
         clusterizedCollection.addTapListener(this)
         clusterizedCollection.clusterPlacemarks(60.0, 15)
     }
 
-    private fun createPoints(list: List<ru.smartro.worknote.service.response.way_task.WayPoint>): List<Point> {
+    private fun createPoints(list: RealmList<WayPointEntity>): List<Point> {
         val pointsArrayList = ArrayList<Point>()
         for (p in list) {
-            pointsArrayList.add(Point(p.coordinate[0], p.coordinate[1]))
+            pointsArrayList.add(Point(p.coordinate?.get(0)!!, p.coordinate!![1]!!))
         }
         return pointsArrayList
     }
@@ -140,11 +137,9 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         return true
     }
 
-    private fun initBottomBehavior(wayInfo: WayInfo) {
+    private fun initBottomBehavior(wayInfo: WayTaskEntity) {
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-        viewModel.findContainerInfo().observe(this, Observer {
-            map_behavior_rv.adapter = WayPointAdapter(this, wayInfo.points as ArrayList<WayPoint>, it)
-        })
+        map_behavior_rv.adapter = WayPointAdapter(this, wayInfo.points!!)
         map_behavior_header.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -153,7 +148,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         }
     }
 
-    override fun startPointService(item: WayPoint) {
+    override fun startPointService(item: WayPointEntity) {
         val intent = Intent(this, PointServiceActivity::class.java)
         intent.putExtra("container", item)
         startActivity(intent)

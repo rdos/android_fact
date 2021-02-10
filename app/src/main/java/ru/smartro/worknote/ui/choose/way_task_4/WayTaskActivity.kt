@@ -17,13 +17,12 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.Status
-import ru.smartro.worknote.service.body.ProgressBody
-import ru.smartro.worknote.service.body.WayTaskBody
-import ru.smartro.worknote.service.db.entity.way_task.WayTaskJsonEntity
-import ru.smartro.worknote.service.response.way_task.WayPoint
-import ru.smartro.worknote.service.response.way_task.WayInfo
-import ru.smartro.worknote.service.response.way_task.WayTaskResponse
+import ru.smartro.worknote.service.db.entity.way_task.WayTaskEntity
+import ru.smartro.worknote.service.network.Status
+import ru.smartro.worknote.service.network.body.ProgressBody
+import ru.smartro.worknote.service.network.body.WayTaskBody
+import ru.smartro.worknote.service.network.response.way_task.WayInfo
+import ru.smartro.worknote.service.network.response.way_task.WayTaskResponse
 import ru.smartro.worknote.ui.map.MapActivity
 
 class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
@@ -80,9 +79,9 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                                 Status.SUCCESS -> {
                                     loadingHide()
                                     AppPreferences.thisUserHasTask = true
-                                    val wayTaskJsonString = Gson().toJson(selectedWayInfo)
-                                    val entity = WayTaskJsonEntity(AppPreferences.userLogin, wayTaskJsonString)
-                                    viewModel.insertWayTaskJson(entity)
+                                    val convertedToJson = Gson().toJson(selectedWayInfo)
+                                    val wayTaskEntityFromJson = Gson().fromJson(convertedToJson, WayTaskEntity::class.java)
+                                    viewModel.insertWayTask(wayTaskEntityFromJson)
                                     dialog.dismiss()
                                     startActivity(Intent(this, MapActivity::class.java))
                                     finish()

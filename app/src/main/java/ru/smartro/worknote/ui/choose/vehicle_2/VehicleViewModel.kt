@@ -3,8 +3,8 @@ package ru.smartro.worknote.ui.choose.vehicle_2
 import android.app.Application
 import androidx.lifecycle.LiveData
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.Resource
-import ru.smartro.worknote.service.response.vehicle.VehicleResponse
+import ru.smartro.worknote.service.network.Resource
+import ru.smartro.worknote.service.network.response.vehicle.VehicleResponse
 
 class VehicleViewModel(application: Application) : BaseViewModel(application) {
 
