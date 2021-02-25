@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.map_behavior_item.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.db.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 
 class WayPointAdapter(private val listener: ContainerClickListener, private val items: RealmList<WayPointEntity>) : RecyclerView.Adapter<WayPointAdapter.OwnerViewHolder>() {
     private var checkedPosition = -1
@@ -36,8 +36,8 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
         }
 
         holder.itemView.map_behavior_address.text = item!!.name
-        holder.itemView.map_behavior_scrp_id.text = item.srpId.toString()
-        holder.itemView.map_behavior_container_count.text = "${item!!.containerInfo!!.size} контейнер"
+        holder.itemView.map_behavior_scrp_id.text = item.srp_id.toString()
+        holder.itemView.map_behavior_container_count.text = "${item!!.cs!!.size} контейнер"
 
 
         //сравниваем заполненные контейнеры с сохраненными с сервера. Если кол-во совпадает, значит данная точка заполнена
@@ -51,7 +51,7 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
                 if (checkedPosition != holder.adapterPosition) {
                     holder.itemView.map_behavior_expl.expand()
                     holder.itemView.map_behavior_start_service.setOnClickListener {
-                        listener.startPointService(item!!)
+                        listener.startPointService(item)
                     }
                     notifyItemChanged(checkedPosition)
                     checkedPosition = holder.adapterPosition

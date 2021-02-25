@@ -1,12 +1,14 @@
 package ru.smartro.worknote.ui.map
 
-import ClusterIcon
+import android.app.Activity
 import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.gson.Gson
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
@@ -18,20 +20,21 @@ import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.image.ImageProvider
 import io.realm.RealmList
-import io.realm.RealmObjectChangeListener
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.behavior_points.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.WayPointAdapter
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.db.entity.way_task.WayPointEntity
-import ru.smartro.worknote.service.db.entity.way_task.WayTaskEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.ui.point_service.PointServiceActivity
+import ru.smartro.worknote.util.ClusterIcon
 
 
 class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, UserLocationObjectListener, MapObjectTapListener, WayPointAdapter.ContainerClickListener {
-    private val TAG = "MapActivity"
+    private val POINT_SERVICE_CODE = 10
+    private val TAG = "MapActivity_LOG"
     private val viewModel: MapViewModel by viewModel()
     private lateinit var wayTaskEntity: WayTaskEntity
     private lateinit var userLocationLayer: UserLocationLayer
@@ -42,10 +45,9 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         MapKitFactory.initialize(this)
         setContentView(R.layout.activity_map)
         wayTaskEntity = viewModel.findWayTask()
-        wayTaskEntity.addChangeListener(RealmObjectChangeListener<WayTaskEntity> { it, changeSet ->
-            initMapView(it)
-            initBottomBehavior(it)
-        })
+        Log.d(TAG, "onCreate: wayTaskEntity ${Gson().toJson(wayTaskEntity)} ")
+        initMapView()
+        initBottomBehavior()
         initUserLocation()
     }
 
@@ -79,18 +81,31 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         }
     }
 
-    private fun initMapView(wayInfo: WayTaskEntity) {
+    private fun initMapView() {
+        val wayInfo = viewModel.findWayTask()
         val clusterizedCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(this)
-        val imageProvider = ImageProvider.fromResource(this, R.drawable.search_result)
-        clusterizedCollection.addPlacemarks(createPoints(wayInfo.points!!), imageProvider, IconStyle())
+        val completedIcon = ImageProvider.fromResource(this, R.drawable.ic_green_marker)
+        val notCompletedIcon = ImageProvider.fromResource(this, R.drawable.ic_blue_marker)
+        clusterizedCollection.addPlacemarks(createPoints(wayInfo.p!!, true), completedIcon, IconStyle())
+        clusterizedCollection.addPlacemarks(createPoints(wayInfo.p!!, false), notCompletedIcon, IconStyle())
         clusterizedCollection.addTapListener(this)
         clusterizedCollection.clusterPlacemarks(60.0, 15)
     }
 
-    private fun createPoints(list: RealmList<WayPointEntity>): List<Point> {
+    private fun createPoints(list: RealmList<WayPointEntity>, isCompletedMarks: Boolean): List<Point> {
         val pointsArrayList = ArrayList<Point>()
-        for (p in list) {
-            pointsArrayList.add(Point(p.coordinate?.get(0)!!, p.coordinate!![1]!!))
+        // возвращает законченные метки
+        if (isCompletedMarks) {
+            for (p in list) {
+                if (p.isComplete)
+                    pointsArrayList.add(Point(p.co?.get(0)!!, p.co!![1]!!))
+            }
+            // возвращает НЕ законченные метки
+        } else {
+            for (p in list) {
+                if (!p.isComplete)
+                    pointsArrayList.add(Point(p.co?.get(0)!!, p.co!![1]!!))
+            }
         }
         return pointsArrayList
     }
@@ -113,7 +128,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
     }
 
     override fun onClusterTap(cluster: Cluster): Boolean {
-
+        map_view.map.move(CameraPosition(cluster.appearance.geometry, 14.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
         return true
     }
 
@@ -125,21 +140,24 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
     }
 
     override fun onObjectRemoved(p0: UserLocationView) {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
     }
 
     override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
     }
 
     override fun onMapObjectTap(p0: MapObject, p1: Point): Boolean {
-
+        // клик по точке на карте
+        //TODO("Not yet implemented")
         return true
     }
 
-    private fun initBottomBehavior(wayInfo: WayTaskEntity) {
+    private fun initBottomBehavior() {
+        val wayInfo = viewModel.findWayTask()
+
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-        map_behavior_rv.adapter = WayPointAdapter(this, wayInfo.points!!)
+        map_behavior_rv.adapter = WayPointAdapter(this, wayInfo.p!!)
         map_behavior_header.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -150,7 +168,16 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
 
     override fun startPointService(item: WayPointEntity) {
         val intent = Intent(this, PointServiceActivity::class.java)
-        intent.putExtra("container", item)
-        startActivity(intent)
+        val itemJson = Gson().toJson(item)
+        intent.putExtra("container", itemJson)
+        startActivityForResult(intent, POINT_SERVICE_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == POINT_SERVICE_CODE && resultCode == Activity.RESULT_OK) {
+            initMapView()
+            initBottomBehavior()
+        }
     }
 }

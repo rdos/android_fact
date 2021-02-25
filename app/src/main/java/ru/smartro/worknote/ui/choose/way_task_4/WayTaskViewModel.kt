@@ -2,8 +2,9 @@ package ru.smartro.worknote.ui.choose.way_task_4
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import io.realm.RealmModel
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.db.entity.way_task.WayTaskEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayTaskBody
@@ -24,6 +25,17 @@ class WayTaskViewModel(application: Application) : BaseViewModel(application) {
         return db.findWayTask()
     }
 
+    fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
+        return db.createObjectFromJson(clazz, json)
+    }
+
+    fun beginTransaction() {
+        db.beginTransaction()
+    }
+
+    fun commitTransaction() {
+        db.commitTransaction()
+    }
 /*
     fun insertWayTaskJson(entity: WayTaskJsonEntity) {
         db.insertWayTaskJson(entity)

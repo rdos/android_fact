@@ -6,7 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import ru.smartro.worknote.service.db.RealmRepository
+import ru.smartro.worknote.service.database.RealmRepository
 import ru.smartro.worknote.service.network.NetworkRepository
 import kotlin.coroutines.CoroutineContext
 

@@ -8,9 +8,10 @@ import android.view.KeyEvent
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.gson.Gson
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.FLAGS_FULLSCREEN
-import ru.smartro.worknote.service.db.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
 
@@ -21,19 +22,19 @@ private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 class CameraActivity : AppCompatActivity() {
     private var photoFor = 0
     private lateinit var hostLayout: FrameLayout
-    private lateinit var container: WayPointEntity
+    private lateinit var wayPoint: WayPointEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
         intent.let {
-            container = it.getSerializableExtra("container") as WayPointEntity
-            photoFor = it.getIntExtra("photoFor", container.id!!)
+            wayPoint = Gson().fromJson(it.getStringExtra("wayPoint"), WayPointEntity::class.java)
+            photoFor = it.getIntExtra("photoFor", wayPoint.id!!)
         }
 
         hostLayout = findViewById(R.id.fragment_container)
-        val cameraFragment = CameraFragment(photoFor, container)
+        val cameraFragment = CameraFragment(photoFor, wayPoint)
         supportFragmentManager.beginTransaction().run {
             this.replace(R.id.fragment_container, cameraFragment)
             this.addToBackStack(null)

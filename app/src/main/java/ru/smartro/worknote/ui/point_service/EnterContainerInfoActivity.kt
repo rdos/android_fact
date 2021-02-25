@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.activity_enter_container_info_acitivty.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -12,8 +13,8 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.PercentAdapter
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.db.entity.container_service.ServedContainerInfoEntity
-import ru.smartro.worknote.service.db.entity.way_task.ContainerInfoEntity
+import ru.smartro.worknote.service.database.entity.container_service.ServedContainerInfoEntity
+import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
 
 class EnterContainerInfoActivity : AppCompatActivity() {
     private lateinit var containerInfo: ContainerInfoEntity
@@ -25,7 +26,7 @@ class EnterContainerInfoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_enter_container_info_acitivty)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.let {
-            containerInfo = it.getSerializableExtra("container_info") as ContainerInfoEntity
+            containerInfo = Gson().fromJson(it.getStringExtra("container_info"), ContainerInfoEntity::class.java)
             wayPointId = it.getIntExtra("wayPointId", 0)
         }
         supportActionBar?.title = containerInfo.number
@@ -37,10 +38,6 @@ class EnterContainerInfoActivity : AppCompatActivity() {
         save_btn.setOnClickListener {
             if (percentAdapter.getSelectedCount() != -1.00) {
                 saveContainerInfo()
-                val intent = Intent()
-                intent.putExtra("filledContainer", 1)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
             } else {
                 toast("Выберите один из вариантов заполненности")
             }
@@ -54,13 +51,20 @@ class EnterContainerInfoActivity : AppCompatActivity() {
             cId = containerInfo.id, comment = comment_et.text.toString(), oid = AppPreferences.organisationId,
             volume = percentAdapter.getSelectedCount(), woId = AppPreferences.wayListId
         )
-        if (servedContainerInfoEntity.cs == null) {
-            servedContainerInfoEntity.cs = RealmList<ServedContainerInfoEntity>()
-            servedContainerInfoEntity.cs!!.add(container)
+        if (servedContainerInfoEntity?.cs == null) {
+            servedContainerInfoEntity?.cs = RealmList()
+            servedContainerInfoEntity?.cs!!.add(container)
         } else {
             servedContainerInfoEntity.cs!!.add(container)
         }
         viewModel.commitTransaction()
+
+        viewModel.completeContainerInfo(wayPointId, containerInfo.id!!)
+
+        val intent = Intent()
+        intent.putExtra("filledContainer", 1)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

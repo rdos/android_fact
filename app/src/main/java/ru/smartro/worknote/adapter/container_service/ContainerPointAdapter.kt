@@ -7,15 +7,15 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmList
-import kotlinx.android.synthetic.main.choose_item.view.*
+import kotlinx.android.synthetic.main.item_choose.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.db.entity.way_task.ContainerInfoEntity
+import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
 
 class ContainerPointAdapter(private val listener: ContainerPointClickListener, private val items: RealmList<ContainerInfoEntity>) :
     RecyclerView.Adapter<ContainerPointAdapter.OwnerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.choose_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_choose, parent, false)
         return OwnerViewHolder(view)
     }
 
@@ -26,7 +26,6 @@ class ContainerPointAdapter(private val listener: ContainerPointClickListener, p
     override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
         val data = items[position]
         holder.itemView.choose_title.text = data!!.number
-
         if (data.isComplete) {
             holder.itemView.choose_status.isVisible = true
             holder.itemView.setOnClickListener {
@@ -41,9 +40,7 @@ class ContainerPointAdapter(private val listener: ContainerPointClickListener, p
 
     }
 
-    class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    }
+    class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     interface ContainerPointClickListener {
         fun startContainerPointService(item: ContainerInfoEntity)

@@ -51,7 +51,9 @@
         <activity
             android:name=".ui.map.MapActivity"
             android:theme="@style/NoToolbar" />
-        <activity android:name=".ui.choose.way_task_4.WayTaskActivity" />
+        <activity
+            android:name=".ui.choose.way_task_4.WayTaskActivity"
+            android:noHistory="true" />
         <activity android:name=".ui.choose.way_list_3.WayListActivity" />
         <activity android:name=".ui.choose.vehicle_2.VehicleActivity" />
         <activity android:name=".ui.choose.owner_1.OrganisationActivity" />

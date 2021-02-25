@@ -1,3 +1,5 @@
+package ru.smartro.worknote.util
+
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color

@@ -47,19 +47,18 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import io.realm.RealmList
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.db.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
@@ -105,7 +104,6 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
     private val volumeDownReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.getIntExtra(KEY_EVENT_EXTRA, KeyEvent.KEYCODE_UNKNOWN)) {
-                // When the volume down button is pressed, simulate a shutter button click
                 KeyEvent.KEYCODE_VOLUME_DOWN -> {
                     val shutter = hostLayout
                         .findViewById<ImageButton>(R.id.camera_capture_button)
@@ -129,8 +127,6 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
 
     override fun onResume() {
         super.onResume()
-        // Make sure that all permissions are still present, since the
-        // user could have removed them while the app was in paused state.
         if (!MyUtil.hasPermissions(requireContext())) {
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         }
@@ -140,7 +136,6 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (PackageManager.PERMISSION_GRANTED == grantResults.firstOrNull()) {
-                // Take the user to the success fragment when permission is granted
                 Toast.makeText(context, "Разрешение принято", Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(context, "Разрешение отклонёно", Toast.LENGTH_LONG).show()
@@ -151,9 +146,7 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Shut down our background executor
         cameraExecutor.shutdown()
-        // Unregister the broadcast receivers and listeners
         broadcastManager.unregisterReceiver(volumeDownReceiver)
         displayManager.unregisterDisplayListener(displayListener)
     }
@@ -161,13 +154,10 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = inflater.inflate(R.layout.fragment_camera, container, false)
 
     private fun setGalleryThumbnail(uri: Uri) {
-        // Reference of the view that holds the gallery thumbnail
         val thumbnail = hostLayout.findViewById<ImageButton>(R.id.photo_view_button)
-        // Run the operations in the view's thread
         thumbnail.post {
             // Remove thumbnail padding
             thumbnail.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
-            // Load thumbnail into circular button using Glide
             Glide.with(thumbnail)
                 .load(uri)
                 .apply(RequestOptions.circleCropTransform())
@@ -180,18 +170,14 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
         super.onViewCreated(view, savedInstanceState)
         hostLayout = view as ConstraintLayout
         viewFinder = hostLayout.findViewById(R.id.view_finder)
-        // Initialize our background executor
         cameraExecutor = Executors.newSingleThreadExecutor()
         broadcastManager = LocalBroadcastManager.getInstance(view.context)
-        // Set up the intent filter that will receive events from our main activity
         val filter = IntentFilter().apply { addAction(KEY_EVENT_ACTION) }
         broadcastManager.registerReceiver(volumeDownReceiver, filter)
-        // Every time the orientation of device changes, update rotation for use cases
         displayManager.registerDisplayListener(displayListener, null)
         outputDirectory = CameraActivity.getOutputDirectory(requireContext())
         viewFinder.post {
             displayId = viewFinder.display.displayId
-            // Build UI controls
             updateCameraUi()
             setUpCamera()
         }
@@ -199,37 +185,29 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        // Redraw the camera UI controls
         updateCameraUi()
-        // Enable or disable switching between cameras
     }
 
-    /** Initialize CameraX, and prepare to bind the camera use cases  */
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(Runnable {
             // CameraProvider
             cameraProvider = cameraProviderFuture.get()
-            // Select lensFacing depending on the available cameras
             lensFacing = when {
                 hasFrontCamera() -> CameraSelector.LENS_FACING_BACK
                 else -> throw IllegalStateException("Back and front camera are unavailable")
             }
-            // Build and bind the camera use cases
             bindCameraUseCases()
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-    /** Declare and bind preview, capture and analysis use cases */
     private fun bindCameraUseCases() {
-        // Get screen metrics used to setup camera for full screen resolution
         val metrics = DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }
         Log.d(TAG, "Screen metrics: ${metrics.widthPixels} x ${metrics.heightPixels}")
         val screenAspectRatio = aspectRatio(metrics.widthPixels, metrics.heightPixels)
         Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
         val rotation = viewFinder.display.rotation
-        val cameraProvider = cameraProvider
-            ?: throw IllegalStateException("Camera initialization failed.")
+        val cameraProvider = cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
 
         val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
@@ -238,14 +216,13 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
             .setTargetRotation(rotation)
             .build()
 
-        // ImageCapture
         imageCapture = ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
             .build()
 
-        // ImageAnalysis
+
         imageAnalyzer = ImageAnalysis.Builder()
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
@@ -256,7 +233,6 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
             camera = cameraProvider.bindToLifecycle(
                 this, cameraSelector, preview, imageCapture, imageAnalyzer
             )
-            // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(viewFinder.surfaceProvider)
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
@@ -271,7 +247,6 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
         return AspectRatio.RATIO_16_9
     }
 
-    /** Method used to re-draw the camera UI controls, called every time configuration changes. */
     private fun updateCameraUi() {
         hostLayout.findViewById<ConstraintLayout>(R.id.camera_ui_container)?.let {
             hostLayout.removeView(it)
@@ -280,49 +255,32 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
         val controls = View.inflate(requireContext(), R.layout.camera_ui_container, hostLayout)
 
         //кнопка отправить в камере. Определения для чего делается фото
-        val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
         controls.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                when (photoFor) {
-                    PhotoTypeEnum.forBeforeMedia -> {
-                        if (servedPointEntity.mediaBefore == null) {
-                            withContext(Dispatchers.Main) {
-                                toast("Сделайте фото")
-                            }
-                        } else {
-                            withContext(Dispatchers.Main) {
-                                requireActivity().finish()
-                            }
-                        }
-                    }
-                    PhotoTypeEnum.forAfterMedia -> {
-                        if (servedPointEntity.mediaAfter == null) {
-                            withContext(Dispatchers.Main) {
-                                toast("Сделайте фото")
-                            }
-                        } else {
-                            withContext(Dispatchers.Main) {
-                                requireActivity().setResult(Activity.RESULT_OK)
-                                requireActivity().finish()
-                            }
-                        }
-                    }
-                    PhotoTypeEnum.forProblemMedia -> {
-                        //Проблемы
-                        /*         if (viewModel.findProblemPhotosByIdNoLv(wayPoint.id).isNullOrEmpty()) {
-                                     withContext(Dispatchers.Main) {
-                                         toast("Сделайте фото")
-                                     }
-                                 } else {
-                                     withContext(Dispatchers.Main) {
-                                         requireActivity().finish()
-                                     }
-                                 }*/
+            val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
+            Log.d(TAG, "ACCEPT BUTTON: ${Gson().toJson(servedPointEntity)}")
+            when (photoFor) {
+                PhotoTypeEnum.forBeforeMedia -> {
+                    if (servedPointEntity?.mediaBefore?.size == 0) {
+                        toast("Сделайте фото")
+                    } else {
+                        requireActivity().finish()
                     }
                 }
-            }
+                PhotoTypeEnum.forAfterMedia -> {
+                    if (servedPointEntity?.mediaAfter?.size == 0) {
+                        toast("Сделайте фото")
+                    } else {
+                        requireActivity().setResult(Activity.RESULT_OK)
+                        requireActivity().finish()
+                    }
+                    }
+                    PhotoTypeEnum.forProblemMedia -> {
+
+                    }
+                }
         }
         controls.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener {
+            Log.d(TAG, "updateCameraUi: CurrentThread ${Thread.currentThread()}")
             imageCapture?.let { imageCapture ->
                 val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
                 val metadata = Metadata().apply {
@@ -333,41 +291,24 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
                     .setMetadata(metadata)
                     .build()
 
-                imageCapture.takePicture(
-                    outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
-                        override fun onError(exc: ImageCaptureException) {
-                            Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                imageCapture.takePicture(outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
+                    override fun onError(exc: ImageCaptureException) {
+                        Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    }
+
+                    override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                        val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
+                        Log.d(TAG, "Photo capture succeeded: $savedUri path: ${savedUri.path}")
+                        Log.d(TAG, "Current thread: ${Thread.currentThread()}")
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            setGalleryThumbnail(savedUri)
                         }
-
-                        override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                            val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
-                            Log.d(TAG, "Photo capture succeeded: $savedUri path: ${savedUri.path}")
-
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                setGalleryThumbnail(savedUri)
-                            }
-                            val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
-                            viewModel.beginTransaction()
-                            when (photoFor) {
-                                PhotoTypeEnum.forAfterMedia -> {
-                                    if (servedPointEntity.mediaAfter == null) {
-                                        servedPointEntity.mediaAfter = RealmList()
-                                    }
-                                    servedPointEntity.mediaAfter!!.add(photoFile.absolutePath)
-                                }
-                                PhotoTypeEnum.forBeforeMedia -> {
-                                    if (servedPointEntity.mediaBefore == null) {
-                                        servedPointEntity.mediaBefore = RealmList()
-                                    }
-                                    servedPointEntity.mediaBefore!!.add(photoFile.absolutePath)
-                                }
-                                PhotoTypeEnum.forProblemMedia -> {
-
-                                }
-                            }
-                            viewModel.commitTransaction()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            viewModel.updatePhotoMediaOfServedPoint(photoFor, wayPoint.id!!, photoFile.absolutePath)
+                            Log.d(TAG, "wayPointId:${wayPoint.id} ")
                         }
-                    })
+                    }
+                })
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     hostLayout.postDelayed({
@@ -382,21 +323,8 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
 
         // Listener for button used to view the most recent photo
         controls.findViewById<ImageButton>(R.id.photo_view_button).setOnClickListener {
-            val fragment: GalleryFragment
-            when (photoFor) {
-                PhotoTypeEnum.forBeforeMedia -> {
-                    fragment = GalleryFragment(wayPointId = wayPoint.id!!, photoFor = PhotoTypeEnum.forBeforeMedia)
-                    fragment.show(childFragmentManager, "GalleryFragment")
-                }
-                PhotoTypeEnum.forAfterMedia -> {
-                    fragment = GalleryFragment(wayPointId = wayPoint.id!!, photoFor = PhotoTypeEnum.forAfterMedia)
-                    fragment.show(childFragmentManager, "GalleryFragment")
-                }
-                PhotoTypeEnum.forProblemMedia -> {
-                    fragment = GalleryFragment(wayPointId = wayPoint.id!!, photoFor = PhotoTypeEnum.forProblemMedia)
-                    fragment.show(childFragmentManager, "GalleryFragment")
-                }
-            }
+            val fragment = GalleryFragment(wayPointId = wayPoint.id!!, photoFor = photoFor)
+            fragment.show(childFragmentManager, "GalleryFragment")
         }
     }
 

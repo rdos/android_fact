@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -17,7 +18,7 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.db.entity.way_task.WayTaskEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayTaskBody
@@ -26,6 +27,7 @@ import ru.smartro.worknote.service.network.response.way_task.WayTaskResponse
 import ru.smartro.worknote.ui.map.MapActivity
 
 class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
+    private val TAG = "WayTaskActivity_LOG"
     private val viewModel: WayTaskViewModel by viewModel()
     private lateinit var adapter: WayTaskAdapter
     private lateinit var selectedWayInfo: WayInfo
@@ -78,10 +80,14 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                             when (result.status) {
                                 Status.SUCCESS -> {
                                     loadingHide()
+                                    viewModel.beginTransaction()
                                     AppPreferences.thisUserHasTask = true
                                     val convertedToJson = Gson().toJson(selectedWayInfo)
-                                    val wayTaskEntityFromJson = Gson().fromJson(convertedToJson, WayTaskEntity::class.java)
+                                    val wayTaskEntityFromJson = viewModel.createObjectFromJson(WayTaskEntity::class.java, convertedToJson)
+                                    Log.d(TAG, "1 CONVERT $convertedToJson")
+                                    Log.d(TAG, "2 CONVERT ${Gson().toJson(wayTaskEntityFromJson)}")
                                     viewModel.insertWayTask(wayTaskEntityFromJson)
+                                    viewModel.commitTransaction()
                                     dialog.dismiss()
                                     startActivity(Intent(this, MapActivity::class.java))
                                     finish()

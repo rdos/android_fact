@@ -1,4 +1,4 @@
-package ru.smartro.worknote.service.db.entity.way_task
+package ru.smartro.worknote.service.database.entity.way_task
 
 
 import io.realm.RealmList
@@ -13,13 +13,13 @@ open class WayTaskEntity(
     /**("accounting")**/
     var accounting: Int? = null,
     /** ("beginned_at")**/
-    var beginnedAt: String? = null,
+    var beginned_at: String? = null,
     /** ("finished_at")**/
-    var finishedAt: String? = null,
+    var finished_at: String? = null,
     /**  ("name")**/
     var name: String? = null,
     /**  ("p")**/
-    var points: RealmList<WayPointEntity>? = null,
+    var p: RealmList<WayPointEntity>? = null,
     /**  ("start")**/
     var start: WayStartPointEntity? = null,
     /**  ("unload")**/
@@ -28,7 +28,7 @@ open class WayTaskEntity(
 
 open class WayStartPointEntity(
     /** ("co")**/
-    var coordinates: RealmList<Double>? = null,
+    var co: RealmList<Double>? = null,
     /**  ("name")**/
     var name: String? = null
 ) : Serializable, RealmObject()
@@ -39,14 +39,13 @@ open class WayPointEntity(
     /** ("address")**/
     var address: String? = null,
     /**  ("co")**/
-    var coordinate: RealmList<Double>? = null,
+    var co: RealmList<Double>? = null,
     /** ("name")**/
     var name: String? = null,
     /**  ("cs")**/
-    var containerInfo: RealmList<ContainerInfoEntity>? = null,
+    var cs: RealmList<ContainerInfoEntity>? = null,
     /**  ("srp_id")**/
-    var srpId: Int? = null,
-
+    var srp_id: Int? = null,
     var isComplete: Boolean = false
 ) : Serializable, RealmObject()
 
@@ -65,10 +64,10 @@ open class ContainerInfoEntity(
     /** ("contacts")**/
     var contacts: String? = null,
     /**  ("is_active")**/
-    var isActive: Int? = null,
+    var is_active: Int? = null,
     /** ("number")**/
     var number: String? = null,
     /**("type_id")**/
-    var typeId: Int? = null,
+    var type_id: Int? = null,
     var isComplete: Boolean = false
 ) : Serializable, RealmObject()

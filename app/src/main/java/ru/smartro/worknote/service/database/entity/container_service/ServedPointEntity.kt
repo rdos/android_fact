@@ -1,4 +1,4 @@
-package ru.smartro.worknote.service.db.entity.container_service
+package ru.smartro.worknote.service.database.entity.container_service
 
 import io.realm.RealmList
 import io.realm.RealmObject

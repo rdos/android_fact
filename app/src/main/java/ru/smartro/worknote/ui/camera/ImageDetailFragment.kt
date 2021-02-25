@@ -16,10 +16,8 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.loadingHide
-import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningDelete
 import ru.smartro.worknote.ui.point_service.PointServiceViewModel
-import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
 
 
@@ -35,22 +33,10 @@ class ImageDetailFragment(private val wayPointId: Int, private val photoPath: St
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_AppCompat_Dialog)
         val image = BitmapFactory.decodeFile(photoPath)
         image_detail.setImageBitmap(image)
-        val servedPointEntity = viewModel.findServedPointEntity(wayPointId)
-
         image_detail_delete.setOnClickListener {
             warningDelete(getString(R.string.warning_detele)).run {
                 this.accept_btn.setOnClickListener {
-                    when (photoFor) {
-                        PhotoTypeEnum.forBeforeMedia -> {
-                            servedPointEntity.mediaBefore!!.remove(photoPath)
-                        }
-                        PhotoTypeEnum.forAfterMedia -> {
-                            servedPointEntity.mediaBefore!!.remove(photoPath)
-                        }
-                        PhotoTypeEnum.forProblemMedia -> {
-                            toast("В разработке")
-                        }
-                    }
+                    viewModel.removePhotoFromServedEntity(photoFor, photoPath, wayPointId)
                     lifecycleScope.launch(Dispatchers.IO) {
                         File(photoPath).delete()
                     }
