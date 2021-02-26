@@ -15,6 +15,7 @@ import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.container_service.ServedContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
+import ru.smartro.worknote.util.ContainerStatusEnum
 
 class EnterContainerInfoActivity : AppCompatActivity() {
     private lateinit var containerInfo: ContainerInfoEntity
@@ -37,14 +38,14 @@ class EnterContainerInfoActivity : AppCompatActivity() {
         }
         save_btn.setOnClickListener {
             if (percentAdapter.getSelectedCount() != -1.00) {
-                saveContainerInfo()
+                completeContainer()
             } else {
                 toast("Выберите один из вариантов заполненности")
             }
         }
     }
 
-    private fun saveContainerInfo() {
+    private fun completeContainer() {
         viewModel.beginTransaction()
         val servedContainerInfoEntity = viewModel.findServedPointEntity(wayPointId)
         val container = ServedContainerInfoEntity(
@@ -59,7 +60,7 @@ class EnterContainerInfoActivity : AppCompatActivity() {
         }
         viewModel.commitTransaction()
 
-        viewModel.completeContainerInfo(wayPointId, containerInfo.id!!)
+        viewModel.updateContainerStatus(wayPointId, containerInfo.id!!, ContainerStatusEnum.completed)
 
         val intent = Intent()
         intent.putExtra("filledContainer", 1)

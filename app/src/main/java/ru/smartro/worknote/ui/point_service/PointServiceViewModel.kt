@@ -15,8 +15,8 @@ class PointServiceViewModel(application: Application) : BaseViewModel(applicatio
         return network.served(body)
     }
 
-    fun completeContainerInfo(pointId: Int, containerId: Int) {
-        db.completeContainerInfo(pointId, containerId)
+    fun updateContainerStatus(pointId: Int, containerId: Int, status : Int) {
+        db.updateContainerStatus(pointId, containerId, status)
     }
 
     fun completePoint(pointId: Int) {

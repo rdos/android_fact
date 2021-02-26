@@ -17,12 +17,12 @@ class RealmRepository(val context: Context) {
         realm.insertOrUpdate(entity)
     }
 
-    fun completeContainerInfo(pointId: Int, containerId: Int) {
+    fun updateContainerStatus(pointId: Int, containerId: Int, status : Int) {
         val wayTaskEntity = realm.where(WayTaskEntity::class.java).findFirst()!!
         realm.beginTransaction()
         val pointEntity = wayTaskEntity.p!!.find { it.id == pointId }
         val containerEntity = pointEntity!!.cs!!.find { it.id == containerId }
-        containerEntity!!.isComplete = true
+        containerEntity!!.status = status
         realm.commitTransaction()
     }
 

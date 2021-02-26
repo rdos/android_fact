@@ -69,5 +69,5 @@ open class ContainerInfoEntity(
     var number: String? = null,
     /**("type_id")**/
     var type_id: Int? = null,
-    var isComplete: Boolean = false
+    var status: Int = 0
 ) : Serializable, RealmObject()

@@ -30,6 +30,7 @@ import ru.smartro.worknote.service.network.body.served.ContainerInfoServed
 import ru.smartro.worknote.service.network.body.served.ContainerPointServed
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 import ru.smartro.worknote.ui.camera.CameraActivity
+import ru.smartro.worknote.util.ContainerStatusEnum
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 
@@ -77,7 +78,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
     }
 
     private fun initAfterMedia() {
-        if (viewModel.findWayTask().p!!.find { it.id == wayPoint.id }?.cs!!.all{it.isComplete}) {
+        if (viewModel.findWayTask().p!!.find { it.id == wayPoint.id }?.cs!!.any{it.status != ContainerStatusEnum.empty}) {
             complete_task_btn.isVisible = true
             complete_task_btn.setOnClickListener {
                 warningCameraShow("Сделайте фото КП после обслуживания").run {
@@ -130,7 +131,6 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
             for (photoAfterEntity in servedPointEntity.mediaAfter!!) {
                 afterMedia.add(MyUtil.getFileToByte(photoAfterEntity))
             }
-
             val servedPoint = ContainerPointServed(
                 beginnedAt = AppPreferences.serviceStartedAt, co = wayPoint.co!!, cs = cs, woId = AppPreferences.wayTaskId,
                 oid = AppPreferences.organisationId, finishedAt = System.currentTimeMillis() / 1000L, mediaAfter = afterMedia, mediaBefore = beforeMedia, pId = wayPoint.id!!
@@ -140,11 +140,11 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
             ps.add(servedPoint)
 
             val serviceResultBody = ServiceResultBody(ps)
+            Log.d("served", "sendServedPoint: ${Gson().toJson(serviceResultBody)}")
 
             withContext(Dispatchers.Main) {
                 Log.d("served", "sendServedPoint: ${Gson().toJson(serviceResultBody)}")
-                viewModel.served(serviceResultBody)
-                    .observe(this@PointServiceActivity, Observer { result ->
+                viewModel.served(serviceResultBody).observe(this@PointServiceActivity, Observer { result ->
                         when (result.status) {
                             Status.SUCCESS -> {
                                 toast("Успешно отправлен!")
