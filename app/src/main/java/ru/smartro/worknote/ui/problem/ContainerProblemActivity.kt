@@ -13,9 +13,13 @@ import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_container_problem.*
+import kotlinx.android.synthetic.main.alert_warning_camera.view.accept_btn
+import kotlinx.android.synthetic.main.alert_warning_delete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.extensions.warningContainerFailure
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.problem.ContainerBreakdownEntity
 import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEntity
@@ -27,9 +31,9 @@ import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
 import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.failure.FailureItem
 import ru.smartro.worknote.ui.camera.CameraActivity
-import ru.smartro.worknote.util.ContainerStatusEnum
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
+import ru.smartro.worknote.util.StatusEnum
 
 class ContainerProblemActivity : AppCompatActivity() {
     private lateinit var breakDown: List<ContainerBreakdownEntity>
@@ -102,18 +106,22 @@ class ContainerProblemActivity : AppCompatActivity() {
                     if (problem_container_choose_problem.text.isNullOrEmpty()) {
                         problem_container_choose_problem_out.error = "Выберите проблему"
                     } else {
-                        sendBreakDown(media!!, breakDownId)
+                        sendBreakDown(media!!, breakDownId, container_problem_cant_tg.isChecked)
                     }
                 }
                 if (container_problem_cant_tg.isChecked) {
                     if (problem_container_choose_reason_cant.text.isNullOrEmpty()) {
                         problem_container_choose_problem_out.error = "Выберите причину невывоза"
                     } else {
-                        sendFailure(media!!, failReasonId)
-                        viewModel.updateContainerStatus(wayPoint.id!!, containerInfo.id!!, ContainerStatusEnum.failure)
+                        warningContainerFailure("${getString(R.string.container_fail)} Причина: ${problem_container_choose_reason_cant.text}").run {
+                            this.accept_btn.setOnClickListener {
+                                sendFailure(media!!, failReasonId)
+                            }
+                            this.dismiss_btn.setOnClickListener {
+                                loadingHide()
+                            }
+                        }
                     }
-                } else {
-                    viewModel.updateContainerStatus(wayPoint.id!!, containerInfo.id!!, ContainerStatusEnum.breakDown)
                 }
             } else {
                 toast("Выберите тип проблемы")
@@ -121,7 +129,7 @@ class ContainerProblemActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendBreakDown(media: List<String>, tId: Int) {
+    private fun sendBreakDown(media: List<String>, tId: Int, failure: Boolean) {
         val list = ArrayList<BreakDownItem>()
         val body = BreakDownItem(
             cId = containerInfo.id!!, allowed = listOf(1, 2), co = wayPoint.co!!, comment = container_problem_comment.text.toString(),
@@ -134,7 +142,11 @@ class ContainerProblemActivity : AppCompatActivity() {
             when (result.status) {
                 Status.SUCCESS -> {
                     toast("Успешно отправлен ${result.msg}")
-                    viewModel.updateContainerStatus(wayPoint.id!!, containerInfo.id!!, ContainerStatusEnum.breakDown)
+                    viewModel.updatePointStatus(wayPoint.id!!, StatusEnum.breakDown)
+                    viewModel.updateContainerStatus(wayPoint.id!!, containerInfo.id!!, StatusEnum.breakDown)
+                    if (!failure) {
+                        finish()
+                    }
                 }
                 Status.ERROR -> {
                     toast(result.msg)
@@ -157,7 +169,10 @@ class ContainerProblemActivity : AppCompatActivity() {
         viewModel.sendFailure(failureBody).observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
+                    viewModel.updatePointStatus(wayPoint.id!!, StatusEnum.failure)
                     toast("Успешно отправлен ${result.msg}")
+                    setResult(Activity.RESULT_CANCELED, null)
+                    finish()
                 }
                 Status.ERROR -> {
                     toast(result.msg)
@@ -177,6 +192,13 @@ class ContainerProblemActivity : AppCompatActivity() {
     }
 
     private fun initSelectors() {
+        val failReason = viewModel.findFailReason()
+        val failReasonString = failReason.map { it.reason }
+        problem_container_choose_reason_cant.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, failReasonString))
+        val breakdowns = viewModel.findBreakDown()
+        val breakdownsString = breakdowns.map { it.problem }
+        problem_container_choose_problem.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, breakdownsString))
+
         container_problem_break_tg.setOnCheckedChangeListener { compoundButton, check ->
             problem_container_choose_problem_out.isVisible = check
             problem_container_choose_problem.setText("")
@@ -185,15 +207,6 @@ class ContainerProblemActivity : AppCompatActivity() {
             } else {
                 container_problem_break_tg.setTextColor(Color.BLACK)
             }
-
-            val breakdowns = viewModel.findBreakDown()
-            val failReason = viewModel.findFailReason()
-            val breakdownsString = breakdowns.map { it.problem }
-            val failReasonString = failReason.map { it.reason }
-
-            problem_container_choose_problem.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, breakdownsString))
-            problem_container_choose_reason_cant.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, failReasonString))
-
             problem_container_choose_problem_out.setOnClickListener {
                 problem_container_choose_problem.showDropDown()
             }

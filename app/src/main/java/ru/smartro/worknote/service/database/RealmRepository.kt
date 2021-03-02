@@ -12,6 +12,7 @@ import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEn
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.service.database.livedata.LiveRealmObject
 import ru.smartro.worknote.util.PhotoTypeEnum
+import ru.smartro.worknote.util.StatusEnum
 
 class RealmRepository(val context: Context) {
     private val realm = Realm.getDefaultInstance()
@@ -47,6 +48,25 @@ class RealmRepository(val context: Context) {
         val containerEntity = pointEntity!!.cs!!.find { it.id == containerId }
         containerEntity!!.status = status
         realm.commitTransaction()
+    }
+
+    fun findContainerStatus(pointId: Int, containerId: Int): Int {
+        val wayTaskEntity = realm.where(WayTaskEntity::class.java).findFirst()!!
+        val pointEntity = wayTaskEntity.p!!.find { it.id == pointId }
+        val containerEntity = pointEntity!!.cs!!.find { it.id == containerId }
+        return containerEntity!!.status
+    }
+
+    fun pointHasBreakdown(pointId: Int): Boolean {
+        val wayTaskEntity = realm.where(WayTaskEntity::class.java).findFirst()!!
+        val pointEntity = wayTaskEntity.p!!.find { it.id == pointId }
+        return pointEntity!!.cs!!.any { it.status == StatusEnum.breakDown }
+    }
+
+    fun currentContainerStatus(pointId: Int, containerId: Int): Int {
+        val wayTaskEntity = realm.where(WayTaskEntity::class.java).findFirst()!!
+        val pointEntity = wayTaskEntity.p!!.find { it.id == pointId }
+        return pointEntity!!.cs!!.find { it.id == containerId }!!.status
     }
 
     fun addServedContainerInfo(container: ServedContainerInfoEntity, wayPointId: Int) {

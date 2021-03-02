@@ -9,7 +9,7 @@ import io.realm.RealmList
 import kotlinx.android.synthetic.main.map_behavior_item.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
-import ru.smartro.worknote.util.ContainerStatusEnum
+import ru.smartro.worknote.util.StatusEnum
 
 class WayPointAdapter(private val listener: ContainerClickListener, private val items: RealmList<WayPointEntity>) : RecyclerView.Adapter<WayPointAdapter.WayPointViewHolder>() {
     private var checkedPosition = -1
@@ -43,7 +43,7 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
 
 
         when (items[position]!!.status) {
-            ContainerStatusEnum.empty -> {
+            StatusEnum.empty -> {
                 holder.itemView.setOnClickListener {
                     if (checkedPosition != holder.adapterPosition) {
                         holder.itemView.map_behavior_expl.expand()
@@ -55,22 +55,29 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
                     }
                 }
             }
-            ContainerStatusEnum.completed -> {
+            StatusEnum.completed -> {
                 holder.itemView.map_behavior_status.isVisible = true
                 holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_check)
                 holder.itemView.setOnClickListener {
                     //nothing
                 }
             }
-            ContainerStatusEnum.breakDown -> {
+            StatusEnum.breakDown -> {
                 holder.itemView.map_behavior_status.isVisible = true
                 holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_red_check)
                 holder.itemView.setOnClickListener {
-                    //nothing
+                    if (checkedPosition != holder.adapterPosition) {
+                        holder.itemView.map_behavior_expl.expand()
+                        holder.itemView.map_behavior_start_service.setOnClickListener {
+                            listener.startPointService(item)
+                        }
+                        notifyItemChanged(checkedPosition)
+                        checkedPosition = holder.adapterPosition
+                    }
                 }
             }
 
-            ContainerStatusEnum.failure -> {
+            StatusEnum.failure -> {
                 holder.itemView.map_behavior_status.isVisible = true
                 holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_cancel)
                 holder.itemView.setOnClickListener {

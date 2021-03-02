@@ -16,9 +16,10 @@ import ru.smartro.worknote.service.database.entity.container_service.ServedConta
 import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.ui.problem.ContainerProblemActivity
-import ru.smartro.worknote.util.ContainerStatusEnum
+import ru.smartro.worknote.util.StatusEnum
 
 class EnterContainerInfoActivity : AppCompatActivity() {
+    private val REQUEST_EXIT = 41
     private lateinit var containerInfo: ContainerInfoEntity
     private lateinit var percentAdapter: PercentAdapter
     private lateinit var wayPoint: WayPointEntity
@@ -37,7 +38,7 @@ class EnterContainerInfoActivity : AppCompatActivity() {
             val intent = Intent(this, ContainerProblemActivity::class.java)
             intent.putExtra("wayPoint", Gson().toJson(wayPoint))
             intent.putExtra("container_info", Gson().toJson(containerInfo))
-            startActivity(intent)
+            startActivityForResult(intent, REQUEST_EXIT)
         }
         supportActionBar?.title = containerInfo.number
         percentAdapter = PercentAdapter(this, arrayListOf(0, 25, 50, 75, 100, 125))
@@ -60,7 +61,9 @@ class EnterContainerInfoActivity : AppCompatActivity() {
             volume = percentAdapter.getSelectedCount(), woId = AppPreferences.wayListId
         )
         viewModel.addServedContainerInfo(container, wayPointId)
-        viewModel.updateContainerStatus(wayPointId, containerInfo.id!!, ContainerStatusEnum.completed)
+        if (viewModel.currentContainerStatus(wayPoint.id!!, containerInfo.id!!) == StatusEnum.empty) {
+            viewModel.updateContainerStatus(wayPointId, containerInfo.id!!, StatusEnum.completed)
+        }
         val intent = Intent()
         intent.putExtra("filledContainer", 1)
         setResult(Activity.RESULT_OK, intent)
@@ -74,6 +77,14 @@ class EnterContainerInfoActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_EXIT && resultCode == RESULT_CANCELED) {
+            setResult(RESULT_CANCELED, null)
+            finish()
+        }
     }
 
 }

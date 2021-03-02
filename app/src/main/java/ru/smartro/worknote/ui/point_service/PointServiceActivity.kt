@@ -30,9 +30,9 @@ import ru.smartro.worknote.service.network.body.served.ContainerInfoServed
 import ru.smartro.worknote.service.network.body.served.ContainerPointServed
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 import ru.smartro.worknote.ui.camera.CameraActivity
-import ru.smartro.worknote.util.ContainerStatusEnum
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
+import ru.smartro.worknote.util.StatusEnum
 
 
 class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.ContainerPointClickListener {
@@ -78,7 +78,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
     }
 
     private fun initAfterMedia() {
-        if (viewModel.findWayTask().p!!.find { it.id == wayPoint.id }?.cs!!.any{it.status != ContainerStatusEnum.empty}) {
+        if (viewModel.findWayTask().p!!.find { it.id == wayPoint.id }?.cs!!.any { it.status != StatusEnum.empty }) {
             complete_task_btn.isVisible = true
             complete_task_btn.setOnClickListener {
                 warningCameraShow("Сделайте фото КП после обслуживания").run {
@@ -120,7 +120,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
     private fun sendServedPoint() {
         loadingShow()
         val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
-        val isBreakDownPoint = viewModel.findWayTask().p!!.find { it.id == wayPoint.id }?.cs?.any { it.status == ContainerStatusEnum.breakDown }
+        val isBreakDownPoint = viewModel.findWayTask().p!!.find { it.id == wayPoint.id }?.cs?.any { it.status == StatusEnum.breakDown }
         Log.d("PointServiceAct", "sendServedPoint: ${Gson().toJson(servedPointEntity)}")
         CoroutineScope(Dispatchers.IO).launch {
             val cs = servedPointEntity?.cs?.map {
@@ -148,9 +148,9 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
                                 toast("Успешно отправлен!")
                                 loadingHide()
                                 if (isBreakDownPoint!!) {
-                                    viewModel.updatePointStatus(wayPoint.id!!, ContainerStatusEnum.breakDown)
+                                    viewModel.updatePointStatus(wayPoint.id!!, StatusEnum.breakDown)
                                 } else {
-                                    viewModel.updatePointStatus(wayPoint.id!!, ContainerStatusEnum.completed)
+                                    viewModel.updatePointStatus(wayPoint.id!!, StatusEnum.completed)
                                 }
                                 setResult(Activity.RESULT_OK)
                                 finish()
@@ -173,9 +173,14 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
             sendServedPoint()
-        } else if ((requestCode == 14 && resultCode == Activity.RESULT_OK)) {
-            initContainer()
-            initAfterMedia()
+        } else if (requestCode == 14) {
+            if (resultCode == Activity.RESULT_OK) {
+                initContainer()
+                initAfterMedia()
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
         }
     }
 }

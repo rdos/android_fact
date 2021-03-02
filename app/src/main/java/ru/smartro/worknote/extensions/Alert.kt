@@ -65,6 +65,18 @@ fun AppCompatActivity.warningDelete(title: String): View {
     dialog.show()
     return view
 }
+fun AppCompatActivity.warningContainerFailure(title: String): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_warning_failure, null)
+    view.title_tv.text = title
+    builder.setView(view)
+    builder.setCancelable(false)
+    dialog = builder.create()
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    dialog.show()
+    return view
+}
 
 fun Fragment.warningDelete(title: String): View {
     val builder = AlertDialog.Builder(activity!!)

@@ -16,8 +16,20 @@ class PointServiceViewModel(application: Application) : BaseViewModel(applicatio
         return network.served(body)
     }
 
-    fun updateContainerStatus(pointId: Int, containerId: Int, status : Int) {
+    fun updateContainerStatus(pointId: Int, containerId: Int, status: Int) {
         db.updateContainerStatus(pointId, containerId, status)
+    }
+
+    fun findContainerStatus(pointId: Int, containerId: Int): Int {
+        return db.findContainerStatus(pointId, containerId)
+    }
+
+    fun pointHasBreakdown(pointId: Int): Boolean {
+        return db.pointHasBreakdown(pointId)
+    }
+
+    fun currentContainerStatus(pointId: Int, containerId: Int): Int {
+        return db.currentContainerStatus(pointId, containerId)
     }
 
     fun addServedContainerInfo(container: ServedContainerInfoEntity, wayPointId: Int) {

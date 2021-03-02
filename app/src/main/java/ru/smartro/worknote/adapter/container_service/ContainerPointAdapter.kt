@@ -10,7 +10,7 @@ import io.realm.RealmList
 import kotlinx.android.synthetic.main.item_choose.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
-import ru.smartro.worknote.util.ContainerStatusEnum
+import ru.smartro.worknote.util.StatusEnum
 
 class ContainerPointAdapter(private val listener: ContainerPointClickListener, private val items: RealmList<ContainerInfoEntity>) :
     RecyclerView.Adapter<ContainerPointAdapter.OwnerViewHolder>() {
@@ -28,29 +28,30 @@ class ContainerPointAdapter(private val listener: ContainerPointClickListener, p
         val data = items[position]
         holder.itemView.choose_title.text = data!!.number
         when (data.status) {
-            ContainerStatusEnum.empty -> {
+            StatusEnum.empty -> {
                 holder.itemView.setOnClickListener {
                     listener.startContainerPointService(item = items[position]!!)
                     Log.d("ContainerPointAdapter", "onBindViewHolder: false")
                 }
             }
-            ContainerStatusEnum.completed -> {
+            StatusEnum.completed -> {
                 holder.itemView.choose_status.isVisible = true
                 holder.itemView.choose_status.setImageResource(R.drawable.ic_check)
                 holder.itemView.setOnClickListener {
                     Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                 }
             }
-            ContainerStatusEnum.breakDown -> {
+            StatusEnum.breakDown -> {
                 holder.itemView.choose_status.isVisible = true
                 holder.itemView.choose_status.setImageResource(R.drawable.ic_red_check)
                 holder.itemView.setOnClickListener {
+                    listener.startContainerPointService(item = items[position]!!)
                     Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                 }
             }
-            ContainerStatusEnum.failure -> {
+            StatusEnum.failure -> {
                 holder.itemView.choose_status.isVisible = true
-                holder.itemView.choose_status.setImageResource(R.drawable.ic_red_check)
+                holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel)
                 holder.itemView.setOnClickListener {
                     Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                 }
