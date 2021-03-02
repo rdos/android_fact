@@ -30,7 +30,7 @@ class CameraActivity : AppCompatActivity() {
 
         intent.let {
             wayPoint = Gson().fromJson(it.getStringExtra("wayPoint"), WayPointEntity::class.java)
-            photoFor = it.getIntExtra("photoFor", wayPoint.id!!)
+            photoFor = it.getIntExtra("photoFor", 0)
         }
 
         hostLayout = findViewById(R.id.fragment_container)
@@ -47,8 +47,11 @@ class CameraActivity : AppCompatActivity() {
             PhotoTypeEnum.forAfterMedia -> {
                 supportActionBar?.title = getString(R.string.service_after)
             }
-            PhotoTypeEnum.forProblemMedia -> {
+            PhotoTypeEnum.forProblemPoint -> {
                 supportActionBar?.title = getString(R.string.service_before)
+            }
+            PhotoTypeEnum.forProblemContainer -> {
+                supportActionBar?.title = getString(R.string.problem_container)
             }
         }
     }

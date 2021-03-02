@@ -5,7 +5,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import io.realm.Realm
 import io.realm.RealmModel
+import ru.smartro.worknote.service.database.entity.container_service.ServedContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.container_service.ServedPointEntity
+import ru.smartro.worknote.service.database.entity.problem.ContainerBreakdownEntity
+import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.service.database.livedata.LiveRealmObject
 import ru.smartro.worknote.util.PhotoTypeEnum
@@ -17,7 +20,27 @@ class RealmRepository(val context: Context) {
         realm.insertOrUpdate(entity)
     }
 
-    fun updateContainerStatus(pointId: Int, containerId: Int, status : Int) {
+    fun insertBreakDown(entities: List<ContainerBreakdownEntity>) {
+        realm.beginTransaction()
+        realm.insertOrUpdate(entities)
+        realm.commitTransaction()
+    }
+
+    fun insertFailReason(entities: List<ContainerFailReasonEntity>) {
+        realm.beginTransaction()
+        realm.insertOrUpdate(entities)
+        realm.commitTransaction()
+    }
+
+    fun findBreakDown(): List<ContainerBreakdownEntity> {
+        return realm.copyFromRealm(realm.where(ContainerBreakdownEntity::class.java).findAll()!!)
+    }
+
+    fun findFailReason(): List<ContainerFailReasonEntity> {
+        return realm.copyFromRealm(realm.where(ContainerFailReasonEntity::class.java).findAll()!!)
+    }
+
+    fun updateContainerStatus(pointId: Int, containerId: Int, status: Int) {
         val wayTaskEntity = realm.where(WayTaskEntity::class.java).findFirst()!!
         realm.beginTransaction()
         val pointEntity = wayTaskEntity.p!!.find { it.id == pointId }
@@ -26,10 +49,18 @@ class RealmRepository(val context: Context) {
         realm.commitTransaction()
     }
 
-    fun completePoint(pointId: Int) {
+    fun addServedContainerInfo(container: ServedContainerInfoEntity, wayPointId: Int) {
+        val entity = realm.where(ServedPointEntity::class.java).equalTo("pId", wayPointId)
+            .findFirst()
+        realm.beginTransaction()
+        entity?.cs!!.add(container)
+        realm.commitTransaction()
+    }
+
+    fun updatePointStatus(pointId: Int, status: Int) {
         val wayTaskEntity = realm.where(WayTaskEntity::class.java).findFirst()!!
         realm.beginTransaction()
-        wayTaskEntity.p?.find {it.id == pointId}?.isComplete = true
+        wayTaskEntity.p?.find { it.id == pointId }?.status = status
         realm.commitTransaction()
     }
 
@@ -98,6 +129,12 @@ class RealmRepository(val context: Context) {
             PhotoTypeEnum.forBeforeMedia -> {
                 servedPointEntity?.mediaBefore?.add(photoPath)
             }
+            PhotoTypeEnum.forProblemPoint -> {
+                servedPointEntity?.mediaPointProblem?.add(photoPath)
+            }
+            PhotoTypeEnum.forProblemContainer -> {
+                servedPointEntity?.mediaProblemContainer?.add(photoPath)
+            }
         }
         realm.commitTransaction()
     }
@@ -115,7 +152,7 @@ class RealmRepository(val context: Context) {
                 servedPointEntity?.mediaAfter?.remove(photoPath)
                 Log.d("REMOVE_PHOTO", "AFTER")
             }
-            PhotoTypeEnum.forProblemMedia -> {
+            PhotoTypeEnum.forProblemPoint -> {
 
             }
         }

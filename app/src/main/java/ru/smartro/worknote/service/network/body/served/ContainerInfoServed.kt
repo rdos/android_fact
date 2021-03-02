@@ -10,7 +10,7 @@ data class ContainerInfoServed(
     @SerializedName("comment")
     val comment: String,
     @SerializedName("oid")
-    val oid: Int,
+    val oid: String,
     @SerializedName("volume")
     val volume: Double,
     @SerializedName("wo_id")

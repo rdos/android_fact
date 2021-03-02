@@ -19,10 +19,12 @@
         android:roundIcon="@drawable/ic_app"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.problem.ContainerProblemActivity"
+            android:theme="@style/Problem"/>
         <activity
             android:name=".ui.point_service.EnterContainerInfoActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/AppThemeMaterial" />
+            android:theme="@style/AppThemeMaterial"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".ui.camera.CameraActivity">
             <intent-filter>
                 <action android:name="android.media.action.IMAGE_CAPTURE" />

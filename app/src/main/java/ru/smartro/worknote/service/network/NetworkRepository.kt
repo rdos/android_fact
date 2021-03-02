@@ -7,6 +7,8 @@ import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayListBody
 import ru.smartro.worknote.service.network.body.WayTaskBody
+import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
+import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 
 class NetworkRepository(private val context: Context) {
@@ -29,8 +31,7 @@ class NetworkRepository(private val context: Context) {
 
     fun served(body: ServiceResultBody) = liveData(Dispatchers.IO) {
         try {
-            val response = RetrofitClient(context)
-                .apiService(true).served(body)
+            val response = RetrofitClient(context).apiService(true).served(body)
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
@@ -61,6 +62,39 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
+    fun getBreakDownTypes() = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context)
+                .apiService(true).getBreakDownTypes()
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body()))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
+    fun getFailReason() = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context).apiService(true).getFailReason()
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body()))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
     fun getWayList(body: WayListBody) = liveData(Dispatchers.IO) {
         try {
             val response = RetrofitClient(context)
@@ -68,6 +102,39 @@ class NetworkRepository(private val context: Context) {
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
+    fun sendBreakDown(body: BreakdownBody) = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context).apiService(true).sendBreakDown(body)
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body(), "${response.code()}"))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
+    fun sendFailure(body: FailureBody) = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context)
+                .apiService(true).sendFailure(body)
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body(), "${response.code()}"))
                 }
                 else -> {
                     emit(Resource.error("Ошибка ${response.code()}", null))

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
-import io.realm.RealmList
 import kotlinx.android.synthetic.main.activity_enter_container_info_acitivty.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
@@ -15,11 +14,14 @@ import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.container_service.ServedContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
+import ru.smartro.worknote.ui.problem.ContainerProblemActivity
 import ru.smartro.worknote.util.ContainerStatusEnum
 
 class EnterContainerInfoActivity : AppCompatActivity() {
     private lateinit var containerInfo: ContainerInfoEntity
     private lateinit var percentAdapter: PercentAdapter
+    private lateinit var wayPoint: WayPointEntity
     private val viewModel: PointServiceViewModel by viewModel()
     private var wayPointId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +31,13 @@ class EnterContainerInfoActivity : AppCompatActivity() {
         intent.let {
             containerInfo = Gson().fromJson(it.getStringExtra("container_info"), ContainerInfoEntity::class.java)
             wayPointId = it.getIntExtra("wayPointId", 0)
+            wayPoint = Gson().fromJson(it.getStringExtra("wayPoint"), WayPointEntity::class.java)
+        }
+        enter_info_problem_btn.setOnClickListener {
+            val intent = Intent(this, ContainerProblemActivity::class.java)
+            intent.putExtra("wayPoint", Gson().toJson(wayPoint))
+            intent.putExtra("container_info", Gson().toJson(containerInfo))
+            startActivity(intent)
         }
         supportActionBar?.title = containerInfo.number
         percentAdapter = PercentAdapter(this, arrayListOf(0, 25, 50, 75, 100, 125))
@@ -46,22 +55,12 @@ class EnterContainerInfoActivity : AppCompatActivity() {
     }
 
     private fun completeContainer() {
-        viewModel.beginTransaction()
-        val servedContainerInfoEntity = viewModel.findServedPointEntity(wayPointId)
         val container = ServedContainerInfoEntity(
             cId = containerInfo.id, comment = comment_et.text.toString(), oid = AppPreferences.organisationId,
             volume = percentAdapter.getSelectedCount(), woId = AppPreferences.wayListId
         )
-        if (servedContainerInfoEntity?.cs == null) {
-            servedContainerInfoEntity?.cs = RealmList()
-            servedContainerInfoEntity?.cs!!.add(container)
-        } else {
-            servedContainerInfoEntity.cs!!.add(container)
-        }
-        viewModel.commitTransaction()
-
+        viewModel.addServedContainerInfo(container, wayPointId)
         viewModel.updateContainerStatus(wayPointId, containerInfo.id!!, ContainerStatusEnum.completed)
-
         val intent = Intent()
         intent.putExtra("filledContainer", 1)
         setResult(Activity.RESULT_OK, intent)

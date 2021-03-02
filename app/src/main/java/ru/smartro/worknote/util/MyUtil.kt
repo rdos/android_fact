@@ -109,13 +109,6 @@ object MyUtil {
         AppPreferences.clear()
     }
 
-    fun encodeImage(bm: Bitmap): String? {
-        val baos = ByteArrayOutputStream()
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val b: ByteArray = baos.toByteArray()
-        return Base64.encodeToString(b, Base64.DEFAULT)
-    }
-
     fun getFileToByte(filePath: String?): String {
         val bmp: Bitmap?
         val bos: ByteArrayOutputStream?

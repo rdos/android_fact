@@ -30,6 +30,7 @@ import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.ui.point_service.PointServiceActivity
 import ru.smartro.worknote.util.ClusterIcon
+import ru.smartro.worknote.util.ContainerStatusEnum
 
 
 class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, UserLocationObjectListener, MapObjectTapListener, WayPointAdapter.ContainerClickListener {
@@ -84,30 +85,22 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
     private fun initMapView() {
         val wayInfo = viewModel.findWayTask()
         val clusterizedCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(this)
-        val completedIcon = ImageProvider.fromResource(this, R.drawable.ic_green_marker)
-        val notCompletedIcon = ImageProvider.fromResource(this, R.drawable.ic_blue_marker)
-        clusterizedCollection.addPlacemarks(createPoints(wayInfo.p!!, true), completedIcon, IconStyle())
-        clusterizedCollection.addPlacemarks(createPoints(wayInfo.p!!, false), notCompletedIcon, IconStyle())
+        val greenIcon = ImageProvider.fromResource(this, R.drawable.ic_green_marker)
+        val blueIcon = ImageProvider.fromResource(this, R.drawable.ic_blue_marker)
+        val redIcon = ImageProvider.fromResource(this, R.drawable.ic_red_marker)
+        clusterizedCollection.addPlacemarks(createPoints(wayInfo.p!!, ContainerStatusEnum.completed), greenIcon, IconStyle())
+        clusterizedCollection.addPlacemarks(createPoints(wayInfo.p!!, ContainerStatusEnum.empty), blueIcon, IconStyle())
+        clusterizedCollection.addPlacemarks(createPoints(wayInfo.p!!, ContainerStatusEnum.breakDown), redIcon, IconStyle())
+        clusterizedCollection.addPlacemarks(createPoints(wayInfo.p!!, ContainerStatusEnum.failure), redIcon, IconStyle())
         clusterizedCollection.addTapListener(this)
         clusterizedCollection.clusterPlacemarks(60.0, 15)
     }
 
-    private fun createPoints(list: RealmList<WayPointEntity>, isCompletedMarks: Boolean): List<Point> {
-        val pointsArrayList = ArrayList<Point>()
-        // возвращает законченные метки
-        if (isCompletedMarks) {
-            for (p in list) {
-                if (p.isComplete)
-                    pointsArrayList.add(Point(p.co?.get(0)!!, p.co!![1]!!))
-            }
-            // возвращает НЕ законченные метки
-        } else {
-            for (p in list) {
-                if (!p.isComplete)
-                    pointsArrayList.add(Point(p.co?.get(0)!!, p.co!![1]!!))
-            }
+    private fun createPoints(list: RealmList<WayPointEntity>, status: Int): List<Point> {
+        return list.filter { it.status == status }.map {
+            Point(it.co?.get(0)!!, it.co!![1]!!)
         }
-        return pointsArrayList
+        // возвращает законченные метки
     }
 
     override fun onStart() {
@@ -155,7 +148,6 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
 
     private fun initBottomBehavior() {
         val wayInfo = viewModel.findWayTask()
-
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
         map_behavior_rv.adapter = WayPointAdapter(this, wayInfo.p!!)
         map_behavior_header.setOnClickListener {

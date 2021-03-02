@@ -14,6 +14,8 @@ open class ServedPointEntity(
     var finishedAt: Long? = null,
     var mediaAfter: RealmList<String>? = null,
     var mediaBefore: RealmList<String>? = null,
+    var mediaPointProblem: RealmList<String>? = null,
+    var mediaProblemContainer: RealmList<String>? = null,
     var oid: Int? = null,
     var woId: Int? = null
 ) : RealmObject()
@@ -25,3 +27,4 @@ open class ServedContainerInfoEntity(
     var volume: Double? = null,
     var woId: Int? = null
 ) : RealmObject()
+

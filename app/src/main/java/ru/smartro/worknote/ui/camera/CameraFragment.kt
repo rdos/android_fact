@@ -273,11 +273,23 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
                         requireActivity().setResult(Activity.RESULT_OK)
                         requireActivity().finish()
                     }
-                    }
-                    PhotoTypeEnum.forProblemMedia -> {
-
+                }
+                PhotoTypeEnum.forProblemPoint -> {
+                    if (servedPointEntity?.mediaPointProblem?.size == 0) {
+                        toast("Сделайте фото")
+                    } else {
+                        requireActivity().finish()
                     }
                 }
+                PhotoTypeEnum.forProblemContainer -> {
+                    if (servedPointEntity?.mediaProblemContainer?.size == 0) {
+                        toast("Сделайте фото")
+                    } else {
+                        requireActivity().setResult(Activity.RESULT_OK)
+                        requireActivity().finish()
+                    }
+                }
+            }
         }
         controls.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener {
             Log.d(TAG, "updateCameraUi: CurrentThread ${Thread.currentThread()}")

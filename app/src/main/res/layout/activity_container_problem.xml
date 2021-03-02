@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.problem.ContainerProblemActivity">
+
+    <ImageView
+        android:id="@+id/container_problem_img"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="@dimen/margin_default"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_app"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/container_problem_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_default"
+        android:text="Фото проблемы"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/container_problem_img"
+        app:layout_constraintTop_toTopOf="@id/container_problem_img" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/point_problem_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_default"
+        android:background="@drawable/bg_button_problem"
+        android:drawableStart="@drawable/ic_sync"
+        android:elevation="17dp"
+        android:padding="6dp"
+        android:text="Переснять фото"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@id/container_problem_img"
+        app:layout_constraintStart_toEndOf="@id/container_problem_img" />
+
+    <LinearLayout
+        android:id="@+id/selectors"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_default"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/container_problem_img">
+
+        <ToggleButton
+            android:id="@+id/container_problem_break_tg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/selector_left_problem"
+            android:textOff="Поломка"
+            android:textOn="Поломка" />
+
+        <ToggleButton
+            android:id="@+id/container_problem_cant_tg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/selector_right_problem"
+            android:textOff="Невывоз"
+            android:textOn="Невывоз" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/selectors">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/problem_container_choose_problem_out"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="@dimen/margin_default"
+            android:gravity="start"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/problem_container_choose_problem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:editable="false"
+                android:hint="Выберите проблему" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/problem_container_reason_cant_out"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="@dimen/margin_default"
+            android:background="@null"
+            android:gravity="start"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/problem_container_choose_reason_cant"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:editable="false"
+                android:hint="Выберите причину невывоза" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="@dimen/margin_default"
+            android:gravity="start">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/container_problem_comment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="top"
+                android:hint="Комментарии..." />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/container_problem_accept"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_default"
+        android:backgroundTint="@color/dark_red"
+        android:text="Подтвердить"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

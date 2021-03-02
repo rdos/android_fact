@@ -109,6 +109,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
         val intent = Intent(this, EnterContainerInfoActivity::class.java)
         intent.putExtra("container_info", Gson().toJson(item))
         intent.putExtra("wayPointId", wayPoint.id)
+        intent.putExtra("wayPoint", Gson().toJson(wayPoint))
         startActivityForResult(intent, 14)
     }
 
@@ -119,21 +120,18 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
     private fun sendServedPoint() {
         loadingShow()
         val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
+        val isBreakDownPoint = viewModel.findWayTask().p!!.find { it.id == wayPoint.id }?.cs?.any { it.status == ContainerStatusEnum.breakDown }
+        Log.d("PointServiceAct", "sendServedPoint: ${Gson().toJson(servedPointEntity)}")
         CoroutineScope(Dispatchers.IO).launch {
-            val cs = ArrayList<ContainerInfoServed>()
-            val beforeMedia = arrayListOf<String>()
-            val afterMedia = arrayListOf<String>()
-
-            for (photoBeforeEntity in servedPointEntity?.mediaAfter!!) {
-                beforeMedia.add(MyUtil.getFileToByte(photoBeforeEntity))
+            val cs = servedPointEntity?.cs?.map {
+                ContainerInfoServed(cId = it.cId!!, comment = it.comment!!, oid = AppPreferences.organisationId.toString(), woId = AppPreferences.wayTaskId, volume = it.volume!!)
             }
+            val beforeMedia = servedPointEntity?.mediaBefore?.map { MyUtil.getFileToByte(it) }
+            val afterMedia = servedPointEntity?.mediaAfter?.map { MyUtil.getFileToByte(it) }
 
-            for (photoAfterEntity in servedPointEntity.mediaAfter!!) {
-                afterMedia.add(MyUtil.getFileToByte(photoAfterEntity))
-            }
             val servedPoint = ContainerPointServed(
-                beginnedAt = AppPreferences.serviceStartedAt, co = wayPoint.co!!, cs = cs, woId = AppPreferences.wayTaskId,
-                oid = AppPreferences.organisationId, finishedAt = System.currentTimeMillis() / 1000L, mediaAfter = afterMedia, mediaBefore = beforeMedia, pId = wayPoint.id!!
+                beginnedAt = AppPreferences.serviceStartedAt, co = wayPoint.co!!, cs = cs!!, woId = AppPreferences.wayTaskId,
+                oid = AppPreferences.organisationId, finishedAt = System.currentTimeMillis() / 1000L, mediaAfter = afterMedia!!, mediaBefore = beforeMedia!!, pId = wayPoint.id!!
             )
 
             val ps = ArrayList<ContainerPointServed>()
@@ -149,7 +147,11 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
                             Status.SUCCESS -> {
                                 toast("Успешно отправлен!")
                                 loadingHide()
-                                viewModel.completePoint(wayPoint.id!!)
+                                if (isBreakDownPoint!!) {
+                                    viewModel.updatePointStatus(wayPoint.id!!, ContainerStatusEnum.breakDown)
+                                } else {
+                                    viewModel.updatePointStatus(wayPoint.id!!, ContainerStatusEnum.completed)
+                                }
                                 setResult(Activity.RESULT_OK)
                                 finish()
                             }

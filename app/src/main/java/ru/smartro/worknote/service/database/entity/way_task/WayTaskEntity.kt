@@ -46,7 +46,7 @@ open class WayPointEntity(
     var cs: RealmList<ContainerInfoEntity>? = null,
     /**  ("srp_id")**/
     var srp_id: Int? = null,
-    var isComplete: Boolean = false
+    var status: Int = 0
 ) : Serializable, RealmObject()
 
 open class WayUnloadPointEntity(
@@ -70,4 +70,5 @@ open class ContainerInfoEntity(
     /**("type_id")**/
     var type_id: Int? = null,
     var status: Int = 0
+
 ) : Serializable, RealmObject()

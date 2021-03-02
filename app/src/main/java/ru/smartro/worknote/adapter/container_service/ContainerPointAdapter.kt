@@ -36,13 +36,21 @@ class ContainerPointAdapter(private val listener: ContainerPointClickListener, p
             }
             ContainerStatusEnum.completed -> {
                 holder.itemView.choose_status.isVisible = true
+                holder.itemView.choose_status.setImageResource(R.drawable.ic_check)
                 holder.itemView.setOnClickListener {
                     Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                 }
             }
             ContainerStatusEnum.breakDown -> {
                 holder.itemView.choose_status.isVisible = true
-                holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel)
+                holder.itemView.choose_status.setImageResource(R.drawable.ic_red_check)
+                holder.itemView.setOnClickListener {
+                    Log.d("ContainerPointAdapter", "onBindViewHolder: true")
+                }
+            }
+            ContainerStatusEnum.failure -> {
+                holder.itemView.choose_status.isVisible = true
+                holder.itemView.choose_status.setImageResource(R.drawable.ic_red_check)
                 holder.itemView.setOnClickListener {
                     Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                 }

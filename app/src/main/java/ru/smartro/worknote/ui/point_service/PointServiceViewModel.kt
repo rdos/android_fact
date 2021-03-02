@@ -3,6 +3,7 @@ package ru.smartro.worknote.ui.point_service
 import android.app.Application
 import androidx.lifecycle.LiveData
 import ru.smartro.worknote.base.BaseViewModel
+import ru.smartro.worknote.service.database.entity.container_service.ServedContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.container_service.ServedPointEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.service.network.Resource
@@ -19,8 +20,12 @@ class PointServiceViewModel(application: Application) : BaseViewModel(applicatio
         db.updateContainerStatus(pointId, containerId, status)
     }
 
-    fun completePoint(pointId: Int) {
-        db.completePoint(pointId)
+    fun addServedContainerInfo(container: ServedContainerInfoEntity, wayPointId: Int) {
+        db.addServedContainerInfo(container, wayPointId)
+    }
+
+    fun updatePointStatus(pointId: Int, status: Int) {
+        db.updatePointStatus(pointId, status)
     }
 
     fun findWayTask(): WayTaskEntity {

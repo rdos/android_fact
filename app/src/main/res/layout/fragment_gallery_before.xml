@@ -9,7 +9,7 @@
     tools:context=".ui.camera.GalleryFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/p"
+        android:id="@+id/custom_toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@color/colorPrimary">

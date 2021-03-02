@@ -40,7 +40,7 @@ class GalleryFragment(private val wayPointId: Int, private val photoFor: Int) : 
     }
 
     private fun initViews() {
-        Log.d("GalleryFragment_LOG", "wayPoinId: $wayPointId")
+        Log.d("GalleryFragment_LOG", "wayPoinId: $photoFor")
         servedPointEntity = viewModel.findServedPointEntity(wayPointId)!!
         when (photoFor) {
             PhotoTypeEnum.forBeforeMedia -> {
@@ -57,15 +57,19 @@ class GalleryFragment(private val wayPointId: Int, private val photoFor: Int) : 
                 Log.d(TAG, "findBeforePhoto: ${Gson().toJson(servedPointEntity.mediaAfter!!)}")
             }
 
-            PhotoTypeEnum.forProblemMedia -> {
-                activity?.actionBar?.title = getString(R.string.service_before)
-                image_title.text = getString(R.string.service_before)
-                /*     viewModel.findBeforePhoto(wayPointId).observe(viewLifecycleOwner, Observer {
-                         image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), it as ArrayList<PhotoBeforeEntity>)
-                         Log.d(TAG, "findBeforePhoto: ${Gson().toJson(it)}")
-                     })*/
+            PhotoTypeEnum.forProblemPoint -> {
+                activity?.actionBar?.title = getString(R.string.problem_container)
+                image_title.text = getString(R.string.problem_container)
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(servedPointEntity.mediaPointProblem!!))
+                Log.d(TAG, "findBeforePhoto: ${Gson().toJson(servedPointEntity.mediaPointProblem!!)}")
             }
 
+            PhotoTypeEnum.forProblemContainer -> {
+                activity?.actionBar?.title = getString(R.string.problem_container)
+                image_title.text = getString(R.string.problem_container)
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(servedPointEntity.mediaProblemContainer!!))
+                Log.d(TAG, "findBeforePhoto: ${Gson().toJson(servedPointEntity.mediaProblemContainer!!)}")
+            }
         }
     }
 

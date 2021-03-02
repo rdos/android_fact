@@ -42,4 +42,5 @@
     <string name="problem">Проблема</string>
     <string name="early_complate">При досрочном завершении рейса все оставшиеся контейнерые площадки будут отмечены как невывезенные</string>
     <string name="problem_on_point">Проблема на КП</string>
+    <string name="problem_container">Проблема на площадке</string>
 </resources>
