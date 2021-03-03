@@ -1,0 +1,47 @@
+<resources>
+    <string name="yandex_map_key">44189d05-a0ac-42a3-ad87-2d5741d709dc</string>
+
+    <string name="app_name">Fact</string>
+    <string name="enter_system">Вход в систему</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="logout">Выйти из системы </string>
+    <string name="change_owner">Сменить организацию</string>
+    <string name="change_role">Сменить роль</string>
+    <string name="loading">Загрузка</string>
+    <string name="choose">Выбрать</string>
+    <string name="empty_way_task">Пусто \n \nДля передачи телефона другому водителю выйдите из системы. Для продолжения работы на другом автомобиле перейдите к выбору автомобиля.</string>
+    <string name="choose_vehicle">Выбрать автомобиль</string>
+    <!--   <string name="yandex_map_key">f7873ee7-b6a0-4527-8df1-215f37ba0f97</string>-->
+    <string name="accept_task">Взяв в работу сменное задание, вы не сможете его поменять до завершения</string>
+    <string name="accept_task_check">Взять задание в работу</string>
+    <string name="start_service">Начать обслуживание</string>
+    <string name="no_images_selected">Изображение не выбрана</string>
+    <string name="n_images_selected">Фотографии выбраны</string>
+    <string name="photo_save_error_toast">Неизвестная ошибка камеры</string>
+    <string name="cancel">Отменить</string>
+    <string name="done">Добавить</string>
+    <string name="service_before">Фотографии до обслуживания КП</string>
+    <string name="warning_detele">Вы действительно хотите удалить?</string>
+    <string name="capture_button_alt">Capture</string>
+    <string name="switch_camera_button_alt">Switch camera</string>
+    <string name="gallery_button_alt">Gallery</string>
+    <string name="back_button_alt">Back</string>
+    <string name="share_button_alt">Share</string>
+    <string name="share_hint">Share using</string>
+    <string name="capture_mode_camera">Camera</string>
+    <string name="capture_mode_hdr">HDR</string>
+    <string name="capture_mode_night">Night</string>
+    <string name="delete_button_alt">Delete</string>
+    <string name="delete_dialog">Delete current photo?</string>
+    <string name="delete_title">Confirm</string>
+    <string name="service_after">Фотографии после обслуживания КП</string>
+    <string name="end_task">Досрочное завершение</string>
+    <string name="problem">Проблема</string>
+    <string name="early_complate">При досрочном завершении рейса все оставшиеся контейнерые площадки будут отмечены как невывезенные</string>
+    <string name="problem_on_point">Проблема на КП</string>
+    <string name="problem_container">Проблема на площадке</string>
+    <string name="container_fail">Все оставшиеся контейнеры на площадке будут помечены как невывезенные.</string>
+</resources>
