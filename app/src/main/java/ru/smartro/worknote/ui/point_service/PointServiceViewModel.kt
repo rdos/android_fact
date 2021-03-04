@@ -44,10 +44,6 @@ class PointServiceViewModel(application: Application) : BaseViewModel(applicatio
         return db.findWayTask()
     }
 
-    fun findWayTaskLV(): LiveData<WayTaskEntity>? {
-        return db.findWayTaskLV()
-    }
-
     fun findLastId(any: Class<*>, fieldId: String): Int? {
         return db.findLastId(any, fieldId)
     }

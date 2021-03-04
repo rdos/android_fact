@@ -8,6 +8,8 @@ import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayListBody
 import ru.smartro.worknote.service.network.body.WayTaskBody
 import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
+import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
+import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 
@@ -166,6 +168,54 @@ class NetworkRepository(private val context: Context) {
         try {
             val response = RetrofitClient(context)
                 .apiService(true).progress(id, body)
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body()))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
+    fun completeWay(id: Int, body: CompleteWayBody) = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context).apiService(true).complete(id, body)
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body()))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
+    fun earlyComplete(id: Int, body: EarlyCompleteBody) = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context).apiService(true).earlyComplete(id, body)
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body()))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
+    fun getCancelWayReason() = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context).apiService(true).getCancelWayReason()
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))

@@ -8,7 +8,7 @@ data class BreakDownItem(
     @SerializedName("allowed")
     val allowed: List<Int>,
     @SerializedName("c_id")
-    val cId: Int,
+    val cId: Int?,
     @SerializedName("co")
     val co: List<Double>,
     @SerializedName("comment")

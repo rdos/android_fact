@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import io.realm.RealmModel
 import ru.smartro.worknote.base.BaseViewModel
+import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.problem.ContainerBreakdownEntity
 import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
@@ -12,6 +13,7 @@ import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayTaskBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.breakdown.BreakDownResponse
+import ru.smartro.worknote.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.service.network.response.failure_reason.FailureReasonResponse
 import ru.smartro.worknote.service.network.response.way_task.WayTaskResponse
 
@@ -29,6 +31,10 @@ class WayTaskViewModel(application: Application) : BaseViewModel(application) {
         return network.getFailReason()
     }
 
+    fun getCancelWayReason(): LiveData<Resource<CancelationReasonResponse>> {
+        return network.getCancelWayReason()
+    }
+
     fun insertWayTask(entity: WayTaskEntity) {
         db.insertWayTask(entity)
     }
@@ -39,6 +45,10 @@ class WayTaskViewModel(application: Application) : BaseViewModel(application) {
 
     fun insertFailReason(entities: List<ContainerFailReasonEntity>) {
         db.insertFailReason(entities)
+    }
+
+    fun insertCancelWayReason(entities: List<CancelWayReasonEntity>) {
+        db.insertCancelWayReason(entities)
     }
 
     fun findWayTask(): WayTaskEntity {

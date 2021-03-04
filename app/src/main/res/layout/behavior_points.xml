@@ -31,15 +31,35 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/map_behavior_rv"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:listitem="@layout/map_behavior_item"
-        android:orientation="vertical"
         android:background="@color/white"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_behavior_header" />
+        app:layout_constraintTop_toBottomOf="@id/map_behavior_header">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/map_behavior_rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@id/map_behavior_send_btn"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/map_behavior_item" />
+
+        <Button
+            android:id="@+id/map_behavior_send_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_default"
+            android:background="@drawable/bg_button"
+            android:text="@string/finish_way"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

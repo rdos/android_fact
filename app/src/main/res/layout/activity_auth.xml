@@ -74,7 +74,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_default"
         android:layout_marginBottom="@dimen/margin_default"
-        android:backgroundTint="@color/colorPrimary"
+        android:layout_margin="@dimen/margin_default"
+        android:background="@drawable/bg_button"
         android:text="Войти в систему"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent" />

@@ -41,7 +41,6 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
         holder.itemView.map_behavior_scrp_id.text = item.srp_id.toString()
         holder.itemView.map_behavior_container_count.text = "${item!!.cs!!.size} контейнер"
 
-
         when (items[position]!!.status) {
             StatusEnum.empty -> {
                 holder.itemView.setOnClickListener {
@@ -49,6 +48,9 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
                         holder.itemView.map_behavior_expl.expand()
                         holder.itemView.map_behavior_start_service.setOnClickListener {
                             listener.startPointService(item)
+                        }
+                        holder.itemView.map_behavior_fire.setOnClickListener {
+                            listener.startPointProblem(item)
                         }
                         notifyItemChanged(checkedPosition)
                         checkedPosition = holder.adapterPosition
@@ -66,14 +68,7 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
                 holder.itemView.map_behavior_status.isVisible = true
                 holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_red_check)
                 holder.itemView.setOnClickListener {
-                    if (checkedPosition != holder.adapterPosition) {
-                        holder.itemView.map_behavior_expl.expand()
-                        holder.itemView.map_behavior_start_service.setOnClickListener {
-                            listener.startPointService(item)
-                        }
-                        notifyItemChanged(checkedPosition)
-                        checkedPosition = holder.adapterPosition
-                    }
+                    //nothing
                 }
             }
 
@@ -94,5 +89,6 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
 
     interface ContainerClickListener {
         fun startPointService(item: WayPointEntity)
+        fun startPointProblem(item: WayPointEntity)
     }
 }

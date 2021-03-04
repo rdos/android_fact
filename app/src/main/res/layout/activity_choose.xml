@@ -18,9 +18,10 @@
     <Button
         android:id="@+id/next_btn"
         android:layout_width="match_parent"
-        android:backgroundTint="@color/colorPrimary"
         android:textColor="@color/white"
         android:text="@string/choose"
+        android:layout_margin="@dimen/margin_default"
+        android:background="@drawable/bg_button"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
 

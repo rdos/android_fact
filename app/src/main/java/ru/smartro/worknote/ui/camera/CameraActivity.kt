@@ -48,7 +48,7 @@ class CameraActivity : AppCompatActivity() {
                 supportActionBar?.title = getString(R.string.service_after)
             }
             PhotoTypeEnum.forProblemPoint -> {
-                supportActionBar?.title = getString(R.string.service_before)
+                supportActionBar?.title = getString(R.string.problem_on_point)
             }
             PhotoTypeEnum.forProblemContainer -> {
                 supportActionBar?.title = getString(R.string.problem_container)

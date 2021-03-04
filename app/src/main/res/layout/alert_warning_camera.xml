@@ -38,7 +38,7 @@
             android:layout_marginTop="@dimen/margin_default"
             android:layout_marginEnd="@dimen/margin_default"
             android:layout_marginBottom="@dimen/margin_default"
-            android:backgroundTint="@color/colorPrimary"
+            android:background="@drawable/bg_button"
             android:padding="@dimen/margin_default"
             android:text="Добавить фото"
             android:textColor="@color/white"

@@ -29,8 +29,9 @@
         android:id="@+id/next_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimary"
         android:text="@string/choose"
+        android:layout_margin="@dimen/margin_default"
+        android:background="@drawable/bg_button"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -40,14 +41,18 @@
         android:visibility="gone"
         tools:visibility="visible"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_default"
+        android:layout_marginBottom="6dp"
         android:text="@string/choose_vehicle"
+        android:background="@drawable/bg_button_white"
         app:layout_constraintBottom_toTopOf="@id/logout_btn" />
 
     <Button
         android:id="@+id/logout_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/dark_red"
+        android:layout_margin="@dimen/margin_default"
+        android:background="@drawable/bg_button_red"
         android:text="@string/logout"
         android:visibility="gone"
         tools:visibility="visible"

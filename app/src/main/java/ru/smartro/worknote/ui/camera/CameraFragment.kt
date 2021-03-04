@@ -74,7 +74,6 @@ import kotlin.math.min
 class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEntity) : Fragment() {
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
-    private val IMMERSIVE_FLAG_TIMEOUT = 500L
     private val ANIMATION_FAST_MILLIS = 50L
     private val ANIMATION_SLOW_MILLIS = 100L
     private lateinit var hostLayout: ConstraintLayout
@@ -278,6 +277,7 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
                     if (servedPointEntity?.mediaPointProblem?.size == 0) {
                         toast("Сделайте фото")
                     } else {
+                        requireActivity().setResult(Activity.RESULT_OK)
                         requireActivity().finish()
                     }
                 }

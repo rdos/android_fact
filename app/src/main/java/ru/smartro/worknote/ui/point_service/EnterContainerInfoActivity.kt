@@ -37,6 +37,7 @@ class EnterContainerInfoActivity : AppCompatActivity() {
         enter_info_problem_btn.setOnClickListener {
             val intent = Intent(this, ContainerProblemActivity::class.java)
             intent.putExtra("wayPoint", Gson().toJson(wayPoint))
+            intent.putExtra("isContainerProblem", true)
             intent.putExtra("container_info", Gson().toJson(containerInfo))
             startActivityForResult(intent, REQUEST_EXIT)
         }
@@ -81,8 +82,8 @@ class EnterContainerInfoActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_EXIT && resultCode == RESULT_CANCELED) {
-            setResult(RESULT_CANCELED, null)
+        if (requestCode == REQUEST_EXIT && resultCode == 99) {
+            setResult(99)
             finish()
         }
     }

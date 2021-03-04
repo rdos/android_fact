@@ -17,7 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.GalleryPhotoAdapter
 import ru.smartro.worknote.adapter.listener.ImageClickListener
-import ru.smartro.worknote.extensions.loadingHide
+import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
 import ru.smartro.worknote.service.database.entity.container_service.ServedPointEntity
 import ru.smartro.worknote.ui.point_service.PointServiceViewModel
@@ -26,7 +26,7 @@ import java.io.File
 
 
 class GalleryFragment(private val wayPointId: Int, private val photoFor: Int) : BottomSheetDialogFragment(), ImageClickListener {
-    private val TAG = "GalleryBeforeFragment"
+    private val TAG = "GalleryFragment_LOG"
     private val viewModel: PointServiceViewModel by viewModel()
     private val listener: ImageClickListener = this
     private lateinit var servedPointEntity: ServedPointEntity
@@ -40,7 +40,8 @@ class GalleryFragment(private val wayPointId: Int, private val photoFor: Int) : 
     }
 
     private fun initViews() {
-        Log.d("GalleryFragment_LOG", "wayPoinId: $photoFor")
+        Log.d("GalleryFragment_LOG", "photoFor: $photoFor")
+        Log.d("GalleryFragment_LOG ", "wayPoinId: $wayPointId")
         servedPointEntity = viewModel.findServedPointEntity(wayPointId)!!
         when (photoFor) {
             PhotoTypeEnum.forBeforeMedia -> {
@@ -86,10 +87,10 @@ class GalleryFragment(private val wayPointId: Int, private val photoFor: Int) : 
                     File(photoPath).delete()
                 }
                 initViews()
-                loadingHide()
+                hideDialog()
             }
             this.dismiss_btn.setOnClickListener {
-                loadingHide()
+                hideDialog()
             }
         }
     }
