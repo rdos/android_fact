@@ -4,11 +4,13 @@ import android.content.Context
 import android.util.Log
 import io.realm.Realm
 import io.realm.RealmModel
+import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.container_service.ServedContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.container_service.ServedPointEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.problem.ContainerBreakdownEntity
 import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
@@ -123,13 +125,25 @@ class RealmRepository(val context: Context) {
     }
 
     fun findServedPointEntity(pointId: Int): ServedPointEntity? {
-        return if (realm.where(ServedPointEntity::class.java).equalTo("pId", pointId).findFirst() == null
+        return if (realm.where(ServedPointEntity::class.java).equalTo("pId", pointId)
+                .findFirst() == null
         ) {
             null
         } else {
             realm.copyFromRealm(
                 realm.where(ServedPointEntity::class.java).equalTo("pId", pointId).findFirst()!!
             )
+        }
+    }
+
+    fun createServedPointEntityIfNull(wayPoint: WayPointEntity) {
+        if (findServedPointEntity(wayPoint.id!!) == null) {
+            val emptyPointEntity = ServedPointEntity(
+                beginnedAt = System.currentTimeMillis() / 1000L, finishedAt = null,
+                mediaBefore = null, mediaAfter = null, oid = AppPreferences.organisationId, woId = AppPreferences.wayTaskId,
+                cs = null, co = wayPoint.co, pId = wayPoint.id
+            )
+            insertOrUpdateServedPoint(emptyPointEntity)
         }
     }
 

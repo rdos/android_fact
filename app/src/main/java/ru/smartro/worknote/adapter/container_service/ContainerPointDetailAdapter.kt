@@ -26,6 +26,7 @@ class ContainerPointDetailAdapter(private val items: RealmList<ContainerInfoEnti
     override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
         val data = items[position]
         holder.itemView.choose_title.text = data!!.number
+
         when (data.status) {
             StatusEnum.completed -> {
                 holder.itemView.choose_status.isVisible = true

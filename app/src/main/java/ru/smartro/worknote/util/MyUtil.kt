@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.os.Environment
 import android.util.Base64
 import android.util.Log
@@ -114,16 +115,35 @@ object MyUtil {
         val bos: ByteArrayOutputStream?
         val bt: ByteArray?
         var encodeString = ""
+        val resizedBmp: Bitmap?
         try {
             bmp = BitmapFactory.decodeFile(filePath)
             bos = ByteArrayOutputStream()
-            bmp.compress(Bitmap.CompressFormat.JPEG, 30, bos)
+            resizedBmp = Bitmap.createScaledBitmap(bmp, 360, 640, false)
+            resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, bos)
             bt = bos.toByteArray()
             encodeString = Base64.encodeToString(bt, Base64.DEFAULT)
         } catch (e: Exception) {
             e.printStackTrace()
         }
         return "data:image/png;base64,$encodeString"
+    }
+
+    private fun getResizedBitmap(bm: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
+        val width = bm.width
+        val height = bm.height
+        val scaleWidth = newWidth.toFloat() / width
+        val scaleHeight = newHeight.toFloat() / height
+        // CREATE A MATRIX FOR THE MANIPULATION
+        val matrix = Matrix()
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight)
+
+        val resizedBitmap = Bitmap.createBitmap(
+            bm, 0, 0, width, height, matrix, false
+        )
+        bm.recycle()
+        return resizedBitmap
     }
 
 }

@@ -16,6 +16,7 @@ import ru.smartro.worknote.service.database.entity.container_service.ServedConta
 import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.ui.problem.ContainerProblemActivity
+import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
 
 class EnterContainerInfoActivity : AppCompatActivity() {
@@ -28,6 +29,9 @@ class EnterContainerInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_container_info_acitivty)
+        baseview.setOnClickListener {
+            MyUtil.hideKeyboard(this)
+        }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.let {
             containerInfo = Gson().fromJson(it.getStringExtra("container_info"), ContainerInfoEntity::class.java)

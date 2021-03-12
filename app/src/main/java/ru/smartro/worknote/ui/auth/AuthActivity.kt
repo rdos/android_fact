@@ -13,6 +13,7 @@ import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import ru.smartro.worknote.ui.map.MapActivity
+import ru.smartro.worknote.util.MyUtil
 
 class AuthActivity : AppCompatActivity() {
     private val viewModel: AuthViewModel by viewModel()
@@ -21,6 +22,10 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
         actionBar?.title = "Вход в систему"
+
+        baseview.setOnClickListener {
+            MyUtil.hideKeyboard(this)
+        }
         if (AppPreferences.isLogined) {
             if (AppPreferences.thisUserHasTask) {
                 startActivity(Intent(this, MapActivity::class.java))

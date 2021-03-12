@@ -33,6 +33,7 @@ class RetrofitClient(context: Context) {
                 Log.d("okhttp", message)
             }
         })
+
         httpLoggingInterceptor1.apply {
             httpLoggingInterceptor1.level = HttpLoggingInterceptor.Level.BODY
         }
@@ -59,12 +60,12 @@ class RetrofitClient(context: Context) {
 
     fun apiService(isWorkNote: Boolean): ApiService {
         return if (isWorkNote)
-            retrofit("https://worknote-back.stage.smartro.ru/api/fact/").create(ApiService::class.java)
+            retrofit("https://wn-api.smartro.ru/api/fact/").create(ApiService::class.java)
         else
-            retrofit("https://auth.stage.smartro.ru/api/").create(ApiService::class.java)
+            retrofit("https://auth.smartro.ru/api/").create(ApiService::class.java)
     }
 
-    /*   fun apiService(isWorkNote: Boolean): ApiService {
+/*       fun apiService(isWorkNote: Boolean): ApiService {
            return if (isWorkNote)
                retrofit("https://worknote-back.rc.smartro.ru/api/").create(ApiService::class.java)
            else

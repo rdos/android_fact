@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.service.database.entity.container_service.ServedContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.container_service.ServedPointEntity
+import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
@@ -54,6 +55,10 @@ class PointServiceViewModel(application: Application) : BaseViewModel(applicatio
 
     fun findServedPointEntity(pointId: Int): ServedPointEntity? {
         return db.findServedPointEntity(pointId)
+    }
+
+    fun createServedPointEntityIfNull(wayPoint: WayPointEntity) {
+        db.createServedPointEntityIfNull(wayPoint)
     }
 
     fun beginTransaction() {

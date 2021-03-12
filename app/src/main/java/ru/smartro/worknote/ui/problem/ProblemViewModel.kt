@@ -26,6 +26,7 @@ class ProblemViewModel(application: Application) : BaseViewModel(application) {
         db.updatePointStatus(pointId, status)
     }
 
+
     fun sendFailure(body: FailureBody): LiveData<Resource<FailureResultResponse>> {
         return network.sendFailure(body)
     }

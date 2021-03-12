@@ -132,8 +132,7 @@ class NetworkRepository(private val context: Context) {
 
     fun sendFailure(body: FailureBody) = liveData(Dispatchers.IO) {
         try {
-            val response = RetrofitClient(context)
-                .apiService(true).sendFailure(body)
+            val response = RetrofitClient(context).apiService(true).sendFailure(body)
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body(), "${response.code()}"))

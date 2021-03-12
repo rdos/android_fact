@@ -19,13 +19,18 @@
         android:roundIcon="@drawable/ic_app"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.problem.ContainerProblemActivity"
-            android:theme="@style/Problem"/>
+        <activity
+            android:name=".ui.problem.ContainerProblemActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Problem" />
         <activity
             android:name=".ui.point_service.EnterContainerInfoActivity"
             android:theme="@style/AppThemeMaterial"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".ui.camera.CameraActivity">
+        <activity
+            android:name=".ui.camera.CameraActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.media.action.IMAGE_CAPTURE" />
                 <action android:name="android.media.action.STILL_IMAGE_CAMERA" />
@@ -49,17 +54,26 @@
                 android:name="android.notch_support"
                 android:value="true" />
         </activity>
-        <activity android:name=".ui.point_service.PointServiceActivity" />
+        <activity android:name=".ui.point_service.PointServiceActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.map.MapActivity"
-            android:theme="@style/NoToolbar" />
+            android:theme="@style/NoToolbar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.choose.way_task_4.WayTaskActivity"
-            android:noHistory="true" />
-        <activity android:name=".ui.choose.way_list_3.WayListActivity" />
-        <activity android:name=".ui.choose.vehicle_2.VehicleActivity" />
-        <activity android:name=".ui.choose.owner_1.OrganisationActivity" />
-        <activity android:name=".ui.auth.AuthActivity">
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.choose.way_list_3.WayListActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.choose.vehicle_2.VehicleActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.choose.owner_1.OrganisationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.auth.AuthActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

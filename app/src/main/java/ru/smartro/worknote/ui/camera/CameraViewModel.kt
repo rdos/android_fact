@@ -10,7 +10,6 @@ class CameraViewModel(application: Application) : BaseViewModel(application) {
         return db.findServedPointEntity(pointId)
     }
 
-
     fun updatePhotoMediaOfServedPoint(isPhotoFor: Int, pointId: Int, photoPath: String) {
         db.updatePhotoMediaOfServedPoint(isPhotoFor, pointId, photoPath)
     }

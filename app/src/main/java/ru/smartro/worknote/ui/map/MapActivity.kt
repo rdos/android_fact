@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
-import kotlinx.android.synthetic.main.alert_point_detail.view.*
 import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import kotlinx.android.synthetic.main.behavior_points.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -41,7 +40,6 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.ui.choose.way_task_4.WayTaskActivity
 import ru.smartro.worknote.ui.point_service.PointServiceActivity
 import ru.smartro.worknote.ui.problem.ContainerProblemActivity
-import ru.smartro.worknote.util.ActivityResult
 import ru.smartro.worknote.util.ClusterIcon
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
@@ -51,6 +49,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
     private val REQUEST_EXIT = 41
     private val POINT_SERVICE_CODE = 10
     private val TAG = "MapActivity_LOG"
+    private var firstTime = true
     private val viewModel: MapViewModel by viewModel()
     private lateinit var wayTaskEntity: WayTaskEntity
     private lateinit var userLocationLayer: UserLocationLayer
@@ -88,11 +87,16 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
 
                 override fun onLocationUpdated(p0: com.yandex.mapkit.location.Location) {
                     locationM = p0
+                    toast("Клиент найден")
+                    if (firstTime) {
+                        map_view.map.move(CameraPosition(p0.position, 12.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
+                        firstTime = false
+                    }
                 }
             })
         location_fab.setOnClickListener {
             try {
-                map_view.map.move(CameraPosition(locationM.position, 14.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
+                map_view.map.move(CameraPosition(locationM.position, 12.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
             } catch (e: Exception) {
                 toast("Клиент не найден")
             }
@@ -166,23 +170,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
             val clickedPoint = wayInfo.p!!.find {
                 it.co!![0]!! == coordinate.latitude && it.co!![1]!! == coordinate.longitude
             }!!
-            showClickedPointDetail(clickedPoint).run {
-                this.point_detail_start_service.setOnClickListener {
-                    val intent = Intent(this@MapActivity, PointServiceActivity::class.java)
-                    val itemJson = Gson().toJson(clickedPoint)
-                    intent.putExtra("container", itemJson)
-                    startActivityForResult(intent, POINT_SERVICE_CODE)
-                    hideDialog()
-                }
-
-                this.point_detail_fire.setOnClickListener {
-                    val intent = Intent(this@MapActivity, ContainerProblemActivity::class.java)
-                    intent.putExtra("wayPoint", Gson().toJson(clickedPoint))
-                    intent.putExtra("isContainerProblem", false)
-                    Log.d(TAG, "startPointProblem: ${Gson().toJson(clickedPoint)}")
-                    startActivityForResult(intent, REQUEST_EXIT)
-                }
-            }
+            PlaceMarkDetailDialog(clickedPoint).show(supportFragmentManager, "PlaceMarkDetailDialog")
         } catch (e: Exception) {
             toast("Не удалось загрузить")
         }
@@ -192,7 +180,10 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
     private fun initBottomBehavior() {
         val wayInfo = viewModel.findWayTask()
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-        map_behavior_rv.adapter = WayPointAdapter(this, wayInfo.p!!)
+        val pointsArray = wayInfo.p!!
+        pointsArray.sortByDescending { it.status == StatusEnum.empty }
+        map_behavior_rv.adapter = WayPointAdapter(this, pointsArray)
+
         map_behavior_header.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -215,7 +206,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
 
     private fun finishWay(boolean: Boolean) {
         if (!boolean) {
-            completeEnterInfo()
+            completeWayInfo()
         } else {
             val allReasons = viewModel.findCancelWayReason()
             showFailureFinishWay(allReasons).run {
@@ -228,7 +219,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
                             .observe(this@MapActivity, Observer { result ->
                                 when (result.status) {
                                     Status.SUCCESS -> {
-                                        completeEnterInfo()
+                                        completeWayInfo()
                                         loadingHide()
                                     }
                                     Status.ERROR -> {
@@ -251,7 +242,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
 
     }
 
-    private fun completeEnterInfo() {
+    private fun completeWayInfo() {
         showCompleteEnterInfo().run {
             this.accept_btn.setOnClickListener {
                 if (this.weight_tg.isChecked || this.volume_tg.isChecked) {
@@ -262,17 +253,16 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
                         .observe(this@MapActivity, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
+                                    AppPreferences.thisUserHasTask = false
+                                    viewModel.clearData()
                                     loadingHide()
                                     showSuccessComplete().run {
                                         this.accept_btn.setOnClickListener {
-                                            viewModel.clearData()
                                             startActivity(Intent(this@MapActivity, WayTaskActivity::class.java))
-                                            AppPreferences.thisUserHasTask = false
                                             finish()
                                         }
                                         this.exit_btn.setOnClickListener {
                                             MyUtil.logout(this@MapActivity)
-                                            viewModel.clearData()
                                         }
                                     }
                                 }
@@ -304,8 +294,15 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         val intent = Intent(this, ContainerProblemActivity::class.java)
         intent.putExtra("wayPoint", Gson().toJson(item))
         intent.putExtra("isContainerProblem", false)
-        Log.d(TAG, "startPointProblem: ${Gson().toJson(item)}")
+        Log.d("POINT_RPOBLEM", "onCreate: ${Gson().toJson(item)}")
+        viewModel.createServedPointEntityIfNull(item)
         startActivityForResult(intent, REQUEST_EXIT)
+    }
+
+    override fun moveCameraPoint(point: Point) {
+        val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        map_view.map.move(CameraPosition(point, 16.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -313,7 +310,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         if (requestCode == POINT_SERVICE_CODE && resultCode == Activity.RESULT_OK) {
             initMapView()
             initBottomBehavior()
-        } else if (requestCode == REQUEST_EXIT && resultCode == ActivityResult.pointProblem) {
+        } else if (requestCode == REQUEST_EXIT && resultCode == 99) {
             initMapView()
             initBottomBehavior()
         }

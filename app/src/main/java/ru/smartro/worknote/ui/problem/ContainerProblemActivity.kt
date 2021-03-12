@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.alert_warning_delete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.hideDialog
+import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningContainerFailure
 import ru.smartro.worknote.service.AppPreferences
@@ -43,9 +44,12 @@ class ContainerProblemActivity : AppCompatActivity() {
     private lateinit var wayPoint: WayPointEntity
     private lateinit var containerInfo: ContainerInfoEntity
     private val viewModel: ProblemViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_container_problem)
+        baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
+
         supportActionBar!!.title = "Проблема на площадке"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         breakDown = viewModel.findBreakDown()
@@ -75,13 +79,13 @@ class ContainerProblemActivity : AppCompatActivity() {
     private fun initProblemPhoto() {
         val intent = Intent(this, CameraActivity::class.java)
         intent.putExtra("wayPoint", Gson().toJson(wayPoint))
+        Log.d("POINT_PROBLEM", "initProblemPhoto: ${Gson().toJson(wayPoint)}")
         if (isContainerProblem) {
             intent.putExtra("photoFor", PhotoTypeEnum.forProblemContainer)
         } else {
             intent.putExtra("photoFor", PhotoTypeEnum.forProblemPoint)
         }
         startActivityForResult(intent, 13)
-
         point_problem_btn.setOnClickListener {
             startActivityForResult(intent, 13)
         }
@@ -89,7 +93,6 @@ class ContainerProblemActivity : AppCompatActivity() {
 
     private fun findBreakDownId(): Int {
         var result = 0
-        Log.d("dsadsadsa", "${Gson().toJson(breakDown)} ")
         breakDown.forEach {
             if (it.problem == problem_container_choose_problem.text.toString()) {
                 result = it.id
@@ -100,7 +103,6 @@ class ContainerProblemActivity : AppCompatActivity() {
 
     private fun findFailReasonId(): Int {
         var result = 0
-        Log.d("dsadsadsa", "${Gson().toJson(failureReason)} ")
         failureReason.forEach {
             if (it.reason == problem_container_choose_reason_cant.text.toString()) {
                 result = it.id
@@ -134,7 +136,7 @@ class ContainerProblemActivity : AppCompatActivity() {
                     } else {
                         warningContainerFailure("${getString(R.string.container_fail)} Причина: ${problem_container_choose_reason_cant.text}").run {
                             this.accept_btn.setOnClickListener {
-                                sendFailure(media!!, failReasonId)
+                                sendFailure(media, failReasonId)
                             }
                             this.dismiss_btn.setOnClickListener {
                                 hideDialog()
@@ -149,6 +151,7 @@ class ContainerProblemActivity : AppCompatActivity() {
     }
 
     private fun sendBreakDown(media: List<String>, tId: Int, failure: Boolean) {
+        loadingShow()
         val breakDownBody = BreakdownBody(makeBreakDownBody(isContainerProblem, media, tId))
         viewModel.sendBreakdown(breakDownBody).observe(this, Observer { result ->
             when (result.status) {
@@ -186,13 +189,10 @@ class ContainerProblemActivity : AppCompatActivity() {
         viewModel.sendFailure(failureBody).observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
+                    hideDialog()
                     viewModel.updatePointStatus(wayPoint.id!!, StatusEnum.failure)
                     toast("Успешно отправлен ${result.msg}")
-                    if (isContainerProblem) {
-                        setResult(ActivityResult.pointProblem)
-                    } else {
-                        setResult(99)
-                    }
+                    setResult(99)
                     finish()
                 }
                 Status.ERROR -> {

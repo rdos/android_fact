@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.yandex.mapkit.geometry.Point
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.map_behavior_item.view.*
 import ru.smartro.worknote.R
@@ -37,12 +38,17 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
             }
         }
 
-        holder.itemView.map_behavior_address.text = item!!.name
+        holder.itemView.map_behavior_address.text = item!!.address
         holder.itemView.map_behavior_scrp_id.text = item.srp_id.toString()
         holder.itemView.map_behavior_container_count.text = "${item!!.cs!!.size} контейнер"
 
+        holder.itemView.map_behavior_coordinate.setOnClickListener {
+            listener.moveCameraPoint(Point(item.co?.get(0)!!, item.co?.get(1)!!))
+        }
+
         when (items[position]!!.status) {
             StatusEnum.empty -> {
+                holder.itemView.map_behavior_status.isVisible = false
                 holder.itemView.setOnClickListener {
                     if (checkedPosition != holder.adapterPosition) {
                         holder.itemView.map_behavior_expl.expand()
@@ -90,5 +96,6 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
     interface ContainerClickListener {
         fun startPointService(item: WayPointEntity)
         fun startPointProblem(item: WayPointEntity)
+        fun moveCameraPoint(point: Point)
     }
 }

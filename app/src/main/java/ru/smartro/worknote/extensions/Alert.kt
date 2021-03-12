@@ -105,17 +105,18 @@ fun AppCompatActivity.warningDelete(title: String): View {
 }
 
 fun AppCompatActivity.showClickedPointDetail(point: WayPointEntity): View {
+    val customDialog: AlertDialog
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_point_detail, null)
+    builder.setView(view)
+    customDialog = builder.create()
     view.bottom_card.isVisible = point.status == StatusEnum.empty
     view.point_detail_address.text = "${point.address} \n ${point.srp_id} ${point.cs!!.size} конт."
-    view.point_detail_rv.adapter = ContainerPointDetailAdapter(point.cs!!)
     view.point_detail_close.setOnClickListener {
         customDialog.dismiss()
     }
-    builder.setView(view)
-    customDialog = builder.create()
+    view.point_detail_rv.adapter = ContainerPointDetailAdapter(point.cs!!)
     customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     customDialog.show()
     return view

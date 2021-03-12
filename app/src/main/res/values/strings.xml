@@ -53,4 +53,5 @@
     <string name="enter_weight_hint">Введите вес (в тоннах)</string>
     <string name="enter_volume_hint">Введите объем (в куб .м.)</string>
     <string name="success_complete">Сменное задание завершено Вы можете выбрать другое задание или завершить смену</string>
+    <string name="show_on_map"><u>Показать на карте</u>.</string>
 </resources>

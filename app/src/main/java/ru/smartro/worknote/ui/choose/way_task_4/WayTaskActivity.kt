@@ -85,6 +85,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                     saveFailReason()
                     saveCancelWayReason()
                     saveBreakDownTypes()
+                    dialog.dismiss()
                 }
 
                 view.dismiss_btn.setOnClickListener {

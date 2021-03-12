@@ -7,12 +7,6 @@
     android:layout_margin="@dimen/margin_default"
     app:cardCornerRadius="32dp">
 
-    <LinearLayout
-        android:id="@+id/top_constraintLayout"
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,23 +27,25 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_default"
+                android:layout_marginTop="16dp"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toStartOf="@id/point_detail_close"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="г. Москва, ул Пушкина д4" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/point_detail_rv"
-            android:layout_width="match_parent"
-            android:layout_height="326dp"
-            android:layout_marginHorizontal="@dimen/margin_default"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:itemCount="3"
-            tools:listitem="@layout/item_choose" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/point_detail_rv"
+                android:layout_width="match_parent"
+                android:layout_height="326dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginHorizontal="@dimen/margin_default"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@id/bottom_card"
+                app:layout_constraintTop_toBottomOf="@id/point_detail_address"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_choose" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/bottom_card"
@@ -94,6 +90,6 @@
 
         </androidx.cardview.widget.CardView>
 
-    </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
