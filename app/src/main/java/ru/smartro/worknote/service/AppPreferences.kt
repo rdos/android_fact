@@ -79,6 +79,9 @@ object AppPreferences {
         accessToken = ""
         vehicleId = 0
         organisationId = 0
+        wayListId = 0
+        wayTaskId = 0
+        thisUserHasTask = false
     }
 
 }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/baseview"
     tools:context=".ui.point_service.EnterContainerInfoActivity">
 
     <androidx.appcompat.widget.AppCompatButton
@@ -73,6 +74,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_default"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/bg_button_white"
         android:fitsSystemWindows="true"
         android:text="Отменить"
         app:layout_constraintBottom_toTopOf="@id/save_btn" />
@@ -83,7 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_default"
         android:layout_marginBottom="@dimen/margin_default"
-        android:backgroundTint="@color/colorPrimary"
+        android:background="@drawable/bg_button"
         android:fitsSystemWindows="true"
         android:text="Сохранить"
         android:textColor="@color/white"

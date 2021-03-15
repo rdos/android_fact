@@ -42,6 +42,16 @@
     <string name="problem">Проблема</string>
     <string name="early_complate">При досрочном завершении рейса все оставшиеся контейнерые площадки будут отмечены как невывезенные</string>
     <string name="problem_on_point">Проблема на КП</string>
-    <string name="problem_container">Проблема на площадке</string>
+    <string name="problem_container">Проблема контейнера</string>
+    <string name="problem_point">Проблема на площадке</string>
     <string name="container_fail">Все оставшиеся контейнеры на площадке будут помечены как невывезенные.</string>
+    <string name="finish_way">Завершить маршрут</string>
+    <string name="finish_way_now">Досрочно завершить маршрут</string>
+    <string name="send">Отправить</string>
+    <string name="weight_t">Вес (т)</string>
+    <string name="volume_cub">Объем (куб .м.)</string>
+    <string name="enter_weight_hint">Введите вес (в тоннах)</string>
+    <string name="enter_volume_hint">Введите объем (в куб .м.)</string>
+    <string name="success_complete">Сменное задание завершено Вы можете выбрать другое задание или завершить смену</string>
+    <string name="show_on_map"><u>Показать на карте</u>.</string>
 </resources>

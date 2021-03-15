@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_default"
+    app:cardCornerRadius="18dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="Итоговые показатели рейса"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_default"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:id="@+id/weight_tg"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:textOn="@string/weight_t"
+                android:textOff="@string/weight_t"
+                android:layout_weight="0.5"
+                android:background="@drawable/selector_left_finish" />
+
+            <ToggleButton
+                android:id="@+id/volume_tg"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:textOn="@string/volume_cub"
+                android:textOff="@string/volume_cub"
+                android:layout_weight="0.5"
+                android:background="@drawable/selector_right_finish" />
+
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/comment_et_out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Выберите вид измерения"
+            android:layout_marginHorizontal="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_default">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/comment_et"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="numberDecimal"
+                android:gravity="top" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/accept_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_default"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:layout_marginBottom="@dimen/margin_default"
+            android:background="@drawable/bg_button"
+            android:padding="@dimen/margin_default"
+            android:text="@string/send"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

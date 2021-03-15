@@ -7,12 +7,15 @@ import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayListBody
 import ru.smartro.worknote.service.network.body.WayTaskBody
 import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
+import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
+import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.service.network.response.breakdown.BreakDownResponse
 import ru.smartro.worknote.service.network.response.breakdown.sendBreakDown.BreakDownResultResponse
+import ru.smartro.worknote.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.service.network.response.failure_reason.FailureReasonResponse
 import ru.smartro.worknote.service.network.response.failure_reason.send_failure.FailureResultResponse
 import ru.smartro.worknote.service.network.response.organisation.OrganisationResponse
@@ -56,17 +59,13 @@ interface ApiService {
     @POST("workorder/{id}/progress")
     suspend fun progress(@Path("id") id: Int, @Body time: ProgressBody): Response<EmptyResponse>
 
-    @POST("workorder/{id}/progress")
-    suspend fun complete(@Path("id") id: Int, @Body time: ProgressBody): Response<EmptyResponse>
+    @POST("workorder/{id}/complete")
+    suspend fun complete(@Path("id") id: Int, @Body time: CompleteWayBody): Response<EmptyResponse>
 
+    @GET("work_order_cancelation_reason")
+    suspend fun getCancelWayReason(): Response<CancelationReasonResponse>
 
-    /* @Multipart
-     @POST("card/file/{id}")
-     suspend fun sendImage(
-         @Part image: MultipartBody.Part,
-         @Part("taskId") taskId: Int,
-         @Part("taskTypeId") taskTypeId: Int,
-         @Path("id") cardId: Int
-     ): Response<String>*/
+    @POST("workorder/{id}/early_complete")
+    suspend fun earlyComplete(@Path("id") id: Int, @Body time: EarlyCompleteBody): Response<EmptyResponse>
 
 }

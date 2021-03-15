@@ -12,10 +12,10 @@ open class ServedPointEntity(
     var co: RealmList<Double>? = null,
     var cs: RealmList<ServedContainerInfoEntity>? = null,
     var finishedAt: Long? = null,
-    var mediaAfter: RealmList<String>? = null,
-    var mediaBefore: RealmList<String>? = null,
-    var mediaPointProblem: RealmList<String>? = null,
-    var mediaProblemContainer: RealmList<String>? = null,
+    var mediaAfter: RealmList<String>? = RealmList(),
+    var mediaBefore: RealmList<String>? = RealmList(),
+    var mediaPointProblem: RealmList<String>? = RealmList(),
+    var mediaProblemContainer: RealmList<String>? = RealmList(),
     var oid: Int? = null,
     var woId: Int? = null
 ) : RealmObject()

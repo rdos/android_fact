@@ -22,6 +22,7 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.problem.ContainerBreakdownEntity
 import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
@@ -82,7 +83,9 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                     loadingShow()
                     AppPreferences.wayTaskId = adapter.getSelectedId()
                     saveFailReason()
-                    saveBreakDownTypes(dialog)
+                    saveCancelWayReason()
+                    saveBreakDownTypes()
+                    dialog.dismiss()
                 }
 
                 view.dismiss_btn.setOnClickListener {
@@ -92,7 +95,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
         }
     }
 
-    private fun saveBreakDownTypes(dialog: AlertDialog) {
+    private fun saveBreakDownTypes() {
         viewModel.getBreakDownTypes().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
@@ -121,9 +124,27 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
             when (result.status) {
                 Status.SUCCESS -> {
                     val entities = result.data?.data?.filter {
-                        it.oid == AppPreferences.organisationId }!!.map {
-                        ContainerFailReasonEntity(it.id, it.name) }
+                        it.oid == AppPreferences.organisationId
+                    }!!.map {
+                        ContainerFailReasonEntity(it.id, it.name)
+                    }
                     viewModel.insertFailReason(entities)
+                }
+                Status.ERROR -> {
+                    toast(result.msg)
+                }
+            }
+        })
+    }
+
+    private fun saveCancelWayReason() {
+        viewModel.getCancelWayReason().observe(this, Observer { result ->
+            when (result.status) {
+                Status.SUCCESS -> {
+                    val entities = result.data?.data?.filter {
+                        it.attributes.organisationId == AppPreferences.organisationId
+                    }!!.map { CancelWayReasonEntity(it.id, it.attributes.name) }
+                    viewModel.insertCancelWayReason(entities)
                 }
                 Status.ERROR -> {
                     toast(result.msg)

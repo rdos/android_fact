@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/baseview"
     tools:context=".ui.problem.ContainerProblemActivity">
 
     <ImageView
@@ -140,7 +141,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_default"
-        android:backgroundTint="@color/dark_red"
+        android:background="@drawable/bg_button_red"
         android:text="Подтвердить"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent" />

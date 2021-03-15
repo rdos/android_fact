@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.extensions.loadingHide
+import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
 import ru.smartro.worknote.ui.point_service.PointServiceViewModel
 import java.io.File
@@ -40,11 +40,11 @@ class ImageDetailFragment(private val wayPointId: Int, private val photoPath: St
                     lifecycleScope.launch(Dispatchers.IO) {
                         File(photoPath).delete()
                     }
-                    loadingHide()
+                    hideDialog()
                     dismiss()
                 }
                 this.dismiss_btn.setOnClickListener {
-                    loadingHide()
+                    hideDialog()
                 }
             }
         }

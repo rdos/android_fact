@@ -17,7 +17,8 @@ import kotlinx.android.synthetic.main.alert_warning_camera.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_delete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.extensions.loadingHide
+import ru.smartro.worknote.extensions.hideDialog
+import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningContainerFailure
 import ru.smartro.worknote.service.AppPreferences
@@ -31,6 +32,7 @@ import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
 import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.failure.FailureItem
 import ru.smartro.worknote.ui.camera.CameraActivity
+import ru.smartro.worknote.util.ActivityResult
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
@@ -38,20 +40,27 @@ import ru.smartro.worknote.util.StatusEnum
 class ContainerProblemActivity : AppCompatActivity() {
     private lateinit var breakDown: List<ContainerBreakdownEntity>
     private lateinit var failureReason: List<ContainerFailReasonEntity>
-
+    private var isContainerProblem = false
     private lateinit var wayPoint: WayPointEntity
     private lateinit var containerInfo: ContainerInfoEntity
     private val viewModel: ProblemViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_container_problem)
+        baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
+
         supportActionBar!!.title = "Проблема на площадке"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         breakDown = viewModel.findBreakDown()
         failureReason = viewModel.findFailReason()
+
         intent.let {
             wayPoint = Gson().fromJson(it.getStringExtra("wayPoint"), WayPointEntity::class.java)
-            containerInfo = Gson().fromJson(it.getStringExtra("container_info"), ContainerInfoEntity::class.java)
+            isContainerProblem = it.getBooleanExtra("isContainerProblem", false)
+            if (isContainerProblem) {
+                containerInfo = Gson().fromJson(it.getStringExtra("container_info"), ContainerInfoEntity::class.java)
+            }
         }
         initProblemPhoto()
         initSelectors()
@@ -60,15 +69,23 @@ class ContainerProblemActivity : AppCompatActivity() {
 
     private fun initImageView() {
         val wayPoint = viewModel.findServedPointEntity(wayPoint.id!!)
-        Glide.with(this).load(wayPoint!!.mediaProblemContainer!!.last()).into(container_problem_img)
+        if (isContainerProblem) {
+            Glide.with(this).load(wayPoint!!.mediaProblemContainer!!.last()).into(container_problem_img)
+        } else {
+            Glide.with(this).load(wayPoint!!.mediaPointProblem!!.last()).into(container_problem_img)
+        }
     }
 
     private fun initProblemPhoto() {
         val intent = Intent(this, CameraActivity::class.java)
         intent.putExtra("wayPoint", Gson().toJson(wayPoint))
-        intent.putExtra("photoFor", PhotoTypeEnum.forProblemContainer)
+        Log.d("POINT_PROBLEM", "initProblemPhoto: ${Gson().toJson(wayPoint)}")
+        if (isContainerProblem) {
+            intent.putExtra("photoFor", PhotoTypeEnum.forProblemContainer)
+        } else {
+            intent.putExtra("photoFor", PhotoTypeEnum.forProblemPoint)
+        }
         startActivityForResult(intent, 13)
-
         point_problem_btn.setOnClickListener {
             startActivityForResult(intent, 13)
         }
@@ -98,7 +115,11 @@ class ContainerProblemActivity : AppCompatActivity() {
         container_problem_accept.setOnClickListener {
             val pointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
             Log.d("ContainerProblem", "acceptProblem: ${Gson().toJson(pointEntity)}")
-            val media = pointEntity?.mediaProblemContainer?.map { MyUtil.getFileToByte(it) }
+            val media = if (isContainerProblem) {
+                pointEntity?.mediaProblemContainer?.map { MyUtil.getFileToByte(it) }!!
+            } else {
+                pointEntity?.mediaPointProblem?.map { MyUtil.getFileToByte(it) }!!
+            }
             val breakDownId = findBreakDownId()
             val failReasonId = findFailReasonId()
             if (container_problem_cant_tg.isChecked || container_problem_break_tg.isChecked) {
@@ -106,7 +127,7 @@ class ContainerProblemActivity : AppCompatActivity() {
                     if (problem_container_choose_problem.text.isNullOrEmpty()) {
                         problem_container_choose_problem_out.error = "Выберите проблему"
                     } else {
-                        sendBreakDown(media!!, breakDownId, container_problem_cant_tg.isChecked)
+                        sendBreakDown(media, breakDownId, container_problem_cant_tg.isChecked)
                     }
                 }
                 if (container_problem_cant_tg.isChecked) {
@@ -115,10 +136,10 @@ class ContainerProblemActivity : AppCompatActivity() {
                     } else {
                         warningContainerFailure("${getString(R.string.container_fail)} Причина: ${problem_container_choose_reason_cant.text}").run {
                             this.accept_btn.setOnClickListener {
-                                sendFailure(media!!, failReasonId)
+                                sendFailure(media, failReasonId)
                             }
                             this.dismiss_btn.setOnClickListener {
-                                loadingHide()
+                                hideDialog()
                             }
                         }
                     }
@@ -130,20 +151,18 @@ class ContainerProblemActivity : AppCompatActivity() {
     }
 
     private fun sendBreakDown(media: List<String>, tId: Int, failure: Boolean) {
-        val list = ArrayList<BreakDownItem>()
-        val body = BreakDownItem(
-            cId = containerInfo.id!!, allowed = listOf(1, 2), co = wayPoint.co!!, comment = container_problem_comment.text.toString(),
-            datetime = System.currentTimeMillis() / 1000L, failureType = "unserve", media = media, oid = AppPreferences.organisationId,
-            pId = wayPoint.id!!, redirect = "fact container", type = "container", woId = AppPreferences.wayTaskId, tId = tId
-        )
-        list.add(body)
-        val breakDownBody = BreakdownBody(list)
+        loadingShow()
+        val breakDownBody = BreakdownBody(makeBreakDownBody(isContainerProblem, media, tId))
         viewModel.sendBreakdown(breakDownBody).observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     toast("Успешно отправлен ${result.msg}")
                     viewModel.updatePointStatus(wayPoint.id!!, StatusEnum.breakDown)
-                    viewModel.updateContainerStatus(wayPoint.id!!, containerInfo.id!!, StatusEnum.breakDown)
+                    if (isContainerProblem) {
+                        viewModel.updateContainerStatus(wayPoint.id!!, containerInfo.id!!, StatusEnum.breakDown)
+                    } else {
+                        setResult(ActivityResult.pointProblem)
+                    }
                     if (!failure) {
                         finish()
                     }
@@ -156,6 +175,7 @@ class ContainerProblemActivity : AppCompatActivity() {
                 }
             }
         })
+
     }
 
     private fun sendFailure(media: List<String>, tId: Int) {
@@ -169,9 +189,10 @@ class ContainerProblemActivity : AppCompatActivity() {
         viewModel.sendFailure(failureBody).observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
+                    hideDialog()
                     viewModel.updatePointStatus(wayPoint.id!!, StatusEnum.failure)
                     toast("Успешно отправлен ${result.msg}")
-                    setResult(Activity.RESULT_CANCELED, null)
+                    setResult(99)
                     finish()
                 }
                 Status.ERROR -> {
@@ -234,4 +255,23 @@ class ContainerProblemActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun makeBreakDownBody(isContainerProblem: Boolean, media: List<String>, tId: Int): ArrayList<BreakDownItem> {
+        return if (isContainerProblem) {
+            val body = BreakDownItem(
+                cId = containerInfo.id!!, allowed = listOf(1, 2), co = wayPoint.co!!, comment = container_problem_comment.text.toString(),
+                datetime = System.currentTimeMillis() / 1000L, failureType = "unserve", media = media, oid = AppPreferences.organisationId,
+                pId = wayPoint.id!!, redirect = "fact container", type = "container", woId = AppPreferences.wayTaskId, tId = tId
+            )
+            arrayListOf(body)
+        } else {
+            val body = BreakDownItem(
+                cId = null, allowed = listOf(1, 2), co = wayPoint.co!!, comment = container_problem_comment.text.toString(),
+                datetime = System.currentTimeMillis() / 1000L, failureType = null, media = media, oid = AppPreferences.organisationId,
+                pId = wayPoint.id!!, redirect = "platform", type = "platform", woId = AppPreferences.wayTaskId, tId = tId
+            )
+            arrayListOf(body)
+        }
+    }
+
 }

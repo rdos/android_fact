@@ -74,7 +74,6 @@ import kotlin.math.min
 class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEntity) : Fragment() {
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
-    private val IMMERSIVE_FLAG_TIMEOUT = 500L
     private val ANIMATION_FAST_MILLIS = 50L
     private val ANIMATION_SLOW_MILLIS = 100L
     private lateinit var hostLayout: ConstraintLayout
@@ -94,6 +93,7 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
     private var cameraProvider: ProcessCameraProvider? = null
 
     private val viewModel: CameraViewModel by viewModel()
+    private var imageCounter = 0
 
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
@@ -181,6 +181,7 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
             updateCameraUi()
             setUpCamera()
         }
+        Log.d(TAG, "servedPointEntity: ${Gson().toJson(wayPoint)}")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -278,6 +279,7 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
                     if (servedPointEntity?.mediaPointProblem?.size == 0) {
                         toast("Сделайте фото")
                     } else {
+                        requireActivity().setResult(Activity.RESULT_OK)
                         requireActivity().finish()
                     }
                 }
@@ -292,6 +294,9 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
             }
         }
         controls.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener {
+            val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
+
+            Log.d(TAG, "servedPointEntity: ${Gson().toJson(servedPointEntity)}")
             Log.d(TAG, "updateCameraUi: CurrentThread ${Thread.currentThread()}")
             imageCapture?.let { imageCapture ->
                 val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
@@ -300,35 +305,54 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
                 }
 
                 val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
-                    .setMetadata(metadata)
-                    .build()
+                    .setMetadata(metadata).build()
 
-                imageCapture.takePicture(outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
-                    override fun onError(exc: ImageCaptureException) {
-                        Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                val maxPhotoCount = 3
+
+                val currentMediaIsFull = when (photoFor) {
+                    PhotoTypeEnum.forAfterMedia -> {
+                        servedPointEntity?.mediaAfter!!.size >= maxPhotoCount
                     }
-
-                    override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                        val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
-                        Log.d(TAG, "Photo capture succeeded: $savedUri path: ${savedUri.path}")
-                        Log.d(TAG, "Current thread: ${Thread.currentThread()}")
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            setGalleryThumbnail(savedUri)
-                        }
-                        CoroutineScope(Dispatchers.Main).launch {
-                            viewModel.updatePhotoMediaOfServedPoint(photoFor, wayPoint.id!!, photoFile.absolutePath)
-                            Log.d(TAG, "wayPointId:${wayPoint.id} ")
-                        }
+                    PhotoTypeEnum.forBeforeMedia -> {
+                        servedPointEntity?.mediaBefore!!.size >= maxPhotoCount
                     }
-                })
+                    PhotoTypeEnum.forProblemContainer -> {
+                        servedPointEntity?.mediaProblemContainer!!.size >= maxPhotoCount
+                    }
+                    PhotoTypeEnum.forProblemPoint -> {
+                        servedPointEntity?.mediaPointProblem!!.size >= maxPhotoCount
+                    }
+                    else -> {
+                        false
+                    }
+                }
+                if (currentMediaIsFull) {
+                    toast("Разрешенное количество фотографии 3")
+                } else {
+                    imageCapture.takePicture(outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
+                        override fun onError(exc: ImageCaptureException) {
+                            Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                        }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    hostLayout.postDelayed({
-                        hostLayout.foreground = ColorDrawable(Color.WHITE)
-                        hostLayout.postDelayed(
-                            { hostLayout.foreground = null }, ANIMATION_FAST_MILLIS
-                        )
-                    }, ANIMATION_SLOW_MILLIS)
+                        override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                            val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
+                            Log.d(TAG, "Photo capture succeeded: $savedUri path: ${savedUri.path}")
+                            Log.d(TAG, "Current thread: ${Thread.currentThread()}")
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                setGalleryThumbnail(savedUri)
+                            }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                viewModel.updatePhotoMediaOfServedPoint(photoFor, wayPoint.id!!, photoFile.absolutePath)
+                                Log.d(TAG, "wayPointId:${wayPoint.id} ")
+                            }
+                        }
+                    })
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        hostLayout.postDelayed({
+                            hostLayout.foreground = ColorDrawable(Color.WHITE)
+                            hostLayout.postDelayed({ hostLayout.foreground = null }, ANIMATION_FAST_MILLIS)
+                        }, ANIMATION_SLOW_MILLIS)
+                    }
                 }
             }
         }

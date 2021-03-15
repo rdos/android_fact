@@ -17,12 +17,8 @@ import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.ContainerPointAdapter
-import ru.smartro.worknote.extensions.loadingHide
-import ru.smartro.worknote.extensions.loadingShow
-import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.extensions.warningCameraShow
+import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.database.entity.container_service.ServedPointEntity
 import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.service.network.Status
@@ -30,12 +26,14 @@ import ru.smartro.worknote.service.network.body.served.ContainerInfoServed
 import ru.smartro.worknote.service.network.body.served.ContainerPointServed
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 import ru.smartro.worknote.ui.camera.CameraActivity
+import ru.smartro.worknote.ui.problem.ContainerProblemActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
 
 class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.ContainerPointClickListener {
+    private val REQUEST_EXIT = 33
     private lateinit var wayPoint: WayPointEntity
     private val viewModel: PointServiceViewModel by viewModel()
 
@@ -47,20 +45,17 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
             wayPoint = Gson().fromJson(itemJson, WayPointEntity::class.java)
         }
         supportActionBar?.title = "${wayPoint.address}"
+        viewModel.createServedPointEntityIfNull(wayPoint)
         initContainer()
-        createPointEntity()
         initBeforeMedia()
         initAfterMedia()
-    }
 
-    private fun createPointEntity() {
-        if (viewModel.findServedPointEntity(wayPoint.id!!) == null) {
-            val emptyPointEntity = ServedPointEntity(
-                beginnedAt = System.currentTimeMillis() / 1000L, finishedAt = null,
-                mediaBefore = null, mediaAfter = null, oid = AppPreferences.organisationId, woId = AppPreferences.wayTaskId,
-                cs = null, co = wayPoint.co, pId = wayPoint.id
-            )
-            viewModel.insertOrUpdateServedPoint(emptyPointEntity)
+        point_problem_btn.setOnClickListener {
+            val intent = Intent(this, ContainerProblemActivity::class.java)
+            intent.putExtra("wayPoint", Gson().toJson(wayPoint))
+            intent.putExtra("isContainerProblem", false)
+            startActivityForResult(intent, REQUEST_EXIT)
+            Log.d("POINT_RPOBLEM", "onCreate: ${Gson().toJson(wayPoint)}")
         }
     }
 
@@ -72,7 +67,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
                 intent.putExtra("wayPoint", Gson().toJson(wayPoint))
                 intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
                 startActivity(intent)
-                loadingHide()
+                hideDialog()
             }
         }
     }
@@ -87,7 +82,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
                         intent.putExtra("wayPoint", Gson().toJson(wayPoint))
                         intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
                         startActivityForResult(intent, 13)
-                        loadingHide()
+                        hideDialog()
                     }
                 }
             }
@@ -102,7 +97,6 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
         point_service_rv.adapter = ContainerPointAdapter(this, wayPointEntity?.cs!!)
         point_info_tv.text = "№${wayPointEntity.srp_id} / ${wayPointEntity.cs!!.size} конт."
         Log.d("PointServiceActivity", "wayPointEntity: ${Gson().toJson(wayPointEntity)}")
-
     }
 
     override fun startContainerPointService(item: ContainerInfoEntity) {
@@ -177,8 +171,13 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
             if (resultCode == Activity.RESULT_OK) {
                 initContainer()
                 initAfterMedia()
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                setResult(Activity.RESULT_OK)
+            } else if (resultCode == 99) {
+                setResult(99)
+                finish()
+            }
+        } else if (requestCode == REQUEST_EXIT) {
+            if (resultCode == 99) {
+                setResult(Activity.RESULT_OK )
                 finish()
             }
         }
