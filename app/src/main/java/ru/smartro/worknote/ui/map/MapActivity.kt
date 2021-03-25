@@ -8,6 +8,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import com.yandex.mapkit.Animation
@@ -43,6 +46,8 @@ import ru.smartro.worknote.ui.problem.ContainerProblemActivity
 import ru.smartro.worknote.util.ClusterIcon
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.work.UploadDataWorkManager
+import java.util.concurrent.TimeUnit
 
 
 class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, UserLocationObjectListener, MapObjectTapListener, WayPointAdapter.ContainerClickListener {
@@ -61,11 +66,20 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         setContentView(R.layout.activity_map)
         wayTaskEntity = viewModel.findWayTask()
         Log.d(TAG, "onCreate: wayTaskEntity ${Gson().toJson(wayTaskEntity)} ")
+        initUploadDataWorker()
+        initUserLocation()
         initMapView()
         initBottomBehavior()
-        initUserLocation()
     }
 
+    private fun initUploadDataWorker() {
+        val uploadDataWorkManager
+                = PeriodicWorkRequestBuilder<UploadDataWorkManager>(16, TimeUnit.MINUTES).build()
+        WorkManager.getInstance(this)
+            .enqueueUniquePeriodicWork("UploadData", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(uploadDataWorkManager.id)
+            .observe(this, Observer { Log.d(TAG, "runWorker: ${it.progress}") })
+    }
 
     private fun initUserLocation() {
         var locationM = com.yandex.mapkit.location.Location()
@@ -181,7 +195,9 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         val wayInfo = viewModel.findWayTask()
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
         val pointsArray = wayInfo.p!!
+
         pointsArray.sortByDescending { it.status == StatusEnum.empty }
+
         map_behavior_rv.adapter = WayPointAdapter(this, pointsArray)
 
         map_behavior_header.setOnClickListener {
@@ -213,7 +229,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
                 this.accept_btn.setOnClickListener {
                     if (!this.reason_et.text.isNullOrEmpty()) {
                         val failureId = allReasons.find { it.problem == this.reason_et.text.toString() }!!.id
-                        val body = EarlyCompleteBody(datetime = System.currentTimeMillis() / 1000L, failureId = failureId)
+                        val body = EarlyCompleteBody(datetime = MyUtil.timeStamp(), failureId = failureId)
                         loadingShow()
                         viewModel.earlyComplete(AppPreferences.wayTaskId, body)
                             .observe(this@MapActivity, Observer { result ->
@@ -238,6 +254,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
                     }
                 }
             }
+
         }
 
     }
@@ -247,7 +264,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
             this.accept_btn.setOnClickListener {
                 if (this.weight_tg.isChecked || this.volume_tg.isChecked) {
                     val unloadType = if (this.volume_tg.isChecked) 1 else 2
-                    val body = CompleteWayBody(finishedAt = System.currentTimeMillis() / 1000L, unloadType = unloadType, unloadValue = "${this.comment_et.text.toString()}.00")
+                    val body = CompleteWayBody(finishedAt = MyUtil.timeStamp(), unloadType = unloadType, unloadValue = "${this.comment_et.text.toString()}.00")
                     loadingShow()
                     viewModel.completeWay(AppPreferences.wayTaskId, body)
                         .observe(this@MapActivity, Observer { result ->

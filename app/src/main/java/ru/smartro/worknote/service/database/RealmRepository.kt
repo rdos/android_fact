@@ -1,6 +1,5 @@
 package ru.smartro.worknote.service.database
 
-import android.content.Context
 import android.util.Log
 import io.realm.Realm
 import io.realm.RealmModel
@@ -12,11 +11,11 @@ import ru.smartro.worknote.service.database.entity.problem.ContainerBreakdownEnt
 import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
+import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
-class RealmRepository(val context: Context) {
-    private val realm = Realm.getDefaultInstance()
+class RealmRepository(val realm: Realm) {
 
     fun insertWayTask(entity: WayTaskEntity) {
         realm.insertOrUpdate(entity)
@@ -139,7 +138,7 @@ class RealmRepository(val context: Context) {
     fun createServedPointEntityIfNull(wayPoint: WayPointEntity) {
         if (findServedPointEntity(wayPoint.id!!) == null) {
             val emptyPointEntity = ServedPointEntity(
-                beginnedAt = System.currentTimeMillis() / 1000L, finishedAt = null,
+                beginnedAt = MyUtil.timeStamp(), finishedAt = null,
                 mediaBefore = null, mediaAfter = null, oid = AppPreferences.organisationId, woId = AppPreferences.wayTaskId,
                 cs = null, co = wayPoint.co, pId = wayPoint.id
             )

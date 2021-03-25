@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_container_service.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
@@ -17,11 +16,13 @@ import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.ContainerPointAdapter
-import ru.smartro.worknote.extensions.*
+import ru.smartro.worknote.extensions.hideDialog
+import ru.smartro.worknote.extensions.loadingShow
+import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.extensions.warningCameraShow
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
-import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.served.ContainerInfoServed
 import ru.smartro.worknote.service.network.body.served.ContainerPointServed
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
@@ -61,7 +62,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
 
     private fun initBeforeMedia() {
         warningCameraShow("Сделайте фото КП до обслуживания").run {
-            AppPreferences.serviceStartedAt = System.currentTimeMillis() / 1000L
+            AppPreferences.serviceStartedAt = MyUtil.timeStamp()
             this.accept_btn.setOnClickListener {
                 val intent = Intent(this@PointServiceActivity, CameraActivity::class.java)
                 intent.putExtra("wayPoint", Gson().toJson(wayPoint))
@@ -114,18 +115,27 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
     private fun sendServedPoint() {
         loadingShow()
         val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
-        val isBreakDownPoint = viewModel.findWayTask().p!!.find { it.id == wayPoint.id }?.cs?.any { it.status == StatusEnum.breakDown }
+        val isBreakDownPoint = viewModel.findWayTask().p!!.find {
+            it.id == wayPoint.id
+        }?.cs?.any {
+            it.status == StatusEnum.breakDown
+        }
+
         Log.d("PointServiceAct", "sendServedPoint: ${Gson().toJson(servedPointEntity)}")
         CoroutineScope(Dispatchers.IO).launch {
             val cs = servedPointEntity?.cs?.map {
-                ContainerInfoServed(cId = it.cId!!, comment = it.comment!!, oid = AppPreferences.organisationId.toString(), woId = AppPreferences.wayTaskId, volume = it.volume!!)
+                ContainerInfoServed(
+                    cId = it.cId!!, comment = it.comment!!, oid = AppPreferences.organisationId.toString(),
+                    woId = AppPreferences.wayTaskId, volume = it.volume!!
+                )
             }
-            val beforeMedia = servedPointEntity?.mediaBefore?.map { MyUtil.getFileToByte(it) }
-            val afterMedia = servedPointEntity?.mediaAfter?.map { MyUtil.getFileToByte(it) }
+            val beforeMedia = servedPointEntity?.mediaBefore?.map { MyUtil.imageToBase64(it) }
+            val afterMedia = servedPointEntity?.mediaAfter?.map { MyUtil.imageToBase64(it) }
 
             val servedPoint = ContainerPointServed(
                 beginnedAt = AppPreferences.serviceStartedAt, co = wayPoint.co!!, cs = cs!!, woId = AppPreferences.wayTaskId,
-                oid = AppPreferences.organisationId, finishedAt = System.currentTimeMillis() / 1000L, mediaAfter = afterMedia!!, mediaBefore = beforeMedia!!, pId = wayPoint.id!!
+                oid = AppPreferences.organisationId, finishedAt = MyUtil.timeStamp(), mediaAfter = afterMedia!!, mediaBefore = beforeMedia!!,
+                pId = wayPoint.id!!
             )
 
             val ps = ArrayList<ContainerPointServed>()
@@ -136,29 +146,7 @@ class PointServiceActivity : AppCompatActivity(), ContainerPointAdapter.Containe
 
             withContext(Dispatchers.Main) {
                 Log.d("served", "sendServedPoint: ${Gson().toJson(serviceResultBody)}")
-                viewModel.served(serviceResultBody).observe(this@PointServiceActivity, Observer { result ->
-                        when (result.status) {
-                            Status.SUCCESS -> {
-                                toast("Успешно отправлен!")
-                                loadingHide()
-                                if (isBreakDownPoint!!) {
-                                    viewModel.updatePointStatus(wayPoint.id!!, StatusEnum.breakDown)
-                                } else {
-                                    viewModel.updatePointStatus(wayPoint.id!!, StatusEnum.completed)
-                                }
-                                setResult(Activity.RESULT_OK)
-                                finish()
-                            }
-                            Status.ERROR -> {
-                                toast(result.msg)
-                                loadingHide()
-                            }
-                            Status.NETWORK -> {
-                                toast(result.msg)
-                                loadingHide()
-                            }
-                        }
-                    })
+
             }
         }
     }

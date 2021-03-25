@@ -12,12 +12,12 @@ import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
+import ru.smartro.worknote.service.network.response.cancelation_reason.CancelationReasonResponse
 
 class NetworkRepository(private val context: Context) {
     fun auth(model: AuthBody) = liveData(Dispatchers.IO) {
         try {
-            val response = RetrofitClient(context)
-                .apiService(false).auth(model)
+            val response = RetrofitClient(context).apiService(false).auth(model)
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
@@ -225,6 +225,22 @@ class NetworkRepository(private val context: Context) {
             }
         } catch (e: Exception) {
             emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
+    suspend fun getCancelWayReasonNoLV(): Resource<CancelationReasonResponse> {
+        return try {
+            val response = RetrofitClient(context).apiService(true).getCancelWayReasonNoLv()
+            when {
+                response.isSuccessful -> {
+                    Resource.success(response.body())
+                }
+                else -> {
+                    Resource.error("Ошибка ${response.code()}", null)
+                }
+            }
+        } catch (e: Exception) {
+            Resource.network("Проблемы с подключением интернета", null)
         }
     }
 

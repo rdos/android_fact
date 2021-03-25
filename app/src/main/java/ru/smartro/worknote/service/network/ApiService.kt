@@ -65,6 +65,9 @@ interface ApiService {
     @GET("work_order_cancelation_reason")
     suspend fun getCancelWayReason(): Response<CancelationReasonResponse>
 
+    @GET("work_order_cancelation_reason")
+    suspend fun getCancelWayReasonNoLv(): Response<CancelationReasonResponse>
+
     @POST("workorder/{id}/early_complete")
     suspend fun earlyComplete(@Path("id") id: Int, @Body time: EarlyCompleteBody): Response<EmptyResponse>
 

@@ -116,9 +116,9 @@ class ContainerProblemActivity : AppCompatActivity() {
             val pointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
             Log.d("ContainerProblem", "acceptProblem: ${Gson().toJson(pointEntity)}")
             val media = if (isContainerProblem) {
-                pointEntity?.mediaProblemContainer?.map { MyUtil.getFileToByte(it) }!!
+                pointEntity?.mediaProblemContainer?.map { MyUtil.imageToBase64(it) }!!
             } else {
-                pointEntity?.mediaPointProblem?.map { MyUtil.getFileToByte(it) }!!
+                pointEntity?.mediaPointProblem?.map { MyUtil.imageToBase64(it) }!!
             }
             val breakDownId = findBreakDownId()
             val failReasonId = findFailReasonId()
@@ -152,7 +152,7 @@ class ContainerProblemActivity : AppCompatActivity() {
 
     private fun sendBreakDown(media: List<String>, tId: Int, failure: Boolean) {
         loadingShow()
-        val breakDownBody = BreakdownBody(makeBreakDownBody(isContainerProblem, media, tId))
+        val breakDownBody = BreakdownBody(createBreakDownBody(isContainerProblem, media, tId))
         viewModel.sendBreakdown(breakDownBody).observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
@@ -182,7 +182,7 @@ class ContainerProblemActivity : AppCompatActivity() {
         val list = ArrayList<FailureItem>()
         val body = FailureItem(
             co = wayPoint.co!!, woId = AppPreferences.wayTaskId, pId = wayPoint.id!!, oid = AppPreferences.organisationId, media = media,
-            failureType = "failure", datetime = System.currentTimeMillis() / 1000L, comment = container_problem_comment.text.toString(), failureId = tId
+            failureType = "failure", datetime = MyUtil.timeStamp(), comment = container_problem_comment.text.toString(), failureId = tId
         )
         list.add(body)
         val failureBody = FailureBody(list)
@@ -256,18 +256,18 @@ class ContainerProblemActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun makeBreakDownBody(isContainerProblem: Boolean, media: List<String>, tId: Int): ArrayList<BreakDownItem> {
+    private fun createBreakDownBody(isContainerProblem: Boolean, media: List<String>, tId: Int): ArrayList<BreakDownItem> {
         return if (isContainerProblem) {
             val body = BreakDownItem(
                 cId = containerInfo.id!!, allowed = listOf(1, 2), co = wayPoint.co!!, comment = container_problem_comment.text.toString(),
-                datetime = System.currentTimeMillis() / 1000L, failureType = "unserve", media = media, oid = AppPreferences.organisationId,
+                datetime = MyUtil.timeStamp(), failureType = "unserve", media = media, oid = AppPreferences.organisationId,
                 pId = wayPoint.id!!, redirect = "fact container", type = "container", woId = AppPreferences.wayTaskId, tId = tId
             )
             arrayListOf(body)
         } else {
             val body = BreakDownItem(
                 cId = null, allowed = listOf(1, 2), co = wayPoint.co!!, comment = container_problem_comment.text.toString(),
-                datetime = System.currentTimeMillis() / 1000L, failureType = null, media = media, oid = AppPreferences.organisationId,
+                datetime = MyUtil.timeStamp(), failureType = null, media = media, oid = AppPreferences.organisationId,
                 pId = wayPoint.id!!, redirect = "platform", type = "platform", woId = AppPreferences.wayTaskId, tId = tId
             )
             arrayListOf(body)

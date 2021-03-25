@@ -27,7 +27,8 @@ class WayTaskViewModel(application: Application) : BaseViewModel(application) {
         return network.getBreakDownTypes()
     }
 
-    fun getFailReason(): LiveData<Resource<FailureReasonResponse>> {
+
+    fun getFailReason(): LiveData<Resource<FailureReasonResponse>>{
         return network.getFailReason()
     }
 

@@ -49,6 +49,10 @@ object MyUtil {
         }
     }
 
+    fun timeStamp(): Long {
+        return System.currentTimeMillis() / 1000L
+    }
+
     fun askPermissionForCamera(context: Activity, code: Int) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED
@@ -110,7 +114,7 @@ object MyUtil {
         AppPreferences.clear()
     }
 
-    fun getFileToByte(filePath: String?): String {
+    fun imageToBase64(filePath: String?): String {
         val bmp: Bitmap?
         val bos: ByteArrayOutputStream?
         val bt: ByteArray?

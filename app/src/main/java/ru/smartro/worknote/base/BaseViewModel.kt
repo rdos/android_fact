@@ -2,6 +2,7 @@ package ru.smartro.worknote.base
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import io.realm.Realm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -13,7 +14,7 @@ import kotlin.coroutines.CoroutineContext
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application),
     CoroutineScope {
     protected val network = NetworkRepository(application.applicationContext)
-    protected val db = RealmRepository(application.applicationContext)
+    protected val db = RealmRepository(Realm.getDefaultInstance())
 
     private val job: Job = SupervisorJob()
 

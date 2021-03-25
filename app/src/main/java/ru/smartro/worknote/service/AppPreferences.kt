@@ -44,6 +44,12 @@ object AppPreferences {
             it.putInt("organisationId", value)
         }
 
+    var lastSynchronizeTime: Long
+        get() = preferences.getLong("lastSynchronizeTime", 0)
+        set(value) = preferences.edit {
+            it.putLong("lastSynchronizeTime", value)
+        }
+
     var serviceStartedAt: Long
         get() = preferences.getLong("serviceStartedAt", 0L)
         set(value) = preferences.edit {

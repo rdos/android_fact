@@ -32,6 +32,7 @@ import ru.smartro.worknote.service.network.body.WayTaskBody
 import ru.smartro.worknote.service.network.response.way_task.WayInfo
 import ru.smartro.worknote.service.network.response.way_task.WayTaskResponse
 import ru.smartro.worknote.ui.map.MapActivity
+import ru.smartro.worknote.util.MyUtil
 
 class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
     private val TAG = "WayTaskActivity_LOG"
@@ -154,7 +155,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
     }
 
     private fun acceptProgress() {
-        viewModel.progress(AppPreferences.wayTaskId, ProgressBody(System.currentTimeMillis() / 1000L))
+        viewModel.progress(AppPreferences.wayTaskId, ProgressBody(MyUtil.timeStamp()))
             .observe(this, Observer { result ->
                 when (result.status) {
                     Status.SUCCESS -> {
