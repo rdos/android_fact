@@ -39,7 +39,6 @@ data class ContainerInfo(
     val typeId: Int
 ) : Serializable
 
-
 data class WayInfo(
     @SerializedName("accounting")
     val accounting: Int,
