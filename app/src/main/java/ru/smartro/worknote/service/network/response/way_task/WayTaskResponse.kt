@@ -51,7 +51,7 @@ data class WayInfo(
     @SerializedName("name")
     val name: String,
     @SerializedName("p")
-    val points: List<WayPoint>,
+    val platforms: List<Platform>,
     @SerializedName("start")
     val start: WayStartPoint,
     @SerializedName("unload")
@@ -59,13 +59,13 @@ data class WayInfo(
 ) : Serializable
 
 
-data class WayPoint(
+data class Platform(
     @SerializedName("address")
     val address: String,
     @SerializedName("co")
     val coordinate: List<Double>,
     @SerializedName("cs")
-    val containerInfo: List<ContainerInfo>,
+    val containers: List<ContainerInfo>,
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")
@@ -83,7 +83,7 @@ data class WayStartPoint(
 
 data class WayUnloadPoint(
     @SerializedName("co")
-    val co: List<Double>,
+    val coordinates: List<Double>,
     @SerializedName("name")
     val name: String
 ) : Serializable

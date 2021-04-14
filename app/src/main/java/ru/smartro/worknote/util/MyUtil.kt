@@ -7,10 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.os.Environment
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
@@ -20,11 +17,9 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import java.io.ByteArrayOutputStream
-import java.io.File
 
 
 object MyUtil {
-    private const val PERMISSIONS_REQUEST_CODE = 10
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
     /** Convenience method used to check if all permissions required by this app are granted */
@@ -32,51 +27,9 @@ object MyUtil {
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun deleteFileFromStorage(filePath: String) {
-        val file = File(filePath)
-        if (file.delete())
-            Log.d("Delete image after send", "DELETED $filePath ")
-        else
-            Log.d("Delete image after send", "NOT DELETED $filePath ")
-    }
-
-    fun createCardFolder(context: Context) {
-        val folderPath = context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.path + "/images"
-        val folder = File(folderPath)
-        if (!folder.exists()) {
-            val cardsDirectory = File(folderPath)
-            cardsDirectory.mkdirs()
-        }
-    }
 
     fun timeStamp(): Long {
         return System.currentTimeMillis() / 1000L
-    }
-
-    fun askPermissionForCamera(context: Activity, code: Int) {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                context,
-                arrayOf(Manifest.permission.CAMERA),
-                code
-            )
-        }
-    }
-
-    fun askPermissionForStorage(context: Activity, code: Int) {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                context,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                code
-            )
-        }
     }
 
     fun hasPermissions(context: Context, vararg permissions: Array<String>): Boolean =
@@ -131,23 +84,6 @@ object MyUtil {
             e.printStackTrace()
         }
         return "data:image/png;base64,$encodeString"
-    }
-
-    private fun getResizedBitmap(bm: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
-        val width = bm.width
-        val height = bm.height
-        val scaleWidth = newWidth.toFloat() / width
-        val scaleHeight = newHeight.toFloat() / height
-        // CREATE A MATRIX FOR THE MANIPULATION
-        val matrix = Matrix()
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight)
-
-        val resizedBitmap = Bitmap.createBitmap(
-            bm, 0, 0, width, height, matrix, false
-        )
-        bm.recycle()
-        return resizedBitmap
     }
 
 }

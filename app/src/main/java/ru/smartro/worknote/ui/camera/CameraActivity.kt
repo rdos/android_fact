@@ -11,7 +11,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.Gson
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.FLAGS_FULLSCREEN
-import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
 
@@ -22,19 +22,19 @@ private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 class CameraActivity : AppCompatActivity() {
     private var photoFor = 0
     private lateinit var hostLayout: FrameLayout
-    private lateinit var wayPoint: WayPointEntity
+    private lateinit var platform: PlatformEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
         intent.let {
-            wayPoint = Gson().fromJson(it.getStringExtra("wayPoint"), WayPointEntity::class.java)
+            platform = Gson().fromJson(it.getStringExtra("wayPoint"), PlatformEntity::class.java)
             photoFor = it.getIntExtra("photoFor", 0)
         }
 
         hostLayout = findViewById(R.id.fragment_container)
-        val cameraFragment = CameraFragment(photoFor, wayPoint)
+        val cameraFragment = CameraFragment(photoFor, platform)
         supportFragmentManager.beginTransaction().run {
             this.replace(R.id.fragment_container, cameraFragment)
             this.addToBackStack(null)
@@ -47,10 +47,10 @@ class CameraActivity : AppCompatActivity() {
             PhotoTypeEnum.forAfterMedia -> {
                 supportActionBar?.title = getString(R.string.service_after)
             }
-            PhotoTypeEnum.forProblemPoint -> {
+            PhotoTypeEnum.forPlatformProblem -> {
                 supportActionBar?.title = getString(R.string.problem_on_point)
             }
-            PhotoTypeEnum.forProblemContainer -> {
+            PhotoTypeEnum.forContainerProblem -> {
                 supportActionBar?.title = getString(R.string.problem_container)
             }
         }

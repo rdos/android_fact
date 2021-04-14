@@ -9,8 +9,8 @@ import ru.smartro.worknote.ui.choose.vehicle_2.VehicleViewModel
 import ru.smartro.worknote.ui.choose.way_list_3.WayListViewModel
 import ru.smartro.worknote.ui.choose.way_task_4.WayTaskViewModel
 import ru.smartro.worknote.ui.map.MapViewModel
-import ru.smartro.worknote.ui.point_service.PointServiceViewModel
-import ru.smartro.worknote.ui.problem.ProblemViewModel
+import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
+import ru.smartro.worknote.ui.ProblemActivity.ProblemViewModel
 
 val viewModelModule = module {
     viewModel { AuthViewModel(androidApplication()) }
@@ -19,7 +19,7 @@ val viewModelModule = module {
     viewModel { WayListViewModel(androidApplication()) }
     viewModel { WayTaskViewModel(androidApplication()) }
     viewModel { MapViewModel(androidApplication()) }
-    viewModel { PointServiceViewModel(androidApplication()) }
+    viewModel { PlatformServiceViewModel(androidApplication()) }
     viewModel { CameraViewModel(androidApplication()) }
     viewModel { ProblemViewModel(androidApplication()) }
 }

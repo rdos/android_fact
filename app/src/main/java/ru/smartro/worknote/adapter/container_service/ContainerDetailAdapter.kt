@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.item_choose.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
+import ru.smartro.worknote.service.database.entity.way_task.ContainerEntity
 import ru.smartro.worknote.util.StatusEnum
 
-class ContainerPointDetailAdapter(private val items: RealmList<ContainerInfoEntity>) :
-    RecyclerView.Adapter<ContainerPointDetailAdapter.OwnerViewHolder>() {
+class ContainerDetailAdapter(private val items: RealmList<ContainerEntity>) :
+    RecyclerView.Adapter<ContainerDetailAdapter.OwnerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_choose, parent, false)
@@ -28,15 +28,15 @@ class ContainerPointDetailAdapter(private val items: RealmList<ContainerInfoEnti
         holder.itemView.choose_title.text = data!!.number
 
         when (data.status) {
-            StatusEnum.completed -> {
+            StatusEnum.COMPLETED -> {
                 holder.itemView.choose_status.isVisible = true
                 holder.itemView.choose_status.setImageResource(R.drawable.ic_check)
             }
-            StatusEnum.breakDown -> {
+            StatusEnum.BREAKDOWN -> {
                 holder.itemView.choose_status.isVisible = true
                 holder.itemView.choose_status.setImageResource(R.drawable.ic_red_check)
             }
-            StatusEnum.failure -> {
+            StatusEnum.FAILURE -> {
                 holder.itemView.choose_status.isVisible = true
                 holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel)
             }

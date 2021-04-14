@@ -9,10 +9,10 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.map_behavior_item.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
 import ru.smartro.worknote.util.StatusEnum
 
-class WayPointAdapter(private val listener: ContainerClickListener, private val items: RealmList<WayPointEntity>) : RecyclerView.Adapter<WayPointAdapter.WayPointViewHolder>() {
+class PlatformAdapter(private val listener: ContainerClickListener, private val items: RealmList<PlatformEntity>) : RecyclerView.Adapter<PlatformAdapter.WayPointViewHolder>() {
     private var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WayPointViewHolder {
@@ -39,38 +39,38 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
         }
 
         holder.itemView.map_behavior_address.text = item!!.address
-        holder.itemView.map_behavior_scrp_id.text = item.srp_id.toString()
-        holder.itemView.map_behavior_container_count.text = "${item!!.cs!!.size} контейнер"
+        holder.itemView.map_behavior_scrp_id.text = item.srpId.toString()
+        holder.itemView.map_behavior_container_count.text = "${item!!.containers!!.size} контейнер"
 
         holder.itemView.map_behavior_coordinate.setOnClickListener {
-            listener.moveCameraPoint(Point(item.co?.get(0)!!, item.co?.get(1)!!))
+            listener.moveCameraPoint(Point(item.lat!!, item.lon!!))
         }
 
         when (items[position]!!.status) {
-            StatusEnum.empty -> {
+            StatusEnum.EMPTY -> {
                 holder.itemView.map_behavior_status.isVisible = false
                 holder.itemView.setOnClickListener {
                     if (checkedPosition != holder.adapterPosition) {
                         holder.itemView.map_behavior_expl.expand()
                         holder.itemView.map_behavior_start_service.setOnClickListener {
-                            listener.startPointService(item)
+                            listener.startPlatformService(item)
                         }
                         holder.itemView.map_behavior_fire.setOnClickListener {
-                            listener.startPointProblem(item)
+                            listener.startPlatformProblem(item)
                         }
                         notifyItemChanged(checkedPosition)
                         checkedPosition = holder.adapterPosition
                     }
                 }
             }
-            StatusEnum.completed -> {
+            StatusEnum.COMPLETED -> {
                 holder.itemView.map_behavior_status.isVisible = true
                 holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_check)
                 holder.itemView.setOnClickListener {
                     //nothing
                 }
             }
-            StatusEnum.breakDown -> {
+            StatusEnum.BREAKDOWN -> {
                 holder.itemView.map_behavior_status.isVisible = true
                 holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_red_check)
                 holder.itemView.setOnClickListener {
@@ -78,7 +78,7 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
                 }
             }
 
-            StatusEnum.failure -> {
+            StatusEnum.FAILURE -> {
                 holder.itemView.map_behavior_status.isVisible = true
                 holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_cancel)
                 holder.itemView.setOnClickListener {
@@ -94,8 +94,8 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
     }
 
     interface ContainerClickListener {
-        fun startPointService(item: WayPointEntity)
-        fun startPointProblem(item: WayPointEntity)
+        fun startPlatformService(item: PlatformEntity)
+        fun startPlatformProblem(item: PlatformEntity)
         fun moveCameraPoint(point: Point)
     }
 }

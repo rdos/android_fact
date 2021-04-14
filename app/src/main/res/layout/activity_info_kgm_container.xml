@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/baseview"
-    tools:context=".ui.point_service.EnterContainerInfoActivity">
+    tools:context=".ui.platform_service.ContainerServiceActivity">
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/enter_info_problem_btn"

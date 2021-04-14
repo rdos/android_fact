@@ -12,6 +12,8 @@ import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
+import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
+import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.cancelation_reason.CancelationReasonResponse
 
 class NetworkRepository(private val context: Context) {
@@ -212,6 +214,22 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
+    fun synchro(body: SynchronizeBody) = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context).apiService(true).synchro(body)
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body()))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
     fun getCancelWayReason() = liveData(Dispatchers.IO) {
         try {
             val response = RetrofitClient(context).apiService(true).getCancelWayReason()
@@ -231,6 +249,22 @@ class NetworkRepository(private val context: Context) {
     suspend fun getCancelWayReasonNoLV(): Resource<CancelationReasonResponse> {
         return try {
             val response = RetrofitClient(context).apiService(true).getCancelWayReasonNoLv()
+            when {
+                response.isSuccessful -> {
+                    Resource.success(response.body())
+                }
+                else -> {
+                    Resource.error("Ошибка ${response.code()}", null)
+                }
+            }
+        } catch (e: Exception) {
+            Resource.network("Проблемы с подключением интернета", null)
+        }
+    }
+
+    suspend fun synchronizeData(body : SynchronizeBody): Resource<EmptyResponse> {
+        return try {
+            val response = RetrofitClient(context).apiService(true).synchro(body)
             when {
                 response.isSuccessful -> {
                     Resource.success(response.body())

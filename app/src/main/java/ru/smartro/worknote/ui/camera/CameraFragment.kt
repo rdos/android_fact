@@ -56,9 +56,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.extensions.loadingHide
+import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
@@ -71,7 +73,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEntity) : Fragment() {
+class CameraFragment(private val photoFor: Int, private val platform: PlatformEntity) : Fragment() {
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
     private val ANIMATION_FAST_MILLIS = 50L
@@ -93,7 +95,6 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
     private var cameraProvider: ProcessCameraProvider? = null
 
     private val viewModel: CameraViewModel by viewModel()
-    private var imageCounter = 0
 
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
@@ -181,7 +182,7 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
             updateCameraUi()
             setUpCamera()
         }
-        Log.d(TAG, "servedPointEntity: ${Gson().toJson(wayPoint)}")
+        Log.d(TAG, "servedPointEntity: ${Gson().toJson(platform)}")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -257,8 +258,7 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
 
         //кнопка отправить в камере. Определения для чего делается фото
         controls.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
-            val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
-            Log.d(TAG, "ACCEPT BUTTON: ${Gson().toJson(servedPointEntity)}")
+            val servedPointEntity = viewModel.findPlatformEntity(platform.platformId!!)
             when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
                     if (servedPointEntity?.mediaBefore?.size == 0) {
@@ -275,16 +275,16 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
                         requireActivity().finish()
                     }
                 }
-                PhotoTypeEnum.forProblemPoint -> {
-                    if (servedPointEntity?.mediaPointProblem?.size == 0) {
+                PhotoTypeEnum.forPlatformProblem -> {
+                    if (servedPointEntity?.mediaPlatformProblem?.size == 0) {
                         toast("Сделайте фото")
                     } else {
                         requireActivity().setResult(Activity.RESULT_OK)
                         requireActivity().finish()
                     }
                 }
-                PhotoTypeEnum.forProblemContainer -> {
-                    if (servedPointEntity?.mediaProblemContainer?.size == 0) {
+                PhotoTypeEnum.forContainerProblem -> {
+                    if (servedPointEntity?.mediaContainerProblem?.size == 0) {
                         toast("Сделайте фото")
                     } else {
                         requireActivity().setResult(Activity.RESULT_OK)
@@ -294,10 +294,9 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
             }
         }
         controls.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener {
-            val servedPointEntity = viewModel.findServedPointEntity(wayPoint.id!!)
+            loadingShow()
+            val platform = viewModel.findPlatformEntity(platform.platformId!!)
 
-            Log.d(TAG, "servedPointEntity: ${Gson().toJson(servedPointEntity)}")
-            Log.d(TAG, "updateCameraUi: CurrentThread ${Thread.currentThread()}")
             imageCapture?.let { imageCapture ->
                 val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
                 val metadata = Metadata().apply {
@@ -311,16 +310,16 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
 
                 val currentMediaIsFull = when (photoFor) {
                     PhotoTypeEnum.forAfterMedia -> {
-                        servedPointEntity?.mediaAfter!!.size >= maxPhotoCount
+                        platform?.mediaAfter!!.size >= maxPhotoCount
                     }
                     PhotoTypeEnum.forBeforeMedia -> {
-                        servedPointEntity?.mediaBefore!!.size >= maxPhotoCount
+                        platform?.mediaBefore!!.size >= maxPhotoCount
                     }
-                    PhotoTypeEnum.forProblemContainer -> {
-                        servedPointEntity?.mediaProblemContainer!!.size >= maxPhotoCount
+                    PhotoTypeEnum.forContainerProblem -> {
+                        platform?.mediaContainerProblem!!.size >= maxPhotoCount
                     }
-                    PhotoTypeEnum.forProblemPoint -> {
-                        servedPointEntity?.mediaPointProblem!!.size >= maxPhotoCount
+                    PhotoTypeEnum.forPlatformProblem -> {
+                        platform?.mediaPlatformProblem!!.size >= maxPhotoCount
                     }
                     else -> {
                         false
@@ -328,10 +327,11 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
                 }
                 if (currentMediaIsFull) {
                     toast("Разрешенное количество фотографии 3")
+                    loadingHide()
                 } else {
                     imageCapture.takePicture(outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
                         override fun onError(exc: ImageCaptureException) {
-                            Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                            Log.e(TAG, ": ${exc.message}", exc)
                         }
 
                         override fun onImageSaved(output: ImageCapture.OutputFileResults) {
@@ -342,9 +342,10 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
                                 setGalleryThumbnail(savedUri)
                             }
                             CoroutineScope(Dispatchers.Main).launch {
-                                viewModel.updatePhotoMediaOfServedPoint(photoFor, wayPoint.id!!, photoFile.absolutePath)
-                                Log.d(TAG, "wayPointId:${wayPoint.id} ")
+                                viewModel.updateMediaPlatform(photoFor, this@CameraFragment.platform.platformId!!, photoFile.absolutePath)
+                                Log.d(TAG, "wayPointId:${this@CameraFragment.platform.platformId} ")
                             }
+                            loadingHide()
                         }
                     })
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -359,7 +360,7 @@ class CameraFragment(private val photoFor: Int, private val wayPoint: WayPointEn
 
         // Listener for button used to view the most recent photo
         controls.findViewById<ImageButton>(R.id.photo_view_button).setOnClickListener {
-            val fragment = GalleryFragment(wayPointId = wayPoint.id!!, photoFor = photoFor)
+            val fragment = GalleryFragment(platformId = platform.platformId!!, photoFor = photoFor)
             fragment.show(childFragmentManager, "GalleryFragment")
         }
     }

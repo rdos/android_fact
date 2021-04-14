@@ -4,12 +4,10 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_choose.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +20,9 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.problem.ContainerBreakdownEntity
-import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEntity
-import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
+import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayTaskBody
@@ -104,7 +101,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                         val entities = result.data?.data?.filter {
                             it.attributes.organisationId == AppPreferences.organisationId
                         }?.map {
-                            ContainerBreakdownEntity(it.attributes.id, it.attributes.name)
+                            BreakDownEntity(it.attributes.id, it.attributes.name)
                         }
                         withContext(Dispatchers.Main) {
                             viewModel.insertBreakDown(entities!!)
@@ -125,9 +122,8 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
             when (result.status) {
                 Status.SUCCESS -> {
                     val entities = result.data?.data?.filter {
-                        it.oid == AppPreferences.organisationId
-                    }!!.map {
-                        ContainerFailReasonEntity(it.id, it.name)
+                        it.oid == AppPreferences.organisationId }!!.map {
+                        FailReasonEntity(it.id, it.name)
                     }
                     viewModel.insertFailReason(entities)
                 }
@@ -160,14 +156,8 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                 when (result.status) {
                     Status.SUCCESS -> {
                         loadingHide()
-                        viewModel.beginTransaction()
                         AppPreferences.thisUserHasTask = true
-                        val convertedToJson = Gson().toJson(selectedWayInfo)
-                        val wayTaskEntityFromJson = viewModel.createObjectFromJson(WayTaskEntity::class.java, convertedToJson)
-                        Log.d(TAG, "1 CONVERT $convertedToJson")
-                        Log.d(TAG, "2 CONVERT ${Gson().toJson(wayTaskEntityFromJson)}")
-                        viewModel.insertWayTask(wayTaskEntityFromJson)
-                        viewModel.commitTransaction()
+                        viewModel.insertWayTask(selectedWayInfo)
                         startActivity(Intent(this, MapActivity::class.java))
                         finish()
                     }

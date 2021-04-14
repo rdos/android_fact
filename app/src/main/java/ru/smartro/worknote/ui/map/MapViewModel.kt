@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.body.WayTaskBody
@@ -23,10 +22,6 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
         return network.completeWay(id, completeWayBody)
     }
 
-    fun createServedPointEntityIfNull(wayPoint: WayPointEntity) {
-        db.createServedPointEntityIfNull(wayPoint)
-    }
-
     fun earlyComplete(id : Int, body : EarlyCompleteBody) : LiveData<Resource<EmptyResponse>>{
         return network.earlyComplete(id, body)
     }
@@ -38,6 +33,11 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
     fun findWayTask(): WayTaskEntity {
         return db.findWayTask()
     }
+
+    fun findWayTaskLV(): WayTaskEntity {
+        return db.findWayTaskLV()
+    }
+
 
     fun findCancelWayReason(): List<CancelWayReasonEntity> {
         return db.findCancelWayReason()

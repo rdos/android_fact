@@ -1,51 +1,47 @@
-package ru.smartro.worknote.ui.point_service
+package ru.smartro.worknote.ui.platform_service
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_enter_container_info_acitivty.*
+import kotlinx.android.synthetic.main.activity_container_service.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.PercentAdapter
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.database.entity.container_service.ServedContainerInfoEntity
-import ru.smartro.worknote.service.database.entity.way_task.ContainerInfoEntity
-import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
-import ru.smartro.worknote.ui.problem.ContainerProblemActivity
+import ru.smartro.worknote.service.database.entity.way_task.ContainerEntity
+import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
+import ru.smartro.worknote.ui.ProblemActivity.ProblemActivity
 import ru.smartro.worknote.util.MyUtil
-import ru.smartro.worknote.util.StatusEnum
 
-class EnterContainerInfoActivity : AppCompatActivity() {
+class ContainerServiceActivity : AppCompatActivity() {
     private val REQUEST_EXIT = 41
-    private lateinit var containerInfo: ContainerInfoEntity
+    private lateinit var container: ContainerEntity
     private lateinit var percentAdapter: PercentAdapter
-    private lateinit var wayPoint: WayPointEntity
-    private val viewModel: PointServiceViewModel by viewModel()
+    private lateinit var platform: PlatformEntity
+    private val viewModel: PlatformServiceViewModel by viewModel()
     private var wayPointId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_enter_container_info_acitivty)
+        setContentView(R.layout.activity_container_service)
         baseview.setOnClickListener {
             MyUtil.hideKeyboard(this)
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.let {
-            containerInfo = Gson().fromJson(it.getStringExtra("container_info"), ContainerInfoEntity::class.java)
+            container = Gson().fromJson(it.getStringExtra("container_info"), ContainerEntity::class.java)
             wayPointId = it.getIntExtra("wayPointId", 0)
-            wayPoint = Gson().fromJson(it.getStringExtra("wayPoint"), WayPointEntity::class.java)
+            platform = Gson().fromJson(it.getStringExtra("wayPoint"), PlatformEntity::class.java)
         }
         enter_info_problem_btn.setOnClickListener {
-            val intent = Intent(this, ContainerProblemActivity::class.java)
-            intent.putExtra("wayPoint", Gson().toJson(wayPoint))
+            val intent = Intent(this, ProblemActivity::class.java)
+            intent.putExtra("wayPoint", Gson().toJson(platform))
             intent.putExtra("isContainerProblem", true)
-            intent.putExtra("container_info", Gson().toJson(containerInfo))
+            intent.putExtra("container_info", Gson().toJson(container))
             startActivityForResult(intent, REQUEST_EXIT)
         }
-        supportActionBar?.title = containerInfo.number
+        supportActionBar?.title = container.number
         percentAdapter = PercentAdapter(this, arrayListOf(0, 25, 50, 75, 100, 125))
         enter_info_percent_rv.adapter = percentAdapter
         back_button.setOnClickListener {
@@ -61,17 +57,9 @@ class EnterContainerInfoActivity : AppCompatActivity() {
     }
 
     private fun completeContainer() {
-        val container = ServedContainerInfoEntity(
-            cId = containerInfo.id, comment = comment_et.text.toString(), oid = AppPreferences.organisationId,
-            volume = percentAdapter.getSelectedCount(), woId = AppPreferences.wayListId
-        )
-        viewModel.addServedContainerInfo(container, wayPointId)
-        if (viewModel.currentContainerStatus(wayPoint.id!!, containerInfo.id!!) == StatusEnum.empty) {
-            viewModel.updateContainerStatus(wayPointId, containerInfo.id!!, StatusEnum.completed)
-        }
-        val intent = Intent()
-        intent.putExtra("filledContainer", 1)
-        setResult(Activity.RESULT_OK, intent)
+        val volume = percentAdapter.getSelectedCount()
+        val comment = comment_et.text.toString()
+        viewModel.updateContainerVolume(container.containerId!!, volume, comment)
         finish()
     }
 

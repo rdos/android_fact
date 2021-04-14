@@ -4,54 +4,91 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.choose.owner_1.OrganisationActivity">
+    android:id="@+id/baseview"
+    tools:context=".ui.platform_service.ContainerServiceActivity">
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/point_problem_btn"
+        android:id="@+id/enter_info_problem_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/margin_default"
         android:background="@drawable/bg_button_white"
         android:drawableStart="@drawable/ic_fire"
         android:elevation="17dp"
         android:padding="8dp"
-        android:text="@string/problem_on_point"
+        android:text="@string/problem"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/point_info_tv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="center_vertical"
-        android:textSize="18sp"
-        android:paddingHorizontal="@dimen/margin_default"
-        tools:text="Hello world"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@id/point_problem_btn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/point_problem_btn"
-        app:layout_constraintTop_toTopOf="@id/point_problem_btn" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/point_service_rv"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/point_problem_btn"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/complete_task_btn"
-        tools:listitem="@layout/item_choose" />
-
-    <Button
-        android:id="@+id/complete_task_btn"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_default"
+        android:layout_marginHorizontal="@dimen/margin_default"
+        android:layout_marginTop="32dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/enter_info_problem_btn">
+
+        <TextView
+            android:id="@+id/enter_info_tittle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Заполненность"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/enter_info_percent_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_default"
+            android:nestedScrollingEnabled="false"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="3"
+            tools:listitem="@layout/item_percent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="88dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="@dimen/margin_default"
+            android:gravity="start">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/comment_et"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="top"
+                android:hint="Комментарии..." />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/back_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_default"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/bg_button_white"
+        android:fitsSystemWindows="true"
+        android:text="Отменить"
+        app:layout_constraintBottom_toTopOf="@id/save_btn" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/save_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_default"
+        android:layout_marginBottom="@dimen/margin_default"
         android:background="@drawable/bg_button"
-        android:text="Завершить"
+        android:fitsSystemWindows="true"
+        android:text="Сохранить"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent" />
 

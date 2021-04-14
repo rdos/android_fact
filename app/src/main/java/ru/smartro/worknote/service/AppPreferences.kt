@@ -26,6 +26,12 @@ object AppPreferences {
             it.putString("accessToken", value)
         }
 
+    var currentCoordinate: String?
+        get() = preferences.getString("currentCoordinate", " ")
+        set(value) = preferences.edit {
+            it.putString("currentCoordinate", value)
+        }
+
     var userLogin: String
         get() = preferences.getString("userLogin", "")!!
         set(value) = preferences.edit {
@@ -44,10 +50,16 @@ object AppPreferences {
             it.putInt("organisationId", value)
         }
 
-    var lastSynchronizeTime: Long
+    var lastSynchroTime: Long
         get() = preferences.getLong("lastSynchronizeTime", 0)
         set(value) = preferences.edit {
             it.putLong("lastSynchronizeTime", value)
+        }
+
+    var lastUpdateTime: Long
+        get() = preferences.getLong("lastUpdateTime", 0)
+        set(value) = preferences.edit {
+            it.putLong("lastUpdateTime", value)
         }
 
     var serviceStartedAt: Long

@@ -71,4 +71,5 @@ class RetrofitClient(context: Context) {
         else
             retrofit("https://auth.stage.smartro.ru/api/").create(ApiService::class.java)
     }
+
 }

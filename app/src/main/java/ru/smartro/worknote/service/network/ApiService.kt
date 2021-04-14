@@ -11,6 +11,7 @@ import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
+import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.service.network.response.breakdown.BreakDownResponse
@@ -70,5 +71,8 @@ interface ApiService {
 
     @POST("workorder/{id}/early_complete")
     suspend fun earlyComplete(@Path("id") id: Int, @Body time: EarlyCompleteBody): Response<EmptyResponse>
+
+    @POST("synchro")
+    suspend fun synchro(@Body time: SynchronizeBody): Response<EmptyResponse>
 
 }
