@@ -17,7 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.ContainerDetailAdapter
 import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
-import ru.smartro.worknote.ui.ProblemActivity.ExtremeProblemActivity
+import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
 import ru.smartro.worknote.util.StatusEnum
 

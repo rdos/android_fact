@@ -23,11 +23,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.ProblemActivity.ProblemActivity"
+            android:name=".ui.problem.ProblemActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Problem" />
         <activity
-            android:name=".ui.ProblemActivity.ExtremeProblemActivity"
+            android:name=".ui.problem.ExtremeProblemActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Problem" />
         <activity
@@ -98,6 +98,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <meta-data
+            android:name="io.sentry.dsn"
+            android:value="https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17" />
     </application>
 
 </manifest>

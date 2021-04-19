@@ -6,19 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.alert_warning_camera.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_delete.view.*
 import kotlinx.android.synthetic.main.fragment_image_detail.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
 import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
-import java.io.File
 
 
 class ImageDetailFragment(private val platformId: Int, private val imagePath: String, private val photoFor: Int, private val listener : ImageDetailDeleteListener) : DialogFragment() {
@@ -36,10 +32,7 @@ class ImageDetailFragment(private val platformId: Int, private val imagePath: St
             warningDelete(getString(R.string.warning_detele)).run {
                 this.accept_btn.setOnClickListener {
                     viewModel.removePhotoFromServedEntity(photoFor, imagePath, platformId)
-                    listener.imageDeleted(imagePath)
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        File(imagePath).delete()
-                    }
+                    listener.imageDeleted()
                     hideDialog()
                     dismiss()
                 }
@@ -62,5 +55,5 @@ class ImageDetailFragment(private val platformId: Int, private val imagePath: St
 }
 
 interface ImageDetailDeleteListener {
-    fun imageDeleted(imagePath : String)
+    fun imageDeleted()
 }

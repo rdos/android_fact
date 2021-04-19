@@ -90,7 +90,7 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int) : 
         }
     }
 
-    override fun imageDeleted(imagePath: String) {
+    override fun imageDeleted() {
         initViews()
     }
 }

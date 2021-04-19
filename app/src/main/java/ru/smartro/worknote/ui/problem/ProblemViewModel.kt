@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.ProblemActivity
+package ru.smartro.worknote.ui.problem
 
 import android.app.Application
 import ru.smartro.worknote.base.BaseViewModel

@@ -38,9 +38,9 @@ import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
-import ru.smartro.worknote.ui.ProblemActivity.ExtremeProblemActivity
 import ru.smartro.worknote.ui.choose.way_task_4.WayTaskActivity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
+import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.ClusterIcon
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
@@ -66,8 +66,6 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         initUserLocation()
         initMapView()
         initBottomBehavior()
-        val deviceId: String = android.provider.Settings.Secure.getString(this.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID)
-        Log.d(TAG, "onCreate: ${deviceId}")
     }
 
     private fun initUploadDataWorker() {
@@ -113,7 +111,8 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
 
     private fun initMapView() {
         val wayInfo = viewModel.findWayTask()
-
+        val dsa = viewModel.findWayTaskLV()
+        Log.d(TAG, "initMapView: ${dsa}")
         val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(this)
         val greenIcon = ImageProvider.fromResource(this, R.drawable.ic_green_marker)
         val blueIcon = ImageProvider.fromResource(this, R.drawable.ic_blue_marker)

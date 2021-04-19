@@ -19,8 +19,8 @@ import ru.smartro.worknote.extensions.warningCameraShow
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.way_task.ContainerEntity
 import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
-import ru.smartro.worknote.ui.ProblemActivity.ProblemActivity
 import ru.smartro.worknote.ui.camera.CameraActivity
+import ru.smartro.worknote.ui.problem.ProblemActivity
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
@@ -61,6 +61,10 @@ class PlatformServiceActivity : AppCompatActivity(), ConteinerAdapter.ContainerP
                 startActivity(intent)
                 hideDialog()
             }
+            this.dismiss_btn.setOnClickListener {
+                hideDialog()
+                finish()
+            }
         }
     }
 
@@ -76,6 +80,7 @@ class PlatformServiceActivity : AppCompatActivity(), ConteinerAdapter.ContainerP
                         startActivityForResult(intent, 13)
                         hideDialog()
                     }
+                    this.dismiss_btn.isVisible = false
                 }
             }
         } else {

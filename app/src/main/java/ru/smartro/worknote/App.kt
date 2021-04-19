@@ -2,6 +2,7 @@ package ru.smartro.worknote
 
 import android.app.Application
 import io.realm.Realm
+import io.sentry.Sentry
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -13,12 +14,17 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         AppPreferences.init(this)
-        Realm.init(this@App)
+
         startKoin {
             androidLogger()
             androidContext(this@App)
             modules(getModule())
         }
+        Sentry.init{ options ->
+            options.dsn = "https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17"
+        }
+
+        Realm.init(this@App)
     }
 
     private fun getModule(): List<Module> {

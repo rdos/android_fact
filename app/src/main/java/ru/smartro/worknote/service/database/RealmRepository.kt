@@ -290,9 +290,9 @@ class RealmRepository(private val realm: Realm) {
             PlatformEntity(
                 platformId = it.platformId, address = it.address, lat = it.lat, lon = it.lon, name = it.name,
                 containers = it.containers, srpId = it.srpId, status = it.status,
-                mediaAfter = toBase64(it.mediaAfter!!), mediaBefore = toBase64(it.mediaBefore!!),
-                mediaPlatformProblem = toBase64(it.mediaPlatformProblem!!),
-                mediaContainerProblem = toBase64(it.mediaContainerProblem!!), breakdownReasonId = it.breakdownReasonId,
+                mediaAfter = it.mediaAfter, mediaBefore = it.mediaBefore,
+                mediaPlatformProblem = it.mediaPlatformProblem,
+                mediaContainerProblem = it.mediaContainerProblem, breakdownReasonId = it.breakdownReasonId,
                 failureReasonId = it.failureReasonId, problemComment = it.problemComment, updatedAt = it.updatedAt,
                 organisationId = it.organisationId, woId = it.woId
             )

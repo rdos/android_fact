@@ -342,7 +342,8 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
                                 setGalleryThumbnail(savedUri)
                             }
                             CoroutineScope(Dispatchers.Main).launch {
-                                viewModel.updateMediaPlatform(photoFor, this@CameraFragment.platform.platformId!!, photoFile.absolutePath)
+                                val imageBase64 = MyUtil.imageToBase64(photoFile.absolutePath)
+                                viewModel.updateMediaPlatform(photoFor, this@CameraFragment.platform.platformId!!, imageBase64)
                                 Log.d(TAG, "wayPointId:${this@CameraFragment.platform.platformId} ")
                             }
                             loadingHide()

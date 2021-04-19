@@ -76,7 +76,7 @@ object MyUtil {
         try {
             bmp = BitmapFactory.decodeFile(filePath)
             bos = ByteArrayOutputStream()
-            resizedBmp = Bitmap.createScaledBitmap(bmp, 360, 640, false)
+            resizedBmp = Bitmap.createScaledBitmap(bmp, 320, 620, false)
             resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, bos)
             bt = bos.toByteArray()
             encodeString = Base64.encodeToString(bt, Base64.DEFAULT)
@@ -84,6 +84,11 @@ object MyUtil {
             e.printStackTrace()
         }
         return "data:image/png;base64,$encodeString"
+    }
+
+    fun base64ToImage(encodedImage : String?) : Bitmap {
+        val decodedString: ByteArray = Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     }
 
 }

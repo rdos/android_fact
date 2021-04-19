@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.ProblemActivity
+package ru.smartro.worknote.ui.problem
 
 import android.app.Activity
 import android.content.Intent
@@ -64,9 +64,9 @@ class ExtremeProblemActivity : AppCompatActivity() {
     private fun initImageView() {
         val wayPoint = viewModel.findPlatformEntity(platform.platformId!!)
         if (isContainerProblem) {
-            Glide.with(this).load(wayPoint!!.mediaContainerProblem!!.last()).into(problem_img)
+            Glide.with(this).load(MyUtil.base64ToImage(wayPoint!!.mediaContainerProblem!!.last())).into(problem_img)
         } else {
-            Glide.with(this).load(wayPoint!!.mediaPlatformProblem!!.last()).into(problem_img)
+            Glide.with(this).load(MyUtil.base64ToImage(wayPoint!!.mediaPlatformProblem!!.last())).into(problem_img)
         }
     }
 

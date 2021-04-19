@@ -12,6 +12,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.listener.ImageClickListener
 import ru.smartro.worknote.base.GenericRecyclerAdapter
 import ru.smartro.worknote.base.ViewHolder
+import ru.smartro.worknote.util.MyUtil
 
 
 class GalleryPhotoAdapter(private val listener: ImageClickListener, val context: Context, items: ArrayList<String>) : GenericRecyclerAdapter<String>(items) {
@@ -39,7 +40,7 @@ class GalleryPhotoAdapter(private val listener: ImageClickListener, val context:
         }
         val myOptions = RequestOptions().override(100, 100)
 
-        Glide.with(holder.itemView).asBitmap().apply(myOptions).load(item)
+        Glide.with(holder.itemView).asBitmap().apply(myOptions).load(MyUtil.base64ToImage(item))
             .into(holder.itemView.item_imageview)
     }
 

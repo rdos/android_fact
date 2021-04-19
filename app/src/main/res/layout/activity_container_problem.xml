@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/baseview"
-    tools:context=".ui.ProblemActivity.ProblemActivity">
+    tools:context=".ui.problem.ProblemActivity">
 
     <ImageView
         android:id="@+id/problem_img"

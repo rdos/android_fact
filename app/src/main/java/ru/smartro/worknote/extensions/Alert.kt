@@ -43,6 +43,7 @@ fun AppCompatActivity.warningCameraShow(title: String): View {
     val view = inflater.inflate(R.layout.alert_warning_camera, null)
     view.title_tv.text = title
     builder.setView(view)
+    builder.setCancelable(false)
     customDialog = builder.create()
     customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     customDialog.show()

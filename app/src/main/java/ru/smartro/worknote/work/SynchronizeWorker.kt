@@ -76,7 +76,7 @@ class SynchronizeWorker(
     private fun synchronizeData() {
         CoroutineScope(Dispatchers.IO).launch {
             val db = RealmRepository(Realm.getDefaultInstance())
-            val platforms = db.findPlaFormsSynchronize()
+            val platforms = db.findWayTask().platfroms
             Log.d(TAG, " entity time > last update ${AppPreferences.lastUpdateTime > AppPreferences.lastSynchroTime} ${AppPreferences.lastUpdateTime}  ${AppPreferences.lastSynchroTime}")
             var long = 0.0
             var lat = 0.0
@@ -115,7 +115,7 @@ class SynchronizeWorker(
     }
 
     private fun Int.min(): Long {
-        return (this * 10) * 1000L
+        return (this * 30) * 1000L
     }
 
 }

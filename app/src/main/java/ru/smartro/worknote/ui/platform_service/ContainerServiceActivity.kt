@@ -12,7 +12,7 @@ import ru.smartro.worknote.adapter.container_service.PercentAdapter
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.database.entity.way_task.ContainerEntity
 import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
-import ru.smartro.worknote.ui.ProblemActivity.ProblemActivity
+import ru.smartro.worknote.ui.problem.ProblemActivity
 import ru.smartro.worknote.util.MyUtil
 
 class ContainerServiceActivity : AppCompatActivity() {

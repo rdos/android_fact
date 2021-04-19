@@ -10,7 +10,7 @@ import ru.smartro.worknote.ui.choose.way_list_3.WayListViewModel
 import ru.smartro.worknote.ui.choose.way_task_4.WayTaskViewModel
 import ru.smartro.worknote.ui.map.MapViewModel
 import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
-import ru.smartro.worknote.ui.ProblemActivity.ProblemViewModel
+import ru.smartro.worknote.ui.problem.ProblemViewModel
 
 val viewModelModule = module {
     viewModel { AuthViewModel(androidApplication()) }

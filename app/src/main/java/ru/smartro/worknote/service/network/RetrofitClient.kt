@@ -2,7 +2,6 @@ package ru.smartro.worknote.service.network
 
 import android.content.Context
 import android.util.Log
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -55,7 +54,6 @@ class RetrofitClient(context: Context) {
             .baseUrl(baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
 
 /*    fun apiService(isWorkNote: Boolean): ApiService {
