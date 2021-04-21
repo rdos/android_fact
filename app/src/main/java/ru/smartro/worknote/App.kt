@@ -3,6 +3,7 @@ package ru.smartro.worknote
 import android.app.Application
 import io.realm.Realm
 import io.sentry.Sentry
+import io.sentry.SentryLevel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -20,11 +21,15 @@ class App : Application() {
             androidContext(this@App)
             modules(getModule())
         }
-        Sentry.init{ options ->
+        Sentry.init { options ->
             options.dsn = "https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17"
+        }
+        Sentry.configureScope { scope ->
+            scope.level = SentryLevel.WARNING
         }
 
         Realm.init(this@App)
+
     }
 
     private fun getModule(): List<Module> {
