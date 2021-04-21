@@ -5,6 +5,8 @@ import androidx.lifecycle.liveData
 import com.google.gson.Gson
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
+import retrofit2.Response
+import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayListBody
@@ -27,7 +29,8 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    response.raw().request.url
+                    badRequest(response)
                     emit(Resource.error("Неверный логин или пароль", null))
                 }
             }
@@ -44,7 +47,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -62,7 +65,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -80,7 +83,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -97,7 +100,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -115,7 +118,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -148,7 +151,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body(), "${response.code()}"))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -166,7 +169,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -184,7 +187,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -201,7 +204,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -218,7 +221,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -235,7 +238,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -252,7 +255,7 @@ class NetworkRepository(private val context: Context) {
                     Resource.success(response.body())
                 }
                 else -> {
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                     Resource.error("Ошибка ${response.code()}", null)
                 }
             }
@@ -270,7 +273,7 @@ class NetworkRepository(private val context: Context) {
                 }
                 else -> {
                     emit(Resource.error("Ошибка ${response.code()}", null))
-                    badRequest(response.code(), Gson().toJson(response.body()))
+                    badRequest(response)
                 }
             }
         } catch (e: Exception) {
@@ -280,9 +283,13 @@ class NetworkRepository(private val context: Context) {
 
 }
 
-private fun badRequest(code: Int, response: String) {
-    if (code in 400..500) {
-        Sentry.captureException(BadRequestException(response))
+private fun <T> badRequest(response: Response<T>) {
+    if (response.code() in 400..500) {
+        Sentry.setTag("url", response.raw().request.url.encodedPath)
+        Sentry.setTag("http_code", response.code().toString())
+        Sentry.setTag("host", response.raw().request.url.host)
+        Sentry.setTag("user", AppPreferences.userLogin)
+        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
     }
 }
 

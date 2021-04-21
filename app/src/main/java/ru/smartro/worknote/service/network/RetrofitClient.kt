@@ -2,6 +2,7 @@ package ru.smartro.worknote.service.network
 
 import android.content.Context
 import android.util.Log
+import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -9,6 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.network.interceptor.TokenAuthenticator
 import java.util.concurrent.TimeUnit
 
 class RetrofitClient(context: Context) {
@@ -42,6 +44,7 @@ class RetrofitClient(context: Context) {
         OkHttpClient().newBuilder()
             .addInterceptor(authInterceptor)
             .addInterceptor(httpLoggingInterceptor)
+            .addInterceptor(SentryOkHttpInterceptor())
             .authenticator(TokenAuthenticator(context))
             .connectTimeout(240, TimeUnit.SECONDS)
             .readTimeout(240, TimeUnit.SECONDS)

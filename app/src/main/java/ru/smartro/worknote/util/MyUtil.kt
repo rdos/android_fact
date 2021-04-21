@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.util.Base64
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -89,6 +90,28 @@ object MyUtil {
     fun base64ToImage(encodedImage : String?) : Bitmap {
         val decodedString: ByteArray = Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+    }
+
+    fun getDeviceName(): String? {
+        fun capitalize(s: String?): String? {
+            if (s == null || s.isEmpty()) {
+                return ""
+            }
+            val first = s[0]
+            return if (Character.isUpperCase(first)) {
+                s
+            } else {
+                Character.toUpperCase(first).toString() + s.substring(1)
+            }
+        }
+
+        val manufacturer = Build.MANUFACTURER
+        val model = Build.MODEL
+        return if (model.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+            capitalize(model)
+        } else {
+            capitalize(manufacturer).toString() + " " + model
+        }
     }
 
 }

@@ -62,11 +62,11 @@ dependencies {
 
     //Okhttp3
     implementation "com.squareup.okhttp3:okhttp:4.9.0"
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.1.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
 
     //Kotlin Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.8"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8"
 
 
     //Glide
@@ -80,10 +80,10 @@ dependencies {
     implementation 'com.airbnb.android:lottie:3.4.1'
 
     //design
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.material:material:1.3.0'
 
     //LiveData
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-rc03'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0-alpha01'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'com.yandex.android:maps.mobile:4.0.0-lite'
 
@@ -106,11 +106,14 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0'
 
-    implementation 'nl.bryanderidder:themed-toggle-button-group:1.3.2'
 
     def work_version = "2.5.0"
     implementation "androidx.work:work-runtime-ktx:$work_version"
 
-    implementation 'io.sentry:sentry-android:4.3.0'
+    //sentry
+    def sentry_version = "4.4.0-alpha.2"
+    implementation "io.sentry:sentry-android:$sentry_version"
+    implementation "io.sentry:sentry-android-okhttp:$sentry_version"
+
 
 }
