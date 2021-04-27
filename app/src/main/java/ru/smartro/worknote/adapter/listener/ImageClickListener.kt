@@ -1,6 +1,6 @@
 package ru.smartro.worknote.adapter.listener
 
 interface ImageClickListener {
-    fun imageDetailClicked(photoPath: String)
-    fun imageRemoveClicked(photoPath: String)
+    fun imageDetailClicked(imageBase64: String)
+    fun imageRemoveClicked(imageBase64: String)
 }

@@ -232,8 +232,7 @@ class NetworkRepository(private val context: Context) {
 
     fun earlyComplete(id: Int, body: EarlyCompleteBody) = liveData(Dispatchers.IO) {
         try {
-            Log.d("dsadsa", "fucking body:${Gson().toJson(body)} ")
-            val response = RetrofitClient(context).apiService(true).earlyComplete(id, EarlyCompleteBody(body.datetime, body.failureId))
+            val response = RetrofitClient(context).apiService(true).earlyComplete(id, body)
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))

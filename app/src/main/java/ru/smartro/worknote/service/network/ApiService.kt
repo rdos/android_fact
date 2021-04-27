@@ -5,7 +5,6 @@ import retrofit2.http.*
 import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayListBody
-import ru.smartro.worknote.service.network.body.WayTaskBody
 import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
@@ -23,7 +22,7 @@ import ru.smartro.worknote.service.network.response.organisation.OrganisationRes
 import ru.smartro.worknote.service.network.response.served.ServedResponse
 import ru.smartro.worknote.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.service.network.response.way_list.WayListResponse
-import ru.smartro.worknote.service.network.response.way_task.WayTaskResponse
+import ru.smartro.worknote.service.network.response.work_order.WorkOrderResponse
 
 interface ApiService {
 
@@ -51,8 +50,10 @@ interface ApiService {
     @POST("failure")
     suspend fun sendFailure(@Body body: FailureBody): Response<FailureResultResponse>
 
+/*
     @POST("waybill/{id}")
     suspend fun getWayTask(@Path("id") wayId: Int, @Body wayTaskBody: WayTaskBody): Response<WayTaskResponse>
+*/
 
     @POST("served")
     suspend fun served(@Body body: ServiceResultBody): Response<ServedResponse>
@@ -70,9 +71,12 @@ interface ApiService {
     suspend fun getCancelWayReasonNoLv(): Response<CancelationReasonResponse>
 
     @POST("workorder/{id}/early_complete")
-    suspend fun earlyComplete(@Path("id") id: Int, @Body time: EarlyCompleteBody): Response<EmptyResponse>
+    suspend fun earlyComplete(@Path("id") id: Int, @Body body: EarlyCompleteBody): Response<EmptyResponse>
 
     @POST("synchro")
-    suspend fun synchro(@Body time: SynchronizeBody): Response<EmptyResponse>
+    suspend fun postSynchro(@Body time: SynchronizeBody): Response<EmptyResponse>
+
+    @POST("synchro/{o_id}/{w_id}")
+    suspend fun getWorkOrder(@Path("o_id") organisationId: Int, @Path("w_id") waybillId: Int): Response<WorkOrderResponse>
 
 }

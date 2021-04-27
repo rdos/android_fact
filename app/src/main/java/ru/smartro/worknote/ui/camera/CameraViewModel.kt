@@ -2,17 +2,24 @@ package ru.smartro.worknote.ui.camera
 
 import android.app.Application
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 
 class CameraViewModel(application: Application) : BaseViewModel(application) {
 
-    fun findPlatformEntity(pointId: Int): PlatformEntity? {
-        return db.findPlatformEntity(pointId)
+    fun findPlatformEntity(platformId: Int): PlatformEntity {
+        return db.findPlatformEntity(platformId)
     }
 
-    fun updateMediaPlatform(isPhotoFor: Int, pointId: Int, photoPath: String) {
-        db.updateMediaPlatform(isPhotoFor, pointId, photoPath)
+    fun updatePlatformMedia(imageFor: Int, pointId: Int, imageBase64: String) {
+        db.updatePlatformMedia(imageFor, pointId, imageBase64)
     }
+
+    fun updateContainerMedia(containerId: Int, imageBase64: String) {
+        db.updateContainerMedia(containerId, imageBase64)
+    }
+
+    fun findContainerEntity(containerId: Int) =
+        db.findContainerEntity(containerId)
 
 }
 

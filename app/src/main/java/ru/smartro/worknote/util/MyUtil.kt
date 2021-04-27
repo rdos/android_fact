@@ -18,6 +18,8 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 object MyUtil {
@@ -31,6 +33,11 @@ object MyUtil {
 
     fun timeStamp(): Long {
         return System.currentTimeMillis() / 1000L
+    }
+
+    fun currentTime(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", Locale.getDefault())
+        return sdf.format(Date())
     }
 
     fun hasPermissions(context: Context, vararg permissions: Array<String>): Boolean =

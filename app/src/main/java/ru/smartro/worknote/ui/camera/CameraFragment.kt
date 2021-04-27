@@ -38,6 +38,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.Metadata
@@ -50,7 +51,6 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,7 +60,6 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
@@ -73,7 +72,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-class CameraFragment(private val photoFor: Int, private val platform: PlatformEntity) : Fragment() {
+class CameraFragment(private val photoFor: Int, private val platformId: Int, private val containerId: Int) : Fragment(), ImageCounter {
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
     private val ANIMATION_FAST_MILLIS = 50L
@@ -164,12 +163,39 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
                 .apply(RequestOptions.circleCropTransform())
                 .into(thumbnail)
         }
+
+    }
+
+    private fun setImageCounter(plus : Boolean) {
+        val imageCounter = hostLayout.findViewById<TextView>(R.id.image_counter)
+        val count = if (plus) 1 else 0
+        imageCounter.post {
+            when (photoFor) {
+                PhotoTypeEnum.forContainerProblem -> {
+                    val container = viewModel.findContainerEntity(containerId)
+                    imageCounter.text = "${container.failureMedia.size + count}"
+                }
+                PhotoTypeEnum.forPlatformProblem -> {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    imageCounter.text = "${platform.failureMedia.size  + count}"
+                }
+                PhotoTypeEnum.forAfterMedia -> {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    imageCounter.text = "${platform.afterMedia.size + count}"
+                }
+                PhotoTypeEnum.forBeforeMedia -> {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    imageCounter.text = "${platform.beforeMedia.size + count}"
+                }
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         hostLayout = view as ConstraintLayout
+
         viewFinder = hostLayout.findViewById(R.id.view_finder)
         cameraExecutor = Executors.newSingleThreadExecutor()
         broadcastManager = LocalBroadcastManager.getInstance(view.context)
@@ -182,7 +208,6 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
             updateCameraUi()
             setUpCamera()
         }
-        Log.d(TAG, "servedPointEntity: ${Gson().toJson(platform)}")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -258,17 +283,18 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
 
         //кнопка отправить в камере. Определения для чего делается фото
         controls.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
-            val servedPointEntity = viewModel.findPlatformEntity(platform.platformId!!)
             when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
-                    if (servedPointEntity?.mediaBefore?.size == 0) {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    if (platform.beforeMedia.size == 0) {
                         toast("Сделайте фото")
                     } else {
                         requireActivity().finish()
                     }
                 }
                 PhotoTypeEnum.forAfterMedia -> {
-                    if (servedPointEntity?.mediaAfter?.size == 0) {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    if (platform.afterMedia.size == 0) {
                         toast("Сделайте фото")
                     } else {
                         requireActivity().setResult(Activity.RESULT_OK)
@@ -276,7 +302,8 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
                     }
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
-                    if (servedPointEntity?.mediaPlatformProblem?.size == 0) {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    if (platform.failureMedia.size == 0) {
                         toast("Сделайте фото")
                     } else {
                         requireActivity().setResult(Activity.RESULT_OK)
@@ -284,7 +311,8 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
                     }
                 }
                 PhotoTypeEnum.forContainerProblem -> {
-                    if (servedPointEntity?.mediaContainerProblem?.size == 0) {
+                    val container = viewModel.findContainerEntity(containerId)
+                    if (container.failureMedia.size == 0) {
                         toast("Сделайте фото")
                     } else {
                         requireActivity().setResult(Activity.RESULT_OK)
@@ -295,8 +323,6 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
         }
         controls.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener {
             loadingShow()
-            val platform = viewModel.findPlatformEntity(platform.platformId!!)
-
             imageCapture?.let { imageCapture ->
                 val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
                 val metadata = Metadata().apply {
@@ -310,23 +336,27 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
 
                 val currentMediaIsFull = when (photoFor) {
                     PhotoTypeEnum.forAfterMedia -> {
-                        platform?.mediaAfter!!.size >= maxPhotoCount
+                        val platform = viewModel.findPlatformEntity(platformId)
+                        platform.afterMedia.size >= maxPhotoCount
                     }
                     PhotoTypeEnum.forBeforeMedia -> {
-                        platform?.mediaBefore!!.size >= maxPhotoCount
-                    }
-                    PhotoTypeEnum.forContainerProblem -> {
-                        platform?.mediaContainerProblem!!.size >= maxPhotoCount
+                        val platform = viewModel.findPlatformEntity(platformId)
+                        platform.beforeMedia.size >= maxPhotoCount
                     }
                     PhotoTypeEnum.forPlatformProblem -> {
-                        platform?.mediaPlatformProblem!!.size >= maxPhotoCount
+                        val platform = viewModel.findPlatformEntity(platformId)
+                        platform.failureMedia.size >= maxPhotoCount
+                    }
+                    PhotoTypeEnum.forContainerProblem -> {
+                        val container = viewModel.findContainerEntity(containerId)
+                        container.failureMedia.size >= maxPhotoCount
                     }
                     else -> {
                         false
                     }
                 }
                 if (currentMediaIsFull) {
-                    toast("Разрешенное количество фотографии 3")
+                    toast("Разрешенное количество фотографий:3")
                     loadingHide()
                 } else {
                     imageCapture.takePicture(outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
@@ -340,11 +370,16 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
                             Log.d(TAG, "Current thread: ${Thread.currentThread()}")
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 setGalleryThumbnail(savedUri)
+                                setImageCounter(true)
                             }
                             CoroutineScope(Dispatchers.Main).launch {
                                 val imageBase64 = MyUtil.imageToBase64(photoFile.absolutePath)
-                                viewModel.updateMediaPlatform(photoFor, this@CameraFragment.platform.platformId!!, imageBase64)
-                                Log.d(TAG, "wayPointId:${this@CameraFragment.platform.platformId} ")
+
+                                if (photoFor == PhotoTypeEnum.forContainerProblem) {
+                                    viewModel.updateContainerMedia(containerId, imageBase64)
+                                } else {
+                                    viewModel.updatePlatformMedia(photoFor, this@CameraFragment.platformId, imageBase64)
+                                }
                             }
                             loadingHide()
                         }
@@ -361,9 +396,11 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
 
         // Listener for button used to view the most recent photo
         controls.findViewById<ImageButton>(R.id.photo_view_button).setOnClickListener {
-            val fragment = GalleryFragment(platformId = platform.platformId!!, photoFor = photoFor)
+            val fragment = GalleryFragment(platformId = platformId, photoFor = photoFor, containerId = containerId, imageCountListener = this)
             fragment.show(childFragmentManager, "GalleryFragment")
         }
+
+        setImageCounter(false)
     }
 
     private fun hasFrontCamera(): Boolean {
@@ -380,4 +417,12 @@ class CameraFragment(private val photoFor: Int, private val platform: PlatformEn
         private fun createFile(baseFolder: File, format: String, extension: String) =
             File(baseFolder, SimpleDateFormat(format, Locale.US).format(System.currentTimeMillis()) + extension)
     }
+
+    override fun mediaSizeChanged() {
+        setImageCounter(false)
+    }
+}
+
+interface ImageCounter {
+    fun mediaSizeChanged()
 }

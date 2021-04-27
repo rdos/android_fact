@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -25,18 +26,14 @@ import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.ProgressBody
-import ru.smartro.worknote.service.network.body.WayTaskBody
-import ru.smartro.worknote.service.network.response.way_task.WayInfo
-import ru.smartro.worknote.service.network.response.way_task.WayTaskResponse
+import ru.smartro.worknote.service.network.response.work_order.Workorder
 import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
 
 class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
-    private val TAG = "WayTaskActivity_LOG"
     private val viewModel: WayTaskViewModel by viewModel()
     private lateinit var adapter: WayTaskAdapter
-    private lateinit var selectedWayInfo: WayInfo
-    private lateinit var wayTask: WayTaskResponse
+    private lateinit var selectedWayInfo: Workorder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,13 +41,12 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
         setContentView(R.layout.activity_choose)
 
         loadingShow()
-        viewModel.getWayTask(AppPreferences.wayListId, WayTaskBody(AppPreferences.organisationId))
+        viewModel.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayListId)
             .observe(this, Observer { result ->
                 val data = result.data
                 when (result.status) {
                     Status.SUCCESS -> {
-                        wayTask = data!!
-                        adapter = WayTaskAdapter(data.data.wos as ArrayList<WayInfo>, this)
+                        adapter = WayTaskAdapter(data!!.data.workorders as ArrayList<Workorder>, this)
                         choose_rv.adapter = adapter
                         loadingHide()
                     }
@@ -112,6 +108,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                 Status.ERROR -> {
                     toast(result.msg)
                 }
+                else -> Log.d("dsadsa", "saveBreakDownTypes:")
             }
 
         })
@@ -161,7 +158,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                         startActivity(Intent(this, MapActivity::class.java))
                         finish()
                     }
-                    Status.ERROR -> {
+                    else -> {
                         toast(result.msg)
                         loadingHide()
                     }
@@ -169,7 +166,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
             })
     }
 
-    override fun selectedWayTask(model: WayInfo) {
+    override fun selectedWayTask(model: Workorder) {
         selectedWayInfo = model
     }
 }

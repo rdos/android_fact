@@ -11,21 +11,20 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import com.google.gson.Gson
+import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
+import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_point_detail.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.ContainerDetailAdapter
-import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
-import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
+import ru.smartro.worknote.extensions.hideDialog
+import ru.smartro.worknote.extensions.warningCameraShow
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
+import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlaceMarkDetailDialog(val platform: PlatformEntity) : DialogFragment() {
-    private val viewModel: MapViewModel by viewModel()
-    private val POINT_SERVICE_CODE = 10
-    private val REQUEST_EXIT = 41
+class PlaceMarkDetailDialog(private val platform: PlatformEntity) : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.alert_point_detail, container, false)
@@ -48,20 +47,27 @@ class PlaceMarkDetailDialog(val platform: PlatformEntity) : DialogFragment() {
     private fun initViews() {
         point_detail_start_service.setOnClickListener {
             val intent = Intent(requireActivity(), PlatformServiceActivity::class.java)
-            val itemJson = Gson().toJson(platform)
-            intent.putExtra("container", itemJson)
+            intent.putExtra("platform_id", platform.platformId)
             dismiss()
-            startActivityForResult(intent, POINT_SERVICE_CODE)
+            startActivity(intent)
         }
 
         point_detail_fire.setOnClickListener {
-            val intent = Intent(requireActivity(), ExtremeProblemActivity::class.java)
-            intent.putExtra("wayPoint", Gson().toJson(platform))
-            intent.putExtra("isContainerProblem", false)
-            dismiss()
-            startActivityForResult(intent, REQUEST_EXIT)
+            warningCameraShow("Сделайте фото проблемы").let {
+                it.accept_btn.setOnClickListener {
+                    val intent = Intent(requireActivity(), ExtremeProblemActivity::class.java)
+                    intent.putExtra("platform_id", platform.platformId)
+                    dismiss()
+                    startActivity(intent)
+                }
+
+                it.dismiss_btn.setOnClickListener {
+                    hideDialog()
+                }
+            }
+
         }
-        bottom_card.isVisible = platform.status == StatusEnum.EMPTY
+        bottom_card.isVisible = platform.status == StatusEnum.NEW
         point_detail_address.text = "${platform.address} \n ${platform.srpId} ${platform.containers!!.size} конт."
 
         point_detail_rv.adapter = ContainerDetailAdapter(platform.containers!!)

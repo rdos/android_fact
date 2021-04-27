@@ -10,8 +10,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
-import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_container_problem.*
+import kotlinx.android.synthetic.main.activity_problem.*
 import kotlinx.android.synthetic.main.alert_warning_camera.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_delete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -19,38 +18,31 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningContainerFailure
-import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
-import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
-import ru.smartro.worknote.service.database.entity.way_task.ContainerEntity
-import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
+import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.ProblemEnum
 
 class ProblemActivity : AppCompatActivity() {
-    private lateinit var breakDown: List<BreakDownEntity>
-    private lateinit var failureReason: List<FailReasonEntity>
-    private var isContainerProblem = false
-    private lateinit var platform: PlatformEntity
-    private lateinit var container: ContainerEntity
     private val viewModel: ProblemViewModel by viewModel()
+    private var isContainer = false
+    private lateinit var container: ContainerEntity
+    private var platformId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_container_problem)
+        setContentView(R.layout.activity_problem)
         baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
 
         supportActionBar!!.title = "Проблема на площадке"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        breakDown = viewModel.findBreakDown()
-        failureReason = viewModel.findFailReason()
 
         intent.let {
-            platform = Gson().fromJson(it.getStringExtra("wayPoint"), PlatformEntity::class.java)
-            isContainerProblem = it.getBooleanExtra("isContainerProblem", false)
-            if (isContainerProblem) {
-                container = Gson().fromJson(it.getStringExtra("container_info"), ContainerEntity::class.java)
+            platformId = it.getIntExtra("platform_id", 0)
+            isContainer = it.getBooleanExtra("is_container", false)
+            if (isContainer) {
+                container = viewModel.findContainerEntity(it.getIntExtra("container_id", 0))
             }
         }
         initProblemPhoto()
@@ -59,20 +51,20 @@ class ProblemActivity : AppCompatActivity() {
     }
 
     private fun initImageView() {
-        val wayPoint = viewModel.findPlatformEntity(platform.platformId!!)
-        if (isContainerProblem) {
-            Glide.with(this).load(MyUtil.base64ToImage(wayPoint!!.mediaContainerProblem!!.last())).into(problem_img)
+        val platform = viewModel.findPlatformEntity(platformId)
+        if (isContainer) {
+            Glide.with(this).load(MyUtil.base64ToImage(container.failureMedia.last())).into(problem_img)
         } else {
-            Glide.with(this).load(MyUtil.base64ToImage(wayPoint!!.mediaPlatformProblem!!.last())).into(problem_img)
+            Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last())).into(problem_img)
         }
     }
 
     private fun initProblemPhoto() {
         val intent = Intent(this, CameraActivity::class.java)
-        intent.putExtra("wayPoint", Gson().toJson(platform))
-        Log.d("POINT_PROBLEM", "initProblemPhoto: ${Gson().toJson(platform)}")
-        if (isContainerProblem) {
+        intent.putExtra("platform_id", platformId)
+        if (isContainer) {
             intent.putExtra("photoFor", PhotoTypeEnum.forContainerProblem)
+            intent.putExtra("container_id", container.containerId)
         } else {
             intent.putExtra("photoFor", PhotoTypeEnum.forPlatformProblem)
         }
@@ -91,14 +83,14 @@ class ProblemActivity : AppCompatActivity() {
                         problem_choose_breakdown_out.error = "Выберите проблему"
                     } else {
                         val problem = problem_choose_breakdown.text.toString()
-                        if (isContainerProblem) {
+                        if (isContainer) {
                             viewModel.updateContainerProblem(
-                                platformId = platform.platformId!!, containerId = container.containerId!!, problemComment = problemComment,
+                                platformId = platformId, containerId = container.containerId!!, problemComment = problemComment,
                                 problem = problem, problemType = ProblemEnum.BREAKDOWN, failProblem = null
                             )
                         } else {
                             viewModel.updatePlatformProblem(
-                                platformId = platform.platformId!!,
+                                platformId = platformId,
                                 problemComment = problemComment, problem = problem, problemType = ProblemEnum.BREAKDOWN, failProblem = null
                             )
                         }
@@ -114,15 +106,15 @@ class ProblemActivity : AppCompatActivity() {
                         warningContainerFailure("${getString(R.string.container_fail)} Причина: ${problem_choose_failure.text}").run {
                             this.accept_btn.setOnClickListener {
                                 val problem = problem_choose_failure.text.toString()
-                                if (isContainerProblem) {
+                                if (isContainer) {
                                     viewModel.updateContainerProblem(
-                                        platformId = platform.platformId!!, containerId = container.containerId!!, problemComment = problemComment,
-                                        problem = problem, problemType = ProblemEnum.FAILURE, failProblem = null
+                                        platformId = platformId, containerId = container.containerId!!, problemComment = problemComment,
+                                        problem = problem, problemType = ProblemEnum.ERROR, failProblem = null
                                     )
                                 } else {
                                     viewModel.updatePlatformProblem(
-                                        platformId = platform.platformId!!,
-                                        problemComment = problemComment, problem = problem, problemType = ProblemEnum.FAILURE, failProblem = null
+                                        platformId = platformId,
+                                        problemComment = problemComment, problem = problem, problemType = ProblemEnum.ERROR, failProblem = null
                                     )
                                 }
                                 Log.d("PROBLEM_ACTIVITY", "acceptProblem: failure")
@@ -142,13 +134,13 @@ class ProblemActivity : AppCompatActivity() {
                     if (breakdown.isNotEmpty() && failure.isNotEmpty()){
                         warningContainerFailure("${getString(R.string.container_fail)} Причина: ${problem_choose_failure.text}").run {
                             this.accept_btn.setOnClickListener {
-                                if (isContainerProblem) {
+                                if (isContainer) {
                                     viewModel.updateContainerProblem(
-                                        platformId = platform.platformId!!,   containerId = container.containerId!!, problemComment = problemComment,
+                                        platformId = platformId,   containerId = container.containerId!!, problemComment = problemComment,
                                         problem = breakdown, problemType = ProblemEnum.BOTH, failProblem = failure)
                                 } else {
                                     viewModel.updatePlatformProblem(
-                                        platformId = platform.platformId!!,
+                                        platformId = platformId,
                                         problemComment = problemComment, problem = breakdown, problemType = ProblemEnum.BOTH, failProblem = failure
                                     )
                                 }
@@ -180,13 +172,11 @@ class ProblemActivity : AppCompatActivity() {
 
     private fun initSelectors() {
         val failReason = viewModel.findFailReason()
-        val failReasonString = failReason.map { it.problem }
-        problem_choose_failure.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, failReasonString))
+        problem_choose_failure.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, failReason))
         val breakdowns = viewModel.findBreakDown()
-        val breakdownsString = breakdowns.map { it.problem }
-        problem_choose_breakdown.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, breakdownsString))
+        problem_choose_breakdown.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, breakdowns))
 
-        problem_breakdown_tg.setOnCheckedChangeListener { compoundButton, check ->
+        problem_breakdown_tg.setOnCheckedChangeListener { _, check ->
             problem_choose_breakdown_out.isVisible = check
             problem_choose_breakdown.setText("")
             if (check) {
@@ -202,7 +192,7 @@ class ProblemActivity : AppCompatActivity() {
             }
         }
 
-        problem_failure_tg.setOnCheckedChangeListener { compoundButton, check ->
+        problem_failure_tg.setOnCheckedChangeListener { _, check ->
             problem_choose_failure_out.isVisible = check
             problem_choose_failure.setText("")
             if (check) {

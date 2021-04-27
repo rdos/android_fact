@@ -17,6 +17,7 @@ import ru.smartro.worknote.util.MyUtil
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
+        initSentry()
         AppPreferences.init(this)
 
         startKoin {

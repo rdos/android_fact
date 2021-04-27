@@ -15,9 +15,12 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
 import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
+import ru.smartro.worknote.util.PhotoTypeEnum
 
 
-class ImageDetailFragment(private val platformId: Int, private val imagePath: String, private val photoFor: Int, private val listener : ImageDetailDeleteListener) : DialogFragment() {
+class ImageDetailFragment(private val platformId: Int, private val containerId : Int,
+                          private val imageBase64: String, private val photoFor: Int,
+                          private val listener: ImageDetailDeleteListener) : DialogFragment() {
     private val viewModel: PlatformServiceViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -27,11 +30,15 @@ class ImageDetailFragment(private val platformId: Int, private val imagePath: St
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_AppCompat_Dialog)
-        Glide.with(this).load(imagePath).into(image_detail)
+        Glide.with(this).load(imageBase64).into(image_detail)
         image_detail_delete.setOnClickListener {
             warningDelete(getString(R.string.warning_detele)).run {
                 this.accept_btn.setOnClickListener {
-                    viewModel.removePhotoFromServedEntity(photoFor, imagePath, platformId)
+                    if (photoFor == PhotoTypeEnum.forContainerProblem) {
+                        viewModel.removeContainerMedia(containerId, imageBase64)
+                    } else {
+                        viewModel.removePlatformMedia(photoFor, imageBase64, platformId)
+                    }
                     listener.imageDeleted()
                     hideDialog()
                     dismiss()

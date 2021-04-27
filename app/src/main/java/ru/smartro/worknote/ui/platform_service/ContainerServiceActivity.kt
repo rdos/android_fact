@@ -4,24 +4,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_container_service.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.PercentAdapter
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.database.entity.way_task.ContainerEntity
-import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
+import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.ui.problem.ProblemActivity
 import ru.smartro.worknote.util.MyUtil
 
 class ContainerServiceActivity : AppCompatActivity() {
     private val REQUEST_EXIT = 41
-    private lateinit var container: ContainerEntity
     private lateinit var percentAdapter: PercentAdapter
-    private lateinit var platform: PlatformEntity
     private val viewModel: PlatformServiceViewModel by viewModel()
-    private var wayPointId = 0
+    private var platformId = 0
+    private var containerId = 0
+    private lateinit var containerEntity: ContainerEntity
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_container_service)
@@ -30,18 +29,20 @@ class ContainerServiceActivity : AppCompatActivity() {
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.let {
-            container = Gson().fromJson(it.getStringExtra("container_info"), ContainerEntity::class.java)
-            wayPointId = it.getIntExtra("wayPointId", 0)
-            platform = Gson().fromJson(it.getStringExtra("wayPoint"), PlatformEntity::class.java)
+            containerId = it.getIntExtra("container_id", 0)
+            platformId = it.getIntExtra("platform_id", 0)
         }
+        containerEntity = viewModel.findContainerEntity(containerId)
+
         enter_info_problem_btn.setOnClickListener {
             val intent = Intent(this, ProblemActivity::class.java)
-            intent.putExtra("wayPoint", Gson().toJson(platform))
-            intent.putExtra("isContainerProblem", true)
-            intent.putExtra("container_info", Gson().toJson(container))
+            intent.putExtra("is_container", true)
+            intent.putExtra("container_id", containerId)
+            intent.putExtra("platform_id", platformId)
             startActivityForResult(intent, REQUEST_EXIT)
         }
-        supportActionBar?.title = container.number
+
+        supportActionBar?.title = containerEntity.number
         percentAdapter = PercentAdapter(this, arrayListOf(0, 25, 50, 75, 100, 125))
         enter_info_percent_rv.adapter = percentAdapter
         back_button.setOnClickListener {
@@ -59,7 +60,7 @@ class ContainerServiceActivity : AppCompatActivity() {
     private fun completeContainer() {
         val volume = percentAdapter.getSelectedCount()
         val comment = comment_et.text.toString()
-        viewModel.updateContainerVolume(container.containerId!!, volume, comment)
+        viewModel.updateContainerVolume(containerId, volume, comment)
         finish()
     }
 

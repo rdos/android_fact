@@ -16,7 +16,7 @@ import kotlinx.coroutines.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.ContainerDetailAdapter
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.util.StatusEnum
 
 private lateinit var loadingDialog: AlertDialog
@@ -39,6 +39,19 @@ fun AppCompatActivity.loadingShow() {
 
 fun AppCompatActivity.warningCameraShow(title: String): View {
     val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_warning_camera, null)
+    view.title_tv.text = title
+    builder.setView(view)
+    builder.setCancelable(false)
+    customDialog = builder.create()
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
+fun Fragment.warningCameraShow(title: String): View {
+    val builder = AlertDialog.Builder(this.requireContext())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_warning_camera, null)
     view.title_tv.text = title
@@ -111,7 +124,7 @@ fun AppCompatActivity.showClickedPointDetail(point: PlatformEntity): View {
     val view = inflater.inflate(R.layout.alert_point_detail, null)
     builder.setView(view)
     customDialog = builder.create()
-    view.bottom_card.isVisible = point.status == StatusEnum.EMPTY
+    view.bottom_card.isVisible = point.status == StatusEnum.NEW
     view.point_detail_address.text = "${point.address} \n ${point.srpId} ${point.containers!!.size} конт."
     view.point_detail_close.setOnClickListener {
         customDialog.dismiss()

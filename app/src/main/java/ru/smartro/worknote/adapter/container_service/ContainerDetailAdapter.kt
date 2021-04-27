@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.item_choose.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.database.entity.way_task.ContainerEntity
+import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.util.StatusEnum
 
 class ContainerDetailAdapter(private val items: RealmList<ContainerEntity>) :
@@ -28,17 +28,13 @@ class ContainerDetailAdapter(private val items: RealmList<ContainerEntity>) :
         holder.itemView.choose_title.text = data!!.number
 
         when (data.status) {
-            StatusEnum.COMPLETED -> {
+            StatusEnum.SUCCESS -> {
                 holder.itemView.choose_status.isVisible = true
                 holder.itemView.choose_status.setImageResource(R.drawable.ic_check)
             }
-            StatusEnum.BREAKDOWN -> {
+            StatusEnum.ERROR -> {
                 holder.itemView.choose_status.isVisible = true
                 holder.itemView.choose_status.setImageResource(R.drawable.ic_red_check)
-            }
-            StatusEnum.FAILURE -> {
-                holder.itemView.choose_status.isVisible = true
-                holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel)
             }
         }
     }

@@ -18,17 +18,18 @@ import ru.smartro.worknote.adapter.GalleryPhotoAdapter
 import ru.smartro.worknote.adapter.listener.ImageClickListener
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
-import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
 
 
-class GalleryFragment(private val platformId: Int, private val photoFor: Int) : BottomSheetDialogFragment(), ImageClickListener, ImageDetailDeleteListener{
+class GalleryFragment(private val platformId: Int, private val photoFor: Int,
+                      private val containerId : Int, private val imageCountListener : ImageCounter)
+    : BottomSheetDialogFragment(), ImageClickListener, ImageDetailDeleteListener{
+
     private val TAG = "GalleryFragment_LOG"
     private val viewModel: PlatformServiceViewModel by viewModel()
     private val listener: ImageClickListener = this
-    private lateinit var platform: PlatformEntity
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_gallery_before, container, false)
     }
@@ -41,47 +42,55 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int) : 
     private fun initViews() {
         Log.d("GalleryFragment_LOG", "photoFor: $photoFor")
         Log.d("GalleryFragment_LOG ", "wayPoinId: $platformId")
-        platform = viewModel.findPlatformEntity(platformId)!!
         when (photoFor) {
             PhotoTypeEnum.forBeforeMedia -> {
+              val platform = viewModel.findPlatformEntity(platformId)
                 activity?.actionBar?.title = getString(R.string.service_before)
                 image_title.text = getString(R.string.service_before)
-                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.mediaBefore!!))
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.beforeMedia))
             }
 
             PhotoTypeEnum.forAfterMedia -> {
+                val platform = viewModel.findPlatformEntity(platformId)
                 activity?.actionBar?.title = getString(R.string.service_after)
                 image_title.text = getString(R.string.service_after)
-                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.mediaAfter!!))
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.afterMedia))
             }
 
             PhotoTypeEnum.forPlatformProblem -> {
+                val  platform = viewModel.findPlatformEntity(platformId)
                 activity?.actionBar?.title = getString(R.string.problem_container)
                 image_title.text = getString(R.string.problem_container)
-                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.mediaPlatformProblem!!))
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.failureMedia))
             }
 
             PhotoTypeEnum.forContainerProblem -> {
+                val container = viewModel.findContainerEntity(containerId)
                 activity?.actionBar?.title = getString(R.string.problem_container)
                 image_title.text = getString(R.string.problem_container)
-                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.mediaContainerProblem!!))
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(container.failureMedia))
             }
         }
     }
 
-    override fun imageDetailClicked(photoPath: String) {
-        val dialogFragment = ImageDetailFragment(platformId, photoPath, photoFor, this)
+    override fun imageDetailClicked(imageBase64: String) {
+        val dialogFragment = ImageDetailFragment(platformId, containerId, imageBase64, photoFor, this)
         dialogFragment.show(childFragmentManager, "ImageDetailFragment")
     }
 
-    override fun imageRemoveClicked(photoPath: String) {
+    override fun imageRemoveClicked(imageBase64: String) {
         warningDelete(getString(R.string.warning_detele)).run {
             this.accept_btn.setOnClickListener {
-                viewModel.removePhotoFromServedEntity(photoFor, photoPath, platformId)
+                if (photoFor == PhotoTypeEnum.forContainerProblem) {
+                    viewModel.removeContainerMedia(containerId, imageBase64)
+                } else {
+                    viewModel.removePlatformMedia(photoFor, imageBase64, platformId)
+                }
                 lifecycleScope.launch(Dispatchers.IO) {
-                    File(photoPath).delete()
+                    File(imageBase64).delete()
                 }
                 initViews()
+                imageCountListener.mediaSizeChanged()
                 hideDialog()
             }
             this.dismiss_btn.setOnClickListener {
@@ -91,6 +100,7 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int) : 
     }
 
     override fun imageDeleted() {
+        imageCountListener.mediaSizeChanged()
         initViews()
     }
 }

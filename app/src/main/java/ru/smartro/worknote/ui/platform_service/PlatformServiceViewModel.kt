@@ -2,8 +2,9 @@ package ru.smartro.worknote.ui.platform_service
 
 import android.app.Application
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.database.entity.way_task.PlatformEntity
-import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
+import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.service.database.entity.work_order.WayTaskEntity
 
 class PlatformServiceViewModel(application: Application) : BaseViewModel(application) {
 
@@ -19,17 +20,25 @@ class PlatformServiceViewModel(application: Application) : BaseViewModel(applica
         return db.findLastId(any, fieldId)
     }
 
-    fun updatePlatformStatus(platformId: Int, status: Int) {
+
+    fun updatePlatformStatus(platformId: Int, status: String) {
         db.updatePlatformStatus(platformId, status)
     }
 
-    fun findPlatformEntity(platformId: Int): PlatformEntity? {
+    fun findPlatformEntity(platformId: Int): PlatformEntity {
         return db.findPlatformEntity(platformId)
     }
 
-    fun removePhotoFromServedEntity(photoFor: Int, photoPath: String, wayPointId: Int) {
-        db.removeMediaPlatformEntity(photoFor, photoPath, wayPointId)
+    fun findContainerEntity(containerId: Int): ContainerEntity {
+        return db.findContainerEntity(containerId)
     }
 
+    fun removePlatformMedia(photoFor: Int, photoPath: String, platformId: Int) {
+        db.removePlatformMedia(photoFor, photoPath, platformId)
+    }
+
+    fun removeContainerMedia (containerId : Int, imageBase64 : String){
+        db.removeContainerMedia(containerId, imageBase64)
+    }
 }
 

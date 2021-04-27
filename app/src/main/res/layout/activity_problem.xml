@@ -145,6 +145,7 @@
         android:layout_marginHorizontal="@dimen/margin_default"
         android:background="@drawable/bg_button_red"
         android:text="Подтвердить"
+        android:layout_marginBottom="@dimen/margin_default"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent" />
 

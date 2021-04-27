@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/baseview"
-    tools:context=".ui.ExtremProblemActivity.ProblemActivity">
+    tools:context=".ui.problem.ExtremeProblemActivity">
 
     <ImageView
         android:id="@+id/problem_img"
@@ -112,6 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_default"
         android:background="@drawable/bg_button_red"
+        android:layout_marginBottom="@dimen/margin_default"
         android:text="Подтвердить"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent" />
