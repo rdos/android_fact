@@ -90,7 +90,7 @@ class PlatformServiceActivity : AppCompatActivity(), ConteinerAdapter.ContainerP
         point_info_tv.text = "№${platform.srpId} / ${platform.containers!!.size} конт."
     }
 
-    override fun startContainerPointService(item: ContainerEntity) {
+    override fun startContainerService(item: ContainerEntity) {
         val intent = Intent(this, ContainerServiceActivity::class.java)
         intent.putExtra("container_id", item.containerId)
         intent.putExtra("platform_id", platformEntity.platformId)

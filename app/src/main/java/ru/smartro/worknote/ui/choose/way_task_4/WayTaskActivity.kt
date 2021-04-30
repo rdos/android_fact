@@ -39,7 +39,6 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
         super.onCreate(savedInstanceState)
         supportActionBar?.title = "Выберите сменное задание"
         setContentView(R.layout.activity_choose)
-
         loadingShow()
         viewModel.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayListId)
             .observe(this, Observer { result ->

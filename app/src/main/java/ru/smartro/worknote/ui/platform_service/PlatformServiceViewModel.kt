@@ -20,7 +20,6 @@ class PlatformServiceViewModel(application: Application) : BaseViewModel(applica
         return db.findLastId(any, fieldId)
     }
 
-
     fun updatePlatformStatus(platformId: Int, status: String) {
         db.updatePlatformStatus(platformId, status)
     }

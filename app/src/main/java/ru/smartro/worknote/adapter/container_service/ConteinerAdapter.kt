@@ -31,7 +31,7 @@ class ConteinerAdapter(private val listener: ContainerPointClickListener, privat
             when (data.status) {
                 StatusEnum.NEW -> {
                     holder.itemView.setOnClickListener {
-                        listener.startContainerPointService(item = items[position]!!)
+                        listener.startContainerService(item = items[position]!!)
                         Log.d("ContainerPointAdapter", "onBindViewHolder: false")
                     }
                 }
@@ -46,7 +46,7 @@ class ConteinerAdapter(private val listener: ContainerPointClickListener, privat
                     holder.itemView.choose_status.isVisible = true
                     holder.itemView.choose_status.setImageResource(R.drawable.ic_red_check)
                     holder.itemView.setOnClickListener {
-                        listener.startContainerPointService(item = items[position]!!)
+                        listener.startContainerService(item = items[position]!!)
                         Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                     }
                 }
@@ -66,6 +66,6 @@ class ConteinerAdapter(private val listener: ContainerPointClickListener, privat
     class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     interface ContainerPointClickListener {
-        fun startContainerPointService(item: ContainerEntity)
+        fun startContainerService(item: ContainerEntity)
     }
 }

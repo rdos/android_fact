@@ -32,7 +32,7 @@
             app:layout_constraintTop_toBottomOf="@id/image_view" />
 
         <Button
-            android:id="@+id/accept_btn"
+            android:id="@+id/finish_accept_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default"
@@ -61,7 +61,7 @@
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/accept_btn"
+            app:layout_constraintTop_toBottomOf="@id/finish_accept_btn"
             app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

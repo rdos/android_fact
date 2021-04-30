@@ -75,7 +75,7 @@ fun AppCompatActivity.showSuccessComplete(): View {
     return view
 }
 
-fun AppCompatActivity.showCompleteEnterInfo(): View {
+fun AppCompatActivity.showCompleteWaybill(): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_finish_way, null)
@@ -147,7 +147,7 @@ fun AppCompatActivity.warningContainerFailure(title: String): View {
     return view
 }
 
-fun AppCompatActivity.showFailureFinishWay(reasons: List<CancelWayReasonEntity>): View {
+fun AppCompatActivity.showEarlyComplete(reasons: List<CancelWayReasonEntity>): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_failure_finish_way, null)
@@ -156,7 +156,25 @@ fun AppCompatActivity.showFailureFinishWay(reasons: List<CancelWayReasonEntity>)
     view.reason_et.setOnClickListener {
         view.reason_et.showDropDown()
     }
-    view.reason_et.setOnFocusChangeListener { t, b ->
+    view.early_weight_tg.setOnCheckedChangeListener { _, b ->
+        if (b) {
+            view.early_volume_tg.isChecked = !b
+            view.early_weight_tg.setTextColor(Color.WHITE)
+            view.unload_value_et_out.hint = (getString(R.string.enter_weight_hint))
+        } else {
+            view.early_weight_tg.setTextColor(Color.BLACK)
+        }
+    }
+    view.early_volume_tg.setOnCheckedChangeListener { _, b ->
+        if (b) {
+            view.early_weight_tg.isChecked = !b
+            view.early_volume_tg.setTextColor(Color.WHITE)
+            view.unload_value_et_out.hint = (getString(R.string.enter_volume_hint))
+        } else {
+            view.early_volume_tg.setTextColor(Color.BLACK)
+        }
+    }
+    view.reason_et.setOnFocusChangeListener { _, _ ->
         view.reason_et.showDropDown()
     }
     builder.setView(view)

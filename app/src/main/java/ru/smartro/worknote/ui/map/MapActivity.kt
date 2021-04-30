@@ -1,6 +1,9 @@
 package ru.smartro.worknote.ui.map
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.location.LocationManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -12,6 +15,7 @@ import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
+import com.yandex.mapkit.location.Location
 import com.yandex.mapkit.location.LocationListener
 import com.yandex.mapkit.location.LocationStatus
 import com.yandex.mapkit.map.*
@@ -24,7 +28,6 @@ import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
-import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import kotlinx.android.synthetic.main.behavior_points.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
@@ -36,7 +39,6 @@ import ru.smartro.worknote.service.database.entity.work_order.WayTaskEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
-import ru.smartro.worknote.ui.choose.way_task_4.WayTaskActivity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.ClusterIcon
@@ -46,12 +48,16 @@ import ru.smartro.worknote.work.SynchronizeWorker
 import java.util.concurrent.TimeUnit
 
 
-class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, UserLocationObjectListener, MapObjectTapListener, PlatformAdapter.ContainerClickListener {
+class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
+    UserLocationObjectListener, MapObjectTapListener,
+    PlatformAdapter.ContainerClickListener, android.location.LocationListener {
+
     private val REQUEST_EXIT = 41
     private var firstTime = true
     private val viewModel: MapViewModel by viewModel()
     private lateinit var wayTaskEntity: WayTaskEntity
     private lateinit var userLocationLayer: UserLocationLayer
+    private val locationListener = this as android.location.LocationListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,34 +78,46 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
             .enqueueUniquePeriodicWork("UploadData", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
     }
 
+    @SuppressLint("MissingPermission")
     private fun initUserLocation() {
-        var locationM = com.yandex.mapkit.location.Location()
+        var locationM = Location()
         val mapKit = MapKitFactory.getInstance()
         userLocationLayer = mapKit.createUserLocationLayer(map_view.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.setObjectListener(this)
 
+
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000L, 10f, locationListener)
+
         mapKit.createLocationManager()
         mapKit.createLocationManager().requestSingleUpdate(object : LocationListener {
-                override fun onLocationStatusUpdated(p0: LocationStatus) {
+            override fun onLocationStatusUpdated(p0: LocationStatus) {
 
-                }
+            }
 
-                override fun onLocationUpdated(p0: com.yandex.mapkit.location.Location) {
-                    locationM = p0
-                    AppPreferences.currentCoordinate = "${p0.position.longitude}#${p0.position.latitude}"
-                    toast("Клиент найден")
-                    if (firstTime) {
-                        map_view.map.move(CameraPosition(p0.position, 12.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
-                        firstTime = false
-                    }
+            override fun onLocationUpdated(p0: Location) {
+                locationM = p0
+                AppPreferences.currentCoordinate = "${p0.position.longitude}#${p0.position.latitude}"
+                toast("Клиент найден")
+                if (firstTime) {
+                    map_view.map.move(
+                        CameraPosition(p0.position, 12.0f, 0.0f, 0.0f),
+                        Animation(Animation.Type.SMOOTH, 1F), null
+                    )
+                    firstTime = false
                 }
-            })
+            }
+        })
+
 
         location_fab.setOnClickListener {
             try {
-                map_view.map.move(CameraPosition(locationM.position, 12.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
+                map_view.map.move(
+                    CameraPosition(locationM.position, 12.0f, 0.0f, 0.0f),
+                    Animation(Animation.Type.SMOOTH, 1F), null
+                )
             } catch (e: Exception) {
                 toast("Клиент не найден")
             }
@@ -116,7 +134,6 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         clusterCollection.addPlacemarks(createPoints(wayInfo.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
         clusterCollection.addPlacemarks(createPoints(wayInfo.platforms, StatusEnum.NEW), blueIcon, IconStyle())
         clusterCollection.addPlacemarks(createPoints(wayInfo.platforms, StatusEnum.ERROR), redIcon, IconStyle())
-        //  clusterCollection.addPlacemarks(createPoints(wayInfo.platforms, StatusEnum.FAILURE), redIcon, IconStyle())
         clusterCollection.addTapListener(this)
         clusterCollection.clusterPlacemarks(60.0, 15)
     }
@@ -145,7 +162,10 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
     }
 
     override fun onClusterTap(cluster: Cluster): Boolean {
-        map_view.map.move(CameraPosition(cluster.appearance.geometry, 14.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
+        map_view.map.move(
+            CameraPosition(cluster.appearance.geometry, 14.0f, 0.0f, 0.0f),
+            Animation(Animation.Type.SMOOTH, 1F), null
+        )
         return true
     }
 
@@ -211,18 +231,22 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
             completeWayBill()
         } else {
             val allReasons = viewModel.findCancelWayReason()
-            showFailureFinishWay(allReasons).run {
-                this.accept_btn.setOnClickListener {
-                    if (!this.reason_et.text.isNullOrEmpty()) {
-                        val failureId = allReasons.find { it.problem == this.reason_et.text.toString() }!!.id
-                        val body = EarlyCompleteBody(datetime = MyUtil.timeStamp(), failureId = failureId)
+            showEarlyComplete(allReasons).let { view ->
+                view.accept_btn.setOnClickListener {
+                    if (!view.reason_et.text.isNullOrEmpty() && (view.early_volume_tg.isChecked || view.early_weight_tg.isChecked)
+                        && !view.unload_value_et.text.isNullOrEmpty()
+                    ) {
+                        val failureId = viewModel.findCancelWayReasonByValue(view.reason_et.text.toString())
+                        val unloadValue = view.unload_value_et.text.toString().toInt()
+                        val unloadType = if (view.early_volume_tg.isChecked) 1 else 2
+
+                        val body = EarlyCompleteBody(failureId, MyUtil.timeStamp(), unloadType, unloadValue)
                         loadingShow()
                         viewModel.earlyComplete(AppPreferences.wayTaskId, body)
                             .observe(this@MapActivity, Observer { result ->
                                 when (result.status) {
                                     Status.SUCCESS -> {
-                                        completeWayBill()
-                                        loadingHide()
+                                        viewModel.finishTask(this@MapActivity)
                                     }
                                     Status.ERROR -> {
                                         toast(result.msg)
@@ -236,10 +260,10 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
 
                             })
                     } else {
-                        toast("Выберите причину")
+                        toast("Заполните все поля")
                     }
                 }
-                this.dismiss_btn.setOnClickListener {
+                view.dismiss_btn.setOnClickListener {
                     hideDialog()
                 }
             }
@@ -249,7 +273,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
     }
 
     private fun completeWayBill() {
-        showCompleteEnterInfo().run {
+        showCompleteWaybill().run {
             this.accept_btn.setOnClickListener {
                 if (this.weight_tg.isChecked || this.volume_tg.isChecked) {
                     val unloadType = if (this.volume_tg.isChecked) 1 else 2
@@ -262,19 +286,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
                         .observe(this@MapActivity, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
-                                    WorkManager.getInstance(this@MapActivity).cancelAllWork()
-                                    AppPreferences.thisUserHasTask = false
-                                    viewModel.clearData()
-                                    loadingHide()
-                                    showSuccessComplete().run {
-                                        this.accept_btn.setOnClickListener {
-                                            startActivity(Intent(this@MapActivity, WayTaskActivity::class.java))
-                                            finish()
-                                        }
-                                        this.exit_btn.setOnClickListener {
-                                            MyUtil.logout(this@MapActivity)
-                                        }
-                                    }
+                                    viewModel.finishTask(this@MapActivity)
                                 }
                                 Status.ERROR -> {
                                     toast(result.msg)
@@ -328,4 +340,21 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         initMapView()
         initBottomBehavior()
     }
+
+    override fun onLocationChanged(p0: android.location.Location) {
+        AppPreferences.currentCoordinate = "${p0.longitude}#${p0.latitude}"
+    }
+
+    override fun onProviderEnabled(provider: String) {
+
+    }
+
+    override fun onProviderDisabled(provider: String) {
+
+    }
+
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+
+    }
+
 }

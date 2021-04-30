@@ -115,6 +115,10 @@ class RealmRepository(private val realm: Realm) {
         return realm.copyFromRealm(realm.where(CancelWayReasonEntity::class.java).findAll())
     }
 
+    fun findCancelWayReasonByValue (reason : String ) : Int{
+        return realm.where(CancelWayReasonEntity::class.java).equalTo("problem", reason).findFirst()?.id!!
+    }
+
     /** добавление заполненности контейнера **/
     fun updateContainerVolume(containerId: Int, volume: Double, comment: String) {
         val container = realm.where(ContainerEntity::class.java).equalTo("containerId", containerId)
@@ -249,7 +253,6 @@ class RealmRepository(private val realm: Realm) {
         val platformEntity = realm.where(PlatformEntity::class.java)
             .equalTo("platformId", platformId)
             .findFirst()
-        updateTimer()
         when (imageFor) {
             PhotoTypeEnum.forAfterMedia -> {
                 platformEntity?.afterMedia?.add(imageBase64)
@@ -261,6 +264,7 @@ class RealmRepository(private val realm: Realm) {
                 platformEntity?.failureMedia?.add(imageBase64)
             }
         }
+        updateTimer()
         realm.commitTransaction()
     }
 
@@ -280,6 +284,7 @@ class RealmRepository(private val realm: Realm) {
             .findFirst()!!
         realm.beginTransaction()
         containerEntity.failureMedia.remove(imageBase64)
+        updateTimer()
         realm.commitTransaction()
     }
 
@@ -288,7 +293,6 @@ class RealmRepository(private val realm: Realm) {
         realm.beginTransaction()
         val platformEntity = realm.where(PlatformEntity::class.java)
             .equalTo("platformId", platformId).findFirst()
-        updateTimer()
         when (imageFor) {
             PhotoTypeEnum.forBeforeMedia -> {
                 platformEntity?.beforeMedia?.remove(imageBase64)
@@ -300,6 +304,7 @@ class RealmRepository(private val realm: Realm) {
                 platformEntity?.failureMedia?.remove(imageBase64)
             }
         }
+        updateTimer()
         realm.commitTransaction()
     }
 
