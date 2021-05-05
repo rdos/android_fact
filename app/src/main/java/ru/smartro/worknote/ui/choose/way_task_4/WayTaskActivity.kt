@@ -8,12 +8,8 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import kotlinx.android.synthetic.main.activity_choose.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.WayTaskAdapter
@@ -78,6 +74,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                     saveFailReason()
                     saveCancelWayReason()
                     saveBreakDownTypes()
+                    acceptProgress()
                     dialog.dismiss()
                 }
 
@@ -92,17 +89,12 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
         viewModel.getBreakDownTypes().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
-                    lifecycleScope.launch(Dispatchers.IO) {
                         val entities = result.data?.data?.filter {
                             it.attributes.organisationId == AppPreferences.organisationId
                         }?.map {
                             BreakDownEntity(it.attributes.id, it.attributes.name)
                         }
-                        withContext(Dispatchers.Main) {
-                            viewModel.insertBreakDown(entities!!)
-                            acceptProgress()
-                        }
-                    }
+                        viewModel.insertBreakDown(entities!!)
                 }
                 Status.ERROR -> {
                     toast(result.msg)

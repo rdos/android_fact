@@ -11,8 +11,7 @@ import ru.smartro.worknote.service.database.RealmRepository
 import ru.smartro.worknote.service.network.NetworkRepository
 import kotlin.coroutines.CoroutineContext
 
-abstract class BaseViewModel(application: Application) : AndroidViewModel(application),
-    CoroutineScope {
+abstract class BaseViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {
     protected val network = NetworkRepository(application.applicationContext)
     protected val db = RealmRepository(Realm.getDefaultInstance())
 

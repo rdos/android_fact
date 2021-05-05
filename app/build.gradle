@@ -85,7 +85,6 @@ dependencies {
     //LiveData
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0-alpha01'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'com.yandex.android:maps.mobile:4.0.0-lite'
 
     //yandex map
     implementation 'com.yandex.android:maps.mobile:4.0.0-full'
@@ -114,6 +113,5 @@ dependencies {
     def sentry_version = "4.4.0-alpha.2"
     implementation "io.sentry:sentry-android:$sentry_version"
     implementation "io.sentry:sentry-android-okhttp:$sentry_version"
-
 
 }

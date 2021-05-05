@@ -75,7 +75,7 @@ class SynchronizeWorker(
     private fun synchronizeData() {
         CoroutineScope(Dispatchers.IO).launch {
             val db = RealmRepository(Realm.getDefaultInstance())
-            val platforms = db.findWayTask().platforms
+            val platforms = db.findAllPlatforms()
             Log.d(TAG, " entity time > last update " +
                     "${AppPreferences.lastUpdateTime > AppPreferences.lastSynchroTime}" +
                     " ${AppPreferences.lastUpdateTime}  ${AppPreferences.lastSynchroTime}")
@@ -83,7 +83,7 @@ class SynchronizeWorker(
             var lat = 0.0
             if (AppPreferences.currentCoordinate!!.contains("#")) {
                 long = AppPreferences.currentCoordinate!!.substringAfter("#").toDouble()
-                lat = AppPreferences.currentCoordinate!!.substringAfter("#").toDouble()
+                lat = AppPreferences.currentCoordinate!!.substringBefore("#").toDouble()
             }
             val timeBeforeRequest = MyUtil.timeStamp()
             if (AppPreferences.lastUpdateTime > AppPreferences.lastSynchroTime) {

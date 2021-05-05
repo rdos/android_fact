@@ -42,7 +42,7 @@ class WayTaskViewModel(application: Application) : BaseViewModel(application) {
     }
 
     fun insertWayTask(response: Workorder) {
-        db.insertWayTask(response)
+            db.insertWayTask(response)
     }
 
     fun insertBreakDown(entities: List<BreakDownEntity>) {

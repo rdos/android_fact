@@ -13,7 +13,7 @@ import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlatformAdapter(private val listener: ContainerClickListener, private val items: RealmList<PlatformEntity>) : RecyclerView.Adapter<PlatformAdapter.PlatformViewHolder>() {
+class PlatformAdapter(private val listener: PlatformClickListener, private val items: RealmList<PlatformEntity>) : RecyclerView.Adapter<PlatformAdapter.PlatformViewHolder>() {
     private var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlatformViewHolder {
@@ -87,7 +87,7 @@ class PlatformAdapter(private val listener: ContainerClickListener, private val 
 
     }
 
-    interface ContainerClickListener {
+    interface PlatformClickListener {
         fun startPlatformService(item: PlatformEntity)
         fun startPlatformProblem(item: PlatformEntity)
         fun moveCameraPoint(point: Point)

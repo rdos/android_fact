@@ -1,7 +1,6 @@
 package ru.smartro.worknote.service.network
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.liveData
 import com.google.gson.Gson
 import io.sentry.Sentry

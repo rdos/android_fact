@@ -51,7 +51,7 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
     }
 
     fun clearData(){
-        return db.clearData()
+        db.clearData()
     }
 
     fun findWayTask(): WayTaskEntity {

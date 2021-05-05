@@ -7,6 +7,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -35,7 +36,6 @@ import ru.smartro.worknote.adapter.PlatformAdapter
 import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
-import ru.smartro.worknote.service.database.entity.work_order.WayTaskEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
@@ -50,21 +50,22 @@ import java.util.concurrent.TimeUnit
 
 class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     UserLocationObjectListener, MapObjectTapListener,
-    PlatformAdapter.ContainerClickListener, android.location.LocationListener {
+    PlatformAdapter.PlatformClickListener, android.location.LocationListener {
 
     private val REQUEST_EXIT = 41
     private var firstTime = true
     private val viewModel: MapViewModel by viewModel()
-    private lateinit var wayTaskEntity: WayTaskEntity
     private lateinit var userLocationLayer: UserLocationLayer
     private val locationListener = this as android.location.LocationListener
+    private val clusterListener = this as ClusterListener
+    private val mapObjectTapListener = this as MapObjectTapListener
+    private val platformClickListener = this as PlatformAdapter.PlatformClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
         setContentView(R.layout.activity_map)
-        wayTaskEntity = viewModel.findWayTask()
         initUploadDataWorker()
         initUserLocation()
         initMapView()
@@ -126,16 +127,19 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     private fun initMapView() {
-        val wayInfo = viewModel.findWayTask()
-        val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(this)
-        val greenIcon = ImageProvider.fromResource(this, R.drawable.ic_green_marker)
-        val blueIcon = ImageProvider.fromResource(this, R.drawable.ic_blue_marker)
-        val redIcon = ImageProvider.fromResource(this, R.drawable.ic_red_marker)
-        clusterCollection.addPlacemarks(createPoints(wayInfo.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
-        clusterCollection.addPlacemarks(createPoints(wayInfo.platforms, StatusEnum.NEW), blueIcon, IconStyle())
-        clusterCollection.addPlacemarks(createPoints(wayInfo.platforms, StatusEnum.ERROR), redIcon, IconStyle())
-        clusterCollection.addTapListener(this)
-        clusterCollection.clusterPlacemarks(60.0, 15)
+        lifecycleScope.launchWhenCreated {
+            viewModel.findWayTask().let {
+                val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(clusterListener)
+                val greenIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_green_marker)
+                val blueIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_blue_marker)
+                val redIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_red_marker)
+                clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
+                clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.NEW), blueIcon, IconStyle())
+                clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.ERROR), redIcon, IconStyle())
+                clusterCollection.addTapListener(mapObjectTapListener)
+                clusterCollection.clusterPlacemarks(60.0, 15)
+            }
+        }
     }
 
     private fun createPoints(list: RealmList<PlatformEntity>, status: String): List<Point> {
@@ -198,32 +202,34 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     private fun initBottomBehavior() {
-        val wayInfo = viewModel.findWayTask()
-        val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-        val platformsArray = wayInfo.platforms
+        lifecycleScope.launchWhenCreated {
+            viewModel.findWayTask().let {
+                val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+                val platformsArray = it.platforms
 
-        platformsArray.sortByDescending { it.status == StatusEnum.NEW }
+                platformsArray.sortByDescending { it.status == StatusEnum.NEW }
 
-        map_behavior_rv.adapter = PlatformAdapter(this, platformsArray)
+                map_behavior_rv.adapter = PlatformAdapter(platformClickListener, platformsArray)
 
-        map_behavior_header.setOnClickListener {
-            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            else
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                map_behavior_header.setOnClickListener {
+                    if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    else
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                val hasNotServedPlatform = it.platforms.any { found -> found.status == StatusEnum.NEW }
+                if (hasNotServedPlatform) {
+                    map_behavior_send_btn.background = getDrawable(R.drawable.bg_button_red)
+                    map_behavior_send_btn.text = getString(R.string.finish_way_now)
+                } else {
+                    map_behavior_send_btn.background = getDrawable(R.drawable.bg_button)
+                    map_behavior_send_btn.text = getString(R.string.finish_way)
+                }
+                map_behavior_send_btn.setOnClickListener {
+                    finishWay(hasNotServedPlatform)
+                }
+            }
         }
-        val hasNotServedPlatform = wayInfo.platforms.any { it.status == StatusEnum.NEW }
-        if (hasNotServedPlatform) {
-            map_behavior_send_btn.background = getDrawable(R.drawable.bg_button_red)
-            map_behavior_send_btn.text = getString(R.string.finish_way_now)
-        } else {
-            map_behavior_send_btn.background = getDrawable(R.drawable.bg_button)
-            map_behavior_send_btn.text = getString(R.string.finish_way)
-        }
-        map_behavior_send_btn.setOnClickListener {
-            finishWay(hasNotServedPlatform)
-        }
-
     }
 
     private fun finishWay(boolean: Boolean) {
@@ -242,6 +248,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
 
                         val body = EarlyCompleteBody(failureId, MyUtil.timeStamp(), unloadType, unloadValue)
                         loadingShow()
+
                         viewModel.earlyComplete(AppPreferences.wayTaskId, body)
                             .observe(this@MapActivity, Observer { result ->
                                 when (result.status) {

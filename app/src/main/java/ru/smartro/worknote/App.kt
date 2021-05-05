@@ -14,6 +14,7 @@ import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 
+
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -27,7 +28,6 @@ class App : Application() {
         }
 
         Realm.init(this@App)
-
     }
 
     private fun getModule(): List<Module> {
