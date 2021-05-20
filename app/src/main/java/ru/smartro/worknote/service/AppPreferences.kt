@@ -92,6 +92,12 @@ object AppPreferences {
             it.putBoolean("thisUserHasTask", value)
         }
 
+    var workerStatus: Boolean
+        get() = preferences.getBoolean("workerStatus", true)
+        set(value) = preferences.edit {
+            it.putBoolean("workerStatus", value)
+        }
+
     fun clear() {
         isLogined = false
         accessToken = ""

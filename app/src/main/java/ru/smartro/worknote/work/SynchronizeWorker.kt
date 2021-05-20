@@ -52,12 +52,7 @@ class SynchronizeWorker(
         return Result.success()
     }
 
-    override fun onStopped() {
-        super.onStopped()
-        Log.d(TAG, "onStopped: WHEN ${Calendar.getInstance().time}")
-    }
-
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "RestrictedApi")
     private fun synchronizeData() {
         CoroutineScope(Dispatchers.IO).launch {
             var long = 0.0
@@ -74,14 +69,18 @@ class SynchronizeWorker(
             val result = network.synchronizeData(synchronizeBody)
             when (result.status) {
                 Status.SUCCESS -> {
+                    val alertMsg = result.data?.alert
                     Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(result.data)}")
                     AppPreferences.lastSynchroTime = timeBeforeRequest
-                    showNotification(appContext, false, "ТЕСТ", "ТЕСТОВИЧ")
+                    if (!alertMsg.isNullOrEmpty()) {
+                        showNotification(appContext, false, alertMsg, "Уведомление")
+                    }
                 }
                 Status.ERROR -> Log.d(TAG, "SYNCHRONIZE GPS SENT ERROR")
                 Status.EMPTY -> Log.d(TAG, "SYNCHRONIZE SENT EMPTY")
                 Status.NETWORK -> Log.e(TAG, "SYNCHRONIZE  SENT NO INTERNET")
             }
+            if (!AppPreferences.workerStatus) { stop() }
             this.cancel()
             return@launch
         }
@@ -95,7 +94,6 @@ class SynchronizeWorker(
         val channelId = "M_CH_ID"
         val fullScreenIntent = Intent(context, MapActivity::class.java)
         fullScreenIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
         val fullScreenPendingIntent =
             PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(context, channelId)
@@ -118,5 +116,15 @@ class SynchronizeWorker(
         notificationManager.notify(1, notification)
     }
 
+    private fun dismissNotification() {
+        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(1)
+    }
+
+    override fun onStopped() {
+        super.onStopped()
+        dismissNotification()
+        Log.d(TAG, "onStopped: WHEN ${Calendar.getInstance().time}")
+    }
 }
 

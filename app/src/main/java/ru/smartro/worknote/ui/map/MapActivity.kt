@@ -8,8 +8,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.Animation
@@ -46,7 +45,6 @@ import ru.smartro.worknote.util.ClusterIcon
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
 import ru.smartro.worknote.work.SynchronizeWorker
-import java.util.concurrent.TimeUnit
 
 
 class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
@@ -74,10 +72,12 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     private fun initUploadDataWorker() {
-        val uploadDataWorkManager
-                = PeriodicWorkRequestBuilder<SynchronizeWorker>(16, TimeUnit.MINUTES).build()
+        val uploadDataWorkManager = OneTimeWorkRequestBuilder<SynchronizeWorker>()
+            .addTag("UpdateData")
+            .build()
         WorkManager.getInstance(this)
-            .enqueueUniquePeriodicWork("UploadData", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
+            .enqueue(uploadDataWorkManager)
+        AppPreferences.workerStatus = true
     }
 
     @SuppressLint("MissingPermission")
@@ -88,7 +88,6 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.setObjectListener(this)
-
 
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000L, 10f, locationListener)

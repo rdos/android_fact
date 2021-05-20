@@ -22,9 +22,6 @@ import ru.smartro.worknote.util.MyUtil
 
 class MapViewModel(application: Application) : BaseViewModel(application) {
 
-/*    fun getWayTask(wayId: Int, wayTaskBody: WayTaskBody): LiveData<Resource<WayTaskResponse>> {
-        return network.getWayTask(wayId, wayTaskBody)
-    }*/
 
     fun completeWay(id : Int, completeWayBody: CompleteWayBody) : LiveData<Resource<EmptyResponse>>{
         return network.completeWay(id, completeWayBody)
@@ -36,6 +33,7 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
 
     fun finishTask (context : AppCompatActivity){
         WorkManager.getInstance(context).cancelAllWork()
+        AppPreferences.workerStatus = false
         AppPreferences.thisUserHasTask = false
         clearData()
         context.loadingHide()
