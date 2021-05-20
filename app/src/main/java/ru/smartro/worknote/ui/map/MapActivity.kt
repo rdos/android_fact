@@ -39,6 +39,7 @@ import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
+import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.ClusterIcon
@@ -124,6 +125,9 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
             }
         }
 
+        debug_fab.setOnClickListener {
+            startActivity(Intent(this, DebugActivity::class.java))
+        }
     }
 
     private fun initMapView() {
@@ -321,6 +325,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     override fun startPlatformProblem(item: PlatformEntity) {
         warningCameraShow("Сделайте фото проблемы").let {
             it.accept_btn.setOnClickListener {
+                hideDialog()
                 val intent = Intent(this, ExtremeProblemActivity::class.java)
                 intent.putExtra("platform_id", item.platformId)
                 startActivityForResult(intent, REQUEST_EXIT)

@@ -39,7 +39,7 @@ class RealmRepository(private val realm: Realm) {
                     beforeMedia = mapMedia(it.beforeMedia), beginnedAt = it.beginnedAt, containers = mapContainers(it.containers),
                     coords = RealmList(it.coords[0], it.coords[1]), failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, finishedAt = it.finishedAt, platformId = it.id,
-                    name = it.name, srpId = it.srpId, status = StatusEnum.NEW
+                    name = it.name, updateAt = null, srpId = it.srpId, status = StatusEnum.NEW
                 )
             }
         }
@@ -89,16 +89,15 @@ class RealmRepository(private val realm: Realm) {
     }
 
 
-    fun findBreakdownByValue(problem: String): BreakDownEntity {
+    fun findBreakdownByValue(realm: Realm, problem: String): BreakDownEntity {
         return realm.copyFromRealm(
             realm.where(BreakDownEntity::class.java).equalTo("problem", problem).findFirst()!!
         )
     }
 
-    fun findFailReasonByValue(problem: String): FailReasonEntity {
-        return realm.copyFromRealm(
-            realm.where(FailReasonEntity::class.java).equalTo("problem", problem).findFirst()!!
-        )
+    fun findFailReasonByValue(realm: Realm, problem: String): FailReasonEntity {
+        return realm.where(FailReasonEntity::class.java).equalTo("problem", problem).findFirst()!!
+
     }
 
     fun findAllFailReason(): List<String> {
@@ -120,18 +119,21 @@ class RealmRepository(private val realm: Realm) {
     }
 
     /** добавление заполненности контейнера **/
-    fun updateContainerVolume(containerId: Int, volume: Double, comment: String) {
+    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double, comment: String) {
         realm.executeTransactionAsync { realm ->
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
                 .findFirst()!!
             container.volume = volume
             container.comment = comment
             if (container.status == StatusEnum.NEW) {
                 container.status = StatusEnum.SUCCESS
             }
+            updateTimer(platformEntity)
         }
-        updateTimer()
     }
 
     fun updateContainerProblem(platformId: Int, containerId: Int, problemComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
@@ -139,23 +141,24 @@ class RealmRepository(private val realm: Realm) {
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
                 .findFirst()!!
-            val platform = realm.where(PlatformEntity::class.java).equalTo("platformId", platformId)
+            val platform = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
                 .findFirst()!!
             when (problemType) {
                 ProblemEnum.BREAKDOWN -> {
-                    val problemId = findBreakdownByValue(problem).id
+                    val problemId = findBreakdownByValue(realm, problem).id
                     container.breakdownReasonId = problemId
                     container.status = StatusEnum.ERROR
                 }
                 ProblemEnum.ERROR -> {
-                    val problemId = findFailReasonByValue(problem).id
+                    val problemId = findFailReasonByValue(realm, problem).id
                     container.failureReasonId = problemId
                     platform.status = StatusEnum.ERROR
                     platform.containers.forEach { it.status = StatusEnum.ERROR }
                 }
                 ProblemEnum.BOTH -> {
-                    val breakdownProblemId = findBreakdownByValue(problem).id
-                    val failReasonProblemId = findFailReasonByValue(failProblem!!).id
+                    val breakdownProblemId = findBreakdownByValue(realm, problem).id
+                    val failReasonProblemId = findFailReasonByValue(realm, failProblem!!).id
                     container.breakdownReasonId = breakdownProblemId
                     container.failureReasonId = failReasonProblemId
                     platform.status = StatusEnum.ERROR
@@ -164,8 +167,8 @@ class RealmRepository(private val realm: Realm) {
                 }
             }
             container.failureComment = problemComment
+            updateTimer(platform)
         }
-        updateTimer()
     }
 
     fun updatePlatformProblem(platformId: Int, failureComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
@@ -174,21 +177,21 @@ class RealmRepository(private val realm: Realm) {
                 .findFirst()!!
             when (problemType) {
                 ProblemEnum.ERROR -> {
-                    val problemId = findFailReasonByValue(problem).id
+                    val problemId = findFailReasonByValue(realm, problem).id
                     platform.failureReasonId = problemId
                     platform.status = StatusEnum.ERROR
                     platform.containers.forEach { it.status = StatusEnum.ERROR }
                 }
                 ProblemEnum.BOTH -> {
-                    val failReasonProblemId = findFailReasonByValue(failProblem!!).id
+                    val failReasonProblemId = findFailReasonByValue(realm, failProblem!!).id
                     platform.failureReasonId = failReasonProblemId
                     platform.status = StatusEnum.ERROR
                     platform.containers.forEach { it.status = StatusEnum.ERROR }
                 }
             }
             platform.failureComment = failureComment
+            updateTimer(platform)
         }
-        updateTimer()
     }
 
     fun updatePlatformStatus(platformId: Int, status: String) {
@@ -198,18 +201,22 @@ class RealmRepository(private val realm: Realm) {
             if (platform.status == StatusEnum.NEW) {
                 platform.status = status
             }
+            updateTimer(platform)
         }
-        updateTimer()
     }
 
-
     fun findWayTask(): WayTaskEntity {
+        realm.refresh()
         return realm.copyFromRealm(realm.where(WayTaskEntity::class.java).findFirst()!!)
     }
 
     fun findAllPlatforms(): List<PlatformEntity> {
         realm.refresh()
-        return realm.copyFromRealm(realm.where(PlatformEntity::class.java).findAll())
+        val lastSynchroTime = AppPreferences.lastSynchroTime
+        return realm.copyFromRealm(
+            realm.where(PlatformEntity::class.java).greaterThan("updateAt", lastSynchroTime)
+                .findAll()
+        )
     }
 
     fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
@@ -221,18 +228,33 @@ class RealmRepository(private val realm: Realm) {
         return realm.copyFromRealm(realm.createObjectFromJson(clazz, json)!!)
     }
 
-    fun findPlatformEntity(platformId: Int) =
-        realm.where(PlatformEntity::class.java)
+    fun findPlatformEntity(platformId: Int): PlatformEntity {
+        realm.refresh()
+        return realm.where(PlatformEntity::class.java)
             .equalTo("platformId", platformId)
             .findFirst()!!
+    }
 
     fun findContainerEntity(containerId: Int) =
         realm.where(ContainerEntity::class.java)
             .equalTo("containerId", containerId)
             .findFirst()!!
 
-    /** добавление фото в платформу **/
+    fun findContainerProgress(): List<Int> {
+        val result = realm.copyFromRealm(realm.where(ContainerEntity::class.java).findAll())
+        val servedContainersCount = result.filter { it.status != StatusEnum.NEW }.size
+        val allCount = result.size
+        return listOf(servedContainersCount, allCount)
+    }
 
+    fun findPlatformProgress(): List<Int> {
+        val result = realm.copyFromRealm(realm.where(PlatformEntity::class.java).findAll())
+        val servedPlatformsCount = result.filter { it.status != StatusEnum.NEW }.size
+        val allCount = result.size
+        return listOf(servedPlatformsCount, allCount)
+    }
+
+    /** добавление фото в платформу **/
     fun updatePlatformMedia(imageFor: Int, platformId: Int, imageBase64: String) {
         realm.executeTransactionAsync { realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
@@ -249,29 +271,34 @@ class RealmRepository(private val realm: Realm) {
                     platformEntity?.failureMedia?.add(imageBase64)
                 }
             }
+            updateTimer(platformEntity)
         }
-        updateTimer()
     }
 
-    fun updateContainerMedia(containerId: Int, imageBase64: String) {
+    fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String) {
         realm.executeTransactionAsync { realm ->
             val containerEntity = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
                 .findFirst()!!
             containerEntity.failureMedia.add(imageBase64)
-
+            updateTimer(platformEntity)
         }
-        updateTimer()
     }
 
-    fun removeContainerMedia(containerId: Int, imageBase64: String) {
+    fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: String) {
         realm.executeTransactionAsync { realm ->
             val containerEntity = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
                 .findFirst()!!
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
+                .findFirst()!!
             containerEntity.failureMedia.remove(imageBase64)
+            updateTimer(platformEntity)
         }
-        updateTimer()
     }
 
     /** удалить фото с платформы **/
@@ -290,12 +317,12 @@ class RealmRepository(private val realm: Realm) {
                     platformEntity?.failureMedia?.remove(imageBase64)
                 }
             }
+            updateTimer(platformEntity)
         }
-        updateTimer()
     }
 
-    private fun updateTimer() {
-        AppPreferences.lastUpdateTime = MyUtil.timeStamp()
+    private fun updateTimer(entity: PlatformEntity?) {
+        entity?.updateAt = MyUtil.timeStamp()
     }
 
 }

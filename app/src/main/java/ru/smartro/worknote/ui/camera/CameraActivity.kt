@@ -47,6 +47,7 @@ class CameraActivity : AppCompatActivity() {
             }
             PhotoTypeEnum.forContainerProblem -> {
                 containerId = intent.getIntExtra("container_id", 0)
+                platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = getString(R.string.problem_container)
             }
         }

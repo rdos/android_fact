@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.activity_platform_service.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.container_service.ConteinerAdapter
+import ru.smartro.worknote.adapter.container_service.ContainerAdapter
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningCameraShow
@@ -22,7 +22,7 @@ import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlatformServiceActivity : AppCompatActivity(), ConteinerAdapter.ContainerPointClickListener {
+class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerPointClickListener {
     private val REQUEST_EXIT = 33
     private lateinit var platformEntity: PlatformEntity
     private val viewModel: PlatformServiceViewModel by viewModel()
@@ -86,7 +86,7 @@ class PlatformServiceActivity : AppCompatActivity(), ConteinerAdapter.ContainerP
 
     private fun initContainer() {
         val platform = viewModel.findPlatformEntity(platformId = platformEntity.platformId!!)
-        platform_service_rv.adapter = ConteinerAdapter(this, platform?.containers!!)
+        platform_service_rv.adapter = ContainerAdapter(this, platform.containers)
         point_info_tv.text = "№${platform.srpId} / ${platform.containers!!.size} конт."
     }
 

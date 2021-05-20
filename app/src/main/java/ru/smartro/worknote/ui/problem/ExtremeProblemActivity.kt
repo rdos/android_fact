@@ -11,7 +11,6 @@ import kotlinx.android.synthetic.main.activity_problem.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.util.MyUtil
@@ -19,7 +18,6 @@ import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.ProblemEnum
 
 class ExtremeProblemActivity : AppCompatActivity() {
-    private lateinit var failureReason: List<FailReasonEntity>
     private lateinit var platform: PlatformEntity
     private val viewModel: ProblemViewModel by viewModel()
 
@@ -33,7 +31,7 @@ class ExtremeProblemActivity : AppCompatActivity() {
 
         intent.let {
             platform = viewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
-        }
+        } 
         initViews()
         initExtremeProblemPhoto()
         acceptExtremeProblem()

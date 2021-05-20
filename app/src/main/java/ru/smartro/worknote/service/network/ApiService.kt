@@ -20,6 +20,7 @@ import ru.smartro.worknote.service.network.response.failure_reason.FailureReason
 import ru.smartro.worknote.service.network.response.failure_reason.send_failure.FailureResultResponse
 import ru.smartro.worknote.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.service.network.response.served.ServedResponse
+import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.service.network.response.work_order.WorkOrderResponse
@@ -74,7 +75,7 @@ interface ApiService {
     suspend fun earlyComplete(@Path("id") id: Int, @Body body: EarlyCompleteBody): Response<EmptyResponse>
 
     @POST("synchro")
-    suspend fun postSynchro(@Body time: SynchronizeBody): Response<EmptyResponse>
+    suspend fun postSynchro(@Body time: SynchronizeBody): Response<SynchronizeResponse>
 
     @POST("synchro/{o_id}/{w_id}")
     suspend fun getWorkOrder(@Path("o_id") organisationId: Int, @Path("w_id") waybillId: Int): Response<WorkOrderResponse>

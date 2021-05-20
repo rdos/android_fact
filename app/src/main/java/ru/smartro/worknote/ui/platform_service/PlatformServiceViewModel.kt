@@ -7,8 +7,8 @@ import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 
 class PlatformServiceViewModel(application: Application) : BaseViewModel(application) {
 
-    fun updateContainerVolume(containerId: Int, volume: Double, comment: String) {
-        db.updateContainerVolume(containerId, volume, comment)
+    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double, comment: String) {
+        db.updateContainerVolume(platformId, containerId, volume, comment)
     }
 
     fun updatePlatformStatus(platformId: Int, status: String) {
@@ -27,8 +27,8 @@ class PlatformServiceViewModel(application: Application) : BaseViewModel(applica
         db.removePlatformMedia(photoFor, photoPath, platformId)
     }
 
-    fun removeContainerMedia (containerId : Int, imageBase64 : String){
-        db.removeContainerMedia(containerId, imageBase64)
+    fun removeContainerMedia (platformId: Int, containerId : Int, imageBase64 : String){
+        db.removeContainerMedia(platformId, containerId, imageBase64)
     }
 }
 

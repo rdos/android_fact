@@ -55,6 +55,7 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity) : DialogFragme
         point_detail_fire.setOnClickListener {
             warningCameraShow("Сделайте фото проблемы").let {
                 it.accept_btn.setOnClickListener {
+                    hideDialog()
                     val intent = Intent(requireActivity(), ExtremeProblemActivity::class.java)
                     intent.putExtra("platform_id", platform.platformId)
                     dismiss()

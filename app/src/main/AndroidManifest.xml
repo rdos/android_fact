@@ -4,12 +4,14 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
     <uses-feature android:name="android.hardware.location.gps" />
     <uses-feature android:name="android.hardware.camera" />
@@ -23,6 +25,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".ui.login.TestActivity"
+            android:label="@string/title_activity_test"/>
+        <activity android:name=".ui.debug.DebugActivity" />
+        <activity
             android:name=".ui.problem.ProblemActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Problem" />
@@ -32,8 +38,8 @@
             android:theme="@style/Problem" />
         <activity
             android:name=".ui.platform_service.ContainerServiceActivity"
-            android:theme="@style/AppThemeMaterial"
             android:screenOrientation="portrait"
+            android:theme="@style/AppThemeMaterial"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.camera.CameraActivity"
@@ -61,28 +67,33 @@
                 android:name="android.notch_support"
                 android:value="true" />
         </activity>
-        <activity android:name=".ui.platform_service.PlatformServiceActivity"
+        <activity
+            android:name=".ui.platform_service.PlatformServiceActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.map.MapActivity"
-            android:theme="@style/NoToolbar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/NoToolbar" />
         <activity
             android:name=".ui.choose.way_task_4.WayTaskActivity"
             android:noHistory="true"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.choose.way_list_3.WayListActivity"
+        <activity
+            android:name=".ui.choose.way_list_3.WayListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.choose.vehicle_2.VehicleActivity"
+        <activity
+            android:name=".ui.choose.vehicle_2.VehicleActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.choose.owner_1.OrganisationActivity"
+        <activity
+            android:name=".ui.choose.owner_1.OrganisationActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.auth.AuthActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -98,6 +109,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <meta-data
             android:name="io.sentry.dsn"
             android:value="https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17" />

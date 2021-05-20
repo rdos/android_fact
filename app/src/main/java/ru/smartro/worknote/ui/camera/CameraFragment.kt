@@ -376,9 +376,9 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
                                 val imageBase64 = MyUtil.imageToBase64(photoFile.absolutePath)
 
                                 if (photoFor == PhotoTypeEnum.forContainerProblem) {
-                                    viewModel.updateContainerMedia(containerId, imageBase64)
+                                    viewModel.updateContainerMedia(platformId, containerId, imageBase64)
                                 } else {
-                                    viewModel.updatePlatformMedia(photoFor, this@CameraFragment.platformId, imageBase64)
+                                    viewModel.updatePlatformMedia(photoFor, platformId, imageBase64)
                                 }
                             }
                             loadingHide()

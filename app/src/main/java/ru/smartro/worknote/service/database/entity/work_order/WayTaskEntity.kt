@@ -42,6 +42,8 @@ open class PlatformEntity(
     var beforeMedia: RealmList<String> = RealmList(),
     @SerializedName("beginned_at")
     var beginnedAt: String? = null,
+    @SerializedName("updateAt")
+    var updateAt: Long? = null,
     @SerializedName("status")
     var status: String? = null,
     @SerializedName("failure_comment")

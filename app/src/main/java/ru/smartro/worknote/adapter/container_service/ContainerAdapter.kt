@@ -12,8 +12,8 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.util.StatusEnum
 
-class ConteinerAdapter(private val listener: ContainerPointClickListener, private val items: RealmList<ContainerEntity>) :
-    RecyclerView.Adapter<ConteinerAdapter.OwnerViewHolder>() {
+class ContainerAdapter(private val listener: ContainerPointClickListener, private val items: RealmList<ContainerEntity>) :
+    RecyclerView.Adapter<ContainerAdapter.OwnerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_choose, parent, false)
@@ -32,7 +32,7 @@ class ConteinerAdapter(private val listener: ContainerPointClickListener, privat
                 StatusEnum.NEW -> {
                     holder.itemView.setOnClickListener {
                         listener.startContainerService(item = items[position]!!)
-                        Log.d("ContainerPointAdapter", "onBindViewHolder: false")
+                        Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                     }
                 }
                 StatusEnum.SUCCESS -> {
@@ -50,16 +50,35 @@ class ConteinerAdapter(private val listener: ContainerPointClickListener, privat
                         Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                     }
                 }
-                /*   StatusEnum.FAILURE -> {
-                       holder.itemView.choose_status.isVisible = true
-                       holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel)
-                       holder.itemView.setOnClickListener {
-                           Log.d("ContainerPointAdapter", "onBindViewHolder: true")
-                       }
-                   }*/
             }
         }else{
-            holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel)
+            when (data.status) {
+                StatusEnum.NEW -> {
+                    holder.itemView.choose_status.isVisible = true
+                    holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel)
+                    holder.itemView.setOnClickListener {
+                        listener.startContainerService(item = items[position]!!)
+                        Log.d("ContainerPointAdapter", "onBindViewHolder: false")
+                    }
+                }
+                StatusEnum.SUCCESS -> {
+                    holder.itemView.choose_status.isVisible = true
+                    holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel_green)
+                    holder.itemView.setOnClickListener {
+                        listener.startContainerService(item = items[position]!!)
+                        Log.d("ContainerPointAdapter", "onBindViewHolder: false")
+                    }
+                }
+                StatusEnum.ERROR -> {
+                    holder.itemView.choose_status.isVisible = true
+                    holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel_red)
+                    holder.itemView.setOnClickListener {
+                        listener.startContainerService(item = items[position]!!)
+                        Log.d("ContainerPointAdapter", "onBindViewHolder: true")
+                    }
+                }
+            }
+
         }
     }
 

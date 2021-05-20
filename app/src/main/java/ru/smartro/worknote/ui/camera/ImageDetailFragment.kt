@@ -35,7 +35,7 @@ class ImageDetailFragment(private val platformId: Int, private val containerId :
             warningDelete(getString(R.string.warning_detele)).run {
                 this.accept_btn.setOnClickListener {
                     if (photoFor == PhotoTypeEnum.forContainerProblem) {
-                        viewModel.removeContainerMedia(containerId, imageBase64)
+                        viewModel.removeContainerMedia(platformId, containerId, imageBase64)
                     } else {
                         viewModel.removePlatformMedia(photoFor, imageBase64, platformId)
                     }

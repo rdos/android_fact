@@ -17,7 +17,7 @@ import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.exeption.BadRequestException
-import ru.smartro.worknote.service.network.response.EmptyResponse
+import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
 
 class NetworkRepository(private val context: Context) {
     fun auth(model: AuthBody) = liveData(Dispatchers.IO) {
@@ -263,7 +263,7 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    suspend fun synchronizeData(body : SynchronizeBody): Resource<EmptyResponse> {
+    suspend fun synchronizeData(body: SynchronizeBody): Resource<SynchronizeResponse> {
         return try {
             val response = RetrofitClient(context).apiService(true).postSynchro(body)
             when {

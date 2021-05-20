@@ -60,7 +60,7 @@ class ContainerServiceActivity : AppCompatActivity() {
     private fun completeContainer() {
         val volume = percentAdapter.getSelectedCount()
         val comment = comment_et.text.toString()
-        viewModel.updateContainerVolume(containerId, volume, comment)
+        viewModel.updateContainerVolume(platformId, containerId, volume, comment)
         finish()
     }
 

@@ -21,10 +21,21 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default"
             android:layout_marginBottom="72dp"
+            android:backgroundTint="@color/colorPrimary"
             android:src="@drawable/ic_geo"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:backgroundTint="@color/colorPrimary"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/debug_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="72dp"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:src="@drawable/ic_bug"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:backgroundTint="@color/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
