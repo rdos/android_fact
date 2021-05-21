@@ -28,7 +28,6 @@ import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
-import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
 
@@ -41,48 +40,56 @@ class SynchronizeWorker(
     private val network = NetworkRepository(applicationContext)
     private val deviceId = Secure.getString(appContext.contentResolver, Secure.ANDROID_ID)
 
-
+    @SuppressLint("MissingPermission", "RestrictedApi")
     override fun doWork(): Result {
         showNotification(appContext, true, "Не закрывайте приложение", "Служба отправки данных работает")
-        fixedRateTimer("timer", false, 0L, 1.min()) {
-            Log.d(TAG, " TIMER ALARM")
-            synchronizeData()
+        if (AppPreferences.workerStatus) {
+            fixedRateTimer("timer", false, 0L, 1.min()) {
+                synchronizeData()
+            }
+        } else {
+            Log.d(TAG, "WORKER STOPPED")
+            dismissNotification()
+            this@SynchronizeWorker.stop()
         }
-        Log.d(TAG, "RETURN SUCCESS")
         return Result.success()
     }
 
-    @SuppressLint("MissingPermission", "RestrictedApi")
     private fun synchronizeData() {
-        CoroutineScope(Dispatchers.IO).launch {
-            var long = 0.0
-            var lat = 0.0
-            if (AppPreferences.currentCoordinate!!.contains("#")) {
-                long = AppPreferences.currentCoordinate!!.substringAfter("#").toDouble()
-                lat = AppPreferences.currentCoordinate!!.substringBefore("#").toDouble()
-            }
-            val timeBeforeRequest = MyUtil.timeStamp()
-            Log.d(TAG, " SYNCHRONIZE STARTED")
-            val db = RealmRepository(Realm.getDefaultInstance())
-            val platforms = db.findAllPlatforms()
-            val synchronizeBody = SynchronizeBody(AppPreferences.wayListId, listOf(lat, long), deviceId, platforms)
-            val result = network.synchronizeData(synchronizeBody)
-            when (result.status) {
-                Status.SUCCESS -> {
-                    val alertMsg = result.data?.alert
-                    Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(result.data)}")
-                    AppPreferences.lastSynchroTime = timeBeforeRequest
-                    if (!alertMsg.isNullOrEmpty()) {
-                        showNotification(appContext, false, alertMsg, "Уведомление")
-                    }
+        if (AppPreferences.workerStatus) {
+            CoroutineScope(Dispatchers.IO).launch {
+                var long = 0.0
+                var lat = 0.0
+                val currentCoordinate = AppPreferences.currentCoordinate!!
+                if (currentCoordinate.contains("#")) {
+                    long = currentCoordinate.substringAfter("#").toDouble()
+                    lat = currentCoordinate.substringBefore("#").toDouble()
                 }
-                Status.ERROR -> Log.d(TAG, "SYNCHRONIZE GPS SENT ERROR")
-                Status.EMPTY -> Log.d(TAG, "SYNCHRONIZE SENT EMPTY")
-                Status.NETWORK -> Log.e(TAG, "SYNCHRONIZE  SENT NO INTERNET")
+                val timeBeforeRequest = MyUtil.timeStamp()
+                Log.d(TAG, " SYNCHRONIZE STARTED")
+                val db = RealmRepository(Realm.getDefaultInstance())
+                val platforms = db.findAllPlatforms()
+                val synchronizeBody = SynchronizeBody(AppPreferences.wayListId, listOf(lat, long), deviceId, platforms)
+                val synchronizeRequest = network.synchronizeData(synchronizeBody)
+                when (synchronizeRequest.status) {
+                    Status.SUCCESS -> {
+                        val alertMsg = synchronizeRequest.data?.alert
+                        Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeRequest.data)}")
+                        AppPreferences.lastSynchroTime = timeBeforeRequest
+                        if (!alertMsg.isNullOrEmpty()) {
+                            showNotification(appContext, false, alertMsg, "Уведомление")
+                        }
+                    }
+                    Status.ERROR -> Log.d(TAG, "SYNCHRONIZE GPS SENT ERROR")
+                    Status.EMPTY -> Log.d(TAG, "SYNCHRONIZE SENT EMPTY")
+                    Status.NETWORK -> Log.e(TAG, "SYNCHRONIZE  SENT NO INTERNET")
+                }
+                this.cancel()
+                return@launch
             }
-            if (!AppPreferences.workerStatus) { stop() }
-            this.cancel()
-            return@launch
+        } else {
+            Log.d(TAG, "WORKER STOPPED")
+            dismissNotification()
         }
     }
 
@@ -121,10 +128,5 @@ class SynchronizeWorker(
         notificationManager.cancel(1)
     }
 
-    override fun onStopped() {
-        super.onStopped()
-        dismissNotification()
-        Log.d(TAG, "onStopped: WHEN ${Calendar.getInstance().time}")
-    }
 }
 

@@ -32,7 +32,7 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
     }
 
     fun finishTask (context : AppCompatActivity){
-        WorkManager.getInstance(context).cancelAllWork()
+        WorkManager.getInstance(context).cancelUniqueWork("UploadData")
         AppPreferences.workerStatus = false
         AppPreferences.thisUserHasTask = false
         clearData()

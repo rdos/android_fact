@@ -8,7 +8,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.Animation
@@ -45,6 +46,7 @@ import ru.smartro.worknote.util.ClusterIcon
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
 import ru.smartro.worknote.work.SynchronizeWorker
+import java.util.concurrent.TimeUnit
 
 
 class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
@@ -72,11 +74,9 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     private fun initUploadDataWorker() {
-        val uploadDataWorkManager = OneTimeWorkRequestBuilder<SynchronizeWorker>()
-            .addTag("UpdateData")
-            .build()
+        val uploadDataWorkManager = PeriodicWorkRequestBuilder<SynchronizeWorker>(16, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this)
-            .enqueue(uploadDataWorkManager)
+            .enqueueUniquePeriodicWork("UploadData", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
         AppPreferences.workerStatus = true
     }
 
