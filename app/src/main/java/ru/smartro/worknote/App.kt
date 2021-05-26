@@ -2,6 +2,7 @@ package ru.smartro.worknote
 
 import android.app.Application
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
@@ -19,6 +20,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         initSentry()
+        initRealm()
         AppPreferences.init(this)
 
         startKoin {
@@ -26,8 +28,14 @@ class App : Application() {
             androidContext(this@App)
             modules(getModule())
         }
+    }
 
+    private fun initRealm(){
         Realm.init(this@App)
+        val config = RealmConfiguration.Builder()
+        config.name("FactRealmBase")
+        config.deleteRealmIfMigrationNeeded()
+        Realm.setDefaultConfiguration(config.build())
     }
 
     private fun getModule(): List<Module> {

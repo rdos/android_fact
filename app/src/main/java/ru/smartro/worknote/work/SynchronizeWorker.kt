@@ -48,7 +48,6 @@ class SynchronizeWorker(
                 synchronizeData()
             }
         } else {
-            Log.d(TAG, "WORKER STOPPED")
             dismissNotification()
             this@SynchronizeWorker.stop()
         }
@@ -112,8 +111,10 @@ class SynchronizeWorker(
                 setOngoing(ongoing)
                 setPriority(NotificationCompat.PRIORITY_MAX)
                 setDefaults(NotificationCompat.DEFAULT_ALL)
-                setFullScreenIntent(fullScreenPendingIntent, true)
             }
+        if (!ongoing) {
+            builder.setFullScreenIntent(fullScreenPendingIntent, true)
+        }
         val notification: Notification = builder.build()
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

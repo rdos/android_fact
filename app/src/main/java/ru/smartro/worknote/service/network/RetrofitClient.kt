@@ -59,6 +59,7 @@ class RetrofitClient(context: Context) {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
+    //PROD
 /*    fun apiService(isWorkNote: Boolean): ApiService {
         return if (isWorkNote)
             retrofit("https://wn-api.smartro.ru/api/fact/").create(ApiService::class.java)
@@ -66,11 +67,20 @@ class RetrofitClient(context: Context) {
             retrofit("https://auth.smartro.ru/api/").create(ApiService::class.java)
     }*/
 
+    //BACK STAGE TEST
     fun apiService(isWorkNote: Boolean): ApiService {
         return if (isWorkNote)
             retrofit("https://worknote-back.stage.smartro.ru/api/fact/").create(ApiService::class.java)
         else
             retrofit("https://auth.stage.smartro.ru/api/").create(ApiService::class.java)
     }
+
+    //BACK STAGE RC
+/*    fun apiService(isWorkNote: Boolean): ApiService {
+        return if (isWorkNote)
+            retrofit("https://worknote-back.rc.smartro.ru/api/fact/").create(ApiService::class.java)
+        else
+            retrofit("https://auth.rc.smartro.ru/api/").create(ApiService::class.java)
+    }*/
 
 }

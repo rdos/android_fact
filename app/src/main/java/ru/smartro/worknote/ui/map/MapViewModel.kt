@@ -17,7 +17,7 @@ import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
-import ru.smartro.worknote.ui.choose.way_task_4.WayTaskActivity
+import ru.smartro.worknote.ui.choose.way_list_3.WayListActivity
 import ru.smartro.worknote.util.MyUtil
 
 class MapViewModel(application: Application) : BaseViewModel(application) {
@@ -39,7 +39,7 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
         context.loadingHide()
         context.showSuccessComplete().let {
             it.finish_accept_btn.setOnClickListener {
-                context.startActivity(Intent(context, WayTaskActivity::class.java))
+                context.startActivity(Intent(context, WayListActivity::class.java))
                 context.finish()
             }
             it.exit_btn.setOnClickListener {

@@ -41,7 +41,7 @@
             android:layout_marginBottom="@dimen/margin_default"
             android:padding="@dimen/margin_default"
             android:background="@drawable/bg_button"
-            android:text="Выбрать сменное задание"
+            android:text="Выбрать путевой лист"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
