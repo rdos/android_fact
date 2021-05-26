@@ -9,23 +9,24 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.map_behavior_item.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.util.StatusEnum
 
-class WayPointAdapter(private val listener: ContainerClickListener, private val items: RealmList<WayPointEntity>) : RecyclerView.Adapter<WayPointAdapter.WayPointViewHolder>() {
+
+class PlatformAdapter(private val listener: PlatformClickListener, private val items: RealmList<PlatformEntity>) : RecyclerView.Adapter<PlatformAdapter.PlatformViewHolder>() {
     private var checkedPosition = -1
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WayPointViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlatformViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.map_behavior_item, parent, false)
-        return WayPointViewHolder(view)
+        return PlatformViewHolder(view)
     }
 
     override fun getItemCount(): Int {
         return items.size
     }
 
-    override fun onBindViewHolder(holder: WayPointViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PlatformViewHolder, position: Int) {
         val item = items[position]
 
         if (checkedPosition == -1) {
@@ -39,48 +40,41 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
         }
 
         holder.itemView.map_behavior_address.text = item!!.address
-        holder.itemView.map_behavior_scrp_id.text = item.srp_id.toString()
-        holder.itemView.map_behavior_container_count.text = "${item!!.cs!!.size} контейнер"
+        holder.itemView.map_behavior_scrp_id.text = item.srpId.toString()
+        val containerString: String = holder.itemView.context.resources.getQuantityString(R.plurals.container_count, item.containers.size)
+        holder.itemView.map_behavior_container_count.text = "${item.containers.size} $containerString"
 
         holder.itemView.map_behavior_coordinate.setOnClickListener {
-            listener.moveCameraPoint(Point(item.co?.get(0)!!, item.co?.get(1)!!))
+            listener.moveCameraPoint(Point(item.coords[0]!!, item.coords[1]!!))
         }
 
         when (items[position]!!.status) {
-            StatusEnum.empty -> {
+            StatusEnum.NEW -> {
                 holder.itemView.map_behavior_status.isVisible = false
                 holder.itemView.setOnClickListener {
                     if (checkedPosition != holder.adapterPosition) {
                         holder.itemView.map_behavior_expl.expand()
                         holder.itemView.map_behavior_start_service.setOnClickListener {
-                            listener.startPointService(item)
+                            listener.startPlatformService(item)
                         }
                         holder.itemView.map_behavior_fire.setOnClickListener {
-                            listener.startPointProblem(item)
+                            listener.startPlatformProblem(item)
                         }
                         notifyItemChanged(checkedPosition)
                         checkedPosition = holder.adapterPosition
                     }
                 }
             }
-            StatusEnum.completed -> {
+            StatusEnum.SUCCESS -> {
                 holder.itemView.map_behavior_status.isVisible = true
                 holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_check)
                 holder.itemView.setOnClickListener {
                     //nothing
                 }
             }
-            StatusEnum.breakDown -> {
+            StatusEnum.ERROR -> {
                 holder.itemView.map_behavior_status.isVisible = true
                 holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_red_check)
-                holder.itemView.setOnClickListener {
-                    //nothing
-                }
-            }
-
-            StatusEnum.failure -> {
-                holder.itemView.map_behavior_status.isVisible = true
-                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_cancel)
                 holder.itemView.setOnClickListener {
                     //nothing
                 }
@@ -89,13 +83,13 @@ class WayPointAdapter(private val listener: ContainerClickListener, private val 
 
     }
 
-    class WayPointViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class PlatformViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     }
 
-    interface ContainerClickListener {
-        fun startPointService(item: WayPointEntity)
-        fun startPointProblem(item: WayPointEntity)
+    interface PlatformClickListener {
+        fun startPlatformService(item: PlatformEntity)
+        fun startPlatformProblem(item: PlatformEntity)
         fun moveCameraPoint(point: Point)
     }
 }

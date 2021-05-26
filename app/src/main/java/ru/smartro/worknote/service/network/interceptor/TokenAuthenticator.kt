@@ -1,4 +1,4 @@
-package ru.smartro.worknote.service.network
+package ru.smartro.worknote.service.network.interceptor
 
 import android.content.Context
 import okhttp3.Authenticator

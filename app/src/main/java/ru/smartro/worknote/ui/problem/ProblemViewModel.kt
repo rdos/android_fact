@@ -1,46 +1,36 @@
 package ru.smartro.worknote.ui.problem
 
 import android.app.Application
-import androidx.lifecycle.LiveData
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.database.entity.container_service.ServedPointEntity
-import ru.smartro.worknote.service.database.entity.problem.ContainerBreakdownEntity
-import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEntity
-import ru.smartro.worknote.service.network.Resource
-import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
-import ru.smartro.worknote.service.network.body.failure.FailureBody
-import ru.smartro.worknote.service.network.response.breakdown.sendBreakDown.BreakDownResultResponse
-import ru.smartro.worknote.service.network.response.failure_reason.send_failure.FailureResultResponse
+import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.util.ProblemEnum
 
 class ProblemViewModel(application: Application) : BaseViewModel(application) {
 
-    fun sendBreakdown(body: BreakdownBody): LiveData<Resource<BreakDownResultResponse>> {
-        return network.sendBreakDown(body)
+
+    fun findPlatformEntity(platformId: Int): PlatformEntity {
+        return db.findPlatformEntity(platformId)
     }
 
-    fun updateContainerStatus(pointId: Int, containerId: Int, status: Int) {
-        db.updateContainerStatus(pointId, containerId, status)
+    fun findContainerEntity(containerId: Int): ContainerEntity {
+        return db.findContainerEntity(containerId)
     }
 
-    fun updatePointStatus(pointId: Int, status: Int) {
-        db.updatePointStatus(pointId, status)
+    fun updateContainerProblem(platformId: Int, containerId: Int, problemComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
+        db.updateContainerProblem(platformId, containerId, problemComment, problemType, problem, failProblem)
     }
 
-
-    fun sendFailure(body: FailureBody): LiveData<Resource<FailureResultResponse>> {
-        return network.sendFailure(body)
+    fun updatePlatformProblem(platformId: Int, problemComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
+        db.updatePlatformProblem(platformId, problemComment, problemType, problem, failProblem)
     }
 
-    fun findServedPointEntity(pointId: Int): ServedPointEntity? {
-        return db.findServedPointEntity(pointId)
+    fun findBreakDown(): List<String> {
+        return db.findAllBreakDown()
     }
 
-    fun findBreakDown(): List<ContainerBreakdownEntity> {
-        return db.findBreakDown()
-    }
-
-    fun findFailReason(): List<ContainerFailReasonEntity> {
-        return db.findFailReason()
+    fun findFailReason(): List<String> {
+        return db.findAllFailReason()
     }
 
 }

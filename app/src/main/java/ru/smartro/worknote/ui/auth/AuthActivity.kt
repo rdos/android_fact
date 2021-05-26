@@ -7,6 +7,8 @@ import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_auth.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.extensions.loadingHide
+import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Status
@@ -42,11 +44,13 @@ class AuthActivity : AppCompatActivity() {
     private fun initViews() {
         auth_enter.setOnClickListener {
             if (!auth_login.text.isNullOrBlank() && !auth_password.text.isNullOrBlank()) {
+                loadingShow()
                 viewModel.auth(AuthBody(auth_login.text.toString(), auth_password.text.toString()))
                     .observe(this, Observer { result ->
                         val data = result.data
                         when (result.status) {
                             Status.SUCCESS -> {
+                                loadingHide()
                                 toast("Вы авторизованы")
                                 AppPreferences.isLogined = true
                                 AppPreferences.userLogin = auth_login.text.toString()
@@ -55,9 +59,11 @@ class AuthActivity : AppCompatActivity() {
                                 finish()
                             }
                             Status.ERROR -> {
+                                loadingHide()
                                 toast("Логин или пароль не совпадает")
                             }
                             Status.NETWORK -> {
+                                loadingHide()
                                 toast("Проблемы с интернетом")
                             }
                         }

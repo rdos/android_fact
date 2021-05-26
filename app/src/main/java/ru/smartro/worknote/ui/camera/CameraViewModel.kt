@@ -2,28 +2,24 @@ package ru.smartro.worknote.ui.camera
 
 import android.app.Application
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.database.entity.container_service.ServedPointEntity
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 
 class CameraViewModel(application: Application) : BaseViewModel(application) {
 
-    fun findServedPointEntity(pointId: Int): ServedPointEntity? {
-        return db.findServedPointEntity(pointId)
+    fun findPlatformEntity(platformId: Int): PlatformEntity {
+        return db.findPlatformEntity(platformId)
     }
 
-    fun updatePhotoMediaOfServedPoint(isPhotoFor: Int, pointId: Int, photoPath: String) {
-        db.updatePhotoMediaOfServedPoint(isPhotoFor, pointId, photoPath)
+    fun updatePlatformMedia(imageFor: Int, pointId: Int, imageBase64: String) {
+        db.updatePlatformMedia(imageFor, pointId, imageBase64)
     }
 
-    fun removePhotoFromServedEntity(photoFor: Int, photoPath: String, wayPointId: Int) {
-        db.removePhotoFromServedEntity(photoFor, photoPath, wayPointId)
+    fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String) {
+        db.updateContainerMedia(platformId, containerId, imageBase64)
     }
 
-    fun beginTransaction() {
-        db.beginTransaction()
-    }
+    fun findContainerEntity(containerId: Int) =
+        db.findContainerEntity(containerId)
 
-    fun commitTransaction() {
-        db.commitTransaction()
-    }
 }
 

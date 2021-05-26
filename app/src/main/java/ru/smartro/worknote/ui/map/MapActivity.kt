@@ -1,19 +1,23 @@
 package ru.smartro.worknote.ui.map
 
-import android.app.Activity
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
-import android.location.Location
-import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.gson.Gson
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
+import com.yandex.mapkit.location.Location
+import com.yandex.mapkit.location.LocationListener
 import com.yandex.mapkit.location.LocationStatus
 import com.yandex.mapkit.map.*
 import com.yandex.mapkit.user_location.UserLocationLayer
@@ -25,102 +29,125 @@ import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
-import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import kotlinx.android.synthetic.main.behavior_points.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.WayPointAdapter
+import ru.smartro.worknote.adapter.PlatformAdapter
 import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
-import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
-import ru.smartro.worknote.ui.choose.way_task_4.WayTaskActivity
-import ru.smartro.worknote.ui.point_service.PointServiceActivity
-import ru.smartro.worknote.ui.problem.ContainerProblemActivity
+import ru.smartro.worknote.ui.debug.DebugActivity
+import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
+import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.ClusterIcon
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.work.SynchronizeWorker
+import java.util.concurrent.TimeUnit
 
 
-class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, UserLocationObjectListener, MapObjectTapListener, WayPointAdapter.ContainerClickListener {
+class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
+    UserLocationObjectListener, MapObjectTapListener,
+    PlatformAdapter.PlatformClickListener, android.location.LocationListener {
+
     private val REQUEST_EXIT = 41
-    private val POINT_SERVICE_CODE = 10
-    private val TAG = "MapActivity_LOG"
     private var firstTime = true
     private val viewModel: MapViewModel by viewModel()
-    private lateinit var wayTaskEntity: WayTaskEntity
     private lateinit var userLocationLayer: UserLocationLayer
+    private val locationListener = this as android.location.LocationListener
+    private val clusterListener = this as ClusterListener
+    private val mapObjectTapListener = this as MapObjectTapListener
+    private val platformClickListener = this as PlatformAdapter.PlatformClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
         setContentView(R.layout.activity_map)
-        wayTaskEntity = viewModel.findWayTask()
-        Log.d(TAG, "onCreate: wayTaskEntity ${Gson().toJson(wayTaskEntity)} ")
+        initUploadDataWorker()
+        initUserLocation()
         initMapView()
         initBottomBehavior()
-        initUserLocation()
     }
 
+    private fun initUploadDataWorker() {
+        val uploadDataWorkManager = PeriodicWorkRequestBuilder<SynchronizeWorker>(16, TimeUnit.MINUTES).build()
+        WorkManager.getInstance(this)
+            .enqueueUniquePeriodicWork("UploadData", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
+        AppPreferences.workerStatus = true
+    }
 
+    @SuppressLint("MissingPermission")
     private fun initUserLocation() {
-        var locationM = com.yandex.mapkit.location.Location()
+        var locationM = Location()
         val mapKit = MapKitFactory.getInstance()
         userLocationLayer = mapKit.createUserLocationLayer(map_view.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.setObjectListener(this)
 
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000L, 10f, locationListener)
+
         mapKit.createLocationManager()
-            .requestSingleUpdate(object : LocationListener, com.yandex.mapkit.location.LocationListener {
-                override fun onLocationChanged(location: Location) {
+        mapKit.createLocationManager().requestSingleUpdate(object : LocationListener {
+            override fun onLocationStatusUpdated(p0: LocationStatus) {
 
+            }
+
+            override fun onLocationUpdated(p0: Location) {
+                locationM = p0
+                AppPreferences.currentCoordinate = "${p0.position.longitude}#${p0.position.latitude}"
+                toast("Клиент найден")
+                if (firstTime) {
+                    map_view.map.move(
+                        CameraPosition(p0.position, 12.0f, 0.0f, 0.0f),
+                        Animation(Animation.Type.SMOOTH, 1F), null
+                    )
+                    firstTime = false
                 }
+            }
+        })
 
-                override fun onLocationStatusUpdated(p0: LocationStatus) {
 
-                }
-
-                override fun onLocationUpdated(p0: com.yandex.mapkit.location.Location) {
-                    locationM = p0
-                    toast("Клиент найден")
-                    if (firstTime) {
-                        map_view.map.move(CameraPosition(p0.position, 12.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
-                        firstTime = false
-                    }
-                }
-            })
         location_fab.setOnClickListener {
             try {
-                map_view.map.move(CameraPosition(locationM.position, 12.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
+                map_view.map.move(
+                    CameraPosition(locationM.position, 12.0f, 0.0f, 0.0f),
+                    Animation(Animation.Type.SMOOTH, 1F), null
+                )
             } catch (e: Exception) {
                 toast("Клиент не найден")
             }
         }
 
+        debug_fab.setOnClickListener {
+            startActivity(Intent(this, DebugActivity::class.java))
+        }
     }
 
     private fun initMapView() {
-        val wayInfo = viewModel.findWayTask()
-        val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(this)
-        val greenIcon = ImageProvider.fromResource(this, R.drawable.ic_green_marker)
-        val blueIcon = ImageProvider.fromResource(this, R.drawable.ic_blue_marker)
-        val redIcon = ImageProvider.fromResource(this, R.drawable.ic_red_marker)
-        clusterCollection.addPlacemarks(createPoints(wayInfo.p!!, StatusEnum.completed), greenIcon, IconStyle())
-        clusterCollection.addPlacemarks(createPoints(wayInfo.p!!, StatusEnum.empty), blueIcon, IconStyle())
-        clusterCollection.addPlacemarks(createPoints(wayInfo.p!!, StatusEnum.breakDown), redIcon, IconStyle())
-        clusterCollection.addPlacemarks(createPoints(wayInfo.p!!, StatusEnum.failure), redIcon, IconStyle())
-        clusterCollection.addTapListener(this)
-        clusterCollection.clusterPlacemarks(60.0, 15)
+        lifecycleScope.launchWhenCreated {
+            viewModel.findWayTask().let {
+                val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(clusterListener)
+                val greenIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_green_marker)
+                val blueIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_blue_marker)
+                val redIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_red_marker)
+                clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
+                clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.NEW), blueIcon, IconStyle())
+                clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.ERROR), redIcon, IconStyle())
+                clusterCollection.addTapListener(mapObjectTapListener)
+                clusterCollection.clusterPlacemarks(60.0, 15)
+            }
+        }
     }
 
-    private fun createPoints(list: RealmList<WayPointEntity>, status: Int): List<Point> {
+    private fun createPoints(list: RealmList<PlatformEntity>, status: String): List<Point> {
         return list.filter { it.status == status }.map {
-            Point(it.co?.get(0)!!, it.co!![1]!!)
+            Point(it.coords[0]!!, it.coords[1]!!)
         }
     }
 
@@ -142,7 +169,10 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
     }
 
     override fun onClusterTap(cluster: Cluster): Boolean {
-        map_view.map.move(CameraPosition(cluster.appearance.geometry, 14.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
+        map_view.map.move(
+            CameraPosition(cluster.appearance.geometry, 14.0f, 0.0f, 0.0f),
+            Animation(Animation.Type.SMOOTH, 1F), null
+        )
         return true
     }
 
@@ -166,11 +196,8 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         try {
             val placeMark = mapObject as PlacemarkMapObject
             val coordinate = placeMark.geometry
-            val wayInfo = viewModel.findWayTask()
-            val clickedPoint = wayInfo.p!!.find {
-                it.co!![0]!! == coordinate.latitude && it.co!![1]!! == coordinate.longitude
-            }!!
-            PlaceMarkDetailDialog(clickedPoint).show(supportFragmentManager, "PlaceMarkDetailDialog")
+            val clickedPlatform = viewModel.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
+            PlaceMarkDetailDialog(clickedPlatform).show(supportFragmentManager, "PlaceMarkDetailDialog")
         } catch (e: Exception) {
             toast("Не удалось загрузить")
         }
@@ -178,49 +205,58 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
     }
 
     private fun initBottomBehavior() {
-        val wayInfo = viewModel.findWayTask()
-        val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-        val pointsArray = wayInfo.p!!
-        pointsArray.sortByDescending { it.status == StatusEnum.empty }
-        map_behavior_rv.adapter = WayPointAdapter(this, pointsArray)
+        lifecycleScope.launchWhenCreated {
+            viewModel.findWayTask().let {
+                val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+                val platformsArray = it.platforms
 
-        map_behavior_header.setOnClickListener {
-            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            else
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-        }
-        val hasNotServedPoint = wayInfo.p!!.any { it.status == StatusEnum.empty }
-        if (hasNotServedPoint) {
-            map_behavior_send_btn.background = getDrawable(R.drawable.bg_button_red)
-            map_behavior_send_btn.text = getString(R.string.finish_way_now)
-        } else {
-            map_behavior_send_btn.background = getDrawable(R.drawable.bg_button)
-            map_behavior_send_btn.text = getString(R.string.finish_way)
-        }
-        map_behavior_send_btn.setOnClickListener {
-            finishWay(hasNotServedPoint)
-        }
+                platformsArray.sortByDescending { it.status == StatusEnum.NEW }
 
+                map_behavior_rv.adapter = PlatformAdapter(platformClickListener, platformsArray)
+
+                map_behavior_header.setOnClickListener {
+                    if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    else
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                val hasNotServedPlatform = it.platforms.any { found -> found.status == StatusEnum.NEW }
+                if (hasNotServedPlatform) {
+                    map_behavior_send_btn.background = getDrawable(R.drawable.bg_button_red)
+                    map_behavior_send_btn.text = getString(R.string.finish_way_now)
+                } else {
+                    map_behavior_send_btn.background = getDrawable(R.drawable.bg_button)
+                    map_behavior_send_btn.text = getString(R.string.finish_way)
+                }
+                map_behavior_send_btn.setOnClickListener {
+                    finishWay(hasNotServedPlatform)
+                }
+            }
+        }
     }
 
     private fun finishWay(boolean: Boolean) {
         if (!boolean) {
-            completeWayInfo()
+            completeWayBill()
         } else {
             val allReasons = viewModel.findCancelWayReason()
-            showFailureFinishWay(allReasons).run {
-                this.accept_btn.setOnClickListener {
-                    if (!this.reason_et.text.isNullOrEmpty()) {
-                        val failureId = allReasons.find { it.problem == this.reason_et.text.toString() }!!.id
-                        val body = EarlyCompleteBody(datetime = System.currentTimeMillis() / 1000L, failureId = failureId)
+            showEarlyComplete(allReasons).let { view ->
+                view.accept_btn.setOnClickListener {
+                    if (!view.reason_et.text.isNullOrEmpty() && (view.early_volume_tg.isChecked || view.early_weight_tg.isChecked)
+                        && !view.unload_value_et.text.isNullOrEmpty()
+                    ) {
+                        val failureId = viewModel.findCancelWayReasonByValue(view.reason_et.text.toString())
+                        val unloadValue = view.unload_value_et.text.toString().toInt()
+                        val unloadType = if (view.early_volume_tg.isChecked) 1 else 2
+
+                        val body = EarlyCompleteBody(failureId, MyUtil.timeStamp(), unloadType, unloadValue)
                         loadingShow()
+
                         viewModel.earlyComplete(AppPreferences.wayTaskId, body)
                             .observe(this@MapActivity, Observer { result ->
                                 when (result.status) {
                                     Status.SUCCESS -> {
-                                        completeWayInfo()
-                                        loadingHide()
+                                        viewModel.finishTask(this@MapActivity)
                                     }
                                     Status.ERROR -> {
                                         toast(result.msg)
@@ -234,37 +270,33 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
 
                             })
                     } else {
-                        toast("Выберите причину")
+                        toast("Заполните все поля")
                     }
                 }
+                view.dismiss_btn.setOnClickListener {
+                    hideDialog()
+                }
             }
+
         }
 
     }
 
-    private fun completeWayInfo() {
-        showCompleteEnterInfo().run {
+    private fun completeWayBill() {
+        showCompleteWaybill().run {
             this.accept_btn.setOnClickListener {
                 if (this.weight_tg.isChecked || this.volume_tg.isChecked) {
                     val unloadType = if (this.volume_tg.isChecked) 1 else 2
-                    val body = CompleteWayBody(finishedAt = System.currentTimeMillis() / 1000L, unloadType = unloadType, unloadValue = "${this.comment_et.text.toString()}.00")
+                    val body = CompleteWayBody(
+                        finishedAt = MyUtil.timeStamp(),
+                        unloadType = unloadType, unloadValue = "${this.comment_et.text.toString()}.00"
+                    )
                     loadingShow()
                     viewModel.completeWay(AppPreferences.wayTaskId, body)
                         .observe(this@MapActivity, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
-                                    AppPreferences.thisUserHasTask = false
-                                    viewModel.clearData()
-                                    loadingHide()
-                                    showSuccessComplete().run {
-                                        this.accept_btn.setOnClickListener {
-                                            startActivity(Intent(this@MapActivity, WayTaskActivity::class.java))
-                                            finish()
-                                        }
-                                        this.exit_btn.setOnClickListener {
-                                            MyUtil.logout(this@MapActivity)
-                                        }
-                                    }
+                                    viewModel.finishTask(this@MapActivity)
                                 }
                                 Status.ERROR -> {
                                     toast(result.msg)
@@ -283,20 +315,25 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         }
     }
 
-    override fun startPointService(item: WayPointEntity) {
-        val intent = Intent(this, PointServiceActivity::class.java)
-        val itemJson = Gson().toJson(item)
-        intent.putExtra("container", itemJson)
-        startActivityForResult(intent, POINT_SERVICE_CODE)
+    override fun startPlatformService(item: PlatformEntity) {
+        val intent = Intent(this, PlatformServiceActivity::class.java)
+        intent.putExtra("platform_id", item.platformId)
+        startActivity(intent)
     }
 
-    override fun startPointProblem(item: WayPointEntity) {
-        val intent = Intent(this, ContainerProblemActivity::class.java)
-        intent.putExtra("wayPoint", Gson().toJson(item))
-        intent.putExtra("isContainerProblem", false)
-        Log.d("POINT_RPOBLEM", "onCreate: ${Gson().toJson(item)}")
-        viewModel.createServedPointEntityIfNull(item)
-        startActivityForResult(intent, REQUEST_EXIT)
+    override fun startPlatformProblem(item: PlatformEntity) {
+        warningCameraShow("Сделайте фото проблемы").let {
+            it.accept_btn.setOnClickListener {
+                hideDialog()
+                val intent = Intent(this, ExtremeProblemActivity::class.java)
+                intent.putExtra("platform_id", item.platformId)
+                startActivityForResult(intent, REQUEST_EXIT)
+            }
+
+            it.dismiss_btn.setOnClickListener {
+                hideDialog()
+            }
+        }
     }
 
     override fun moveCameraPoint(point: Point) {
@@ -305,14 +342,30 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener, Us
         map_view.map.move(CameraPosition(point, 16.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == POINT_SERVICE_CODE && resultCode == Activity.RESULT_OK) {
-            initMapView()
-            initBottomBehavior()
-        } else if (requestCode == REQUEST_EXIT && resultCode == 99) {
-            initMapView()
-            initBottomBehavior()
-        }
+    override fun onBackPressed() {
+
     }
+
+    override fun onResume() {
+        super.onResume()
+        initMapView()
+        initBottomBehavior()
+    }
+
+    override fun onLocationChanged(p0: android.location.Location) {
+        AppPreferences.currentCoordinate = "${p0.longitude}#${p0.latitude}"
+    }
+
+    override fun onProviderEnabled(provider: String) {
+
+    }
+
+    override fun onProviderDisabled(provider: String) {
+
+    }
+
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+
+    }
+
 }

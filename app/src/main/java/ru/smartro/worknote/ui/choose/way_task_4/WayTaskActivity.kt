@@ -8,13 +8,8 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_choose.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.WayTaskAdapter
@@ -22,37 +17,31 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.problem.ContainerBreakdownEntity
-import ru.smartro.worknote.service.database.entity.problem.ContainerFailReasonEntity
-import ru.smartro.worknote.service.database.entity.way_task.WayTaskEntity
+import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.ProgressBody
-import ru.smartro.worknote.service.network.body.WayTaskBody
-import ru.smartro.worknote.service.network.response.way_task.WayInfo
-import ru.smartro.worknote.service.network.response.way_task.WayTaskResponse
+import ru.smartro.worknote.service.network.response.work_order.Workorder
 import ru.smartro.worknote.ui.map.MapActivity
+import ru.smartro.worknote.util.MyUtil
 
 class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
-    private val TAG = "WayTaskActivity_LOG"
     private val viewModel: WayTaskViewModel by viewModel()
     private lateinit var adapter: WayTaskAdapter
-    private lateinit var selectedWayInfo: WayInfo
-    private lateinit var wayTask: WayTaskResponse
+    private lateinit var selectedWayInfo: Workorder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.title = "Выберите сменное задание"
         setContentView(R.layout.activity_choose)
-
         loadingShow()
-        viewModel.getWayTask(AppPreferences.wayListId, WayTaskBody(AppPreferences.organisationId))
+        viewModel.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayListId)
             .observe(this, Observer { result ->
                 val data = result.data
                 when (result.status) {
                     Status.SUCCESS -> {
-                        wayTask = data!!
-                        adapter = WayTaskAdapter(data.data.wos as ArrayList<WayInfo>, this)
+                        adapter = WayTaskAdapter(data!!.data.workorders as ArrayList<Workorder>, this)
                         choose_rv.adapter = adapter
                         loadingHide()
                     }
@@ -85,6 +74,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                     saveFailReason()
                     saveCancelWayReason()
                     saveBreakDownTypes()
+                    acceptProgress()
                     dialog.dismiss()
                 }
 
@@ -99,21 +89,17 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
         viewModel.getBreakDownTypes().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
-                    lifecycleScope.launch(Dispatchers.IO) {
                         val entities = result.data?.data?.filter {
                             it.attributes.organisationId == AppPreferences.organisationId
                         }?.map {
-                            ContainerBreakdownEntity(it.attributes.id, it.attributes.name)
+                            BreakDownEntity(it.attributes.id, it.attributes.name)
                         }
-                        withContext(Dispatchers.Main) {
-                            viewModel.insertBreakDown(entities!!)
-                            acceptProgress()
-                        }
-                    }
+                        viewModel.insertBreakDown(entities!!)
                 }
                 Status.ERROR -> {
                     toast(result.msg)
                 }
+                else -> Log.d("dsadsa", "saveBreakDownTypes:")
             }
 
         })
@@ -124,9 +110,8 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
             when (result.status) {
                 Status.SUCCESS -> {
                     val entities = result.data?.data?.filter {
-                        it.oid == AppPreferences.organisationId
-                    }!!.map {
-                        ContainerFailReasonEntity(it.id, it.name)
+                        it.oid == AppPreferences.organisationId }!!.map {
+                        FailReasonEntity(it.id, it.name)
                     }
                     viewModel.insertFailReason(entities)
                 }
@@ -154,23 +139,17 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
     }
 
     private fun acceptProgress() {
-        viewModel.progress(AppPreferences.wayTaskId, ProgressBody(System.currentTimeMillis() / 1000L))
+        viewModel.progress(AppPreferences.wayTaskId, ProgressBody(MyUtil.timeStamp()))
             .observe(this, Observer { result ->
                 when (result.status) {
                     Status.SUCCESS -> {
                         loadingHide()
-                        viewModel.beginTransaction()
                         AppPreferences.thisUserHasTask = true
-                        val convertedToJson = Gson().toJson(selectedWayInfo)
-                        val wayTaskEntityFromJson = viewModel.createObjectFromJson(WayTaskEntity::class.java, convertedToJson)
-                        Log.d(TAG, "1 CONVERT $convertedToJson")
-                        Log.d(TAG, "2 CONVERT ${Gson().toJson(wayTaskEntityFromJson)}")
-                        viewModel.insertWayTask(wayTaskEntityFromJson)
-                        viewModel.commitTransaction()
+                        viewModel.insertWayTask(selectedWayInfo)
                         startActivity(Intent(this, MapActivity::class.java))
                         finish()
                     }
-                    Status.ERROR -> {
+                    else -> {
                         toast(result.msg)
                         loadingHide()
                     }
@@ -178,7 +157,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
             })
     }
 
-    override fun selectedWayTask(model: WayInfo) {
+    override fun selectedWayTask(model: Workorder) {
         selectedWayInfo = model
     }
 }

@@ -8,10 +8,8 @@ import android.view.KeyEvent
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.gson.Gson
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.FLAGS_FULLSCREEN
-import ru.smartro.worknote.service.database.entity.way_task.WayPointEntity
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
 
@@ -22,37 +20,42 @@ private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 class CameraActivity : AppCompatActivity() {
     private var photoFor = 0
     private lateinit var hostLayout: FrameLayout
-    private lateinit var wayPoint: WayPointEntity
+    private var platformId = 0
+    private var containerId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
         intent.let {
-            wayPoint = Gson().fromJson(it.getStringExtra("wayPoint"), WayPointEntity::class.java)
             photoFor = it.getIntExtra("photoFor", 0)
         }
 
         hostLayout = findViewById(R.id.fragment_container)
-        val cameraFragment = CameraFragment(photoFor, wayPoint)
+        when (photoFor) {
+            PhotoTypeEnum.forBeforeMedia -> {
+                platformId = intent.getIntExtra("platform_id", 0)
+                supportActionBar?.title = getString(R.string.service_before)
+            }
+            PhotoTypeEnum.forAfterMedia -> {
+                platformId = intent.getIntExtra("platform_id", 0)
+                supportActionBar?.title = getString(R.string.service_after)
+            }
+            PhotoTypeEnum.forPlatformProblem -> {
+                platformId = intent.getIntExtra("platform_id", 0)
+                supportActionBar?.title = getString(R.string.problem_on_point)
+            }
+            PhotoTypeEnum.forContainerProblem -> {
+                containerId = intent.getIntExtra("container_id", 0)
+                platformId = intent.getIntExtra("platform_id", 0)
+                supportActionBar?.title = getString(R.string.problem_container)
+            }
+        }
+        val cameraFragment = CameraFragment(photoFor, platformId, containerId)
         supportFragmentManager.beginTransaction().run {
             this.replace(R.id.fragment_container, cameraFragment)
             this.addToBackStack(null)
             this.commit()
-        }
-        when (photoFor) {
-            PhotoTypeEnum.forBeforeMedia -> {
-                supportActionBar?.title = getString(R.string.service_before)
-            }
-            PhotoTypeEnum.forAfterMedia -> {
-                supportActionBar?.title = getString(R.string.service_after)
-            }
-            PhotoTypeEnum.forProblemPoint -> {
-                supportActionBar?.title = getString(R.string.problem_on_point)
-            }
-            PhotoTypeEnum.forProblemContainer -> {
-                supportActionBar?.title = getString(R.string.problem_container)
-            }
         }
     }
 

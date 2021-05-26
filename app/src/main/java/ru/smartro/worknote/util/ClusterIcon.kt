@@ -7,6 +7,8 @@ import android.graphics.Paint
 import android.util.DisplayMetrics
 import androidx.appcompat.app.AppCompatActivity
 import com.yandex.runtime.image.ImageProvider
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 class ClusterIcon(private val text: String, private val context: AppCompatActivity) : ImageProvider() {
     private val FONT_SIZE = 15f
@@ -35,8 +37,8 @@ class ClusterIcon(private val text: String, private val context: AppCompatActivi
         textPaint.isAntiAlias = true
         val widthF = textPaint.measureText(text)
         val textMetrics = textPaint.fontMetrics
-        val heightF = Math.abs(textMetrics.bottom) + Math.abs(textMetrics.top)
-        val textRadius = Math.sqrt(widthF * widthF + heightF * heightF.toDouble()).toFloat() / 2
+        val heightF = abs(textMetrics.bottom) + abs(textMetrics.top)
+        val textRadius = sqrt(widthF * widthF + heightF * heightF.toDouble()).toFloat() / 2
         val internalRadius: Float = textRadius + MARGIN_SIZE * metrics.density
         val externalRadius: Float =
             internalRadius + STROKE_SIZE * metrics.density

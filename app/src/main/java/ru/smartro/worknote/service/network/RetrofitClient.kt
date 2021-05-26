@@ -2,7 +2,7 @@ package ru.smartro.worknote.service.network
 
 import android.content.Context
 import android.util.Log
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,6 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.network.interceptor.TokenAuthenticator
 import java.util.concurrent.TimeUnit
 
 class RetrofitClient(context: Context) {
@@ -43,6 +44,7 @@ class RetrofitClient(context: Context) {
         OkHttpClient().newBuilder()
             .addInterceptor(authInterceptor)
             .addInterceptor(httpLoggingInterceptor)
+            .addInterceptor(SentryOkHttpInterceptor())
             .authenticator(TokenAuthenticator(context))
             .connectTimeout(240, TimeUnit.SECONDS)
             .readTimeout(240, TimeUnit.SECONDS)
@@ -55,21 +57,30 @@ class RetrofitClient(context: Context) {
             .baseUrl(baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
 
-    fun apiService(isWorkNote: Boolean): ApiService {
+    //PROD
+/*    fun apiService(isWorkNote: Boolean): ApiService {
         return if (isWorkNote)
             retrofit("https://wn-api.smartro.ru/api/fact/").create(ApiService::class.java)
         else
             retrofit("https://auth.smartro.ru/api/").create(ApiService::class.java)
+    }*/
+
+    //BACK STAGE TEST
+    fun apiService(isWorkNote: Boolean): ApiService {
+        return if (isWorkNote)
+            retrofit("https://worknote-back.stage.smartro.ru/api/fact/").create(ApiService::class.java)
+        else
+            retrofit("https://auth.stage.smartro.ru/api/").create(ApiService::class.java)
     }
 
-/*       fun apiService(isWorkNote: Boolean): ApiService {
-           return if (isWorkNote)
-               retrofit("https://worknote-back.rc.smartro.ru/api/").create(ApiService::class.java)
-           else
-               retrofit("https://auth.rc.smartro.ru/api/").create(ApiService::class.java)
-       }*/
+    //BACK STAGE RC
+/*    fun apiService(isWorkNote: Boolean): ApiService {
+        return if (isWorkNote)
+            retrofit("https://worknote-back.rc.smartro.ru/api/fact/").create(ApiService::class.java)
+        else
+            retrofit("https://auth.rc.smartro.ru/api/").create(ApiService::class.java)
+    }*/
 
 }

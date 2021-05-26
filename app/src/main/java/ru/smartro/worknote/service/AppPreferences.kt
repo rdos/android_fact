@@ -26,6 +26,12 @@ object AppPreferences {
             it.putString("accessToken", value)
         }
 
+    var currentCoordinate: String?
+        get() = preferences.getString("currentCoordinate", " ")
+        set(value) = preferences.edit {
+            it.putString("currentCoordinate", value)
+        }
+
     var userLogin: String
         get() = preferences.getString("userLogin", "")!!
         set(value) = preferences.edit {
@@ -42,6 +48,18 @@ object AppPreferences {
         get() = preferences.getInt("organisationId", 0)
         set(value) = preferences.edit {
             it.putInt("organisationId", value)
+        }
+
+    var lastSynchroTime: Long
+        get() = preferences.getLong("lastSynchronizeTime", 0)
+        set(value) = preferences.edit {
+            it.putLong("lastSynchronizeTime", value)
+        }
+
+    var lastUpdateTime: Long
+        get() = preferences.getLong("lastUpdateTime", 0)
+        set(value) = preferences.edit {
+            it.putLong("lastUpdateTime", value)
         }
 
     var serviceStartedAt: Long
@@ -72,6 +90,12 @@ object AppPreferences {
         get() = preferences.getBoolean("thisUserHasTask", false)
         set(value) = preferences.edit {
             it.putBoolean("thisUserHasTask", value)
+        }
+
+    var workerStatus: Boolean
+        get() = preferences.getBoolean("workerStatus", true)
+        set(value) = preferences.edit {
+            it.putBoolean("workerStatus", value)
         }
 
     fun clear() {

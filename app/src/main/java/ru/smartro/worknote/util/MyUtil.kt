@@ -7,10 +7,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.os.Environment
+import android.os.Build
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
@@ -20,11 +18,11 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import java.io.ByteArrayOutputStream
-import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 object MyUtil {
-    private const val PERMISSIONS_REQUEST_CODE = 10
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
     /** Convenience method used to check if all permissions required by this app are granted */
@@ -32,47 +30,13 @@ object MyUtil {
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun deleteFileFromStorage(filePath: String) {
-        val file = File(filePath)
-        if (file.delete())
-            Log.d("Delete image after send", "DELETED $filePath ")
-        else
-            Log.d("Delete image after send", "NOT DELETED $filePath ")
+    fun timeStamp(): Long {
+        return System.currentTimeMillis() / 1000L
     }
 
-    fun createCardFolder(context: Context) {
-        val folderPath = context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.path + "/images"
-        val folder = File(folderPath)
-        if (!folder.exists()) {
-            val cardsDirectory = File(folderPath)
-            cardsDirectory.mkdirs()
-        }
-    }
-
-    fun askPermissionForCamera(context: Activity, code: Int) {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                context,
-                arrayOf(Manifest.permission.CAMERA),
-                code
-            )
-        }
-    }
-
-    fun askPermissionForStorage(context: Activity, code: Int) {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                context,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                code
-            )
-        }
+    fun currentTime(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", Locale.getDefault())
+        return sdf.format(Date())
     }
 
     fun hasPermissions(context: Context, vararg permissions: Array<String>): Boolean =
@@ -110,7 +74,7 @@ object MyUtil {
         AppPreferences.clear()
     }
 
-    fun getFileToByte(filePath: String?): String {
+    fun imageToBase64(filePath: String?): String {
         val bmp: Bitmap?
         val bos: ByteArrayOutputStream?
         val bt: ByteArray?
@@ -119,7 +83,7 @@ object MyUtil {
         try {
             bmp = BitmapFactory.decodeFile(filePath)
             bos = ByteArrayOutputStream()
-            resizedBmp = Bitmap.createScaledBitmap(bmp, 360, 640, false)
+            resizedBmp = Bitmap.createScaledBitmap(bmp, 320, 620, false)
             resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, bos)
             bt = bos.toByteArray()
             encodeString = Base64.encodeToString(bt, Base64.DEFAULT)
@@ -129,21 +93,31 @@ object MyUtil {
         return "data:image/png;base64,$encodeString"
     }
 
-    private fun getResizedBitmap(bm: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
-        val width = bm.width
-        val height = bm.height
-        val scaleWidth = newWidth.toFloat() / width
-        val scaleHeight = newHeight.toFloat() / height
-        // CREATE A MATRIX FOR THE MANIPULATION
-        val matrix = Matrix()
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight)
+    fun base64ToImage(encodedImage : String?) : Bitmap {
+        val decodedString: ByteArray = Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+    }
 
-        val resizedBitmap = Bitmap.createBitmap(
-            bm, 0, 0, width, height, matrix, false
-        )
-        bm.recycle()
-        return resizedBitmap
+    fun getDeviceName(): String? {
+        fun capitalize(s: String?): String? {
+            if (s == null || s.isEmpty()) {
+                return ""
+            }
+            val first = s[0]
+            return if (Character.isUpperCase(first)) {
+                s
+            } else {
+                Character.toUpperCase(first).toString() + s.substring(1)
+            }
+        }
+
+        val manufacturer = Build.MANUFACTURER
+        val model = Build.MODEL
+        return if (model.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+            capitalize(model)
+        } else {
+            capitalize(manufacturer).toString() + " " + model
+        }
     }
 
 }

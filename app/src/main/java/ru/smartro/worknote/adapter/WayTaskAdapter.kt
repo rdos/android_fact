@@ -8,9 +8,9 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_choose.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.network.response.way_task.WayInfo
+import ru.smartro.worknote.service.network.response.work_order.Workorder
 
-class WayTaskAdapter(private val items: ArrayList<WayInfo>, val listener: SelectListener) :
+class WayTaskAdapter(private val items: ArrayList<Workorder>, val listener: SelectListener) :
     RecyclerView.Adapter<WayTaskAdapter.OwnerViewHolder>() {
     private var checkedPosition = -1
 
@@ -66,6 +66,6 @@ class WayTaskAdapter(private val items: ArrayList<WayInfo>, val listener: Select
     }
 
     interface SelectListener {
-        fun selectedWayTask(model: WayInfo)
+        fun selectedWayTask(model: Workorder)
     }
 }
