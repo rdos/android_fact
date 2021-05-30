@@ -81,6 +81,18 @@ fun AppCompatActivity.warningClearNavigator(title: String): View {
     return view
 }
 
+fun AppCompatActivity.alertOnPoint(): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_on_point, null)
+    builder.setView(view)
+    builder.setCancelable(false)
+    customDialog = builder.create()
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
 fun Fragment.warningCameraShow(title: String): View {
     val builder = AlertDialog.Builder(this.requireContext())
     val inflater = this.layoutInflater

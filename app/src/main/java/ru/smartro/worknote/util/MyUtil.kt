@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.os.Build
 import android.util.Base64
 import android.view.View
@@ -118,6 +119,18 @@ object MyUtil {
         } else {
             capitalize(manufacturer).toString() + " " + model
         }
+    }
+
+    fun calculateDistance(user: com.yandex.mapkit.geometry.Point, checkPoint: com.yandex.mapkit.geometry.Point): Int {
+        val userLocation = Location("")
+        userLocation.latitude = user.latitude
+        userLocation.longitude = user.longitude
+
+        val checkPointLocation = Location("")
+        checkPointLocation.latitude = checkPoint.latitude
+        checkPointLocation.longitude = checkPoint.longitude
+
+        return userLocation.distanceTo(checkPointLocation).toInt()
     }
 
 }

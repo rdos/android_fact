@@ -57,20 +57,24 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     UserLocationObjectListener, MapObjectTapListener,
     PlatformAdapter.PlatformClickListener, android.location.LocationListener {
 
+
+    var drivingModeState = false
+
     private val REQUEST_EXIT = 41
     private var firstTime = true
     private val viewModel: MapViewModel by viewModel()
-    private lateinit var userLocationLayer: UserLocationLayer
-    private val locationListener = this as android.location.LocationListener
     private val clusterListener = this as ClusterListener
     private val mapObjectTapListener = this as MapObjectTapListener
     private val platformClickListener = this as PlatformAdapter.PlatformClickListener
+    private val MIN_METERS = 50
+
+    private lateinit var userLocationLayer: UserLocationLayer
     private lateinit var drivingRouter: DrivingRouter
     private lateinit var mapObjects: MapObjectCollection
     private lateinit var drivingSession: DrivingSession.DrivingRouteListener
     private lateinit var currentLocation: Location
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
-    var drivingModeState = false
+    private lateinit var selectedPlatformToNavigate: Point
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +89,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     private fun initDriveMode() {
+        selectedPlatformToNavigate = Point(0.0, 0.0)
         drivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
         mapObjects = map_view.map.mapObjects.addCollection()
         drivingSession = object : DrivingSession.DrivingRouteListener {
@@ -134,6 +139,13 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
             override fun onLocationUpdated(p0: Location) {
                 currentLocation = p0
                 AppPreferences.currentCoordinate = "${p0.position.longitude}#${p0.position.latitude}"
+                if (drivingModeState && MyUtil.calculateDistance(p0.position, selectedPlatformToNavigate) <= MIN_METERS) {
+                    alertOnPoint().let {
+                        it.dismiss_btn.setOnClickListener {
+                            mapObjects.clear()
+                        }
+                    }
+                }
                 toast("Клиент найден")
                 if (firstTime) {
                     moveCameraToUser(p0)
@@ -221,7 +233,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
             val placeMark = mapObject as PlacemarkMapObject
             val coordinate = placeMark.geometry
             val clickedPlatform = viewModel.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
-            PlaceMarkDetailDialog(clickedPlatform).show(supportFragmentManager, "PlaceMarkDetailDialog")
+            PlaceMarkDetailDialog(clickedPlatform, coordinate).show(supportFragmentManager, "PlaceMarkDetailDialog")
         } catch (e: Exception) {
             toast("Не удалось загрузить")
         }
@@ -366,20 +378,22 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
         if (drivingModeState) {
             warningClearNavigator("У вас уже есть построенный маршрут. Отменить старый и построить новый?").let {
                 it.accept_btn.setOnClickListener {
-                    buildNavigator()
+                    buildNavigator(checkPoint)
                 }
             }
         } else {
             warningNavigatePlatform().let {
                 it.accept_btn.setOnClickListener {
-                    buildNavigator()
+                    buildNavigator(checkPoint)
                 }
             }
         }
     }
 
-    fun buildNavigator() {
-        viewModel.buildMapNavigator(currentLocation, drivingRouter, drivingSession)
+    fun buildNavigator(checkPoint: Point) {
+        mapObjects.clear()
+        selectedPlatformToNavigate = checkPoint
+        viewModel.buildMapNavigator(currentLocation, checkPoint, drivingRouter, drivingSession)
         drivingModeState = true
         navigator_toggle_fab.isVisible = drivingModeState
         hideDialog()
@@ -419,6 +433,4 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
             Animation(Animation.Type.SMOOTH, 1F), null
         )
     }
-
-
 }

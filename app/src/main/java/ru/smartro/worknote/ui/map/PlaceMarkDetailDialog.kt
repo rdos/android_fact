@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_point_detail.*
@@ -26,7 +27,7 @@ import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlaceMarkDetailDialog(private val platform: PlatformEntity) : DialogFragment() {
+class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point : Point) : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.alert_point_detail, container, false)
@@ -71,6 +72,7 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity) : DialogFragme
 
         }
 
+        //коммент инициализации
         platform_location.setOnClickListener {
             val currentActivity = requireActivity() as MapActivity
             val drivingModeState = currentActivity.drivingModeState
@@ -78,14 +80,14 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity) : DialogFragme
                 currentActivity.warningClearNavigator("У вас уже есть построенный маршрут. Отменить старый и построить новый?")
                     .let {
                         it.accept_btn.setOnClickListener {
-                            currentActivity.buildNavigator()
+                            currentActivity.buildNavigator(point)
                             dismiss()
                         }
                     }
             } else {
                 currentActivity.warningNavigatePlatform().let {
                     it.accept_btn.setOnClickListener {
-                        currentActivity.buildNavigator()
+                        currentActivity.buildNavigator(point)
                         dismiss()
                     }
                 }

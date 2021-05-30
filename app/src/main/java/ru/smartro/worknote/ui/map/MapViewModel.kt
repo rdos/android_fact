@@ -30,6 +30,7 @@ import java.util.*
 
 class MapViewModel(application: Application) : BaseViewModel(application) {
 
+
     fun completeWay(id : Int, completeWayBody: CompleteWayBody) : LiveData<Resource<EmptyResponse>>{
         return network.completeWay(id, completeWayBody)
     }
@@ -75,24 +76,22 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
         return db.findCancelWayReasonByValue(reason)
     }
 
-    fun buildMapNavigator(currentLocation: com.yandex.mapkit.location.Location, drivingRouter: DrivingRouter, drivingSession: DrivingSession.DrivingRouteListener) {
+    fun buildMapNavigator(currentLocation: com.yandex.mapkit.location.Location, checkPoint: Point, drivingRouter: DrivingRouter, drivingSession: DrivingSession.DrivingRouteListener) {
         val drivingOptions = DrivingOptions()
         drivingOptions.routesCount = 1
         drivingOptions.avoidTolls = true
         val vehicleOptions = VehicleOptions()
         val requestPoints = ArrayList<RequestPoint>()
-        val startLocation = currentLocation.position
-        val endLocation = Point(42.875974, 74.607116)
         requestPoints.add(
             RequestPoint(
-                startLocation,
+                currentLocation.position,
                 RequestPointType.WAYPOINT,
                 null
             )
         )
         requestPoints.add(
             RequestPoint(
-                endLocation,
+                checkPoint,
                 RequestPointType.WAYPOINT,
                 null
             )
