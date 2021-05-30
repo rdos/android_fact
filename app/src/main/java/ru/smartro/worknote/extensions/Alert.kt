@@ -50,6 +50,37 @@ fun AppCompatActivity.warningCameraShow(title: String): View {
     return view
 }
 
+fun AppCompatActivity.warningNavigatePlatform(): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_navigate_platform, null)
+    builder.setView(view)
+    builder.setCancelable(false)
+    customDialog = builder.create()
+    view.dismiss_btn.setOnClickListener {
+        customDialog.dismiss()
+    }
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
+fun AppCompatActivity.warningClearNavigator(title: String): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_clear_navigator, null)
+    builder.setView(view)
+    builder.setCancelable(false)
+    customDialog = builder.create()
+    view.title_tv.text = title
+    view.dismiss_btn.setOnClickListener {
+        customDialog.dismiss()
+    }
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
 fun Fragment.warningCameraShow(title: String): View {
     val builder = AlertDialog.Builder(this.requireContext())
     val inflater = this.layoutInflater

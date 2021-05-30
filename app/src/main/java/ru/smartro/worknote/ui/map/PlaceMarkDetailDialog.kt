@@ -18,6 +18,8 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.ContainerDetailAdapter
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningCameraShow
+import ru.smartro.worknote.extensions.warningClearNavigator
+import ru.smartro.worknote.extensions.warningNavigatePlatform
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
@@ -45,14 +47,14 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity) : DialogFragme
         dialog!!.window!!.attributes = params
     }
     private fun initViews() {
-        point_detail_start_service.setOnClickListener {
+        platform_detail_start_service.setOnClickListener {
             val intent = Intent(requireActivity(), PlatformServiceActivity::class.java)
             intent.putExtra("platform_id", platform.platformId)
             dismiss()
             startActivity(intent)
         }
 
-        point_detail_fire.setOnClickListener {
+        platform_detail_fire.setOnClickListener {
             warningCameraShow("Сделайте фото проблемы").let {
                 it.accept_btn.setOnClickListener {
                     hideDialog()
@@ -67,6 +69,27 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity) : DialogFragme
                 }
             }
 
+        }
+
+        platform_location.setOnClickListener {
+            val currentActivity = requireActivity() as MapActivity
+            val drivingModeState = currentActivity.drivingModeState
+            if (drivingModeState) {
+                currentActivity.warningClearNavigator("У вас уже есть построенный маршрут. Отменить старый и построить новый?")
+                    .let {
+                        it.accept_btn.setOnClickListener {
+                            currentActivity.buildNavigator()
+                            dismiss()
+                        }
+                    }
+            } else {
+                currentActivity.warningNavigatePlatform().let {
+                    it.accept_btn.setOnClickListener {
+                        currentActivity.buildNavigator()
+                        dismiss()
+                    }
+                }
+            }
         }
         bottom_card.isVisible = platform.status == StatusEnum.NEW
         point_detail_address.text = "${platform.address} \n ${platform.srpId} ${platform.containers!!.size} конт."

@@ -47,7 +47,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/map_behavior_send_btn"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/map_behavior_item" />
+            tools:listitem="@layout/item_map_behavior" />
 
         <Button
             android:id="@+id/map_behavior_send_btn"

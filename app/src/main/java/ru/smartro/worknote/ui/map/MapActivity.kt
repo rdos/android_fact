@@ -1,19 +1,22 @@
 package ru.smartro.worknote.ui.map
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.location.LocationManager
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.directions.DirectionsFactory
+import com.yandex.mapkit.directions.driving.DrivingRoute
+import com.yandex.mapkit.directions.driving.DrivingRouter
+import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
 import com.yandex.mapkit.location.Location
@@ -23,13 +26,14 @@ import com.yandex.mapkit.map.*
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
+import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
-import kotlinx.android.synthetic.main.behavior_points.*
+import kotlinx.android.synthetic.main.behavior_platforms.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.PlatformAdapter
@@ -61,19 +65,53 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     private val clusterListener = this as ClusterListener
     private val mapObjectTapListener = this as MapObjectTapListener
     private val platformClickListener = this as PlatformAdapter.PlatformClickListener
+    private lateinit var drivingRouter: DrivingRouter
+    private lateinit var mapObjects: MapObjectCollection
+    private lateinit var drivingSession: DrivingSession.DrivingRouteListener
+    private lateinit var currentLocation: Location
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
+    var drivingModeState = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
         setContentView(R.layout.activity_map)
-        initUploadDataWorker()
+        initSynchronizeWorker()
         initUserLocation()
         initMapView()
         initBottomBehavior()
+        initDriveMode()
     }
 
-    private fun initUploadDataWorker() {
+    private fun initDriveMode() {
+        drivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
+        mapObjects = map_view.map.mapObjects.addCollection()
+        drivingSession = object : DrivingSession.DrivingRouteListener {
+            override fun onDrivingRoutesError(p0: Error) {
+                toast("Ошибка при построении маршрута")
+            }
+
+            override fun onDrivingRoutes(routes: MutableList<DrivingRoute>) {
+                routes.forEach {
+                    mapObjects.addPolyline(it.geometry)
+                }
+            }
+
+        }
+        navigator_toggle_fab.setOnClickListener {
+            warningClearNavigator("Отменить текущий маршрут?").let {
+                it.accept_btn.setOnClickListener {
+                    drivingModeState = false
+                    navigator_toggle_fab.isVisible = drivingModeState
+                    mapObjects.clear()
+                    hideDialog()
+                }
+            }
+        }
+    }
+
+    private fun initSynchronizeWorker() {
         val uploadDataWorkManager = PeriodicWorkRequestBuilder<SynchronizeWorker>(16, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this)
             .enqueueUniquePeriodicWork("UploadData", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
@@ -82,43 +120,31 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
 
     @SuppressLint("MissingPermission")
     private fun initUserLocation() {
-        var locationM = Location()
         val mapKit = MapKitFactory.getInstance()
         userLocationLayer = mapKit.createUserLocationLayer(map_view.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.setObjectListener(this)
 
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000L, 10f, locationListener)
-
         mapKit.createLocationManager()
         mapKit.createLocationManager().requestSingleUpdate(object : LocationListener {
             override fun onLocationStatusUpdated(p0: LocationStatus) {
-
             }
 
             override fun onLocationUpdated(p0: Location) {
-                locationM = p0
+                currentLocation = p0
                 AppPreferences.currentCoordinate = "${p0.position.longitude}#${p0.position.latitude}"
                 toast("Клиент найден")
                 if (firstTime) {
-                    map_view.map.move(
-                        CameraPosition(p0.position, 12.0f, 0.0f, 0.0f),
-                        Animation(Animation.Type.SMOOTH, 1F), null
-                    )
+                    moveCameraToUser(p0)
                     firstTime = false
                 }
             }
         })
 
-
         location_fab.setOnClickListener {
             try {
-                map_view.map.move(
-                    CameraPosition(locationM.position, 12.0f, 0.0f, 0.0f),
-                    Animation(Animation.Type.SMOOTH, 1F), null
-                )
+                moveCameraToUser(currentLocation)
             } catch (e: Exception) {
                 toast("Клиент не найден")
             }
@@ -130,24 +156,22 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     private fun initMapView() {
-        lifecycleScope.launchWhenCreated {
-            viewModel.findWayTask().let {
-                val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(clusterListener)
-                val greenIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_green_marker)
-                val blueIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_blue_marker)
-                val redIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_red_marker)
-                clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
-                clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.NEW), blueIcon, IconStyle())
-                clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.ERROR), redIcon, IconStyle())
-                clusterCollection.addTapListener(mapObjectTapListener)
-                clusterCollection.clusterPlacemarks(60.0, 15)
+        fun createPoints(list: RealmList<PlatformEntity>, status: String): List<Point> {
+            return list.filter { it.status == status }.map {
+                Point(it.coords[0]!!, it.coords[1]!!)
             }
         }
-    }
 
-    private fun createPoints(list: RealmList<PlatformEntity>, status: String): List<Point> {
-        return list.filter { it.status == status }.map {
-            Point(it.coords[0]!!, it.coords[1]!!)
+        viewModel.findWayTask().let {
+            val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(clusterListener)
+            val greenIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_green_marker)
+            val blueIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_blue_marker)
+            val redIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_red_marker)
+            clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
+            clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.NEW), blueIcon, IconStyle())
+            clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.ERROR), redIcon, IconStyle())
+            clusterCollection.addTapListener(mapObjectTapListener)
+            clusterCollection.clusterPlacemarks(60.0, 15)
         }
     }
 
@@ -205,12 +229,11 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     private fun initBottomBehavior() {
-        lifecycleScope.launchWhenCreated {
             viewModel.findWayTask().let {
-                val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+                bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
                 val platformsArray = it.platforms
 
-                platformsArray.sortByDescending { it.status == StatusEnum.NEW }
+                platformsArray.sortByDescending { sort -> sort.status == StatusEnum.NEW }
 
                 map_behavior_rv.adapter = PlatformAdapter(platformClickListener, platformsArray)
 
@@ -231,7 +254,6 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
                 map_behavior_send_btn.setOnClickListener {
                     finishWay(hasNotServedPlatform)
                 }
-            }
         }
     }
 
@@ -242,7 +264,8 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
             val allReasons = viewModel.findCancelWayReason()
             showEarlyComplete(allReasons).let { view ->
                 view.accept_btn.setOnClickListener {
-                    if (!view.reason_et.text.isNullOrEmpty() && (view.early_volume_tg.isChecked || view.early_weight_tg.isChecked)
+                    if (!view.reason_et.text.isNullOrEmpty() &&
+                        (view.early_volume_tg.isChecked || view.early_weight_tg.isChecked)
                         && !view.unload_value_et.text.isNullOrEmpty()
                     ) {
                         val failureId = viewModel.findCancelWayReasonByValue(view.reason_et.text.toString())
@@ -267,7 +290,6 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
                                         loadingHide()
                                     }
                                 }
-
                             })
                     } else {
                         toast("Заполните все поля")
@@ -277,9 +299,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
                     hideDialog()
                 }
             }
-
         }
-
     }
 
     private fun completeWayBill() {
@@ -336,10 +356,35 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
         }
     }
 
-    override fun moveCameraPoint(point: Point) {
+    override fun moveCameraPlatform(point: Point) {
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         map_view.map.move(CameraPosition(point, 16.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
+    }
+
+    override fun navigatePlatform(checkPoint: Point) {
+        if (drivingModeState) {
+            warningClearNavigator("У вас уже есть построенный маршрут. Отменить старый и построить новый?").let {
+                it.accept_btn.setOnClickListener {
+                    buildNavigator()
+                }
+            }
+        } else {
+            warningNavigatePlatform().let {
+                it.accept_btn.setOnClickListener {
+                    buildNavigator()
+                }
+            }
+        }
+    }
+
+    fun buildNavigator() {
+        viewModel.buildMapNavigator(currentLocation, drivingRouter, drivingSession)
+        drivingModeState = true
+        navigator_toggle_fab.isVisible = drivingModeState
+        hideDialog()
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        moveCameraToUser(currentLocation)
     }
 
     override fun onBackPressed() {
@@ -367,5 +412,13 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
 
     }
+
+    private fun moveCameraToUser(location: Location) {
+        map_view.map.move(
+            CameraPosition(location.position, 15.0f, 0.0f, 0.0f),
+            Animation(Animation.Type.SMOOTH, 1F), null
+        )
+    }
+
 
 }

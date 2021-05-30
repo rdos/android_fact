@@ -32,14 +32,28 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="72dp"
             android:layout_marginEnd="@dimen/margin_default"
+            android:backgroundTint="@color/colorPrimary"
             android:src="@drawable/ic_bug"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:backgroundTint="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageButton
+            android:id="@+id/navigator_toggle_fab"
+            android:layout_width="43dp"
+            android:layout_height="43dp"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:visibility="invisible"
+            android:layout_marginStart="@dimen/margin_default"
+            android:background="@drawable/bg_circle_button"
+            android:src="@drawable/ic_location_off"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@id/location_fab"
+            app:layout_constraintEnd_toEndOf="@id/location_fab"
+            app:layout_constraintStart_toStartOf="@id/location_fab" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
-        layout="@layout/behavior_points" />
+        layout="@layout/behavior_platforms" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

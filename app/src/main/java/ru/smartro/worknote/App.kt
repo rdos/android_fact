@@ -44,7 +44,7 @@ class App : Application() {
 
     private fun initSentry() {
         Sentry.init { options ->
-            options.dsn = "https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17"
+            options.dsn = getString(R.string.sentry_url)
         }
         Sentry.configureScope { scope ->
             scope.level = SentryLevel.WARNING
