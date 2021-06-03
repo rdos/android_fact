@@ -19,9 +19,9 @@ import ru.smartro.worknote.util.MyUtil
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
+        AppPreferences.init(this)
         initSentry()
         initRealm()
-        AppPreferences.init(this)
 
         startKoin {
             androidLogger()
@@ -30,8 +30,11 @@ class App : Application() {
         }
     }
 
-    private fun initRealm(){
+    private fun initRealm() {
         Realm.init(this@App)
+        if (!AppPreferences.thisUserHasTask) {
+            Realm.deleteRealm(Realm.getDefaultConfiguration()!!)
+        }
         val config = RealmConfiguration.Builder()
         config.name("FactRealmBase")
         config.deleteRealmIfMigrationNeeded()

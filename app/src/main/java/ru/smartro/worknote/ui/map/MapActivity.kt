@@ -243,6 +243,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     private fun initBottomBehavior() {
             viewModel.findWayTask().let {
                 bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+                val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
                 val platformsArray = it.platforms
 
                 platformsArray.sortByDescending { sort -> sort.status == StatusEnum.NEW }

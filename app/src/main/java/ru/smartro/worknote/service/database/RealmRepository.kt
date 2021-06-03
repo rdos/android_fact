@@ -270,8 +270,21 @@ class RealmRepository(private val realm: Realm) {
                 PhotoTypeEnum.forPlatformProblem -> {
                     platformEntity?.failureMedia?.add(imageBase64)
                 }
+                PhotoTypeEnum.forKGO -> {
+                    platformEntity?.kgoMedia?.add(imageBase64)
+                }
             }
             updateTimer(platformEntity)
+        }
+    }
+
+    fun updatePlatformKGO (platformId: Int, kgoVolume : Int){
+        realm.executeTransactionAsync{ realm: Realm ->
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+
+            platformEntity.kgoVolume = kgoVolume
         }
     }
 
@@ -315,6 +328,9 @@ class RealmRepository(private val realm: Realm) {
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
                     platformEntity?.failureMedia?.remove(imageBase64)
+                }
+                PhotoTypeEnum.forKGO -> {
+                    platformEntity?.kgoMedia?.remove(imageBase64)
                 }
             }
             updateTimer(platformEntity)

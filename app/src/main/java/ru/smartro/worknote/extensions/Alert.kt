@@ -147,6 +147,18 @@ fun AppCompatActivity.showCompleteWaybill(): View {
     return view
 }
 
+
+fun AppCompatActivity.fillKgoVolume(): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_fill_kgo, null)
+    builder.setView(view)
+    customDialog = builder.create()
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
 fun AppCompatActivity.warningDelete(title: String): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater

@@ -66,6 +66,12 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int,
                 image_title.text = getString(R.string.problem_container)
                 image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(container.failureMedia))
             }
+            PhotoTypeEnum.forKGO -> {
+                val  platform = viewModel.findPlatformEntity(platformId)
+                activity?.actionBar?.title = getString(R.string.problem_container)
+                image_title.text = getString(R.string.problem_container)
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.kgoMedia))
+            }
         }
     }
 

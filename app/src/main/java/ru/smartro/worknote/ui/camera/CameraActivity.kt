@@ -50,6 +50,10 @@ class CameraActivity : AppCompatActivity() {
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = getString(R.string.problem_container)
             }
+            PhotoTypeEnum.forKGO ->{
+                platformId = intent.getIntExtra("platform_id", 0)
+                supportActionBar?.title = getString(R.string.kgo)
+            }
         }
         val cameraFragment = CameraFragment(photoFor, platformId, containerId)
         supportFragmentManager.beginTransaction().run {

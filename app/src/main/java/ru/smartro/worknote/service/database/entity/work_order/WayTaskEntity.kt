@@ -54,6 +54,10 @@ open class PlatformEntity(
     var coords: RealmList<Double> = RealmList(),
     @SerializedName("failure_media")
     var failureMedia: RealmList<String> = RealmList(),
+    @SerializedName("kgo_media")
+    var kgoMedia: RealmList<String> = RealmList(),
+    @SerializedName("kgo_volume")
+    var kgoVolume : Int? = null,
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
     @SerializedName("finished_at")

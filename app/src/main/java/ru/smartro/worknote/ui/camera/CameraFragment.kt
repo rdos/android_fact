@@ -187,6 +187,10 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
                     val platform = viewModel.findPlatformEntity(platformId)
                     imageCounter.text = "${platform.beforeMedia.size + count}"
                 }
+                PhotoTypeEnum.forKGO->{
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    imageCounter.text = "${platform.kgoMedia.size  + count}"
+                }
             }
         }
     }
@@ -319,6 +323,16 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
                         requireActivity().finish()
                     }
                 }
+
+                PhotoTypeEnum.forKGO ->{
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    if (platform.kgoMedia.size == 0) {
+                        toast("Сделайте фото")
+                    } else {
+                        requireActivity().setResult(101)
+                        requireActivity().finish()
+                    }
+                }
             }
         }
         controls.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener {
@@ -350,6 +364,10 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
                     PhotoTypeEnum.forContainerProblem -> {
                         val container = viewModel.findContainerEntity(containerId)
                         container.failureMedia.size >= maxPhotoCount
+                    }
+                    PhotoTypeEnum.forKGO -> {
+                        val platform = viewModel.findPlatformEntity(platformId)
+                        platform.kgoMedia.size >= maxPhotoCount
                     }
                     else -> {
                         false

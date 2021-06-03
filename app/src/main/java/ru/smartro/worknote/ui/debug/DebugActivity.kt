@@ -12,6 +12,7 @@ import com.yandex.mapkit.map.CameraPosition
 import com.yandex.runtime.image.ImageProvider
 import kotlinx.android.synthetic.main.activity_debug.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.util.MyUtil
@@ -40,6 +41,10 @@ class DebugActivity : AppCompatActivity() {
         val nativeHeapFreeSize = memoryInfo.availMem
         val usedMemInBytes = nativeHeapSize - nativeHeapFreeSize
         val usedMemInPercentage = usedMemInBytes * 100 / nativeHeapSize
+
+        val appVersion = BuildConfig.VERSION_CODE
+
+        debug_app.text = "Версия приложении $appVersion"
 
         debug_container_count.text = "Кол-во обслуженных контейнеров: ${containerProgress[0]}/${containerProgress[1]}"
         debug_platform_count.text = "Кол-во обслуженных платформ: ${platformProgress[0]}/${platformProgress[1]}"

@@ -7,9 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.activity_platform_service.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
+import kotlinx.android.synthetic.main.alert_accept_task.view.accept_btn
+import kotlinx.android.synthetic.main.alert_fill_kgo.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.ContainerAdapter
+import ru.smartro.worknote.extensions.fillKgoVolume
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningCameraShow
@@ -42,6 +45,13 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
             intent.putExtra("platform_id", platformEntity.platformId)
             intent.putExtra("isContainerProblem", false)
             startActivityForResult(intent, REQUEST_EXIT)
+        }
+        kgo_btn.setOnClickListener {
+            val intent = Intent(this@PlatformServiceActivity, CameraActivity::class.java)
+            intent.putExtra("platform_id", platformEntity.platformId)
+            intent.putExtra("photoFor", PhotoTypeEnum.forKGO)
+            startActivityForResult(intent, 101)
+            hideDialog()
         }
     }
 
@@ -117,11 +127,21 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
                     finish()
                 }
             } else if (requestCode == REQUEST_EXIT) {
-                if (resultCode == 99) {
-                    setResult(Activity.RESULT_OK)
-                    finish()
+            if (resultCode == 99) {
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
+        } else if (resultCode == 101 && requestCode == 101) {
+            fillKgoVolume().let { view->
+                view.accept_btn.setOnClickListener {
+                    if (!view.kgo_volume_in.text.isNullOrEmpty()) {
+                        val kgoVolume = view.kgo_volume_in.text.toString().toInt()
+                        viewModel.updatePlatformKGO(platformEntity.platformId!!, kgoVolume)
+                        hideDialog()
+                    }
                 }
             }
+        }
     }
 
     override fun onResume() {
