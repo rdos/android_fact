@@ -180,11 +180,11 @@ fun AppCompatActivity.showClickedPointDetail(point: PlatformEntity): View {
     builder.setView(view)
     customDialog = builder.create()
     view.bottom_card.isVisible = point.status == StatusEnum.NEW
-    view.point_detail_address.text = "${point.address} \n ${point.srpId} ${point.containers!!.size} конт."
+    view.point_detail_address.text = "${point.address} \n ${point.srpId} ${point.containers.size} конт."
     view.point_detail_close.setOnClickListener {
         customDialog.dismiss()
     }
-    view.point_detail_rv.adapter = ContainerDetailAdapter(point.containers!!)
+    view.point_detail_rv.adapter = ContainerDetailAdapter(point.containers)
     customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     customDialog.show()
     return view

@@ -47,7 +47,7 @@ class ExtremeProblemActivity : AppCompatActivity() {
 
     private fun initImageView() {
         val platform = viewModel.findPlatformEntity(platform.platformId!!)
-        Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia!!.last()))
+        Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last()?.image))
             .into(problem_img)
     }
 

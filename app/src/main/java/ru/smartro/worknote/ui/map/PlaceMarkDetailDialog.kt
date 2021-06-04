@@ -96,7 +96,7 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point : Po
         bottom_card.isVisible = platform.status == StatusEnum.NEW
         point_detail_address.text = "${platform.address} \n ${platform.srpId} ${platform.containers!!.size} конт."
 
-        point_detail_rv.adapter = ContainerDetailAdapter(platform.containers!!)
+        point_detail_rv.adapter = ContainerDetailAdapter(platform.containers)
         point_detail_close.setOnClickListener {
             dismiss()
         }

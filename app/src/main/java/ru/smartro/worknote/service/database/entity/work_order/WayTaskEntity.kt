@@ -37,9 +37,9 @@ open class PlatformEntity(
     @SerializedName("address")
     var address: String? = null,
     @SerializedName("after_media")
-    var afterMedia: RealmList<String> = RealmList(),
+    var afterMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("before_media")
-    var beforeMedia: RealmList<String> = RealmList(),
+    var beforeMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("beginned_at")
     var beginnedAt: String? = null,
     @SerializedName("updateAt")
@@ -53,9 +53,9 @@ open class PlatformEntity(
     @SerializedName("coords")
     var coords: RealmList<Double> = RealmList(),
     @SerializedName("failure_media")
-    var failureMedia: RealmList<String> = RealmList(),
+    var failureMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("kgo_media")
-    var kgoMedia: RealmList<String> = RealmList(),
+    var kgoMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("kgo_volume")
     var kgoVolume : Int? = null,
     @SerializedName("failure_reason_id")
@@ -82,7 +82,7 @@ open class ContainerEntity(
     @SerializedName("contacts")
     var contacts: String? = null,
     @SerializedName("failure_media")
-    var failureMedia: RealmList<String> = RealmList(),
+    var failureMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
     @SerializedName("breakdownReasonId")
@@ -103,6 +103,11 @@ open class ContainerEntity(
     var failureComment: String? = null,
     @SerializedName("comment")
     var comment: String? = null
+) : Serializable, RealmObject()
+
+open class ImageEntity(
+    var image: String? = null,
+    var date: Long? = null
 ) : Serializable, RealmObject()
 
 

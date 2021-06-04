@@ -3,6 +3,7 @@ package ru.smartro.worknote.ui.platform_service
 import android.app.Application
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
+import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 
 class PlatformServiceViewModel(application: Application) : BaseViewModel(application) {
@@ -23,11 +24,11 @@ class PlatformServiceViewModel(application: Application) : BaseViewModel(applica
         return db.findContainerEntity(containerId)
     }
 
-    fun removePlatformMedia(photoFor: Int, photoPath: String, platformId: Int) {
-        db.removePlatformMedia(photoFor, photoPath, platformId)
+    fun removePlatformMedia(photoFor: Int, image: ImageEntity, platformId: Int) {
+        db.removePlatformMedia(photoFor, image, platformId)
     }
 
-    fun removeContainerMedia (platformId: Int, containerId : Int, imageBase64 : String){
+    fun removeContainerMedia (platformId: Int, containerId : Int, imageBase64 : ImageEntity){
         db.removeContainerMedia(platformId, containerId, imageBase64)
     }
     fun updatePlatformKGO (platformId: Int, kgoVolume : Int){

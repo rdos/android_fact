@@ -18,8 +18,8 @@ class RealmRepository(private val realm: Realm) {
 
     fun insertWayTask(response: Workorder) {
 
-        fun mapMedia(data: List<String>): RealmList<String> {
-            return data.mapTo(RealmList()) { it }
+        fun mapMedia(data: List<String>): RealmList<ImageEntity> {
+            return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0) }
         }
 
         fun mapContainers(list: List<Container>): RealmList<ContainerEntity> {
@@ -262,16 +262,16 @@ class RealmRepository(private val realm: Realm) {
                 .findFirst()
             when (imageFor) {
                 PhotoTypeEnum.forAfterMedia -> {
-                    platformEntity?.afterMedia?.add(imageBase64)
+                    platformEntity?.afterMedia?.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
-                    platformEntity?.beforeMedia?.add(imageBase64)
+                    platformEntity?.beforeMedia?.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
-                    platformEntity?.failureMedia?.add(imageBase64)
+                    platformEntity?.failureMedia?.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
                 }
                 PhotoTypeEnum.forKGO -> {
-                    platformEntity?.kgoMedia?.add(imageBase64)
+                    platformEntity?.kgoMedia?.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
                 }
             }
             updateTimer(platformEntity)
@@ -296,12 +296,12 @@ class RealmRepository(private val realm: Realm) {
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()!!
-            containerEntity.failureMedia.add(imageBase64)
+            containerEntity.failureMedia.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
             updateTimer(platformEntity)
         }
     }
 
-    fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: String) {
+    fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
         realm.executeTransactionAsync { realm ->
             val containerEntity = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
@@ -315,7 +315,7 @@ class RealmRepository(private val realm: Realm) {
     }
 
     /** удалить фото с платформы **/
-    fun removePlatformMedia(imageFor: Int, imageBase64: String, platformId: Int) {
+    fun removePlatformMedia(imageFor: Int, imageBase64: ImageEntity, platformId: Int) {
         realm.executeTransactionAsync { realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId).findFirst()

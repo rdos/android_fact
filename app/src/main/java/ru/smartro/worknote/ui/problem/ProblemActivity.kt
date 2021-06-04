@@ -53,9 +53,9 @@ class ProblemActivity : AppCompatActivity() {
     private fun initImageView() {
         val platform = viewModel.findPlatformEntity(platformId)
         if (isContainer) {
-            Glide.with(this).load(MyUtil.base64ToImage(container.failureMedia.last())).into(problem_img)
+            Glide.with(this).load(MyUtil.base64ToImage(container.failureMedia.last()?.image)).into(problem_img)
         } else {
-            Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last())).into(problem_img)
+            Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last()?.image)).into(problem_img)
         }
     }
 

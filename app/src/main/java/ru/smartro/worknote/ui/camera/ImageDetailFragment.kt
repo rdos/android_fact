@@ -14,12 +14,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
+import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
+import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 
 
 class ImageDetailFragment(private val platformId: Int, private val containerId : Int,
-                          private val imageBase64: String, private val photoFor: Int,
+                          private val imageBase64: ImageEntity, private val photoFor: Int,
                           private val listener: ImageDetailDeleteListener) : DialogFragment() {
     private val viewModel: PlatformServiceViewModel by viewModel()
 
@@ -30,7 +32,7 @@ class ImageDetailFragment(private val platformId: Int, private val containerId :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_AppCompat_Dialog)
-        Glide.with(this).load(imageBase64).into(image_detail)
+        Glide.with(this).load(MyUtil.base64ToImage(imageBase64.image)).into(image_detail)
         image_detail_delete.setOnClickListener {
             warningDelete(getString(R.string.warning_detele)).run {
                 this.accept_btn.setOnClickListener {
