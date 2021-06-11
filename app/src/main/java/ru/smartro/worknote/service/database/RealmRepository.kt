@@ -39,7 +39,7 @@ class RealmRepository(private val realm: Realm) {
                     beforeMedia = mapMedia(it.beforeMedia), beginnedAt = it.beginnedAt, containers = mapContainers(it.containers),
                     coords = RealmList(it.coords[0], it.coords[1]), failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, finishedAt = it.finishedAt, platformId = it.id,
-                    name = it.name, updateAt = null, srpId = it.srpId, status = StatusEnum.NEW
+                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, kgoVolume = 0
                 )
             }
         }
@@ -210,13 +210,28 @@ class RealmRepository(private val realm: Realm) {
         return realm.copyFromRealm(realm.where(WayTaskEntity::class.java).findFirst()!!)
     }
 
-    fun findAllPlatforms(): List<PlatformEntity> {
+    fun findLastPlatforms(): List<PlatformEntity> {
         realm.refresh()
         val lastSynchroTime = AppPreferences.lastSynchroTime
         return realm.copyFromRealm(
             realm.where(PlatformEntity::class.java).greaterThan("updateAt", lastSynchroTime)
                 .findAll()
         )
+    }
+
+    fun findAllPlatforms(): List<PlatformEntity> {
+        return realm.copyFromRealm(
+            realm.where(PlatformEntity::class.java)
+                .findAll()
+        )
+    }
+
+
+    fun findAllContainerInPlatform(platformId: Int): List<ContainerEntity> {
+        val platform = realm.where(PlatformEntity::class.java)
+            .equalTo("platformId", platformId)
+            .findFirst()!!
+        return realm.copyFromRealm(platform.containers)
     }
 
     fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
@@ -301,6 +316,7 @@ class RealmRepository(private val realm: Realm) {
         }
     }
 
+    /** удалить фото с контейнера **/
     fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
         realm.executeTransactionAsync { realm ->
             val containerEntity = realm.where(ContainerEntity::class.java)

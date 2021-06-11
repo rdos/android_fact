@@ -45,11 +45,22 @@
             android:visibility="invisible"
             android:layout_marginStart="@dimen/margin_default"
             android:background="@drawable/bg_circle_button"
-            android:src="@drawable/ic_location_off"
             android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_location_off"
             app:layout_constraintBottom_toTopOf="@id/location_fab"
             app:layout_constraintEnd_toEndOf="@id/location_fab"
             app:layout_constraintStart_toStartOf="@id/location_fab" />
+
+        <ImageButton
+            android:id="@+id/log_fab"
+            android:layout_width="43dp"
+            android:layout_height="43dp"
+            android:background="@drawable/bg_circle_button"
+            android:src="@drawable/ic_done"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@id/debug_fab"
+            app:layout_constraintEnd_toEndOf="@id/debug_fab"
+            app:layout_constraintStart_toStartOf="@id/debug_fab" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

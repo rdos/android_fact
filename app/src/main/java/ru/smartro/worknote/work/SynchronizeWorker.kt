@@ -67,7 +67,7 @@ class SynchronizeWorker(
                 val timeBeforeRequest = MyUtil.timeStamp()
                 Log.d(TAG, " SYNCHRONIZE STARTED")
                 val db = RealmRepository(Realm.getDefaultInstance())
-                val platforms = db.findAllPlatforms()
+                val platforms = db.findLastPlatforms()
                 val synchronizeBody = SynchronizeBody(AppPreferences.wayListId, listOf(lat, long), deviceId, platforms)
                 val synchronizeRequest = network.synchronizeData(synchronizeBody)
                 when (synchronizeRequest.status) {

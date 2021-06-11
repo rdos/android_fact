@@ -61,20 +61,20 @@ class RetrofitClient(context: Context) {
 
     fun apiService(isWorkNote: Boolean): ApiService {
         // переключатель для разных API
-        when (APIFOR.TEST) {
-            APIFOR.TEST -> {
+        when (APIENUM.TEST) {
+            APIENUM.TEST -> {
                 return if (isWorkNote)
                     retrofit("https://worknote-back.stage.smartro.ru/api/fact/").create(ApiService::class.java)
                 else
                     retrofit("https://auth.stage.smartro.ru/api/").create(ApiService::class.java)
             }
-            APIFOR.PRODUCTION -> {
+            APIENUM.PRODUCTION -> {
                 return if (isWorkNote)
                     retrofit("https://wn-api.smartro.ru/api/fact/").create(ApiService::class.java)
                 else
                     retrofit("https://auth.smartro.ru/api/").create(ApiService::class.java)
             }
-            APIFOR.RC -> {
+            APIENUM.RC -> {
                 return if (isWorkNote)
                     retrofit("https://worknote-back.rc.smartro.ru/api/fact/").create(ApiService::class.java)
                 else
@@ -85,9 +85,8 @@ class RetrofitClient(context: Context) {
 
 }
 
-enum class APIFOR {
+enum class APIENUM {
     TEST,
     PRODUCTION,
     RC
-
 }

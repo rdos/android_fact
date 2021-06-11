@@ -50,6 +50,8 @@ data class Start(
 data class Platform(
     @SerializedName("address")
     val address: String,
+    @SerializedName("status")
+    val status: String,
     @SerializedName("after_media")
     val afterMedia: List<String>,
     @SerializedName("before_media")

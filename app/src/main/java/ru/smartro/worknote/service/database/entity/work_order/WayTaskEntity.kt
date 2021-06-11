@@ -43,7 +43,7 @@ open class PlatformEntity(
     @SerializedName("beginned_at")
     var beginnedAt: String? = null,
     @SerializedName("updateAt")
-    var updateAt: Long? = null,
+    var updateAt: Long = 0,
     @SerializedName("status")
     var status: String? = null,
     @SerializedName("failure_comment")
@@ -57,7 +57,7 @@ open class PlatformEntity(
     @SerializedName("kgo_media")
     var kgoMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("kgo_volume")
-    var kgoVolume : Int? = null,
+    var kgoVolume : Int = 0,
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
     @SerializedName("finished_at")

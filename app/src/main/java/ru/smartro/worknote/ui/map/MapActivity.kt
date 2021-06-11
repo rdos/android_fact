@@ -44,6 +44,7 @@ import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.ui.debug.DebugActivity
+import ru.smartro.worknote.ui.log.LogActivity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.ClusterIcon
@@ -56,8 +57,6 @@ import java.util.concurrent.TimeUnit
 class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     UserLocationObjectListener, MapObjectTapListener,
     PlatformAdapter.PlatformClickListener, android.location.LocationListener {
-
-
     var drivingModeState = false
 
     private val REQUEST_EXIT = 41
@@ -114,6 +113,11 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
                 }
             }
         }
+
+        log_fab.setOnClickListener {
+            startActivity(Intent(this@MapActivity, LogActivity::class.java))
+        }
+
     }
 
     private fun initSynchronizeWorker() {
