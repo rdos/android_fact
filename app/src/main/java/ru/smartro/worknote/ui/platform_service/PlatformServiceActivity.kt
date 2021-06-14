@@ -135,7 +135,7 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
             fillKgoVolume().let { view->
                 view.accept_btn.setOnClickListener {
                     if (!view.kgo_volume_in.text.isNullOrEmpty()) {
-                        val kgoVolume = view.kgo_volume_in.text.toString().toInt()
+                        val kgoVolume = view.kgo_volume_in.text.toString().toDouble()
                         viewModel.updatePlatformKGO(platformEntity.platformId!!, kgoVolume)
                         hideDialog()
                     }

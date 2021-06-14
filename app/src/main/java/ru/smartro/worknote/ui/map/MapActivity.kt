@@ -183,9 +183,11 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
             val greenIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_green_marker)
             val blueIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_blue_marker)
             val redIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_red_marker)
+            val orangeIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_orange_marker)
             clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
             clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.NEW), blueIcon, IconStyle())
             clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.ERROR), redIcon, IconStyle())
+            clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.UNFINISHED), orangeIcon, IconStyle())
             clusterCollection.addTapListener(mapObjectTapListener)
             clusterCollection.clusterPlacemarks(60.0, 15)
         }

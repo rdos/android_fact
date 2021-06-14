@@ -31,7 +31,7 @@ class PlatformServiceViewModel(application: Application) : BaseViewModel(applica
     fun removeContainerMedia (platformId: Int, containerId : Int, imageBase64 : ImageEntity){
         db.removeContainerMedia(platformId, containerId, imageBase64)
     }
-    fun updatePlatformKGO (platformId: Int, kgoVolume : Int){
+    fun updatePlatformKGO (platformId: Int, kgoVolume : Double){
         db.updatePlatformKGO(platformId, kgoVolume)
     }
 }

@@ -82,6 +82,13 @@ class PlatformAdapter(private val listener: PlatformClickListener, private val i
                     //nothing
                 }
             }
+            StatusEnum.UNFINISHED -> {
+                holder.itemView.map_behavior_status.isVisible = true
+                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_orange_check)
+                holder.itemView.setOnClickListener {
+                    //nothing
+                }
+            }
         }
 
     }

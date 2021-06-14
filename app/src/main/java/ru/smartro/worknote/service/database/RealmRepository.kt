@@ -39,7 +39,7 @@ class RealmRepository(private val realm: Realm) {
                     beforeMedia = mapMedia(it.beforeMedia), beginnedAt = it.beginnedAt, containers = mapContainers(it.containers),
                     coords = RealmList(it.coords[0], it.coords[1]), failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, finishedAt = it.finishedAt, platformId = it.id,
-                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, kgoVolume = 0
+                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, kgoVolume = 0.0
                 )
             }
         }
@@ -153,17 +153,24 @@ class RealmRepository(private val realm: Realm) {
                 ProblemEnum.ERROR -> {
                     val problemId = findFailReasonByValue(realm, problem).id
                     container.failureReasonId = problemId
-                    platform.status = StatusEnum.ERROR
-                    platform.containers.forEach { it.status = StatusEnum.ERROR }
+                    var platformStatus = StatusEnum.ERROR
+                    platform.containers.forEach {
+                        if (it.status != StatusEnum.SUCCESS) it.status = StatusEnum.ERROR
+                        else platformStatus = StatusEnum.UNFINISHED
+                    }
+                    platform.status = platformStatus
                 }
                 ProblemEnum.BOTH -> {
                     val breakdownProblemId = findBreakdownByValue(realm, problem).id
                     val failReasonProblemId = findFailReasonByValue(realm, failProblem!!).id
                     container.breakdownReasonId = breakdownProblemId
                     container.failureReasonId = failReasonProblemId
-                    platform.status = StatusEnum.ERROR
-                    platform.containers.forEach { it.status = StatusEnum.ERROR }
-
+                    var platformStatus = StatusEnum.ERROR
+                    platform.containers.forEach {
+                        if (it.status != StatusEnum.SUCCESS) it.status = StatusEnum.ERROR
+                         else platformStatus = StatusEnum.UNFINISHED
+                    }
+                    platform.status = platformStatus
                 }
             }
             container.failureComment = problemComment
@@ -179,14 +186,26 @@ class RealmRepository(private val realm: Realm) {
                 ProblemEnum.ERROR -> {
                     val problemId = findFailReasonByValue(realm, problem).id
                     platform.failureReasonId = problemId
-                    platform.status = StatusEnum.ERROR
-                    platform.containers.forEach { it.status = StatusEnum.ERROR }
+                    var platformStatus = StatusEnum.ERROR
+                    platform.containers.forEach {
+                        if (it.status != StatusEnum.SUCCESS) it.status = StatusEnum.ERROR
+                        else platformStatus = StatusEnum.UNFINISHED
+                    }
+                    platform.status = platformStatus
                 }
                 ProblemEnum.BOTH -> {
                     val failReasonProblemId = findFailReasonByValue(realm, failProblem!!).id
                     platform.failureReasonId = failReasonProblemId
-                    platform.status = StatusEnum.ERROR
-                    platform.containers.forEach { it.status = StatusEnum.ERROR }
+                    var platformStatus = StatusEnum.ERROR
+                    platform.containers.forEach {
+                        if (it.status != StatusEnum.SUCCESS) it.status = StatusEnum.ERROR
+                        else platformStatus = StatusEnum.UNFINISHED
+                    }
+                    platform.status = platformStatus
+                }
+                ProblemEnum.BREAKDOWN -> {
+                    val failReasonProblemId = findFailReasonByValue(realm, failProblem!!).id
+                    platform.failureReasonId = failReasonProblemId
                 }
             }
             platform.failureComment = failureComment
@@ -293,8 +312,8 @@ class RealmRepository(private val realm: Realm) {
         }
     }
 
-    fun updatePlatformKGO (platformId: Int, kgoVolume : Int){
-        realm.executeTransactionAsync{ realm: Realm ->
+    fun updatePlatformKGO(platformId: Int, kgoVolume: Double) {
+        realm.executeTransactionAsync { realm: Realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()!!
