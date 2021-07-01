@@ -66,12 +66,16 @@ data class Platform(
     val failureMedia: List<String>,
     @SerializedName("failure_reason_id")
     val failureReasonId: Int,
+    @SerializedName("breakdown_reason_id")
+    val breakdownReasonId: Int,
     @SerializedName("finished_at")
     val finishedAt: String,
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")
     val name: String,
+    @SerializedName("updateAt")
+    var updateAt: Long,
     @SerializedName("srp_id")
     val srpId: Int
 )
@@ -98,12 +102,18 @@ data class Container(
     val failureMedia: List<String>,
     @SerializedName("failure_reason_id")
     val failureReasonId: Int,
+    @SerializedName("breakdown_reason_id")
+    val breakdownReasonId: Int,
     @SerializedName("id")
     val id: Int,
     @SerializedName("is_active_today")
     val isActiveToday: Boolean,
     @SerializedName("number")
     val number: String,
+    @SerializedName("constructive_volume")
+    var constructiveVolume: Double? = null,
+    @SerializedName("type_name")
+    var typeName: String? = null,
     @SerializedName("status")
     val status: String,
     @SerializedName("type_id")

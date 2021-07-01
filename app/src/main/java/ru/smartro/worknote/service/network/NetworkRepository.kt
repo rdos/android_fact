@@ -17,6 +17,7 @@ import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.exeption.BadRequestException
+import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
 
 class NetworkRepository(private val context: Context) {
@@ -220,8 +221,9 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                     badRequest(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
+                    emit(Resource.error(errorResponse.message, null))
                 }
             }
         } catch (e: Exception) {
@@ -280,6 +282,23 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
+    fun sendLastPlatforms(body: SynchronizeBody) = liveData(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient(context).apiService(true).postSynchro(body)
+            when {
+                response.isSuccessful -> {
+                    emit(Resource.success(response.body()))
+                }
+                else -> {
+                    emit(Resource.error("Ошибка ${response.code()}", null))
+                    badRequest(response)
+                }
+            }
+        } catch (e: Exception) {
+            emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
     fun getOwners() = liveData(Dispatchers.IO) {
         try {
             val response = RetrofitClient(context).apiService(false).getOwners()
@@ -296,6 +315,7 @@ class NetworkRepository(private val context: Context) {
             emit(Resource.network("Проблемы с подключением интернета", null))
         }
     }
+
 
 }
 

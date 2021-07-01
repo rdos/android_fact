@@ -15,7 +15,6 @@ import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 
-
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -36,6 +35,7 @@ class App : Application() {
             Realm.deleteRealm(Realm.getDefaultConfiguration()!!)
         }
         val config = RealmConfiguration.Builder()
+        config.allowWritesOnUiThread(true)
         config.name("FactRealmBase")
         config.deleteRealmIfMigrationNeeded()
         Realm.setDefaultConfiguration(config.build())

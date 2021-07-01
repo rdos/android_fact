@@ -11,5 +11,6 @@ data class EarlyCompleteBody(
     @SerializedName("unload_type")
     val unloadType: Int,
     @SerializedName("unload_value")
-    val unloadValue: Int
+    val unloadValue: Double
+
 )

@@ -1,19 +1,3 @@
-/*
- * Copyright 2020 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package ru.smartro.worknote.ui.camera
 
 import android.Manifest
@@ -27,20 +11,16 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.hardware.display.DisplayManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.camera.core.*
+import androidx.camera.core.ImageCapture.FLASH_MODE_ON
 import androidx.camera.core.ImageCapture.Metadata
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -71,7 +51,6 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-
 class CameraFragment(private val photoFor: Int, private val platformId: Int, private val containerId: Int) : Fragment(), ImageCounter {
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
@@ -95,10 +74,6 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
 
     private val viewModel: CameraViewModel by viewModel()
 
-    private val displayManager by lazy {
-        requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
-    }
-
     private lateinit var cameraExecutor: ExecutorService
 
     private val volumeDownReceiver = object : BroadcastReceiver() {
@@ -113,7 +88,7 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
         }
     }
 
-    private val displayListener = object : DisplayManager.DisplayListener {
+/*    private val displayListener = object : DisplayManager.DisplayListener {
         override fun onDisplayAdded(displayId: Int) = Unit
         override fun onDisplayRemoved(displayId: Int) = Unit
         override fun onDisplayChanged(displayId: Int) = view?.let { view ->
@@ -123,7 +98,7 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
                 imageAnalyzer?.targetRotation = view.display.rotation
             }
         } ?: Unit
-    }
+    }*/
 
     override fun onResume() {
         super.onResume()
@@ -148,10 +123,11 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
         super.onDestroyView()
         cameraExecutor.shutdown()
         broadcastManager.unregisterReceiver(volumeDownReceiver)
-        displayManager.unregisterDisplayListener(displayListener)
+        //  displayManager.unregisterDisplayListener(displayListener)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = inflater.inflate(R.layout.fragment_camera, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?):
+            View? = inflater.inflate(R.layout.fragment_camera, container, false)
 
     private fun setGalleryThumbnail(uri: Uri) {
         val thumbnail = hostLayout.findViewById<ImageButton>(R.id.photo_view_button)
@@ -205,7 +181,7 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
         broadcastManager = LocalBroadcastManager.getInstance(view.context)
         val filter = IntentFilter().apply { addAction(KEY_EVENT_ACTION) }
         broadcastManager.registerReceiver(volumeDownReceiver, filter)
-        displayManager.registerDisplayListener(displayListener, null)
+        // displayManager.registerDisplayListener(displayListener, null)
         outputDirectory = CameraActivity.getOutputDirectory(requireContext())
         viewFinder.post {
             displayId = viewFinder.display.displayId
@@ -233,24 +209,46 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
     }
 
     private fun bindCameraUseCases() {
-        val metrics = DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }
-        Log.d(TAG, "Screen metrics: ${metrics.widthPixels} x ${metrics.heightPixels}")
-        val screenAspectRatio = aspectRatio(metrics.widthPixels, metrics.heightPixels)
+        val screenAspectRatio = aspectRatio(320, 620)
         Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
-        val rotation = viewFinder.display.rotation
+        var rotation = Surface.ROTATION_0
         val cameraProvider = cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
 
         val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
+        val orientationEventListener = object : OrientationEventListener(context) {
+            override fun onOrientationChanged(orientation: Int) {
+                // Monitors orientation values to determine the target rotation value
+                rotation = when (orientation) {
+                    in 45..134 -> {
+                        Surface.ROTATION_270
+                    }
+                    in 135..224 -> {
+                        Surface.ROTATION_180
+                    }
+                    in 225..314 -> {
+                        Surface.ROTATION_90
+                    }
+                    else -> {
+                        Surface.ROTATION_0
+                    }
+                }
+                imageCapture?.targetRotation = rotation
+            }
+        }
+
+        orientationEventListener.enable()
         preview = Preview.Builder()
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
+
             .build()
 
         imageCapture = ImageCapture.Builder()
-            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setFlashMode(FLASH_MODE_ON)
             .build()
 
 
@@ -383,15 +381,15 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
                         }
 
                         override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                            val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
-                            Log.d(TAG, "Photo capture succeeded: $savedUri path: ${savedUri.path}")
+                            val imageUri = output.savedUri ?: Uri.fromFile(photoFile)
+                            Log.d(TAG, "Photo capture succeeded: $imageUri path: ${imageUri.path}")
                             Log.d(TAG, "Current thread: ${Thread.currentThread()}")
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                setGalleryThumbnail(savedUri)
+                                setGalleryThumbnail(imageUri)
                                 setImageCounter(true)
                             }
                             CoroutineScope(Dispatchers.Main).launch {
-                                val imageBase64 = MyUtil.imageToBase64(photoFile.absolutePath)
+                                val imageBase64 = MyUtil.imageToBase64(imageUri, requireContext())
 
                                 if (photoFor == PhotoTypeEnum.forContainerProblem) {
                                     viewModel.updateContainerMedia(platformId, containerId, imageBase64)

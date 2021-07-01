@@ -78,7 +78,7 @@
             android:gravity="start">
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/problem_choose_failure"
+                android:id="@+id/problem_choose_failure_in"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@null"

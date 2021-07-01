@@ -46,6 +46,8 @@ open class PlatformEntity(
     var updateAt: Long = 0,
     @SerializedName("status")
     var status: String? = null,
+    @SerializedName("network_status")
+    var networkStatus: Boolean? = false,
     @SerializedName("failure_comment")
     var failureComment: String? = null,
     @SerializedName("containers")
@@ -58,9 +60,10 @@ open class PlatformEntity(
     var kgoMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("kgo_volume")
     var kgoVolume : Double = 0.0,
-    var dsadas : Double = 0.0,
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
+/*    @SerializedName("breakdown_reason_id")
+    var breakdownReasonId: Int? = null,*/
     @SerializedName("finished_at")
     var finishedAt: String? = null,
     @SerializedName("id")
@@ -86,10 +89,14 @@ open class ContainerEntity(
     var failureMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
-    @SerializedName("breakdownReasonId")
-    var breakdownReasonId: Int? = null,
+/*    @SerializedName("breakdown_reason_id")
+    var breakdownReasonId: Int? = null,*/
     @SerializedName("id")
     var containerId: Int? = null,
+    @SerializedName("constructive_volume")
+    var constructiveVolume: Double? = null,
+    @SerializedName("type_name")
+    var typeName: String? = null,
     @SerializedName("is_active_today")
     var isActiveToday: Boolean? = null,
     @SerializedName("number")

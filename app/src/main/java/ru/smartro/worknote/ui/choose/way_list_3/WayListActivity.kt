@@ -78,7 +78,7 @@ class WayListActivity : AppCompatActivity() {
 
         next_btn.setOnClickListener {
             if (adapter.getSelectedId() != -1) {
-                AppPreferences.wayListId = adapter.getSelectedId()
+                AppPreferences.wayBillId = adapter.getSelectedId()
                 startActivity(Intent(this, WayTaskActivity::class.java))
             }
         }

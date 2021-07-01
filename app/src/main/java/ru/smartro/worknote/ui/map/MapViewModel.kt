@@ -12,7 +12,6 @@ import com.yandex.mapkit.directions.driving.DrivingRouter
 import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.directions.driving.VehicleOptions
 import com.yandex.mapkit.geometry.Point
-import io.realm.Realm
 import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
@@ -24,7 +23,9 @@ import ru.smartro.worknote.service.database.entity.work_order.WayTaskEntity
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
+import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
+import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.ui.choose.way_list_3.WayListActivity
 import ru.smartro.worknote.util.MyUtil
 import java.util.*
@@ -40,12 +41,14 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
         return network.earlyComplete(id, body)
     }
 
-    fun finishTask (context : AppCompatActivity){
+    fun finishTask (context : AppCompatActivity) {
+        context.loadingHide()
         WorkManager.getInstance(context).cancelUniqueWork("UploadData")
         AppPreferences.workerStatus = false
         AppPreferences.thisUserHasTask = false
+        AppPreferences.wayTaskId = 0
+        AppPreferences.wayBillId = 0
         clearData()
-        context.loadingHide()
         context.showSuccessComplete().let {
             it.finish_accept_btn.setOnClickListener {
                 context.startActivity(Intent(context, WayListActivity::class.java))
@@ -57,7 +60,7 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
         }
     }
 
-    fun clearData(){
+    fun clearData() {
         db.clearData()
     }
 
@@ -65,8 +68,15 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
         return db.findWayTask()
     }
 
-    fun findPlatformByCoordinate(lat : Double, lon : Double): PlatformEntity {
+    fun findLastPlatforms() =
+        db.findLastPlatforms()
+
+    fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
         return db.findPlatformByCoordinate(lat, lon)
+    }
+
+    fun sendLastPlatforms(body: SynchronizeBody): LiveData<Resource<SynchronizeResponse>> {
+        return network.sendLastPlatforms(body)
     }
 
     fun findCancelWayReason(): List<CancelWayReasonEntity> {
@@ -76,6 +86,9 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
     fun findCancelWayReasonByValue(reason: String): Int {
         return db.findCancelWayReasonByValue(reason)
     }
+
+    fun findContainersVolume(): Double =
+        db.findContainersVolume()
 
     fun buildMapNavigator(currentLocation: com.yandex.mapkit.location.Location, checkPoint: Point, drivingRouter: DrivingRouter, drivingSession: DrivingSession.DrivingRouteListener) {
         val drivingOptions = DrivingOptions()

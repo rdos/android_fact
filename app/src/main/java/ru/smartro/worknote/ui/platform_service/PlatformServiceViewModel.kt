@@ -35,4 +35,3 @@ class PlatformServiceViewModel(application: Application) : BaseViewModel(applica
         db.updatePlatformKGO(platformId, kgoVolume)
     }
 }
-

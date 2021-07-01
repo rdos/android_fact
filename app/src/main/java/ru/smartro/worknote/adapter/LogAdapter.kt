@@ -23,6 +23,7 @@ class LogAdapter(
         val date = Date(item.updateAt * 1000L)
         val dateFormat = SimpleDateFormat("HH:mm")
         val resultDate: String = dateFormat.format(date)
+
         holder.itemView.log_item_time.text = resultDate
 
         holder.itemView.log_item_title.text = item.address
@@ -36,8 +37,22 @@ class LogAdapter(
             "Общее кол-во контейнеров: ${item.containers.size} \n" +
                     "Обслужено кол-во контейнеров: ${item.containers.filter { it.status != StatusEnum.NEW }.size}/${item.containers.size} \n" +
                     "Проблема: $failureComment \n" +
-                    "Объем КГО: ${item.kgoVolume}"
+                    "Объем КГО: ${item.kgoVolume}\n" +
+                    "Статус сети: ${status(item.networkStatus!!)}"
+
+        if (item.networkStatus!!)
+            holder.itemView.log_item_status.setImageResource(R.drawable.ic_check)
+        else
+            holder.itemView.log_item_status.setImageResource(R.drawable.ic_cancel_red)
+
     }
+
+
+    private fun status(b: Boolean) =
+        if (b)
+            "Отправлено"
+        else
+            "Еще не отправлен"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return super.onCreateViewHolder(parent, R.layout.item_log)

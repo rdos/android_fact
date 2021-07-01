@@ -7,10 +7,18 @@ import android.view.MenuItem
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.activity_container_extreme.*
 import kotlinx.android.synthetic.main.activity_problem.*
+import kotlinx.android.synthetic.main.activity_problem.baseview
+import kotlinx.android.synthetic.main.activity_problem.problem_accept_btn
+import kotlinx.android.synthetic.main.activity_problem.problem_btn
+import kotlinx.android.synthetic.main.activity_problem.problem_choose_failure_out
+import kotlinx.android.synthetic.main.activity_problem.problem_comment
+import kotlinx.android.synthetic.main.activity_problem.problem_img
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.util.MyUtil
@@ -19,18 +27,25 @@ import ru.smartro.worknote.util.ProblemEnum
 
 class ExtremeProblemActivity : AppCompatActivity() {
     private lateinit var platform: PlatformEntity
+    private lateinit var container: ContainerEntity
+    private var isContainer = false
     private val viewModel: ProblemViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_container_extreme)
         baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
-
-        supportActionBar!!.title = "Проблема на площадке"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         intent.let {
             platform = viewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            isContainer = it.getBooleanExtra("is_container", false)
+            if (isContainer) {
+                supportActionBar!!.title = "Проблема контейнера"
+                container = viewModel.findContainerEntity(it.getIntExtra("container_id", 0))
+            } else {
+                supportActionBar!!.title = "Проблема на площадке"
+            }
         } 
         initViews()
         initExtremeProblemPhoto()
@@ -39,7 +54,7 @@ class ExtremeProblemActivity : AppCompatActivity() {
 
     private fun initViews() {
         val failReason = viewModel.findFailReason()
-        problem_choose_failure.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, failReason))
+        problem_choose_failure_in.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, failReason))
         problem_choose_failure_out.setOnClickListener {
             problem_choose_failure.showDropDown()
         }
@@ -47,14 +62,24 @@ class ExtremeProblemActivity : AppCompatActivity() {
 
     private fun initImageView() {
         val platform = viewModel.findPlatformEntity(platform.platformId!!)
-        Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last()?.image))
-            .into(problem_img)
+        if (isContainer) {
+            Glide.with(this).load(MyUtil.base64ToImage(container.failureMedia.last()?.image))
+                .into(problem_img)
+        } else {
+            Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last()?.image))
+                .into(problem_img)
+        }
     }
 
     private fun initExtremeProblemPhoto() {
         val intent = Intent(this, CameraActivity::class.java)
-        intent.putExtra("photoFor", PhotoTypeEnum.forPlatformProblem)
         intent.putExtra("platform_id", platform.platformId)
+        if (isContainer) {
+            intent.putExtra("photoFor", PhotoTypeEnum.forContainerProblem)
+            intent.putExtra("container_id", container.containerId)
+        } else {
+            intent.putExtra("photoFor", PhotoTypeEnum.forPlatformProblem)
+        }
         startActivityForResult(intent, 13)
         problem_btn.setOnClickListener {
             startActivityForResult(intent, 13)
@@ -63,13 +88,21 @@ class ExtremeProblemActivity : AppCompatActivity() {
 
     private fun acceptExtremeProblem() {
         problem_accept_btn.setOnClickListener {
-            if (!problem_choose_failure.text.isNullOrEmpty()) {
+            if (!problem_choose_failure_in.text.isNullOrEmpty()) {
                 val problemComment = problem_comment.text.toString()
-                val failure =  problem_choose_failure.text.toString()
-                viewModel.updatePlatformProblem(
-                    platformId = platform.platformId!!,
-                    problemComment = problemComment, problem = failure, problemType = ProblemEnum.ERROR, failProblem = null
-                )
+                val failure = problem_choose_failure_in.text.toString()
+                if (isContainer) {
+                    viewModel.updateContainerProblem(
+                        platformId = platform.platformId!!, containerId = container.containerId!!,
+                        problemComment = problemComment, problemType = ProblemEnum.ERROR, problem = failure, failProblem = null
+                    )
+                } else {
+                    viewModel.updatePlatformProblem(
+                        platformId = platform.platformId!!,
+                        problemComment = problemComment, problem = failure, problemType = ProblemEnum.ERROR, failProblem = null
+                    )
+                }
+                setResult(99)
                 finish()
             }else{
                 toast("Выберите причину поломки")

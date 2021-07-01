@@ -24,6 +24,7 @@
         android:roundIcon="@drawable/ic_app"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.scanner.ScannerActivity" />
         <activity android:name=".ui.log.LogActivity" />
         <activity android:name=".ui.log.LogDetailActivity" />
         <activity android:name=".ui.debug.DebugActivity" />

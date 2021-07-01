@@ -68,19 +68,19 @@ class SynchronizeWorker(
                 Log.d(TAG, " SYNCHRONIZE STARTED")
                 val db = RealmRepository(Realm.getDefaultInstance())
                 val platforms = db.findLastPlatforms()
-                val synchronizeBody = SynchronizeBody(AppPreferences.wayListId, listOf(lat, long), deviceId, platforms)
+                val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), deviceId, platforms)
                 val synchronizeRequest = network.synchronizeData(synchronizeBody)
                 when (synchronizeRequest.status) {
                     Status.SUCCESS -> {
-                        val alertMsg = synchronizeRequest.data?.alert
                         Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeRequest.data)}")
                         AppPreferences.lastSynchroTime = timeBeforeRequest
+                        db.updatePlatformNetworkStatus(platforms)
+                        val alertMsg = synchronizeRequest.data?.alert
                         if (!alertMsg.isNullOrEmpty()) {
                             showNotification(appContext, false, alertMsg, "Уведомление")
                         }
                     }
                     Status.ERROR -> Log.d(TAG, "SYNCHRONIZE GPS SENT ERROR")
-                    Status.EMPTY -> Log.d(TAG, "SYNCHRONIZE SENT EMPTY")
                     Status.NETWORK -> Log.e(TAG, "SYNCHRONIZE  SENT NO INTERNET")
                 }
                 this.cancel()

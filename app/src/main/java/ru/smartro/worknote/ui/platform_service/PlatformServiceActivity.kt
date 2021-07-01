@@ -3,6 +3,7 @@ package ru.smartro.worknote.ui.platform_service
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.activity_platform_service.*
@@ -20,7 +21,7 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
-import ru.smartro.worknote.ui.problem.ProblemActivity
+import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
@@ -37,11 +38,12 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
             platformEntity = viewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
         }
         supportActionBar?.title = "${platformEntity.address}"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         initContainer()
         initBeforeMedia()
 
         problem_btn.setOnClickListener {
-            val intent = Intent(this, ProblemActivity::class.java)
+            val intent = Intent(this, ExtremeProblemActivity::class.java)
             intent.putExtra("platform_id", platformEntity.platformId)
             intent.putExtra("isContainerProblem", false)
             startActivityForResult(intent, REQUEST_EXIT)
@@ -73,7 +75,8 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
     }
 
     private fun initAfterMedia() {
-        if (viewModel.findPlatformEntity(platformEntity.platformId!!).containers.filter { it.isActiveToday == true }.any{ it.status != StatusEnum.NEW }){
+        if (viewModel.findPlatformEntity(platformEntity.platformId!!).containers.filter {
+                it.isActiveToday == true }.all{ it.status != StatusEnum.NEW }){
             complete_task_btn.isVisible = true
             complete_task_btn.setOnClickListener {
                 warningCameraShow("Сделайте фото КП после обслуживания").let {
@@ -122,9 +125,6 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
                 if (resultCode == Activity.RESULT_OK) {
                     initContainer()
                     initAfterMedia()
-                } else if (resultCode == 99) {
-                    setResult(RESULT_OK)
-                    finish()
                 }
             } else if (requestCode == REQUEST_EXIT) {
             if (resultCode == 99) {
@@ -148,5 +148,14 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
         super.onResume()
         initContainer()
         initAfterMedia()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

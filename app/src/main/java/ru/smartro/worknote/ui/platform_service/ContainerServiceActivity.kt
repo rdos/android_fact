@@ -10,7 +10,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.PercentAdapter
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
-import ru.smartro.worknote.ui.problem.ProblemActivity
+import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.MyUtil
 
 class ContainerServiceActivity : AppCompatActivity() {
@@ -35,7 +35,7 @@ class ContainerServiceActivity : AppCompatActivity() {
         containerEntity = viewModel.findContainerEntity(containerId)
 
         enter_info_problem_btn.setOnClickListener {
-            val intent = Intent(this, ProblemActivity::class.java)
+            val intent = Intent(this, ExtremeProblemActivity::class.java)
             intent.putExtra("is_container", true)
             intent.putExtra("container_id", containerId)
             intent.putExtra("platform_id", platformId)

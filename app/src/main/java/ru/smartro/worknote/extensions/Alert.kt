@@ -202,6 +202,21 @@ fun AppCompatActivity.warningContainerFailure(title: String): View {
     return view
 }
 
+fun AppCompatActivity.warningAlert(title: String): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_warning, null)
+    builder.setView(view)
+    customDialog = builder.create()
+    view.title_tv.text = title
+    view.dismiss_btn.setOnClickListener {
+        customDialog.dismiss()
+    }
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
 fun AppCompatActivity.showEarlyComplete(reasons: List<CancelWayReasonEntity>): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater

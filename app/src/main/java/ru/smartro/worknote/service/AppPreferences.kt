@@ -56,12 +56,6 @@ object AppPreferences {
             it.putLong("lastSynchronizeTime", value)
         }
 
-    var lastUpdateTime: Long
-        get() = preferences.getLong("lastUpdateTime", 0)
-        set(value) = preferences.edit {
-            it.putLong("lastUpdateTime", value)
-        }
-
     var serviceStartedAt: Long
         get() = preferences.getLong("serviceStartedAt", 0L)
         set(value) = preferences.edit {
@@ -74,7 +68,7 @@ object AppPreferences {
             it.putInt("vehicleId", value)
         }
 
-    var wayListId: Int
+    var wayBillId: Int
         get() = preferences.getInt("wayListId", 0)
         set(value) = preferences.edit {
             it.putInt("wayListId", value)
@@ -103,9 +97,10 @@ object AppPreferences {
         accessToken = ""
         vehicleId = 0
         organisationId = 0
-        wayListId = 0
+        wayBillId = 0
         wayTaskId = 0
         thisUserHasTask = false
+        workerStatus = false
     }
 
 }

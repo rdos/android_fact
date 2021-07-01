@@ -3,6 +3,7 @@ package ru.smartro.worknote.ui.map
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -19,9 +20,7 @@ import com.yandex.mapkit.directions.driving.DrivingRouter
 import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
-import com.yandex.mapkit.location.Location
-import com.yandex.mapkit.location.LocationListener
-import com.yandex.mapkit.location.LocationStatus
+import com.yandex.mapkit.location.*
 import com.yandex.mapkit.map.*
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
@@ -43,6 +42,7 @@ import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
+import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.log.LogActivity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
@@ -52,11 +52,12 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
 import ru.smartro.worknote.work.SynchronizeWorker
 import java.util.concurrent.TimeUnit
+import kotlin.math.round
 
 
 class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     UserLocationObjectListener, MapObjectTapListener,
-    PlatformAdapter.PlatformClickListener, android.location.LocationListener {
+    PlatformAdapter.PlatformClickListener, LocationListener {
     var drivingModeState = false
 
     private val REQUEST_EXIT = 41
@@ -65,6 +66,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     private val clusterListener = this as ClusterListener
     private val mapObjectTapListener = this as MapObjectTapListener
     private val platformClickListener = this as PlatformAdapter.PlatformClickListener
+    private val locationListener = this as LocationListener
     private val MIN_METERS = 50
 
     private lateinit var userLocationLayer: UserLocationLayer
@@ -74,6 +76,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     private lateinit var currentLocation: Location
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var selectedPlatformToNavigate: Point
+    private lateinit var locationManager: LocationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,10 +124,10 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     private fun initSynchronizeWorker() {
+        AppPreferences.workerStatus = true
         val uploadDataWorkManager = PeriodicWorkRequestBuilder<SynchronizeWorker>(16, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this)
             .enqueueUniquePeriodicWork("UploadData", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
-        AppPreferences.workerStatus = true
     }
 
     @SuppressLint("MissingPermission")
@@ -135,28 +138,8 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.setObjectListener(this)
 
-        mapKit.createLocationManager()
-        mapKit.createLocationManager().requestSingleUpdate(object : LocationListener {
-            override fun onLocationStatusUpdated(p0: LocationStatus) {
-            }
-
-            override fun onLocationUpdated(p0: Location) {
-                currentLocation = p0
-                AppPreferences.currentCoordinate = "${p0.position.longitude}#${p0.position.latitude}"
-                if (drivingModeState && MyUtil.calculateDistance(p0.position, selectedPlatformToNavigate) <= MIN_METERS) {
-                    alertOnPoint().let {
-                        it.dismiss_btn.setOnClickListener {
-                            mapObjects.clear()
-                        }
-                    }
-                }
-                toast("Клиент найден")
-                if (firstTime) {
-                    moveCameraToUser(p0)
-                    firstTime = false
-                }
-            }
-        })
+        locationManager = mapKit.createLocationManager()
+        locationManager.subscribeForLocationUpdates(0.0, 1000, 1.0, false, FilteringMode.OFF, locationListener)
 
         location_fab.setOnClickListener {
             try {
@@ -202,6 +185,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     override fun onStop() {
         super.onStop()
         map_view.onStop()
+        locationManager.unsubscribe(locationListener)
         MapKitFactory.getInstance().onStop()
     }
 
@@ -226,11 +210,11 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     override fun onObjectRemoved(p0: UserLocationView) {
-        //TODO("Not yet implemented")
+
     }
 
     override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) {
-        //TODO("Not yet implemented")
+
     }
 
     // Нажатие на маркер (точки)
@@ -251,9 +235,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
                 bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
                 val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
                 val platformsArray = it.platforms
-
-                platformsArray.sortByDescending { sort -> sort.status == StatusEnum.NEW }
-
+                platformsArray.sortBy { it.updateAt }
                 map_behavior_rv.adapter = PlatformAdapter(platformClickListener, platformsArray)
 
                 map_behavior_header.setOnClickListener {
@@ -271,64 +253,110 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
                     map_behavior_send_btn.text = getString(R.string.finish_way)
                 }
                 map_behavior_send_btn.setOnClickListener {
-                    finishWay(hasNotServedPlatform)
+                    val lastPlatforms = viewModel.findLastPlatforms()
+                    if (lastPlatforms.isEmpty()) {
+                        finishWay(hasNotServedPlatform)
+                    } else {
+                        var long = 0.0
+                        var lat = 0.0
+                        val deviceId = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
+                        val currentCoordinate = AppPreferences.currentCoordinate!!
+                        if (currentCoordinate.contains("#")) {
+                            long = currentCoordinate.substringAfter("#").toDouble()
+                            lat = currentCoordinate.substringBefore("#").toDouble()
+                        }
+                        val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), deviceId, lastPlatforms)
+                        warningAlert("Не все данные отправлены нa сервер").let {
+                            it.accept_btn.setOnClickListener {
+                                loadingShow()
+                                viewModel.sendLastPlatforms(synchronizeBody)
+                                    .observe(this, Observer { result ->
+                                        when (result.status) {
+                                            Status.SUCCESS -> {
+                                                loadingHide()
+                                                hideDialog()
+                                                finishWay(hasNotServedPlatform)
+                                            }
+                                            Status.ERROR -> {
+                                                toast(result.msg)
+                                                loadingHide()
+                                            }
+                                            Status.NETWORK -> {
+                                                toast("Проблемы с интернетом")
+                                                loadingHide()
+                                            }
+                                        }
+                                    })
+                            }
+                        }
+                    }
                 }
-        }
+            }
     }
 
     private fun finishWay(boolean: Boolean) {
         if (!boolean) {
-            completeWayBill()
+            successCompleteWayBill()
         } else {
-            val allReasons = viewModel.findCancelWayReason()
-            showEarlyComplete(allReasons).let { view ->
-                view.accept_btn.setOnClickListener {
-                    if (!view.reason_et.text.isNullOrEmpty() &&
-                        (view.early_volume_tg.isChecked || view.early_weight_tg.isChecked)
-                        && !view.unload_value_et.text.isNullOrEmpty()
-                    ) {
-                        val failureId = viewModel.findCancelWayReasonByValue(view.reason_et.text.toString())
-                        val unloadValue = view.unload_value_et.text.toString().toInt()
-                        val unloadType = if (view.early_volume_tg.isChecked) 1 else 2
+            earlyCompleteWayBill()
+        }
+    }
 
-                        val body = EarlyCompleteBody(failureId, MyUtil.timeStamp(), unloadType, unloadValue)
-                        loadingShow()
+    private fun earlyCompleteWayBill() {
+        val allReasons = viewModel.findCancelWayReason()
+        showEarlyComplete(allReasons).let { view ->
+            val totalVolume = viewModel.findContainersVolume()
+            view.unload_value_et.setText("$totalVolume")
+            view.accept_btn.setOnClickListener {
+                if (!view.reason_et.text.isNullOrEmpty() &&
+                    (view.early_volume_tg.isChecked || view.early_weight_tg.isChecked)
+                    && !view.unload_value_et.text.isNullOrEmpty()
+                ) {
+                    val failureId = viewModel.findCancelWayReasonByValue(view.reason_et.text.toString())
+                    val unloadValue = round(
+                        view.unload_value_et.text.toString().toDouble() * 100
+                    ) / 100
+                    val unloadType = if (view.early_volume_tg.isChecked) 1 else 2
+                    val body = EarlyCompleteBody(failureId, MyUtil.timeStamp(), unloadType, unloadValue)
+                    loadingShow()
 
-                        viewModel.earlyComplete(AppPreferences.wayTaskId, body)
-                            .observe(this@MapActivity, Observer { result ->
-                                when (result.status) {
-                                    Status.SUCCESS -> {
-                                        viewModel.finishTask(this@MapActivity)
-                                    }
-                                    Status.ERROR -> {
-                                        toast(result.msg)
-                                        loadingHide()
-                                    }
-                                    Status.NETWORK -> {
-                                        toast("Проблемы с интернетом")
-                                        loadingHide()
-                                    }
+                    viewModel.earlyComplete(AppPreferences.wayTaskId, body)
+                        .observe(this@MapActivity, Observer { result ->
+                            when (result.status) {
+                                Status.SUCCESS -> {
+                                    viewModel.finishTask(this)
                                 }
-                            })
-                    } else {
-                        toast("Заполните все поля")
-                    }
+                                Status.ERROR -> {
+                                    toast(result.msg)
+                                    loadingHide()
+                                }
+                                Status.NETWORK -> {
+                                    toast("Проблемы с интернетом")
+                                    loadingHide()
+                                }
+                            }
+                        })
+                } else {
+                    toast("Заполните все поля")
                 }
-                view.dismiss_btn.setOnClickListener {
-                    hideDialog()
-                }
+            }
+            view.dismiss_btn.setOnClickListener {
+                hideDialog()
             }
         }
     }
 
-    private fun completeWayBill() {
+    private fun successCompleteWayBill() {
+        val totalVolume = viewModel.findContainersVolume()
         showCompleteWaybill().run {
+            this.comment_et.setText("$totalVolume")
             this.accept_btn.setOnClickListener {
                 if (this.weight_tg.isChecked || this.volume_tg.isChecked) {
                     val unloadType = if (this.volume_tg.isChecked) 1 else 2
+                    val unloadValue = round(this.comment_et.text.toString().toDouble() * 100) / 100
                     val body = CompleteWayBody(
                         finishedAt = MyUtil.timeStamp(),
-                        unloadType = unloadType, unloadValue = "${this.comment_et.text.toString()}.00"
+                        unloadType = unloadType, unloadValue = unloadValue.toString()
                     )
                     loadingShow()
                     viewModel.completeWay(AppPreferences.wayTaskId, body)
@@ -398,14 +426,19 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     fun buildNavigator(checkPoint: Point) {
-        mapObjects.clear()
-        selectedPlatformToNavigate = checkPoint
-        viewModel.buildMapNavigator(currentLocation, checkPoint, drivingRouter, drivingSession)
-        drivingModeState = true
-        navigator_toggle_fab.isVisible = drivingModeState
-        hideDialog()
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        moveCameraToUser(currentLocation)
+        try {
+            mapObjects.clear()
+            selectedPlatformToNavigate = checkPoint
+            viewModel.buildMapNavigator(currentLocation, checkPoint, drivingRouter, drivingSession)
+            drivingModeState = true
+            navigator_toggle_fab.isVisible = drivingModeState
+            hideDialog()
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            moveCameraToUser(currentLocation)
+        } catch (e: Exception) {
+            toast("Невозможно построить маршрут, повторите попытку.")
+        }
+
     }
 
     override fun onBackPressed() {
@@ -418,26 +451,31 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
         initBottomBehavior()
     }
 
-    override fun onLocationChanged(p0: android.location.Location) {
-        AppPreferences.currentCoordinate = "${p0.longitude}#${p0.latitude}"
-    }
-
-    override fun onProviderEnabled(provider: String) {
-
-    }
-
-    override fun onProviderDisabled(provider: String) {
-
-    }
-
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-
-    }
-
     private fun moveCameraToUser(location: Location) {
         map_view.map.move(
             CameraPosition(location.position, 15.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null
         )
+    }
+
+    override fun onLocationStatusUpdated(p0: LocationStatus) {
+
+
+    }
+
+    override fun onLocationUpdated(p0: Location) {
+        currentLocation = p0
+        AppPreferences.currentCoordinate = "${p0.position.longitude}#${p0.position.latitude}"
+        if (drivingModeState && MyUtil.calculateDistance(p0.position, selectedPlatformToNavigate) <= MIN_METERS) {
+            alertOnPoint().let {
+                it.dismiss_btn.setOnClickListener {
+                    mapObjects.clear()
+                }
+            }
+        }
+        if (firstTime) {
+            moveCameraToUser(p0)
+            firstTime = false
+        }
     }
 }

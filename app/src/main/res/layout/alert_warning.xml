@@ -43,7 +43,7 @@
             android:layout_margin="@dimen/margin_default"
             android:background="@drawable/bg_button"
             android:padding="@dimen/margin_default"
-            android:text="Подтвердить"
+            android:text="Отправить данные"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/dismiss_btn"

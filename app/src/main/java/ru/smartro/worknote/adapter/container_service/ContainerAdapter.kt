@@ -46,7 +46,6 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
                     holder.itemView.choose_status.isVisible = true
                     holder.itemView.choose_status.setImageResource(R.drawable.ic_red_check)
                     holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position]!!)
                         Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                     }
                 }

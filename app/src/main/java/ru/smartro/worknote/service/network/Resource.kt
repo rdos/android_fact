@@ -19,5 +19,4 @@ enum class Status {
     SUCCESS,
     ERROR,
     NETWORK,
-    EMPTY
 }

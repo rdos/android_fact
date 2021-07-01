@@ -74,9 +74,14 @@ class AuthActivity : AppCompatActivity() {
             }
         }
 
-  /*      auth_enter.setOnLongClickListener {
+/*        auth_enter.setOnLongClickListener {
             auth_login.setText("admin@smartro.ru")
             auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
+            return@setOnLongClickListener true
+        }*/
+/*        auth_enter.setOnLongClickListener {
+            auth_login.setText("gkh2@smartro.ru")
+            auth_password.setText("JT8NcST%sDqUpuc")
             return@setOnLongClickListener true
         }*/
     }
