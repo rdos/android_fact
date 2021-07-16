@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -13,6 +14,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.Animation
+import com.yandex.mapkit.MapKit
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.directions.DirectionsFactory
 import com.yandex.mapkit.directions.driving.DrivingRoute
@@ -47,7 +49,6 @@ import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.log.LogActivity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
-import ru.smartro.worknote.util.ClusterIcon
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
 import ru.smartro.worknote.work.SynchronizeWorker
@@ -55,7 +56,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 
-class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
+class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*/
     UserLocationObjectListener, MapObjectTapListener,
     PlatformAdapter.PlatformClickListener, LocationListener {
     var drivingModeState = false
@@ -63,7 +64,8 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     private val REQUEST_EXIT = 41
     private var firstTime = true
     private val viewModel: MapViewModel by viewModel()
-    private val clusterListener = this as ClusterListener
+
+    //private val clusterListener = this as ClusterListener
     private val mapObjectTapListener = this as MapObjectTapListener
     private val platformClickListener = this as PlatformAdapter.PlatformClickListener
     private val locationListener = this as LocationListener
@@ -77,16 +79,16 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var selectedPlatformToNavigate: Point
     private lateinit var locationManager: LocationManager
-
+    private lateinit var mapKit: MapKit
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
         setContentView(R.layout.activity_map)
         initSynchronizeWorker()
-        initUserLocation()
         initMapView()
         initBottomBehavior()
+        initUserLocation()
         initDriveMode()
     }
 
@@ -107,14 +109,10 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
 
         }
         navigator_toggle_fab.setOnClickListener {
-            warningClearNavigator("Отменить текущий маршрут?").let {
-                it.accept_btn.setOnClickListener {
-                    drivingModeState = false
-                    navigator_toggle_fab.isVisible = drivingModeState
-                    mapObjects.clear()
-                    hideDialog()
-                }
-            }
+            drivingModeState = false
+            navigator_toggle_fab.isVisible = drivingModeState
+            mapObjects.clear()
+            hideDialog()
         }
 
         log_fab.setOnClickListener {
@@ -132,14 +130,11 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
 
     @SuppressLint("MissingPermission")
     private fun initUserLocation() {
-        val mapKit = MapKitFactory.getInstance()
+        mapKit = MapKitFactory.getInstance()
         userLocationLayer = mapKit.createUserLocationLayer(map_view.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.setObjectListener(this)
-
-        locationManager = mapKit.createLocationManager()
-        locationManager.subscribeForLocationUpdates(0.0, 1000, 1.0, false, FilteringMode.OFF, locationListener)
 
         location_fab.setOnClickListener {
             try {
@@ -162,17 +157,18 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
         }
 
         viewModel.findWayTask().let {
-            val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(clusterListener)
+            // val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(clusterListener)
+            val mapObjectCollection = map_view.map.mapObjects
             val greenIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_green_marker)
             val blueIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_blue_marker)
             val redIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_red_marker)
             val orangeIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_orange_marker)
-            clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
-            clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.NEW), blueIcon, IconStyle())
-            clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.ERROR), redIcon, IconStyle())
-            clusterCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.UNFINISHED), orangeIcon, IconStyle())
-            clusterCollection.addTapListener(mapObjectTapListener)
-            clusterCollection.clusterPlacemarks(60.0, 15)
+            mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
+            mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.NEW), blueIcon, IconStyle())
+            mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.ERROR), redIcon, IconStyle())
+            mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.UNFINISHED), orangeIcon, IconStyle())
+            mapObjectCollection.addTapListener(mapObjectTapListener)
+            // mapObjectCollection.clusterPlacemarks(60.0, 15)
         }
     }
 
@@ -185,11 +181,11 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     override fun onStop() {
         super.onStop()
         map_view.onStop()
-        locationManager.unsubscribe(locationListener)
         MapKitFactory.getInstance().onStop()
     }
 
-    override fun onClusterAdded(cluster: Cluster) {
+
+/*    override fun onClusterAdded(cluster: Cluster) {
         cluster.appearance.setIcon(ClusterIcon(cluster.size.toString(), this))
         cluster.addClusterTapListener(this)
     }
@@ -200,7 +196,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
             Animation(Animation.Type.SMOOTH, 1F), null
         )
         return true
-    }
+    }*/
 
     //UserLocation
     override fun onObjectAdded(userLocationView: UserLocationView) {
@@ -231,67 +227,67 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     private fun initBottomBehavior() {
-            viewModel.findWayTask().let {
-                bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-                val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-                val platformsArray = it.platforms
-                platformsArray.sortBy { it.updateAt }
-                map_behavior_rv.adapter = PlatformAdapter(platformClickListener, platformsArray)
+        viewModel.findWayTask().let {
+            bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+            val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+            val platformsArray = it.platforms
+            platformsArray.sortBy { it.updateAt }
+            map_behavior_rv.adapter = PlatformAdapter(platformClickListener, platformsArray)
 
-                map_behavior_header.setOnClickListener {
-                    if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
-                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                    else
-                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
-                val hasNotServedPlatform = it.platforms.any { found -> found.status == StatusEnum.NEW }
-                if (hasNotServedPlatform) {
-                    map_behavior_send_btn.background = getDrawable(R.drawable.bg_button_red)
-                    map_behavior_send_btn.text = getString(R.string.finish_way_now)
+            map_behavior_header.setOnClickListener {
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                else
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+            val hasNotServedPlatform = it.platforms.any { found -> found.status == StatusEnum.NEW }
+            if (hasNotServedPlatform) {
+                map_behavior_send_btn.background = getDrawable(R.drawable.bg_button_red)
+                map_behavior_send_btn.text = getString(R.string.finish_way_now)
+            } else {
+                map_behavior_send_btn.background = getDrawable(R.drawable.bg_button)
+                map_behavior_send_btn.text = getString(R.string.finish_way)
+            }
+            map_behavior_send_btn.setOnClickListener {
+                val lastPlatforms = viewModel.findLastPlatforms()
+                if (lastPlatforms.isEmpty()) {
+                    finishWay(hasNotServedPlatform)
                 } else {
-                    map_behavior_send_btn.background = getDrawable(R.drawable.bg_button)
-                    map_behavior_send_btn.text = getString(R.string.finish_way)
-                }
-                map_behavior_send_btn.setOnClickListener {
-                    val lastPlatforms = viewModel.findLastPlatforms()
-                    if (lastPlatforms.isEmpty()) {
-                        finishWay(hasNotServedPlatform)
-                    } else {
-                        var long = 0.0
-                        var lat = 0.0
-                        val deviceId = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
-                        val currentCoordinate = AppPreferences.currentCoordinate!!
-                        if (currentCoordinate.contains("#")) {
-                            long = currentCoordinate.substringAfter("#").toDouble()
-                            lat = currentCoordinate.substringBefore("#").toDouble()
-                        }
-                        val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), deviceId, lastPlatforms)
-                        warningAlert("Не все данные отправлены нa сервер").let {
-                            it.accept_btn.setOnClickListener {
-                                loadingShow()
-                                viewModel.sendLastPlatforms(synchronizeBody)
-                                    .observe(this, Observer { result ->
-                                        when (result.status) {
-                                            Status.SUCCESS -> {
-                                                loadingHide()
-                                                hideDialog()
-                                                finishWay(hasNotServedPlatform)
-                                            }
-                                            Status.ERROR -> {
-                                                toast(result.msg)
-                                                loadingHide()
-                                            }
-                                            Status.NETWORK -> {
-                                                toast("Проблемы с интернетом")
-                                                loadingHide()
-                                            }
+                    var long = 0.0
+                    var lat = 0.0
+                    val deviceId = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
+                    val currentCoordinate = AppPreferences.currentCoordinate!!
+                    if (currentCoordinate.contains("#")) {
+                        long = currentCoordinate.substringAfter("#").toDouble()
+                        lat = currentCoordinate.substringBefore("#").toDouble()
+                    }
+                    val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), deviceId, lastPlatforms)
+                    warningAlert("Не все данные отправлены нa сервер").let {
+                        it.accept_btn.setOnClickListener {
+                            loadingShow()
+                            viewModel.sendLastPlatforms(synchronizeBody)
+                                .observe(this, Observer { result ->
+                                    when (result.status) {
+                                        Status.SUCCESS -> {
+                                            loadingHide()
+                                            hideDialog()
+                                            finishWay(hasNotServedPlatform)
                                         }
-                                    })
-                            }
+                                        Status.ERROR -> {
+                                            toast(result.msg)
+                                            loadingHide()
+                                        }
+                                        Status.NETWORK -> {
+                                            toast("Проблемы с интернетом")
+                                            loadingHide()
+                                        }
+                                    }
+                                })
                         }
                     }
                 }
             }
+        }
     }
 
     private fun finishWay(boolean: Boolean) {
@@ -389,18 +385,10 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     override fun startPlatformProblem(item: PlatformEntity) {
-        warningCameraShow("Сделайте фото проблемы").let {
-            it.accept_btn.setOnClickListener {
-                hideDialog()
-                val intent = Intent(this, ExtremeProblemActivity::class.java)
-                intent.putExtra("platform_id", item.platformId)
-                startActivityForResult(intent, REQUEST_EXIT)
-            }
-
-            it.dismiss_btn.setOnClickListener {
-                hideDialog()
-            }
-        }
+        hideDialog()
+        val intent = Intent(this, ExtremeProblemActivity::class.java)
+        intent.putExtra("platform_id", item.platformId)
+        startActivityForResult(intent, REQUEST_EXIT)
     }
 
     override fun moveCameraPlatform(point: Point) {
@@ -417,11 +405,7 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
                 }
             }
         } else {
-            warningNavigatePlatform().let {
-                it.accept_btn.setOnClickListener {
-                    buildNavigator(checkPoint)
-                }
-            }
+            buildNavigator(checkPoint)
         }
     }
 
@@ -449,6 +433,8 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
         super.onResume()
         initMapView()
         initBottomBehavior()
+        locationManager = mapKit.createLocationManager()
+        locationManager.subscribeForLocationUpdates(0.0, 1000, 1.0, true, FilteringMode.ON, locationListener)
     }
 
     private fun moveCameraToUser(location: Location) {
@@ -459,23 +445,40 @@ class MapActivity : AppCompatActivity(), ClusterListener, ClusterTapListener,
     }
 
     override fun onLocationStatusUpdated(p0: LocationStatus) {
-
+        when (p0) {
+            LocationStatus.AVAILABLE -> toast("GPS работает")
+            LocationStatus.NOT_AVAILABLE -> toast("GPS не работает")
+        }
 
     }
 
-    override fun onLocationUpdated(p0: Location) {
-        currentLocation = p0
-        AppPreferences.currentCoordinate = "${p0.position.longitude}#${p0.position.latitude}"
-        if (drivingModeState && MyUtil.calculateDistance(p0.position, selectedPlatformToNavigate) <= MIN_METERS) {
+    override fun onLocationUpdated(location: Location) {
+        Log.d("LogDistance", "###################")
+        currentLocation = location
+        AppPreferences.currentCoordinate = "${location.position.longitude}#${location.position.latitude}"
+        val distanceToPoint = MyUtil.calculateDistance(location.position, selectedPlatformToNavigate)
+        Log.d("LogDistance", "Distance: $distanceToPoint")
+        if (drivingModeState && distanceToPoint <= MIN_METERS) {
             alertOnPoint().let {
                 it.dismiss_btn.setOnClickListener {
+                    drivingModeState = false
                     mapObjects.clear()
+                    hideDialog()
                 }
             }
+        }else{
+            Log.d("LogDistance", "Distance not arrive")
         }
         if (firstTime) {
-            moveCameraToUser(p0)
+            moveCameraToUser(location)
             firstTime = false
         }
+        Log.d("LogDistance", "Location updated")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        locationManager.unsubscribe(locationListener)
+        Log.d("LYFECYCLE", "onPause:")
     }
 }

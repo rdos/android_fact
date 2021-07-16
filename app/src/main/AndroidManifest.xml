@@ -14,7 +14,6 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
     <uses-feature android:name="android.hardware.location.gps" />
-    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:name=".App"
@@ -69,6 +68,9 @@
         </activity>
         <activity
             android:name=".ui.platform_service.PlatformServiceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.platform_service.ServiceActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.map.MapActivity"

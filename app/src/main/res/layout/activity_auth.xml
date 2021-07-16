@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/baseview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/baseview"
     tools:context=".ui.auth.AuthActivity">
 
     <LinearLayout
@@ -52,8 +52,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/margin_default"
-            app:passwordToggleEnabled="true"
-            android:layout_marginTop="24dp">
+            android:layout_marginTop="24dp"
+            app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/auth_password"
@@ -72,12 +72,21 @@
         android:id="@+id/auth_enter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_default"
         android:layout_marginHorizontal="@dimen/margin_default"
         android:layout_marginBottom="@dimen/margin_default"
-        android:layout_margin="@dimen/margin_default"
         android:background="@drawable/bg_button"
         android:text="Войти в систему"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/auth_appversion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_default"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="312.421" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,14 +20,13 @@ import ru.smartro.worknote.adapter.container_service.ContainerDetailAdapter
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningCameraShow
 import ru.smartro.worknote.extensions.warningClearNavigator
-import ru.smartro.worknote.extensions.warningNavigatePlatform
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point : Point) : DialogFragment() {
+class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point: Point) : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.alert_point_detail, container, false)
@@ -47,6 +46,7 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point : Po
         dialog!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog!!.window!!.attributes = params
     }
+
     private fun initViews() {
         platform_detail_start_service.setOnClickListener {
             val intent = Intent(requireActivity(), PlatformServiceActivity::class.java)
@@ -85,12 +85,8 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point : Po
                         }
                     }
             } else {
-                currentActivity.warningNavigatePlatform().let {
-                    it.accept_btn.setOnClickListener {
-                        currentActivity.buildNavigator(point)
-                        dismiss()
-                    }
-                }
+                currentActivity.buildNavigator(point)
+                dismiss()
             }
         }
         bottom_card.isVisible = platform.status == StatusEnum.NEW

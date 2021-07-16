@@ -9,11 +9,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.location.Location
-import android.media.ExifInterface
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
@@ -80,51 +79,11 @@ object MyUtil {
         AppPreferences.clear()
     }
 
-    /*fun imageToBase64(filePath: String?): String {
-        val bmp: Bitmap?
-        val bos: ByteArrayOutputStream?
-        val bt: ByteArray?
-        var encodeString = ""
-        val resizedBmp: Bitmap?
-        try {
-            bmp = BitmapFactory.decodeFile(filePath)
-            bos = ByteArrayOutputStream()
-            resizedBmp = Bitmap.createScaledBitmap(bmp, 320, 620, false)
-            resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, bos)
-            bt = bos.toByteArray()
-            encodeString = Base64.encodeToString(bt, Base64.DEFAULT)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return "data:image/png;base64,$encodeString"
-    }*/
-
-    fun imageToBase64(imageUri: Uri, context: Context): String {
-        fun exifToDegrees(exifOrientation: Int): Float {
-            return when (exifOrientation) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> {
-                    Log.d("MYUTIL", "exifToDegrees:  90F")
-                    90F
-                }
-                ExifInterface.ORIENTATION_ROTATE_180 -> {
-                    Log.d("MYUTIL", "exifToDegrees:  180F")
-                    180F
-                }
-                ExifInterface.ORIENTATION_ROTATE_270 -> {
-                    Log.d("MYUTIL", "exifToDegrees:  270F")
-                    270F
-                }
-                else -> 0F
-            }
-        }
-
-        val exif = ExifInterface(imageUri.path!!)
-        val rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-        val rotationInDegrees = exifToDegrees(rotation)
+    fun imageToBase64(imageUri: Uri, rotationDegrees: Float, context: Context): String {
         val imageStream: InputStream? = context.contentResolver.openInputStream(imageUri)
         val selectedImage = BitmapFactory.decodeStream(imageStream)
         val matrix = Matrix()
-        matrix.preRotate(rotationInDegrees)
+        matrix.preRotate(rotationDegrees)
         val rotatedBitmap = Bitmap.createBitmap(selectedImage, 0, 0, selectedImage.width, selectedImage.height, matrix, true)
         val compressedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, 320, 620, false)
         val baos = ByteArrayOutputStream()
@@ -133,9 +92,9 @@ object MyUtil {
         return "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
     }
 
-
     fun base64ToImage(encodedImage: String?): Bitmap {
-        val decodedString: ByteArray = Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
+        val decodedString: ByteArray =
+            Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     }
 
@@ -161,16 +120,17 @@ object MyUtil {
         }
     }
 
-    fun calculateDistance(user: com.yandex.mapkit.geometry.Point, checkPoint: com.yandex.mapkit.geometry.Point): Int {
-        val userLocation = Location("")
-        userLocation.latitude = user.latitude
-        userLocation.longitude = user.longitude
+    fun calculateDistance(
+        currentLocation: com.yandex.mapkit.geometry.Point,
+        finishLocation: com.yandex.mapkit.geometry.Point
+    ): Int {
+        val userLocation = Location(LocationManager.GPS_PROVIDER)
+        userLocation.latitude = currentLocation.latitude
+        userLocation.longitude = currentLocation.longitude
 
-        val checkPointLocation = Location("")
-        checkPointLocation.latitude = checkPoint.latitude
-        checkPointLocation.longitude = checkPoint.longitude
-
+        val checkPointLocation = Location(LocationManager.GPS_PROVIDER)
+        checkPointLocation.latitude = finishLocation.latitude
+        checkPointLocation.longitude = finishLocation.longitude
         return userLocation.distanceTo(checkPointLocation).toInt()
     }
-
 }

@@ -39,8 +39,10 @@ import ru.smartro.worknote.base.BaseFragment
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.ui.platform_service.ServiceActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
+import ru.smartro.worknote.util.StatusEnum
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -50,7 +52,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class CameraFragment(private val photoFor: Int, private val platformId: Int, private val containerId: Int) : BaseFragment(), ImageCounter {
+class SlideCameraFragment(private val photoFor: Int, private val platformId: Int, private val containerId: Int) : BaseFragment(), ImageCounter {
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
     private val ANIMATION_FAST_MILLIS = 50L
@@ -262,51 +264,15 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
 
         //кнопка отправить в камере. Определения для чего делается фото
         controls.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
+            val serviceActivity = (requireActivity() as ServiceActivity)
             when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.beforeMedia.size == 0) {
-                        toast("Сделайте фото")
-                    } else {
-                        requireActivity().finish()
-                    }
+                    serviceActivity.nextPage()
                 }
                 PhotoTypeEnum.forAfterMedia -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.afterMedia.size == 0) {
-                        toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(Activity.RESULT_OK)
-                        requireActivity().finish()
-                    }
-                }
-                PhotoTypeEnum.forPlatformProblem -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.failureMedia.size == 0) {
-                        toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(Activity.RESULT_OK)
-                        requireActivity().finish()
-                    }
-                }
-                PhotoTypeEnum.forContainerProblem -> {
-                    val container = viewModel.findContainerEntity(containerId)
-                    if (container.failureMedia.size == 0) {
-                        toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(Activity.RESULT_OK)
-                        requireActivity().finish()
-                    }
-                }
-
-                PhotoTypeEnum.forKGO -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.kgoMedia.size == 0) {
-                        toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(101)
-                        requireActivity().finish()
-                    }
+                    viewModel.updatePlatformStatus(platformId, StatusEnum.SUCCESS)
+                    serviceActivity.setResult(Activity.RESULT_OK)
+                    serviceActivity.finish()
                 }
             }
         }
@@ -332,18 +298,6 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
                     PhotoTypeEnum.forBeforeMedia -> {
                         val platform = viewModel.findPlatformEntity(platformId)
                         platform.beforeMedia.size >= maxPhotoCount
-                    }
-                    PhotoTypeEnum.forPlatformProblem -> {
-                        val platform = viewModel.findPlatformEntity(platformId)
-                        platform.failureMedia.size >= maxPhotoCount
-                    }
-                    PhotoTypeEnum.forContainerProblem -> {
-                        val container = viewModel.findContainerEntity(containerId)
-                        container.failureMedia.size >= maxPhotoCount
-                    }
-                    PhotoTypeEnum.forKGO -> {
-                        val platform = viewModel.findPlatformEntity(platformId)
-                        platform.kgoMedia.size >= maxPhotoCount
                     }
                     else -> {
                         false
@@ -458,6 +412,3 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
     }
 }
 
-interface ImageCounter {
-    fun mediaSizeChanged()
-}

@@ -86,7 +86,6 @@ fun AppCompatActivity.alertOnPoint(): View {
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_on_point, null)
     builder.setView(view)
-    builder.setCancelable(false)
     customDialog = builder.create()
     customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     customDialog.show()
@@ -150,6 +149,17 @@ fun AppCompatActivity.showCompleteWaybill(): View {
 
 fun AppCompatActivity.fillKgoVolume(): View {
     val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_fill_kgo, null)
+    builder.setView(view)
+    customDialog = builder.create()
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
+fun Fragment.fillKgoVolume(): View {
+    val builder = AlertDialog.Builder(requireContext())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_fill_kgo, null)
     builder.setView(view)

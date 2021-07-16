@@ -8,8 +8,8 @@ import kotlinx.android.synthetic.main.activity_container_service.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.PercentAdapter
+import ru.smartro.worknote.adapter.container_service.PercentModel
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.MyUtil
 
@@ -19,7 +19,6 @@ class ContainerServiceActivity : AppCompatActivity() {
     private val viewModel: PlatformServiceViewModel by viewModel()
     private var platformId = 0
     private var containerId = 0
-    private lateinit var containerEntity: ContainerEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +31,6 @@ class ContainerServiceActivity : AppCompatActivity() {
             containerId = it.getIntExtra("container_id", 0)
             platformId = it.getIntExtra("platform_id", 0)
         }
-        containerEntity = viewModel.findContainerEntity(containerId)
 
         enter_info_problem_btn.setOnClickListener {
             val intent = Intent(this, ExtremeProblemActivity::class.java)
@@ -42,8 +40,20 @@ class ContainerServiceActivity : AppCompatActivity() {
             startActivityForResult(intent, REQUEST_EXIT)
         }
 
-        supportActionBar?.title = containerEntity.number
-        percentAdapter = PercentAdapter(this, arrayListOf(0, 25, 50, 75, 100, 125))
+        comment_clear.setOnClickListener {
+            comment_et.setText("")
+        }
+
+        viewModel.findContainerEntity(containerId).let {
+            supportActionBar?.title = it.number
+            comment_et.setText(it.comment)
+            percentAdapter = if (it.volume != null) {
+                PercentAdapter(this, selectedPercents(it.volume!!, true))
+            } else {
+                PercentAdapter(this, selectedPercents(it.volume!!, false))
+
+            }
+        }
         enter_info_percent_rv.adapter = percentAdapter
         back_button.setOnClickListener {
             finish()
@@ -81,4 +91,18 @@ class ContainerServiceActivity : AppCompatActivity() {
         }
     }
 
+    fun selectedPercents(selectedVolume: Double, isNotNull: Boolean): ArrayList<PercentModel> {
+        val resultPercents = arrayListOf<PercentModel>()
+        val allPercents = arrayListOf(0.00, 0.25, 0.50, 0.75, 1.00, 1.25)
+        if (isNotNull) {
+            allPercents.forEach {
+                resultPercents.add(PercentModel(it, it == selectedVolume))
+            }
+        } else {
+            allPercents.forEach {
+                resultPercents.add(PercentModel(it, false))
+            }
+        }
+        return resultPercents
+    }
 }

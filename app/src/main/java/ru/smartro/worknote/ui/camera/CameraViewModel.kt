@@ -18,6 +18,10 @@ class CameraViewModel(application: Application) : BaseViewModel(application) {
         db.updateContainerMedia(platformId, containerId, imageBase64)
     }
 
+    fun updatePlatformStatus(platformId: Int, status: String) {
+        db.updatePlatformStatus(platformId, status)
+    }
+
     fun findContainerEntity(containerId: Int) =
         db.findContainerEntity(containerId)
 

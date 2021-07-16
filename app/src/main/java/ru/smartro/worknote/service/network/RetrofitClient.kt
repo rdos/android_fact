@@ -82,7 +82,6 @@ class RetrofitClient(context: Context) {
             }
         }
     }
-
 }
 
 enum class APIENUM {

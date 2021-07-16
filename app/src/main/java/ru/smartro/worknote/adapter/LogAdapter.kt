@@ -41,9 +41,9 @@ class LogAdapter(
                     "Статус сети: ${status(item.networkStatus!!)}"
 
         if (item.networkStatus!!)
-            holder.itemView.log_item_status.setImageResource(R.drawable.ic_check)
+            holder.itemView.log_item_status.setImageResource(R.drawable.ic_done)
         else
-            holder.itemView.log_item_status.setImageResource(R.drawable.ic_cancel_red)
+            holder.itemView.log_item_status.setImageResource(R.drawable.ic_clock)
 
     }
 

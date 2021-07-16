@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.activity_platform_service.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
-import kotlinx.android.synthetic.main.alert_accept_task.view.accept_btn
 import kotlinx.android.synthetic.main.alert_fill_kgo.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
@@ -16,7 +15,6 @@ import ru.smartro.worknote.adapter.container_service.ContainerAdapter
 import ru.smartro.worknote.extensions.fillKgoVolume
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.extensions.warningCameraShow
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
@@ -58,39 +56,24 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
     }
 
     private fun initBeforeMedia() {
-        warningCameraShow("Сделайте фото КП до обслуживания").run {
-            AppPreferences.serviceStartedAt = System.currentTimeMillis() / 1000L
-            this.accept_btn.setOnClickListener {
-                val intent = Intent(this@PlatformServiceActivity, CameraActivity::class.java)
-                intent.putExtra("platform_id", platformEntity.platformId)
-                intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
-                startActivity(intent)
-                hideDialog()
-            }
-            this.dismiss_btn.setOnClickListener {
-                hideDialog()
-                finish()
-            }
-        }
+        AppPreferences.serviceStartedAt = System.currentTimeMillis() / 1000L
+        val intent = Intent(this@PlatformServiceActivity, CameraActivity::class.java)
+        intent.putExtra("platform_id", platformEntity.platformId)
+        intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
+        startActivity(intent)
+        hideDialog()
     }
 
     private fun initAfterMedia() {
         if (viewModel.findPlatformEntity(platformEntity.platformId!!).containers.filter {
-                it.isActiveToday == true }.all{ it.status != StatusEnum.NEW }){
+                it.isActiveToday == true
+            }.all { it.status != StatusEnum.NEW }) {
             complete_task_btn.isVisible = true
             complete_task_btn.setOnClickListener {
-                warningCameraShow("Сделайте фото КП после обслуживания").let {
-                    it.accept_btn.setOnClickListener {
-                        val intent = Intent(this@PlatformServiceActivity, CameraActivity::class.java)
-                        intent.putExtra("platform_id", platformEntity.platformId!!)
-                        intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
-                        startActivityForResult(intent, 13)
-                        hideDialog()
-                    }
-                    it.dismiss_btn.setOnClickListener {
-                        hideDialog()
-                    }
-                }
+                val intent = Intent(this@PlatformServiceActivity, CameraActivity::class.java)
+                intent.putExtra("platform_id", platformEntity.platformId!!)
+                intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
+                startActivityForResult(intent, 13)
             }
         } else {
             complete_task_btn.isVisible = false
@@ -120,19 +103,18 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
             viewModel.updatePlatformStatus(platformEntity.platformId!!, StatusEnum.SUCCESS)
             setResult(Activity.RESULT_OK)
             finish()
-        }
-        else if (requestCode == 14) {
-                if (resultCode == Activity.RESULT_OK) {
-                    initContainer()
-                    initAfterMedia()
-                }
-            } else if (requestCode == REQUEST_EXIT) {
+        } else if (requestCode == 14) {
+            if (resultCode == Activity.RESULT_OK) {
+                initContainer()
+                initAfterMedia()
+            }
+        } else if (requestCode == REQUEST_EXIT) {
             if (resultCode == 99) {
                 setResult(Activity.RESULT_OK)
                 finish()
             }
         } else if (resultCode == 101 && requestCode == 101) {
-            fillKgoVolume().let { view->
+            fillKgoVolume().let { view ->
                 view.accept_btn.setOnClickListener {
                     if (!view.kgo_volume_in.text.isNullOrEmpty()) {
                         val kgoVolume = view.kgo_volume_in.text.toString().toDouble()

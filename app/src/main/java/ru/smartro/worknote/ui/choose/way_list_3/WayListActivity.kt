@@ -34,7 +34,7 @@ class WayListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_way_list)
         supportActionBar?.title = "Выберите путевой лист"
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val body = WayListBody(
             date = currentDate,
@@ -92,7 +92,11 @@ class WayListActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         MyUtil.onMenuOptionClicked(this, item.itemId)
-
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 }
