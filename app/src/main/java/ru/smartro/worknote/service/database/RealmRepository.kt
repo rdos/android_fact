@@ -293,8 +293,10 @@ class RealmRepository(private val realm: Realm) {
     }
 
     fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
-        val wayTask = findWayTask()
-        return wayTask.platforms.find { it.coords[0] == lat && it.coords[1] == lon }!!
+        return realm.copyFromRealm(
+            realm.where(PlatformEntity::class.java)
+                .findAll()
+        ).find { it.coords[0] == lat && it.coords[1] == lon }!!
     }
 
     fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {

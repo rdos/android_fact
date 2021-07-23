@@ -1,6 +1,5 @@
 package ru.smartro.worknote.work
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,14 +11,11 @@ import android.os.Build
 import android.provider.Settings.Secure
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import io.realm.Realm
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.RealmRepository
@@ -31,28 +27,24 @@ import ru.smartro.worknote.util.MyUtil
 
 
 class SynchronizeWorker(
-    private val appContext: Context,
-    params: WorkerParameters
-) : Worker(appContext, params) {
+    private val context: Context,
+    private val params: WorkerParameters
+) : CoroutineWorker(context, params) {
 
     private val TAG = "UploadDataWorkManager"
     private val network = NetworkRepository(applicationContext)
-    private val deviceId = Secure.getString(appContext.contentResolver, Secure.ANDROID_ID)
+    private val deviceId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
 
-    @SuppressLint("MissingPermission", "RestrictedApi")
-    override fun doWork(): Result {
-        showNotification(appContext, true, "Не закрывайте приложение", "Служба отправки данных работает")
-            CoroutineScope(Dispatchers.IO).launch {
-                val db = RealmRepository(Realm.getDefaultInstance())
-                while (true){
-                    synchronizeData(db)
-                    delay(30_000)
-                }
+    override suspend fun doWork(): Result {
+        showNotification(context, true, "Не закрывайте приложение", "Служба отправки данных работает")
+            val db = RealmRepository(Realm.getDefaultInstance())
+            while (true) {
+                synchronizeData(db)
+                delay(30_000)
             }
-        return Result.success()
-    }
+        }
 
-    private suspend fun synchronizeData(db : RealmRepository) {
+    private suspend fun synchronizeData(db: RealmRepository) {
         if (AppPreferences.workerStatus) {
             var long = 0.0
             var lat = 0.0
@@ -63,6 +55,7 @@ class SynchronizeWorker(
             }
             val timeBeforeRequest = MyUtil.timeStamp()
             Log.d(TAG, " SYNCHRONIZE STARTED")
+
             val platforms = db.findLastPlatforms()
             val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), deviceId, platforms)
             val synchronizeRequest = network.synchronizeData(synchronizeBody)
@@ -73,7 +66,7 @@ class SynchronizeWorker(
                     db.updatePlatformNetworkStatus(platforms)
                     val alertMsg = synchronizeRequest.data?.alert
                     if (!alertMsg.isNullOrEmpty()) {
-                        showNotification(appContext, false, alertMsg, "Уведомление")
+                        showNotification(context, false, alertMsg, "Уведомление")
                     }
                 }
                 Status.ERROR -> Log.d(TAG, "SYNCHRONIZE GPS SENT ERROR")
@@ -83,10 +76,6 @@ class SynchronizeWorker(
             Log.d(TAG, "WORKER STOPPED")
             dismissNotification()
         }
-    }
-
-    private fun Int.min(): Long {
-        return (this * 10) * 1000L
     }
 
     private fun showNotification(context: Context, ongoing: Boolean, content: String, title: String) {

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.yandex.mapkit.geometry.Point
@@ -25,15 +26,16 @@ import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 
-
-class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point: Point) : DialogFragment() {
-
+class PlaceMarkDetailDialog(private val platform: PlatformEntity, private val point: Point) : DialogFragment() {
+    private lateinit var currentActivity: AppCompatActivity
+    private var firstTime = true
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.alert_point_detail, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        currentActivity = requireActivity() as MapActivity
         initViews()
     }
 
@@ -45,6 +47,11 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point: Poi
         params.horizontalMargin = 56f
         dialog!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog!!.window!!.attributes = params
+        if (firstTime) {
+            firstTime = false
+        } else {
+            dismiss()
+        }
     }
 
     private fun initViews() {
@@ -52,7 +59,7 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point: Poi
             val intent = Intent(requireActivity(), PlatformServiceActivity::class.java)
             intent.putExtra("platform_id", platform.platformId)
             dismiss()
-            startActivity(intent)
+            startActivityForResult(intent, 88)
         }
 
         platform_detail_fire.setOnClickListener {
@@ -62,7 +69,7 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point: Poi
                     val intent = Intent(requireActivity(), ExtremeProblemActivity::class.java)
                     intent.putExtra("platform_id", platform.platformId)
                     dismiss()
-                    startActivity(intent)
+                    startActivityForResult(intent, 88)
                 }
 
                 it.dismiss_btn.setOnClickListener {
@@ -91,10 +98,10 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity, val point: Poi
         }
         bottom_card.isVisible = platform.status == StatusEnum.NEW
         point_detail_address.text = "${platform.address} \n ${platform.srpId} ${platform.containers!!.size} конт."
-
         point_detail_rv.adapter = ContainerDetailAdapter(platform.containers)
         point_detail_close.setOnClickListener {
             dismiss()
         }
     }
+
 }

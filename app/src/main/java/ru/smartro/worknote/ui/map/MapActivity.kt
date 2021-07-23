@@ -80,13 +80,15 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
     private lateinit var selectedPlatformToNavigate: Point
     private lateinit var locationManager: LocationManager
     private lateinit var mapKit: MapKit
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
         setContentView(R.layout.activity_map)
         initSynchronizeWorker()
-        initMapView()
+        initMapView(false)
         initBottomBehavior()
         initUserLocation()
         initDriveMode()
@@ -149,7 +151,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         }
     }
 
-    private fun initMapView() {
+    private fun initMapView(isUpdateView : Boolean) {
         fun createPoints(list: RealmList<PlatformEntity>, status: String): List<Point> {
             return list.filter { it.status == status }.map {
                 Point(it.coords[0]!!, it.coords[1]!!)
@@ -159,6 +161,9 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         viewModel.findWayTask().let {
             // val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(clusterListener)
             val mapObjectCollection = map_view.map.mapObjects
+            if (isUpdateView){
+                mapObjectCollection.removeTapListener(mapObjectTapListener)
+            }
             val greenIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_green_marker)
             val blueIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_blue_marker)
             val redIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_red_marker)
@@ -167,8 +172,8 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
             mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.NEW), blueIcon, IconStyle())
             mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.ERROR), redIcon, IconStyle())
             mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.UNFINISHED), orangeIcon, IconStyle())
-            mapObjectCollection.addTapListener(mapObjectTapListener)
             // mapObjectCollection.clusterPlacemarks(60.0, 15)
+            mapObjectCollection.addTapListener(mapObjectTapListener)
         }
     }
 
@@ -211,19 +216,6 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
 
     override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) {
 
-    }
-
-    // Нажатие на маркер (точки)
-    override fun onMapObjectTap(mapObject: MapObject, p1: Point): Boolean {
-        try {
-            val placeMark = mapObject as PlacemarkMapObject
-            val coordinate = placeMark.geometry
-            val clickedPlatform = viewModel.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
-            PlaceMarkDetailDialog(clickedPlatform, coordinate).show(supportFragmentManager, "PlaceMarkDetailDialog")
-        } catch (e: Exception) {
-            toast("Не удалось загрузить")
-        }
-        return true
     }
 
     private fun initBottomBehavior() {
@@ -431,7 +423,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
 
     override fun onResume() {
         super.onResume()
-        initMapView()
+        initMapView(true)
         initBottomBehavior()
         locationManager = mapKit.createLocationManager()
         locationManager.subscribeForLocationUpdates(0.0, 1000, 1.0, true, FilteringMode.ON, locationListener)
@@ -444,8 +436,8 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         )
     }
 
-    override fun onLocationStatusUpdated(p0: LocationStatus) {
-        when (p0) {
+    override fun onLocationStatusUpdated(locationStatus: LocationStatus) {
+        when (locationStatus) {
             LocationStatus.AVAILABLE -> toast("GPS работает")
             LocationStatus.NOT_AVAILABLE -> toast("GPS не работает")
         }
@@ -481,4 +473,14 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         locationManager.unsubscribe(locationListener)
         Log.d("LYFECYCLE", "onPause:")
     }
+
+    override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
+        val placeMark = mapObject as PlacemarkMapObject
+        val coordinate = placeMark.geometry
+        val clickedPlatform = viewModel.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
+        val placeMarkDetailDialog = PlaceMarkDetailDialog(clickedPlatform, coordinate)
+        placeMarkDetailDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
+        return true
+    }
+
 }

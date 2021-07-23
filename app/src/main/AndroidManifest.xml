@@ -61,7 +61,6 @@
                 <data android:host="example.android.com" />
                 <data android:pathPattern="/camerax" />
             </intent-filter>
-
             <meta-data
                 android:name="android.notch_support"
                 android:value="true" />
@@ -95,7 +94,6 @@
             android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -383,7 +383,7 @@ class CameraFragment(private val photoFor: Int, private val platformId: Int, pri
                                 captureButton.isClickable = true
                                 captureButton.isEnabled = true
                             }
-
+                            Log.d(TAG, "image path:${File(imageUri.path!!)}")
                         }
                     })
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

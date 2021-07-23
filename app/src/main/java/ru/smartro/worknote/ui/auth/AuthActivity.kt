@@ -30,13 +30,8 @@ class AuthActivity : AppCompatActivity() {
             MyUtil.hideKeyboard(this)
         }
         if (AppPreferences.isLogined) {
-            if (AppPreferences.thisUserHasTask) {
                 startActivity(Intent(this, MapActivity::class.java))
                 finish()
-            } else {
-                startActivity(Intent(this, OrganisationActivity::class.java))
-                finish()
-            }
         } else {
             initViews()
         }
@@ -74,12 +69,11 @@ class AuthActivity : AppCompatActivity() {
                 login_login_out.error = "Проверьте логин"
             }
         }
-
-/*        auth_enter.setOnLongClickListener {
+        auth_enter.setOnLongClickListener {
             auth_login.setText("admin@smartro.ru")
             auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
             return@setOnLongClickListener true
-        }*/
+        }
 
 /*        auth_enter.setOnLongClickListener {
             auth_login.setText("gkh2@smartro.ru")

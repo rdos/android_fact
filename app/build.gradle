@@ -14,7 +14,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName "2.0.15"
+        versionName "2.0.21"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -113,7 +113,5 @@ dependencies {
     def sentry_version = "4.4.0-alpha.2"
     implementation "io.sentry:sentry-android:$sentry_version"
     implementation "io.sentry:sentry-android-okhttp:$sentry_version"
-
-    implementation "ru.tinkoff.decoro:decoro:1.1.1"
 
 }
