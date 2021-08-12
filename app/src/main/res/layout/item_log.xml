@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -44,7 +45,7 @@
             android:layout_marginEnd="@dimen/margin_default"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/log_item_detail"
+            app:layout_constraintTop_toBottomOf="@id/log_item_content"
             tools:src="@drawable/ic_clock" />
 
         <TextView
@@ -58,15 +59,6 @@
             app:layout_constraintEnd_toStartOf="@id/log_item_status"
             app:layout_constraintTop_toTopOf="@id/log_item_status" />
 
-        <Button
-            android:id="@+id/log_item_detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_default"
-            android:background="@drawable/bg_button"
-            android:text="Подробнее"
-            android:textColor="@color/white"
-            app:layout_constraintTop_toBottomOf="@id/log_item_content" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -6,14 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import io.realm.RealmList
 import kotlinx.android.synthetic.main.item_choose.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.util.StatusEnum
 
-class ContainerAdapter(private val listener: ContainerPointClickListener, private val items: RealmList<ContainerEntity>) :
-    RecyclerView.Adapter<ContainerAdapter.OwnerViewHolder>() {
+class ContainerAdapter1(private val listener: ContainerPointClickListener, private val items: ArrayList<ContainerEntity>) :
+    RecyclerView.Adapter<ContainerAdapter1.OwnerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_choose, parent, false)
@@ -26,12 +25,12 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
 
     override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
         val data = items[position]
-        holder.itemView.choose_title.text = data!!.number
-        if (data.isActiveToday!!){
+        holder.itemView.choose_title.text = data.number
+        if (data.isActiveToday!!) {
             when (data.status) {
                 StatusEnum.NEW -> {
                     holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position]!!)
+                        listener.startContainerService(item = items[position])
                         Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                     }
                 }
@@ -39,7 +38,7 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
                     holder.itemView.choose_status.isVisible = true
                     holder.itemView.choose_status.setImageResource(R.drawable.ic_check)
                     holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position]!!)
+                        listener.startContainerService(item = items[position])
                         Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                     }
                 }
@@ -51,13 +50,13 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
                     }
                 }
             }
-        }else{
+        } else {
             when (data.status) {
                 StatusEnum.NEW -> {
                     holder.itemView.choose_status.isVisible = true
                     holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel)
                     holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position]!!)
+                        listener.startContainerService(item = items[position])
                         Log.d("ContainerPointAdapter", "onBindViewHolder: false")
                     }
                 }
@@ -65,7 +64,7 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
                     holder.itemView.choose_status.isVisible = true
                     holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel_green)
                     holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position]!!)
+                        listener.startContainerService(item = items[position])
                         Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                     }
                 }
@@ -73,7 +72,7 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
                     holder.itemView.choose_status.isVisible = true
                     holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel_red)
                     holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position]!!)
+                        listener.startContainerService(item = items[position])
                         Log.d("ContainerPointAdapter", "onBindViewHolder: true")
                     }
                 }
@@ -88,4 +87,9 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
         fun startContainerService(item: ContainerEntity)
     }
 
+    fun updateData(newData: ArrayList<ContainerEntity>) {
+        items.clear()
+        items.addAll(newData)
+        notifyDataSetChanged()
+    }
 }

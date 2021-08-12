@@ -147,7 +147,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                 when (result.status) {
                     Status.SUCCESS -> {
                         loadingHide()
-                        AppPreferences.thisUserHasTask = true
+                        AppPreferences.isHasTask = true
                         viewModel.insertWayTask(selectedWayInfo)
                         val intent = Intent(this, MapActivity::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -45,7 +45,7 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
         context.loadingHide()
         WorkManager.getInstance(context).cancelUniqueWork("UploadData")
         AppPreferences.workerStatus = false
-        AppPreferences.thisUserHasTask = false
+        AppPreferences.isHasTask = false
         AppPreferences.wayTaskId = 0
         AppPreferences.wayBillId = 0
         clearData()

@@ -29,7 +29,6 @@ import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider
-import io.realm.RealmList
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
@@ -47,7 +46,7 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.log.LogActivity
-import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
+import ru.smartro.worknote.ui.platform_service.ServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
@@ -63,6 +62,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
 
     private val REQUEST_EXIT = 41
     private var firstTime = true
+    private var isOnPointFirstTime = true
     private val viewModel: MapViewModel by viewModel()
 
     //private val clusterListener = this as ClusterListener
@@ -151,28 +151,14 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         }
     }
 
-    private fun initMapView(isUpdateView : Boolean) {
-        fun createPoints(list: RealmList<PlatformEntity>, status: String): List<Point> {
-            return list.filter { it.status == status }.map {
-                Point(it.coords[0]!!, it.coords[1]!!)
-            }
-        }
-
+    private fun initMapView(isUpdateView: Boolean) {
         viewModel.findWayTask().let {
             // val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(clusterListener)
             val mapObjectCollection = map_view.map.mapObjects
-            if (isUpdateView){
+            if (isUpdateView) {
                 mapObjectCollection.removeTapListener(mapObjectTapListener)
             }
-            val greenIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_green_marker)
-            val blueIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_blue_marker)
-            val redIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_red_marker)
-            val orangeIcon = ImageProvider.fromResource(this@MapActivity, R.drawable.ic_orange_marker)
-            mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.SUCCESS), greenIcon, IconStyle())
-            mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.NEW), blueIcon, IconStyle())
-            mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.ERROR), redIcon, IconStyle())
-            mapObjectCollection.addPlacemarks(createPoints(it.platforms, StatusEnum.UNFINISHED), orangeIcon, IconStyle())
-            // mapObjectCollection.clusterPlacemarks(60.0, 15)
+            MyUtil.addPlaceMarks(this, mapObjectCollection, it.platforms)
             mapObjectCollection.addTapListener(mapObjectTapListener)
         }
     }
@@ -371,7 +357,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
     }
 
     override fun startPlatformService(item: PlatformEntity) {
-        val intent = Intent(this, PlatformServiceActivity::class.java)
+        val intent = Intent(this, ServiceActivity::class.java)
         intent.putExtra("platform_id", item.platformId)
         startActivity(intent)
     }
@@ -437,10 +423,6 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
     }
 
     override fun onLocationStatusUpdated(locationStatus: LocationStatus) {
-        when (locationStatus) {
-            LocationStatus.AVAILABLE -> toast("GPS работает")
-            LocationStatus.NOT_AVAILABLE -> toast("GPS не работает")
-        }
 
     }
 
@@ -450,15 +432,17 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         AppPreferences.currentCoordinate = "${location.position.longitude}#${location.position.latitude}"
         val distanceToPoint = MyUtil.calculateDistance(location.position, selectedPlatformToNavigate)
         Log.d("LogDistance", "Distance: $distanceToPoint")
-        if (drivingModeState && distanceToPoint <= MIN_METERS) {
+        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
+            isOnPointFirstTime = false
             alertOnPoint().let {
                 it.dismiss_btn.setOnClickListener {
                     drivingModeState = false
+                    isOnPointFirstTime = true
                     mapObjects.clear()
                     hideDialog()
                 }
             }
-        }else{
+        } else {
             Log.d("LogDistance", "Distance not arrive")
         }
         if (firstTime) {
@@ -468,10 +452,10 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         Log.d("LogDistance", "Location updated")
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onDestroy() {
+        super.onDestroy()
         locationManager.unsubscribe(locationListener)
-        Log.d("LYFECYCLE", "onPause:")
+
     }
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {

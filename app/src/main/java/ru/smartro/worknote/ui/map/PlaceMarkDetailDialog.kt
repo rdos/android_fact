@@ -23,6 +23,7 @@ import ru.smartro.worknote.extensions.warningCameraShow
 import ru.smartro.worknote.extensions.warningClearNavigator
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
+import ru.smartro.worknote.ui.platform_service.ServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 
@@ -56,7 +57,7 @@ class PlaceMarkDetailDialog(private val platform: PlatformEntity, private val po
 
     private fun initViews() {
         platform_detail_start_service.setOnClickListener {
-            val intent = Intent(requireActivity(), PlatformServiceActivity::class.java)
+            val intent = Intent(requireActivity(), ServiceActivity::class.java)
             intent.putExtra("platform_id", platform.platformId)
             dismiss()
             startActivityForResult(intent, 88)

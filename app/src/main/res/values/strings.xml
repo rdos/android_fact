@@ -57,6 +57,7 @@
     <string name="success_complete">Сменное задание завершено Вы можете выбрать другое задание или завершить смену</string>
     <string name="show_on_map"><u>Показать на карте</u>.</string>
     <string name="clear_comment"><u>Очистить</u>.</string>
+    <string name="cancel_clear"><u>Отменить и скрыть</u>.</string>
 
     <plurals name="container_count">
         <item quantity="zero">конейтер</item>

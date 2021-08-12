@@ -59,7 +59,7 @@ open class PlatformEntity(
     @SerializedName("kgo_media")
     var kgoMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("kgo_volume")
-    var kgoVolume : Double = 0.0,
+    var kgoVolume: Double = 0.0,
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
 /*    @SerializedName("breakdown_reason_id")
@@ -115,7 +115,8 @@ open class ContainerEntity(
 
 open class ImageEntity(
     var image: String? = null,
-    var date: Long? = null
+    var date: Long? = null,
+    var coords : RealmList<Double> = RealmList()
 ) : Serializable, RealmObject()
 
 

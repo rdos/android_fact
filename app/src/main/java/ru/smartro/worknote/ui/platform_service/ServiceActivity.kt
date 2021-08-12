@@ -1,5 +1,6 @@
 package ru.smartro.worknote.ui.platform_service
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -11,7 +12,7 @@ import ru.smartro.worknote.ui.camera.SlideCameraFragment
 import ru.smartro.worknote.util.PhotoTypeEnum
 
 
-class ServiceActivity : AppCompatActivity() {
+class ServiceActivity : AppCompatActivity()  {
     private var platformId = 0
     private var currentPosition = 0
 
@@ -76,6 +77,12 @@ class ServiceActivity : AppCompatActivity() {
         service_next.setOnClickListener {
             service_vp.currentItem = currentPosition + 1
         }
+    }
+
+
+    override fun onActivityReenter(resultCode: Int, data: Intent?) {
+        super.onActivityReenter(resultCode, data)
+
     }
 
 }

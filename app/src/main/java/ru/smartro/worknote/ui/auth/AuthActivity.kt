@@ -30,8 +30,12 @@ class AuthActivity : AppCompatActivity() {
             MyUtil.hideKeyboard(this)
         }
         if (AppPreferences.isLogined) {
+            if (AppPreferences.isHasTask) {
                 startActivity(Intent(this, MapActivity::class.java))
-                finish()
+            } else {
+                startActivity(Intent(this, OrganisationActivity::class.java))
+            }
+            finish()
         } else {
             initViews()
         }

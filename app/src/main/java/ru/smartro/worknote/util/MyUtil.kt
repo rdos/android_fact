@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Matrix
 import android.location.Location
 import android.location.LocationManager
@@ -17,8 +18,14 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.map.MapObjectCollection
+import com.yandex.runtime.ui_view.ViewProvider
+import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import java.io.ByteArrayOutputStream
@@ -42,6 +49,25 @@ object MyUtil {
     fun currentTime(): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", Locale.getDefault())
         return sdf.format(Date())
+    }
+
+    fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap? {
+        var drawable = ContextCompat.getDrawable(context, drawableId) ?: return null
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = DrawableCompat.wrap(drawable).mutate()
+        }
+
+        val bitmap = Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        ) ?: return null
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+
+        return bitmap
     }
 
     fun hasPermissions(context: Context, vararg permissions: Array<String>): Boolean =
@@ -132,5 +158,28 @@ object MyUtil {
         checkPointLocation.latitude = finishLocation.latitude
         checkPointLocation.longitude = finishLocation.longitude
         return userLocation.distanceTo(checkPointLocation).toInt()
+    }
+
+    fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: RealmList<PlatformEntity>) {
+        val newIcon = View(context).apply { background = ContextCompat.getDrawable(context, R.drawable.ic_blue_marker) }
+        val successIcon = View(context).apply { background = ContextCompat.getDrawable(context, R.drawable.ic_green_marker) }
+        val errorIcon = View(context).apply { background = ContextCompat.getDrawable(context, R.drawable.ic_red_marker) }
+        val unfinishedIcon = View(context).apply { background = ContextCompat.getDrawable(context, R.drawable.ic_orange_marker) }
+        platforms.forEach {
+            when (it.status) {
+                StatusEnum.NEW -> {
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), ViewProvider(newIcon))
+                }
+                StatusEnum.SUCCESS -> {
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), ViewProvider(successIcon))
+                }
+                StatusEnum.ERROR -> {
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), ViewProvider(errorIcon))
+                }
+                StatusEnum.UNFINISHED -> {
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), ViewProvider(unfinishedIcon))
+                }
+            }
+        }
     }
 }

@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.RealmRepository
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.service.network.NetworkRepository
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
@@ -34,43 +35,59 @@ class SynchronizeWorker(
     private val TAG = "UploadDataWorkManager"
     private val network = NetworkRepository(applicationContext)
     private val deviceId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
+    private val minutes = 30 * 60
 
     override suspend fun doWork(): Result {
         showNotification(context, true, "Не закрывайте приложение", "Служба отправки данных работает")
-            val db = RealmRepository(Realm.getDefaultInstance())
-            while (true) {
-                synchronizeData(db)
-                delay(30_000)
-            }
+        val db = RealmRepository(Realm.getDefaultInstance())
+        while (true) {
+            synchronizeData(db)
+            delay(30_000)
         }
+    }
 
     private suspend fun synchronizeData(db: RealmRepository) {
         if (AppPreferences.workerStatus) {
-            var long = 0.0
             var lat = 0.0
+            var long = 0.0
             val currentCoordinate = AppPreferences.currentCoordinate!!
             if (currentCoordinate.contains("#")) {
-                long = currentCoordinate.substringAfter("#").toDouble()
                 lat = currentCoordinate.substringBefore("#").toDouble()
+                long = currentCoordinate.substringAfter("#").toDouble()
             }
-            val timeBeforeRequest = MyUtil.timeStamp()
+            val timeBeforeRequest: Long
             Log.d(TAG, " SYNCHRONIZE STARTED")
+            val lastSynchroTime = AppPreferences.lastSynchroTime
+            val platforms: List<PlatformEntity>
 
-            val platforms = db.findLastPlatforms()
+            if (lastSynchroTime - MyUtil.timeStamp() > minutes) {
+                platforms = db.findPlatforms30min()
+                timeBeforeRequest = lastSynchroTime + minutes
+                Log.d(TAG, " SYNCHRONIZE PLATFORMS IN LAST 30 min")
+            } else {
+                platforms = db.findLastPlatforms()
+                timeBeforeRequest = MyUtil.timeStamp()
+                Log.d(TAG, " SYNCHRONIZE LAST PLATFORMS")
+            }
+
             val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), deviceId, platforms)
             val synchronizeRequest = network.synchronizeData(synchronizeBody)
             when (synchronizeRequest.status) {
                 Status.SUCCESS -> {
-                    Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeRequest.data)}")
-                    AppPreferences.lastSynchroTime = timeBeforeRequest
-                    db.updatePlatformNetworkStatus(platforms)
+                    if (platforms.isNotEmpty()) {
+                        AppPreferences.lastSynchroTime = timeBeforeRequest
+                        db.updatePlatformNetworkStatus(platforms)
+                        Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeRequest.data)}")
+                    } else {
+                        Log.d(TAG, "SYNCHRONIZE SUCCESS: GPS SENT")
+                    }
                     val alertMsg = synchronizeRequest.data?.alert
                     if (!alertMsg.isNullOrEmpty()) {
                         showNotification(context, false, alertMsg, "Уведомление")
                     }
                 }
-                Status.ERROR -> Log.d(TAG, "SYNCHRONIZE GPS SENT ERROR")
-                Status.NETWORK -> Log.e(TAG, "SYNCHRONIZE  SENT NO INTERNET")
+                Status.ERROR -> Log.d(TAG, "SYNCHRONIZE ERROR")
+                Status.NETWORK -> Log.e(TAG, "SYNCHRONIZE NO INTERNET")
             }
         } else {
             Log.d(TAG, "WORKER STOPPED")

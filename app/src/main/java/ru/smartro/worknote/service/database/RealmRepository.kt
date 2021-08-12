@@ -1,5 +1,6 @@
 package ru.smartro.worknote.service.database
 
+import com.yandex.mapkit.geometry.Point
 import io.realm.Realm
 import io.realm.RealmList
 import io.realm.RealmModel
@@ -19,7 +20,7 @@ class RealmRepository(private val realm: Realm) {
     fun insertWayTask(response: Workorder) {
 
         fun mapMedia(data: List<String>): RealmList<ImageEntity> {
-            return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0) }
+            return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0, RealmList()) }
         }
 
         fun mapContainers(list: List<Container>): RealmList<ContainerEntity> {
@@ -114,8 +115,9 @@ class RealmRepository(private val realm: Realm) {
         return realm.copyFromRealm(realm.where(CancelWayReasonEntity::class.java).findAll())
     }
 
-    fun findCancelWayReasonByValue (reason : String ) : Int{
-        return realm.where(CancelWayReasonEntity::class.java).equalTo("problem", reason).findFirst()?.id!!
+    fun findCancelWayReasonByValue(reason: String): Int {
+        return realm.where(CancelWayReasonEntity::class.java).equalTo("problem", reason)
+            .findFirst()?.id!!
     }
 
     /** добавление заполненности контейнера **/
@@ -229,6 +231,15 @@ class RealmRepository(private val realm: Realm) {
         )
     }
 
+    fun findPlatforms30min(): List<PlatformEntity> {
+        val minutes = 30 * 60 * 1000
+        val lastSynchroTime = AppPreferences.lastSynchroTime
+        return realm.where(PlatformEntity::class.java)
+            .greaterThan("updateAt", lastSynchroTime)
+            .lessThanOrEqualTo("updateAt", lastSynchroTime + minutes)
+            .findAll()
+    }
+
     fun updatePlatformNetworkStatus(list: List<PlatformEntity>) {
         realm.executeTransaction {
             list.forEach {
@@ -329,23 +340,31 @@ class RealmRepository(private val realm: Realm) {
     }
 
     /** добавление фото в платформу **/
-    fun updatePlatformMedia(imageFor: Int, platformId: Int, imageBase64: String) {
+    fun updatePlatformMedia(imageFor: Int, platformId: Int, imageBase64: String, coords: Point) {
         realm.executeTransaction { realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()
             when (imageFor) {
                 PhotoTypeEnum.forAfterMedia -> {
-                    platformEntity?.afterMedia?.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
+                    platformEntity?.afterMedia?.add(
+                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+                    )
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
-                    platformEntity?.beforeMedia?.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
+                    platformEntity?.beforeMedia?.add(
+                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+                    )
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
-                    platformEntity?.failureMedia?.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
+                    platformEntity?.failureMedia?.add(
+                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+                    )
                 }
                 PhotoTypeEnum.forKGO -> {
-                    platformEntity?.kgoMedia?.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
+                    platformEntity?.kgoMedia?.add(
+                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+                    )
                 }
             }
             updateTimer(platformEntity)
@@ -362,7 +381,7 @@ class RealmRepository(private val realm: Realm) {
         }
     }
 
-    fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String) {
+    fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String, coords: Point) {
         realm.executeTransaction { realm ->
             val containerEntity = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
@@ -370,7 +389,9 @@ class RealmRepository(private val realm: Realm) {
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()!!
-            containerEntity.failureMedia.add(ImageEntity(imageBase64, MyUtil.timeStamp()))
+            containerEntity.failureMedia.add(
+                ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+            )
             updateTimer(platformEntity)
         }
     }

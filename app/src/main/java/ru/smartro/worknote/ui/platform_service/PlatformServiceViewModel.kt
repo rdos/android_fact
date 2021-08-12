@@ -24,6 +24,10 @@ class PlatformServiceViewModel(application: Application) : BaseViewModel(applica
         return db.findContainerEntity(containerId)
     }
 
+    fun findAllContainerInPlatform (platformId: Int) : List<ContainerEntity> {
+        return db.findAllContainerInPlatform(platformId)
+    }
+
     fun removePlatformMedia(photoFor: Int, image: ImageEntity, platformId: Int) {
         db.removePlatformMedia(photoFor, image, platformId)
     }

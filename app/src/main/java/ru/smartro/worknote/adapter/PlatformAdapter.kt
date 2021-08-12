@@ -13,7 +13,10 @@ import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlatformAdapter(private val listener: PlatformClickListener, private val items: RealmList<PlatformEntity>) : RecyclerView.Adapter<PlatformAdapter.PlatformViewHolder>() {
+class PlatformAdapter(
+    private val listener: PlatformClickListener,
+    private val items: RealmList<PlatformEntity>
+) : RecyclerView.Adapter<PlatformAdapter.PlatformViewHolder>() {
     private var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlatformViewHolder {
@@ -51,7 +54,7 @@ class PlatformAdapter(private val listener: PlatformClickListener, private val i
             listener.navigatePlatform(Point(item.coords[0]!!, item.coords[1]!!))
         }
 
-        when (items[position]!!.status) {
+        when (item.status) {
             StatusEnum.NEW -> {
                 holder.itemView.map_behavior_status.isVisible = false
                 holder.itemView.setOnClickListener {

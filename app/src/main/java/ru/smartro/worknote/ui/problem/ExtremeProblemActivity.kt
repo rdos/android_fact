@@ -46,7 +46,7 @@ class ExtremeProblemActivity : AppCompatActivity() {
             } else {
                 supportActionBar!!.title = "Проблема на площадке"
             }
-        } 
+        }
         initViews()
         initExtremeProblemPhoto()
         acceptExtremeProblem()
@@ -104,7 +104,7 @@ class ExtremeProblemActivity : AppCompatActivity() {
                 }
                 setResult(99)
                 finish()
-            }else{
+            } else {
                 toast("Выберите причину поломки")
             }
         }

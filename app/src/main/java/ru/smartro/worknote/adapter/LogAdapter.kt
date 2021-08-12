@@ -12,14 +12,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class LogAdapter(
-    private val listener: LogClickListener, items: ArrayList<PlatformEntity>
+class LogAdapter(items: ArrayList<PlatformEntity>
 ) : GenericRecyclerAdapter<PlatformEntity>(items) {
 
     override fun bind(item: PlatformEntity, holder: ViewHolder) {
-        holder.itemView.log_item_detail.setOnClickListener {
-            listener.logDetailClicked(item)
-        }
         val date = Date(item.updateAt * 1000L)
         val dateFormat = SimpleDateFormat("HH:mm")
         val resultDate: String = dateFormat.format(date)

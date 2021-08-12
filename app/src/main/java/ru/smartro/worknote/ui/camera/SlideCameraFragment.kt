@@ -32,6 +32,7 @@ import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.camera_ui_container.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
@@ -39,6 +40,7 @@ import ru.smartro.worknote.base.BaseFragment
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.ui.platform_service.ServiceActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
@@ -52,7 +54,14 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class SlideCameraFragment(private val photoFor: Int, private val platformId: Int, private val containerId: Int) : BaseFragment(), ImageCounter {
+class SlideCameraFragment(
+    private val photoFor: Int,
+    private val platformId: Int,
+    private val containerId: Int
+) : BaseFragment(), ImageCounter {
+
+    private lateinit var parentActivity: ServiceActivity
+
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
     private val ANIMATION_FAST_MILLIS = 50L
@@ -118,8 +127,10 @@ class SlideCameraFragment(private val photoFor: Int, private val platformId: Int
         //  displayManager.unregisterDisplayListener(displayListener)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?):
-            View? = inflater.inflate(R.layout.fragment_camera, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_camera, container, false)
+    }
+
 
     private fun setGalleryThumbnail(uri: Uri) {
         val thumbnail = hostLayout.findViewById<ImageButton>(R.id.photo_view_button)
@@ -166,6 +177,7 @@ class SlideCameraFragment(private val photoFor: Int, private val platformId: Int
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        parentActivity = (requireActivity() as ServiceActivity)
         initCamera()
     }
 
@@ -318,26 +330,27 @@ class SlideCameraFragment(private val photoFor: Int, private val platformId: Int
                             Log.e(TAG, ": ${exc.message}", exc)
                         }
 
-                        override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                        override fun onImageSaved(output: OutputFileResults) {
+                            val job = CoroutineScope(Dispatchers.Main)
                             val imageUri = output.savedUri ?: Uri.fromFile(photoFile)
-                            Log.d(TAG, "Photo capture succeeded: $imageUri path: ${imageUri.path}")
-                            Log.d(TAG, "Current thread: ${Thread.currentThread()}")
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 setGalleryThumbnail(imageUri)
                                 setImageCounter(true)
                             }
-                            CoroutineScope(Dispatchers.Main).launch {
+                            job.launch {
                                 val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees, requireContext())
-
                                 if (photoFor == PhotoTypeEnum.forContainerProblem) {
-                                    viewModel.updateContainerMedia(platformId, containerId, imageBase64)
+                                    viewModel.updateContainerMedia(
+                                        platformId, containerId, imageBase64, AppPreferences.getCurrentLocation())
                                 } else {
-                                    viewModel.updatePlatformMedia(photoFor, platformId, imageBase64)
+                                    viewModel.updatePlatformMedia(
+                                        photoFor, platformId, imageBase64, AppPreferences.getCurrentLocation())
                                 }
                                 captureButton.isClickable = true
                                 captureButton.isEnabled = true
+                                File(imageUri.path!!).delete()
+                                job.cancel()
                             }
-
                         }
                     })
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

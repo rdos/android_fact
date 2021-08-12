@@ -25,7 +25,7 @@ class LogActivity : AppCompatActivity(), LogClickListener {
 
     private fun initViews() {
         viewModel.findAllPlatforms().let {
-            log_rv.adapter = LogAdapter(this, it as ArrayList<PlatformEntity>)
+            log_rv.adapter = LogAdapter(it as ArrayList<PlatformEntity>)
         }
     }
 

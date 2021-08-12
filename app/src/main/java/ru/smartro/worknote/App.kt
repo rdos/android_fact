@@ -31,7 +31,7 @@ class App : Application() {
 
     private fun initRealm() {
         Realm.init(this@App)
-        if (!AppPreferences.thisUserHasTask) {
+        if (!AppPreferences.isHasTask) {
             Realm.deleteRealm(Realm.getDefaultConfiguration()!!)
         }
         val config = RealmConfiguration.Builder()

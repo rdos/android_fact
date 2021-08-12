@@ -44,10 +44,11 @@
             android:layout_height="43dp"
             android:layout_marginEnd="@dimen/margin_default"
             android:visibility="invisible"
+            tools:visibility="visible"
             android:layout_marginStart="@dimen/margin_default"
             android:background="@drawable/bg_circle_button"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_location_off"
+            android:src="@drawable/ic_route_off"
             app:layout_constraintBottom_toTopOf="@id/location_fab"
             app:layout_constraintEnd_toEndOf="@id/location_fab"
             app:layout_constraintStart_toStartOf="@id/location_fab" />

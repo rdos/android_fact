@@ -2,6 +2,7 @@ package ru.smartro.worknote.service
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.yandex.mapkit.geometry.Point
 
 
 object AppPreferences {
@@ -26,8 +27,8 @@ object AppPreferences {
             it.putString("accessToken", value)
         }
 
-    var currentCoordinate: String?
-        get() = preferences.getString("currentCoordinate", " ")
+    var currentCoordinate: String
+        get() = preferences.getString("currentCoordinate", " ")!!
         set(value) = preferences.edit {
             it.putString("currentCoordinate", value)
         }
@@ -80,7 +81,7 @@ object AppPreferences {
             it.putInt("wayTaskId", value)
         }
 
-    var thisUserHasTask: Boolean
+    var isHasTask: Boolean
         get() = preferences.getBoolean("thisUserHasTask", false)
         set(value) = preferences.edit {
             it.putBoolean("thisUserHasTask", value)
@@ -99,8 +100,14 @@ object AppPreferences {
         organisationId = 0
         wayBillId = 0
         wayTaskId = 0
-        thisUserHasTask = false
+        isHasTask = false
         workerStatus = false
+    }
+
+    fun getCurrentLocation(): Point {
+        val lat = currentCoordinate.substringBefore("#").toDouble()
+        val long = currentCoordinate.substringAfter("#").toDouble()
+        return Point(lat, long)
     }
 
 }

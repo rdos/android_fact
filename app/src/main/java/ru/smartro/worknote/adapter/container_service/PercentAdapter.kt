@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_percent.view.*
 import ru.smartro.worknote.R
 
-class PercentAdapter(private val context: Context, private val items: ArrayList<PercentModel>) :
-    RecyclerView.Adapter<PercentAdapter.OwnerViewHolder>() {
+class PercentAdapter(
+    private val context: Context,
+    private val items: ArrayList<PercentModel>
+) : RecyclerView.Adapter<PercentAdapter.OwnerViewHolder>() {
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val outMetrics = DisplayMetrics()
     private var checkedPosition = -1
@@ -41,7 +43,7 @@ class PercentAdapter(private val context: Context, private val items: ArrayList<
         if (checkedPosition == -1) {
             holder.itemView.percent_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.light_green))
             holder.itemView.item_percent_tv.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
-            if (items[position].selected){
+            if (items[position].selected) {
                 holder.itemView.percent_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.colorPrimary))
                 holder.itemView.item_percent_tv.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
                 checkedPosition = holder.adapterPosition
@@ -87,5 +89,6 @@ class PercentAdapter(private val context: Context, private val items: ArrayList<
     }
 
     class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
     }
 }
