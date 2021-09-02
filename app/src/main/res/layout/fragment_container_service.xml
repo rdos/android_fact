@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/bg_behavior"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_behavior">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -13,20 +13,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-       <!--
-       Сверху экрана есть кнопка проблема
-       будет убран пока нету проблем контейнера
-       <ImageButton
+        <ImageButton
             android:id="@+id/enter_info_problem_btn"
             android:layout_width="wrap_content"
-            android:layout_marginStart="@dimen/margin_default"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
             android:background="@drawable/bg_button_white"
             android:padding="8dp"
             android:src="@drawable/ic_fire"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />-->
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/enter_info_tittle"
@@ -40,85 +37,91 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <nl.bryanderidder.themedtogglebuttongroup.ThemedToggleButtonGroup
+        <RadioGroup
             android:id="@+id/enter_info_percent_rg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
             android:layout_marginTop="@dimen/margin_default"
+            android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@+id/enter_info_tittle"
             tools:listitem="@layout/item_percent">
 
-            <nl.bryanderidder.themedtogglebuttongroup.ThemedButton
+            <RadioButton
                 android:id="@+id/percent_0"
-                android:layout_width="128dp"
-                android:layout_height="43dp"
-                app:toggle_selectedBackgroundColor="@color/colorPrimary"
-                app:toggle_selectedTextColor="@color/white"
-                app:toggle_text="0%"
-                app:toggle_textColor="@color/black"
-                app:toggle_textSize="@dimen/themed_btn_size" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="0%"
+                android:textColor="@color/black" />
 
-            <nl.bryanderidder.themedtogglebuttongroup.ThemedButton
+            <RadioButton
                 android:id="@+id/percent_25"
-                android:layout_width="128dp"
-                android:layout_height="43dp"
-                app:toggle_selectedBackgroundColor="@color/colorPrimary"
-                app:toggle_selectedTextColor="@color/white"
-                app:toggle_text="25%"
-                app:toggle_textColor="@color/black"
-                app:toggle_textSize="@dimen/themed_btn_size" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="25%"
+                android:textColor="@color/black" />
 
-            <nl.bryanderidder.themedtogglebuttongroup.ThemedButton
+            <RadioButton
                 android:id="@+id/percent_50"
-                android:layout_width="128dp"
-                android:layout_height="43dp"
-                app:toggle_selectedBackgroundColor="@color/colorPrimary"
-                app:toggle_selectedTextColor="@color/white"
-                app:toggle_text="50%"
-                app:toggle_textColor="@color/black"
-                app:toggle_textSize="@dimen/themed_btn_size" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="50%"
+                android:textColor="@color/black" />
 
-            <nl.bryanderidder.themedtogglebuttongroup.ThemedButton
+            <RadioButton
                 android:id="@+id/percent_75"
-                android:layout_width="128dp"
-                android:layout_height="43dp"
-                app:toggle_selectedBackgroundColor="@color/colorPrimary"
-                app:toggle_selectedTextColor="@color/white"
-                app:toggle_text="75%"
-                app:toggle_textColor="@color/black"
-                app:toggle_textSize="@dimen/themed_btn_size" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="75%"
+                android:textColor="@color/black" />
 
-            <nl.bryanderidder.themedtogglebuttongroup.ThemedButton
+            <RadioButton
                 android:id="@+id/percent_100"
-                android:layout_width="128dp"
-                android:layout_height="43dp"
-                app:toggle_selectedBackgroundColor="@color/colorPrimary"
-                app:toggle_selectedTextColor="@color/white"
-                app:toggle_text="100%"
-                app:toggle_textColor="@color/black"
-                app:toggle_textSize="@dimen/themed_btn_size" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="100%"
+                android:textColor="@color/black" />
 
-            <nl.bryanderidder.themedtogglebuttongroup.ThemedButton
+            <RadioButton
                 android:id="@+id/percent_125"
-                android:layout_width="128dp"
-                android:layout_height="43dp"
-                app:toggle_selectedBackgroundColor="@color/colorPrimary"
-                app:toggle_selectedTextColor="@color/white"
-                app:toggle_text="125%"
-                app:toggle_textColor="@color/black"
-                app:toggle_textSize="@dimen/themed_btn_size" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="125%"
+                android:textColor="@color/black" />
 
-        </nl.bryanderidder.themedtogglebuttongroup.ThemedToggleButtonGroup>
+        </RadioGroup>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/comment_et_out"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_default"
             android:layout_marginTop="@dimen/margin_default"
             android:gravity="start"
-            android:layout_marginHorizontal="@dimen/margin_default"
             app:layout_constraintTop_toBottomOf="@+id/enter_info_percent_rg">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -133,8 +136,8 @@
             android:id="@+id/comment_clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/margin_default"
             android:layout_gravity="end"
+            android:layout_marginHorizontal="@dimen/margin_default"
             android:padding="8dp"
             android:text="@string/clear_comment"
             android:textColor="#0466B5"

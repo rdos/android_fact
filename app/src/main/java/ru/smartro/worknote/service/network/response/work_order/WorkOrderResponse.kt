@@ -52,6 +52,8 @@ data class Platform(
     val address: String,
     @SerializedName("status")
     val status: String,
+    @SerializedName("icon")
+    val icon : String,
     @SerializedName("after_media")
     val afterMedia: List<String>,
     @SerializedName("before_media")
@@ -98,6 +100,8 @@ data class Container(
     val client: String,
     @SerializedName("contacts")
     val contacts: String,
+    @SerializedName("icon")
+    val icon : String,
     @SerializedName("failure_media")
     val failureMedia: List<String>,
     @SerializedName("failure_reason_id")

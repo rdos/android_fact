@@ -27,8 +27,10 @@ class RealmRepository(private val realm: Realm) {
             return list.mapTo(RealmList()) {
                 ContainerEntity(
                     client = it.client, contacts = it.contacts, failureMedia = mapMedia(it.failureMedia),
-                    failureReasonId = it.failureReasonId, containerId = it.id, isActiveToday = it.isActiveToday,/* breakdownReasonId = it.breakdownReasonId,*/
-                    number = it.number, status = it.status, typeId = it.typeId, constructiveVolume = it.constructiveVolume, typeName = it.typeName, volume = it.volume
+                    failureReasonId = it.failureReasonId, containerId = it.id,
+                    isActiveToday = it.isActiveToday,/* breakdownReasonId = it.breakdownReasonId,*/
+                    number = it.number, status = it.status, typeId = it.typeId,
+                    constructiveVolume = it.constructiveVolume, typeName = it.typeName, volume = it.volume
                 )
             }
         }
@@ -39,8 +41,9 @@ class RealmRepository(private val realm: Realm) {
                     address = it.address, afterMedia = mapMedia(it.afterMedia),
                     beforeMedia = mapMedia(it.beforeMedia), beginnedAt = it.beginnedAt, containers = mapContainers(it.containers),
                     coords = RealmList(it.coords[0], it.coords[1]), failureMedia = mapMedia(it.failureMedia),
-                    failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/ finishedAt = it.finishedAt, platformId = it.id,
-                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, kgoVolume = 0.0
+                    failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
+                    finishedAt = it.finishedAt, platformId = it.id,
+                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, kgoVolume = 0.0, icon = it.icon
                 )
             }
         }
@@ -121,7 +124,7 @@ class RealmRepository(private val realm: Realm) {
     }
 
     /** добавление заполненности контейнера **/
-    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double, comment: String) {
+    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?, comment: String?) {
         realm.executeTransaction { realm ->
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
@@ -134,6 +137,22 @@ class RealmRepository(private val realm: Realm) {
             if (container.status == StatusEnum.NEW) {
                 container.status = StatusEnum.SUCCESS
             }
+            updateTimer(platformEntity)
+        }
+    }
+
+    fun clearContainerVolume(platformId: Int, containerId: Int) {
+        realm.executeTransaction {
+            val container = realm.where(ContainerEntity::class.java)
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            container.volume = null
+            container.comment = null
+            if (container.status == StatusEnum.SUCCESS)
+                container.status = StatusEnum.NEW
             updateTimer(platformEntity)
         }
     }
@@ -172,7 +191,8 @@ class RealmRepository(private val realm: Realm) {
 
     fun updatePlatformProblem(platformId: Int, failureComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
         realm.executeTransaction { realm ->
-            val platform = realm.where(PlatformEntity::class.java).equalTo("platformId", platformId)
+            val platform = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
                 .findFirst()!!
             when (problemType) {
                 ProblemEnum.ERROR -> {
@@ -197,7 +217,7 @@ class RealmRepository(private val realm: Realm) {
                 }
                 ProblemEnum.BREAKDOWN -> {
                     val breakdownReasonId = findBreakdownByValue(realm, problem).id
-                    //    platform.breakdownReasonId = breakdownReasonId
+                    //platform.breakdownReasonId = breakdownReasonId
 
                 }
             }

@@ -46,7 +46,7 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.log.LogActivity
-import ru.smartro.worknote.ui.platform_service.ServiceActivity
+import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 
-class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*/
+class MapActivity : AppCompatActivity(),
     UserLocationObjectListener, MapObjectTapListener,
     PlatformAdapter.PlatformClickListener, LocationListener {
     var drivingModeState = false
@@ -65,9 +65,9 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
     private var isOnPointFirstTime = true
     private val viewModel: MapViewModel by viewModel()
 
-    //private val clusterListener = this as ClusterListener
     private val mapObjectTapListener = this as MapObjectTapListener
     private val platformClickListener = this as PlatformAdapter.PlatformClickListener
+
     private val locationListener = this as LocationListener
     private val MIN_METERS = 50
 
@@ -92,6 +92,9 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         initBottomBehavior()
         initUserLocation()
         initDriveMode()
+        map_toast.setOnClickListener{
+            toast("${AppPreferences.wayBillId}")
+        }
     }
 
     private fun initDriveMode() {
@@ -104,9 +107,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
             }
 
             override fun onDrivingRoutes(routes: MutableList<DrivingRoute>) {
-                routes.forEach {
-                    mapObjects.addPolyline(it.geometry)
-                }
+                routes.forEach { mapObjects.addPolyline(it.geometry) }
             }
 
         }
@@ -153,7 +154,6 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
 
     private fun initMapView(isUpdateView: Boolean) {
         viewModel.findWayTask().let {
-            // val clusterCollection: ClusterizedPlacemarkCollection = map_view.map.mapObjects.addClusterizedPlacemarkCollection(clusterListener)
             val mapObjectCollection = map_view.map.mapObjects
             if (isUpdateView) {
                 mapObjectCollection.removeTapListener(mapObjectTapListener)
@@ -168,26 +168,6 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         map_view.onStart()
         MapKitFactory.getInstance().onStart()
     }
-
-    override fun onStop() {
-        super.onStop()
-        map_view.onStop()
-        MapKitFactory.getInstance().onStop()
-    }
-
-
-/*    override fun onClusterAdded(cluster: Cluster) {
-        cluster.appearance.setIcon(ClusterIcon(cluster.size.toString(), this))
-        cluster.addClusterTapListener(this)
-    }
-
-    override fun onClusterTap(cluster: Cluster): Boolean {
-        map_view.map.move(
-            CameraPosition(cluster.appearance.geometry, 14.0f, 0.0f, 0.0f),
-            Animation(Animation.Type.SMOOTH, 1F), null
-        )
-        return true
-    }*/
 
     //UserLocation
     override fun onObjectAdded(userLocationView: UserLocationView) {
@@ -231,10 +211,11 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
                 if (lastPlatforms.isEmpty()) {
                     finishWay(hasNotServedPlatform)
                 } else {
+
                     var long = 0.0
                     var lat = 0.0
                     val deviceId = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
-                    val currentCoordinate = AppPreferences.currentCoordinate!!
+                    val currentCoordinate = AppPreferences.currentCoordinate
                     if (currentCoordinate.contains("#")) {
                         long = currentCoordinate.substringAfter("#").toDouble()
                         lat = currentCoordinate.substringBefore("#").toDouble()
@@ -243,8 +224,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
                     warningAlert("Не все данные отправлены нa сервер").let {
                         it.accept_btn.setOnClickListener {
                             loadingShow()
-                            viewModel.sendLastPlatforms(synchronizeBody)
-                                .observe(this, Observer { result ->
+                            viewModel.sendLastPlatforms(synchronizeBody).observe(this, { result ->
                                     when (result.status) {
                                         Status.SUCCESS -> {
                                             loadingHide()
@@ -357,7 +337,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
     }
 
     override fun startPlatformService(item: PlatformEntity) {
-        val intent = Intent(this, ServiceActivity::class.java)
+        val intent = Intent(this, PlatformServiceActivity::class.java)
         intent.putExtra("platform_id", item.platformId)
         startActivity(intent)
     }
@@ -377,7 +357,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
 
     override fun navigatePlatform(checkPoint: Point) {
         if (drivingModeState) {
-            warningClearNavigator("У вас уже есть построенный маршрут. Отменить старый и построить новый?").let {
+            warningClearNavigator(getString(R.string.way_is_exist)).let {
                 it.accept_btn.setOnClickListener {
                     buildNavigator(checkPoint)
                 }
@@ -398,7 +378,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             moveCameraToUser(currentLocation)
         } catch (e: Exception) {
-            toast("Невозможно построить маршрут, повторите попытку.")
+            toast(getString(R.string.error_build_way))
         }
 
     }
@@ -412,7 +392,7 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
         initMapView(true)
         initBottomBehavior()
         locationManager = mapKit.createLocationManager()
-        locationManager.subscribeForLocationUpdates(0.0, 1000, 1.0, true, FilteringMode.ON, locationListener)
+        locationManager.subscribeForLocationUpdates(0.0, 0, 0.0, true, FilteringMode.ON, locationListener)
     }
 
     private fun moveCameraToUser(location: Location) {
@@ -423,7 +403,11 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
     }
 
     override fun onLocationStatusUpdated(locationStatus: LocationStatus) {
+        when (locationStatus) {
+            LocationStatus.NOT_AVAILABLE -> Log.d("LogDistance", "GPS STOP")
+            LocationStatus.AVAILABLE -> Log.d("LogDistance", "GPS START")
 
+        }
     }
 
     override fun onLocationUpdated(location: Location) {
@@ -455,7 +439,8 @@ class MapActivity : AppCompatActivity(), /*ClusterListener, ClusterTapListener,*
     override fun onDestroy() {
         super.onDestroy()
         locationManager.unsubscribe(locationListener)
-
+        map_view.onStop()
+        MapKitFactory.getInstance().onStop()
     }
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {

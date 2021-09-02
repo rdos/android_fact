@@ -29,7 +29,7 @@ import ru.smartro.worknote.util.MyUtil
 
 class SynchronizeWorker(
     private val context: Context,
-    private val params: WorkerParameters
+    params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
     private val TAG = "UploadDataWorkManager"
@@ -50,7 +50,7 @@ class SynchronizeWorker(
         if (AppPreferences.workerStatus) {
             var lat = 0.0
             var long = 0.0
-            val currentCoordinate = AppPreferences.currentCoordinate!!
+            val currentCoordinate = AppPreferences.currentCoordinate
             if (currentCoordinate.contains("#")) {
                 lat = currentCoordinate.substringBefore("#").toDouble()
                 long = currentCoordinate.substringAfter("#").toDouble()

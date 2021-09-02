@@ -34,12 +34,8 @@
         <activity
             android:name=".ui.problem.ExtremeProblemActivity"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:theme="@style/Problem" />
-        <activity
-            android:name=".ui.platform_service.ContainerServiceActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppThemeMaterial"
-            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.camera.CameraActivity"
             android:screenOrientation="portrait">
@@ -69,9 +65,6 @@
             android:name=".ui.platform_service.PlatformServiceActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.platform_service.ServiceActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.map.MapActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoToolbar" />
@@ -80,7 +73,7 @@
             android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.choose.way_list_3.WayListActivity"
+            android:name=".ui.choose.way_list_3.WayBillActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.choose.vehicle_2.VehicleActivity"

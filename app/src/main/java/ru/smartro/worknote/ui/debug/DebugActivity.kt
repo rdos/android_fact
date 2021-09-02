@@ -75,7 +75,7 @@ class DebugActivity : AppCompatActivity() {
 
         }
         val point = Point(long, lat)
-        debug_mapview.map.mapObjects.addPlacemark(point, ImageProvider.fromResource(this, R.drawable.ic_blue_marker))
+        debug_mapview.map.mapObjects.addPlacemark(point, ImageProvider.fromResource(this, R.drawable.ic_euro_blue))
         debug_mapview.map.move(
             CameraPosition(point, 12.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null

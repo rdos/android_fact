@@ -6,7 +6,6 @@ import com.yandex.mapkit.geometry.Point
 
 
 object AppPreferences {
-
     private const val NAME = ""
     private const val MODE = Context.MODE_PRIVATE
     private lateinit var preferences: SharedPreferences

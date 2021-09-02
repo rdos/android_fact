@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.showSuccessComplete
-import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.service.database.entity.work_order.WayTaskEntity
@@ -26,32 +25,28 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
-import ru.smartro.worknote.ui.choose.way_list_3.WayListActivity
+import ru.smartro.worknote.ui.choose.way_list_3.WayBillActivity
 import ru.smartro.worknote.util.MyUtil
 import java.util.*
 
 class MapViewModel(application: Application) : BaseViewModel(application) {
 
 
-    fun completeWay(id : Int, completeWayBody: CompleteWayBody) : LiveData<Resource<EmptyResponse>>{
+    fun completeWay(id: Int, completeWayBody: CompleteWayBody): LiveData<Resource<EmptyResponse>> {
         return network.completeWay(id, completeWayBody)
     }
 
-    fun earlyComplete(id : Int, body : EarlyCompleteBody) : LiveData<Resource<EmptyResponse>>{
+    fun earlyComplete(id: Int, body: EarlyCompleteBody): LiveData<Resource<EmptyResponse>> {
         return network.earlyComplete(id, body)
     }
 
-    fun finishTask (context : AppCompatActivity) {
+    fun finishTask(context: AppCompatActivity) {
         context.loadingHide()
         WorkManager.getInstance(context).cancelUniqueWork("UploadData")
-        AppPreferences.workerStatus = false
-        AppPreferences.isHasTask = false
-        AppPreferences.wayTaskId = 0
-        AppPreferences.wayBillId = 0
         clearData()
         context.showSuccessComplete().let {
             it.finish_accept_btn.setOnClickListener {
-                context.startActivity(Intent(context, WayListActivity::class.java))
+                context.startActivity(Intent(context, WayBillActivity::class.java))
                 context.finish()
             }
             it.exit_btn.setOnClickListener {

@@ -8,8 +8,12 @@ import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 
 class PlatformServiceViewModel(application: Application) : BaseViewModel(application) {
 
-    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double, comment: String) {
+    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?, comment: String?) {
         db.updateContainerVolume(platformId, containerId, volume, comment)
+    }
+
+    fun clearContainerVolume(platformId: Int, containerId: Int) {
+        db.clearContainerVolume(platformId, containerId)
     }
 
     fun updatePlatformStatus(platformId: Int, status: String) {
@@ -24,7 +28,7 @@ class PlatformServiceViewModel(application: Application) : BaseViewModel(applica
         return db.findContainerEntity(containerId)
     }
 
-    fun findAllContainerInPlatform (platformId: Int) : List<ContainerEntity> {
+    fun findAllContainerInPlatform(platformId: Int): List<ContainerEntity> {
         return db.findAllContainerInPlatform(platformId)
     }
 
@@ -32,10 +36,11 @@ class PlatformServiceViewModel(application: Application) : BaseViewModel(applica
         db.removePlatformMedia(photoFor, image, platformId)
     }
 
-    fun removeContainerMedia (platformId: Int, containerId : Int, imageBase64 : ImageEntity){
+    fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
         db.removeContainerMedia(platformId, containerId, imageBase64)
     }
-    fun updatePlatformKGO (platformId: Int, kgoVolume : Double){
+
+    fun updatePlatformKGO(platformId: Int, kgoVolume: Double) {
         db.updatePlatformKGO(platformId, kgoVolume)
     }
 }

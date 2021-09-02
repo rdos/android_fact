@@ -10,8 +10,8 @@ import kotlinx.android.synthetic.main.item_choose.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.network.response.way_list.Data
 
-class WayListAdapter(private val items: ArrayList<Data>) :
-    RecyclerView.Adapter<WayListAdapter.OwnerViewHolder>() {
+class WayBillAdapter(private val items: ArrayList<Data>) :
+    RecyclerView.Adapter<WayBillAdapter.OwnerViewHolder>() {
     private var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {

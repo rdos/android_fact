@@ -26,6 +26,7 @@ import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
+import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -36,7 +37,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.BaseFragment
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
@@ -56,7 +56,7 @@ class CameraFragment(
     private val photoFor: Int,
     private val platformId: Int,
     private val containerId: Int
-) : BaseFragment(),  ImageCounter {
+) : Fragment(),  ImageCounter {
 
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
@@ -367,12 +367,12 @@ class CameraFragment(
 
                     Log.d(TAG, "${rotation}")
 
-                    imageCapture.takePicture(outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
+                    imageCapture.takePicture(outputOptions, cameraExecutor, object : OnImageSavedCallback {
                         override fun onError(exc: ImageCaptureException) {
                             Log.e(TAG, ": ${exc.message}", exc)
                         }
 
-                        override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                        override fun onImageSaved(output: OutputFileResults) {
                             val job = CoroutineScope(Dispatchers.Main)
                             val imageUri = output.savedUri ?: Uri.fromFile(photoFile)
                             Log.d(TAG, "Photo capture succeeded: $imageUri path: ${imageUri.path}")
@@ -449,16 +449,6 @@ class CameraFragment(
 
     override fun mediaSizeChanged() {
         setImageCounter(false)
-    }
-
-    override fun onPauseFragment() {
-        super.onPauseFragment()
-        cameraProvider?.unbindAll()
-    }
-
-    override fun onResumeFragment() {
-        super.onResumeFragment()
-        initCamera()
     }
 
     override fun onDestroy() {

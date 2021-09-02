@@ -9,10 +9,10 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_choose.choose_rv
 import kotlinx.android.synthetic.main.activity_choose.next_btn
-import kotlinx.android.synthetic.main.activity_way_list.*
+import kotlinx.android.synthetic.main.activity_way_bill.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.WayListAdapter
+import ru.smartro.worknote.adapter.WayBillAdapter
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
@@ -26,13 +26,13 @@ import ru.smartro.worknote.util.MyUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
-class WayListActivity : AppCompatActivity() {
+class WayBillActivity : AppCompatActivity() {
     private val viewModel: WayListViewModel by viewModel()
-    private lateinit var adapter: WayListAdapter
+    private lateinit var adapter: WayBillAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_way_list)
+        setContentView(R.layout.activity_way_bill)
         supportActionBar?.title = "Выберите путевой лист"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
@@ -60,7 +60,7 @@ class WayListActivity : AppCompatActivity() {
                             finish()
                         }
                     } else {
-                        adapter = WayListAdapter(data?.data as ArrayList<Data>)
+                        adapter = WayBillAdapter(data?.data as ArrayList<Data>)
                         choose_rv.adapter = adapter
                     }
                     loadingHide()

@@ -41,6 +41,7 @@ class App : Application() {
         Realm.setDefaultConfiguration(config.build())
     }
 
+
     private fun getModule(): List<Module> {
         return listOf(viewModelModule)
     }

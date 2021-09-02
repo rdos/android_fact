@@ -71,7 +71,9 @@ open class PlatformEntity(
     @SerializedName("name")
     var name: String? = null,
     @SerializedName("srp_id")
-    var srpId: Int? = null
+    var srpId: Int? = null,
+    @SerializedName("icon")
+    var icon: String? = null
 ) : Serializable, RealmObject()
 
 open class UnloadEntity(
@@ -116,7 +118,7 @@ open class ContainerEntity(
 open class ImageEntity(
     var image: String? = null,
     var date: Long? = null,
-    var coords : RealmList<Double> = RealmList()
+    var coords: RealmList<Double> = RealmList()
 ) : Serializable, RealmObject()
 
 

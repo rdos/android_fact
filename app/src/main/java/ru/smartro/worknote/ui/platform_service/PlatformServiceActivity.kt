@@ -27,6 +27,8 @@ import ru.smartro.worknote.util.StatusEnum
 class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerPointClickListener {
     private val REQUEST_EXIT = 33
     private lateinit var platformEntity: PlatformEntity
+    private lateinit var adapter: ContainerAdapter
+
     private val viewModel: PlatformServiceViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +46,7 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
             val intent = Intent(this, ExtremeProblemActivity::class.java)
             intent.putExtra("platform_id", platformEntity.platformId)
             intent.putExtra("isContainerProblem", false)
-            startActivityForResult(intent, REQUEST_EXIT)
+                startActivityForResult(intent, REQUEST_EXIT)
         }
         kgo_btn.setOnClickListener {
             val intent = Intent(this@PlatformServiceActivity, CameraActivity::class.java)
@@ -82,15 +84,22 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
 
     private fun initContainer() {
         val platform = viewModel.findPlatformEntity(platformId = platformEntity.platformId!!)
-        platform_service_rv.adapter = ContainerAdapter(this, platform.containers)
+        val containers = viewModel.findAllContainerInPlatform(platformEntity.platformId!!)
+        adapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
+        platform_service_rv.recycledViewPool.setMaxRecycledViews(0, 0);
+        platform_service_rv.adapter = adapter
         point_info_tv.text = "№${platform.srpId} / ${platform.containers!!.size} конт."
     }
 
+    fun updateRecyclerview() {
+        val containers = viewModel.findAllContainerInPlatform(platformEntity.platformId!!)
+        adapter.updateData(containers as ArrayList<ContainerEntity>)
+        initAfterMedia()
+    }
+
     override fun startContainerService(item: ContainerEntity) {
-        val intent = Intent(this, ContainerServiceActivity::class.java)
-        intent.putExtra("container_id", item.containerId)
-        intent.putExtra("platform_id", platformEntity.platformId)
-        startActivityForResult(intent, 14)
+        ContainerServiceFragment(item.containerId!!, platformEntity.platformId!!)
+            .show(supportFragmentManager, "ContainerServiceFragment")
     }
 
     override fun onBackPressed() {
@@ -103,11 +112,6 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
             viewModel.updatePlatformStatus(platformEntity.platformId!!, StatusEnum.SUCCESS)
             setResult(Activity.RESULT_OK)
             finish()
-        } else if (requestCode == 14) {
-            if (resultCode == Activity.RESULT_OK) {
-                initContainer()
-                initAfterMedia()
-            }
         } else if (requestCode == REQUEST_EXIT) {
             if (resultCode == 99) {
                 setResult(Activity.RESULT_OK)
@@ -126,11 +130,6 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        initContainer()
-        initAfterMedia()
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

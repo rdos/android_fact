@@ -1,24 +1,26 @@
 package ru.smartro.worknote.ui.platform_service
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_container_service.*
-import nl.bryanderidder.themedtogglebuttongroup.ThemedButton
-import nl.bryanderidder.themedtogglebuttongroup.ThemedToggleButtonGroup
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 
 class ContainerServiceFragment(val containerId: Int, val platformId: Int) : BottomSheetDialogFragment() {
     private val viewModel: PlatformServiceViewModel by viewModel()
-    private var comment: String = ""
-    private var volume: Double = 0.0
-    private lateinit var hostFragment: PlatformServiceFragment
+    private var comment: String? = null
+    private var volume: Double? = null
+    private lateinit var parentActivity: PlatformServiceActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,25 +36,24 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Bott
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        hostFragment = parentFragment as PlatformServiceFragment
+        parentActivity = requireActivity() as PlatformServiceActivity
         viewModel.findContainerEntity(containerId).let {
             comment_et.setText(it.comment)
-            setPercent(
-                enter_info_percent_rg, percent_0, percent_25,
-                percent_50, percent_75,
-                percent_100, percent_125, it.volume!!
-            )
+            comment = it.comment
+            volume = it.volume
+            setVolume(view, it.volume)
             enter_info_tittle.text = "Заполненность конт №${it.number}"
         }
-
-        enter_info_percent_rg.setOnSelectListener {
-            volume = toPercent(it.text.replace("%", "").toInt())
-        }
         comment_et.addTextChangedListener { comment = it.toString() }
-
         comment_clear.setOnClickListener {
-            comment_et.setText("")
-            enter_info_percent_rg.selectButton(percent_0)
+            clearContainerVolume()
+        }
+        enter_info_problem_btn.setOnClickListener {
+            val intent = Intent(requireContext(), ExtremeProblemActivity::class.java)
+            intent.putExtra("is_container", true)
+            intent.putExtra("container_id", containerId)
+            intent.putExtra("platform_id", platformId)
+            startActivityForResult(intent, 99)
         }
     }
 
@@ -60,44 +61,74 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Bott
         super.onDismiss(dialog)
         if (isNotDefault(volume, comment)) {
             viewModel.updateContainerVolume(platformId, containerId, volume, comment)
-            hostFragment.updateRecyclerview()
+        }
+        parentActivity.updateRecyclerview()
+    }
+
+    private fun setVolume(view: View, volume: Double?) {
+        var prevRadioButton = view.findViewById<RadioButton>(R.id.percent_0)
+        enter_info_percent_rg.setOnCheckedChangeListener { group, checkedId ->
+            prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            val radioButton = view.findViewById<RadioButton>(checkedId)
+            this.volume = toPercent(radioButton.text.toString())
+            when (radioButton.isChecked) {
+                true -> {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                }
+                false -> {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                }
+            }
+            prevRadioButton = radioButton
+        }
+        when (volume) {
+            0.00 -> percent_0.isChecked = true
+            0.25 -> percent_25.isChecked = true
+            0.50 -> percent_50.isChecked = true
+            0.75 -> percent_75.isChecked = true
+            1.00 -> percent_100.isChecked = true
+            1.25 -> percent_125.isChecked = true
+            null -> {
+                percent_0.isChecked = false
+                percent_25.isChecked = false
+                percent_50.isChecked = false
+                percent_75.isChecked = false
+                percent_100.isChecked = false
+                percent_125.isChecked = false
+            }
+        }
+
+    }
+
+    private fun isNotDefault(volume: Double?, comment: String?): Boolean {
+        Log.d("ContainerExpandAdapter", "volumeIsNotO:${volume != null} commentIsNotNullOrEmpty:${!comment.isNullOrEmpty()} ")
+        return volume != null || !comment.isNullOrEmpty()
+    }
+
+    private fun clearContainerVolume() {
+        percent_0.isChecked = false
+        percent_25.isChecked = false
+        percent_50.isChecked = false
+        percent_75.isChecked = false
+        percent_100.isChecked = false
+        percent_125.isChecked = false
+        comment_et.setText(null)
+        comment = null
+        volume = null
+        viewModel.clearContainerVolume(platformId, containerId)
+        parentActivity.updateRecyclerview()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 99 && resultCode == 99) {
+            clearContainerVolume()
+            dismiss()
         }
     }
 
-    private fun setPercent(
-        group: ThemedToggleButtonGroup, view0: ThemedButton, view25: ThemedButton, view50:
-        ThemedButton, view75: ThemedButton, view100: ThemedButton, view125: ThemedButton, percent: Double
-    ) {
-        when (percent) {
-            0.00 -> {
-                group.selectButton(view0)
-            }
-            0.25 -> {
-                group.selectButton(view25)
-            }
-            0.50 -> {
-                group.selectButton(view50)
-            }
-            0.75 -> {
-                group.selectButton(view75)
-            }
-            1.00 -> {
-                group.selectButton(view100)
-            }
-            else -> {
-                group.selectButton(view125)
-            }
-        }
-
-    }
-
-    private fun isNotDefault(volume: Double, comment: String): Boolean {
-        Log.d("ContainerExpandAdapter", "volumeIsNotO:${volume != 0.0} commentIsNotNullOrEmpty:${comment.isNullOrEmpty()} ")
-        return volume != 0.0 || comment.isNotEmpty()
-    }
-
-    private fun toPercent(percent: Int): Double {
-        return when (percent) {
+    private fun toPercent(percent: String): Double {
+        return when (percent.replace("%", "").toInt()) {
             0 -> 0.00
             25 -> 0.25
             50 -> 0.50

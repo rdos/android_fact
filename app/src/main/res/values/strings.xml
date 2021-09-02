@@ -77,4 +77,6 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="kgo">Крупногабаритные отходы</string>
+    <string name="way_is_exist">У вас уже есть построенный маршрут. Отменить старый и построить новый?</string>
+    <string name="error_build_way">Невозможно построить маршрут, повторите попытку.</string>
 </resources>

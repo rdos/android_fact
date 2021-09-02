@@ -147,8 +147,8 @@ object MyUtil {
     }
 
     fun calculateDistance(
-        currentLocation: com.yandex.mapkit.geometry.Point,
-        finishLocation: com.yandex.mapkit.geometry.Point
+        currentLocation: Point,
+        finishLocation: Point
     ): Int {
         val userLocation = Location(LocationManager.GPS_PROVIDER)
         userLocation.latitude = currentLocation.latitude
@@ -161,25 +161,75 @@ object MyUtil {
     }
 
     fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: RealmList<PlatformEntity>) {
-        val newIcon = View(context).apply { background = ContextCompat.getDrawable(context, R.drawable.ic_blue_marker) }
-        val successIcon = View(context).apply { background = ContextCompat.getDrawable(context, R.drawable.ic_green_marker) }
-        val errorIcon = View(context).apply { background = ContextCompat.getDrawable(context, R.drawable.ic_red_marker) }
-        val unfinishedIcon = View(context).apply { background = ContextCompat.getDrawable(context, R.drawable.ic_orange_marker) }
         platforms.forEach {
             when (it.status) {
                 StatusEnum.NEW -> {
-                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), ViewProvider(newIcon))
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), icon(context, it))
                 }
                 StatusEnum.SUCCESS -> {
-                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), ViewProvider(successIcon))
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), icon(context, it))
                 }
                 StatusEnum.ERROR -> {
-                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), ViewProvider(errorIcon))
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), icon(context, it))
                 }
                 StatusEnum.UNFINISHED -> {
-                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), ViewProvider(unfinishedIcon))
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), icon(context, it))
                 }
             }
         }
     }
+
+    private fun icon(context: Context, platform: PlatformEntity): ViewProvider {
+        fun iconMarker(context: Context, selectedIcon: Int): ViewProvider {
+            val resultIcon = View(context).apply { background = ContextCompat.getDrawable(context, selectedIcon) }
+            return ViewProvider(resultIcon)
+        }
+        return when (platform.icon) {
+            "bunker" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_bunker_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_bunker_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_bunker_red)
+                    else -> iconMarker(context, R.drawable.ic_bunker_orange)
+                }
+            "bag" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_bag_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_bag_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_bag_red)
+                    else -> iconMarker(context, R.drawable.ic_bag_orange)
+                }
+            "bulk" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_bulk_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_bulk_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_bulk_red)
+                    else -> iconMarker(context, R.drawable.ic_bulk_orange)
+                }
+            "euro" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_euro_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_euro_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_euro_red)
+                    else -> iconMarker(context, R.drawable.ic_euro_orange)
+                }
+            "metal" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_metal_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_metal_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_metal_red)
+                    else -> iconMarker(context, R.drawable.ic_metal_orange)
+                }
+            else ->
+                //many
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_many_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_many_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_many_red)
+                    else -> iconMarker(context, R.drawable.ic_many_orange)
+                }
+        }
+    }
+
+
 }

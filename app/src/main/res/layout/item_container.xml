@@ -80,6 +80,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/enter_info_problem_btn" />
 
+<!--
                 <nl.bryanderidder.themedtogglebuttongroup.ThemedToggleButtonGroup
                     android:id="@+id/enter_info_percent_rg"
                     android:layout_width="match_parent"
@@ -184,6 +185,7 @@
                     android:textColor="#0466B5"
                     app:layout_constraintBottom_toTopOf="@id/save_btn"
                     app:layout_constraintTop_toBottomOf="@+id/comment_clear" />
+-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
