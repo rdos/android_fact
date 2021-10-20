@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_auth.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
@@ -24,18 +25,17 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
         actionBar?.title = "Вход в систему"
-
+        auth_appversion.text = BuildConfig.VERSION_NAME
         baseview.setOnClickListener {
             MyUtil.hideKeyboard(this)
         }
         if (AppPreferences.isLogined) {
-            if (AppPreferences.thisUserHasTask) {
+            if (AppPreferences.isHasTask) {
                 startActivity(Intent(this, MapActivity::class.java))
-                finish()
             } else {
                 startActivity(Intent(this, OrganisationActivity::class.java))
-                finish()
             }
+            finish()
         } else {
             initViews()
         }
@@ -73,11 +73,16 @@ class AuthActivity : AppCompatActivity() {
                 login_login_out.error = "Проверьте логин"
             }
         }
-
         auth_enter.setOnLongClickListener {
             auth_login.setText("admin@smartro.ru")
             auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
             return@setOnLongClickListener true
         }
+
+/*        auth_enter.setOnLongClickListener {
+            auth_login.setText("gkh2@smartro.ru")
+            auth_password.setText("JT8NcST%sDqUpuc")
+            return@setOnLongClickListener true
+        }*/
     }
 }

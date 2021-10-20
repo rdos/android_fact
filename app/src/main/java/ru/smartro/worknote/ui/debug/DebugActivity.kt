@@ -12,6 +12,7 @@ import com.yandex.mapkit.map.CameraPosition
 import com.yandex.runtime.image.ImageProvider
 import kotlinx.android.synthetic.main.activity_debug.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.util.MyUtil
@@ -41,6 +42,10 @@ class DebugActivity : AppCompatActivity() {
         val usedMemInBytes = nativeHeapSize - nativeHeapFreeSize
         val usedMemInPercentage = usedMemInBytes * 100 / nativeHeapSize
 
+        val appVersion = BuildConfig.VERSION_NAME
+
+        debug_app.text = "Версия приложения: $appVersion"
+
         debug_container_count.text = "Кол-во обслуженных контейнеров: ${containerProgress[0]}/${containerProgress[1]}"
         debug_platform_count.text = "Кол-во обслуженных платформ: ${platformProgress[0]}/${platformProgress[1]}"
         debug_ram_count.text = "ОЗУ используется: $usedMemInPercentage%"
@@ -56,7 +61,7 @@ class DebugActivity : AppCompatActivity() {
 
         debug_organisation.text = "Организация: ${AppPreferences.organisationId}"
         debug_user.text = "Пользователь: ${AppPreferences.userLogin}"
-        debug_waybill.text = "Путевой лист: ${AppPreferences.wayListId}"
+        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillId}"
         debug_coordinate.text = "Координаты: ${AppPreferences.currentCoordinate}"
         debug_phone.text = "Устройство: ${MyUtil.getDeviceName()}, Android: ${android.os.Build.VERSION.SDK_INT}"
 
@@ -70,7 +75,7 @@ class DebugActivity : AppCompatActivity() {
 
         }
         val point = Point(long, lat)
-        debug_mapview.map.mapObjects.addPlacemark(point, ImageProvider.fromResource(this, R.drawable.ic_blue_marker))
+        debug_mapview.map.mapObjects.addPlacemark(point, ImageProvider.fromResource(this, R.drawable.ic_euro_blue))
         debug_mapview.map.move(
             CameraPosition(point, 12.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null
@@ -89,13 +94,11 @@ class DebugActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-
     override fun onStart() {
         super.onStart()
         debug_mapview.onStart()
         MapKitFactory.getInstance().onStart()
     }
-
 
     override fun onStop() {
         super.onStop()

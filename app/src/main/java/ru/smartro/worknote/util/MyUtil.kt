@@ -7,17 +7,29 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.location.Location
+import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.util.Base64
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.map.MapObjectCollection
+import com.yandex.runtime.ui_view.ViewProvider
+import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,6 +49,25 @@ object MyUtil {
     fun currentTime(): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", Locale.getDefault())
         return sdf.format(Date())
+    }
+
+    fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap? {
+        var drawable = ContextCompat.getDrawable(context, drawableId) ?: return null
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = DrawableCompat.wrap(drawable).mutate()
+        }
+
+        val bitmap = Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        ) ?: return null
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+
+        return bitmap
     }
 
     fun hasPermissions(context: Context, vararg permissions: Array<String>): Boolean =
@@ -74,27 +105,22 @@ object MyUtil {
         AppPreferences.clear()
     }
 
-    fun imageToBase64(filePath: String?): String {
-        val bmp: Bitmap?
-        val bos: ByteArrayOutputStream?
-        val bt: ByteArray?
-        var encodeString = ""
-        val resizedBmp: Bitmap?
-        try {
-            bmp = BitmapFactory.decodeFile(filePath)
-            bos = ByteArrayOutputStream()
-            resizedBmp = Bitmap.createScaledBitmap(bmp, 320, 620, false)
-            resizedBmp.compress(Bitmap.CompressFormat.JPEG, 100, bos)
-            bt = bos.toByteArray()
-            encodeString = Base64.encodeToString(bt, Base64.DEFAULT)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return "data:image/png;base64,$encodeString"
+    fun imageToBase64(imageUri: Uri, rotationDegrees: Float, context: Context): String {
+        val imageStream: InputStream? = context.contentResolver.openInputStream(imageUri)
+        val selectedImage = BitmapFactory.decodeStream(imageStream)
+        val matrix = Matrix()
+        matrix.preRotate(rotationDegrees)
+        val rotatedBitmap = Bitmap.createBitmap(selectedImage, 0, 0, selectedImage.width, selectedImage.height, matrix, true)
+        val compressedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, 320, 620, false)
+        val baos = ByteArrayOutputStream()
+        compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val b: ByteArray = baos.toByteArray()
+        return "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
     }
 
-    fun base64ToImage(encodedImage : String?) : Bitmap {
-        val decodedString: ByteArray = Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
+    fun base64ToImage(encodedImage: String?): Bitmap {
+        val decodedString: ByteArray =
+            Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     }
 
@@ -119,5 +145,91 @@ object MyUtil {
             capitalize(manufacturer).toString() + " " + model
         }
     }
+
+    fun calculateDistance(
+        currentLocation: Point,
+        finishLocation: Point
+    ): Int {
+        val userLocation = Location(LocationManager.GPS_PROVIDER)
+        userLocation.latitude = currentLocation.latitude
+        userLocation.longitude = currentLocation.longitude
+
+        val checkPointLocation = Location(LocationManager.GPS_PROVIDER)
+        checkPointLocation.latitude = finishLocation.latitude
+        checkPointLocation.longitude = finishLocation.longitude
+        return userLocation.distanceTo(checkPointLocation).toInt()
+    }
+
+    fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: RealmList<PlatformEntity>) {
+        platforms.forEach {
+            when (it.status) {
+                StatusEnum.NEW -> {
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), icon(context, it))
+                }
+                StatusEnum.SUCCESS -> {
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), icon(context, it))
+                }
+                StatusEnum.ERROR -> {
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), icon(context, it))
+                }
+                StatusEnum.UNFINISHED -> {
+                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), icon(context, it))
+                }
+            }
+        }
+    }
+
+    private fun icon(context: Context, platform: PlatformEntity): ViewProvider {
+        fun iconMarker(context: Context, selectedIcon: Int): ViewProvider {
+            val resultIcon = View(context).apply { background = ContextCompat.getDrawable(context, selectedIcon) }
+            return ViewProvider(resultIcon)
+        }
+        return when (platform.icon) {
+            "bunker" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_bunker_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_bunker_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_bunker_red)
+                    else -> iconMarker(context, R.drawable.ic_bunker_orange)
+                }
+            "bag" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_bag_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_bag_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_bag_red)
+                    else -> iconMarker(context, R.drawable.ic_bag_orange)
+                }
+            "bulk" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_bulk_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_bulk_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_bulk_red)
+                    else -> iconMarker(context, R.drawable.ic_bulk_orange)
+                }
+            "euro" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_euro_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_euro_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_euro_red)
+                    else -> iconMarker(context, R.drawable.ic_euro_orange)
+                }
+            "metal" ->
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_metal_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_metal_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_metal_red)
+                    else -> iconMarker(context, R.drawable.ic_metal_orange)
+                }
+            else ->
+                //many
+                when (platform.status) {
+                    StatusEnum.NEW -> iconMarker(context, R.drawable.ic_many_blue)
+                    StatusEnum.SUCCESS -> iconMarker(context, R.drawable.ic_many_green)
+                    StatusEnum.ERROR -> iconMarker(context, R.drawable.ic_many_red)
+                    else -> iconMarker(context, R.drawable.ic_many_orange)
+                }
+        }
+    }
+
 
 }

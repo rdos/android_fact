@@ -50,6 +50,48 @@ fun AppCompatActivity.warningCameraShow(title: String): View {
     return view
 }
 
+fun AppCompatActivity.warningNavigatePlatform(): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_navigate_platform, null)
+    builder.setView(view)
+    builder.setCancelable(false)
+    customDialog = builder.create()
+    view.dismiss_btn.setOnClickListener {
+        customDialog.dismiss()
+    }
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
+fun AppCompatActivity.warningClearNavigator(title: String): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_clear_navigator, null)
+    builder.setView(view)
+    builder.setCancelable(false)
+    customDialog = builder.create()
+    view.title_tv.text = title
+    view.dismiss_btn.setOnClickListener {
+        customDialog.dismiss()
+    }
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
+fun AppCompatActivity.alertOnPoint(): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_on_point, null)
+    builder.setView(view)
+    customDialog = builder.create()
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
 fun Fragment.warningCameraShow(title: String): View {
     val builder = AlertDialog.Builder(this.requireContext())
     val inflater = this.layoutInflater
@@ -104,6 +146,29 @@ fun AppCompatActivity.showCompleteWaybill(): View {
     return view
 }
 
+
+fun AppCompatActivity.fillKgoVolume(): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_fill_kgo, null)
+    builder.setView(view)
+    customDialog = builder.create()
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
+fun Fragment.fillKgoVolume(): View {
+    val builder = AlertDialog.Builder(requireContext())
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_fill_kgo, null)
+    builder.setView(view)
+    customDialog = builder.create()
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
 fun AppCompatActivity.warningDelete(title: String): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
@@ -125,11 +190,11 @@ fun AppCompatActivity.showClickedPointDetail(point: PlatformEntity): View {
     builder.setView(view)
     customDialog = builder.create()
     view.bottom_card.isVisible = point.status == StatusEnum.NEW
-    view.point_detail_address.text = "${point.address} \n ${point.srpId} ${point.containers!!.size} конт."
+    view.point_detail_address.text = "${point.address} \n ${point.srpId} ${point.containers.size} конт."
     view.point_detail_close.setOnClickListener {
         customDialog.dismiss()
     }
-    view.point_detail_rv.adapter = ContainerDetailAdapter(point.containers!!)
+    view.point_detail_rv.adapter = ContainerDetailAdapter(point.containers)
     customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     customDialog.show()
     return view
@@ -142,6 +207,21 @@ fun AppCompatActivity.warningContainerFailure(title: String): View {
     view.title_tv.text = title
     builder.setView(view)
     customDialog = builder.create()
+    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    customDialog.show()
+    return view
+}
+
+fun AppCompatActivity.warningAlert(title: String): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.alert_warning, null)
+    builder.setView(view)
+    customDialog = builder.create()
+    view.title_tv.text = title
+    view.dismiss_btn.setOnClickListener {
+        customDialog.dismiss()
+    }
     customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     customDialog.show()
     return view

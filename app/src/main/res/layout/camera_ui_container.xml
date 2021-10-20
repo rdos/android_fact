@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/camera_ui_container"
     android:layout_width="match_parent"
-    tools:background="@color/black"
     android:layout_height="match_parent"
-    android:layoutDirection="ltr">
+    android:layoutDirection="ltr"
+    tools:background="@color/black">
 
     <ImageButton
         android:id="@+id/camera_capture_button"
@@ -32,21 +31,42 @@
         android:padding="@dimen/spacing_large"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:layout_width="0dp"
         android:id="@+id/image_counter"
-        app:layout_constraintStart_toStartOf="@id/photo_view_button"
-        app:layout_constraintEnd_toEndOf="@id/photo_view_button"
-        app:layout_constraintBottom_toBottomOf="@id/photo_view_button"
-        app:layout_constraintTop_toTopOf="@id/photo_view_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:gravity="center"
-        tools:text="0"
-        android:textSize="21sp"
         android:textColor="@color/white"
-        android:layout_height="0dp"/>
+        android:textSize="21sp"
+        app:layout_constraintBottom_toBottomOf="@id/photo_view_button"
+        app:layout_constraintEnd_toEndOf="@id/photo_view_button"
+        app:layout_constraintStart_toStartOf="@id/photo_view_button"
+        app:layout_constraintTop_toTopOf="@id/photo_view_button"
+        tools:text="0" />
 
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/photo_flash"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="@dimen/margin_default"
+        android:background="@drawable/ic_flash"
+        android:checked="false"
+        android:textOff="@null"
+        android:textOn="@null"
+        app:layout_constraintBottom_toTopOf="@id/image_counter"
+        app:layout_constraintEnd_toEndOf="@id/image_counter"
+        app:layout_constraintStart_toStartOf="@id/image_counter" />
+
+    <ImageView
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:src="@drawable/ic_outer_circle"
+        app:layout_constraintBottom_toBottomOf="@id/photo_flash"
+        app:layout_constraintEnd_toEndOf="@id/photo_flash"
+        app:layout_constraintStart_toStartOf="@id/photo_flash"
+        app:layout_constraintTop_toTopOf="@id/photo_flash" />
 
 
     <ImageButton

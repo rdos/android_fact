@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -33,10 +34,11 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.title = "Выберите сменное задание"
         setContentView(R.layout.activity_choose)
+        supportActionBar?.title = "Выберите сменное задание"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         loadingShow()
-        viewModel.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayListId)
+        viewModel.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayBillId)
             .observe(this, Observer { result ->
                 val data = result.data
                 when (result.status) {
@@ -89,12 +91,12 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
         viewModel.getBreakDownTypes().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
-                        val entities = result.data?.data?.filter {
-                            it.attributes.organisationId == AppPreferences.organisationId
-                        }?.map {
-                            BreakDownEntity(it.attributes.id, it.attributes.name)
-                        }
-                        viewModel.insertBreakDown(entities!!)
+                    val entities = result.data?.data?.filter {
+                        it.attributes.organisationId == AppPreferences.organisationId
+                    }?.map {
+                        BreakDownEntity(it.attributes.id, it.attributes.name)
+                    }
+                    viewModel.insertBreakDown(entities!!)
                 }
                 Status.ERROR -> {
                     toast(result.msg)
@@ -110,7 +112,8 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
             when (result.status) {
                 Status.SUCCESS -> {
                     val entities = result.data?.data?.filter {
-                        it.oid == AppPreferences.organisationId }!!.map {
+                        it.oid == AppPreferences.organisationId
+                    }!!.map {
                         FailReasonEntity(it.id, it.name)
                     }
                     viewModel.insertFailReason(entities)
@@ -144,9 +147,11 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                 when (result.status) {
                     Status.SUCCESS -> {
                         loadingHide()
-                        AppPreferences.thisUserHasTask = true
+                        AppPreferences.isHasTask = true
                         viewModel.insertWayTask(selectedWayInfo)
-                        startActivity(Intent(this, MapActivity::class.java))
+                        val intent = Intent(this, MapActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
                         finish()
                     }
                     else -> {
@@ -160,4 +165,14 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
     override fun selectedWayTask(model: Workorder) {
         selectedWayInfo = model
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 }

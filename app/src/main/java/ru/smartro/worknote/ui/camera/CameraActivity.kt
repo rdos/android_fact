@@ -3,8 +3,8 @@ package ru.smartro.worknote.ui.camera
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
+import android.view.MenuItem
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -26,7 +26,8 @@ class CameraActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
-
+        supportActionBar?.isHideOnContentScrollEnabled = false
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.let {
             photoFor = it.getIntExtra("photoFor", 0)
         }
@@ -49,6 +50,10 @@ class CameraActivity : AppCompatActivity() {
                 containerId = intent.getIntExtra("container_id", 0)
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = getString(R.string.problem_container)
+            }
+            PhotoTypeEnum.forKGO -> {
+                platformId = intent.getIntExtra("platform_id", 0)
+                supportActionBar?.title = getString(R.string.kgo)
             }
         }
         val cameraFragment = CameraFragment(photoFor, platformId, containerId)
@@ -89,6 +94,15 @@ class CameraActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        Log.d("CameraActivity", "onBackPressed: ignored")
+        finish()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

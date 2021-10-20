@@ -1,6 +1,7 @@
 <resources>
     <!--   <string name="yandex_map_key">44189d05-a0ac-42a3-ad87-2d5741d709dc</string>-->
     <string name="yandex_map_key">948e55bc-da44-452d-9629-00898d438ca9</string>
+    <string name="sentry_url">https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17</string>
 
     <string name="app_name">Fact</string>
     <string name="enter_system">Вход в систему</string>
@@ -55,6 +56,8 @@
     <string name="enter_volume_hint">Введите объем (в куб .м.)</string>
     <string name="success_complete">Сменное задание завершено Вы можете выбрать другое задание или завершить смену</string>
     <string name="show_on_map"><u>Показать на карте</u>.</string>
+    <string name="clear_comment"><u>Очистить</u>.</string>
+    <string name="cancel_clear"><u>Отменить и скрыть</u>.</string>
 
     <plurals name="container_count">
         <item quantity="zero">конейтер</item>
@@ -73,4 +76,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="kgo">Крупногабаритные отходы</string>
+    <string name="way_is_exist">У вас уже есть построенный маршрут. Отменить старый и построить новый?</string>
+    <string name="error_build_way">Невозможно построить маршрут, повторите попытку.</string>
 </resources>

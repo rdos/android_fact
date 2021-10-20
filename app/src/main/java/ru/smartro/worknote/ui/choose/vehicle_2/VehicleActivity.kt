@@ -16,7 +16,7 @@ import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.response.vehicle.Vehicle
-import ru.smartro.worknote.ui.choose.way_list_3.WayListActivity
+import ru.smartro.worknote.ui.choose.way_list_3.WayBillActivity
 import ru.smartro.worknote.util.MyUtil
 
 class VehicleActivity : AppCompatActivity() {
@@ -27,7 +27,7 @@ class VehicleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose)
         supportActionBar?.title = "Выберите автомобиль"
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         loadingShow()
         viewModel.getVehicle(AppPreferences.organisationId).observe(this, Observer { result ->
             val data = result.data
@@ -52,7 +52,7 @@ class VehicleActivity : AppCompatActivity() {
         next_btn.setOnClickListener {
             if (adapter.getSelectedId() != -1) {
                 AppPreferences.vehicleId = adapter.getSelectedId()
-                startActivity(Intent(this, WayListActivity::class.java))
+                startActivity(Intent(this, WayBillActivity::class.java))
             }
         }
     }
@@ -64,6 +64,11 @@ class VehicleActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         MyUtil.onMenuOptionClicked(this, item.itemId)
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 }

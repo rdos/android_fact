@@ -1,6 +1,5 @@
 package ru.smartro.worknote.work
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,88 +11,88 @@ import android.os.Build
 import android.provider.Settings.Secure
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import io.realm.Realm
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.RealmRepository
+import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.service.network.NetworkRepository
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
-import kotlin.concurrent.fixedRateTimer
 
 
 class SynchronizeWorker(
-    private val appContext: Context,
+    private val context: Context,
     params: WorkerParameters
-) : Worker(appContext, params) {
+) : CoroutineWorker(context, params) {
 
     private val TAG = "UploadDataWorkManager"
     private val network = NetworkRepository(applicationContext)
-    private val deviceId = Secure.getString(appContext.contentResolver, Secure.ANDROID_ID)
+    private val deviceId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
+    private val minutes = 30 * 60
 
-    @SuppressLint("MissingPermission", "RestrictedApi")
-    override fun doWork(): Result {
-        showNotification(appContext, true, "Не закрывайте приложение", "Служба отправки данных работает")
-        if (AppPreferences.workerStatus) {
-            fixedRateTimer("timer", false, 0L, 1.min()) {
-                synchronizeData()
-            }
-        } else {
-            dismissNotification()
-            this@SynchronizeWorker.stop()
+    override suspend fun doWork(): Result {
+        showNotification(context, true, "Не закрывайте приложение", "Служба отправки данных работает")
+        val db = RealmRepository(Realm.getDefaultInstance())
+        while (true) {
+            synchronizeData(db)
+            delay(30_000)
         }
-        return Result.success()
     }
 
-    private fun synchronizeData() {
+    private suspend fun synchronizeData(db: RealmRepository) {
         if (AppPreferences.workerStatus) {
-            CoroutineScope(Dispatchers.IO).launch {
-                var long = 0.0
-                var lat = 0.0
-                val currentCoordinate = AppPreferences.currentCoordinate!!
-                if (currentCoordinate.contains("#")) {
-                    long = currentCoordinate.substringAfter("#").toDouble()
-                    lat = currentCoordinate.substringBefore("#").toDouble()
-                }
-                val timeBeforeRequest = MyUtil.timeStamp()
-                Log.d(TAG, " SYNCHRONIZE STARTED")
-                val db = RealmRepository(Realm.getDefaultInstance())
-                val platforms = db.findAllPlatforms()
-                val synchronizeBody = SynchronizeBody(AppPreferences.wayListId, listOf(lat, long), deviceId, platforms)
-                val synchronizeRequest = network.synchronizeData(synchronizeBody)
-                when (synchronizeRequest.status) {
-                    Status.SUCCESS -> {
-                        val alertMsg = synchronizeRequest.data?.alert
-                        Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeRequest.data)}")
+            var lat = 0.0
+            var long = 0.0
+            val currentCoordinate = AppPreferences.currentCoordinate
+            if (currentCoordinate.contains("#")) {
+                lat = currentCoordinate.substringBefore("#").toDouble()
+                long = currentCoordinate.substringAfter("#").toDouble()
+            }
+            val timeBeforeRequest: Long
+            Log.d(TAG, " SYNCHRONIZE STARTED")
+            val lastSynchroTime = AppPreferences.lastSynchroTime
+            val platforms: List<PlatformEntity>
+
+            if (lastSynchroTime - MyUtil.timeStamp() > minutes) {
+                platforms = db.findPlatforms30min()
+                timeBeforeRequest = lastSynchroTime + minutes
+                Log.d(TAG, " SYNCHRONIZE PLATFORMS IN LAST 30 min")
+            } else {
+                platforms = db.findLastPlatforms()
+                timeBeforeRequest = MyUtil.timeStamp()
+                Log.d(TAG, " SYNCHRONIZE LAST PLATFORMS")
+            }
+
+            val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), deviceId, platforms)
+            val synchronizeRequest = network.synchronizeData(synchronizeBody)
+            when (synchronizeRequest.status) {
+                Status.SUCCESS -> {
+                    if (platforms.isNotEmpty()) {
                         AppPreferences.lastSynchroTime = timeBeforeRequest
-                        if (!alertMsg.isNullOrEmpty()) {
-                            showNotification(appContext, false, alertMsg, "Уведомление")
-                        }
+                        db.updatePlatformNetworkStatus(platforms)
+                        Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeRequest.data)}")
+                    } else {
+                        Log.d(TAG, "SYNCHRONIZE SUCCESS: GPS SENT")
                     }
-                    Status.ERROR -> Log.d(TAG, "SYNCHRONIZE GPS SENT ERROR")
-                    Status.EMPTY -> Log.d(TAG, "SYNCHRONIZE SENT EMPTY")
-                    Status.NETWORK -> Log.e(TAG, "SYNCHRONIZE  SENT NO INTERNET")
+                    val alertMsg = synchronizeRequest.data?.alert
+                    if (!alertMsg.isNullOrEmpty()) {
+                        showNotification(context, false, alertMsg, "Уведомление")
+                    }
                 }
-                this.cancel()
-                return@launch
+                Status.ERROR -> Log.d(TAG, "SYNCHRONIZE ERROR")
+                Status.NETWORK -> Log.e(TAG, "SYNCHRONIZE NO INTERNET")
             }
         } else {
             Log.d(TAG, "WORKER STOPPED")
             dismissNotification()
         }
-    }
-
-    private fun Int.min(): Long {
-        return (this * 30) * 1000L
     }
 
     private fun showNotification(context: Context, ongoing: Boolean, content: String, title: String) {

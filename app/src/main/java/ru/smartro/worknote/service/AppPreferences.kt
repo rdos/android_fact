@@ -2,10 +2,10 @@ package ru.smartro.worknote.service
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.yandex.mapkit.geometry.Point
 
 
 object AppPreferences {
-
     private const val NAME = ""
     private const val MODE = Context.MODE_PRIVATE
     private lateinit var preferences: SharedPreferences
@@ -26,8 +26,8 @@ object AppPreferences {
             it.putString("accessToken", value)
         }
 
-    var currentCoordinate: String?
-        get() = preferences.getString("currentCoordinate", " ")
+    var currentCoordinate: String
+        get() = preferences.getString("currentCoordinate", " ")!!
         set(value) = preferences.edit {
             it.putString("currentCoordinate", value)
         }
@@ -56,12 +56,6 @@ object AppPreferences {
             it.putLong("lastSynchronizeTime", value)
         }
 
-    var lastUpdateTime: Long
-        get() = preferences.getLong("lastUpdateTime", 0)
-        set(value) = preferences.edit {
-            it.putLong("lastUpdateTime", value)
-        }
-
     var serviceStartedAt: Long
         get() = preferences.getLong("serviceStartedAt", 0L)
         set(value) = preferences.edit {
@@ -74,7 +68,7 @@ object AppPreferences {
             it.putInt("vehicleId", value)
         }
 
-    var wayListId: Int
+    var wayBillId: Int
         get() = preferences.getInt("wayListId", 0)
         set(value) = preferences.edit {
             it.putInt("wayListId", value)
@@ -86,7 +80,7 @@ object AppPreferences {
             it.putInt("wayTaskId", value)
         }
 
-    var thisUserHasTask: Boolean
+    var isHasTask: Boolean
         get() = preferences.getBoolean("thisUserHasTask", false)
         set(value) = preferences.edit {
             it.putBoolean("thisUserHasTask", value)
@@ -103,9 +97,16 @@ object AppPreferences {
         accessToken = ""
         vehicleId = 0
         organisationId = 0
-        wayListId = 0
+        wayBillId = 0
         wayTaskId = 0
-        thisUserHasTask = false
+        isHasTask = false
+        workerStatus = false
+    }
+
+    fun getCurrentLocation(): Point {
+        val lat = currentCoordinate.substringBefore("#").toDouble()
+        val long = currentCoordinate.substringAfter("#").toDouble()
+        return Point(lat, long)
     }
 
 }

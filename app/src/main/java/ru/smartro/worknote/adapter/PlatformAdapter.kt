@@ -7,18 +7,21 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
 import io.realm.RealmList
-import kotlinx.android.synthetic.main.map_behavior_item.view.*
+import kotlinx.android.synthetic.main.item_map_behavior.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlatformAdapter(private val listener: PlatformClickListener, private val items: RealmList<PlatformEntity>) : RecyclerView.Adapter<PlatformAdapter.PlatformViewHolder>() {
+class PlatformAdapter(
+    private val listener: PlatformClickListener,
+    private val items: RealmList<PlatformEntity>
+) : RecyclerView.Adapter<PlatformAdapter.PlatformViewHolder>() {
     private var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlatformViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.map_behavior_item, parent, false)
+            .inflate(R.layout.item_map_behavior, parent, false)
         return PlatformViewHolder(view)
     }
 
@@ -45,10 +48,13 @@ class PlatformAdapter(private val listener: PlatformClickListener, private val i
         holder.itemView.map_behavior_container_count.text = "${item.containers.size} $containerString"
 
         holder.itemView.map_behavior_coordinate.setOnClickListener {
-            listener.moveCameraPoint(Point(item.coords[0]!!, item.coords[1]!!))
+            listener.moveCameraPlatform(Point(item.coords[0]!!, item.coords[1]!!))
+        }
+        holder.itemView.map_behavior_location.setOnClickListener {
+            listener.navigatePlatform(Point(item.coords[0]!!, item.coords[1]!!))
         }
 
-        when (items[position]!!.status) {
+        when (item.status) {
             StatusEnum.NEW -> {
                 holder.itemView.map_behavior_status.isVisible = false
                 holder.itemView.setOnClickListener {
@@ -79,6 +85,13 @@ class PlatformAdapter(private val listener: PlatformClickListener, private val i
                     //nothing
                 }
             }
+            StatusEnum.UNFINISHED -> {
+                holder.itemView.map_behavior_status.isVisible = true
+                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_orange_check)
+                holder.itemView.setOnClickListener {
+                    //nothing
+                }
+            }
         }
 
     }
@@ -90,6 +103,7 @@ class PlatformAdapter(private val listener: PlatformClickListener, private val i
     interface PlatformClickListener {
         fun startPlatformService(item: PlatformEntity)
         fun startPlatformProblem(item: PlatformEntity)
-        fun moveCameraPoint(point: Point)
+        fun moveCameraPlatform(point: Point)
+        fun navigatePlatform(checkPoint: Point)
     }
 }

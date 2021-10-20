@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_behavior">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_default"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/enter_info_problem_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
+            android:background="@drawable/bg_button_white"
+            android:padding="8dp"
+            android:src="@drawable/ic_fire"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/enter_info_tittle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Заполненность"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/enter_info_percent_rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_default"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/enter_info_tittle"
+            tools:listitem="@layout/item_percent">
+
+            <RadioButton
+                android:id="@+id/percent_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="0%"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:id="@+id/percent_25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="25%"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:id="@+id/percent_50"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="50%"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:id="@+id/percent_75"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="75%"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:id="@+id/percent_100"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="100%"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:id="@+id/percent_125"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/selector_percent"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:text="125%"
+                android:textColor="@color/black" />
+
+        </RadioGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/comment_et_out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_default"
+            android:gravity="start"
+            app:layout_constraintTop_toBottomOf="@+id/enter_info_percent_rg">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/comment_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Комментарии..." />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/comment_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginHorizontal="@dimen/margin_default"
+            android:padding="8dp"
+            android:text="@string/clear_comment"
+            android:textColor="#0466B5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/comment_et_out" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

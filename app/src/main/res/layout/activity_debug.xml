@@ -8,7 +8,6 @@
     android:orientation="vertical"
     tools:context=".ui.debug.DebugActivity">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -143,6 +142,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         tools:text="Устройство: 0" />
+
+    <TextView
+        android:id="@+id/debug_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        tools:text="Версия приложения: 0" />
 
     <androidx.cardview.widget.CardView
         android:layout_marginTop="@dimen/margin_default"

@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_percent.view.*
 import ru.smartro.worknote.R
 
-class PercentAdapter(private val context: Context, private val items: ArrayList<Int>) :
-    RecyclerView.Adapter<PercentAdapter.OwnerViewHolder>() {
+class PercentAdapter(
+    private val context: Context,
+    private val items: ArrayList<PercentModel>
+) : RecyclerView.Adapter<PercentAdapter.OwnerViewHolder>() {
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val outMetrics = DisplayMetrics()
     private var checkedPosition = -1
@@ -36,14 +38,18 @@ class PercentAdapter(private val context: Context, private val items: ArrayList<
             val display = windowManager.defaultDisplay
             display.getMetrics(outMetrics)
         }
-
         holder.itemView.percent_cardview.layoutParams.height = outMetrics.widthPixels / 7
         holder.itemView.percent_cardview.layoutParams.width = outMetrics.widthPixels / 4
         if (checkedPosition == -1) {
             holder.itemView.percent_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.light_green))
             holder.itemView.item_percent_tv.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
+            if (items[position].selected) {
+                holder.itemView.percent_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.colorPrimary))
+                holder.itemView.item_percent_tv.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
+                checkedPosition = holder.adapterPosition
+            }
         } else {
-            if (checkedPosition == holder.adapterPosition) {0
+            if (checkedPosition == holder.adapterPosition) {
                 holder.itemView.percent_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.colorPrimary))
                 holder.itemView.item_percent_tv.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
             } else {
@@ -51,8 +57,7 @@ class PercentAdapter(private val context: Context, private val items: ArrayList<
                 holder.itemView.item_percent_tv.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
             }
         }
-
-        holder.itemView.item_percent_tv.text = "${items[position]} %"
+        holder.itemView.item_percent_tv.text = "${toPercent(items[position].volume)} %"
         holder.itemView.setOnClickListener {
             holder.itemView.percent_cardview.isVisible = true
             if (checkedPosition != holder.adapterPosition) {
@@ -66,23 +71,24 @@ class PercentAdapter(private val context: Context, private val items: ArrayList<
 
     fun getSelectedCount(): Double {
         return (if (checkedPosition != -1) {
-            toPercent(items[checkedPosition])
+            items[checkedPosition].volume
         } else {
             -1.00
         })
     }
 
-    private fun toPercent(percent: Int): Double {
+    private fun toPercent(percent: Double): Int {
         return when (percent) {
-            0 -> 0.00
-            25 -> 0.25
-            50 -> 0.50
-            75 -> 0.75
-            100 -> 1.00
-            else -> 1.25
+            0.00 -> 0
+            0.25 -> 25
+            0.50 -> 50
+            0.75 -> 75
+            1.00 -> 100
+            else -> 125
         }
     }
 
     class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
     }
 }

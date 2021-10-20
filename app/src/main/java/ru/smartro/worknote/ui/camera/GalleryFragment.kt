@@ -15,6 +15,7 @@ import ru.smartro.worknote.adapter.GalleryPhotoAdapter
 import ru.smartro.worknote.adapter.listener.ImageClickListener
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
+import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
 import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
 import ru.smartro.worknote.util.PhotoTypeEnum
 
@@ -66,15 +67,21 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int,
                 image_title.text = getString(R.string.problem_container)
                 image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(container.failureMedia))
             }
+            PhotoTypeEnum.forKGO -> {
+                val  platform = viewModel.findPlatformEntity(platformId)
+                activity?.actionBar?.title = getString(R.string.problem_container)
+                image_title.text = getString(R.string.problem_container)
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.kgoMedia))
+            }
         }
     }
 
-    override fun imageDetailClicked(imageBase64: String) {
+    override fun imageDetailClicked(imageBase64: ImageEntity) {
         val dialogFragment = ImageDetailFragment(platformId, containerId, imageBase64, photoFor, this)
         dialogFragment.show(childFragmentManager, "ImageDetailFragment")
     }
 
-    override fun imageRemoveClicked(imageBase64: String) {
+    override fun imageRemoveClicked(imageBase64: ImageEntity) {
         warningDelete(getString(R.string.warning_detele)).let {
             it.accept_btn.setOnClickListener {
                 if (photoFor == PhotoTypeEnum.forContainerProblem) {
