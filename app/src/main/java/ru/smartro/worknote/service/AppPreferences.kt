@@ -74,6 +74,12 @@ object AppPreferences {
             it.putInt("wayListId", value)
         }
 
+    var wayBillNumber: String
+        get() = preferences.getString("wayBillNumber", "rNull")!!
+        set(value) = preferences.edit {
+            it.putString("wayBillNumber", value)
+        }
+
     var wayTaskId: Int
         get() = preferences.getInt("wayTaskId", 0)
         set(value) = preferences.edit {
@@ -98,6 +104,8 @@ object AppPreferences {
         vehicleId = 0
         organisationId = 0
         wayBillId = 0
+        //TODO: rNull!!
+        wayBillNumber = "rNull"
         wayTaskId = 0
         isHasTask = false
         workerStatus = false

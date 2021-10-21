@@ -63,6 +63,15 @@ class WayBillAdapter(private val items: ArrayList<Data>) :
         }
 
     }
+    //TODO: rNull!!
+    fun getSelectedNumber(): String {
+        return if (checkedPosition != -1) {
+            items[checkedPosition].number
+        } else {
+            "rNull"
+        }
+
+    }
 
     class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }

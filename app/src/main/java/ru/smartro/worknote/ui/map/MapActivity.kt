@@ -92,9 +92,10 @@ class MapActivity : AppCompatActivity(),
         initBottomBehavior()
         initUserLocation()
         initDriveMode()
-        map_toast.setOnClickListener{
-            toast("${AppPreferences.wayBillId}")
-        }
+        // TODO: 21.10.2021 r_dos 
+//        map_toast.setOnClickListener{
+//            toast("${AppPreferences.wayBillId}")
+//        }
     }
 
     private fun initDriveMode() {

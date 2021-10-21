@@ -79,6 +79,7 @@ class WayBillActivity : AppCompatActivity() {
         next_btn.setOnClickListener {
             if (adapter.getSelectedId() != -1) {
                 AppPreferences.wayBillId = adapter.getSelectedId()
+                AppPreferences.wayBillNumber = adapter.getSelectedNumber()
                 startActivity(Intent(this, WayTaskActivity::class.java))
             }
         }

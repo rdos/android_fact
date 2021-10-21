@@ -61,7 +61,7 @@ class DebugActivity : AppCompatActivity() {
 
         debug_organisation.text = "Организация: ${AppPreferences.organisationId}"
         debug_user.text = "Пользователь: ${AppPreferences.userLogin}"
-        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillId}"
+        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillNumber}"
         debug_coordinate.text = "Координаты: ${AppPreferences.currentCoordinate}"
         debug_phone.text = "Устройство: ${MyUtil.getDeviceName()}, Android: ${android.os.Build.VERSION.SDK_INT}"
 
