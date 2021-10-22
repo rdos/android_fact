@@ -10,8 +10,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/point_detail_close"
@@ -37,17 +36,30 @@
                 tools:text="г. Москва, ул Пушкина д4" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/point_detail_rv"
-                android:layout_width="match_parent"
-                android:layout_height="326dp"
-                android:layout_marginTop="24dp"
+                android:id="@+id/rv_dialog_platform_clicked_dtl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_default"
                 android:layout_marginHorizontal="@dimen/margin_default"
                 android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/bottom_card"
                 app:layout_constraintTop_toBottomOf="@id/point_detail_address"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_choose" />
+
+            <TextView
+                android:id="@+id/tv_dialog_platform_clicked_dtl__containers_cnt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:padding="@dimen/margin_default"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rv_dialog_platform_clicked_dtl"
+                app:layout_constraintBottom_toTopOf="@id/bottom_card"
+                tools:text="999 конт. на площадке" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/bottom_card"
@@ -75,13 +87,13 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
-                    android:id="@+id/platform_detail_start_service"
+                    android:id="@+id/btn_dialog_platform_clicked_dtl__start_serve"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="8"
                     android:layout_marginHorizontal="8dp"
                     android:background="@drawable/bg_button"
-                    android:text="@string/start_service"
+                    android:text="@string/start_serve"
                     android:textColor="@color/white"
                     app:layout_constraintBottom_toBottomOf="@id/platform_detail_fire"
                     app:layout_constraintStart_toEndOf="@id/platform_detail_fire"

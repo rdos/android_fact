@@ -6,18 +6,13 @@ import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.alert_accept_task.view.title_tv
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
-import kotlinx.android.synthetic.main.alert_point_detail.view.*
 import kotlinx.coroutines.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.container_service.ContainerDetailAdapter
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
-import ru.smartro.worknote.util.StatusEnum
 
 private lateinit var loadingDialog: AlertDialog
 private lateinit var customDialog: AlertDialog
@@ -182,23 +177,23 @@ fun AppCompatActivity.warningDelete(title: String): View {
     return view
 }
 
-fun AppCompatActivity.showClickedPointDetail(point: PlatformEntity): View {
-    val customDialog: AlertDialog
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_point_detail, null)
-    builder.setView(view)
-    customDialog = builder.create()
-    view.bottom_card.isVisible = point.status == StatusEnum.NEW
-    view.point_detail_address.text = "${point.address} \n ${point.srpId} ${point.containers.size} конт."
-    view.point_detail_close.setOnClickListener {
-        customDialog.dismiss()
-    }
-    view.point_detail_rv.adapter = ContainerDetailAdapter(point.containers)
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
-    return view
-}
+//fun AppCompatActivity.showClickedPointDetail(point: PlatformEntity): View {
+//    val customDialog: AlertDialog
+//    val builder = AlertDialog.Builder(this)
+//    val inflater = this.layoutInflater
+//    val view = inflater.inflate(R.layout.alert_point_detail, null)
+//    builder.setView(view)
+//    customDialog = builder.create()
+//    view.bottom_card.isVisible = point.status == StatusEnum.NEW
+//    view.point_detail_address.text = "${point.address} \n ${point.srpId} ${point.containers.size} конт."
+//    view.point_detail_close.setOnClickListener {
+//        customDialog.dismiss()
+//    }
+//    view.point_detail_rv.adapter = ContainerDetailAdapter(point.containers)
+//    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//    customDialog.show()
+//    return view
+//}
 
 fun AppCompatActivity.warningContainerFailure(title: String): View {
     val builder = AlertDialog.Builder(this)

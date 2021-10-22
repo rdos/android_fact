@@ -1,10 +1,16 @@
 package ru.smartro.worknote.service.database.entity.work_order
 
 
+import android.content.Context
+import android.view.View
+import androidx.core.content.ContextCompat
 import com.google.gson.annotations.SerializedName
+import com.yandex.runtime.ui_view.ViewProvider
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import ru.smartro.worknote.R
+import ru.smartro.worknote.util.StatusEnum
 import java.io.Serializable
 
 open class WayTaskEntity(
@@ -74,7 +80,56 @@ open class PlatformEntity(
     var srpId: Int? = null,
     @SerializedName("icon")
     var icon: String? = null
-) : Serializable, RealmObject()
+) : Serializable, RealmObject() {
+
+    fun getIconDrawableResId(): Int {
+        return when (this.icon) {
+            "bunker" ->
+                when (this.status) {
+                    StatusEnum.NEW -> R.drawable.ic_bunker_blue
+                    StatusEnum.SUCCESS -> R.drawable.ic_bunker_green
+                    StatusEnum.ERROR -> R.drawable.ic_bunker_red
+                    else -> R.drawable.ic_bunker_orange
+                }
+            "bag" ->
+                when (this.status) {
+                    StatusEnum.NEW -> R.drawable.ic_bag_blue
+                    StatusEnum.SUCCESS -> R.drawable.ic_bag_green
+                    StatusEnum.ERROR -> R.drawable.ic_bag_red
+                    else -> R.drawable.ic_bag_orange
+                }
+            "bulk" ->
+                when (this.status) {
+                    StatusEnum.NEW -> R.drawable.ic_bulk_blue
+                    StatusEnum.SUCCESS -> R.drawable.ic_bulk_green
+                    StatusEnum.ERROR -> R.drawable.ic_bulk_red
+                    else -> R.drawable.ic_bulk_orange
+                }
+            "euro" ->
+                when (this.status) {
+                    StatusEnum.NEW -> R.drawable.ic_euro_blue
+                    StatusEnum.SUCCESS ->  R.drawable.ic_euro_green
+                    StatusEnum.ERROR -> R.drawable.ic_euro_red
+                    else -> R.drawable.ic_euro_orange
+                }
+            "metal" ->
+                when (this.status) {
+                    StatusEnum.NEW -> R.drawable.ic_metal_blue
+                    StatusEnum.SUCCESS -> R.drawable.ic_metal_green
+                    StatusEnum.ERROR -> R.drawable.ic_metal_red
+                    else -> R.drawable.ic_metal_orange
+                }
+            else ->
+                //many
+                when (this.status) {
+                    StatusEnum.NEW -> R.drawable.ic_many_blue
+                    StatusEnum.SUCCESS -> R.drawable.ic_many_green
+                    StatusEnum.ERROR -> R.drawable.ic_many_red
+                    else -> R.drawable.ic_many_orange
+                }
+        }
+    }
+}
 
 open class UnloadEntity(
     var coords: RealmList<Double> = RealmList(),

@@ -29,6 +29,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Союз 317" />
 
+
         <ImageView
             android:id="@+id/choose_status"
             android:visibility="gone"

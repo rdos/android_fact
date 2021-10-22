@@ -27,7 +27,7 @@ import ru.smartro.worknote.util.StatusEnum
 class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerPointClickListener {
     private val REQUEST_EXIT = 33
     private lateinit var platformEntity: PlatformEntity
-    private lateinit var adapter: ContainerAdapter
+    private lateinit var mConrainerAdapter: ContainerAdapter
 
     private val viewModel: PlatformServiceViewModel by viewModel()
 
@@ -85,15 +85,15 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
     private fun initContainer() {
         val platform = viewModel.findPlatformEntity(platformId = platformEntity.platformId!!)
         val containers = viewModel.findAllContainerInPlatform(platformEntity.platformId!!)
-        adapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
+        mConrainerAdapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
         platform_service_rv.recycledViewPool.setMaxRecycledViews(0, 0);
-        platform_service_rv.adapter = adapter
+        platform_service_rv.adapter = mConrainerAdapter
         point_info_tv.text = "№${platform.srpId} / ${platform.containers!!.size} конт."
     }
 
     fun updateRecyclerview() {
         val containers = viewModel.findAllContainerInPlatform(platformEntity.platformId!!)
-        adapter.updateData(containers as ArrayList<ContainerEntity>)
+        mConrainerAdapter.updateData(containers as ArrayList<ContainerEntity>)
         initAfterMedia()
     }
 

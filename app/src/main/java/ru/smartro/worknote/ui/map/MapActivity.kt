@@ -1,12 +1,14 @@
 package ru.smartro.worknote.ui.map
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -29,6 +31,8 @@ import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider
+import com.yandex.runtime.ui_view.ViewProvider
+import io.realm.RealmList
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
@@ -159,10 +163,41 @@ class MapActivity : AppCompatActivity(),
             if (isUpdateView) {
                 mapObjectCollection.removeTapListener(mapObjectTapListener)
             }
-            MyUtil.addPlaceMarks(this, mapObjectCollection, it.platforms)
+            addPlaceMarks(this, mapObjectCollection, it.platforms)
             mapObjectCollection.addTapListener(mapObjectTapListener)
         }
     }
+
+    private fun getIconViewProvider(_context: Context, drawableResId: Int): ViewProvider {
+        fun iconMarker(_drawableResId: Int): View {
+            val resultIcon = View(_context).apply { background = ContextCompat.getDrawable(context, _drawableResId) }
+            return resultIcon
+        }
+        return ViewProvider(iconMarker(drawableResId))
+    }
+
+    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: RealmList<PlatformEntity>) {
+        platforms.forEach {
+            mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), getIconViewProvider(context, it.getIconDrawableResId()))
+            // TODO: 22.10.2021 wtf???!!!start
+//            when (it.status) {
+//                StatusEnum.NEW -> {
+//                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), getIconViewProvider(context, it.getIconDrawableResId()))
+//                }
+//                StatusEnum.SUCCESS -> {
+//                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), getIconViewProvider(context, it.getIconDrawableResId()))
+//                }
+//                StatusEnum.ERROR -> {
+//                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), getIconViewProvider(context, it.getIconDrawableResId()))
+//                }
+//                StatusEnum.UNFINISHED -> {
+//                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), getIconViewProvider(context, it.getIconDrawableResId()))
+//                }
+//            }
+            // TODO: 22.10.2021 WTF?!!!stop
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
@@ -187,6 +222,7 @@ class MapActivity : AppCompatActivity(),
 
     private fun initBottomBehavior() {
         viewModel.findWayTask().let {
+
             bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
             val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
             val platformsArray = it.platforms
@@ -444,12 +480,13 @@ class MapActivity : AppCompatActivity(),
         MapKitFactory.getInstance().onStop()
     }
 
+
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
         val placeMark = mapObject as PlacemarkMapObject
         val coordinate = placeMark.geometry
         val clickedPlatform = viewModel.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
-        val placeMarkDetailDialog = PlaceMarkDetailDialog(clickedPlatform, coordinate)
-        placeMarkDetailDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
+        val platformClickedDtlDialog = PlatformClickedDtlDialog(clickedPlatform, coordinate)
+        platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
         return true
     }
 
