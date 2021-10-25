@@ -6,16 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_choose.view.*
+import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.util.StatusEnum
 
+// TODO: 22.10.2021 !!!когда?
 class ContainerAdapter(private val listener: ContainerPointClickListener, private val items: ArrayList<ContainerEntity>) :
     RecyclerView.Adapter<ContainerAdapter.OwnerViewHolder>() {
-
+    // TODO: 22.10.2021  item_container_adapter !!!
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_choose, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_adapter, parent, false)
         return OwnerViewHolder(view)
     }
 
@@ -25,7 +26,14 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
 
     override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
         val data = items[position]
+
         holder.itemView.choose_title.text = data.number
+        holder.itemView.tv_item_container_adapter__type_name.text = data.typeName
+        // TODO: 25.10.2021 add getString() + format
+        holder.itemView.tv_item_container_adapter__volume.text = "${data.volume.toString()} м3"
+
+        holder.itemView.choose_status.visibility = View.INVISIBLE
+
         if (data.isActiveToday!!) {
             when (data.status) {
                 StatusEnum.NEW -> {

@@ -62,7 +62,7 @@
                 android:value="true" />
         </activity>
         <activity
-            android:name=".ui.platform_service.PlatformServiceActivity"
+            android:name=".ui.platform_service.PlatformServeActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.map.MapActivity"

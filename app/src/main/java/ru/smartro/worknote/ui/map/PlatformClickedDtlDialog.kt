@@ -26,7 +26,7 @@ import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningCameraShow
 import ru.smartro.worknote.extensions.warningClearNavigator
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
-import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
+import ru.smartro.worknote.ui.platform_service.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 import kotlin.math.min
@@ -44,7 +44,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         mCurrentActivity = requireActivity() as MapActivity
 
         view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve).setOnClickListener {
-            val intent = Intent(requireActivity(), PlatformServiceActivity::class.java)
+            val intent = Intent(requireActivity(), PlatformServeActivity::class.java)
             intent.putExtra("platform_id", _platform.platformId)
             dismiss()
             startActivityForResult(intent, 88)

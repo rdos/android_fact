@@ -15,7 +15,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
 import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
-import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
+import ru.smartro.worknote.ui.platform_service.PlatformServeViewModel
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 
@@ -23,7 +23,7 @@ import ru.smartro.worknote.util.PhotoTypeEnum
 class ImageDetailFragment(private val platformId: Int, private val containerId : Int,
                           private val imageBase64: ImageEntity, private val photoFor: Int,
                           private val listener: ImageDetailDeleteListener) : DialogFragment() {
-    private val viewModel: PlatformServiceViewModel by viewModel()
+    private val viewModel: PlatformServeViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_image_detail, container, false)

@@ -47,7 +47,7 @@
                 app:layout_constraintBottom_toTopOf="@id/bottom_card"
                 app:layout_constraintTop_toBottomOf="@id/point_detail_address"
                 tools:itemCount="3"
-                tools:listitem="@layout/item_choose" />
+                tools:listitem="@layout/item_dialog_platform_clicked_dtl" />
 
             <TextView
                 android:id="@+id/tv_dialog_platform_clicked_dtl__containers_cnt"

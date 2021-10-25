@@ -11,7 +11,7 @@ import ru.smartro.worknote.ui.choose.way_task_4.WayTaskViewModel
 import ru.smartro.worknote.ui.debug.DebugViewModel
 import ru.smartro.worknote.ui.log.LogViewModel
 import ru.smartro.worknote.ui.map.MapViewModel
-import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
+import ru.smartro.worknote.ui.platform_service.PlatformServeViewModel
 import ru.smartro.worknote.ui.problem.ProblemViewModel
 
 val viewModelModule = module {
@@ -21,7 +21,7 @@ val viewModelModule = module {
     viewModel { WayListViewModel(androidApplication()) }
     viewModel { WayTaskViewModel(androidApplication()) }
     viewModel { MapViewModel(androidApplication()) }
-    viewModel { PlatformServiceViewModel(androidApplication()) }
+    viewModel { PlatformServeViewModel(androidApplication()) }
     viewModel { CameraViewModel(androidApplication()) }
     viewModel { ProblemViewModel(androidApplication()) }
     viewModel { DebugViewModel(androidApplication()) }

@@ -16,7 +16,7 @@ import ru.smartro.worknote.adapter.listener.ImageClickListener
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
 import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
-import ru.smartro.worknote.ui.platform_service.PlatformServiceViewModel
+import ru.smartro.worknote.ui.platform_service.PlatformServeViewModel
 import ru.smartro.worknote.util.PhotoTypeEnum
 
 
@@ -25,7 +25,7 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int,
     : BottomSheetDialogFragment(), ImageClickListener, ImageDetailDeleteListener{
 
     private val TAG = "GalleryFragment_LOG"
-    private val viewModel: PlatformServiceViewModel by viewModel()
+    private val viewModel: PlatformServeViewModel by viewModel()
     private val listener: ImageClickListener = this
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_gallery_before, container, false)

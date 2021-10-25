@@ -17,10 +17,10 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 
 class ContainerServiceFragment(val containerId: Int, val platformId: Int) : BottomSheetDialogFragment() {
-    private val viewModel: PlatformServiceViewModel by viewModel()
+    private val viewModel: PlatformServeViewModel by viewModel()
     private var comment: String? = null
     private var volume: Double? = null
-    private lateinit var parentActivity: PlatformServiceActivity
+    private lateinit var parentActivity: PlatformServeActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Bott
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parentActivity = requireActivity() as PlatformServiceActivity
+        parentActivity = requireActivity() as PlatformServeActivity
         viewModel.findContainerEntity(containerId).let {
             comment_et.setText(it.comment)
             comment = it.comment

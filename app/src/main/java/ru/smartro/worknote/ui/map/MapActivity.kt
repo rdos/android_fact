@@ -50,7 +50,7 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.log.LogActivity
-import ru.smartro.worknote.ui.platform_service.PlatformServiceActivity
+import ru.smartro.worknote.ui.platform_service.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
@@ -374,7 +374,7 @@ class MapActivity : AppCompatActivity(),
     }
 
     override fun startPlatformService(item: PlatformEntity) {
-        val intent = Intent(this, PlatformServiceActivity::class.java)
+        val intent = Intent(this, PlatformServeActivity::class.java)
         intent.putExtra("platform_id", item.platformId)
         startActivity(intent)
     }

@@ -6,7 +6,7 @@ import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 
-class PlatformServiceViewModel(application: Application) : BaseViewModel(application) {
+class PlatformServeViewModel(application: Application) : BaseViewModel(application) {
 
     fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?, comment: String?) {
         db.updateContainerVolume(platformId, containerId, volume, comment)

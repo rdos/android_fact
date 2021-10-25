@@ -24,18 +24,18 @@ import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerPointClickListener {
+class PlatformServeActivity : AppCompatActivity(), ContainerAdapter.ContainerPointClickListener {
     private val REQUEST_EXIT = 33
     private lateinit var platformEntity: PlatformEntity
     private lateinit var mConrainerAdapter: ContainerAdapter
 
-    private val viewModel: PlatformServiceViewModel by viewModel()
+    private val mPlatformServeViewModel: PlatformServeViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform_service)
         intent.let {
-            platformEntity = viewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            platformEntity = mPlatformServeViewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
         }
         supportActionBar?.title = "${platformEntity.address}"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -49,7 +49,7 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
                 startActivityForResult(intent, REQUEST_EXIT)
         }
         kgo_btn.setOnClickListener {
-            val intent = Intent(this@PlatformServiceActivity, CameraActivity::class.java)
+            val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
             intent.putExtra("platform_id", platformEntity.platformId)
             intent.putExtra("photoFor", PhotoTypeEnum.forKGO)
             startActivityForResult(intent, 101)
@@ -59,7 +59,7 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
 
     private fun initBeforeMedia() {
         AppPreferences.serviceStartedAt = System.currentTimeMillis() / 1000L
-        val intent = Intent(this@PlatformServiceActivity, CameraActivity::class.java)
+        val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
         intent.putExtra("platform_id", platformEntity.platformId)
         intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
         startActivity(intent)
@@ -67,12 +67,12 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
     }
 
     private fun initAfterMedia() {
-        if (viewModel.findPlatformEntity(platformEntity.platformId!!).containers.filter {
+        if (mPlatformServeViewModel.findPlatformEntity(platformEntity.platformId!!).containers.filter {
                 it.isActiveToday == true
             }.all { it.status != StatusEnum.NEW }) {
             complete_task_btn.isVisible = true
             complete_task_btn.setOnClickListener {
-                val intent = Intent(this@PlatformServiceActivity, CameraActivity::class.java)
+                val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
                 intent.putExtra("platform_id", platformEntity.platformId!!)
                 intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
                 startActivityForResult(intent, 13)
@@ -83,8 +83,8 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
     }
 
     private fun initContainer() {
-        val platform = viewModel.findPlatformEntity(platformId = platformEntity.platformId!!)
-        val containers = viewModel.findAllContainerInPlatform(platformEntity.platformId!!)
+        val platform = mPlatformServeViewModel.findPlatformEntity(platformId = platformEntity.platformId!!)
+        val containers = mPlatformServeViewModel.findAllContainerInPlatform(platformEntity.platformId!!)
         mConrainerAdapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
         platform_service_rv.recycledViewPool.setMaxRecycledViews(0, 0);
         platform_service_rv.adapter = mConrainerAdapter
@@ -92,7 +92,7 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
     }
 
     fun updateRecyclerview() {
-        val containers = viewModel.findAllContainerInPlatform(platformEntity.platformId!!)
+        val containers = mPlatformServeViewModel.findAllContainerInPlatform(platformEntity.platformId!!)
         mConrainerAdapter.updateData(containers as ArrayList<ContainerEntity>)
         initAfterMedia()
     }
@@ -109,7 +109,7 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
-            viewModel.updatePlatformStatus(platformEntity.platformId!!, StatusEnum.SUCCESS)
+            mPlatformServeViewModel.updatePlatformStatus(platformEntity.platformId!!, StatusEnum.SUCCESS)
             setResult(Activity.RESULT_OK)
             finish()
         } else if (requestCode == REQUEST_EXIT) {
@@ -122,7 +122,7 @@ class PlatformServiceActivity : AppCompatActivity(), ContainerAdapter.ContainerP
                 view.kgo_accept_btn.setOnClickListener {
                     if (!view.kgo_volume_in.text.isNullOrEmpty()) {
                         val kgoVolume = view.kgo_volume_in.text.toString().toDouble()
-                        viewModel.updatePlatformKGO(platformEntity.platformId!!, kgoVolume)
+                        mPlatformServeViewModel.updatePlatformKGO(platformEntity.platformId!!, kgoVolume)
                         hideDialog()
                     }
                 }
