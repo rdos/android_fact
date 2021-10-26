@@ -1,15 +1,12 @@
 package ru.smartro.worknote.service.database.entity.work_order
 
 
-import android.content.Context
-import android.view.View
-import androidx.core.content.ContextCompat
 import com.google.gson.annotations.SerializedName
-import com.yandex.runtime.ui_view.ViewProvider
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.R
+import ru.smartro.worknote.util.MyUtil.isNotNull
 import ru.smartro.worknote.util.StatusEnum
 import java.io.Serializable
 
@@ -83,6 +80,9 @@ open class PlatformEntity(
 ) : Serializable, RealmObject() {
 
     fun getIconDrawableResId(): Int {
+        if (this.beginnedAt.isNotNull() && this.status == StatusEnum.NEW) {
+            return R.drawable.ic_serving
+        }
         return when (this.icon) {
             "bunker" ->
                 when (this.status) {

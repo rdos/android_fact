@@ -51,6 +51,7 @@ object MyUtil {
         return sdf.format(Date())
     }
 
+    // TODO: 26.10.2021 !!! см. MapActivity.getBitmapFromVectorDrawable
     fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap? {
         var drawable = ContextCompat.getDrawable(context, drawableId) ?: return null
 
@@ -160,9 +161,8 @@ object MyUtil {
         return userLocation.distanceTo(checkPointLocation).toInt()
     }
 
-
-
-
-
+    fun CharSequence?.isNotNull(): Boolean {
+        return !this.isNullOrBlank()
+    }
 
 }

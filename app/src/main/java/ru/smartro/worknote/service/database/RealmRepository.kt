@@ -97,7 +97,7 @@ class RealmRepository(private val realm: Realm) {
     }
 
 
-    fun findBreakdownByValue(realm: Realm, problem: String): BreakDownEntity {
+    private fun findBreakdownByValue(realm: Realm, problem: String): BreakDownEntity {
         return realm.copyFromRealm(
             realm.where(BreakDownEntity::class.java).equalTo("problem", problem).findFirst()!!
         )
@@ -135,12 +135,14 @@ class RealmRepository(private val realm: Realm) {
                 .findFirst()!!
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
-                .findFirst()!!
+                .findFirst()
             container.volume = volume
             container.comment = comment
             if (container.status == StatusEnum.NEW) {
                 container.status = StatusEnum.SUCCESS
             }
+
+            platformEntity?.beginnedAt = MyUtil.currentTime()
             updateTimer(platformEntity)
         }
     }
@@ -385,6 +387,7 @@ class RealmRepository(private val realm: Realm) {
                     )
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
+                    platformEntity?.beginnedAt = MyUtil.currentTime()
                     platformEntity?.beforeMedia?.add(
                         ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
                     )

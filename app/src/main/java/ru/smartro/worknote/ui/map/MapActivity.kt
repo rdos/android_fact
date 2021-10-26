@@ -239,7 +239,8 @@ class MapActivity : AppCompatActivity(),
 ////        userLocationLayer.setObjectListener(null)
 //    }
 //
-//    private fun Context.getBitmapFromVectorDrawable(drawableId: Int): Bitmap? {
+    // TODO: 26.10.2021 !!! см. MapActivity.getBitmapFromVectorDrawable
+//    private fun MyUtil.getBitmapFromVectorDrawable(drawableId: Int): Bitmap? {
 //        val drawable = ContextCompat.getDrawable(this, drawableId) ?: return null
 //
 //        val bitmap = Bitmap.createBitmap(
