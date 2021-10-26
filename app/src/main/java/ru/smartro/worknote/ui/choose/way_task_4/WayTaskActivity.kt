@@ -28,6 +28,7 @@ import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
 
 class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
+    private val TAG : String = "WayTaskActivity--AAA"
     private val viewModel: WayTaskViewModel by viewModel()
     private lateinit var adapter: WayTaskAdapter
     private lateinit var selectedWayInfo: Workorder
@@ -86,6 +87,27 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
             }
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onPause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart")
+    }
+
 
     private fun saveBreakDownTypes() {
         viewModel.getBreakDownTypes().observe(this, Observer { result ->

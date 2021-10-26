@@ -1,5 +1,6 @@
 package ru.smartro.worknote.service.database
 
+import android.util.Log
 import com.yandex.mapkit.geometry.Point
 import io.realm.Realm
 import io.realm.RealmList
@@ -14,9 +15,10 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.ProblemEnum
 import ru.smartro.worknote.util.StatusEnum
+import kotlin.math.round
 
 class RealmRepository(private val realm: Realm) {
-
+    private val TAG : String = "RealmRepository--AAA"
     fun insertWayTask(response: Workorder) {
 
         fun mapMedia(data: List<String>): RealmList<ImageEntity> {
@@ -81,9 +83,11 @@ class RealmRepository(private val realm: Realm) {
     }
 
     fun insertFailReason(entities: List<FailReasonEntity>) {
+        Log.d(TAG, "insertFailReason.before ${entities.toString()}")
         realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }
+        Log.d(TAG, "insertFailReason.after")
     }
 
     fun insertCancelWayReason(entities: List<CancelWayReasonEntity>) {
@@ -239,7 +243,13 @@ class RealmRepository(private val realm: Realm) {
 
     fun findWayTask(): WayTaskEntity {
         realm.refresh()
-        return realm.copyFromRealm(realm.where(WayTaskEntity::class.java).findFirst()!!)
+        // TODO: 25.10.2021 !!!???
+        //  return WayTaskEntity() is fail
+        val wayTaskEntity = realm.where(WayTaskEntity::class.java).findFirst()
+        if (wayTaskEntity != null) {
+            return realm.copyFromRealm(wayTaskEntity)
+        }
+        return WayTaskEntity()
     }
 
     fun findLastPlatforms(): List<PlatformEntity> {
@@ -319,8 +329,11 @@ class RealmRepository(private val realm: Realm) {
         allPlatforms.forEach {
             totalKgoVolume += it.kgoVolume
         }
-
-        return totalContainersVolume + totalKgoVolume
+        val total = totalContainersVolume + totalKgoVolume
+        Log.d(TAG, "total=${total}")
+        val totalRound = round(total * 100) / 100
+        Log.d(TAG, "totalRound=${totalRound}")
+        return totalRound
     }
 
     fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {

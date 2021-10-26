@@ -57,6 +57,18 @@ import ru.smartro.worknote.util.StatusEnum
 import ru.smartro.worknote.work.SynchronizeWorker
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+
+import androidx.core.graphics.drawable.DrawableCompat
+
+import android.os.Build
+
+import android.graphics.drawable.Drawable
+
+
+
 
 
 class MapActivity : AppCompatActivity(),
@@ -205,12 +217,42 @@ class MapActivity : AppCompatActivity(),
         MapKitFactory.getInstance().onStart()
     }
 
+
     //UserLocation
     override fun onObjectAdded(userLocationView: UserLocationView) {
         userLocationView.arrow.setIcon(ImageProvider.fromResource(this, R.drawable.ic_vehicle_png))
         userLocationView.accuracyCircle.isVisible = false
         userLocationLayer.setObjectListener(null)
     }
+//    //UserLocation
+//    override fun onObjectAdded(userLocationView: UserLocationView) {
+//        val bitmap = this.getBitmapFromVectorDrawable(R.drawable.ic_vehicle)
+////        bitmap = null
+//        bitmap?.let {
+//            userLocationView.arrow.setIcon(ImageProvider.fromBitmap(bitmap))
+//        }
+//
+//
+////        userLocationView.arrow.setIcon(ImageProvider.fromResource(this, R.drawable.ic_vehicle_png))
+//        userLocationView.accuracyCircle.isVisible = true
+//        // TODO: 25.10.2021 ???
+////        userLocationLayer.setObjectListener(null)
+//    }
+//
+//    private fun Context.getBitmapFromVectorDrawable(drawableId: Int): Bitmap? {
+//        val drawable = ContextCompat.getDrawable(this, drawableId) ?: return null
+//
+//        val bitmap = Bitmap.createBitmap(
+//            drawable.intrinsicWidth,
+//            drawable.intrinsicHeight,
+//            Bitmap.Config.ARGB_8888) ?: return null
+//        val canvas = Canvas(bitmap)
+//        drawable.setBounds(0, 0, canvas.width, canvas.height)
+//        drawable.draw(canvas)
+//
+//        return bitmap
+//    }
+
 
     override fun onObjectRemoved(p0: UserLocationView) {
 

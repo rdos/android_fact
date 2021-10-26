@@ -1,6 +1,7 @@
 package ru.smartro.worknote.ui.choose.way_task_4
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import io.realm.RealmModel
 import ru.smartro.worknote.base.BaseViewModel
@@ -25,6 +26,7 @@ class WayTaskViewModel(application: Application) : BaseViewModel(application) {
 */
 
     fun getWorkOrder(organisationId: Int, wayId: Int): LiveData<Resource<WorkOrderResponse>> {
+        Log.d("AAA", "getWorkOrder")
         return network.getWorkOder(organisationId, wayId)
     }
 
