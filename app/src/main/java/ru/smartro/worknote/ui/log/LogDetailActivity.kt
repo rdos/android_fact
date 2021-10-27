@@ -7,10 +7,11 @@ import kotlinx.android.synthetic.main.activity_log.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.LogDetailAdapter
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import java.util.*
 
-class LogDetailActivity : AppCompatActivity() {
+class LogDetailActivity : AbstractAct() {
     private val viewModel: LogViewModel by viewModel()
     private var platformId = 0
     override fun onCreate(savedInstanceState: Bundle?) {

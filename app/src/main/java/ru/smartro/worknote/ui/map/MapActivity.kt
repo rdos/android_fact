@@ -66,12 +66,10 @@ import androidx.core.graphics.drawable.DrawableCompat
 import android.os.Build
 
 import android.graphics.drawable.Drawable
+import ru.smartro.worknote.base.AbstractAct
 
 
-
-
-
-class MapActivity : AppCompatActivity(),
+class MapActivity : AbstractAct(),
     UserLocationObjectListener, MapObjectTapListener,
     PlatformAdapter.PlatformClickListener, LocationListener {
     var drivingModeState = false
@@ -209,7 +207,6 @@ class MapActivity : AppCompatActivity(),
             // TODO: 22.10.2021 WTF?!!!stop
         }
     }
-
 
     override fun onStart() {
         super.onStart()

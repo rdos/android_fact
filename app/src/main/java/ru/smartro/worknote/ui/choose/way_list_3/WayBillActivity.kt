@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_choose.choose_rv
@@ -13,6 +12,7 @@ import kotlinx.android.synthetic.main.activity_way_bill.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.WayBillAdapter
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
@@ -26,7 +26,7 @@ import ru.smartro.worknote.util.MyUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
-class WayBillActivity : AppCompatActivity() {
+class WayBillActivity : AbstractAct() {
     private val viewModel: WayListViewModel by viewModel()
     private lateinit var adapter: WayBillAdapter
 
@@ -49,7 +49,7 @@ class WayBillActivity : AppCompatActivity() {
                 Status.SUCCESS -> {
                     if (data?.data.isNullOrEmpty()) {
                         empty_title.isVisible = true
-                        // TODO: 27.10.2021 SR-3259!!! 
+                        // TODO: 27.10.2021 SR-3259!!!
                         empty_title.text = getString(R.string.empty_way_task)
                         logout_btn.isVisible = true
                         logout_btn.setOnClickListener {

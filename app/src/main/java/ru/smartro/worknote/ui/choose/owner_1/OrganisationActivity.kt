@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_choose.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.OwnerAdapter
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
@@ -22,7 +23,7 @@ import ru.smartro.worknote.service.network.response.organisation.Organisation
 import ru.smartro.worknote.ui.choose.vehicle_2.VehicleActivity
 import ru.smartro.worknote.util.MyUtil
 
-class OrganisationActivity : AppCompatActivity() {
+class OrganisationActivity : AbstractAct() {
     private val viewModel: OrganisationViewModel by viewModel()
     private lateinit var adapter: OwnerAdapter
     private val PERMISSIONS = arrayOf(

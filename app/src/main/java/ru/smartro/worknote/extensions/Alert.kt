@@ -313,16 +313,16 @@ fun Fragment.loadingShow() {
 
 fun Fragment.hideDialog(time: Long = 0) {
     try {
-        println()
+        println("rdos-A")
         CoroutineScope(Dispatchers.IO).launch {
-            println()
+            println("rdos-AB")
             delay(time)
             withContext(Dispatchers.Main) {
                 customDialog.dismiss()
             }
-            println()
+            println("rdos-ABC")
         }
-        println()
+        println("rdos-ABCD")
 
 
     } catch (e: Exception) {

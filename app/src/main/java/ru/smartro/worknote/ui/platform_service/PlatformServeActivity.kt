@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.alert_fill_kgo.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.container_service.ContainerAdapter
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.fillKgoVolume
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.toast
@@ -24,7 +25,7 @@ import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlatformServeActivity : AppCompatActivity(), ContainerAdapter.ContainerPointClickListener {
+class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClickListener {
     private val REQUEST_EXIT = 33
     private lateinit var platformEntity: PlatformEntity
     private lateinit var mConrainerAdapter: ContainerAdapter
@@ -54,6 +55,11 @@ class PlatformServeActivity : AppCompatActivity(), ContainerAdapter.ContainerPoi
             intent.putExtra("photoFor", PhotoTypeEnum.forKGO)
             startActivityForResult(intent, 101)
             hideDialog()
+        }
+        // TODO: 27.10.2021 !!!
+        //  is a duplicate FIND complete_task_btn.setOnClickListener
+        complete_task_btn.setOnClickListener{
+            finish()
         }
     }
 

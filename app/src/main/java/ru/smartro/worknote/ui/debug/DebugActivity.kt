@@ -14,11 +14,12 @@ import kotlinx.android.synthetic.main.activity_debug.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 
 
-class DebugActivity : AppCompatActivity() {
+class DebugActivity : AbstractAct() {
     private val viewModel: DebugViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {

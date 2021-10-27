@@ -9,10 +9,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.LogAdapter
 import ru.smartro.worknote.adapter.LogClickListener
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import java.util.*
 
-class LogActivity : AppCompatActivity(), LogClickListener {
+class LogActivity : AbstractAct(), LogClickListener {
     private val viewModel: LogViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {

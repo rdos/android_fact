@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.activity_choose.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.VehicleAdapter
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
@@ -19,7 +20,7 @@ import ru.smartro.worknote.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.ui.choose.way_list_3.WayBillActivity
 import ru.smartro.worknote.util.MyUtil
 
-class VehicleActivity : AppCompatActivity() {
+class VehicleActivity : AbstractAct() {
     private val viewModel: VehicleViewModel by viewModel()
     private lateinit var adapter: VehicleAdapter
 

@@ -19,7 +19,6 @@
     <!--   <string name="yandex_map_key">f7873ee7-b6a0-4527-8df1-215f37ba0f97</string>-->
     <string name="accept_task">Взяв в работу сменное задание, вы не сможете его поменять до завершения</string>
     <string name="accept_task_check">Взять задание в работу</string>
-    <string name="start_serve">Начать обслуживание</string>
     <string name="no_images_selected">Изображение не выбрана</string>
     <string name="n_images_selected">Фотографии выбраны</string>
     <string name="photo_save_error_toast">Неизвестная ошибка камеры</string>
@@ -81,4 +80,7 @@
     <string name="error_build_way">Невозможно построить маршрут, повторите попытку.</string>
 
     <string name="dialog_platform_clicked_dtl__containers_cnt">конт. на площадке %s</string>
+    <string name="dialog_platform_clicked_dtl__address">%s \n %s</string>
+    <string name="start_serve">Начать обслуживание</string>
+    <string name="dialog_platform_clicked_dtl__serve_again">Редактировать / Дополнить</string>
 </resources>

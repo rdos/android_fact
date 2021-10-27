@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.activity_problem.problem_comment
 import kotlinx.android.synthetic.main.activity_problem.problem_img
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
@@ -25,7 +26,7 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.ProblemEnum
 
-class ExtremeProblemActivity : AppCompatActivity() {
+class ExtremeProblemActivity : AbstractAct() {
     private lateinit var platform: PlatformEntity
     private lateinit var container: ContainerEntity
     private var isContainer = false

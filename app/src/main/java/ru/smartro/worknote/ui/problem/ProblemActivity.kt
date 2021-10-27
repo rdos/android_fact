@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.alert_warning_camera.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_delete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningContainerFailure
@@ -24,7 +25,7 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.ProblemEnum
 
-class ProblemActivity : AppCompatActivity() {
+class ProblemActivity : AbstractAct() {
     private val viewModel: ProblemViewModel by viewModel()
     private var isContainer = false
     private lateinit var container: ContainerEntity

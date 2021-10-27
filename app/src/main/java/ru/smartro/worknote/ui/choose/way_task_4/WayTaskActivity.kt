@@ -7,13 +7,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_choose.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.WayTaskAdapter
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
@@ -27,8 +27,7 @@ import ru.smartro.worknote.service.network.response.work_order.Workorder
 import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
 
-class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
-    private val TAG : String = "WayTaskActivity--AAA"
+class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
     private val viewModel: WayTaskViewModel by viewModel()
     private lateinit var adapter: WayTaskAdapter
     private lateinit var mSelectedWayInfo: Workorder
@@ -88,25 +87,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause")
-    }
 
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onPause")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart")
-    }
 
 
     private fun saveBreakDownTypes() {
@@ -130,6 +111,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
     }
 
     private fun saveFailReason() {
+        Log.i(TAG, "saveFailReason.before")
         viewModel.getFailReason().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {

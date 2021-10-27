@@ -8,16 +8,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.map.MapObjectTapListener
 import kotlinx.android.synthetic.main.dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
@@ -31,9 +30,10 @@ import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 import kotlin.math.min
 
-class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : DialogFragment() {
+class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : DialogFragment(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
     private var mFirstTime = true
+    private val mOnClickListener = this as View.OnClickListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_platform_clicked_dtl, container, false)
@@ -43,15 +43,6 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         super.onViewCreated(view, savedInstanceState)
         mCurrentActivity = requireActivity() as MapActivity
 
-        view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve).setOnClickListener {
-            val intent = Intent(requireActivity(), PlatformServeActivity::class.java)
-            intent.putExtra("platform_id", _platform.platformId)
-            dismiss()
-            startActivityForResult(intent, 88)
-        }
-
-
-
         val spanCount = min(_platform.containers.size, 10)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_dialog_platform_clicked_dtl)
         recyclerView.layoutManager = GridLayoutManager(context, spanCount)
@@ -60,18 +51,49 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         val tvContainersCnt = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__containers_cnt)
         tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containers.size)
 
-        initViews()
+
+
+        val isStartServe = _platform.status == StatusEnum.NEW
+
+        val cvStartServe = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
+        cvStartServe.isVisible = isStartServe
+
+        val cvServeAgain = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__serve_again)
+        cvServeAgain.isVisible = !isStartServe
+        val tvAddress = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__address)
+        tvAddress.text = String.format(getString(R.string.dialog_platform_clicked_dtl__address), _platform.address, _platform.srpId)
+
+        // TODO: 27.10.2021 !!!?
+        initButtonsViews()
+        view.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener {
+            dismiss()
+        }
+
+        view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
+        view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve).setOnClickListener(mOnClickListener)
 
     }
 
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.btn_dialog_platform_clicked_dtl__serve_again ,
+            R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
+                val intent = Intent(requireActivity(), PlatformServeActivity::class.java)
+                intent.putExtra("platform_id", _platform.platformId)
+                dismiss()
+                startActivityForResult(intent, 88)
+            }
+        }
+
+    }
     override fun onResume() {
         super.onResume()
-        val params: WindowManager.LayoutParams = dialog!!.window!!.attributes
-        params.height = FrameLayout.LayoutParams.WRAP_CONTENT
-        params.width = FrameLayout.LayoutParams.MATCH_PARENT
-        params.horizontalMargin = 56f
-        dialog!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog!!.window!!.attributes = params
+        val params: WindowManager.LayoutParams? = dialog?.window?.attributes
+        params?.height = FrameLayout.LayoutParams.WRAP_CONTENT
+        params?.width = FrameLayout.LayoutParams.MATCH_PARENT
+        params?.horizontalMargin = 56f
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.attributes = params
 
         // TODO: 22.10.2021 mFirstTime ??!
         if (mFirstTime) {
@@ -81,8 +103,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         }
     }
 
-    private fun initViews() {
-
+    private fun initButtonsViews() {
         platform_detail_fire.setOnClickListener {
             warningCameraShow("Сделайте фото проблемы").let {
                 it.accept_btn.setOnClickListener {
@@ -97,7 +118,6 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
                     hideDialog()
                 }
             }
-
         }
 
         //коммент инициализации
@@ -117,13 +137,6 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
                 dismiss()
             }
         }
-        bottom_card.isVisible = _platform.status == StatusEnum.NEW
-        point_detail_address.text = "${_platform.address} \n ${_platform.srpId}"
-
-        point_detail_close.setOnClickListener {
-            dismiss()
-        }
-
     }
 
     class PlatformClickedDtlAdapter(private val _platform: PlatformEntity) :
@@ -162,6 +175,8 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
 
         }
     }
+
+
 
 
 }

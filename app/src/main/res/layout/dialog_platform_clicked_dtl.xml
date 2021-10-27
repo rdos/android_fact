@@ -13,7 +13,7 @@
             android:layout_height="wrap_content">
 
             <ImageButton
-                android:id="@+id/point_detail_close"
+                android:id="@+id/ibtn_dialog_platform_clicked_dtl__close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
@@ -24,13 +24,13 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/point_detail_address"
+                android:id="@+id/tv_dialog_platform_clicked_dtl__address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_default"
                 android:layout_marginTop="16dp"
                 android:textColor="@color/black"
-                app:layout_constraintEnd_toStartOf="@id/point_detail_close"
+                app:layout_constraintEnd_toStartOf="@id/ibtn_dialog_platform_clicked_dtl__close"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="г. Москва, ул Пушкина д4" />
@@ -41,11 +41,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_default"
                 android:layout_marginHorizontal="@dimen/margin_default"
-                android:orientation="vertical"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/bottom_card"
-                app:layout_constraintTop_toBottomOf="@id/point_detail_address"
+                app:layout_constraintBottom_toTopOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt"
+                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__address"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_dialog_platform_clicked_dtl" />
 
@@ -58,15 +59,47 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/rv_dialog_platform_clicked_dtl"
-                app:layout_constraintBottom_toTopOf="@id/bottom_card"
                 tools:text="999 конт. на площадке" />
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_dialog_platform_clicked_dtl__serve_again"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="16dp"
+                app:cardCornerRadius="32dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt"
+                tools:visibility="visible">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/margin_default"
+                    android:gravity="center_vertical">
+
+                    <Button
+                        android:id="@+id/btn_dialog_platform_clicked_dtl__serve_again"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="8"
+                        android:paddingHorizontal="@dimen/margin_max"
+                        android:background="@drawable/bg_button_gray"
+                        android:text="@string/dialog_platform_clicked_dtl__serve_again"
+                        android:textColor="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
         <androidx.cardview.widget.CardView
-            android:id="@+id/bottom_card"
+            android:id="@+id/cv_dialog_platform_clicked_dtl__start_serve"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="16dp"
             app:cardCornerRadius="32dp"
+            app:layout_constraintTop_toBottomOf="@id/cv_dialog_platform_clicked_dtl__serve_again"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout

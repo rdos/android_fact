@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ru.smartro.worknote.R
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.FLAGS_FULLSCREEN
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
@@ -17,7 +18,7 @@ const val KEY_EVENT_ACTION = "key_event_action"
 const val KEY_EVENT_EXTRA = "key_event_extra"
 private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
-class CameraActivity : AppCompatActivity() {
+class CameraActivity : AbstractAct() {
     private var photoFor = 0
     private lateinit var hostLayout: FrameLayout
     private var platformId = 0
