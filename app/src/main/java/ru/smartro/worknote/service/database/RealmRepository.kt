@@ -82,8 +82,10 @@ class RealmRepository(private val realm: Realm) {
         }
     }
 
+    // TODO: 26.10.2021 oopS errorS "${entities.size}"
+    //  так надо чтобы возможно поймать плавающую ошибку :(
     fun insertFailReason(entities: List<FailReasonEntity>) {
-        Log.d(TAG, "insertFailReason.before ${entities.toString()}")
+        Log.d(TAG, "insertFailReason.before ${entities.size}")
         realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }

@@ -49,6 +49,7 @@ class WayBillActivity : AppCompatActivity() {
                 Status.SUCCESS -> {
                     if (data?.data.isNullOrEmpty()) {
                         empty_title.isVisible = true
+                        // TODO: 27.10.2021 SR-3259!!! 
                         empty_title.text = getString(R.string.empty_way_task)
                         logout_btn.isVisible = true
                         logout_btn.setOnClickListener {

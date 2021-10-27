@@ -1,3 +1,3 @@
 package ru.smartro.worknote.service.network.response
 
-class EmptyResponse(val success: Boolean, val message : String)
+data class EmptyResponse(val success: Boolean, val message : String)

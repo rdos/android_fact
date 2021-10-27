@@ -31,7 +31,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
     private val TAG : String = "WayTaskActivity--AAA"
     private val viewModel: WayTaskViewModel by viewModel()
     private lateinit var adapter: WayTaskAdapter
-    private lateinit var selectedWayInfo: Workorder
+    private lateinit var mSelectedWayInfo: Workorder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -170,7 +170,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
                     Status.SUCCESS -> {
                         loadingHide()
                         AppPreferences.isHasTask = true
-                        viewModel.insertWayTask(selectedWayInfo)
+                        viewModel.insertWayTask(mSelectedWayInfo)
                         val intent = Intent(this, MapActivity::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)
@@ -185,7 +185,7 @@ class WayTaskActivity : AppCompatActivity(), WayTaskAdapter.SelectListener {
     }
 
     override fun selectedWayTask(model: Workorder) {
-        selectedWayInfo = model
+        mSelectedWayInfo = model
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -46,6 +46,7 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
         clearData()
         context.showSuccessComplete().let {
             it.finish_accept_btn.setOnClickListener {
+
                 context.startActivity(Intent(context, WayBillActivity::class.java))
                 context.finish()
             }

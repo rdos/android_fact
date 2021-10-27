@@ -1,3 +1,3 @@
 package ru.smartro.worknote.service.network.body
 
-class ProgressBody(val beginned_at: Long)
+data class ProgressBody(val beginned_at: Long)

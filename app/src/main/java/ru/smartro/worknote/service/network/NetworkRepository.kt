@@ -1,6 +1,7 @@
 package ru.smartro.worknote.service.network
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.liveData
 import com.google.gson.Gson
 import io.sentry.Sentry
@@ -19,9 +20,16 @@ import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.exception.BadRequestException
 import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
+import org.json.JSONObject
+
+
+
 
 class NetworkRepository(private val context: Context) {
+    private val TAG: String = "NetworkRepository--AAA"
+
     fun auth(model: AuthBody) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "auth")
         try {
             val response = RetrofitClient(context).apiService(false).auth(model)
             when {
@@ -40,7 +48,9 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun served(body: ServiceResultBody) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "served")
         try {
+
             val response = RetrofitClient(context).apiService(true).served(body)
             when {
                 response.isSuccessful -> {
@@ -57,15 +67,19 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getVehicle(organisationId: Int) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "getVehicle.before")
         try {
             val response = RetrofitClient(context)
                 .apiService(true).getVehicle(organisationId)
+            Log.d(TAG, "getVehicle.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
                     badRequest(response)
+                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+                    Log.d(TAG, "getVehicle.after errorResponse=${errorResponse}")
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -75,6 +89,8 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getBreakDownTypes() = liveData(Dispatchers.IO) {
+        Log.i(TAG, "getBreakDownTypes")
+
         try {
             val response = RetrofitClient(context)
                 .apiService(true).getBreakDownTypes()
@@ -93,6 +109,7 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getFailReason() = liveData(Dispatchers.IO) {
+        Log.i(TAG, "getFailReason")
         try {
             val response = RetrofitClient(context).apiService(true).getFailReason()
             when {
@@ -110,9 +127,12 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getWayList(body: WayListBody) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "getWayList.before")
+
         try {
             val response = RetrofitClient(context)
                 .apiService(true).getWayList(body)
+            Log.d(TAG, "getWayList.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
@@ -128,6 +148,8 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun sendBreakDown(body: BreakdownBody) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "sendBreakDownsendBreakDownsendBreakDown")
+
         try {
             val response = RetrofitClient(context).apiService(true).sendBreakDown(body)
             when {
@@ -144,6 +166,8 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun sendFailure(body: FailureBody) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "sendFailuresendFailuresendFailure")
+
         try {
             val response = RetrofitClient(context).apiService(true).sendFailure(body)
             when {
@@ -179,9 +203,12 @@ class NetworkRepository(private val context: Context) {
     }*/
 
     fun getWorkOder(organisationId: Int, wayId: Int) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "getWorkOder.before")
+
         try {
             val response = RetrofitClient(context)
                 .apiService(true).getWorkOrder(organisationId, wayId)
+            Log.d(TAG, "getWorkOder.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
@@ -197,13 +224,18 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun progress(id: Int, body: ProgressBody) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "progress.before id=${id} body=${body}")
         try {
             val response = RetrofitClient(context).apiService(true).progress(id, body)
+            Log.d(TAG, "progress.after ${response.body().toString()}")
+            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+            Log.d(TAG, "progress.after errorResponse=${errorResponse}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    Log.e(TAG, "progress")
                     badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
@@ -214,14 +246,17 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun completeWay(id: Int, body: CompleteWayBody) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "completeWay.before id=${id}, body=${body}")
         try {
             val response = RetrofitClient(context).apiService(true).complete(id, body)
+            Log.d(TAG, "completeWay.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+                    Log.d(TAG, "completeWay.after errorResponse=${errorResponse}")
                     badRequest(response)
                     emit(Resource.error(errorResponse.message, null))
                 }
@@ -232,8 +267,12 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun earlyComplete(id: Int, body: EarlyCompleteBody) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "earlyComplete.before id={$id}, body={$body}")
         try {
             val response = RetrofitClient(context).apiService(true).earlyComplete(id, body)
+            Log.d(TAG, "earlyComplete.after ${response.body().toString()}")
+            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+            Log.d(TAG, "progress.after errorResponse=${errorResponse}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
@@ -249,6 +288,7 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getCancelWayReason() = liveData(Dispatchers.IO) {
+        Log.i(TAG, "getCancelWayReason.before")
         try {
             val response = RetrofitClient(context).apiService(true).getCancelWayReason()
             when {
@@ -266,6 +306,7 @@ class NetworkRepository(private val context: Context) {
     }
 
     suspend fun synchronizeData(body: SynchronizeBody): Resource<SynchronizeResponse> {
+        Log.i(TAG, "synchronizeData.before")
         return try {
             val response = RetrofitClient(context).apiService(true).postSynchro(body)
             when {
@@ -283,8 +324,11 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun sendLastPlatforms(body: SynchronizeBody) = liveData(Dispatchers.IO) {
+        Log.i(TAG, "sendLastPlatforms.before")
+
         try {
             val response = RetrofitClient(context).apiService(true).postSynchro(body)
+            Log.d(TAG, "sendLastPlatforms.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
@@ -300,6 +344,8 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getOwners() = liveData(Dispatchers.IO) {
+        Log.i(TAG, "getOwners")
+
         try {
             val response = RetrofitClient(context).apiService(false).getOwners()
             when {
