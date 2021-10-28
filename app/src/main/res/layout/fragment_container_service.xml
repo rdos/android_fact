@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default"
             android:background="@drawable/bg_button_white"
+            app:layout_constraintHorizontal_weight="1"
             android:padding="8dp"
             android:src="@drawable/ic_fire"
             android:textColor="@color/black"
@@ -29,12 +30,13 @@
             android:id="@+id/enter_info_tittle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="300dp"
             android:text="Заполненность"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/enter_info_problem_btn"
             app:layout_constraintTop_toTopOf="parent" />
 
         <RadioGroup

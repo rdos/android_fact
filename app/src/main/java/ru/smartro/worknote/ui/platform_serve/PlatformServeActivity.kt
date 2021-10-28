@@ -3,6 +3,7 @@ package ru.smartro.worknote.ui.platform_serve
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_platform_service.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
 import kotlinx.android.synthetic.main.alert_fill_kgo.view.*
@@ -130,12 +131,12 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     }
 
 
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            android.R.id.home -> {
-//                finish()
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }
