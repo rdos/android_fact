@@ -1,4 +1,4 @@
-package ru.smartro.worknote.adapter.container_service
+package ru.smartro.worknote.ui.platform_serve
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
+import ru.smartro.worknote.util.MyUtil.toStr
 import ru.smartro.worknote.util.StatusEnum
 
 // TODO: 22.10.2021 !!!когда?
@@ -30,7 +31,7 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
         holder.itemView.choose_title.text = data.number
         holder.itemView.tv_item_container_adapter__type_name.text = data.typeName
         // TODO: 25.10.2021 add getString() + format
-        holder.itemView.tv_item_container_adapter__volume.text = "${data.volume.toString()} м3"
+        holder.itemView.tv_item_container_adapter__volume.text = "${data.volume.toStr("м3")}"
 
         holder.itemView.choose_status.visibility = View.INVISIBLE
 

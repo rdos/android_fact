@@ -22,7 +22,7 @@ class RealmRepository(private val realm: Realm) {
     fun insertWayTask(response: Workorder) {
 
         fun mapMedia(data: List<String>): RealmList<ImageEntity> {
-            return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0, RealmList()) }
+            return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0, coords = RealmList()) }
         }
 
         fun mapContainers(list: List<Container>): RealmList<ContainerEntity> {

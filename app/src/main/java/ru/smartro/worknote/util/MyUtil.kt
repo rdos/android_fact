@@ -20,12 +20,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.yandex.mapkit.geometry.Point
-import com.yandex.mapkit.map.MapObjectCollection
-import com.yandex.runtime.ui_view.ViewProvider
-import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import java.io.ByteArrayOutputStream
@@ -165,4 +161,11 @@ object MyUtil {
         return !this.isNullOrBlank()
     }
 
+    fun Any?.toStr(s: String): String {
+        return if (this == null) {
+            ""
+        } else {
+            "$this $s"
+        }
+    }
 }

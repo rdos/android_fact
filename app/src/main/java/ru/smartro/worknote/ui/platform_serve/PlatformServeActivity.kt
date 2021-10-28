@@ -1,17 +1,13 @@
-package ru.smartro.worknote.ui.platform_service
+package ru.smartro.worknote.ui.platform_serve
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.activity_platform_service.*
 import kotlinx.android.synthetic.main.alert_accept_task.view.*
 import kotlinx.android.synthetic.main.alert_fill_kgo.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.container_service.ContainerAdapter
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.fillKgoVolume
 import ru.smartro.worknote.extensions.hideDialog
@@ -29,7 +25,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     private val REQUEST_EXIT = 33
     private lateinit var platformEntity: PlatformEntity
     private lateinit var mConrainerAdapter: ContainerAdapter
-
+    private var mIsServeAgain: Boolean = false
     private val mPlatformServeViewModel: PlatformServeViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +33,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
         setContentView(R.layout.activity_platform_service)
         intent.let {
             platformEntity = mPlatformServeViewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            mIsServeAgain = it.getBooleanExtra("mIsServeAgain", false)
         }
         supportActionBar?.title = "${platformEntity.address}"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -56,10 +53,14 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             startActivityForResult(intent, 101)
             hideDialog()
         }
+        complete_task_btn.isEnabled = mIsServeAgain
         // TODO: 27.10.2021 !!!
         //  is a duplicate FIND complete_task_btn.setOnClickListener
-        complete_task_btn.setOnClickListener{
-            finish()
+        complete_task_btn.setOnClickListener {
+            val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
+            intent.putExtra("platform_id", platformEntity.platformId!!)
+            intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
+            startActivityForResult(intent, 13)
         }
     }
 
@@ -72,20 +73,12 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
         hideDialog()
     }
 
+    // TODO: 28.10.2021 isActiveToday что это за поле?
     private fun initAfterMedia() {
-        if (mPlatformServeViewModel.findPlatformEntity(platformEntity.platformId!!).containers.filter {
-                it.isActiveToday == true
-            }.all { it.status != StatusEnum.NEW }) {
-            complete_task_btn.isVisible = true
-            complete_task_btn.setOnClickListener {
-                val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
-                intent.putExtra("platform_id", platformEntity.platformId!!)
-                intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
-                startActivityForResult(intent, 13)
-            }
-        } else {
-            complete_task_btn.isVisible = false
-        }
+        val platformEntity = mPlatformServeViewModel.findPlatformEntity(platformEntity.platformId!!)
+        complete_task_btn.isEnabled = platformEntity.containers.filter {
+            it.isActiveToday == true
+        }.all { it.status != StatusEnum.NEW }
     }
 
     private fun initContainer() {
@@ -137,12 +130,12 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     }
 
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+//            android.R.id.home -> {
+//                finish()
+//            }
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 }

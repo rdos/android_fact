@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.platform_service
+package ru.smartro.worknote.ui.platform_serve
 
 import android.content.DialogInterface
 import android.content.Intent

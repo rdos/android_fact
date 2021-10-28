@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -50,22 +49,14 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.log.LogActivity
-import ru.smartro.worknote.ui.platform_service.PlatformServeActivity
+import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
 import ru.smartro.worknote.work.SynchronizeWorker
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 
-import androidx.core.graphics.drawable.DrawableCompat
-
-import android.os.Build
-
-import android.graphics.drawable.Drawable
 import ru.smartro.worknote.base.AbstractAct
 
 

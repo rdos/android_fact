@@ -16,7 +16,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
-import com.yandex.mapkit.map.MapObjectTapListener
 import kotlinx.android.synthetic.main.dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
@@ -25,7 +24,7 @@ import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningCameraShow
 import ru.smartro.worknote.extensions.warningClearNavigator
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
-import ru.smartro.worknote.ui.platform_service.PlatformServeActivity
+import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 import kotlin.math.min
@@ -33,6 +32,7 @@ import kotlin.math.min
 class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : DialogFragment(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
     private var mFirstTime = true
+    private var mIsServeAgain = false
     private val mOnClickListener = this as View.OnClickListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -53,13 +53,13 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
 
 
 
-        val isStartServe = _platform.status == StatusEnum.NEW
+        mIsServeAgain = _platform.status != StatusEnum.NEW
 
         val cvStartServe = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
-        cvStartServe.isVisible = isStartServe
+        cvStartServe.isVisible = !mIsServeAgain
 
         val cvServeAgain = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__serve_again)
-        cvServeAgain.isVisible = !isStartServe
+        cvServeAgain.isVisible = mIsServeAgain
         val tvAddress = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__address)
         tvAddress.text = String.format(getString(R.string.dialog_platform_clicked_dtl__address), _platform.address, _platform.srpId)
 
@@ -80,6 +80,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
                 val intent = Intent(requireActivity(), PlatformServeActivity::class.java)
                 intent.putExtra("platform_id", _platform.platformId)
+                intent.putExtra("mIsServeAgain", mIsServeAgain)
                 dismiss()
                 startActivityForResult(intent, 88)
             }
