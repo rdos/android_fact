@@ -15,8 +15,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 
 private lateinit var loadingDialog: AlertDialog
-private lateinit var customDialog: AlertDialog
-
+private lateinit var mCustomDialog: AlertDialog
 fun AppCompatActivity.loadingShow() {
     try {
         val builder = AlertDialog.Builder(this)
@@ -39,9 +38,9 @@ fun AppCompatActivity.warningCameraShow(title: String): View {
     view.title_tv.text = title
     builder.setView(view)
     builder.setCancelable(false)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -51,12 +50,12 @@ fun AppCompatActivity.warningNavigatePlatform(): View {
     val view = inflater.inflate(R.layout.alert_navigate_platform, null)
     builder.setView(view)
     builder.setCancelable(false)
-    customDialog = builder.create()
+    mCustomDialog = builder.create()
     view.dismiss_btn.setOnClickListener {
-        customDialog.dismiss()
+        mCustomDialog.dismiss()
     }
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -66,13 +65,13 @@ fun AppCompatActivity.warningClearNavigator(title: String): View {
     val view = inflater.inflate(R.layout.alert_clear_navigator, null)
     builder.setView(view)
     builder.setCancelable(false)
-    customDialog = builder.create()
+    mCustomDialog = builder.create()
     view.title_tv.text = title
     view.dismiss_btn.setOnClickListener {
-        customDialog.dismiss()
+        mCustomDialog.dismiss()
     }
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -81,9 +80,9 @@ fun AppCompatActivity.alertOnPoint(): View {
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_on_point, null)
     builder.setView(view)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -94,9 +93,9 @@ fun Fragment.warningCameraShow(title: String): View {
     view.title_tv.text = title
     builder.setView(view)
     builder.setCancelable(false)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -106,9 +105,9 @@ fun AppCompatActivity.showSuccessComplete(): View {
     val view = inflater.inflate(R.layout.alert_successful_complete, null)
     builder.setView(view)
     builder.setCancelable(false)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -135,32 +134,32 @@ fun AppCompatActivity.showCompleteWaybill(): View {
         }
     }
     builder.setView(view)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
 
-fun AppCompatActivity.fillKgoVolume(): View {
+fun AppCompatActivity.showDialogFillKgoVolume(): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_fill_kgo, null)
     builder.setView(view)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
-fun Fragment.fillKgoVolume(): View {
+fun Fragment.showDialogFillKgoVolum(): View {
     val builder = AlertDialog.Builder(requireContext())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_fill_kgo, null)
     builder.setView(view)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -171,9 +170,9 @@ fun AppCompatActivity.warningDelete(title: String): View {
     view.title_tv.text = title
     builder.setView(view)
     builder.setCancelable(false)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -201,9 +200,9 @@ fun AppCompatActivity.warningContainerFailure(title: String): View {
     val view = inflater.inflate(R.layout.alert_warning_failure, null)
     view.title_tv.text = title
     builder.setView(view)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -212,13 +211,13 @@ fun AppCompatActivity.warningAlert(title: String): View {
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_warning, null)
     builder.setView(view)
-    customDialog = builder.create()
+    mCustomDialog = builder.create()
     view.title_tv.text = title
     view.dismiss_btn.setOnClickListener {
-        customDialog.dismiss()
+        mCustomDialog.dismiss()
     }
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -253,9 +252,9 @@ fun AppCompatActivity.showEarlyComplete(reasons: List<CancelWayReasonEntity>): V
         view.reason_et.showDropDown()
     }
     builder.setView(view)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
@@ -266,15 +265,15 @@ fun Fragment.warningDelete(title: String): View {
     view.title_tv.text = title
     builder.setView(view)
     builder.setCancelable(false)
-    customDialog = builder.create()
-    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    customDialog.show()
+    mCustomDialog = builder.create()
+    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog.show()
     return view
 }
 
 fun AppCompatActivity.hideDialog() {
     try {
-        customDialog.dismiss()
+        mCustomDialog.dismiss()
     } catch (e: java.lang.Exception) {
 
     }
@@ -318,7 +317,7 @@ fun Fragment.hideDialog(time: Long = 0) {
             println("rdos-AB")
             delay(time)
             withContext(Dispatchers.Main) {
-                customDialog.dismiss()
+                mCustomDialog.dismiss()
             }
             println("rdos-ABC")
         }

@@ -168,4 +168,6 @@ object MyUtil {
             "$this $s"
         }
     }
+
+    fun Any?.toStr() = this?.toString() ?: ""
 }

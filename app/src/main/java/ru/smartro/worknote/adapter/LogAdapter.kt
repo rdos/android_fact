@@ -33,7 +33,7 @@ class LogAdapter(items: ArrayList<PlatformEntity>
             "Общее кол-во контейнеров: ${item.containers.size} \n" +
                     "Обслужено кол-во контейнеров: ${item.containers.filter { it.status != StatusEnum.NEW }.size}/${item.containers.size} \n" +
                     "Проблема: $failureComment \n" +
-                    "Объем КГО: ${item.kgoVolume}\n" +
+                    "Объем КГО: ${item.volumeKGO}\n" +
                     "Статус сети: ${status(item.networkStatus!!)}"
 
         if (item.networkStatus!!)

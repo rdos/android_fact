@@ -62,7 +62,9 @@ open class PlatformEntity(
     @SerializedName("kgo_media")
     var kgoMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("kgo_volume")
-    var kgoVolume: Double = 0.0,
+    var volumeKGO: Double = 0.0,
+    @SerializedName("kgo_is_takeaway")
+    var isTakeawayKGO: Boolean = true,
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
 /*    @SerializedName("breakdown_reason_id")

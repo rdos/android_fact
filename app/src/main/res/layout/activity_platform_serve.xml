@@ -4,14 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.choose.owner_1.OrganisationActivity">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/problem_btn"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        app:layout_constraintEnd_toStartOf="@id/kgo_btn"
+        app:layout_constraintEnd_toStartOf="@id/btn_activity_platform_serve__kgo"
         android:layout_margin="8dp"
         android:background="@drawable/bg_button_white"
         android:drawableStart="@drawable/ic_fire"
@@ -22,15 +21,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/kgo_btn"
+        android:id="@+id/btn_activity_platform_serve__kgo"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_margin="8dp"
         android:background="@drawable/bg_button_white"
         app:layout_constraintStart_toEndOf="@id/problem_btn"
-        android:drawableStart="@drawable/ic_kgo"
+        android:drawableEnd="@drawable/ic_kgo"
         android:padding="@dimen/margin_default"
-        android:text="Добавить КГО"
+        android:text="Отметить КГО"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -57,11 +56,11 @@
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/point_info_tv"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/complete_task_btn"
+        app:layout_constraintBottom_toTopOf="@id/btn_activity_platform_serve__complete_task"
         tools:listitem="@layout/item_choose" />
 
-    <Button
-        android:id="@+id/complete_task_btn"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_activity_platform_serve__complete_task"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_default"

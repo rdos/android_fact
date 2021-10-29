@@ -45,7 +45,7 @@ class RealmRepository(private val realm: Realm) {
                     coords = RealmList(it.coords[0], it.coords[1]), failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
                     finishedAt = it.finishedAt, platformId = it.id,
-                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, kgoVolume = 0.0, icon = it.icon
+                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, volumeKGO = 0.0, icon = it.icon
                 )
             }
         }
@@ -302,6 +302,7 @@ class RealmRepository(private val realm: Realm) {
     fun findContainersVolume(): Double {
         var totalKgoVolume = 0.0
         var totalContainersVolume = 0.0
+        Log.d(TAG, "findContainersVolume.before")
 
 
         fun doublePercent(percent: Double?) =
@@ -324,20 +325,30 @@ class RealmRepository(private val realm: Realm) {
             val filledVolume = it.constructiveVolume!! * (doublePercent(it.volume) / 100)
             totalContainersVolume += filledVolume
         }
+        Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
 
         val allPlatforms = realm.copyFromRealm(
             realm.where(PlatformEntity::class.java)
-                .findAll()
+                .findAll().filter{
+                    if (!it.isTakeawayKGO) {
+                        Log.d(TAG, "findContainersVolume.isTakeawayKGO=${it.isTakeawayKGO})")
+                        Log.d(TAG, "findContainersVolume.volumeKGO=${it.volumeKGO}")
+                        Log.d(TAG, "findContainersVolume --")
+                    }
+                    it.isTakeawayKGO
+                }
         )
 
         allPlatforms.forEach {
-            totalKgoVolume += it.kgoVolume
+            totalKgoVolume += it.volumeKGO
         }
-        val total = totalContainersVolume + totalKgoVolume
-        Log.d(TAG, "total=${total}")
-        val totalRound = round(total * 100) / 100
-        Log.d(TAG, "totalRound=${totalRound}")
-        return totalRound
+        Log.d(TAG, "findContainersVolume.totalKgoVolume=${totalKgoVolume}")
+
+        val result = totalContainersVolume + totalKgoVolume
+        Log.d(TAG, "findContainersVolume.result=${result}")
+        val resultRound = round(result * 100) / 100
+        Log.d(TAG, "findContainersVolume.resultRound=${resultRound}")
+        return resultRound
     }
 
     fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
@@ -409,13 +420,15 @@ class RealmRepository(private val realm: Realm) {
         }
     }
 
-    fun updatePlatformKGO(platformId: Int, kgoVolume: Double) {
+    // TODO: 29.10.2021 !!!???
+    fun updatePlatformKGO(platformId: Int, kgoVolume: Double, isTakeaway: Boolean) {
         realm.executeTransaction { realm: Realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()!!
 
-            platformEntity.kgoVolume = kgoVolume
+            platformEntity.volumeKGO = kgoVolume
+            platformEntity.isTakeawayKGO = isTakeaway
         }
     }
 
