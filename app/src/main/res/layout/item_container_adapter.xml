@@ -41,7 +41,7 @@
             tools:text="Тип контейнера" />
 
         <TextView
-            android:id="@+id/tv_item_container_adapter__volume"
+            android:id="@+id/tv_item_container_adapter__constructiveVolume"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.4"
