@@ -23,6 +23,7 @@ import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
+import ru.smartro.worknote.util.MyUtil.toStr
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
@@ -31,6 +32,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     private val REQUEST_EXIT = 33
     private lateinit var mPlatformEntity: PlatformEntity
     private lateinit var mConrainerAdapter: ContainerAdapter
+    private val mOnClickListener = this as View.OnClickListener
     private var mIsServeAgain: Boolean = false
     private val mPlatformServeViewModel: PlatformServeViewModel by viewModel()
     private lateinit var btnKGO: AppCompatButton
@@ -41,12 +43,12 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 
         when(buttonView.id) {
             R.id.btn_alert_kgo__takeaway -> {
-                onButtonKgoClick(buttonView.rootView, true)
-                btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check) , null)
+                onAlertButtonKgoClick(buttonView.rootView, true)
+                setButtonKGODrawableEnd(true)
             }
             R.id.btn_alert_kgo__no_takeaway -> {
-                onButtonKgoClick(buttonView.rootView,false)
-                btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check_gray) , null)
+                onAlertButtonKgoClick(buttonView.rootView,false)
+                setButtonKGODrawableEnd(false)
             }
         }
 
@@ -71,6 +73,9 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
                 startActivityForResult(intent, REQUEST_EXIT)
         }
         btnKGO = findViewById(R.id.btn_activity_platform_serve__kgo)
+        if (mPlatformEntity.volumeKGO != null) {
+            setButtonKGODrawableEnd(mPlatformEntity.isTakeawayKGO)
+        }
         btnKGO.setOnClickListener {
             val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId)
@@ -86,6 +91,14 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
             startActivityForResult(intent, 13)
+        }
+    }
+
+    private fun setButtonKGODrawableEnd(isTakeawayKGO: Boolean) {
+        if (isTakeawayKGO) {
+            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check) , null)
+        } else {
+            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check_gray) , null)
         }
     }
 
@@ -143,9 +156,9 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             }
         } else if (resultCode == 101 && requestCode == 101) {
             showDialogFillKgoVolume().let { view ->
-                view.findViewById<TextInputEditText>(R.id.kgo_volume_in).setText(mPlatformEntity.volumeKGO.toString())
-                view.findViewById<Button>(R.id.btn_alert_kgo__takeaway).setOnClickListener(this)
-                view.findViewById<Button>(R.id.btn_alert_kgo__no_takeaway).setOnClickListener(this)
+                view.findViewById<TextInputEditText>(R.id.kgo_volume_in).setText(mPlatformEntity.volumeKGO.toStr())
+                view.findViewById<Button>(R.id.btn_alert_kgo__takeaway).setOnClickListener(mOnClickListener)
+                view.findViewById<Button>(R.id.btn_alert_kgo__no_takeaway).setOnClickListener(mOnClickListener)
             }
         }
     }
@@ -160,7 +173,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
         return super.onOptionsItemSelected(item)
     }
 
-    private fun onButtonKgoClick(dialogView: View, isTakeaway : Boolean) {
+    private fun onAlertButtonKgoClick(dialogView: View, isTakeaway : Boolean) {
         Log.i(TAG, "onButtonKgoClick.before id=${dialogView.id} isTakeaway=$isTakeaway")
         val kgoVolumeText = dialogView.findViewById<TextInputEditText>(R.id.kgo_volume_in).text.toString()
         if (kgoVolumeText.isNullOrBlank()) {
@@ -170,4 +183,5 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
         mPlatformServeViewModel.updatePlatformKGO(mPlatformEntity.platformId!!, kgoVolume, isTakeaway)
         hideDialog()
     }
+
 }

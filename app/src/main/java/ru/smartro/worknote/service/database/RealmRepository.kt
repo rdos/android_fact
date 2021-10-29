@@ -25,8 +25,15 @@ class RealmRepository(private val realm: Realm) {
             return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0, coords = RealmList()) }
         }
 
+        // TODO: 29.10.2021 ! it.volume = 0.0 ??Error
         fun mapContainers(list: List<Container>): RealmList<ContainerEntity> {
             return list.mapTo(RealmList()) {
+//                var volumeReal : Double? = null
+//                if (it.volume >  0) {
+//                    Log.e(TAG ,"mapContainers.it.volume >  0")
+//                    volumeReal = it.volume
+//                    Log.e(TAG ,"mapContainers.volumeReal = ${volumeReal}")
+//                }
                 ContainerEntity(
                     client = it.client, contacts = it.contacts, failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, containerId = it.id,
@@ -45,7 +52,7 @@ class RealmRepository(private val realm: Realm) {
                     coords = RealmList(it.coords[0], it.coords[1]), failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
                     finishedAt = it.finishedAt, platformId = it.id,
-                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, volumeKGO = 0.0, icon = it.icon
+                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, volumeKGO = null, icon = it.icon
                 )
             }
         }
@@ -331,16 +338,21 @@ class RealmRepository(private val realm: Realm) {
             realm.where(PlatformEntity::class.java)
                 .findAll().filter{
                     if (!it.isTakeawayKGO) {
+                        Log.d(TAG, "findContainersVolume -${it.platformId}-")
                         Log.d(TAG, "findContainersVolume.isTakeawayKGO=${it.isTakeawayKGO})")
                         Log.d(TAG, "findContainersVolume.volumeKGO=${it.volumeKGO}")
-                        Log.d(TAG, "findContainersVolume --")
+
                     }
-                    it.isTakeawayKGO
+                    if (it.volumeKGO == null) {
+                        Log.d(TAG, "findContainersVolume -${it.platformId}-")
+                        Log.w(TAG, "findContainersVolume.volumeKGO=${it.volumeKGO})")
+                    }
+                    it.isTakeawayKGO && it.volumeKGO != null
                 }
         )
 
         allPlatforms.forEach {
-            totalKgoVolume += it.volumeKGO
+            totalKgoVolume += it.volumeKGO!!
         }
         Log.d(TAG, "findContainersVolume.totalKgoVolume=${totalKgoVolume}")
 
