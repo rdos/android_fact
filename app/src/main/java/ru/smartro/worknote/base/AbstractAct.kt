@@ -29,7 +29,7 @@ abstract class AbstractAct : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onPause")
+        Log.d(TAG, "onStop")
     }
 
     override fun onDestroy() {

@@ -11,6 +11,7 @@ import android.os.Build
 import android.provider.Settings.Secure
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
@@ -32,12 +33,14 @@ class SynchronizeWorker(
     params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
-    private val TAG = "UploadDataWorkManager"
-    private val network = NetworkRepository(applicationContext)
-    private val deviceId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
-    private val minutes = 30 * 60
+    private val TAG = "SynchronizeWorker--AaA"
+    private val mNetworkRepository = NetworkRepository(applicationContext)
+    private val mDeviceId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
+    private val mMinutesInSec = 30 * 60
 
     override suspend fun doWork(): Result {
+        Log.w(TAG, "doWork.before thread_id=${Thread.currentThread().id}")
+
         showNotification(context, true, "Не закрывайте приложение", "Служба отправки данных работает")
         val db = RealmRepository(Realm.getDefaultInstance())
         while (true) {
@@ -60,9 +63,9 @@ class SynchronizeWorker(
             val lastSynchroTime = AppPreferences.lastSynchroTime
             val platforms: List<PlatformEntity>
 
-            if (lastSynchroTime - MyUtil.timeStamp() > minutes) {
+            if (lastSynchroTime - MyUtil.timeStamp() > mMinutesInSec) {
                 platforms = db.findPlatforms30min()
-                timeBeforeRequest = lastSynchroTime + minutes
+                timeBeforeRequest = lastSynchroTime + mMinutesInSec
                 Log.d(TAG, " SYNCHRONIZE PLATFORMS IN LAST 30 min")
             } else {
                 platforms = db.findLastPlatforms()
@@ -70,24 +73,24 @@ class SynchronizeWorker(
                 Log.d(TAG, " SYNCHRONIZE LAST PLATFORMS")
             }
 
-            val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), deviceId, platforms)
-            val synchronizeRequest = network.synchronizeData(synchronizeBody)
-            when (synchronizeRequest.status) {
+            val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), mDeviceId, platforms)
+            val synchronizeResponse = mNetworkRepository.synchronizeData(synchronizeBody)
+            when (synchronizeResponse.status) {
                 Status.SUCCESS -> {
                     if (platforms.isNotEmpty()) {
                         AppPreferences.lastSynchroTime = timeBeforeRequest
                         db.updatePlatformNetworkStatus(platforms)
-                        Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeRequest.data)}")
+                        Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
                     } else {
                         Log.d(TAG, "SYNCHRONIZE SUCCESS: GPS SENT")
                     }
-                    val alertMsg = synchronizeRequest.data?.alert
+                    val alertMsg = synchronizeResponse.data?.alert
                     if (!alertMsg.isNullOrEmpty()) {
                         showNotification(context, false, alertMsg, "Уведомление")
                     }
                 }
-                Status.ERROR -> Log.d(TAG, "SYNCHRONIZE ERROR")
-                Status.NETWORK -> Log.e(TAG, "SYNCHRONIZE NO INTERNET")
+                Status.ERROR -> Log.e(TAG, "SYNCHRONIZE ERROR")
+                Status.NETWORK -> Log.w(TAG, "SYNCHRONIZE NO INTERNET")
             }
         } else {
             Log.d(TAG, "WORKER STOPPED")
@@ -108,14 +111,17 @@ class SynchronizeWorker(
                 setContentTitle(title)
                 setContentText(content)
                 setOngoing(ongoing)
-                setPriority(NotificationCompat.PRIORITY_MAX)
+                priority = NotificationCompat.PRIORITY_MAX
                 setDefaults(NotificationCompat.DEFAULT_ALL)
+                setContentIntent(fullScreenPendingIntent)
+                setShowWhen(true)
+
             }
         if (!ongoing) {
             builder.setFullScreenIntent(fullScreenPendingIntent, true)
         }
         val notification: Notification = builder.build()
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = NotificationManagerCompat.from(context)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(channelId, "FACT_SERVICE", NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(channel)
@@ -124,7 +130,8 @@ class SynchronizeWorker(
     }
 
     private fun dismissNotification() {
-        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        Log.d(TAG, "dismissNotification.before")
+        val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.cancel(1)
     }
 

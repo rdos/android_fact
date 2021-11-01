@@ -131,10 +131,13 @@ class MapActivity : AbstractAct(),
     }
 
     private fun initSynchronizeWorker() {
+        Log.w(TAG, "initSynchronizeWorker.before thread_id=${Thread.currentThread().id}")
         AppPreferences.workerStatus = true
         val uploadDataWorkManager = PeriodicWorkRequestBuilder<SynchronizeWorker>(16, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this)
             .enqueueUniquePeriodicWork("UploadData", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
+        Log.d(TAG, "initSynchronizeWorker.after")
+
     }
 
     @SuppressLint("MissingPermission")
