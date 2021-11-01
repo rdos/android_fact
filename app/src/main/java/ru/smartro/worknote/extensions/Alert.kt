@@ -221,7 +221,7 @@ fun AppCompatActivity.warningAlert(title: String): View {
     return view
 }
 
-fun AppCompatActivity.showEarlyComplete(reasons: List<CancelWayReasonEntity>): View {
+fun AppCompatActivity.showDialogEarlyComplete(reasons: List<CancelWayReasonEntity>): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_failure_finish_way, null)
@@ -252,6 +252,10 @@ fun AppCompatActivity.showEarlyComplete(reasons: List<CancelWayReasonEntity>): V
         view.reason_et.showDropDown()
     }
     builder.setView(view)
+
+    //https://jira.smartro.ru/browse/SR-2625
+    view.early_volume_tg.isChecked = true
+
     mCustomDialog = builder.create()
     mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     mCustomDialog.show()

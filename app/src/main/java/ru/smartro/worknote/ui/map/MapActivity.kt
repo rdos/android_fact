@@ -329,7 +329,7 @@ class MapActivity : AbstractAct(),
 
     private fun earlyCompleteWayBill() {
         val allReasons = viewModel.findCancelWayReason()
-        showEarlyComplete(allReasons).let { view ->
+        showDialogEarlyComplete(allReasons).let { view ->
             val totalVolume = viewModel.findContainersVolume()
             view.unload_value_et.setText("$totalVolume")
             view.accept_btn.setOnClickListener {
