@@ -15,7 +15,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName "2.1.9"
+        versionName "0.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -25,6 +25,22 @@ android {
             }
         }
 
+        //устанавливаем версию
+        def Properties props = new Properties()
+        def propFile = file("$projectDir/../VERSION")
+        if (propFile.canRead()){
+            props.load(new FileInputStream(propFile))
+
+            if (props!=null && props.containsKey('version.code')) {
+                versionCode = props['version.code']
+            }
+
+            if (props!=null && props.containsKey('version.name')) {
+                versionName = props['version.name']
+            }
+        }
+
+        project.ext.set("archivesBaseName", "Fact-" + defaultConfig.versionName + "-")
     }
 
     compileOptions {
@@ -33,7 +49,7 @@ android {
     }
 
     signingConfigs {
-
+        //след
         release {
             storeFile file(RELEASE_STORE_FILE)
             storePassword RELEASE_STORE_PASSWORD
@@ -48,12 +64,29 @@ android {
 
 
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
         debug {
+            applicationIdSuffix '.stage'
+            versionNameSuffix '-STAGE'
+            resValue "string", "app_name", "Fact.STAGE"
             signingConfig signingConfigs.release
+        }
+
+        release {
+            //TODO: не используй!!!
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debugRC {
+            applicationIdSuffix '.rc'
+            versionNameSuffix '-RC'
+            resValue "string", "app_name", "Fact.RC"
+            signingConfig signingConfigs.release
+
+        }
+        debugProd {
+            signingConfig signingConfigs.release
+            resValue "string", "app_name", "Fact"
         }
     }
 
@@ -75,7 +108,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     //Retrofit2
     implementation "com.squareup.retrofit2:retrofit:2.9.0"

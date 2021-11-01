@@ -31,6 +31,7 @@ class AuthActivity : AbstractAct() {
         baseview.setOnClickListener {
             MyUtil.hideKeyboard(this)
         }
+        // TODO: 01.11.2021 !! ?
         if (AppPreferences.isLogined) {
             if (AppPreferences.isHasTask) {
                 startActivity(Intent(this, MapActivity::class.java))
@@ -75,10 +76,13 @@ class AuthActivity : AbstractAct() {
                 login_login_out.error = "Проверьте логин"
             }
         }
-        auth_enter.setOnLongClickListener {
-            auth_login.setText("admin@smartro.ru")
-            auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
-            return@setOnLongClickListener true
+
+        if (BuildConfig.BUILD_TYPE == "debug") {
+            auth_enter.setOnLongClickListener {
+                auth_login.setText("admin@smartro.ru")
+                auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
+                return@setOnLongClickListener true
+            }
         }
 
 /*        auth_enter.setOnLongClickListener {

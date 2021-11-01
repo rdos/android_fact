@@ -9,6 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.interceptor.TokenAuthenticator
 import java.util.concurrent.TimeUnit
@@ -56,31 +57,25 @@ class RetrofitClient(context: Context) {
 
     fun apiService(isWorkNote: Boolean): ApiService {
         // переключатель для разных API
-        when (APIENUM.STAGE) {
-            APIENUM.STAGE -> {
-                return if (isWorkNote)
-                    retrofit("https://worknote-back.stage.smartro.ru/api/fact/").create(ApiService::class.java)
-                else
-                    retrofit("https://auth.stage.smartro.ru/api/").create(ApiService::class.java)
-            }
-            APIENUM.PRODUCTION -> {
+        when (BuildConfig.BUILD_TYPE) {
+            "debugProd" -> {
                 return if (isWorkNote)
                     retrofit("https://wn-api.smartro.ru/api/fact/").create(ApiService::class.java)
                 else
                     retrofit("https://auth.smartro.ru/api/").create(ApiService::class.java)
             }
-            APIENUM.RC -> {
+            "debugRC" -> {
                 return if (isWorkNote)
                     retrofit("https://worknote-back.rc.smartro.ru/api/fact/").create(ApiService::class.java)
                 else
                     retrofit("https://auth.rc.smartro.ru/api/").create(ApiService::class.java)
             }
+            else -> {
+                return if (isWorkNote)
+                    retrofit("https://worknote-back.stage.smartro.ru/api/fact/").create(ApiService::class.java)
+                else
+                    retrofit("https://auth.stage.smartro.ru/api/").create(ApiService::class.java)
+            }
         }
     }
-}
-
-enum class APIENUM {
-    STAGE,
-    PRODUCTION,
-    RC
 }

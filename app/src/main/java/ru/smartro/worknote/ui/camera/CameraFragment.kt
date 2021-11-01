@@ -62,7 +62,7 @@ class CameraFragment(
     private val KEY_EVENT_EXTRA = "key_event_extra"
     private val ANIMATION_FAST_MILLIS = 50L
     private val ANIMATION_SLOW_MILLIS = 100L
-    private lateinit var hostLayout: ConstraintLayout
+    private lateinit var mHostLayout: ConstraintLayout
     private lateinit var viewFinder: PreviewView
     private lateinit var outputDirectory: File
     private lateinit var broadcastManager: LocalBroadcastManager
@@ -89,7 +89,7 @@ class CameraFragment(
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.getIntExtra(KEY_EVENT_EXTRA, KeyEvent.KEYCODE_UNKNOWN)) {
                 KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                    val shutter = hostLayout
+                    val shutter = mHostLayout
                         .findViewById<ImageButton>(R.id.camera_capture_button)
                     shutter.simulateClick()
                 }
@@ -128,7 +128,7 @@ class CameraFragment(
     }
 
     private fun setGalleryThumbnail(uri: Uri) {
-        val thumbnail = hostLayout.findViewById<ImageButton>(R.id.photo_view_button)
+        val thumbnail = mHostLayout.findViewById<ImageButton>(R.id.photo_view_button)
         thumbnail.post {
             // Remove thumbnail padding
             thumbnail.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
@@ -141,7 +141,7 @@ class CameraFragment(
     }
 
     private fun setImageCounter(plus: Boolean) {
-        val imageCounter = hostLayout.findViewById<TextView>(R.id.image_counter)
+        val imageCounter = mHostLayout.findViewById<TextView>(R.id.image_counter)
         val count = if (plus) 1 else 0
         imageCounter.post {
             when (photoFor) {
@@ -169,10 +169,21 @@ class CameraFragment(
         }
     }
 
-    @SuppressLint("MissingPermission")
+//    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initCamera()
+        mHostLayout = view as ConstraintLayout
+        viewFinder = mHostLayout.findViewById(R.id.view_finder)
+        cameraExecutor = Executors.newSingleThreadExecutor()
+        broadcastManager = LocalBroadcastManager.getInstance(requireContext())
+        val filter = IntentFilter().apply { addAction(KEY_EVENT_ACTION) }
+        broadcastManager.registerReceiver(volumeDownReceiver, filter)
+        outputDirectory = CameraActivity.getOutputDirectory(requireContext())
+        viewFinder.post {
+            displayId = viewFinder.display.displayId
+            updateCameraUi()
+            setUpCamera()
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -262,11 +273,11 @@ class CameraFragment(
     }
 
     private fun updateCameraUi() {
-        hostLayout.findViewById<ConstraintLayout>(R.id.camera_ui_container)?.let {
-            hostLayout.removeView(it)
+        mHostLayout.findViewById<ConstraintLayout>(R.id.camera_ui_container)?.let {
+            mHostLayout.removeView(it)
         }
 
-        val controls = View.inflate(requireContext(), R.layout.camera_ui_container, hostLayout)
+        val controls = View.inflate(requireContext(), R.layout.camera_ui_container, mHostLayout)
 
         //кнопка отправить в камере. Определения для чего делается фото
         controls.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
@@ -396,9 +407,9 @@ class CameraFragment(
                         }
                     })
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        hostLayout.postDelayed({
-                            hostLayout.foreground = ColorDrawable(Color.WHITE)
-                            hostLayout.postDelayed({ hostLayout.foreground = null }, ANIMATION_FAST_MILLIS)
+                        mHostLayout.postDelayed({
+                            mHostLayout.foreground = ColorDrawable(Color.WHITE)
+                            mHostLayout.postDelayed({ mHostLayout.foreground = null }, ANIMATION_FAST_MILLIS)
                         }, ANIMATION_SLOW_MILLIS)
                     }
                 }
@@ -421,20 +432,6 @@ class CameraFragment(
         return cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
     }
 
-    private fun initCamera() {
-        hostLayout = view as ConstraintLayout
-        viewFinder = hostLayout.findViewById(R.id.view_finder)
-        cameraExecutor = Executors.newSingleThreadExecutor()
-        broadcastManager = LocalBroadcastManager.getInstance(requireContext())
-        val filter = IntentFilter().apply { addAction(KEY_EVENT_ACTION) }
-        broadcastManager.registerReceiver(volumeDownReceiver, filter)
-        outputDirectory = CameraActivity.getOutputDirectory(requireContext())
-        viewFinder.post {
-            displayId = viewFinder.display.displayId
-            updateCameraUi()
-            setUpCamera()
-        }
-    }
 
     companion object {
         private const val TAG = "CameraXBasic"
