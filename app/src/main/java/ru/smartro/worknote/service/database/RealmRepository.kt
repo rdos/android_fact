@@ -385,19 +385,26 @@ class RealmRepository(private val realm: Realm) {
             .equalTo("containerId", containerId)
             .findFirst()!!
 
-    fun findContainerProgress(): List<Int> {
+    fun findCountContainerIsServed(): List<Int> {
         val result = realm.copyFromRealm(realm.where(ContainerEntity::class.java).findAll())
         val servedContainersCount = result.filter { it.status != StatusEnum.NEW }.size
         val allCount = result.size
         return listOf(servedContainersCount, allCount)
     }
 
-    fun findPlatformProgress(): List<Int> {
+    fun findCountPlatformIsServed(): List<Int> {
         val result = realm.copyFromRealm(realm.where(PlatformEntity::class.java).findAll())
         val servedPlatformsCount = result.filter { it.status != StatusEnum.NEW }.size
         val allCount = result.size
         return listOf(servedPlatformsCount, allCount)
     }
+
+    fun findPlatformsIsServed(): List<PlatformEntity> {
+        val result = realm.copyFromRealm(realm.where(PlatformEntity::class.java).findAll().sort("updateAt"))
+        val filteredList = result.filter { it.status != StatusEnum.NEW }
+        return filteredList
+    }
+
 
     /** добавление фото в платформу **/
     fun updatePlatformMedia(imageFor: Int, platformId: Int, imageBase64: String, coords: Point) {

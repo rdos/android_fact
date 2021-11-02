@@ -9,7 +9,7 @@ import ru.smartro.worknote.ui.choose.vehicle_2.VehicleViewModel
 import ru.smartro.worknote.ui.choose.way_list_3.WayListViewModel
 import ru.smartro.worknote.ui.choose.way_task_4.WayTaskViewModel
 import ru.smartro.worknote.ui.debug.DebugViewModel
-import ru.smartro.worknote.ui.log.LogViewModel
+import ru.smartro.worknote.ui.journal.JournalViewModel
 import ru.smartro.worknote.ui.map.MapViewModel
 import ru.smartro.worknote.ui.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.ui.problem.ProblemViewModel
@@ -25,5 +25,5 @@ val viewModelModule = module {
     viewModel { CameraViewModel(androidApplication()) }
     viewModel { ProblemViewModel(androidApplication()) }
     viewModel { DebugViewModel(androidApplication()) }
-    viewModel { LogViewModel(androidApplication()) }
+    viewModel { JournalViewModel(androidApplication()) }
 }

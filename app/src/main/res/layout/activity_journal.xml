@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:background="@drawable/bg_chat"
     android:layout_height="match_parent"
-    tools:context=".ui.log.LogActivity">
+    tools:context=".ui.journal.JournalAct">
 
     <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/log_rv"
+        android:id="@+id/rv_act_journal"
         android:layout_width="match_parent"
         tools:itemCount="4"
         tools:listitem="@layout/item_log"

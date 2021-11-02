@@ -7,12 +7,13 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.base.GenericRecyclerAdapter
 import ru.smartro.worknote.base.ViewHolder
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.util.MyUtil.toStr
 import ru.smartro.worknote.util.StatusEnum
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class LogAdapter(items: ArrayList<PlatformEntity>
+class JournalAdapter(items: ArrayList<PlatformEntity>
 ) : GenericRecyclerAdapter<PlatformEntity>(items) {
 
     override fun bind(item: PlatformEntity, holder: ViewHolder) {
@@ -29,11 +30,12 @@ class LogAdapter(items: ArrayList<PlatformEntity>
         } else {
             item.failureComment
         }
+
         holder.itemView.log_item_content.text =
             "Общее кол-во контейнеров: ${item.containers.size} \n" +
                     "Обслужено кол-во контейнеров: ${item.containers.filter { it.status != StatusEnum.NEW }.size}/${item.containers.size} \n" +
                     "Проблема: $failureComment \n" +
-                    "Объем КГО: ${item.volumeKGO}\n" +
+                    "Объем КГО: ${item.volumeKGO.toStr()}\n" +
                     "Статус сети: ${status(item.networkStatus!!)}"
 
         if (item.networkStatus!!)
@@ -56,6 +58,6 @@ class LogAdapter(items: ArrayList<PlatformEntity>
 
 }
 
-interface LogClickListener {
+interface JournalClickListener {
     fun logDetailClicked(item: PlatformEntity)
 }

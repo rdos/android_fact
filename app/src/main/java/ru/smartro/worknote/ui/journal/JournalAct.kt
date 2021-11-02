@@ -1,32 +1,29 @@
-package ru.smartro.worknote.ui.log
+package ru.smartro.worknote.ui.journal
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_log.*
+import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.LogAdapter
-import ru.smartro.worknote.adapter.LogClickListener
+import ru.smartro.worknote.adapter.JournalAdapter
+import ru.smartro.worknote.adapter.JournalClickListener
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
-import java.util.*
 
-class LogActivity : AbstractAct(), LogClickListener {
-    private val viewModel: LogViewModel by viewModel()
+class JournalAct : AbstractAct(), JournalClickListener {
+    private val viewModel: JournalViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_log)
+        setContentView(R.layout.activity_journal)
         supportActionBar!!.title = "Журнал"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        initViews()
-    }
 
-    private fun initViews() {
-        viewModel.findAllPlatforms().let {
-            log_rv.adapter = LogAdapter(it as ArrayList<PlatformEntity>)
+        val rvJournalAct = findViewById<RecyclerView>(R.id.rv_act_journal)
+
+        viewModel.findPlatformsIsServed().let {
+            rvJournalAct.adapter = JournalAdapter(it as ArrayList<PlatformEntity>)
         }
     }
 

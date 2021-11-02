@@ -1,22 +1,17 @@
-package ru.smartro.worknote.ui.log
+package ru.smartro.worknote.ui.journal
 
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_log.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.LogDetailAdapter
 import ru.smartro.worknote.base.AbstractAct
-import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
-import java.util.*
 
 class LogDetailActivity : AbstractAct() {
-    private val viewModel: LogViewModel by viewModel()
+    private val viewModel: JournalViewModel by viewModel()
     private var platformId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_log)
+        setContentView(R.layout.activity_journal)
         supportActionBar!!.title = "Контейнеры"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         initViews()
@@ -26,9 +21,9 @@ class LogDetailActivity : AbstractAct() {
         intent.let {
             platformId = it.getIntExtra("platform_id", 0)
         }
-        viewModel.findAllContainerInPlatform(platformId).let {
-            log_rv.adapter = LogDetailAdapter(it as ArrayList<ContainerEntity>)
-        }
+//        viewModel.findAllContainerInPlatform(platformId).let {
+//            log_rv.adapter = LogDetailAdapter(it as ArrayList<ContainerEntity>)
+//        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
