@@ -133,6 +133,7 @@ fun AppCompatActivity.showCompleteWaybill(): View {
             view.volume_tg.setTextColor(Color.BLACK)
         }
     }
+    view.volume_tg.isChecked = true
     builder.setView(view)
     mCustomDialog = builder.create()
     mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
