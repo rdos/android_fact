@@ -21,9 +21,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.R
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
+import ru.smartro.worknote.ui.map.MapActivity
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat
@@ -170,4 +172,12 @@ object MyUtil {
     }
 
     fun Any?.toStr() = this?.toString() ?: ""
+
+    fun getNextActClazz__todo(hasTask: Boolean): Class<out AbstractAct> {
+        return if (hasTask) {
+            MapActivity::class.java
+        } else {
+            OrganisationActivity::class.java
+        }
+    }
 }

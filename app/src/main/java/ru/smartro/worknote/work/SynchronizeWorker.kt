@@ -24,6 +24,8 @@ import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.service.network.NetworkRepository
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
+import ru.smartro.worknote.ui.auth.AuthActivity
+import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
 import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
 
@@ -100,7 +102,7 @@ class SynchronizeWorker(
 
     private fun showNotification(context: Context, ongoing: Boolean, content: String, title: String) {
         val channelId = "M_CH_ID"
-        val fullScreenIntent = Intent(context, MapActivity::class.java)
+        val fullScreenIntent = Intent(context, AuthActivity::class.java)
         fullScreenIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val fullScreenPendingIntent =
             PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -117,6 +119,7 @@ class SynchronizeWorker(
                 setShowWhen(true)
 
             }
+//        <!--<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />-->
         if (!ongoing) {
             builder.setFullScreenIntent(fullScreenPendingIntent, true)
         }

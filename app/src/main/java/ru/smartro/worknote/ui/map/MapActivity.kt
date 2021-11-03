@@ -137,7 +137,6 @@ class MapActivity : AbstractAct(),
         WorkManager.getInstance(this)
             .enqueueUniquePeriodicWork("UploadData", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
         Log.d(TAG, "initSynchronizeWorker.after")
-
     }
 
     @SuppressLint("MissingPermission")

@@ -31,12 +31,12 @@ class AuthActivity : AbstractAct() {
         baseview.setOnClickListener {
             MyUtil.hideKeyboard(this)
         }
-        // TODO: 01.11.2021 !! ?
+        // TODO: 01.11.2021 !! !
         if (AppPreferences.isLogined) {
             if (AppPreferences.isHasTask) {
-                startActivity(Intent(this, MapActivity::class.java))
+                startActivity(Intent(this, MyUtil.getNextActClazz__todo(AppPreferences.isHasTask)))
             } else {
-                startActivity(Intent(this, OrganisationActivity::class.java))
+                startActivity(Intent(this, MyUtil.getNextActClazz__todo(AppPreferences.isHasTask)))
             }
             finish()
         } else {

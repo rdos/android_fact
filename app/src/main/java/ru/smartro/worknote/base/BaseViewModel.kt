@@ -12,6 +12,7 @@ import ru.smartro.worknote.service.network.NetworkRepository
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {
+    protected var TAG : String = "--Aaa${this::class.simpleName}"
     protected val network = NetworkRepository(application.applicationContext)
     protected val db = RealmRepository(Realm.getDefaultInstance())
 
