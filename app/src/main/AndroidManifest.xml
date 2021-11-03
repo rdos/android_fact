@@ -34,7 +34,6 @@
         <activity
             android:name=".ui.problem.ExtremeProblemActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible|adjustResize"
             android:theme="@style/Problem" />
         <activity
             android:name=".ui.camera.CameraActivity"

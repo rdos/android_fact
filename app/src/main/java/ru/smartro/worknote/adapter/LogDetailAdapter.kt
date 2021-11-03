@@ -23,22 +23,22 @@ class LogDetailAdapter(
             StatusEnum.SUCCESS -> "Обслужен"
             else -> "Проблема"
         }
-        val problemComment = if (item.failureComment.isNullOrEmpty()) {
-            "Пусто"
-        } else {
-            item.failureComment
-        }
+//        val problemComment = if (item.failureComment.isNullOrEmpty()) {
+//            "Пусто"
+//        } else {
+//            item.failureComment
+//        }
         val comment = if (item.comment.isNullOrEmpty()) {
             "Пусто"
         } else {
             item.comment
         }
-        holder.itemView.log_item_content.text =
-            "Номер: ${item.number} \n" +
-                    "Статус: $statusString \n" +
-                    "Объем заполненности ${item.volume} \n" +
-                    "Комментарии: $comment \n" +
-                    "Проблема: $problemComment \n"
+//        holder.itemView.log_item_content.text =
+//            "Номер: ${item.number} \n" +
+//                    "Статус: $statusString \n" +
+//                    "Объем заполненности ${item.volume} \n" +
+//                    "Комментарии: $comment \n" +
+//                    "Проблема: $problemComment \n"
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

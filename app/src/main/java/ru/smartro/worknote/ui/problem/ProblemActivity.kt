@@ -118,7 +118,7 @@ class ProblemActivity : AbstractAct() {
                                         problemComment = problemComment, problem = problem, problemType = ProblemEnum.ERROR, failProblem = null
                                     )
                                 }
-                                Log.d("PROBLEM_ACTIVITY", "acceptProblem: failure")
+                                Log.d(TAG, "acceptProblem: failure")
                                 hideDialog()
                                    setResult(99)
                                    finish()
@@ -145,7 +145,7 @@ class ProblemActivity : AbstractAct() {
                                         problemComment = problemComment, problem = breakdown, problemType = ProblemEnum.BOTH, failProblem = failure
                                     )
                                 }
-                                Log.d("PROBLEM_ACTIVITY", "acceptProblem: both")
+                                Log.d(TAG, "acceptProblem: both")
                                 hideDialog()
                                 setResult(99)
                                 finish()

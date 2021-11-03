@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_container_extreme.*
 import kotlinx.android.synthetic.main.activity_problem.*
@@ -29,7 +28,7 @@ import ru.smartro.worknote.util.ProblemEnum
 class ExtremeProblemActivity : AbstractAct() {
     private lateinit var platform: PlatformEntity
     private lateinit var container: ContainerEntity
-    private var isContainer = false
+    private var mIsContainer = false
     private val viewModel: ProblemViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +39,8 @@ class ExtremeProblemActivity : AbstractAct() {
 
         intent.let {
             platform = viewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
-            isContainer = it.getBooleanExtra("is_container", false)
-            if (isContainer) {
+            mIsContainer = it.getBooleanExtra("is_container", false)
+            if (mIsContainer) {
                 supportActionBar!!.title = "Проблема контейнера"
                 container = viewModel.findContainerEntity(it.getIntExtra("container_id", 0))
             } else {
@@ -63,7 +62,7 @@ class ExtremeProblemActivity : AbstractAct() {
 
     private fun initImageView() {
         val platform = viewModel.findPlatformEntity(platform.platformId!!)
-        if (isContainer) {
+        if (mIsContainer) {
             Glide.with(this).load(MyUtil.base64ToImage(container.failureMedia.last()?.image))
                 .into(problem_img)
         } else {
@@ -75,7 +74,7 @@ class ExtremeProblemActivity : AbstractAct() {
     private fun initExtremeProblemPhoto() {
         val intent = Intent(this, CameraActivity::class.java)
         intent.putExtra("platform_id", platform.platformId)
-        if (isContainer) {
+        if (mIsContainer) {
             intent.putExtra("photoFor", PhotoTypeEnum.forContainerProblem)
             intent.putExtra("container_id", container.containerId)
         } else {
@@ -92,7 +91,7 @@ class ExtremeProblemActivity : AbstractAct() {
             if (!problem_choose_failure_in.text.isNullOrEmpty()) {
                 val problemComment = problem_comment.text.toString()
                 val failure = problem_choose_failure_in.text.toString()
-                if (isContainer) {
+                if (mIsContainer) {
                     viewModel.updateContainerProblem(
                         platformId = platform.platformId!!, containerId = container.containerId!!,
                         problemComment = problemComment, problemType = ProblemEnum.ERROR, problem = failure, failProblem = null

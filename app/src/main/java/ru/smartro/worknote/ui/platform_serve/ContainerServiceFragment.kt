@@ -14,9 +14,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_container_service.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.base.AbstractBottomDialog
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 
-class ContainerServiceFragment(val containerId: Int, val platformId: Int) : BottomSheetDialogFragment() {
+class ContainerServiceFragment(val containerId: Int, val platformId: Int) : AbstractBottomDialog() {
     private val viewModel: PlatformServeViewModel by viewModel()
     private var comment: String? = null
     private var volume: Double? = null

@@ -165,7 +165,10 @@ class RealmRepository(private val realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             container.volume = null
-            container.comment = null
+            // TODO: 02.11.2021 !!!
+            if (container.failureReasonId == null) {
+                container.comment = null
+            }
             if (container.status == StatusEnum.SUCCESS)
                 container.status = StatusEnum.NEW
             updateTimer(platformEntity)
@@ -173,6 +176,10 @@ class RealmRepository(private val realm: Realm) {
     }
 
     fun updateContainerProblem(platformId: Int, containerId: Int, problemComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
+        Log.d(TAG, "updateContainerProblem.before platformId=${platformId}")
+        Log.d(TAG, "updateContainerProblem.containerId=${containerId}, problemComment=${problemComment}")
+        Log.d(TAG, "updateContainerProblem.problemType=${problemType}, problem=${problem}")
+        Log.d(TAG, "updateContainerProblem.failProblem=${failProblem}")
         realm.executeTransaction { realm ->
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
@@ -199,7 +206,7 @@ class RealmRepository(private val realm: Realm) {
                     container.status = StatusEnum.ERROR
                 }
             }
-            container.failureComment = problemComment
+            container.comment = problemComment
             updateTimer(platform)
         }
     }

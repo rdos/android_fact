@@ -13,6 +13,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.GalleryPhotoAdapter
 import ru.smartro.worknote.adapter.listener.ImageClickListener
+import ru.smartro.worknote.base.AbstractBottomDialog
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
 import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
@@ -22,9 +23,7 @@ import ru.smartro.worknote.util.PhotoTypeEnum
 
 class GalleryFragment(private val platformId: Int, private val photoFor: Int,
                       private val containerId : Int, private val imageCountListener : ImageCounter)
-    : BottomSheetDialogFragment(), ImageClickListener, ImageDetailDeleteListener{
-
-    private val TAG = "GalleryFragment_LOG"
+    : AbstractBottomDialog(), ImageClickListener, ImageDetailDeleteListener{
     private val viewModel: PlatformServeViewModel by viewModel()
     private val listener: ImageClickListener = this
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -37,8 +36,8 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int,
     }
 
     private fun initViews() {
-        Log.d("GalleryFragment_LOG", "photoFor: $photoFor")
-        Log.d("GalleryFragment_LOG ", "wayPoinId: $platformId")
+        Log.d(TAG, "photoFor: $photoFor")
+        Log.d(TAG, "wayPoinId: $platformId")
         when (photoFor) {
             PhotoTypeEnum.forBeforeMedia -> {
               val platform = viewModel.findPlatformEntity(platformId)

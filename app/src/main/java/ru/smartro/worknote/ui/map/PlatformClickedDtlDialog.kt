@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import ru.smartro.worknote.R
+import ru.smartro.worknote.base.AbstractDialog
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningCameraShow
 import ru.smartro.worknote.extensions.warningClearNavigator
@@ -29,7 +30,7 @@ import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 import kotlin.math.min
 
-class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : DialogFragment(), View.OnClickListener {
+class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : AbstractDialog(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
     private var mFirstTime = true
     private var mIsServeAgain = false
