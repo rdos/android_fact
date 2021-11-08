@@ -3,6 +3,7 @@ package ru.smartro.worknote.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
@@ -53,6 +54,9 @@ class PlatformAdapter(
         holder.itemView.map_behavior_location.setOnClickListener {
             listener.navigatePlatform(Point(item.coords[0]!!, item.coords[1]!!))
         }
+
+        val tvPlatformContact = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__platform_contact)
+        tvPlatformContact.text = "Для связи +79111124594 Вася"
 
         when (item.status) {
             StatusEnum.NEW -> {
