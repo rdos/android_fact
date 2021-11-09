@@ -51,7 +51,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginBottom="@dimen/margin_default"
-        android:background="@drawable/ic_flash"
+        android:background="@drawable/ic_photo_flash"
         android:checked="false"
         android:textOff="@null"
         android:textOn="@null"

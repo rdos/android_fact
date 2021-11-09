@@ -1,7 +1,6 @@
 package ru.smartro.worknote.ui.camera
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -19,6 +18,7 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -75,7 +75,7 @@ class CameraFragment(
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
     private var imageAnalyzer: ImageAnalysis? = null
-    private var camera: Camera? = null
+    private var mCamera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
 
     private val viewModel: CameraViewModel by viewModel()
@@ -181,8 +181,8 @@ class CameraFragment(
         outputDirectory = CameraActivity.getOutputDirectory(requireContext())
         viewFinder.post {
             displayId = viewFinder.display.displayId
-            updateCameraUi()
             setUpCamera()
+            updateCameraUi()
         }
     }
 
@@ -255,7 +255,7 @@ class CameraFragment(
         cameraProvider.unbindAll()
 
         try {
-            camera = cameraProvider.bindToLifecycle(
+            mCamera = cameraProvider.bindToLifecycle(
                 this, cameraSelector, preview, imageCapture, imageAnalyzer
             )
             preview?.setSurfaceProvider(viewFinder.surfaceProvider)
@@ -273,6 +273,7 @@ class CameraFragment(
     }
 
     private fun updateCameraUi() {
+        Log.d(TAG, "updateCameraUi")
         mHostLayout.findViewById<ConstraintLayout>(R.id.camera_ui_container)?.let {
             mHostLayout.removeView(it)
         }
@@ -416,6 +417,15 @@ class CameraFragment(
             }
         }
 
+        val tbPhotoFlash = controls.findViewById<AppCompatToggleButton>(R.id.photo_flash)
+        tbPhotoFlash.setOnClickListener{
+            Log.d(TAG, "tbPhotoflash.before")
+            if (mCamera?.cameraInfo?.hasFlashUnit() == true) {
+                mCamera?.cameraControl?.enableTorch(tbPhotoFlash.isChecked)
+            } else {
+                Log.e(TAG, "updateCameraUi mCamera?.cameraInfo?.hasFlashUnit() == true")
+            }
+        }
         // Listener for button used to view the most recent photo
         controls.findViewById<ImageButton>(R.id.photo_view_button).setOnClickListener {
             val fragment = GalleryFragment(
