@@ -17,7 +17,7 @@ import java.io.File
 
 const val KEY_EVENT_ACTION = "key_event_action"
 const val KEY_EVENT_EXTRA = "key_event_extra"
-//internal const val IMMERSIVE_FLAG_TIMEOUT = 500L
+private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
 class CameraActivity : AbstractAct() {
     private var photoFor = 0
@@ -68,7 +68,7 @@ class CameraActivity : AbstractAct() {
 
     override fun onResume() {
         super.onResume()
-//        hostLayout.postDelayed({ hostLayout.systemUiVisibility = FLAGS_FULLSCREEN }, IMMERSIVE_FLAG_TIMEOUT)
+        hostLayout.postDelayed({ hostLayout.systemUiVisibility = FLAGS_FULLSCREEN }, IMMERSIVE_FLAG_TIMEOUT)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
