@@ -120,7 +120,10 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+                    Log.d(TAG, "getFailReason.after errorResponse=${errorResponse}")
                     badRequest(response)
+
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -141,6 +144,8 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+                    Log.d(TAG, "getWayList.after errorResponse=${errorResponse}")
                     badRequest(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }

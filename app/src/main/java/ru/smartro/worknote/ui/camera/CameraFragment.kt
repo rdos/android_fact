@@ -1,7 +1,6 @@
 package ru.smartro.worknote.ui.camera
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -23,20 +22,18 @@ import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
-import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.android.synthetic.main.camera_ui_container.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.base.AbstractFragment
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
@@ -52,18 +49,19 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+
 class CameraFragment(
     private val photoFor: Int,
     private val platformId: Int,
     private val containerId: Int
-) : Fragment(),  ImageCounter {
+) : AbstractFragment(),  ImageCounter {
 
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
     private val ANIMATION_FAST_MILLIS = 50L
     private val ANIMATION_SLOW_MILLIS = 100L
-    private lateinit var mHostLayout: ConstraintLayout
-    private lateinit var viewFinder: PreviewView
+    private lateinit var mRootView: View
+    private lateinit var mPreviewView: PreviewView
     private lateinit var outputDirectory: File
     private lateinit var broadcastManager: LocalBroadcastManager
 
@@ -75,7 +73,7 @@ class CameraFragment(
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
     private var imageAnalyzer: ImageAnalysis? = null
-    private var camera: Camera? = null
+    private var mCamera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
 
     private val viewModel: CameraViewModel by viewModel()
@@ -89,7 +87,7 @@ class CameraFragment(
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.getIntExtra(KEY_EVENT_EXTRA, KeyEvent.KEYCODE_UNKNOWN)) {
                 KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                    val shutter = mHostLayout
+                    val shutter = mRootView
                         .findViewById<ImageButton>(R.id.camera_capture_button)
                     shutter.simulateClick()
                 }
@@ -128,7 +126,7 @@ class CameraFragment(
     }
 
     private fun setGalleryThumbnail(uri: Uri) {
-        val thumbnail = mHostLayout.findViewById<ImageButton>(R.id.photo_view_button)
+        val thumbnail = mRootView.findViewById<ImageButton>(R.id.photo_view_button)
         thumbnail.post {
             // Remove thumbnail padding
             thumbnail.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
@@ -141,7 +139,7 @@ class CameraFragment(
     }
 
     private fun setImageCounter(plus: Boolean) {
-        val imageCounter = mHostLayout.findViewById<TextView>(R.id.image_counter)
+        val imageCounter = mRootView.findViewById<TextView>(R.id.image_counter)
         val count = if (plus) 1 else 0
         imageCounter.post {
             when (photoFor) {
@@ -172,19 +170,20 @@ class CameraFragment(
 //    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mHostLayout = view as ConstraintLayout
-        viewFinder = mHostLayout.findViewById(R.id.view_finder)
+        mRootView = view
+        mPreviewView = mRootView.findViewById(R.id.view_finder)
         cameraExecutor = Executors.newSingleThreadExecutor()
         broadcastManager = LocalBroadcastManager.getInstance(requireContext())
         val filter = IntentFilter().apply { addAction(KEY_EVENT_ACTION) }
         broadcastManager.registerReceiver(volumeDownReceiver, filter)
         outputDirectory = CameraActivity.getOutputDirectory(requireContext())
-        viewFinder.post {
-            displayId = viewFinder.display.displayId
-            updateCameraUi()
+        mPreviewView.post{
+            displayId = mPreviewView.display.displayId
             setUpCamera()
+            updateCameraUi()
         }
     }
+
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -232,6 +231,7 @@ class CameraFragment(
                     }
                 }
                 imageCapture?.targetRotation = rotation
+                imageAnalyzer?.targetRotation = rotation
             }
         }
 
@@ -240,11 +240,12 @@ class CameraFragment(
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
             .build()
-        cameraProvider.unbindAll()
+
         imageCapture = ImageCapture.Builder()
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
-            .setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
+//            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setCaptureMode(CAPTURE_MODE_MAXIMIZE_QUALITY)
             .setFlashMode(FLASH_MODE_OFF)
             .build()
 
@@ -252,16 +253,24 @@ class CameraFragment(
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
             .build()
+
         cameraProvider.unbindAll()
 
         try {
-            camera = cameraProvider.bindToLifecycle(
+            mCamera = cameraProvider.bindToLifecycle(
                 this, cameraSelector, preview, imageCapture, imageAnalyzer
             )
-            preview?.setSurfaceProvider(viewFinder.surfaceProvider)
+            if (mCamera?.cameraInfo?.hasFlashUnit() == true) {
+                mCamera?.cameraControl?.enableTorch(true)
+            } else {
+                Log.e(TAG, "bindCameraUseCases mCamera?.cameraInfo?.hasFlashUnit() == false")
+            }
+            preview?.setSurfaceProvider(mPreviewView.surfaceProvider)
+
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
+
     }
 
     private fun aspectRatio(width: Int, height: Int): Int {
@@ -273,14 +282,10 @@ class CameraFragment(
     }
 
     private fun updateCameraUi() {
-        mHostLayout.findViewById<ConstraintLayout>(R.id.camera_ui_container)?.let {
-            mHostLayout.removeView(it)
-        }
-
-        val controls = View.inflate(requireContext(), R.layout.camera_ui_container, mHostLayout)
+        Log.d(TAG, "updateCameraUi")
 
         //кнопка отправить в камере. Определения для чего делается фото
-        controls.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
+        mRootView.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
             when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
@@ -329,7 +334,7 @@ class CameraFragment(
                 }
             }
         }
-        val captureButton = controls.findViewById<ImageButton>(R.id.camera_capture_button)
+        val captureButton = mRootView.findViewById<ImageButton>(R.id.camera_capture_button)
         captureButton.setOnClickListener {
             imageCapture?.let { imageCapture ->
                 val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
@@ -341,8 +346,8 @@ class CameraFragment(
                     .setMetadata(metadata).build()
 
                 val maxPhotoCount = 3
-                val flashMode = if (photo_flash.isChecked) FLASH_MODE_ON else FLASH_MODE_OFF
-                imageCapture.flashMode = flashMode
+//                val flashMode = if (photo_flash.isChecked) FLASH_MODE_ON else FLASH_MODE_OFF
+//                imageCapture.flashMode = flashMode
                 val currentMediaIsFull = when (photoFor) {
                     PhotoTypeEnum.forAfterMedia -> {
                         val platform = viewModel.findPlatformEntity(platformId)
@@ -380,7 +385,7 @@ class CameraFragment(
 
                     imageCapture.takePicture(outputOptions, cameraExecutor, object : OnImageSavedCallback {
                         override fun onError(exc: ImageCaptureException) {
-                            Log.e(TAG, ": ${exc.message}", exc)
+                            Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                         }
 
                         override fun onImageSaved(output: OutputFileResults) {
@@ -392,6 +397,7 @@ class CameraFragment(
                                 setGalleryThumbnail(imageUri)
                                 setImageCounter(true)
                             }
+
                             job.launch {
                                 val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees, requireContext())
                                 if (photoFor == PhotoTypeEnum.forContainerProblem) {
@@ -407,9 +413,9 @@ class CameraFragment(
                         }
                     })
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        mHostLayout.postDelayed({
-                            mHostLayout.foreground = ColorDrawable(Color.WHITE)
-                            mHostLayout.postDelayed({ mHostLayout.foreground = null }, ANIMATION_FAST_MILLIS)
+                        mRootView.postDelayed({
+                            mRootView.foreground = ColorDrawable(Color.WHITE)
+                            mRootView.postDelayed({ mRootView.foreground = null }, ANIMATION_FAST_MILLIS)
                         }, ANIMATION_SLOW_MILLIS)
                     }
                 }
@@ -417,7 +423,7 @@ class CameraFragment(
         }
 
         // Listener for button used to view the most recent photo
-        controls.findViewById<ImageButton>(R.id.photo_view_button).setOnClickListener {
+        mRootView.findViewById<ImageButton>(R.id.photo_view_button).setOnClickListener {
             val fragment = GalleryFragment(
                 platformId = platformId, photoFor = photoFor,
                 containerId = containerId, imageCountListener = this
@@ -432,14 +438,13 @@ class CameraFragment(
         return cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
     }
 
-
     companion object {
-        private const val TAG = "CameraXBasic"
         private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val PHOTO_EXTENSION = ".jpg"
         private const val RATIO_4_3_VALUE = 4.0 / 3.0
         private const val RATIO_16_9_VALUE = 16.0 / 9.0
-
+        private const val MANUAL_FOCUS_DURATION__MS = 8000L
+        private const val ANIMATION_MANUAL_FOCUS_DURATION__MS = MANUAL_FOCUS_DURATION__MS / 2
         private fun createFile(baseFolder: File, format: String, extension: String) =
             File(baseFolder, SimpleDateFormat(format, Locale.US).format(System.currentTimeMillis()) + extension)
     }
@@ -453,8 +458,47 @@ class CameraFragment(
         cameraProvider?.unbindAll()
     }
 
+
+//    private class LuminosityAnalyzer:ImageAnalysis.Analyzer{
+//        private var lastAnalyzedTimestamp = 0L
+//        /**
+//         * Helper extension function used to extract a byte array from an
+//         * image plane buffer
+//         */
+//        private fun ByteBuffer.toByteArray():ByteArray{
+//            rewind() //Rewind buffer to zero
+//            val data=ByteArray(remaining())
+//            get(data)  // Copy buffer into byte array
+//            return data // Return byte array
+//        }
+//
+//        override fun analyze(image: ImageProxy) {
+//            val currentTimestamp =System.currentTimeMillis()
+//            // Calculate the average luma no more often than every second
+//            if(currentTimestamp-lastAnalyzedTimestamp>=java.util.concurrent.TimeUnit.SECONDS.toMillis(1)){
+//                // Since format in ImageAnalysis is YUV, image.planes[0]
+//                // contains the Y (luminance) plane
+//                val buffer = image.planes[0].buffer
+//                // Extract image data from callback object
+//                val data = buffer.toByteArray()
+//                // Convert the data into an array of pixel values
+//                val pixels = data.map { it.toInt() and 0xFF }
+//                // Compute average luminance for the image
+//                val luma = pixels.average()
+//                // Log the new luma value
+//                Log.d( "CameraX Demo" , "Average luminosity: $luma")
+//                // Update timestamp of last analyzed frame
+//                lastAnalyzedTimestamp = currentTimestamp
+//            }
+//        }
+//
+//
+//    }
 }
+
 
 interface ImageCounter {
     fun mediaSizeChanged()
 }
+
+
