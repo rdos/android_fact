@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -21,9 +22,7 @@ import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractDialog
-import ru.smartro.worknote.extensions.hideDialog
-import ru.smartro.worknote.extensions.warningCameraShow
-import ru.smartro.worknote.extensions.warningClearNavigator
+import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
@@ -141,7 +140,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         }
     }
 
-    class PlatformClickedDtlAdapter(private val _platform: PlatformEntity) :
+    inner class PlatformClickedDtlAdapter(private val _platform: PlatformEntity) :
         RecyclerView.Adapter<PlatformClickedDtlAdapter.PlatformClickedDtlHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlatformClickedDtlHolder {
@@ -158,6 +157,21 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
 //            holder.tv_title.text = container!!.number
             holder.platformImageView.setImageResource(_platform.getIconDrawableResId())
 
+            holder.clParent.setOnClickListener{
+                var toastText = ""
+                if (!_platform.name.isNullOrEmpty()) {
+                    toastText += "Имя = ${_platform.name} \n"
+                }
+                toastText += "${container?.typeName} \n"
+                toastText += "Объем = ${container?.constructiveVolume} \n"
+                if (!container?.client.isNullOrEmpty()) {
+                    toastText += "Клиент = ${container?.client} \n"
+                }
+                if (!container?.client.isNullOrEmpty()) {
+                    toastText += "Контакт = ${container?.contacts} \n"
+                }
+                toast(toastText)
+            }
             holder.statusImageView.isVisible = false
             when (container?.status) {
                 StatusEnum.SUCCESS -> {
@@ -170,11 +184,11 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
                 }
             }
         }
-        class PlatformClickedDtlHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        inner class PlatformClickedDtlHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 //            val tv_title = itemView.findViewById<TextView>(R.id.tv_item_dialog_platform_clicked_dtl)
-            val platformImageView = itemView.findViewById<ImageView>(R.id.iv_item_dialog_platform_clicked_dtl__platform)
+            val platformImageView = itemView.findViewById<ImageView>(R.id.ib_item_dialog_platform_clicked_dtl__platform)
             val statusImageView = itemView.findViewById<ImageView>(R.id.iv_item_dialog_platform_clicked_dtl__status)
-
+            val clParent = itemView.findViewById<ConstraintLayout>(R.id.cl_item_dialog_platform_clicked_dtl)
         }
     }
 
