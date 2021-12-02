@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
+import kotlinx.android.synthetic.main.item_map_behavior.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.util.MyUtil.toStr
@@ -33,6 +34,10 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
         // TODO: 25.10.2021 add getString() + format
         holder.itemView.tv_item_container_adapter__constructiveVolume.text = "${data.constructiveVolume.toStr("м3")}"
 
+        holder.itemView.map_behavior_expl11.collapse()
+        holder.itemView.plus.setOnClickListener {
+            holder.itemView.map_behavior_expl11.expand()
+        }
         holder.itemView.choose_status.visibility = View.INVISIBLE
 
         if (data.isActiveToday!!) {
