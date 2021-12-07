@@ -34,10 +34,6 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
         // TODO: 25.10.2021 add getString() + format
         holder.itemView.tv_item_container_adapter__constructiveVolume.text = "${data.constructiveVolume.toStr("м3")}"
 
-        holder.itemView.map_behavior_expl11.collapse()
-        holder.itemView.plus.setOnClickListener {
-            holder.itemView.map_behavior_expl11.expand()
-        }
         holder.itemView.choose_status.visibility = View.INVISIBLE
 
         if (data.isActiveToday!!) {
