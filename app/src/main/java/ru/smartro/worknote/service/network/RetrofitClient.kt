@@ -8,7 +8,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.interceptor.TokenAuthenticator
@@ -51,7 +50,6 @@ class RetrofitClient(context: Context) {
         Retrofit.Builder()
             .client(client)
             .baseUrl(baseUrl)
-            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

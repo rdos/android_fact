@@ -56,8 +56,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
             intent.putExtra("platform_id", platformId)
             startActivityForResult(intent, 99)
         }
-
-        enter_info_percent_rg.check(R.id.percent_100)
+        
     }
 
     override fun onDismiss(dialog: DialogInterface) {
