@@ -52,7 +52,6 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containers.size)
 
 
-
         mIsServeAgain = _platform.status != StatusEnum.NEW
 
         val cvStartServe = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
@@ -64,7 +63,10 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         tvAddress.text = String.format(getString(R.string.dialog_platform_clicked_dtl__address), _platform.address, _platform.srpId)
 
         val tvPlatformContact = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__platform_contact)
-        tvPlatformContact.text = "Для связи +9111124594 Если вы хотите разблокировать Blackview BV4900 без отладки, смотрите наши статьи. Вы сможете найти множество советов, как разблокировать Blackview BV4900 в случае забытого графического ключа или разблокировать Blackview BV4900 в случае забытого пароля."
+        val contactsInfo = _platform.getContactsInfo()
+        tvPlatformContact.text = contactsInfo
+        tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
+
         // TODO: 27.10.2021 !! !?
         initButtonsViews()
         view.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener {

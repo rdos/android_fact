@@ -56,8 +56,9 @@ class PlatformAdapter(
         }
 
         val tvPlatformContact = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__platform_contact)
-        tvPlatformContact.text = "Для связи +79111124594 Вася"
-
+        val contactsInfo = item.getContactsInfo()
+        tvPlatformContact.text = contactsInfo
+        tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
         when (item.status) {
             StatusEnum.NEW -> {
                 holder.itemView.map_behavior_status.isVisible = false
