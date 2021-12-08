@@ -130,6 +130,7 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
     }
 
     private fun saveCancelWayReason() {
+        Log.d(TAG, "saveCancelWayReason.before")
         viewModel.getCancelWayReason().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
@@ -148,10 +149,12 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
     }
 
     private fun acceptProgress() {
+        Log.d(TAG, "acceptProgress.before")
         viewModel.progress(AppPreferences.wayTaskId, ProgressBody(MyUtil.timeStamp()))
             .observe(this, Observer { result ->
                 when (result.status) {
                     Status.SUCCESS -> {
+                        Log.d(TAG, "acceptProgress Status.SUCCESS ")
                         loadingHide()
                         AppPreferences.isHasTask = true
                         viewModel.insertWayTask(mSelectedWayInfo)
@@ -161,6 +164,7 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
                         finish()
                     }
                     else -> {
+                        Log.d(TAG, "acceptProgress Status.ERROR")
                         toast(result.msg)
                         loadingHide()
                     }
