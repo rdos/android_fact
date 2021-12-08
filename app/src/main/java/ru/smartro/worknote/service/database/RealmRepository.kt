@@ -100,6 +100,7 @@ class RealmRepository(private val realm: Realm) {
     }
 
     fun insertCancelWayReason(entities: List<CancelWayReasonEntity>) {
+        Log.d(TAG, "insertCancelWayReason.before  ${entities.size}")
         realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }

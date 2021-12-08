@@ -481,11 +481,11 @@ class MapActivity : AbstractAct(),
     }
 
     override fun onLocationUpdated(location: Location) {
-        Log.d("LogDistance", "###################")
+//        Log.d("LogDistance", "###################")
         currentLocation = location
         AppPreferences.currentCoordinate = "${location.position.longitude}#${location.position.latitude}"
         val distanceToPoint = MyUtil.calculateDistance(location.position, selectedPlatformToNavigate)
-        Log.d("LogDistance", "Distance: $distanceToPoint")
+//        Log.d("LogDistance", "Distance: $distanceToPoint")
         if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
             isOnPointFirstTime = false
             alertOnPoint().let {
@@ -497,13 +497,13 @@ class MapActivity : AbstractAct(),
                 }
             }
         } else {
-            Log.d("LogDistance", "Distance not arrive")
+//            Log.d("LogDistance", "Distance not arrive")
         }
         if (firstTime) {
             moveCameraToUser(location)
             firstTime = false
         }
-        Log.d("LogDistance", "Location updated")
+//        Log.d("LogDistance", "Location updated")
     }
 
     override fun onDestroy() {

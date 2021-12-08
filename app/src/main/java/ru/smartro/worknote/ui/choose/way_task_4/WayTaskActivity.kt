@@ -133,12 +133,14 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
         viewModel.getCancelWayReason().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
+                    Log.d(TAG, "saveCancelWayReason. Status.SUCCESS")
                     val entities = result.data?.data?.filter {
                         it.attributes.organisationId == AppPreferences.organisationId
                     }!!.map { CancelWayReasonEntity(it.id, it.attributes.name) }
                     viewModel.insertCancelWayReason(entities)
                 }
                 Status.ERROR -> {
+                    Log.d(TAG, "saveCancelWayReason. Status.ERROR")
                     toast(result.msg)
                 }
             }

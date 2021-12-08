@@ -136,7 +136,7 @@ open class PlatformEntity(
         var result = ""
         this.containers.forEach{ containerEntity ->
             if (!containerEntity.client.isNullOrEmpty()) {
-                result += containerEntity.client
+                result += containerEntity.client + " "
             }
             if (!containerEntity.contacts.isNullOrEmpty()) {
                 result += containerEntity.contacts
