@@ -3,6 +3,7 @@ package ru.smartro.worknote.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_auth.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -75,6 +76,10 @@ class AuthActivity : AbstractAct() {
                 auth_password_out.error = "Проверьте пароль"
                 login_login_out.error = "Проверьте логин"
             }
+        }
+
+        if (BuildConfig.BUILD_TYPE == "debugProd") {
+            actv_activity_auth__it_test_version.isVisible = false
         }
 
         if (BuildConfig.BUILD_TYPE == "debug") {

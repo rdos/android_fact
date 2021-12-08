@@ -137,10 +137,10 @@ fun AppCompatActivity.showDialogFillKgoVolume(): View {
     return view
 }
 
-fun Fragment.showDialogFillKgoVolum(): View {
+fun Fragment.showDialogAdditionalVolumeContainer(): View {
     val builder = AlertDialog.Builder(requireContext())
     val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_fill_kgo, null)
+    val view = inflater.inflate(R.layout.alert_additional_volume_container, null)
     builder.setView(view)
     showCustomDialog(builder)
     return view

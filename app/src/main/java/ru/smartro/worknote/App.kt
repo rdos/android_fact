@@ -36,7 +36,7 @@ class App : Application() {
         }
         val config = RealmConfiguration.Builder()
         config.allowWritesOnUiThread(true)
-        config.name("FactRealmBase")
+        config.name("FACT.realm")
         config.deleteRealmIfMigrationNeeded()
         Realm.setDefaultConfiguration(config.build())
     }

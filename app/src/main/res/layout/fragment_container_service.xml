@@ -114,7 +114,12 @@
                 android:gravity="center"
                 android:text="125%"
                 android:textColor="@color/black" />
-
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/aciv_fragment_container_service__additional_volume"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_baseline_add_circle_outline_24"
+                />
         </RadioGroup>
 
         <com.google.android.material.textfield.TextInputLayout

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
+import kotlinx.android.synthetic.main.item_map_behavior.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
 import ru.smartro.worknote.util.MyUtil.toStr

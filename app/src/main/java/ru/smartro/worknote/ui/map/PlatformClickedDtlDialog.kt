@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
@@ -143,6 +144,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
             }
         }
     }
+    
 
     inner class PlatformClickedDtlAdapter(private val _platform: PlatformEntity) :
         RecyclerView.Adapter<PlatformClickedDtlAdapter.PlatformClickedDtlHolder>() {

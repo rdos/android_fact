@@ -182,7 +182,10 @@ open class ContainerEntity(
     var typeId: Int? = null,
     @SerializedName("volume")
     var volume: Double? = null,
+    @SerializedName("volume_additional_in_m3")
+    var volumeAdditionalInM3: Double? = null,
     @SerializedName("comment")
+
     var comment: String? = null
 ) : Serializable, RealmObject()
 
