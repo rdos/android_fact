@@ -114,22 +114,33 @@
                 android:gravity="center"
                 android:text="125%"
                 android:textColor="@color/black" />
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/aciv_fragment_container_service__additional_volume"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/ic_baseline_add_circle_outline_24"
-                />
+
         </RadioGroup>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb_fragment_container_service__additional_volume"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginTop="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="@dimen/margin_default"
+            android:background="@drawable/bg_button_white"
+            android:drawableStart="@drawable/ic_baseline_add_circle_outline_24"
+            android:text="Доп. объем"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/enter_info_percent_rg" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/comment_et_out"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/margin_default"
-            android:layout_marginTop="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_min"
             android:gravity="start"
-            app:layout_constraintTop_toBottomOf="@+id/enter_info_percent_rg">
+            app:layout_constraintTop_toBottomOf="@+id/acb_fragment_container_service__additional_volume">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/comment_et"

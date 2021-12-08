@@ -9,8 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputEditText
@@ -64,7 +63,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
             startActivityForResult(intent, 99)
         }
 
-        val acivAdditionalVolume = view.findViewById<AppCompatImageView>(R.id.aciv_fragment_container_service__additional_volume)
+        val acivAdditionalVolume = view.findViewById<AppCompatButton>(R.id.acb_fragment_container_service__additional_volume)
 
         acivAdditionalVolume.setOnClickListener {
             showDialogAdditionalVolumeContainer().let{ dialogView ->
