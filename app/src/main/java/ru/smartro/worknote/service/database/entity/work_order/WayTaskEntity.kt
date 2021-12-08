@@ -131,6 +131,22 @@ open class PlatformEntity(
                 }
         }
     }
+
+    fun getContactsInfo(): String {
+        var result = ""
+        this.containers.forEach{ containerEntity ->
+            if (!containerEntity.client.isNullOrEmpty()) {
+                result += containerEntity.client + " "
+            }
+            if (!containerEntity.contacts.isNullOrEmpty()) {
+                result += containerEntity.contacts
+            }
+            if (!containerEntity.client.isNullOrEmpty() || !containerEntity.contacts.isNullOrEmpty()) {
+                result += "\n"
+            }
+        }
+        return result
+    }
 }
 
 open class UnloadEntity(

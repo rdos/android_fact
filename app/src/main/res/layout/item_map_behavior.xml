@@ -7,7 +7,9 @@
     android:layout_marginHorizontal="@dimen/margin_default"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="8dp"
-    app:cardCornerRadius="@dimen/margin_default">
+    app:cardCornerRadius="@dimen/margin_default"
+    android:stateListAnimator="@animator/selector_raise"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -105,7 +107,21 @@
                     app:layout_constraintBottom_toBottomOf="@id/map_behavior_fire"
                     app:layout_constraintStart_toEndOf="@id/map_behavior_fire"
                     app:layout_constraintEnd_toStartOf="@id/map_behavior_location"
-                    app:layout_constraintTop_toTopOf="@id/map_behavior_fire" />
+                    app:layout_constraintTop_toTopOf="@id/map_behavior_fire"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_item_map_behavior__platform_contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:padding="@dimen/margin_default"
+                    android:autoLink="phone"
+                    android:textColorLink="@color/colorPrimary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/map_behavior_start_service"
+                    tools:text="Для связи +79111124594 Вася" />
 
                 <ImageButton
                     android:id="@+id/map_behavior_location"
