@@ -30,7 +30,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/map_behavior_address"
+            android:id="@+id/tv_item_map_behavior__address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
@@ -39,13 +39,24 @@
             tools:text="Ул Пушкино 64" />
 
         <TextView
+            android:id="@+id/tv_item_map_behavior__name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:autoLink="phone"
+            app:layout_constraintTop_toBottomOf="@id/tv_item_map_behavior__address"
+            tools:text="Наименование из логистики. " />
+
+        <TextView
             android:id="@+id/map_behavior_scrp_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/map_behavior_address"
+            app:layout_constraintTop_toBottomOf="@id/tv_item_map_behavior__name"
             tools:text="5960" />
 
         <TextView
@@ -56,7 +67,7 @@
             android:layout_marginTop="8dp"
             android:textColor="@color/black"
             app:layout_constraintStart_toEndOf="@id/map_behavior_scrp_id"
-            app:layout_constraintTop_toBottomOf="@id/map_behavior_address"
+            app:layout_constraintTop_toBottomOf="@id/tv_item_map_behavior__name"
             tools:text="12 контайнер" />
 
         <TextView
@@ -68,7 +79,7 @@
             android:text="@string/show_on_map"
             android:textColor="#0466B5"
             app:layout_constraintStart_toEndOf="@id/map_behavior_container_count"
-            app:layout_constraintTop_toBottomOf="@id/map_behavior_address"
+            app:layout_constraintTop_toBottomOf="@id/tv_item_map_behavior__name"
       />
 
         <net.cachapa.expandablelayout.ExpandableLayout

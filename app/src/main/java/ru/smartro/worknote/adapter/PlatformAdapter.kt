@@ -43,7 +43,8 @@ class PlatformAdapter(
             }
         }
 
-        holder.itemView.map_behavior_address.text = item!!.address
+        holder.itemView.tv_item_map_behavior__address.text = item!!.address
+        holder.itemView.tv_item_map_behavior__name.text = item.name
         holder.itemView.map_behavior_scrp_id.text = item.srpId.toString()
         val containerString: String = holder.itemView.context.resources.getQuantityString(R.plurals.container_count, item.containers.size)
         holder.itemView.map_behavior_container_count.text = "${item.containers.size} $containerString"
