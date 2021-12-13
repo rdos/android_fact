@@ -65,6 +65,8 @@ open class PlatformEntity(
     var volumeKGO: Double? = null,
     @SerializedName("kgo_is_takeaway")
     var isTakeawayKGO: Boolean = true,
+    @SerializedName("volume_selection_in_m3")
+    var volumeSelectionInM3: Double? = null,
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
 /*    @SerializedName("breakdown_reason_id")
@@ -166,10 +168,7 @@ open class ContainerEntity(
     var typeId: Int? = null,
     @SerializedName("volume")
     var volume: Double? = null,
-    @SerializedName("volume_additional_in_m3")
-    var volumeAdditionalInM3: Double? = null,
     @SerializedName("comment")
-
     var comment: String? = null
 ) : Serializable, RealmObject()
 

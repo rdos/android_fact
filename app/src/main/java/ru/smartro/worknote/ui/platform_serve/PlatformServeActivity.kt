@@ -16,6 +16,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.hideDialog
+import ru.smartro.worknote.extensions.showDialogAdditionalVolumeContainer
 import ru.smartro.worknote.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
@@ -91,6 +92,28 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
             startActivityForResult(intent, 13)
+        }
+
+        var volumeSelectionInM3 = mPlatformEntity.volumeSelectionInM3
+//        volumeAdditionalInM3 = null
+        val acivSelection = findViewById<AppCompatButton>(R.id.acb_fragment_container_service__selection)
+
+        acivSelection.setOnClickListener {
+            showDialogAdditionalVolumeContainer().let{ dialogView ->
+                val btnCancel = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__cancel)
+                btnCancel.setOnClickListener { hideDialog() }
+                val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
+                volumeSelectionInM3?.let{
+                    tietAdditionalVolumeInM3.setText(volumeSelectionInM3.toString())
+                }
+
+                val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
+                btnOk.setOnClickListener {
+                    volumeSelectionInM3 = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
+                    mPlatformServeViewModel.updateSelectionVolume(mPlatformEntity.platformId!!, volumeSelectionInM3)
+                    hideDialog()
+                }
+            }
         }
     }
 

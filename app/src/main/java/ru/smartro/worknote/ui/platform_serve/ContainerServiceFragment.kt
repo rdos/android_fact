@@ -7,25 +7,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.RadioButton
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import com.google.android.material.textfield.TextInputEditText
 import kotlinx.android.synthetic.main.fragment_container_service.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractBottomDialog
-import ru.smartro.worknote.extensions.hideDialog
-import ru.smartro.worknote.extensions.showDialogAdditionalVolumeContainer
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 
 class ContainerServiceFragment(val containerId: Int, val platformId: Int) : AbstractBottomDialog() {
     private val viewModel: PlatformServeViewModel by viewModel()
     private var comment: String? = null
     private var volume: Double? = null
-    private var volumeAdditionalInM3: Double? = null
     private lateinit var parentActivity: PlatformServeActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +41,6 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
             comment_et.setText(it.comment)
             comment = it.comment
             volume = it.volume
-            volumeAdditionalInM3 = it.volumeAdditionalInM3
             setVolume(view, it.volume)
             enter_info_tittle.text = "Заполненность конт №${it.number}"
         }
@@ -63,31 +56,12 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
             startActivityForResult(intent, 99)
         }
 
-        val acivAdditionalVolume = view.findViewById<AppCompatButton>(R.id.acb_fragment_container_service__additional_volume)
-
-        acivAdditionalVolume.setOnClickListener {
-            showDialogAdditionalVolumeContainer().let{ dialogView ->
-                val btnCancel = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__cancel)
-                btnCancel.setOnClickListener { hideDialog() }
-                val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
-                volumeAdditionalInM3?.let{
-                    tietAdditionalVolumeInM3.setText(volumeAdditionalInM3.toString())
-                }
-
-                val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
-                btnOk.setOnClickListener {
-                    volumeAdditionalInM3 = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-                    hideDialog()
-                }
-            }
-        }
-
     }
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         if (isNotDefault(volume, comment)) {
-            viewModel.updateContainerVolume(platformId, containerId, volume, comment, volumeAdditionalInM3)
+            viewModel.updateContainerVolume(platformId, containerId, volume, comment)
         }
         parentActivity.updateRecyclerview()
     }
@@ -142,7 +116,6 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
         comment_et.setText(null)
         comment = null
         volume = null
-        volumeAdditionalInM3 = null
         viewModel.clearContainerVolume(platformId, containerId)
         parentActivity.updateRecyclerview()
     }

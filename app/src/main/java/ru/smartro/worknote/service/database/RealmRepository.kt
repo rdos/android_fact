@@ -136,8 +136,19 @@ class RealmRepository(private val realm: Realm) {
             .findFirst()?.id!!
     }
 
+    fun updateSelectionVolume(platformId: Int, volumeSelectionInM3: Double?) {
+        realm.executeTransaction { realm ->
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.volumeSelectionInM3 = volumeSelectionInM3
+            platformEntity?.beginnedAt = MyUtil.currentTime()
+            updateTimer(platformEntity)
+        }
+    }
+
     /** добавление заполненности контейнера **/
-    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?, comment: String?, volumeAdditional: Double?) {
+    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?, comment: String?) {
         realm.executeTransaction { realm ->
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
@@ -146,7 +157,6 @@ class RealmRepository(private val realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()
             container.volume = volume
-            container.volumeAdditionalInM3 = volumeAdditional
             container.comment = comment
             if (container.status == StatusEnum.NEW) {
                 container.status = StatusEnum.SUCCESS
@@ -166,7 +176,6 @@ class RealmRepository(private val realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             container.volume = null
-            container.volumeAdditionalInM3 = null
             // TODO: 02.11.2021 !!!
             if (container.failureReasonId == null) {
                 container.comment = null
@@ -339,9 +348,6 @@ class RealmRepository(private val realm: Realm) {
 
         allContainers.forEach { container ->
             var filledVolume = container.constructiveVolume!! * (doublePercent(container.volume) / 100)
-            container.volumeAdditionalInM3?.let{
-                filledVolume += it
-            }
             totalContainersVolume += filledVolume
         }
         Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
@@ -363,8 +369,11 @@ class RealmRepository(private val realm: Realm) {
                 }
         )
 
-        allPlatforms.forEach {
-            totalKgoVolume += it.volumeKGO!!
+        allPlatforms.forEach { pl ->
+            totalKgoVolume += pl.volumeKGO!!
+            pl.volumeSelectionInM3?.let{
+                totalKgoVolume += it
+            } //код всегда показывает, где(когда) Люди ошиблись
         }
         Log.d(TAG, "findContainersVolume.totalKgoVolume=${totalKgoVolume}")
 
