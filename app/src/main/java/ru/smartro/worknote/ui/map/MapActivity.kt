@@ -3,6 +3,7 @@ package ru.smartro.worknote.ui.map
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.PointF
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -210,7 +211,27 @@ class MapActivity : AbstractAct(),
 
     //UserLocation
     override fun onObjectAdded(userLocationView: UserLocationView) {
-        userLocationView.arrow.setIcon(ImageProvider.fromResource(this, R.drawable.ic_vehicle_png))
+//        userLocationView.arrow.setIcon(ImageProvider.fromResource(this, R.drawable.ic_truck_icon),
+//            IconStyle().setAnchor(PointF(0.0f, 0.0f))
+//            .setRotationType(RotationType.ROTATE)
+//            .setZIndex(0f)
+//        )
+        val pinIcon = userLocationView.arrow.useCompositeIcon()
+        pinIcon.setIcon(
+            "icon",
+            ImageProvider.fromResource(this, R.drawable.ic_truck_icon),
+            IconStyle().setAnchor(PointF(0.5f, 1f))
+                .setRotationType(RotationType.ROTATE)
+                .setZIndex(0f)
+        )
+
+//        pinIcon.setIcon(
+//            "pin",
+//            ImageProvider.fromResource(this, R.drawable.ic_truck_icon),
+//            IconStyle().setAnchor(PointF(0.5f, 0.5f))
+//                .setRotationType(RotationType.NO_ROTATION)
+//                .setZIndex(1f)
+//        )
         userLocationView.accuracyCircle.isVisible = false
         userLocationLayer.setObjectListener(null)
     }
@@ -481,11 +502,11 @@ class MapActivity : AbstractAct(),
     }
 
     override fun onLocationUpdated(location: Location) {
-        Log.d("LogDistance", "###################")
+//        Log.d("LogDistance", "###################")
         currentLocation = location
         AppPreferences.currentCoordinate = "${location.position.longitude}#${location.position.latitude}"
         val distanceToPoint = MyUtil.calculateDistance(location.position, selectedPlatformToNavigate)
-        Log.d("LogDistance", "Distance: $distanceToPoint")
+//        Log.d("LogDistance", "Distance: $distanceToPoint")
         if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
             isOnPointFirstTime = false
             alertOnPoint().let {
@@ -497,13 +518,13 @@ class MapActivity : AbstractAct(),
                 }
             }
         } else {
-            Log.d("LogDistance", "Distance not arrive")
+//            Log.d("LogDistance", "Distance not arrive")
         }
         if (firstTime) {
             moveCameraToUser(location)
             firstTime = false
         }
-        Log.d("LogDistance", "Location updated")
+//        Log.d("LogDistance", "Location updated")
     }
 
     override fun onDestroy() {

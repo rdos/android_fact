@@ -30,33 +30,21 @@ class WayTaskViewModel(application: Application) : BaseViewModel(application) {
         return network.getWorkOder(organisationId, wayId)
     }
 
-    fun getBreakDownTypes(): LiveData<Resource<BreakDownResponse>> {
+    fun getBreakDownTypes(): LiveData<Resource<Nothing>> {
         return network.getBreakDownTypes()
     }
 
 
-    fun getFailReason(): LiveData<Resource<FailureReasonResponse>> {
+    fun getFailReason(): LiveData<Resource<Nothing>> {
         return network.getFailReason()
     }
 
-    fun getCancelWayReason(): LiveData<Resource<CancelationReasonResponse>> {
+    fun getCancelWayReason(): LiveData<Resource<Nothing>> {
         return network.getCancelWayReason()
     }
 
     fun insertWayTask(response: Workorder) {
             db.insertWayTask(response)
-    }
-
-    fun insertBreakDown(entities: List<BreakDownEntity>) {
-        db.insertBreakDown(entities)
-    }
-
-    fun insertFailReason(entities: List<FailReasonEntity>) {
-        db.insertFailReason(entities)
-    }
-
-    fun insertCancelWayReason(entities: List<CancelWayReasonEntity>) {
-        db.insertCancelWayReason(entities)
     }
 
     fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {

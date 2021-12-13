@@ -21,7 +21,8 @@
                 android:src="@drawable/ic_close"
                 android:layout_marginEnd="@dimen/margin_default"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_dialog_platform_clicked_dtl__name"/>
 
             <TextView
                 android:id="@+id/tv_dialog_platform_clicked_dtl__address"
@@ -35,6 +36,21 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="г. Москва, ул Пушкина д4" />
 
+            <TextView
+                android:id="@+id/tv_dialog_platform_clicked_dtl__name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_min"
+                android:layout_marginBottom="@dimen/margin_min"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:autoLink="phone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__address"
+                tools:text="Наименование из логистики. " />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_dialog_platform_clicked_dtl"
                 android:layout_width="wrap_content"
@@ -45,8 +61,8 @@
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__name"
                 app:layout_constraintBottom_toTopOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt"
-                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__address"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_dialog_platform_clicked_dtl" />
 
@@ -61,13 +77,26 @@
                 app:layout_constraintTop_toBottomOf="@id/rv_dialog_platform_clicked_dtl"
                 tools:text="999 конт. на площадке" />
 
+            <TextView
+                android:id="@+id/tv_dialog_platform_clicked_dtl__platform_contact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:padding="@dimen/margin_default"
+                android:autoLink="phone"
+                android:textColorLink="@color/colorPrimary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt"
+                tools:text="Для связи +79111124594 Вася" />
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cv_dialog_platform_clicked_dtl__serve_again"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="16dp"
                 app:cardCornerRadius="32dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt"
+                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__platform_contact"
                 tools:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout

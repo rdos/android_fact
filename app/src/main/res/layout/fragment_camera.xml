@@ -57,6 +57,29 @@
             app:layout_constraintTop_toTopOf="@id/photo_view_button"
             tools:text="0" />
 
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/photo_flash"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="@dimen/margin_default"
+            android:background="@drawable/ic_photo_flash"
+            android:checked="false"
+            android:textOff="@null"
+            android:textOn="@null"
+            app:layout_constraintBottom_toTopOf="@id/image_counter"
+            app:layout_constraintEnd_toEndOf="@id/image_counter"
+            app:layout_constraintStart_toStartOf="@id/image_counter" />
+
+        <ImageView
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:src="@drawable/ic_outer_circle"
+            app:layout_constraintBottom_toBottomOf="@id/photo_flash"
+            app:layout_constraintEnd_toEndOf="@id/photo_flash"
+            app:layout_constraintStart_toStartOf="@id/photo_flash"
+            app:layout_constraintTop_toTopOf="@id/photo_flash" />
+
+
         <ImageButton
             android:id="@+id/photo_accept_button"
             android:layout_width="@dimen/round_button_medium"

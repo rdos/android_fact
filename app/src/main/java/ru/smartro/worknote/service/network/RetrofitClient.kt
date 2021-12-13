@@ -13,6 +13,7 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.interceptor.TokenAuthenticator
 import java.util.concurrent.TimeUnit
 
+const val TIME_OUT = 240000L
 class RetrofitClient(context: Context) {
 
     private val authInterceptor = Interceptor { chain ->
@@ -41,9 +42,9 @@ class RetrofitClient(context: Context) {
             .addInterceptor(httpLoggingInterceptor)
             .addInterceptor(SentryOkHttpInterceptor())
             .authenticator(TokenAuthenticator(context))
-            .connectTimeout(240, TimeUnit.SECONDS)
-            .readTimeout(240, TimeUnit.SECONDS)
-            .writeTimeout(240, TimeUnit.SECONDS)
+            .connectTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
+            .readTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
+            .writeTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
             .build()
 
     private fun retrofit(baseUrl: String) =

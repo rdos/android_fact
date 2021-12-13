@@ -38,6 +38,13 @@ object AppPreferences {
             it.putString("userLogin", value)
         }
 
+    var isTorchEnabled: Boolean
+        get() = preferences.getBoolean("isTorchEnabled", true)
+        set(value) = preferences.edit {
+            it.putBoolean("isTorchEnabled", value)
+        }
+
+
     var isLogined: Boolean
         get() = preferences.getBoolean("isLogined", false)
         set(value) = preferences.edit {

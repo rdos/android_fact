@@ -53,7 +53,6 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containers.size)
 
 
-
         mIsServeAgain = _platform.status != StatusEnum.NEW
 
         val cvStartServe = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
@@ -64,7 +63,12 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         val tvAddress = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__address)
         tvAddress.text = String.format(getString(R.string.dialog_platform_clicked_dtl__address), _platform.address, _platform.srpId)
 
-        // TODO: 27.10.2021 !!!?
+        val tvPlatformContact = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__platform_contact)
+        val contactsInfo = _platform.getContactsInfo()
+        tvPlatformContact.text = contactsInfo
+        tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
+
+        // TODO: 27.10.2021 !! !?
         initButtonsViews()
         view.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener {
             dismiss()
@@ -73,6 +77,8 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
         view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve).setOnClickListener(mOnClickListener)
 
+        val tvName = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__name)
+        tvName.text = _platform.name
     }
 
     override fun onClick(v: View?) {

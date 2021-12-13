@@ -18,6 +18,7 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -56,6 +57,7 @@ class CameraFragment(
     private val containerId: Int
 ) : AbstractFragment(),  ImageCounter {
 
+    private var mActbPhotoFlash: AppCompatToggleButton? = null
     private val KEY_EVENT_ACTION = "key_event_action"
     private val KEY_EVENT_EXTRA = "key_event_extra"
     private val ANIMATION_FAST_MILLIS = 50L
@@ -100,6 +102,7 @@ class CameraFragment(
         if (!MyUtil.hasPermissions(requireContext())) {
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         }
+        enableTorch()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -260,17 +263,22 @@ class CameraFragment(
             mCamera = cameraProvider.bindToLifecycle(
                 this, cameraSelector, preview, imageCapture, imageAnalyzer
             )
-            if (mCamera?.cameraInfo?.hasFlashUnit() == true) {
-                mCamera?.cameraControl?.enableTorch(true)
-            } else {
-                Log.e(TAG, "bindCameraUseCases mCamera?.cameraInfo?.hasFlashUnit() == false")
-            }
+            enableTorch()
             preview?.setSurfaceProvider(mPreviewView.surfaceProvider)
 
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
 
+    }
+
+    private fun enableTorch() {
+        if (mCamera?.cameraInfo?.hasFlashUnit() == true) {
+            mCamera?.cameraControl?.enableTorch(AppPreferences.isTorchEnabled)
+            mActbPhotoFlash?.isChecked = AppPreferences.isTorchEnabled
+        } else {
+            Log.e(TAG, "bindCameraUseCases mCamera?.cameraInfo?.hasFlashUnit() == false")
+        }
     }
 
     private fun aspectRatio(width: Int, height: Int): Int {
@@ -420,6 +428,12 @@ class CameraFragment(
                     }
                 }
             }
+        }
+
+        mActbPhotoFlash = mRootView.findViewById<AppCompatToggleButton>(R.id.photo_flash)
+        mActbPhotoFlash?.setOnClickListener {
+           AppPreferences.isTorchEnabled = mActbPhotoFlash!!.isChecked
+           enableTorch()
         }
 
         // Listener for button used to view the most recent photo

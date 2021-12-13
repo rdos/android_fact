@@ -18,9 +18,6 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
-import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.response.work_order.Workorder
@@ -71,13 +68,14 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
                 dialog.show()
 
                 view.accept_btn.setOnClickListener {
-                    loadingShow()
+                    dialog.dismiss()
                     AppPreferences.wayTaskId = adapter.getSelectedId()
+                    loadingShow()
                     saveFailReason()
                     saveCancelWayReason()
                     saveBreakDownTypes()
+//                    val hand = Handler(Looper.getMainLooper())
                     acceptProgress()
-                    dialog.dismiss()
                 }
 
                 view.dismiss_btn.setOnClickListener {
@@ -87,24 +85,17 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
         }
     }
 
-
-
-
     private fun saveBreakDownTypes() {
         viewModel.getBreakDownTypes().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
-                    val entities = result.data?.data?.filter {
-                        it.attributes.organisationId == AppPreferences.organisationId
-                    }?.map {
-                        BreakDownEntity(it.attributes.id, it.attributes.name)
-                    }
-                    viewModel.insertBreakDown(entities!!)
+                    // TODO: ПО голове себе постучи
+                    Log.d(TAG, "saveBreakDownTypes. Status.SUCCESS")
                 }
                 Status.ERROR -> {
                     toast(result.msg)
                 }
-                else -> Log.d("dsadsa", "saveBreakDownTypes:")
+                else -> Log.d(TAG, "saveBreakDownTypes:")
             }
 
         })
@@ -115,12 +106,7 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
         viewModel.getFailReason().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
-                    val entities = result.data?.data?.filter {
-                        it.oid == AppPreferences.organisationId
-                    }!!.map {
-                        FailReasonEntity(it.id, it.name)
-                    }
-                    viewModel.insertFailReason(entities)
+                    Log.d(TAG, "saveFailReason. Status.SUCCESS")
                 }
                 Status.ERROR -> {
                     toast(result.msg)
@@ -130,15 +116,14 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
     }
 
     private fun saveCancelWayReason() {
+        Log.d(TAG, "saveCancelWayReason.before")
         viewModel.getCancelWayReason().observe(this, Observer { result ->
             when (result.status) {
                 Status.SUCCESS -> {
-                    val entities = result.data?.data?.filter {
-                        it.attributes.organisationId == AppPreferences.organisationId
-                    }!!.map { CancelWayReasonEntity(it.id, it.attributes.name) }
-                    viewModel.insertCancelWayReason(entities)
+                    Log.d(TAG, "saveCancelWayReason. Status.SUCCESS")
                 }
                 Status.ERROR -> {
+                    Log.d(TAG, "saveCancelWayReason. Status.ERROR")
                     toast(result.msg)
                 }
             }
@@ -146,10 +131,12 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
     }
 
     private fun acceptProgress() {
+        Log.d(TAG, "acceptProgress.before")
         viewModel.progress(AppPreferences.wayTaskId, ProgressBody(MyUtil.timeStamp()))
             .observe(this, Observer { result ->
                 when (result.status) {
                     Status.SUCCESS -> {
+                        Log.d(TAG, "acceptProgress Status.SUCCESS ")
                         loadingHide()
                         AppPreferences.isHasTask = true
                         viewModel.insertWayTask(mSelectedWayInfo)
@@ -159,6 +146,7 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
                         finish()
                     }
                     else -> {
+                        Log.d(TAG, "acceptProgress Status.ERROR")
                         toast(result.msg)
                         loadingHide()
                     }

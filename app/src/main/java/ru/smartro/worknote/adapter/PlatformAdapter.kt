@@ -3,6 +3,7 @@ package ru.smartro.worknote.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
@@ -42,7 +43,8 @@ class PlatformAdapter(
             }
         }
 
-        holder.itemView.map_behavior_address.text = item!!.address
+        holder.itemView.tv_item_map_behavior__address.text = item!!.address
+        holder.itemView.tv_item_map_behavior__name.text = item.name
         holder.itemView.map_behavior_scrp_id.text = item.srpId.toString()
         val containerString: String = holder.itemView.context.resources.getQuantityString(R.plurals.container_count, item.containers.size)
         holder.itemView.map_behavior_container_count.text = "${item.containers.size} $containerString"
@@ -54,6 +56,10 @@ class PlatformAdapter(
             listener.navigatePlatform(Point(item.coords[0]!!, item.coords[1]!!))
         }
 
+        val tvPlatformContact = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__platform_contact)
+        val contactsInfo = item.getContactsInfo()
+        tvPlatformContact.text = contactsInfo
+        tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
         when (item.status) {
             StatusEnum.NEW -> {
                 holder.itemView.map_behavior_status.isVisible = false
