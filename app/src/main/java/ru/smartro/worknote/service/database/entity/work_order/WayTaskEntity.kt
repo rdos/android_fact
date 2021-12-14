@@ -65,7 +65,7 @@ open class PlatformEntity(
     var volumeKGO: Double? = null,
     @SerializedName("kgo_is_takeaway")
     var isTakeawayKGO: Boolean = true,
-    @SerializedName("volume_selection_in_m3")
+    @SerializedName("volume_pickup")
     var volumeSelectionInM3: Double? = null,
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
