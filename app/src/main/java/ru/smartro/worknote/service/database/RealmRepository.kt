@@ -331,16 +331,7 @@ class RealmRepository(private val realm: Realm) {
         Log.d(TAG, "findContainersVolume.before")
 
 
-        fun doublePercent(percent: Double?) =
-            when (percent) {
-                0.00 -> 0.0
-                0.25 -> 25.0
-                0.50 -> 50.0
-                0.75 -> 75.0
-                1.00 -> 100.0
-                1.25 -> 125.0
-                else -> 0.0
-            }
+
 
         val allContainers = realm.copyFromRealm(
             realm.where(ContainerEntity::class.java)
@@ -348,7 +339,7 @@ class RealmRepository(private val realm: Realm) {
         )
 
         allContainers.forEach { container ->
-            var filledVolume = container.constructiveVolume!! * (doublePercent(container.volume) / 100)
+            val filledVolume = container.constructiveVolume!! * (container.getVolumeInPercent() / 100)
             totalContainersVolume += filledVolume
         }
         Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")

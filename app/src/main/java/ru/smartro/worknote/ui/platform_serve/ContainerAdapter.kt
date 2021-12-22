@@ -1,9 +1,12 @@
 package ru.smartro.worknote.ui.platform_serve
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
@@ -34,61 +37,33 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
         // TODO: 25.10.2021 add getString() + format
         holder.itemView.tv_item_container_adapter__constructiveVolume.text = "${data.constructiveVolume.toStr("м3")}"
 
-        holder.itemView.choose_status.visibility = View.INVISIBLE
 
-        if (data.isActiveToday!!) {
-            when (data.status) {
-                StatusEnum.NEW -> {
-                    holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position])
-                        Log.d("ContainerPointAdapter", "onBindViewHolder: true")
-                    }
-                }
-                StatusEnum.SUCCESS -> {
-                    holder.itemView.choose_status.isVisible = true
-                    holder.itemView.choose_status.setImageResource(R.drawable.ic_check)
-                    holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position])
-                        Log.d("ContainerPointAdapter", "onBindViewHolder: true")
-                    }
-                }
-                StatusEnum.ERROR -> {
-                    holder.itemView.choose_status.isVisible = true
-                    holder.itemView.choose_status.setImageResource(R.drawable.ic_red_check)
-                    holder.itemView.setOnClickListener {
-                        Log.d("ContainerPointAdapter", "onBindViewHolder: true")
-                    }
-                }
-            }
-        } else {
-            when (data.status) {
-                StatusEnum.NEW -> {
-                    holder.itemView.choose_status.isVisible = true
-                    holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel)
-                    holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position])
-                        Log.d("ContainerPointAdapter", "onBindViewHolder: false")
-                    }
-                }
-                StatusEnum.SUCCESS -> {
-                    holder.itemView.choose_status.isVisible = true
-                    holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel_green)
-                    holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position])
-                        Log.d("ContainerPointAdapter", "onBindViewHolder: true")
-                    }
-                }
-                StatusEnum.ERROR -> {
-                    holder.itemView.choose_status.isVisible = true
-                    holder.itemView.choose_status.setImageResource(R.drawable.ic_cancel_red)
-                    holder.itemView.setOnClickListener {
-                        listener.startContainerService(item = items[position])
-                        Log.d("ContainerPointAdapter", "onBindViewHolder: true")
-                    }
-                }
-            }
-
+        holder.itemView.setOnClickListener {
+            listener.startContainerService(item = items[position])
+            Log.d("ContainerPointAdapter", "onBindViewHolder: true")
         }
+        val tvVolume = holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__volume)
+        tvVolume.text = data.getVolumeInPercent().toString()
+
+
+        if (data.isActiveToday == true) {
+            tvVolume.setTextColor(Color.GRAY)
+            return
+        }
+
+        when (data.status) {
+            StatusEnum.NEW -> { //1
+
+            }
+            StatusEnum.SUCCESS -> { //2
+                tvVolume.setTextColor(Color.GREEN)
+            }
+            StatusEnum.ERROR -> { //3
+                tvVolume.setTextColor(Color.RED)
+            }
+        }
+
+
     }
 
     class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

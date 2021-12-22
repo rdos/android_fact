@@ -186,7 +186,29 @@ open class ContainerEntity(
     var volume: Double? = null,
     @SerializedName("comment")
     var comment: String? = null
-) : Serializable, RealmObject()
+) : Serializable, RealmObject() {
+
+    private fun convertVolumeToPercent() : Double {
+        var result = -11.1
+
+        result =  when (this.volume) {
+            0.00 -> 0.0
+            0.25 -> 25.0
+            0.50 -> 50.0
+            0.75 -> 75.0
+            1.00 -> 100.0
+            1.25 -> 125.0
+            else -> 100.0
+            }
+        return result
+    }
+    fun getVolumeInPercent(): Double {
+        if (this.isActiveToday == true) {
+            return 0.0
+        }
+        return this.convertVolumeToPercent()
+    }
+}
 
 open class ImageEntity(
     var image: String? = null,

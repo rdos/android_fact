@@ -82,7 +82,7 @@ class AuthActivity : AbstractAct() {
             actv_activity_auth__it_test_version.isVisible = false
         }
 
-        if (BuildConfig.BUILD_TYPE == "debug") {
+        if (BuildConfig.BUILD_TYPE != "debugProd") {
             auth_enter.setOnLongClickListener {
                 auth_login.setText("admin@smartro.ru")
                 auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
