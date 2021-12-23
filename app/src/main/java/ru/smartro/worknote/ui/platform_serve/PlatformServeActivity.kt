@@ -93,7 +93,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             startActivityForResult(intent, 13)
         }
 
-        var volumeSelectionInM3 = mPlatformEntity.volumeSelectionInM3
+        var volumeSelectionInM3 = mPlatformEntity.volumePickup
 //        volumeAdditionalInM3 = null
         val acivSelection = findViewById<AppCompatButton>(R.id.acb_fragment_container_service__selection)
 
@@ -111,6 +111,11 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
                     volumeSelectionInM3 = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
                     mViewModel.updateSelectionVolume(mPlatformEntity.platformId!!, volumeSelectionInM3)
                     hideDialog()
+
+                    val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
+                    intent.putExtra("platform_id", mPlatformEntity.platformId!!)
+                    intent.putExtra("photoFor", PhotoTypeEnum.forPlatformPickupVolume)
+                    startActivityForResult(intent, 14)
                 }
             }
         }

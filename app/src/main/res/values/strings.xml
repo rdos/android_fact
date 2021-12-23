@@ -25,6 +25,7 @@
     <string name="cancel">Отменить</string>
     <string name="done">Добавить</string>
     <string name="service_before">Фотографии до обслуживания КП</string>
+    <string name="service_pickup_volume">Фотографии подбора</string>
     <string name="warning_detele">Вы действительно хотите удалить?</string>
     <string name="capture_button_alt">Capture</string>
     <string name="switch_camera_button_alt">Switch camera</string>

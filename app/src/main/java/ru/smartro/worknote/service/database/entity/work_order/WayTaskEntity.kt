@@ -69,7 +69,9 @@ open class PlatformEntity(
     @SerializedName("kgo_is_takeaway")
     var isTakeawayKGO: Boolean = true,
     @SerializedName("pickup_volume")
-    var volumeSelectionInM3: Double? = null,
+    var volumePickup: Double? = null,
+    @SerializedName("pickup_media")
+    var pickupMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
 /*    @SerializedName("breakdown_reason_id")

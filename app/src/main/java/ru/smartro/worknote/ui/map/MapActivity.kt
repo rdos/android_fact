@@ -62,7 +62,7 @@ import ru.smartro.worknote.base.AbstractAct
 
 
 class MapActivity : AbstractAct(),
-    UserLocationObjectListener, MapObjectTapListener,
+    /*UserLocationObjectListener,*/ MapObjectTapListener,
     PlatformAdapter.PlatformClickListener, LocationListener {
     var drivingModeState = false
 
@@ -146,7 +146,7 @@ class MapActivity : AbstractAct(),
         userLocationLayer = mapKit.createUserLocationLayer(map_view.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = true
-        userLocationLayer.setObjectListener(this)
+//        userLocationLayer.setObjectListener(this)
 
         location_fab.setOnClickListener {
             try {
@@ -209,70 +209,27 @@ class MapActivity : AbstractAct(),
     }
 
 
-    //UserLocation
-    override fun onObjectAdded(userLocationView: UserLocationView) {
-//        userLocationView.arrow.setIcon(ImageProvider.fromResource(this, R.drawable.ic_truck_icon),
-//            IconStyle().setAnchor(PointF(0.0f, 0.0f))
-//            .setRotationType(RotationType.ROTATE)
-//            .setZIndex(0f)
-//        )
-        val pinIcon = userLocationView.arrow.useCompositeIcon()
-        pinIcon.setIcon(
-            "icon",
-            ImageProvider.fromResource(this, R.drawable.ic_truck_icon),
-            IconStyle().setAnchor(PointF(0.5f, 1f))
-                .setRotationType(RotationType.ROTATE)
-                .setZIndex(0f)
-        )
-
-//        pinIcon.setIcon(
-//            "pin",
-//            ImageProvider.fromResource(this, R.drawable.ic_truck_icon),
-//            IconStyle().setAnchor(PointF(0.5f, 0.5f))
-//                .setRotationType(RotationType.NO_ROTATION)
-//                .setZIndex(1f)
-//        )
-        userLocationView.accuracyCircle.isVisible = false
-        userLocationLayer.setObjectListener(null)
-    }
-//    //UserLocation
 //    override fun onObjectAdded(userLocationView: UserLocationView) {
-//        val bitmap = this.getBitmapFromVectorDrawable(R.drawable.ic_vehicle)
-////        bitmap = null
-//        bitmap?.let {
-//            userLocationView.arrow.setIcon(ImageProvider.fromBitmap(bitmap))
-//        }
+//        val pinIcon = userLocationView.arrow.useCompositeIcon()
+//        pinIcon.setIcon(
+//            "icon",
+//            ImageProvider.fromResource(this, R.drawable.ic_truck_icon),
+//            IconStyle().setAnchor(PointF(0.5f, 1f))
+//                .setRotationType(RotationType.ROTATE)
+//                .setZIndex(0f)
+//        )
 //
-//
-////        userLocationView.arrow.setIcon(ImageProvider.fromResource(this, R.drawable.ic_vehicle_png))
-//        userLocationView.accuracyCircle.isVisible = true
-//        // TODO: 25.10.2021 ???
-////        userLocationLayer.setObjectListener(null)
-//    }
-//
-    // TODO: 26.10.2021 !!! см. MapActivity.getBitmapFromVectorDrawable
-//    private fun MyUtil.getBitmapFromVectorDrawable(drawableId: Int): Bitmap? {
-//        val drawable = ContextCompat.getDrawable(this, drawableId) ?: return null
-//
-//        val bitmap = Bitmap.createBitmap(
-//            drawable.intrinsicWidth,
-//            drawable.intrinsicHeight,
-//            Bitmap.Config.ARGB_8888) ?: return null
-//        val canvas = Canvas(bitmap)
-//        drawable.setBounds(0, 0, canvas.width, canvas.height)
-//        drawable.draw(canvas)
-//
-//        return bitmap
+//        userLocationView.accuracyCircle.isVisible = false
+//        userLocationLayer.setObjectListener(null)
 //    }
 
-
-    override fun onObjectRemoved(p0: UserLocationView) {
-
-    }
-
-    override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) {
-
-    }
+//    override fun onObjectRemoved(p0: UserLocationView) {
+//
+//    }
+//
+//    override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) {
+//
+//    }
 
     private fun initBottomBehavior() {
         viewModel.findWayTask().let {

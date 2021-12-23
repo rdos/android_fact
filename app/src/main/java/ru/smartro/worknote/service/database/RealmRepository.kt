@@ -142,7 +142,7 @@ class RealmRepository(private val realm: Realm) {
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()
-            platformEntity?.volumeSelectionInM3 = volumeSelectionInM3
+            platformEntity?.volumePickup = volumeSelectionInM3
             platformEntity?.beginnedAt = MyUtil.currentTime()
             updateTimer(platformEntity)
         }
@@ -383,7 +383,7 @@ class RealmRepository(private val realm: Realm) {
 
         allPlatforms.forEach { pl ->
             totalKgoVolume += pl.volumeKGO!!
-            pl.volumeSelectionInM3?.let{
+            pl.volumePickup?.let{
                 totalKgoVolume += it
             } //код всегда показывает, где(когда) Люди ошиблись
         }
@@ -462,6 +462,11 @@ class RealmRepository(private val realm: Realm) {
                         ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
                     )
                 }
+                PhotoTypeEnum.forPlatformPickupVolume -> {
+                    platformEntity?.pickupMedia?.add(
+                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+                    )
+                }
                 PhotoTypeEnum.forKGO -> {
                     platformEntity?.kgoMedia?.add(
                         ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
@@ -522,6 +527,7 @@ class RealmRepository(private val realm: Realm) {
                 PhotoTypeEnum.forBeforeMedia -> {
                     platformEntity?.beforeMedia?.remove(imageBase64)
                 }
+
                 PhotoTypeEnum.forAfterMedia -> {
                     platformEntity?.afterMedia?.remove(imageBase64)
                 }
@@ -530,6 +536,9 @@ class RealmRepository(private val realm: Realm) {
                 }
                 PhotoTypeEnum.forKGO -> {
                     platformEntity?.kgoMedia?.remove(imageBase64)
+                }
+                PhotoTypeEnum.forPlatformPickupVolume -> {
+                    platformEntity?.pickupMedia?.remove(imageBase64)
                 }
             }
             updateTimer(platformEntity)

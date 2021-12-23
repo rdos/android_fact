@@ -57,6 +57,10 @@ class CameraActivity : AbstractAct() {
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = getString(R.string.kgo)
             }
+            PhotoTypeEnum.forPlatformPickupVolume -> {
+                platformId = intent.getIntExtra("platform_id", 0)
+                supportActionBar?.title = getString(R.string.service_pickup_volume)
+            }
         }
         val cameraFragment = CameraFragment(photoFor, platformId, containerId)
         supportFragmentManager.beginTransaction().run {

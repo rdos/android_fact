@@ -166,6 +166,10 @@ class CameraFragment(
                     val platform = viewModel.findPlatformEntity(platformId)
                     imageCounter.text = "${platform.kgoMedia.size + count}"
                 }
+                PhotoTypeEnum.forPlatformPickupVolume -> {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    imageCounter.text = "${platform.pickupMedia.size + count}"
+                }
             }
         }
     }
@@ -340,6 +344,11 @@ class CameraFragment(
                         requireActivity().finish()
                     }
                 }
+                PhotoTypeEnum.forPlatformPickupVolume -> {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    requireActivity().setResult(Activity.RESULT_OK)
+                    requireActivity().finish()
+                }
             }
         }
         val captureButton = mRootView.findViewById<ImageButton>(R.id.camera_capture_button)
@@ -376,6 +385,10 @@ class CameraFragment(
                     PhotoTypeEnum.forKGO -> {
                         val platform = viewModel.findPlatformEntity(platformId)
                         platform.kgoMedia.size >= maxPhotoCount
+                    }
+                    PhotoTypeEnum.forPlatformPickupVolume -> {
+                        val platform = viewModel.findPlatformEntity(platformId)
+                        platform.afterMedia.size >= maxPhotoCount
                     }
                     else -> {
                         false
