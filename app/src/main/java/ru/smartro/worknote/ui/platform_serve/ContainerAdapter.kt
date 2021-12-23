@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
@@ -43,27 +44,9 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
             Log.d("ContainerPointAdapter", "onBindViewHolder: true")
         }
         val tvVolume = holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__volume)
-        tvVolume.text = data.getVolumeInPercent().toString()
-
-
-        if (data.isActiveToday == true) {
-            tvVolume.setTextColor(Color.GRAY)
-            return
-        }
-
-        when (data.status) {
-            StatusEnum.NEW -> { //1
-
-            }
-            StatusEnum.SUCCESS -> { //2
-                tvVolume.setTextColor(Color.GREEN)
-            }
-            StatusEnum.ERROR -> { //3
-                tvVolume.setTextColor(Color.RED)
-            }
-        }
-
-
+        tvVolume.text =  "${data.getVolumeInPercent().toString().dropLast(2)}%"
+        //2&
+        tvVolume.setTextColor(data.getVolumePercentColor(holder.itemView.context))
     }
 
     class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

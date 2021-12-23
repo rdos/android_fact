@@ -1,6 +1,9 @@
 package ru.smartro.worknote.service.database.entity.work_order
 
 
+import android.content.Context
+import android.graphics.Color
+import androidx.core.content.ContextCompat
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -175,7 +178,7 @@ open class ContainerEntity(
     @SerializedName("type_name")
     var typeName: String? = null,
     @SerializedName("is_active_today")
-    var isActiveToday: Boolean? = null,
+    var isActiveToday: Boolean = false,
     @SerializedName("number")
     var number: String? = null,
     @SerializedName("status")
@@ -188,8 +191,8 @@ open class ContainerEntity(
     var comment: String? = null
 ) : Serializable, RealmObject() {
 
-    private fun convertVolumeToPercent() : Double {
-        var result = -11.1
+    fun convertVolumeToPercent() : Double {
+        var result = -111.1
 
         result =  when (this.volume) {
             0.00 -> 0.0
@@ -202,11 +205,23 @@ open class ContainerEntity(
             }
         return result
     }
+
+    // TODO: 23.12.2021
     fun getVolumeInPercent(): Double {
-        if (this.isActiveToday == true) {
+        if ((!this.isActiveToday) && this.volume == null) {
             return 0.0
         }
         return this.convertVolumeToPercent()
+    }
+
+    fun getVolumePercentColor(context: Context): Int {
+        if (!this.isActiveToday) {
+            return Color.GRAY
+        }
+        if (this.status == StatusEnum.ERROR) {
+            return Color.RED
+        }
+        return ContextCompat.getColor(context, R.color.colorAccent)
     }
 }
 

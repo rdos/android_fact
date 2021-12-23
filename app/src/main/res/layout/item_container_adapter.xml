@@ -53,10 +53,11 @@
 
         <TextView
             android:id="@+id/tv_item_container_adapter__volume"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorAccent"
-            android:src="@drawable/ic_baseline_percent_24" />
+            android:layout_weight="0.3"
+            android:gravity="center"
+            />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

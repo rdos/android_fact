@@ -35,7 +35,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     private lateinit var mConrainerAdapter: ContainerAdapter
     private val mOnClickListener = this as View.OnClickListener
     private var mIsServeAgain: Boolean = false
-    private val mPlatformServeViewModel: PlatformServeViewModel by viewModel()
+    private val mViewModel: PlatformServeViewModel by viewModel()
     private lateinit var btnKGO: AppCompatButton
     private lateinit var btnCompleteTask: AppCompatButton
 
@@ -59,7 +59,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform_serve)
         intent.let {
-            mPlatformEntity = mPlatformServeViewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            mPlatformEntity = mViewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
             mIsServeAgain = it.getBooleanExtra("mIsServeAgain", false)
         }
         supportActionBar?.title = "${mPlatformEntity.address}"
@@ -86,7 +86,6 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
         }
 
         btnCompleteTask = findViewById(R.id.btn_activity_platform_serve__complete_task)
-        btnCompleteTask.isEnabled = mIsServeAgain
         btnCompleteTask.setOnClickListener {
             val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
@@ -110,7 +109,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
                 val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
                 btnOk.setOnClickListener {
                     volumeSelectionInM3 = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-                    mPlatformServeViewModel.updateSelectionVolume(mPlatformEntity.platformId!!, volumeSelectionInM3)
+                    mViewModel.updateSelectionVolume(mPlatformEntity.platformId!!, volumeSelectionInM3)
                     hideDialog()
                 }
             }
@@ -136,15 +135,15 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 
     // TODO: 28.10.2021 isActiveToday что это за поле?
     private fun initAfterMedia() {
-        val platformEntity = mPlatformServeViewModel.findPlatformEntity(mPlatformEntity.platformId!!)
+        val platformEntity = mViewModel.findPlatformEntity(mPlatformEntity.platformId!!)
         btnCompleteTask.isEnabled = platformEntity.containers.filter {
             it.isActiveToday == true
         }.all { it.status != StatusEnum.NEW }
     }
 
     private fun initContainer() {
-        val platform = mPlatformServeViewModel.findPlatformEntity(platformId = mPlatformEntity.platformId!!)
-        val containers = mPlatformServeViewModel.findAllContainerInPlatform(mPlatformEntity.platformId!!)
+        val platform = mViewModel.findPlatformEntity(platformId = mPlatformEntity.platformId!!)
+        val containers = mViewModel.findAllContainerInPlatform(mPlatformEntity.platformId!!)
         mConrainerAdapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
         findViewById<RecyclerView>(R.id.platform_service_rv).recycledViewPool.setMaxRecycledViews(0, 0);
         findViewById<RecyclerView>(R.id.platform_service_rv).adapter = mConrainerAdapter
@@ -152,7 +151,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     }
 
     fun updateRecyclerview() {
-        val containers = mPlatformServeViewModel.findAllContainerInPlatform(mPlatformEntity.platformId!!)
+        val containers = mViewModel.findAllContainerInPlatform(mPlatformEntity.platformId!!)
         mConrainerAdapter.updateData(containers as ArrayList<ContainerEntity>)
         initAfterMedia()
     }
@@ -169,7 +168,8 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
-            mPlatformServeViewModel.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
+            mViewModel.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
+            mViewModel.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
             setResult(Activity.RESULT_OK)
             finish()
         } else if (requestCode == REQUEST_EXIT) {
@@ -203,7 +203,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             return
         }
         val kgoVolume = kgoVolumeText.toDouble()
-        mPlatformServeViewModel.updatePlatformKGO(mPlatformEntity.platformId!!, kgoVolume, isTakeaway)
+        mViewModel.updatePlatformKGO(mPlatformEntity.platformId!!, kgoVolume, isTakeaway)
         hideDialog()
     }
 

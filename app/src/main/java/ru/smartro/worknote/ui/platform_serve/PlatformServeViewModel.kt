@@ -12,6 +12,11 @@ class PlatformServeViewModel(application: Application) : BaseViewModel(applicati
         db.updateContainerVolume(platformId, containerId, volume, comment)
     }
 
+    fun updateContainersVolumeIfnNull(platformId: Int, volume: Double) {
+        // TODO: 23.12.2021 когда.
+        db.updateContainersVolumeIfnNull(platformId, volume)
+    }
+
     fun updateSelectionVolume(platformId: Int, volume: Double?) {
         db.updateSelectionVolume(platformId, volume)
     }
@@ -47,4 +52,6 @@ class PlatformServeViewModel(application: Application) : BaseViewModel(applicati
     fun updatePlatformKGO(platformId: Int, kgoVolume: Double, isTakeaway: Boolean) {
         db.updatePlatformKGO(platformId, kgoVolume, isTakeaway)
     }
+
+
 }

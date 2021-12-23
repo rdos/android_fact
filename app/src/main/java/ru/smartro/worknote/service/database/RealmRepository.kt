@@ -168,6 +168,26 @@ class RealmRepository(private val realm: Realm) {
         }
     }
 
+    fun updateContainersVolumeIfnNull(platformId: Int, volume: Double) {
+        realm.executeTransaction { realm ->
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.containers?.forEach {
+                if (it.volume == null) {
+                    it.volume = volume
+                }
+                if (it.status == StatusEnum.NEW) {
+                    it.status = StatusEnum.SUCCESS
+                }
+            }
+
+            platformEntity?.beginnedAt = MyUtil.currentTime()
+            updateTimer(platformEntity)
+        }
+    }
+
+
     fun clearContainerVolume(platformId: Int, containerId: Int) {
         realm.executeTransaction {
             val container = realm.where(ContainerEntity::class.java)
@@ -339,7 +359,7 @@ class RealmRepository(private val realm: Realm) {
         )
 
         allContainers.forEach { container ->
-            val filledVolume = container.constructiveVolume!! * (container.getVolumeInPercent() / 100)
+            val filledVolume = container.constructiveVolume!! * (container.convertVolumeToPercent() / 100)
             totalContainersVolume += filledVolume
         }
         Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
