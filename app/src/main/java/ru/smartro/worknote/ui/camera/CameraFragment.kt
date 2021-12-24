@@ -100,9 +100,6 @@ class CameraFragment(
 
     override fun onResume() {
         super.onResume()
-        if (!MyUtil.hasPermissions(requireContext())) {
-            requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
-        }
         enableTorch()
     }
 
@@ -113,7 +110,7 @@ class CameraFragment(
                 Toast.makeText(context, "Разрешение принято", Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(context, "Разрешение отклонёно", Toast.LENGTH_LONG).show()
-                requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
+//                requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
             }
         }
     }
@@ -127,6 +124,13 @@ class CameraFragment(
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_camera, container, false)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!MyUtil.hasPermissions(requireContext())) {
+            requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
+        }
     }
 
     private fun setGalleryThumbnail(uri: Uri) {
@@ -427,6 +431,7 @@ class CameraFragment(
                             }
 
                             job.launch {
+                                Log.d("AAAAAAA", Thread.currentThread().name)
                                 val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees, requireContext())
                                 if (photoFor == PhotoTypeEnum.forContainerProblem) {
                                     viewModel.updateContainerMedia(platformId, containerId, imageBase64, AppPreferences.getCurrentLocation())

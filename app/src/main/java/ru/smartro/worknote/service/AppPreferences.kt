@@ -3,6 +3,7 @@ package ru.smartro.worknote.service
 import android.content.Context
 import android.content.SharedPreferences
 import com.yandex.mapkit.geometry.Point
+import java.lang.Exception
 
 
 object AppPreferences {
@@ -119,9 +120,15 @@ object AppPreferences {
     }
 
     fun getCurrentLocation(): Point {
-        val lat = currentCoordinate.substringBefore("#").toDouble()
-        val long = currentCoordinate.substringAfter("#").toDouble()
-        return Point(lat, long)
+        var result =  Point(55.748813, 37.615462)
+        try {
+            val lat = currentCoordinate.substringBefore("#").toDouble()
+            val long = currentCoordinate.substringAfter("#").toDouble()
+            result = Point(lat, long)
+        } catch (ex: Exception) {
+            // TODO: 24.12.2021  /\
+        }
+        return result
     }
 
 }
