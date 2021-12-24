@@ -24,6 +24,7 @@ import androidx.camera.core.ImageCapture.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
@@ -168,10 +169,16 @@ class CameraFragment(
                 }
                 PhotoTypeEnum.forPlatformPickupVolume -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    imageCounter.text = "${platform.pickupMedia.size + count}"
+                    val imageCount = platform.pickupMedia.size + count
+                    imageCounter.text = "${imageCount}"
+
+                    val tvSkip = mRootView.findViewById<TextView>(R.id.tv_fragment_camera__skip)
+                    tvSkip.isVisible = imageCount <= 0
+
                 }
             }
         }
+
     }
 
 //    @SuppressLint("MissingPermission")
@@ -459,6 +466,7 @@ class CameraFragment(
         }
 
         setImageCounter(false)
+
     }
 
     private fun hasFrontCamera(): Boolean {
@@ -527,5 +535,3 @@ class CameraFragment(
 interface ImageCounter {
     fun mediaSizeChanged()
 }
-
-

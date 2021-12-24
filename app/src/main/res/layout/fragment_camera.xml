@@ -79,6 +79,19 @@
             app:layout_constraintStart_toStartOf="@id/photo_flash"
             app:layout_constraintTop_toTopOf="@id/photo_flash" />
 
+        <TextView
+            android:id="@+id/tv_fragment_camera__skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="пропустить"
+            android:textColor="@color/gray"
+            android:layout_marginBottom="@dimen/margin_min"
+            android:layout_marginEnd="@dimen/margin_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/photo_accept_button"
+            app:layout_constraintVertical_bias="@id/photo_accept_button"
+            android:visibility="gone"
+            />
 
         <ImageButton
             android:id="@+id/photo_accept_button"
@@ -93,6 +106,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_send" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
