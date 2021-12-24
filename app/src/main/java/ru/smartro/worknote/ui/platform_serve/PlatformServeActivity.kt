@@ -93,7 +93,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             startActivityForResult(intent, 13)
         }
 
-        var volumeSelectionInM3 = mPlatformEntity.volumePickup
+        var volumePickup = mPlatformEntity.volumePickup
 //        volumeAdditionalInM3 = null
         val acivSelection = findViewById<AppCompatButton>(R.id.acb_fragment_container_service__selection)
 
@@ -102,14 +102,19 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
                 val btnCancel = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__cancel)
                 btnCancel.setOnClickListener { hideDialog() }
                 val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
-                volumeSelectionInM3?.let{
-                    tietAdditionalVolumeInM3.setText(volumeSelectionInM3.toString())
+                volumePickup?.let{
+                    tietAdditionalVolumeInM3.setText(volumePickup.toString())
                 }
 
                 val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
                 btnOk.setOnClickListener {
-                    volumeSelectionInM3 = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-                    mViewModel.updateSelectionVolume(mPlatformEntity.platformId!!, volumeSelectionInM3)
+                    val pickupVolumeText = tietAdditionalVolumeInM3.text.toString()
+                    if (pickupVolumeText.isBlank()) {
+                        tietAdditionalVolumeInM3.error = "Обязательное поле"
+                        return@setOnClickListener
+                    }
+                    volumePickup = pickupVolumeText.toDoubleOrNull()
+                    mViewModel.updateSelectionVolume(mPlatformEntity.platformId!!, volumePickup)
                     hideDialog()
 
                     val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)

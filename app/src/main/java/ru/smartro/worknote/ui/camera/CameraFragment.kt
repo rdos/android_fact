@@ -388,7 +388,7 @@ class CameraFragment(
                     }
                     PhotoTypeEnum.forPlatformPickupVolume -> {
                         val platform = viewModel.findPlatformEntity(platformId)
-                        platform.afterMedia.size >= maxPhotoCount
+                        platform.pickupMedia.size >= maxPhotoCount
                     }
                     else -> {
                         false

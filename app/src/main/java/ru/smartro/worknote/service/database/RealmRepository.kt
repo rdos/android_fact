@@ -366,23 +366,15 @@ class RealmRepository(private val realm: Realm) {
 
         val allPlatforms = realm.copyFromRealm(
             realm.where(PlatformEntity::class.java)
-                .findAll().filter{
-                    if (!it.isTakeawayKGO) {
-                        Log.d(TAG, "findContainersVolume -${it.platformId}-")
-                        Log.d(TAG, "findContainersVolume.isTakeawayKGO=${it.isTakeawayKGO})")
-                        Log.d(TAG, "findContainersVolume.volumeKGO=${it.volumeKGO}")
-
-                    }
-                    if (it.volumeKGO == null) {
-                        Log.d(TAG, "findContainersVolume -${it.platformId}-")
-                        Log.w(TAG, "findContainersVolume.volumeKGO=${it.volumeKGO})")
-                    }
-                    it.isTakeawayKGO && it.volumeKGO != null
-                }
+                .findAll()
         )
 
         allPlatforms.forEach { pl ->
-            totalKgoVolume += pl.volumeKGO!!
+            if (pl.isTakeawayKGO) {
+                pl.volumeKGO?.let {
+                    totalKgoVolume += it
+                }
+            }
             pl.volumePickup?.let{
                 totalKgoVolume += it
             } //код всегда показывает, где(когда) Люди ошиблись
