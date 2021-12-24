@@ -123,5 +123,5 @@ data class Container(
     @SerializedName("type_id")
     val typeId: Int,
     @SerializedName("volume")
-    val volume: Double
+    val volume: Double? = null
 )
