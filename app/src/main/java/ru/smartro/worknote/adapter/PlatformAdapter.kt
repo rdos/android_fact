@@ -10,6 +10,7 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.item_map_behavior.view.*
 import ru.smartro.worknote.R
+import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.util.StatusEnum
 
@@ -45,6 +46,14 @@ class PlatformAdapter(
 
         holder.itemView.tv_item_map_behavior__address.text = item!!.address
         holder.itemView.tv_item_map_behavior__name.text = item.name
+
+        val tvOrderTime = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__order_time)
+        val orderTime = item.getOrderTime()
+        if (orderTime.isShowForUser()) {
+            tvOrderTime.text = orderTime
+            tvOrderTime.isVisible = true
+        }
+
         holder.itemView.map_behavior_scrp_id.text = item.srpId.toString()
         val containerString: String = holder.itemView.context.resources.getQuantityString(R.plurals.container_count, item.containers.size)
         holder.itemView.map_behavior_container_count.text = "${item.containers.size} $containerString"
