@@ -52,7 +52,8 @@ class RealmRepository(private val realm: Realm) {
                     coords = RealmList(it.coords[0], it.coords[1]), failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
                     finishedAt = it.finishedAt, platformId = it.id,
-                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, volumeKGO = null, icon = it.icon
+                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, volumeKGO = null, icon = it.icon,
+                    orderEndTime = it.orderEndTime, orderStartTime= it.orderStartTime,
                 )
             }
         }

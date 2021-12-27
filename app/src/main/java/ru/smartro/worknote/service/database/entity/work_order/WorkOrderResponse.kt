@@ -79,7 +79,11 @@ data class Platform(
     @SerializedName("updateAt")
     var updateAt: Long,
     @SerializedName("srp_id")
-    val srpId: Int
+    val srpId: Int,
+    @SerializedName("order_start_time")
+    var orderStartTime: String? = null,
+    @SerializedName("order_end_time")
+    var orderEndTime: String? = null,
 )
 
 data class WorkOrderData(
