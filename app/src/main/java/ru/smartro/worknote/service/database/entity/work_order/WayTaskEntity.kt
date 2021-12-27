@@ -165,7 +165,7 @@ open class PlatformEntity(
     fun getOrderTime(): String {
         var result = Snull
         this.orderStartTime?.let{
-            result = "${this.orderStartTime} ${this.orderEndTime}"
+            result = "${this.orderStartTime} -- ${this.orderEndTime}"
 
         }
         return result

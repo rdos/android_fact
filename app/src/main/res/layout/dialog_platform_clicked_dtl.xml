@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_min"
                 android:gravity="center"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/gray"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
