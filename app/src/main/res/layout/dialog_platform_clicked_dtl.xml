@@ -51,6 +51,8 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__address"
                 tools:text="Наименование из логистики. " />
 
+
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_dialog_platform_clicked_dtl"
                 android:layout_width="wrap_content"
@@ -67,14 +69,26 @@
                 tools:listitem="@layout/item_dialog_platform_clicked_dtl" />
 
             <TextView
+                android:id="@+id/tv_dialog_platform_clicked_dtl__order_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_min"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rv_dialog_platform_clicked_dtl"
+                tools:text="Order Time. " />
+
+            <TextView
                 android:id="@+id/tv_dialog_platform_clicked_dtl__containers_cnt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
-                android:padding="@dimen/margin_default"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_dialog_platform_clicked_dtl"
+                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__order_time"
                 tools:text="999 конт. на площадке" />
 
             <TextView

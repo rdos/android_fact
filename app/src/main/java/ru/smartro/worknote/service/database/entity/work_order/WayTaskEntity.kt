@@ -8,7 +8,9 @@ import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import org.w3c.dom.Text
 import ru.smartro.worknote.R
+import ru.smartro.worknote.Snull
 import ru.smartro.worknote.util.MyUtil.isNotNull
 import ru.smartro.worknote.util.StatusEnum
 import java.io.Serializable
@@ -85,7 +87,12 @@ open class PlatformEntity(
     @SerializedName("srp_id")
     var srpId: Int? = null,
     @SerializedName("icon")
-    var icon: String? = null
+    var icon: String? = null,
+    @SerializedName("order_start_time")
+    var orderStartTime: String? = null,
+    @SerializedName("order_end_time")
+    var orderEndTime: String? = null,
+
 ) : Serializable, RealmObject() {
 
     fun getIconDrawableResId(): Int {
@@ -151,6 +158,15 @@ open class PlatformEntity(
             if (!containerEntity.client.isNullOrEmpty() || !containerEntity.contacts.isNullOrEmpty()) {
                 result += "\n"
             }
+        }
+        return result
+    }
+
+    fun getOrderTime(): String {
+        var result = Snull
+        this.orderStartTime?.let{
+            result = "${this.orderStartTime} ${this.orderEndTime}"
+
         }
         return result
     }

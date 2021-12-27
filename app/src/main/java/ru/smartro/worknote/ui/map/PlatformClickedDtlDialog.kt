@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractDialog
 import ru.smartro.worknote.extensions.*
+import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
@@ -41,6 +42,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        //onBindViewHolder
         super.onViewCreated(view, savedInstanceState)
         mCurrentActivity = requireActivity() as MapActivity
 
@@ -79,6 +81,12 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
 
         val tvName = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__name)
         tvName.text = _platform.name
+        val tvOrderTime = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__order_time)
+        val orderTime = _platform.getOrderTime()
+        if (orderTime.isShowForUser()) {
+            tvOrderTime.text = orderTime
+            tvOrderTime.isVisible = true
+        }
     }
 
     override fun onClick(v: View?) {

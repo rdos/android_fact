@@ -14,6 +14,8 @@ import org.koin.core.module.Module
 import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.util.MyUtil
+import java.text.SimpleDateFormat
+import java.util.*
 
 class App : Application() {
     override fun onCreate() {
@@ -66,4 +68,16 @@ class App : Application() {
             }
         }
     }
+}
+
+const val Snull = "rNull"
+const val Inull = -111
+const val Lnull = -111222333 as Long
+const val Fnull = -11.1
+const val Dnull = -111.0
+const val ErrorsE = "ErrorsE"
+
+fun String.isShowForUser(): Boolean {
+    val result = this != Snull
+    return result
 }

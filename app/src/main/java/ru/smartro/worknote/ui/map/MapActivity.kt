@@ -3,11 +3,13 @@ package ru.smartro.worknote.ui.map
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.PointF
+import android.graphics.*
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -23,14 +25,10 @@ import com.yandex.mapkit.directions.driving.DrivingRoute
 import com.yandex.mapkit.directions.driving.DrivingRouter
 import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.geometry.Point
-import com.yandex.mapkit.layers.ObjectEvent
 import com.yandex.mapkit.location.*
 import com.yandex.mapkit.map.*
 import com.yandex.mapkit.user_location.UserLocationLayer
-import com.yandex.mapkit.user_location.UserLocationObjectListener
-import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.Error
-import com.yandex.runtime.image.ImageProvider
 import com.yandex.runtime.ui_view.ViewProvider
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.activity_map.*
@@ -59,6 +57,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.isShowForUser
 
 
 class MapActivity : AbstractAct(),
@@ -172,18 +171,77 @@ class MapActivity : AbstractAct(),
         }
     }
 
-    private fun getIconViewProvider(_context: Context, drawableResId: Int): ViewProvider {
-        fun iconMarker(_drawableResId: Int): View {
-            val resultIcon = View(_context).apply { background = ContextCompat.getDrawable(context, _drawableResId) }
-            return resultIcon
-        }
-        return ViewProvider(iconMarker(drawableResId))
+    private fun getIconViewProvider(_context: Context, _platform: PlatformEntity): ViewProvider {
+        val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
+
+        val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
+        iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconDrawableResId()))
+//            iv.backgroundd==
+//            val resultIcon =  View(_context).apply { background =  }
+        val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
+
+//        val orderTime = _platform.getOrderTime()
+//        if (orderTime.isShowForUser()) {
+//            tv.text = orderTime
+//        } else {
+////            tv.text = "12:00 21:00" //orderTime
+//            tv.isVisible = false
+//        }
+        return ViewProvider(result)
     }
 
+
+//        int picSize = {нужный вам размер изображения};
+//        Bitmap bitmap = Bitmap.createBitmap(picSize, picSize, Bitmap.Config.ARGB_8888);
+//        Canvas canvas = new Canvas(bitmap);
+//        // отрисовка плейсмарка
+//        Paint paint = new Paint();
+//        paint.setColor(Color.Green);
+//        paint.setStyle(Paint.Style.FILL);
+//        canvas.drawCircle(picSize / 2, picSize / 2, picSize / 2, paint);
+//        // отрисовка текста
+//        paint.setColor(Color.WHITE)
+//        paint.setAntiAlias(true);
+//        paint.setTextSize({Нужный размер текста});
+//        paint.setTextAlign(Paint.Align.CENTER);
+//        canvas.drawText(number, picSize / 2,
+//            picSize / 2 - ((paint.descent() + paint.ascent()) / 2), paint);
+//        return bitmap;
+
+
+//    private fun drawSimpleBitmap(number: String):Bitmap{
+//        val picSize = 100.0f// {нужный вам размер изображения}
+//        val bitmap =  Bitmap.createBitmap(picSize.toInt(), picSize.toInt(), Bitmap.Config.ARGB_8888)
+//        val canvas = Canvas(bitmap)
+//        //        // отрисовка плейсмарка
+//        val paint = Paint()
+//        paint.color = Color.GREEN
+//        paint.setStyle(Paint.Style.FILL)
+//        canvas.drawCircle(picSize / 2, picSize / 2, picSize / 2, paint)
+//        //        // отрисовка текста
+//        paint.setColor(Color.WHITE)
+//        paint.setAntiAlias(true)
+//        paint.setTextSize(30f)
+//        canvas.drawText(number, 0f,picSize / 2 - ((paint.descent() + paint.ascent()) / 2), paint);
+//        return bitmap
+//    }
+
     private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: RealmList<PlatformEntity>) {
+//        val source = BitmapFactory.decodeResource(context.resources, R.drawable.your_icon_name)
+// создаем mutable копию, чтобы можно было рисовать поверх
+// создаем mutable копию, чтобы можно было рисовать поверх
+//        val bitmap = source.copy(Bitmap.Config.ARGB_8888, true)
+// инициализируем канвас
+// инициализируем канвас
+//        val canvas = Canvas(bitmap)
+// рисуем текст на канвасе аналогично примеру выше
+
         platforms.forEach {
-            mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), getIconViewProvider(context, it.getIconDrawableResId()))
-            // TODO: 22.10.2021 wtf???!!!start
+
+            mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), getIconViewProvider(context, it))
+//            mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!),
+//                ImageProvider.fromBitmap(drawSimpleBitmap("number")))
+        // TODO: 22.10.2021 wtf???!!!start
 //            when (it.status) {
 //                StatusEnum.NEW -> {
 //                    mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), getIconViewProvider(context, it.getIconDrawableResId()))
@@ -199,7 +257,9 @@ class MapActivity : AbstractAct(),
 //                }
 //            }
             // TODO: 22.10.2021 WTF?!!!stop
+
         }
+
     }
 
     override fun onStart() {
