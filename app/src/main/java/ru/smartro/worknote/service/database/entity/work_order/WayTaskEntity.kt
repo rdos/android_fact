@@ -108,16 +108,16 @@ open class PlatformEntity(
         if (this.beginnedAt.isNotNull() && this.status == StatusEnum.NEW) {
             return R.drawable.ic_serving
         }
-        if (this.beginnedAt.isNullOrEmpty() && this.status == StatusEnum.NEW) {
-            // время прошло = красный
-            if (isOrderTimeAlert()) {
-                return getIconFromStatus(StatusEnum.ERROR)
-            }
-            //осталось меньше часа оранжевый
-            if (isOrderTimeWarning()) {
-                return getIconFromStatus(StatusEnum.UNFINISHED)
-            }
-        }
+//        if (this.beginnedAt.isNullOrEmpty() && this.status == StatusEnum.NEW) {
+//            // время прошло = красный
+//            if (isOrderTimeAlert()) {
+//                return getIconFromStatus(StatusEnum.ERROR)
+//            }
+//            //осталось меньше часа оранжевый
+//            if (isOrderTimeWarning()) {
+//                return getIconFromStatus(StatusEnum.UNFINISHED)
+//            }
+//        }
         return getIconFromStatus(this.status)
     }
 
