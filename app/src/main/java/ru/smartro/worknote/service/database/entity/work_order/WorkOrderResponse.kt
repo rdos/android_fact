@@ -75,7 +75,7 @@ data class Platform(
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")
-    val name: String,
+    val name: String? = null,
     @SerializedName("updateAt")
     var updateAt: Long,
     @SerializedName("srp_id")
@@ -84,6 +84,10 @@ data class Platform(
     var orderStartTime: String? = null,
     @SerializedName("order_end_time")
     var orderEndTime: String? = null,
+    @SerializedName("order_warning_time")
+    var orderWarningTime: String? = null,
+    @SerializedName("order_alert_time")
+    var orderAlertTime: String? = null,
 )
 
 data class WorkOrderData(

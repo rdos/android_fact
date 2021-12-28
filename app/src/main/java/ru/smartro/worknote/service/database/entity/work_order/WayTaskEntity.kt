@@ -3,17 +3,23 @@ package ru.smartro.worknote.service.database.entity.work_order
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import org.w3c.dom.Text
-import ru.smartro.worknote.R
-import ru.smartro.worknote.Snull
+import ru.smartro.worknote.*
 import ru.smartro.worknote.util.MyUtil.isNotNull
 import ru.smartro.worknote.util.StatusEnum
 import java.io.Serializable
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.time.days
 
 open class WayTaskEntity(
     @PrimaryKey
@@ -89,47 +95,64 @@ open class PlatformEntity(
     @SerializedName("icon")
     var icon: String? = null,
     @SerializedName("order_start_time")
-    var orderStartTime: String? = null,
+    var orderTimeStart: String? = null,
     @SerializedName("order_end_time")
-    var orderEndTime: String? = null,
-
+    var orderTimeEnd: String? = null,
+    @SerializedName("order_warning_time")
+    var orderTimeWarning: String? = null,
+    @SerializedName("order_alert_time")
+    var orderTimeAlert: String? = null,
 ) : Serializable, RealmObject() {
 
     fun getIconDrawableResId(): Int {
         if (this.beginnedAt.isNotNull() && this.status == StatusEnum.NEW) {
             return R.drawable.ic_serving
         }
+        if (this.beginnedAt.isNullOrEmpty() && this.status == StatusEnum.NEW) {
+            // время прошло = красный
+            if (isOrderTimeAlert()) {
+                return getIconFromStatus(StatusEnum.ERROR)
+            }
+            //осталось меньше часа оранжевый
+            if (isOrderTimeWarning()) {
+                return getIconFromStatus(StatusEnum.UNFINISHED)
+            }
+        }
+        return getIconFromStatus(this.status)
+    }
+
+    private fun getIconFromStatus(p_status: String?): Int {
         return when (this.icon) {
             "bunker" ->
-                when (this.status) {
+                when (p_status) {
                     StatusEnum.NEW -> R.drawable.ic_bunker_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_bunker_green
                     StatusEnum.ERROR -> R.drawable.ic_bunker_red
                     else -> R.drawable.ic_bunker_orange
                 }
             "bag" ->
-                when (this.status) {
+                when (p_status) {
                     StatusEnum.NEW -> R.drawable.ic_bag_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_bag_green
                     StatusEnum.ERROR -> R.drawable.ic_bag_red
                     else -> R.drawable.ic_bag_orange
                 }
             "bulk" ->
-                when (this.status) {
+                when (p_status) {
                     StatusEnum.NEW -> R.drawable.ic_bulk_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_bulk_green
                     StatusEnum.ERROR -> R.drawable.ic_bulk_red
                     else -> R.drawable.ic_bulk_orange
                 }
             "euro" ->
-                when (this.status) {
+                when (p_status) {
                     StatusEnum.NEW -> R.drawable.ic_euro_blue
                     StatusEnum.SUCCESS ->  R.drawable.ic_euro_green
                     StatusEnum.ERROR -> R.drawable.ic_euro_red
                     else -> R.drawable.ic_euro_orange
                 }
             "metal" ->
-                when (this.status) {
+                when (p_status) {
                     StatusEnum.NEW -> R.drawable.ic_metal_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_metal_green
                     StatusEnum.ERROR -> R.drawable.ic_metal_red
@@ -137,7 +160,7 @@ open class PlatformEntity(
                 }
             else ->
                 //many
-                when (this.status) {
+                when (p_status) {
                     StatusEnum.NEW -> R.drawable.ic_many_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_many_green
                     StatusEnum.ERROR -> R.drawable.ic_many_red
@@ -164,9 +187,63 @@ open class PlatformEntity(
 
     fun getOrderTime(): String {
         var result = Snull
-        this.orderStartTime?.let{
-            result = "${this.orderStartTime} -- ${this.orderEndTime}"
+        this.orderTimeStart?.let {
+            result = "${this.orderTimeStart}—${this.orderTimeEnd}"
+        }
+        return result
+    }
 
+    fun getOrderTimeForMaps(): String {
+        var result = Snull
+        if (this.beginnedAt.isNullOrEmpty() && this.status == StatusEnum.NEW) {
+            this.orderTimeStart?.let {
+                result = "до ${this.orderTimeEnd}"
+            }
+        }
+        return result
+    }
+
+    fun getOrderTimeColor(context: Context): Int {
+        if (isOrderTimeWarning() && isNotOrderTimeAlert()) {
+            return ContextCompat.getColor(context, R.color.orange)
+        }
+        if (isOrderTimeAlert()) {
+            return ContextCompat.getColor(context, R.color.dark_red)
+        }
+        return Color.GRAY
+    }
+
+
+    fun isOrderTimeWarning(): Boolean {
+        var result = false
+        this.orderTimeWarning?.let {
+            val orderEndTime: Date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(this.orderTimeWarning)
+            val today = getDeviceDateTime()
+            val diff: Long = orderEndTime.time - today.time
+            val minutes = diff / (1000 * 60)
+            Log.d("AAAA", this.orderTimeWarning!!)
+            Log.d("AAAA", minutes.toString())
+            if (minutes < 0) {
+                result = true
+            }
+        }
+        return result
+    }
+
+    fun isNotOrderTimeAlert(): Boolean {
+        return !isOrderTimeAlert()
+    }
+
+    private fun isOrderTimeAlert(): Boolean {
+        var result = false
+        this.orderTimeAlert?.let {
+            val orderEndTime: Date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(this.orderTimeAlert)
+            val today = getDeviceDateTime()
+            val diff: Long = orderEndTime.time - today.time
+            val minutes = diff / (1000 * 60)
+            if (minutes < 0) {
+                result = true
+            }
         }
         return result
     }

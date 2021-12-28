@@ -85,6 +85,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         val orderTime = _platform.getOrderTime()
         if (orderTime.isShowForUser()) {
             tvOrderTime.text = orderTime
+            tvOrderTime.setTextColor(_platform.getOrderTimeColor(requireContext()))
             tvOrderTime.isVisible = true
         }
     }

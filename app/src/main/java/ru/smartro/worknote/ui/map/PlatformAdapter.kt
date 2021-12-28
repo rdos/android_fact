@@ -1,4 +1,4 @@
-package ru.smartro.worknote.adapter
+package ru.smartro.worknote.ui.map
 
 import android.view.LayoutInflater
 import android.view.View
@@ -45,12 +45,19 @@ class PlatformAdapter(
         }
 
         holder.itemView.tv_item_map_behavior__address.text = item!!.address
-        holder.itemView.tv_item_map_behavior__name.text = item.name
+        val tvName = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__name)
+        tvName.isVisible = false
+        if (item.name.isShowForUser()) {
+            tvName.text = item.name
+            tvName.isVisible = true
+        }
 
         val tvOrderTime = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__order_time)
         val orderTime = item.getOrderTime()
+        tvOrderTime.isVisible = false
         if (orderTime.isShowForUser()) {
             tvOrderTime.text = orderTime
+            tvOrderTime.setTextColor(item.getOrderTimeColor(holder.itemView.context))
             tvOrderTime.isVisible = true
         }
 

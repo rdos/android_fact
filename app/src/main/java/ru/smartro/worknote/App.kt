@@ -15,6 +15,7 @@ import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 
 class App : Application() {
@@ -77,7 +78,20 @@ const val Fnull = -11.1
 const val Dnull = -111.0
 const val ErrorsE = "ErrorsE"
 
-fun String.isShowForUser(): Boolean {
-    val result = this != Snull
-    return result
+fun String?.isShowForUser(): Boolean {
+    var result = this != Snull
+    if (result) {
+        result = !this.isNullOrEmpty()
+        if (result) return true
+    }
+    return false
+}
+
+fun Any.getDeviceTime(format: String = "yyyy-MM-dd HH:mm:ss"): String {
+    val sdf = SimpleDateFormat(format, Locale.getDefault())
+    return sdf.format(getDeviceDateTime())
+}
+
+fun Any.getDeviceDateTime(): Date {
+    return Date()
 }

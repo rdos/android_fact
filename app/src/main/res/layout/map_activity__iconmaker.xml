@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     >
 
     <TextView
         android:id="@+id/map_activity__iconmaker__textview"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:lines="3"
+        android:lines="1"
         android:textSize="11sp"
-        android:textColor="@color/dark_red"
+        android:textColor="@color/gray"
+        android:textStyle="bold"
         android:text="TesT.RNull"
-        android:visibility="gone"
         />
     <!--        android:textSize="13px"-->
     <ImageView
         android:id="@+id/map_activity__iconmaker__imageview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/ic_bunker_red"
+        android:layout_gravity="center"
         />
 </androidx.appcompat.widget.LinearLayoutCompat >

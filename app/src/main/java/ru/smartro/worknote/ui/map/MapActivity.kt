@@ -38,7 +38,6 @@ import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.behavior_platforms.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.PlatformAdapter
 import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
@@ -57,6 +56,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.getDeviceTime
 import ru.smartro.worknote.isShowForUser
 
 
@@ -179,14 +179,16 @@ class MapActivity : AbstractAct(),
 //            iv.backgroundd==
 //            val resultIcon =  View(_context).apply { background =  }
         val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
+        tv.isVisible = false
+        if (_platform.isOrderTimeWarning()) {
+            val orderTime = _platform.getOrderTimeForMaps()
+            if (orderTime.isShowForUser()) {
+                tv.text = orderTime
+                tv.setTextColor(_platform.getOrderTimeColor(this))
+                tv.isVisible = true
+            }
+        }
 
-//        val orderTime = _platform.getOrderTime()
-//        if (orderTime.isShowForUser()) {
-//            tv.text = orderTime
-//        } else {
-////            tv.text = "12:00 21:00" //orderTime
-//            tv.isVisible = false
-//        }
         return ViewProvider(result)
     }
 

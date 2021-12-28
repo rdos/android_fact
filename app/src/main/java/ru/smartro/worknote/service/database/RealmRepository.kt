@@ -53,7 +53,8 @@ class RealmRepository(private val realm: Realm) {
                     failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
                     finishedAt = it.finishedAt, platformId = it.id,
                     name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, volumeKGO = null, icon = it.icon,
-                    orderEndTime = it.orderEndTime, orderStartTime= it.orderStartTime,
+                    orderTimeEnd = it.orderEndTime, orderTimeStart= it.orderStartTime,
+                    orderTimeAlert = it.orderAlertTime, orderTimeWarning = it.orderWarningTime
                 )
             }
         }
