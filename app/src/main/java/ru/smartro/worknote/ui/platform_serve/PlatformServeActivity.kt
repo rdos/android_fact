@@ -143,13 +143,13 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
         hideDialog()
     }
 
-    // TODO: 28.10.2021 isActiveToday что это за поле?
-    private fun initAfterMedia() {
-        val platformEntity = mViewModel.findPlatformEntity(mPlatformEntity.platformId!!)
-        btnCompleteTask.isEnabled = platformEntity.containers.filter {
-            it.isActiveToday == true
-        }.all { it.status != StatusEnum.NEW }
-    }
+//    // TODO: 28.10.2021 isActiveToday что это за поле?
+//    private fun initAfterMedia() {
+//        val platformEntity = mViewModel.findPlatformEntity(mPlatformEntity.platformId!!)
+//        btnCompleteTask.isEnabled = platformEntity.containers.filter {
+//            it.isActiveToday == true
+//        }.all { it.status != StatusEnum.NEW }
+//    }
 
     private fun initContainer() {
         val platform = mViewModel.findPlatformEntity(platformId = mPlatformEntity.platformId!!)
@@ -163,7 +163,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     fun updateRecyclerview() {
         val containers = mViewModel.findAllContainerInPlatform(mPlatformEntity.platformId!!)
         mConrainerAdapter.updateData(containers as ArrayList<ContainerEntity>)
-        initAfterMedia()
+//        initAfterMedia()
     }
 
     override fun startContainerService(item: ContainerEntity) {
