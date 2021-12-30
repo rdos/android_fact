@@ -177,10 +177,13 @@ class RealmRepository(private val realm: Realm) {
                 .findFirst()
             platformEntity?.containers?.forEach {
                 if (it.volume == null) {
-                    it.volume = volume
-                }
-                if (it.status == StatusEnum.NEW) {
-                    it.status = StatusEnum.SUCCESS
+                    if (it.isActiveToday) {
+                        it.volume = volume
+                        if (it.status == StatusEnum.NEW) {
+                            it.status = StatusEnum.SUCCESS
+                        }
+                    }
+
                 }
             }
 
