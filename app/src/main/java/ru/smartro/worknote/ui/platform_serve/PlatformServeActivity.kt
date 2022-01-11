@@ -30,6 +30,7 @@ import ru.smartro.worknote.util.StatusEnum
 
 
 class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClickListener, View.OnClickListener {
+    private var mBackPressedCnt: Int = 3
     private val REQUEST_EXIT = 33
     private lateinit var mPlatformEntity: PlatformEntity
     private lateinit var mConrainerAdapter: ContainerAdapter
@@ -63,9 +64,11 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             mIsServeAgain = it.getBooleanExtra("mIsServeAgain", false)
         }
         supportActionBar?.title = "${mPlatformEntity.address}"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         initContainer()
-        initBeforeMedia()
+        if (!mPlatformEntity.isStartServeVolume()) {
+            initBeforeMedia()
+        }
 
         findViewById<AppCompatButton>(R.id.problem_btn).setOnClickListener {
             val intent = Intent(this, ExtremeProblemActivity::class.java)
@@ -172,7 +175,13 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     }
 
     override fun onBackPressed() {
-        toast("Заполните данные")
+        mBackPressedCnt--
+        if (mBackPressedCnt <= 0) {
+            super.onBackPressed()
+            toast("Вы не завершили обслуживание КП.")
+            return
+        }
+        toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

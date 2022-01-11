@@ -82,6 +82,9 @@ class PlatformAdapter(
                 holder.itemView.setOnClickListener {
                     if (checkedPosition != holder.adapterPosition) {
                         holder.itemView.map_behavior_expl.expand()
+                        if (item.isStartServe()) {
+                            holder.itemView.map_behavior_start_service.setText(R.string.start_serve_again)
+                        }
                         holder.itemView.map_behavior_start_service.setOnClickListener {
                             listener.startPlatformService(item)
                         }

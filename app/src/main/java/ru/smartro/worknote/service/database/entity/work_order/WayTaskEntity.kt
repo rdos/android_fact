@@ -105,7 +105,7 @@ open class PlatformEntity(
 ) : Serializable, RealmObject() {
 
     fun getIconDrawableResId(): Int {
-        if (this.beginnedAt.isNotNull() && this.status == StatusEnum.NEW) {
+        if (this.isStartServe()) {
             return R.drawable.ic_serving
         }
 //        if (this.beginnedAt.isNullOrEmpty() && this.status == StatusEnum.NEW) {
@@ -243,6 +243,24 @@ open class PlatformEntity(
             val minutes = diff / (1000 * 60)
             if (minutes < 0) {
                 result = true
+            }
+        }
+        return result
+    }
+
+    fun isStartServe(): Boolean {
+        return this.beginnedAt.isNotNull() && this.status == StatusEnum.NEW
+    }
+
+    fun isStartServeVolume(): Boolean {
+        var result = false
+        if (!this.isStartServe()) {
+            return result
+        }
+        this.containers.forEach { container ->
+            if (container.volume != null) {
+                result = true
+                return@forEach
             }
         }
         return result

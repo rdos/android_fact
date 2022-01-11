@@ -71,7 +71,6 @@ class MapActivity : AbstractAct(),
     private val viewModel: MapViewModel by viewModel()
 
     private val mapObjectTapListener = this as MapObjectTapListener
-    private val platformClickListener = this as PlatformAdapter.PlatformClickListener
 
     private val locationListener = this as LocationListener
     private val MIN_METERS = 50
@@ -300,7 +299,7 @@ class MapActivity : AbstractAct(),
             val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
             val platformsArray = it.platforms
             platformsArray.sortBy { it.updateAt }
-            map_behavior_rv.adapter = PlatformAdapter(platformClickListener, platformsArray)
+            map_behavior_rv.adapter = PlatformAdapter(this, platformsArray)
 
             map_behavior_header.setOnClickListener {
                 if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)

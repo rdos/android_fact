@@ -83,5 +83,6 @@
     <string name="dialog_platform_clicked_dtl__containers_cnt">конт. на площадке %s</string>
     <string name="dialog_platform_clicked_dtl__address">%s \n %s</string>
     <string name="start_serve">Начать обслуживание</string>
+    <string name="start_serve_again">Продолжить обслуживание</string>
     <string name="dialog_platform_clicked_dtl__serve_again">Редактировать / Дополнить</string>
 </resources>

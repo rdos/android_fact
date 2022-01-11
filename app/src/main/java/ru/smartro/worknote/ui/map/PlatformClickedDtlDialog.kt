@@ -77,8 +77,11 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
         }
 
         view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
-        view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve).setOnClickListener(mOnClickListener)
-
+        val btnStartServe = view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
+        btnStartServe.setOnClickListener(mOnClickListener)
+        if (_platform.isStartServe()) {
+            btnStartServe.setText(R.string.start_serve_again)
+        }
         val tvName = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__name)
         tvName.text = _platform.name
         val tvOrderTime = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__order_time)
