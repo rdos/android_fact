@@ -16,6 +16,6 @@ object PhotoTypeEnum {
     //Крупногабаритные отходы
     const val forKGO = 4
 
-    //После обслуживания платформы
+    //Подбор
     const val forPlatformPickupVolume = 5
 }

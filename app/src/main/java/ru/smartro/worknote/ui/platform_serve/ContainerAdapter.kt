@@ -36,7 +36,7 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
         holder.itemView.choose_title.text = data.number
         holder.itemView.tv_item_container_adapter__type_name.text = data.typeName
         // TODO: 25.10.2021 add getString() + format
-        holder.itemView.tv_item_container_adapter__constructiveVolume.text = "${data.constructiveVolume.toStr("м3")}"
+        holder.itemView.tv_item_container_adapter__constructiveVolume.text = "${data.constructiveVolume.toStr("м³")}"
 
 
         holder.itemView.setOnClickListener {

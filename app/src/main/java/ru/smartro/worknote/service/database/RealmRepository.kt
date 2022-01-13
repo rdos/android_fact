@@ -139,12 +139,15 @@ class RealmRepository(private val realm: Realm) {
             .findFirst()?.id!!
     }
 
-    fun updateSelectionVolume(platformId: Int, volumeSelectionInM3: Double?) {
+    fun updateSelectionVolume(platformId: Int, volumePickup: Double?) {
         realm.executeTransaction { realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()
-            platformEntity?.volumePickup = volumeSelectionInM3
+            platformEntity?.volumePickup = volumePickup
+            if (volumePickup == null) {
+                platformEntity?.pickupMedia = RealmList()
+            }
             platformEntity?.beginnedAt = MyUtil.currentTime()
             updateTimer(platformEntity)
         }
