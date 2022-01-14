@@ -69,13 +69,15 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int,
                 val  platform = viewModel.findPlatformEntity(platformId)
                 activity?.actionBar?.title = getString(R.string.problem_container)
                 image_title.text = getString(R.string.problem_container)
-                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.servedKGO.media))
+                // TODO: 14.01.2022 r_dos!!!
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.servedKGO?.media))
             }
             PhotoTypeEnum.forRemainingKGO -> {
                 val  platform = viewModel.findPlatformEntity(platformId)
                 activity?.actionBar?.title = getString(R.string.problem_container)
                 image_title.text = getString(R.string.problem_container)
-                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.remainingKGO.media))
+                // TODO: 14.01.2022 r_dos!!! 
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.remainingKGO?.media))
             }
             PhotoTypeEnum.forPlatformPickupVolume -> {
                 val  platform = viewModel.findPlatformEntity(platformId)

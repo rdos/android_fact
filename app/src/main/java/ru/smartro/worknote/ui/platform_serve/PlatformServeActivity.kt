@@ -7,10 +7,10 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
@@ -32,6 +32,8 @@ import ru.smartro.worknote.util.StatusEnum
 
 
 class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClickListener, SeekBar.OnSeekBarChangeListener{
+
+
     private var mBackPressedCnt: Int = 3
     private val REQUEST_EXIT = 33
     private lateinit var mPlatformEntity: PlatformEntity
@@ -39,6 +41,12 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     private var mIsServeAgain: Boolean = false
     private val mViewModel: PlatformServeViewModel by viewModel()
     private lateinit var btnCompleteTask: AppCompatButton
+
+    // TODO: 14.01.2022 r_dos))
+    private lateinit var mRemainingKGOVolumeText: String
+    private lateinit var mServedKGOVolumeText: String
+    private lateinit var mAcbKGORemaining: AppCompatButton
+    private lateinit var mAcbKGOServed: AppCompatButton
 
 //    override fun onClick(buttonView: View) {
 //        Log.d(TAG, "onClick.before id=${buttonView.id}")
@@ -56,9 +64,30 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 //
 //    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
+            mViewModel.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
+            mViewModel.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
+            setResult(Activity.RESULT_OK)
+            finish()
+        } else if (requestCode == REQUEST_EXIT) {
+            if (resultCode == 99) {
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
+        } else if (resultCode == 101 && requestCode == 101) {
+            mViewModel.updatePlatformKGO(mPlatformEntity.platformId!!, mServedKGOVolumeText, isServedKGO = true)
+            setUseButtonStyleAlpha(mAcbKGOServed)
+        } else if (resultCode == 102 && requestCode == 102) {
+            mViewModel.updatePlatformKGO(mPlatformEntity.platformId!!, mRemainingKGOVolumeText, isServedKGO = false)
+            setUseButtonStyleAlpha(mAcbKGORemaining)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_platform_serve)
+        setContentView(R.layout.act_platform_serve)
         intent.let {
             mPlatformEntity = mViewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
             mIsServeAgain = it.getBooleanExtra("mIsServeAgain", false)
@@ -70,36 +99,76 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             initBeforeMedia()
         }
 
-        findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__problem).setOnClickListener {
+        val acbProblem = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__problem)
+        setNotUseButtonStyleAlpha(acbProblem)
+        if (mPlatformEntity.failureMedia.size > 0) {
+           setUseButtonStyleAlpha(acbProblem)
+        }
+        acbProblem.setOnClickListener {
             val intent = Intent(this, ExtremeProblemActivity::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId)
             intent.putExtra("isContainerProblem", false)
-                startActivityForResult(intent, REQUEST_EXIT)
+            startActivityForResult(intent, REQUEST_EXIT)
         }
 
+        /** COPY PAST START*/     /** COPY PAST START*/   /** COPY PAST START*/ /** COPY PAST START*/
+        /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
+        /** COPY PAST r_dos!!!*/
 
 
-
-        val acbKGOServed = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__kgo_served)
-        if (mPlatformEntity.servedKGO.isNotEmpty()) {
-            acbKGOServed.alpha = 1f
+        mAcbKGOServed = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__kgo_served)
+        setNotUseButtonStyleAlpha(mAcbKGOServed)
+        if (mPlatformEntity.isServedKGONotEmpty()) {
+            setUseButtonStyleAlpha(mAcbKGOServed)
         }
-        acbKGOServed.setOnClickListener {
+        mAcbKGOServed.setOnClickListener {
             showDialogFillKgoVolume().let { view ->
-                view.findViewById<TextInputEditText>(R.id.kgo_volume_in).setText(mPlatformEntity.servedKGO.volume.toString())
-//                view.findViewById<Button>(R.id.btn_alert_kgo__takeaway).setOnClickListener(mOnClickListener)
-//                view.findViewById<Button>(R.id.btn_alert_kgo__no_takeaway).setOnClickListener(mOnClickListener)
+                val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
+                tietKGOVolumeIn.setText(mPlatformEntity.getServedKGOVolume())
+                val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
+                btnSave.setOnClickListener {
+                    mServedKGOVolumeText = tietKGOVolumeIn.text.toString()
+                    if (mServedKGOVolumeText.isNullOrBlank()) {
+                        return@setOnClickListener
+                    }
+                    val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
+                    intent.putExtra("platform_id", mPlatformEntity.platformId)
+                    intent.putExtra("photoFor", PhotoTypeEnum.forServedKGO)
+                    startActivityForResult(intent, 101)
+                    hideDialog()
+                    }
+                }
             }
 
-            val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
-            intent.putExtra("platform_id", mPlatformEntity.platformId)
-            intent.putExtra("photoFor", PhotoTypeEnum.forServedKGO)
-            startActivityForResult(intent, 101)
-            hideDialog()
+        /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
+            /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
 
-
-        }
-
+            mAcbKGORemaining = findViewById<AppCompatButton>(R.id.apb_activity_platform_serve__kgo_remaining)
+            setNotUseButtonStyleAlpha(mAcbKGORemaining)
+            if (mPlatformEntity.isRemainingKGONotEmpty()) {
+                setUseButtonStyleAlpha(mAcbKGORemaining)
+            }
+            mAcbKGORemaining.setOnClickListener {
+                showDialogFillKgoVolume().let { view ->
+                    val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
+                    tietKGOVolumeIn.setText(mPlatformEntity.getRemainingKGOVolume())
+                    val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
+                    btnSave.setOnClickListener{
+                        mRemainingKGOVolumeText = tietKGOVolumeIn.text.toString()
+                        if (mRemainingKGOVolumeText.isNullOrBlank()) {
+                            return@setOnClickListener
+                        }
+                        val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
+                        intent.putExtra("platform_id", mPlatformEntity.platformId)
+                        intent.putExtra("photoFor", PhotoTypeEnum.forRemainingKGO)
+                        startActivityForResult(intent, 102)
+                        hideDialog()
+                    }
+                }
+            }
+            /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
+            /** COPY PAST r_dos!!!*/
+            /** COPY PAST END*/     /** COPY PAST END*/   /** COPY PAST END*/ /** COPY PAST END*/
 
 
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
@@ -139,7 +208,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 //                    if (pickupVolumeText.isBlank()) {
 //                        tietAdditionalVolumeInM3.error = "Обязательное поле"
 //                        return@setOnClickListener
-//                    }
+//                    }  mViewModel.updatePlatformKGO(mPlatformEntity.platformId!!, mServedKGOVolumeText, isServedKGO = true)
 //                    volumePickup = pickupVolumeText.toDoubleOrNull()
 //                    mViewModel.updateSelectionVolume(mPlatformEntity.platformId!!, volumePickup)
 //                    hideDialog()
@@ -151,6 +220,14 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 //                }
 //            }
 //        }
+    }
+
+    private fun setUseButtonStyleAlpha(appCompatButton: AppCompatButton) {
+        appCompatButton.alpha = 1f
+    }
+
+    private fun setNotUseButtonStyleAlpha(appCompatButton: AppCompatButton) {
+        appCompatButton.alpha = 0.2f
     }
 
 //    private fun setButtonKGODrawableEnd(isTakeawayKGO: Boolean) {
@@ -229,20 +306,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
         toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
-            mViewModel.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
-            mViewModel.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
-            setResult(Activity.RESULT_OK)
-            finish()
-        } else if (requestCode == REQUEST_EXIT) {
-            if (resultCode == 99) {
-                setResult(Activity.RESULT_OK)
-                finish()
-            }
-        }
-    }
+
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -252,17 +316,6 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun onAlertButtonKgoClick(dialogView: View, isTakeaway : Boolean) {
-        Log.i(TAG, "onButtonKgoClick.before id=${dialogView.id} isTakeaway=$isTakeaway")
-        val kgoVolumeText = dialogView.findViewById<TextInputEditText>(R.id.kgo_volume_in).text.toString()
-        if (kgoVolumeText.isNullOrBlank()) {
-            return
-        }
-        val kgoVolume = kgoVolumeText.toDouble()
-        mViewModel.updatePlatformKGO(mPlatformEntity.platformId!!, kgoVolume, isTakeaway)
-        hideDialog()
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -295,7 +348,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 
     fun getThumb(progress: Int): Drawable? {
         val thumbView: View = LayoutInflater.from(this)
-            .inflate(R.layout.activity_platform_serve__seekbar_thumb, null, false)
+            .inflate(R.layout.act_platform_serve__seekbar_thumb, null, false)
 //        (thumbView.findViewById(R.id.tvProgress) as TextView).text = progress.toString() + ""
         thumbView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val bitmap = Bitmap.createBitmap(thumbView.getMeasuredWidth(), thumbView.getMeasuredHeight(), Bitmap.Config.ARGB_8888)

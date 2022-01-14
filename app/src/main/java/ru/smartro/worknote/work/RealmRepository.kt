@@ -374,8 +374,8 @@ class RealmRepository(private val realm: Realm) {
         )
 
         allPlatforms.forEach { pl ->
-            if (pl.servedKGO.isNotEmpty()) {
-                pl.servedKGO.volume?.let {
+            if (pl.isServedKGONotEmpty()) {
+                pl.servedKGO!!.volume?.let {
                     totalKgoVolume += it
                 }
             }
@@ -440,40 +440,29 @@ class RealmRepository(private val realm: Realm) {
     /** добавление фото в платформу **/
     fun updatePlatformMedia(imageFor: Int, platformId: Int, imageBase64: String, coords: Point) {
         realm.executeTransaction { realm ->
+            val imageEntity = ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()
             when (imageFor) {
                 PhotoTypeEnum.forAfterMedia -> {
-                    platformEntity?.afterMedia?.add(
-                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
-                    )
+                    platformEntity?.afterMedia?.add(imageEntity)
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
                     platformEntity?.beginnedAt = MyUtil.currentTime()
-                    platformEntity?.beforeMedia?.add(
-                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
-                    )
+                    platformEntity?.beforeMedia?.add(imageEntity)
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
-                    platformEntity?.failureMedia?.add(
-                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
-                    )
+                    platformEntity?.failureMedia?.add(imageEntity)
                 }
                 PhotoTypeEnum.forPlatformPickupVolume -> {
-                    platformEntity?.pickupMedia?.add(
-                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
-                    )
+                    platformEntity?.pickupMedia?.add(imageEntity)
                 }
                 PhotoTypeEnum.forServedKGO -> {
-                    platformEntity!!.servedKGO.media.add(
-                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
-                    )
+                    platformEntity!!.addServerKGOMedia(imageEntity)
                 }
                 PhotoTypeEnum.forRemainingKGO -> {
-                    platformEntity!!.remainingKGO.media.add(
-                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
-                    )
+                    platformEntity!!.addRemainingKGOMedia(imageEntity)
                 }
             }
             setEntityUpdateAt(platformEntity)
@@ -481,15 +470,15 @@ class RealmRepository(private val realm: Realm) {
     }
 
     // TODO: 29.10.2021 !!!???
-    fun updatePlatformKGO(platformId: Int, kgoVolume: Double, isServedKGO: Boolean) {
+    fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
         realm.executeTransaction { realm: Realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             if (isServedKGO) {
-                platformEntity.servedKGO.volume = kgoVolume
+                platformEntity.setServedKGOVolume(kgoVolume)
             } else {
-                platformEntity.remainingKGO.volume = kgoVolume
+                platformEntity.setRemainingKGOVolume(kgoVolume)
             }
         }
     }
@@ -544,10 +533,10 @@ class RealmRepository(private val realm: Realm) {
                     platformEntity!!.pickupMedia.remove(imageBase64)
                 }
                 PhotoTypeEnum.forServedKGO -> {
-                    platformEntity!!.servedKGO.media.remove(imageBase64)
+                    platformEntity!!.servedKGO!!.media.remove(imageBase64)
                 }
                 PhotoTypeEnum.forRemainingKGO -> {
-                    platformEntity!!.remainingKGO.media.remove(imageBase64)
+                    platformEntity!!.remainingKGO!!.media.remove(imageBase64)
                 }
             }
             setEntityUpdateAt(platformEntity)

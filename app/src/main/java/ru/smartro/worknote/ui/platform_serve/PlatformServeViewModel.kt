@@ -49,8 +49,8 @@ class PlatformServeViewModel(application: Application) : BaseViewModel(applicati
         db.removeContainerMedia(platformId, containerId, imageBase64)
     }
 
-    fun updatePlatformKGO(platformId: Int, kgoVolume: Double, isTakeaway: Boolean) {
-        db.updatePlatformKGO(platformId, kgoVolume, isTakeaway)
+    fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
+        db.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
     }
 
 

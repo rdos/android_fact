@@ -44,10 +44,13 @@
 
         <Button
             android:id="@+id/btn_alert_kgo__save"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_button"
             android:padding="@dimen/margin_default"
+            android:layout_marginStart="@dimen/margin_max_max"
+            android:layout_marginEnd="@dimen/margin_max_max"
+            android:layout_marginBottom="@dimen/margin_min"
             android:text="Сохранить"
             android:textColor="@color/white"
             android:layout_gravity="center"
