@@ -24,6 +24,8 @@ import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.util.MyUtil
+import java.io.File
+import java.io.FileOutputStream
 
 
 class SynchronizeWorker(
@@ -72,6 +74,8 @@ class SynchronizeWorker(
             }
 
             val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), mDeviceId, platforms)
+
+            saveJSON(synchronizeBody)
             val synchronizeResponse = mNetworkRepository.synchronizeData(synchronizeBody)
             when (synchronizeResponse.status) {
                 Status.SUCCESS -> {
@@ -94,6 +98,52 @@ class SynchronizeWorker(
             Log.d(TAG, "WORKER STOPPED")
             dismissNotification()
         }
+    }
+
+    fun saveJSON(synchronizeBody: SynchronizeBody) {
+        val gson = Gson()
+        val bodyInStringFormat = gson.toJson(synchronizeBody)
+        deleteOutputDirectory("ttest", null)
+        val file: File = File(getOutputDirectory("ttest", null), "filename.json")
+
+        //This point and below is responsible for the write operation
+
+        //This point and below is responsible for the write operation
+        var outputStream: FileOutputStream? = null
+        try {
+
+            file.createNewFile()
+            //second argument of FileOutputStream constructor indicates whether
+            //to append or create new file if one exists
+            outputStream = FileOutputStream(file, true)
+            outputStream.write(bodyInStringFormat.toByteArray())
+            outputStream.flush()
+            outputStream.close()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun deleteOutputDirectory(platformUuid: String, containerUuid: String?) {
+        try {
+            val file = getOutputDirectory(platformUuid, containerUuid)
+            file.deleteRecursively()
+        } catch (e: Exception) {
+//            log.error("deleteOutputDirectory", e)
+        }
+    }
+
+    fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
+        var dirPath = context.filesDir.absolutePath
+        if(containerUuid == null) {
+            dirPath = dirPath + File.separator + platformUuid
+        } else {
+            dirPath = dirPath + File.separator + platformUuid + File.separator + containerUuid
+        }
+
+        val file = File(dirPath)
+        if (!file.exists()) file.mkdirs()
+        return file
     }
 
     private fun showNotification(context: Context, ongoing: Boolean, content: String, title: String) {
