@@ -53,9 +53,17 @@ class CameraActivity : AbstractAct() {
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = getString(R.string.problem_container)
             }
-            PhotoTypeEnum.forKGO -> {
+            PhotoTypeEnum.forServedKGO -> {
                 platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.kgo)
+//                supportActionBar?.title = getString(R.string.kgo)
+                // TODO: 14.01.2022 r_dos!!!
+                supportActionBar?.hide()
+            }
+            PhotoTypeEnum.forRemainingKGO -> {
+                // TODO: 14.01.2022 r_dos!!!
+                platformId = intent.getIntExtra("platform_id", 0)
+//                supportActionBar?.title = getString(R.string.kgo)
+                supportActionBar?.hide()
             }
             PhotoTypeEnum.forPlatformPickupVolume -> {
                 platformId = intent.getIntExtra("platform_id", 0)

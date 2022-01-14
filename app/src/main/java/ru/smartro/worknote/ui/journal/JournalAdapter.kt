@@ -35,7 +35,7 @@ class JournalAdapter(items: ArrayList<PlatformEntity>
             "Общее кол-во контейнеров: ${item.containers.size} \n" +
                     "Обслужено кол-во контейнеров: ${item.containers.filter { it.status != StatusEnum.NEW }.size}/${item.containers.size} \n" +
                     "Проблема: $failureComment \n" +
-                    "Объем КГО: ${item.volumeKGO.toStr()}\n" +
+                    "Объем Подбора: ${item.volumePickup.toStr()}\n" +
                     "Статус сети: ${status(item.networkStatus!!)}"
 
         if (item.networkStatus!!)

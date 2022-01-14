@@ -6,6 +6,8 @@ import android.graphics.Color
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.gson.annotations.SerializedName
+import io.realm.Realm
+import io.realm.RealmFieldType
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -40,7 +42,20 @@ open class StartEntity(
     var coords: RealmList<Double> = RealmList(),
     var name: String? = null,
     var id: Int? = null
-) : Serializable, RealmObject()
+    ) : Serializable, RealmObject()
+
+open class KGOEntity(
+    var volume: Double? = null,
+    val media: RealmList<ImageEntity> = RealmList()
+    ): Serializable, RealmObject() {
+        fun isEmpty(): Boolean {
+            val result = volume == null
+            return result
+        }
+        fun isNotEmpty(): Boolean {
+            return !isEmpty()
+        }
+    }
 
 open class PlatformEntity(
     @SerializedName("address")
@@ -67,9 +82,9 @@ open class PlatformEntity(
     var failureMedia: RealmList<ImageEntity> = RealmList(),
 
     @SerializedName("kgo_remaining")
-    var remainingKGO: KGOEntity = KGOEntity(),
+    var remainingKGO: KGOEntity = Realm.getDefaultInstance().createObject(KGOEntity::class.java),
     @SerializedName("kgo_served")
-    var servedKGO: KGOEntity = KGOEntity(),
+    var servedKGO: KGOEntity = Realm.getDefaultInstance().createObject(KGOEntity::class.java),
 
     @SerializedName("pickup_volume")
     var volumePickup: Double? = null,
@@ -260,20 +275,31 @@ open class PlatformEntity(
         }
         return result
     }
-}
 
-open class KGOEntity(
-    var volume: Double? = null,
-    val media: RealmList<ImageEntity> = RealmList()
-) {
-    fun isEmpty(): Boolean {
-        val result = volume == null
+    fun getServedKGOMediaSize(): Int {
+        TODO("Not yet implemented")
+        var result = 0
+        if (this.servedKGO == null ) {
+//            this.servedKGO = createServedKGO(Realm.getDefaultInstance())
+                return result
+        }
+        result = this.servedKGO.media.size
         return result
     }
-    fun isNotEmpty(): Boolean {
-        return !isEmpty()
+
+    fun createServedKGO(realm: Realm): KGOEntity {
+//        this.servedKGO = Realm.getDefaultInstance().createObject(Real)
+        val result = realm.createObject(KGOEntity::class.java)
+        return result
     }
+
+    fun createRemainingKGO(realm: Realm) {
+        this.remainingKGO = realm.createObject(KGOEntity::class.java)
+    }
+
 }
+
+
 
 open class UnloadEntity(
     var coords: RealmList<Double> = RealmList(),

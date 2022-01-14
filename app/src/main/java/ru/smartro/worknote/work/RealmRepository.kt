@@ -492,65 +492,65 @@ class RealmRepository(private val realm: Realm) {
                 platformEntity.remainingKGO.volume = kgoVolume
             }
         }
+    }
 
-        fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String, coords: Point) {
-            realm.executeTransaction { realm ->
-                val containerEntity = realm.where(ContainerEntity::class.java)
-                    .equalTo("containerId", containerId)
-                    .findFirst()!!
-                val platformEntity = realm.where(PlatformEntity::class.java)
-                    .equalTo("platformId", platformId)
-                    .findFirst()!!
-                containerEntity.failureMedia.add(
-                    ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
-                )
-                setEntityUpdateAt(platformEntity)
-            }
+    fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String, coords: Point) {
+        realm.executeTransaction { realm ->
+            val containerEntity = realm.where(ContainerEntity::class.java)
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            containerEntity.failureMedia.add(
+                ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+            )
+            setEntityUpdateAt(platformEntity)
         }
+    }
 
-        /** удалить фото с контейнера **/
-        fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
-            realm.executeTransaction { realm ->
-                val containerEntity = realm.where(ContainerEntity::class.java)
-                    .equalTo("containerId", containerId)
-                    .findFirst()!!
-                val platformEntity = realm.where(PlatformEntity::class.java)
-                    .equalTo("platformId", platformId)
-                    .findFirst()!!
-                containerEntity.failureMedia.remove(imageBase64)
-                setEntityUpdateAt(platformEntity)
-            }
+    /** удалить фото с контейнера **/
+    fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
+        realm.executeTransaction { realm ->
+            val containerEntity = realm.where(ContainerEntity::class.java)
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            containerEntity.failureMedia.remove(imageBase64)
+            setEntityUpdateAt(platformEntity)
         }
+    }
 
-        /** удалить фото с платформы **/
-        fun removePlatformMedia(imageFor: Int, imageBase64: ImageEntity, platformId: Int) {
-            realm.executeTransaction { realm ->
-                val platformEntity = realm.where(PlatformEntity::class.java)
-                    .equalTo("platformId", platformId).findFirst()
-                when (imageFor) {
-                    PhotoTypeEnum.forBeforeMedia -> {
-                        platformEntity?.beforeMedia?.remove(imageBase64)
-                    }
-
-                    PhotoTypeEnum.forAfterMedia -> {
-                        platformEntity?.afterMedia?.remove(imageBase64)
-                    }
-                    PhotoTypeEnum.forPlatformProblem -> {
-                        platformEntity?.failureMedia?.remove(imageBase64)
-                    }
-
-                    PhotoTypeEnum.forPlatformPickupVolume -> {
-                        platformEntity!!.pickupMedia.remove(imageBase64)
-                    }
-                    PhotoTypeEnum.forServedKGO -> {
-                        platformEntity!!.servedKGO.media.remove(imageBase64)
-                    }
-                    PhotoTypeEnum.forRemainingKGO -> {
-                        platformEntity!!.remainingKGO.media.remove(imageBase64)
-                    }
+    /** удалить фото с платформы **/
+    fun removePlatformMedia(imageFor: Int, imageBase64: ImageEntity, platformId: Int) {
+        realm.executeTransaction { realm ->
+            val platformEntity = realm.where(PlatformEntity::class.java)
+                .equalTo("platformId", platformId).findFirst()
+            when (imageFor) {
+                PhotoTypeEnum.forBeforeMedia -> {
+                    platformEntity?.beforeMedia?.remove(imageBase64)
                 }
-                setEntityUpdateAt(platformEntity)
+
+                PhotoTypeEnum.forAfterMedia -> {
+                    platformEntity?.afterMedia?.remove(imageBase64)
+                }
+                PhotoTypeEnum.forPlatformProblem -> {
+                    platformEntity?.failureMedia?.remove(imageBase64)
+                }
+
+                PhotoTypeEnum.forPlatformPickupVolume -> {
+                    platformEntity!!.pickupMedia.remove(imageBase64)
+                }
+                PhotoTypeEnum.forServedKGO -> {
+                    platformEntity!!.servedKGO.media.remove(imageBase64)
+                }
+                PhotoTypeEnum.forRemainingKGO -> {
+                    platformEntity!!.remainingKGO.media.remove(imageBase64)
+                }
             }
+            setEntityUpdateAt(platformEntity)
         }
     }
 

@@ -167,9 +167,13 @@ class CameraFragment(
                     val platform = viewModel.findPlatformEntity(platformId)
                     imageCounter.text = "${platform.beforeMedia.size + count}"
                 }
-                PhotoTypeEnum.forKGO -> {
+                PhotoTypeEnum.forServedKGO -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    imageCounter.text = "${platform.kgoMedia.size + count}"
+                    imageCounter.text = "${platform.servedKGO.media.size + count}"
+                }
+                PhotoTypeEnum.forRemainingKGO -> {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    imageCounter.text = "${platform.remainingKGO.media.size + count}"
                 }
                 PhotoTypeEnum.forPlatformPickupVolume -> {
                     val platform = viewModel.findPlatformEntity(platformId)
@@ -346,15 +350,26 @@ class CameraFragment(
                     }
                 }
 
-                PhotoTypeEnum.forKGO -> {
+                PhotoTypeEnum.forServedKGO -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.kgoMedia.size == 0) {
+                    if (platform.getServedKGOMediaSize() == 0) {
                         toast("Сделайте фото")
                     } else {
                         requireActivity().setResult(101)
                         requireActivity().finish()
                     }
                 }
+
+                PhotoTypeEnum.forRemainingKGO -> {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    if (platform.remainingKGO.media.size == 0) {
+                        toast("Сделайте фото")
+                    } else {
+                        requireActivity().setResult(102)
+                        requireActivity().finish()
+                    }
+                }
+
                 PhotoTypeEnum.forPlatformPickupVolume -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     requireActivity().setResult(Activity.RESULT_OK)
@@ -393,9 +408,13 @@ class CameraFragment(
                         val container = viewModel.findContainerEntity(containerId)
                         container.failureMedia.size >= maxPhotoCount
                     }
-                    PhotoTypeEnum.forKGO -> {
+                    PhotoTypeEnum.forServedKGO -> {
                         val platform = viewModel.findPlatformEntity(platformId)
-                        platform.kgoMedia.size >= maxPhotoCount
+                        platform.getServedKGOMediaSize() >= maxPhotoCount
+                    }
+                    PhotoTypeEnum.forRemainingKGO -> {
+                        val platform = viewModel.findPlatformEntity(platformId)
+                        platform.remainingKGO.media.size >= maxPhotoCount
                     }
                     PhotoTypeEnum.forPlatformPickupVolume -> {
                         val platform = viewModel.findPlatformEntity(platformId)
