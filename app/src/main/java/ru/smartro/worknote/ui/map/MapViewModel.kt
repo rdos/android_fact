@@ -19,8 +19,8 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.showSuccessComplete
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
-import ru.smartro.worknote.service.database.entity.work_order.WayTaskEntity
+import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.WayTaskEntity
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody

@@ -43,7 +43,7 @@
     <string name="end_task">Досрочное завершение</string>
     <string name="problem">Проблема</string>
     <string name="early_complate">При досрочном завершении рейса все оставшиеся контейнерые площадки будут отмечены как невывезенные</string>
-    <string name="problem_on_point">Проблема на КП</string>
+    <string name="problem_on_point">Проблема</string>
     <string name="problem_container">Проблема контейнера</string>
     <string name="problem_point">Проблема на площадке</string>
     <string name="container_fail">Все оставшиеся контейнеры на площадке будут помечены как невывезенные.</string>

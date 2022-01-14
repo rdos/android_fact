@@ -1,4 +1,4 @@
-package ru.smartro.worknote.service.database.entity.work_order
+package ru.smartro.worknote.work
 
 
 import android.content.Context
@@ -9,17 +9,12 @@ import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
-import org.w3c.dom.Text
 import ru.smartro.worknote.*
 import ru.smartro.worknote.util.MyUtil.isNotNull
 import ru.smartro.worknote.util.StatusEnum
 import java.io.Serializable
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.Period
-import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.time.days
 
 open class WayTaskEntity(
     @PrimaryKey
@@ -70,12 +65,12 @@ open class PlatformEntity(
     var coords: RealmList<Double> = RealmList(),
     @SerializedName("failure_media")
     var failureMedia: RealmList<ImageEntity> = RealmList(),
-    @SerializedName("kgo_media")
-    var kgoMedia: RealmList<ImageEntity> = RealmList(),
-    @SerializedName("kgo_volume")
-    var volumeKGO: Double? = null,
-    @SerializedName("kgo_is_takeaway")
-    var isTakeawayKGO: Boolean = true,
+
+    @SerializedName("kgo_remaining")
+    var remainingKGO: KGOEntity = KGOEntity(),
+    @SerializedName("kgo_served")
+    var servedKGO: KGOEntity = KGOEntity(),
+
     @SerializedName("pickup_volume")
     var volumePickup: Double? = null,
     @SerializedName("pickup_media")
@@ -264,6 +259,19 @@ open class PlatformEntity(
             }
         }
         return result
+    }
+}
+
+open class KGOEntity(
+    var volume: Double? = null,
+    val media: RealmList<ImageEntity> = RealmList()
+) {
+    fun isEmpty(): Boolean {
+        val result = volume == null
+        return result
+    }
+    fun isNotEmpty(): Boolean {
+        return !isEmpty()
     }
 }
 

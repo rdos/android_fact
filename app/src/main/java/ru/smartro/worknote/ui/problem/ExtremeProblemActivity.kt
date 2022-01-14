@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_container_extreme.*
 import kotlinx.android.synthetic.main.activity_problem.*
 import kotlinx.android.synthetic.main.activity_problem.baseview
 import kotlinx.android.synthetic.main.activity_problem.problem_accept_btn
-import kotlinx.android.synthetic.main.activity_problem.problem_btn
+import kotlinx.android.synthetic.main.activity_problem.acb_activity_platform_serve__problem
 import kotlinx.android.synthetic.main.activity_problem.problem_choose_failure_out
 import kotlinx.android.synthetic.main.activity_problem.problem_comment
 import kotlinx.android.synthetic.main.activity_problem.problem_img
@@ -18,8 +18,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.work.ContainerEntity
+import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
@@ -81,7 +81,7 @@ class ExtremeProblemActivity : AbstractAct() {
             intent.putExtra("photoFor", PhotoTypeEnum.forPlatformProblem)
         }
         startActivityForResult(intent, 13)
-        problem_btn.setOnClickListener {
+        acb_activity_platform_serve__problem.setOnClickListener {
             startActivityForResult(intent, 13)
         }
     }

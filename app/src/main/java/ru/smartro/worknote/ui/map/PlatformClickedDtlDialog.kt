@@ -13,10 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
@@ -25,7 +23,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractDialog
 import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.isShowForUser
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum

@@ -11,14 +11,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import io.realm.RealmList
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
@@ -26,41 +23,38 @@ import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.work.ContainerEntity
+import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
-import ru.smartro.worknote.util.MyUtil.toStr
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClickListener, View.OnClickListener,  SeekBar.OnSeekBarChangeListener{
+class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClickListener, SeekBar.OnSeekBarChangeListener{
     private var mBackPressedCnt: Int = 3
     private val REQUEST_EXIT = 33
     private lateinit var mPlatformEntity: PlatformEntity
     private lateinit var mConrainerAdapter: ContainerAdapter
-    private val mOnClickListener = this as View.OnClickListener
     private var mIsServeAgain: Boolean = false
     private val mViewModel: PlatformServeViewModel by viewModel()
-    private lateinit var btnKGO: AppCompatButton
     private lateinit var btnCompleteTask: AppCompatButton
 
-    override fun onClick(buttonView: View) {
-        Log.d(TAG, "onClick.before id=${buttonView.id}")
-
-        when(buttonView.id) {
-            R.id.btn_alert_kgo__takeaway -> {
-                onAlertButtonKgoClick(buttonView.rootView, true)
-                setButtonKGODrawableEnd(true)
-            }
-            R.id.btn_alert_kgo__no_takeaway -> {
-                onAlertButtonKgoClick(buttonView.rootView,false)
-                setButtonKGODrawableEnd(false)
-            }
-        }
-
-    }
+//    override fun onClick(buttonView: View) {
+//        Log.d(TAG, "onClick.before id=${buttonView.id}")
+//
+//        when(buttonView.id) {
+//            R.id.btn_alert_kgo__takeaway -> {
+//                onAlertButtonKgoClick(buttonView.rootView, true)
+//                setButtonKGODrawableEnd(true)
+//            }
+//            R.id.btn_alert_kgo__no_takeaway -> {
+//                onAlertButtonKgoClick(buttonView.rootView,false)
+//                setButtonKGODrawableEnd(false)
+//            }
+//        }
+//
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,32 +70,50 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             initBeforeMedia()
         }
 
-        findViewById<AppCompatButton>(R.id.problem_btn).setOnClickListener {
+        findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__problem).setOnClickListener {
             val intent = Intent(this, ExtremeProblemActivity::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId)
             intent.putExtra("isContainerProblem", false)
                 startActivityForResult(intent, REQUEST_EXIT)
         }
-        btnKGO = findViewById(R.id.btn_activity_platform_serve__kgo)
-        if (mPlatformEntity.volumeKGO != null) {
-            setButtonKGODrawableEnd(mPlatformEntity.isTakeawayKGO)
+
+
+
+
+        val acbKGOServed = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__kgo_served)
+        if (mPlatformEntity.servedKGO.isNotEmpty()) {
+            acbKGOServed.alpha = 1f
         }
-        btnKGO.setOnClickListener {
+        acbKGOServed.setOnClickListener {
+            showDialogFillKgoVolume().let { view ->
+                view.findViewById<TextInputEditText>(R.id.kgo_volume_in).setText(mPlatformEntity.servedKGO.volume.toString())
+//                view.findViewById<Button>(R.id.btn_alert_kgo__takeaway).setOnClickListener(mOnClickListener)
+//                view.findViewById<Button>(R.id.btn_alert_kgo__no_takeaway).setOnClickListener(mOnClickListener)
+            }
+
             val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId)
-            intent.putExtra("photoFor", PhotoTypeEnum.forKGO)
+            intent.putExtra("photoFor", PhotoTypeEnum.forServedKGO)
             startActivityForResult(intent, 101)
             hideDialog()
+
+
         }
 
-        btnCompleteTask = findViewById(R.id.btn_activity_platform_serve__complete_task)
+
+
+        btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
         btnCompleteTask.setOnClickListener {
             val intent = Intent(this@PlatformServeActivity, CameraActivity::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
             startActivityForResult(intent, 13)
         }
-        val seekBar = findViewById<SeekBar>(R.id.seekbar)
+
+
+
+
+        val seekBar = findViewById<SeekBar>(R.id.acsb_activity_platform_serve__seekbar)
         seekBar.setOnSeekBarChangeListener(this)
         seekBar?.thumb = getThumb(1);
 
@@ -141,13 +153,13 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 //        }
     }
 
-    private fun setButtonKGODrawableEnd(isTakeawayKGO: Boolean) {
-        if (isTakeawayKGO) {
-            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check) , null)
-        } else {
-            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check_gray) , null)
-        }
-    }
+//    private fun setButtonKGODrawableEnd(isTakeawayKGO: Boolean) {
+//        if (isTakeawayKGO) {
+//            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check) , null)
+//        } else {
+//            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check_gray) , null)
+//        }
+//    }
 
     private fun initBeforeMedia() {
         AppPreferences.serviceStartedAt = System.currentTimeMillis() / 1000L
@@ -191,9 +203,9 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 //        arrays.add(arrays.get(0))
 //        arrays.add(arrays.get(0))
         mConrainerAdapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
-        findViewById<RecyclerView>(R.id.platform_service_rv).recycledViewPool.setMaxRecycledViews(0, 0);
-        findViewById<RecyclerView>(R.id.platform_service_rv).adapter = mConrainerAdapter
-        findViewById<TextView>(R.id.point_info_tv).text = "№${platform.srpId} / ${platform.containers!!.size} конт."
+        findViewById<RecyclerView>(R.id.rv_activity_platform_serve).recycledViewPool.setMaxRecycledViews(0, 0);
+        findViewById<RecyclerView>(R.id.rv_activity_platform_serve).adapter = mConrainerAdapter
+        findViewById<TextView>(R.id.tv_activity_platform_serve__point_info).text = "№${platform.srpId} / ${platform.containers!!.size} конт."
     }
 
     fun updateRecyclerview() {
@@ -228,12 +240,6 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             if (resultCode == 99) {
                 setResult(Activity.RESULT_OK)
                 finish()
-            }
-        } else if (resultCode == 101 && requestCode == 101) {
-            showDialogFillKgoVolume().let { view ->
-                view.findViewById<TextInputEditText>(R.id.kgo_volume_in).setText(mPlatformEntity.volumeKGO.toStr())
-                view.findViewById<Button>(R.id.btn_alert_kgo__takeaway).setOnClickListener(mOnClickListener)
-                view.findViewById<Button>(R.id.btn_alert_kgo__no_takeaway).setOnClickListener(mOnClickListener)
             }
         }
     }

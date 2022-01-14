@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.alert_warning_camera.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_delete.view.*
 import kotlinx.android.synthetic.main.fragment_gallery_before.*
@@ -16,7 +15,7 @@ import ru.smartro.worknote.adapter.listener.ImageClickListener
 import ru.smartro.worknote.base.AbstractBottomDialog
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
-import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
+import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.ui.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.util.PhotoTypeEnum
 

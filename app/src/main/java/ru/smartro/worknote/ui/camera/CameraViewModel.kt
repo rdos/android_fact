@@ -3,7 +3,7 @@ package ru.smartro.worknote.ui.camera
 import android.app.Application
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.work.PlatformEntity
 
 class CameraViewModel(application: Application) : BaseViewModel(application) {
 

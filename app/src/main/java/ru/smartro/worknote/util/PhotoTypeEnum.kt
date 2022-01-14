@@ -13,9 +13,12 @@ object PhotoTypeEnum {
     //Проблемы с контейнерами
     const val forContainerProblem = 3
 
-    //Крупногабаритные отходы
-    const val forKGO = 4
+    //Крупногабаритные отходы.забрал
+    const val forServedKGO = 4
 
     //Подбор
     const val forPlatformPickupVolume = 5
+
+    //Вызвать
+    const val forRemainingKGO = 6
 }

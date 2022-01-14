@@ -19,14 +19,10 @@ import io.realm.Realm
 import kotlinx.coroutines.delay
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.database.RealmRepository
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
 import ru.smartro.worknote.service.network.NetworkRepository
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.auth.AuthActivity
-import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
-import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
 
 

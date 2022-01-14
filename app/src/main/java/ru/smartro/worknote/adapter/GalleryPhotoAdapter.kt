@@ -12,7 +12,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.listener.ImageClickListener
 import ru.smartro.worknote.base.GenericRecyclerAdapter
 import ru.smartro.worknote.base.ViewHolder
-import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
+import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.util.MyUtil
 
 

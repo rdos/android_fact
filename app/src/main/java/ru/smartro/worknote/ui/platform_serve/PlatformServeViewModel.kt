@@ -2,9 +2,9 @@ package ru.smartro.worknote.ui.platform_serve
 
 import android.app.Application
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
-import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.work.ContainerEntity
+import ru.smartro.worknote.work.ImageEntity
+import ru.smartro.worknote.work.PlatformEntity
 
 class PlatformServeViewModel(application: Application) : BaseViewModel(application) {
 

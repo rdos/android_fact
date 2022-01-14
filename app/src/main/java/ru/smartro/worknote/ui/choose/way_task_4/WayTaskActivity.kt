@@ -20,7 +20,7 @@ import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.ProgressBody
-import ru.smartro.worknote.service.network.response.work_order.Workorder
+import ru.smartro.worknote.work.Workorder
 import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
 

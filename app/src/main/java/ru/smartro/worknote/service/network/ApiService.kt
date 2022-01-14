@@ -23,7 +23,7 @@ import ru.smartro.worknote.service.network.response.served.ServedResponse
 import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.service.network.response.way_list.WayListResponse
-import ru.smartro.worknote.service.network.response.work_order.WorkOrderResponse
+import ru.smartro.worknote.work.WorkOrderResponse
 
 interface ApiService {
 

@@ -8,7 +8,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_choose.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.network.response.work_order.Workorder
+import ru.smartro.worknote.work.Workorder
 
 class WayTaskAdapter(private val items: ArrayList<Workorder>, val listener: SelectListener) :
     RecyclerView.Adapter<WayTaskAdapter.OwnerViewHolder>() {

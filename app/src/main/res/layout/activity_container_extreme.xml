@@ -30,7 +30,7 @@
         app:layout_constraintTop_toTopOf="@id/problem_img" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/problem_btn"
+        android:id="@+id/acb_activity_platform_serve__problem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_default"

@@ -40,7 +40,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
@@ -56,7 +56,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 import ru.smartro.worknote.base.AbstractAct
-import ru.smartro.worknote.getDeviceTime
 import ru.smartro.worknote.isShowForUser
 
 

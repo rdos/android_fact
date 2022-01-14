@@ -1,4 +1,4 @@
-package ru.smartro.worknote.service.database
+package ru.smartro.worknote.work
 
 import android.util.Log
 import com.yandex.mapkit.geometry.Point
@@ -9,8 +9,6 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
-import ru.smartro.worknote.service.database.entity.work_order.*
-import ru.smartro.worknote.service.network.response.work_order.*
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.ProblemEnum
@@ -18,7 +16,7 @@ import ru.smartro.worknote.util.StatusEnum
 import kotlin.math.round
 
 class RealmRepository(private val realm: Realm) {
-    private val TAG : String = "RealmRepository--AAA"
+    private val TAG: String = "RealmRepository--AAA"
     fun insertWayTask(response: Workorder) {
 
         fun mapMedia(data: List<String>): RealmList<ImageEntity> {
@@ -52,8 +50,8 @@ class RealmRepository(private val realm: Realm) {
                     coords = RealmList(it.coords[0], it.coords[1]), failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
                     finishedAt = it.finishedAt, platformId = it.id,
-                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, volumeKGO = null, icon = it.icon,
-                    orderTimeEnd = it.orderEndTime, orderTimeStart= it.orderStartTime,
+                    name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, /** volumeKGO = null,*/ icon = it.icon,
+                    orderTimeEnd = it.orderEndTime, orderTimeStart = it.orderStartTime,
                     orderTimeAlert = it.orderAlertTime, orderTimeWarning = it.orderWarningTime
                 )
             }
@@ -149,7 +147,7 @@ class RealmRepository(private val realm: Realm) {
                 platformEntity?.pickupMedia = RealmList()
             }
             platformEntity?.beginnedAt = MyUtil.currentTime()
-            updateTimer(platformEntity)
+            setEntityUpdateAt(platformEntity)
         }
     }
 
@@ -169,7 +167,7 @@ class RealmRepository(private val realm: Realm) {
             }
 
             platformEntity?.beginnedAt = MyUtil.currentTime()
-            updateTimer(platformEntity)
+            setEntityUpdateAt(platformEntity)
         }
     }
 
@@ -191,7 +189,7 @@ class RealmRepository(private val realm: Realm) {
             }
 
             platformEntity?.beginnedAt = MyUtil.currentTime()
-            updateTimer(platformEntity)
+            setEntityUpdateAt(platformEntity)
         }
     }
 
@@ -211,7 +209,7 @@ class RealmRepository(private val realm: Realm) {
             }
             if (container.status == StatusEnum.SUCCESS)
                 container.status = StatusEnum.NEW
-            updateTimer(platformEntity)
+            setEntityUpdateAt(platformEntity)
         }
     }
 
@@ -247,7 +245,7 @@ class RealmRepository(private val realm: Realm) {
                 }
             }
             container.comment = problemComment
-            updateTimer(platform)
+            setEntityUpdateAt(platform)
         }
     }
 
@@ -284,7 +282,7 @@ class RealmRepository(private val realm: Realm) {
                 }
             }
             platform.failureComment = failureComment
-            updateTimer(platform)
+            setEntityUpdateAt(platform)
         }
     }
 
@@ -295,7 +293,7 @@ class RealmRepository(private val realm: Realm) {
             if (platform.status == StatusEnum.NEW) {
                 platform.status = status
             }
-            updateTimer(platform)
+            setEntityUpdateAt(platform)
         }
     }
 
@@ -359,8 +357,6 @@ class RealmRepository(private val realm: Realm) {
         Log.d(TAG, "findContainersVolume.before")
 
 
-
-
         val allContainers = realm.copyFromRealm(
             realm.where(ContainerEntity::class.java)
                 .findAll()
@@ -378,12 +374,12 @@ class RealmRepository(private val realm: Realm) {
         )
 
         allPlatforms.forEach { pl ->
-            if (pl.isTakeawayKGO) {
-                pl.volumeKGO?.let {
+            if (pl.servedKGO.isNotEmpty()) {
+                pl.servedKGO.volume?.let {
                     totalKgoVolume += it
                 }
             }
-            pl.volumePickup?.let{
+            pl.volumePickup?.let {
                 totalKgoVolume += it
             } //код всегда показывает, где(когда) Люди ошиблись
         }
@@ -433,7 +429,9 @@ class RealmRepository(private val realm: Realm) {
     }
 
     fun findPlatformsIsServed(): List<PlatformEntity> {
-        val result = realm.copyFromRealm(realm.where(PlatformEntity::class.java).findAll().sort("updateAt"))
+        val result = realm.copyFromRealm(
+            realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
+        )
         val filteredList = result.filter { it.status != StatusEnum.NEW }
         return filteredList
     }
@@ -467,86 +465,96 @@ class RealmRepository(private val realm: Realm) {
                         ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
                     )
                 }
-                PhotoTypeEnum.forKGO -> {
-                    platformEntity?.kgoMedia?.add(
+                PhotoTypeEnum.forServedKGO -> {
+                    platformEntity!!.servedKGO.media.add(
+                        ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+                    )
+                }
+                PhotoTypeEnum.forRemainingKGO -> {
+                    platformEntity!!.remainingKGO.media.add(
                         ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
                     )
                 }
             }
-            updateTimer(platformEntity)
+            setEntityUpdateAt(platformEntity)
         }
     }
 
     // TODO: 29.10.2021 !!!???
-    fun updatePlatformKGO(platformId: Int, kgoVolume: Double, isTakeaway: Boolean) {
+    fun updatePlatformKGO(platformId: Int, kgoVolume: Double, isServedKGO: Boolean) {
         realm.executeTransaction { realm: Realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()!!
-
-            platformEntity.volumeKGO = kgoVolume
-            platformEntity.isTakeawayKGO = isTakeaway
-        }
-    }
-
-    fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String, coords: Point) {
-        realm.executeTransaction { realm ->
-            val containerEntity = realm.where(ContainerEntity::class.java)
-                .equalTo("containerId", containerId)
-                .findFirst()!!
-            val platformEntity = realm.where(PlatformEntity::class.java)
-                .equalTo("platformId", platformId)
-                .findFirst()!!
-            containerEntity.failureMedia.add(
-                ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
-            )
-            updateTimer(platformEntity)
-        }
-    }
-
-    /** удалить фото с контейнера **/
-    fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
-        realm.executeTransaction { realm ->
-            val containerEntity = realm.where(ContainerEntity::class.java)
-                .equalTo("containerId", containerId)
-                .findFirst()!!
-            val platformEntity = realm.where(PlatformEntity::class.java)
-                .equalTo("platformId", platformId)
-                .findFirst()!!
-            containerEntity.failureMedia.remove(imageBase64)
-            updateTimer(platformEntity)
-        }
-    }
-
-    /** удалить фото с платформы **/
-    fun removePlatformMedia(imageFor: Int, imageBase64: ImageEntity, platformId: Int) {
-        realm.executeTransaction { realm ->
-            val platformEntity = realm.where(PlatformEntity::class.java)
-                .equalTo("platformId", platformId).findFirst()
-            when (imageFor) {
-                PhotoTypeEnum.forBeforeMedia -> {
-                    platformEntity?.beforeMedia?.remove(imageBase64)
-                }
-
-                PhotoTypeEnum.forAfterMedia -> {
-                    platformEntity?.afterMedia?.remove(imageBase64)
-                }
-                PhotoTypeEnum.forPlatformProblem -> {
-                    platformEntity?.failureMedia?.remove(imageBase64)
-                }
-                PhotoTypeEnum.forKGO -> {
-                    platformEntity?.kgoMedia?.remove(imageBase64)
-                }
-                PhotoTypeEnum.forPlatformPickupVolume -> {
-                    platformEntity?.pickupMedia?.remove(imageBase64)
-                }
+            if (isServedKGO) {
+                platformEntity.servedKGO.volume = kgoVolume
+            } else {
+                platformEntity.remainingKGO.volume = kgoVolume
             }
-            updateTimer(platformEntity)
+        }
+
+        fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String, coords: Point) {
+            realm.executeTransaction { realm ->
+                val containerEntity = realm.where(ContainerEntity::class.java)
+                    .equalTo("containerId", containerId)
+                    .findFirst()!!
+                val platformEntity = realm.where(PlatformEntity::class.java)
+                    .equalTo("platformId", platformId)
+                    .findFirst()!!
+                containerEntity.failureMedia.add(
+                    ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+                )
+                setEntityUpdateAt(platformEntity)
+            }
+        }
+
+        /** удалить фото с контейнера **/
+        fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
+            realm.executeTransaction { realm ->
+                val containerEntity = realm.where(ContainerEntity::class.java)
+                    .equalTo("containerId", containerId)
+                    .findFirst()!!
+                val platformEntity = realm.where(PlatformEntity::class.java)
+                    .equalTo("platformId", platformId)
+                    .findFirst()!!
+                containerEntity.failureMedia.remove(imageBase64)
+                setEntityUpdateAt(platformEntity)
+            }
+        }
+
+        /** удалить фото с платформы **/
+        fun removePlatformMedia(imageFor: Int, imageBase64: ImageEntity, platformId: Int) {
+            realm.executeTransaction { realm ->
+                val platformEntity = realm.where(PlatformEntity::class.java)
+                    .equalTo("platformId", platformId).findFirst()
+                when (imageFor) {
+                    PhotoTypeEnum.forBeforeMedia -> {
+                        platformEntity?.beforeMedia?.remove(imageBase64)
+                    }
+
+                    PhotoTypeEnum.forAfterMedia -> {
+                        platformEntity?.afterMedia?.remove(imageBase64)
+                    }
+                    PhotoTypeEnum.forPlatformProblem -> {
+                        platformEntity?.failureMedia?.remove(imageBase64)
+                    }
+
+                    PhotoTypeEnum.forPlatformPickupVolume -> {
+                        platformEntity!!.pickupMedia.remove(imageBase64)
+                    }
+                    PhotoTypeEnum.forServedKGO -> {
+                        platformEntity!!.servedKGO.media.remove(imageBase64)
+                    }
+                    PhotoTypeEnum.forRemainingKGO -> {
+                        platformEntity!!.remainingKGO.media.remove(imageBase64)
+                    }
+                }
+                setEntityUpdateAt(platformEntity)
+            }
         }
     }
 
-    private fun updateTimer(entity: PlatformEntity?) {
+    private fun setEntityUpdateAt(entity: PlatformEntity?) {
         entity?.updateAt = MyUtil.timeStamp()
     }
-
 }

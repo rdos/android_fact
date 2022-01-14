@@ -7,44 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/problem_btn"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            app:layout_constraintEnd_toStartOf="@id/btn_activity_platform_serve__kgo"
-            android:layout_margin="8dp"
-            android:background="@drawable/bg_button_white"
-            android:drawableStart="@drawable/ic_fire"
-            android:text="@string/problem_on_point"
-            android:padding="@dimen/margin_default"
-            android:textColor="@color/black" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_activity_platform_serve__kgo"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_button_white"
-            app:layout_constraintStart_toEndOf="@id/problem_btn"
-            android:drawableEnd="@drawable/ic_kgo"
-            android:padding="@dimen/margin_default"
-            android:text="Отметить КГО"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
     <TextView
-        android:id="@+id/point_info_tv"
+        android:id="@+id/tv_activity_platform_serve__point_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -55,7 +19,7 @@
         android:textColor="@color/black"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/platform_service_rv"
+        android:id="@+id/rv_activity_platform_serve"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -80,15 +44,55 @@
     <!--    android:textAllCaps="false"-->
     <!--    android:textColor="@color/black"/>-->
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb_activity_platform_serve__problem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/bg_button_white"
+            android:text="@string/problem_on_point"
+            android:alpha="0.2"
+            android:padding="@dimen/margin_default"
+            android:textColor="@color/black"
+            />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/apb_activity_platform_serve__kgo_remaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/acb_activity_platform_serve__problem"
+            app:layout_constraintEnd_toStartOf="@id/acb_activity_platform_serve__kgo_served"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/bg_button_white"
+            android:padding="@dimen/margin_default"
+            android:text="Заказать Борт"
+            android:alpha="0.2"
+            android:textColor="@color/black" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb_activity_platform_serve__kgo_served"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/bg_button_white"
+            android:padding="@dimen/margin_default"
+            android:text="КГО"
+            android:alpha="0.2"
+            android:textColor="@color/black" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/platform_service_rv"
-        app:layout_constraintStart_toStartOf="parent"
         android:orientation="vertical"
+        android:layout_marginBottom="@dimen/margin_min"
         >
         <androidx.cardview.widget.CardView
-            android:id="@+id/choose_cardview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="2dp"
@@ -104,7 +108,7 @@
                 >
 
                 <androidx.appcompat.widget.AppCompatSeekBar
-                    android:id="@+id/seekbar"
+                    android:id="@+id/acsb_activity_platform_serve__seekbar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -127,7 +131,7 @@
     <!--android:progressDrawable="@android:color/transparent"-->
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_activity_platform_serve__complete_task"
+        android:id="@+id/acb_activity_platform_serve__complete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_default"

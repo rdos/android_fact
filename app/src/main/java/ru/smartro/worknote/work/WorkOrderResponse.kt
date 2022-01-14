@@ -1,4 +1,4 @@
-package ru.smartro.worknote.service.network.response.work_order
+package ru.smartro.worknote.work
 
 import com.google.gson.annotations.SerializedName
 

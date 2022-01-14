@@ -21,7 +21,7 @@ import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.exception.BadRequestException
 import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
-import ru.smartro.worknote.service.database.RealmRepository
+import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity

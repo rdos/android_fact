@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_problem.*
@@ -19,7 +18,7 @@ import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.extensions.warningContainerFailure
-import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
+import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
@@ -70,7 +69,7 @@ class ProblemActivity : AbstractAct() {
             intent.putExtra("photoFor", PhotoTypeEnum.forPlatformProblem)
         }
         startActivityForResult(intent, 13)
-        problem_btn.setOnClickListener {
+        acb_activity_platform_serve__problem.setOnClickListener {
             startActivityForResult(intent, 13)
         }
     }

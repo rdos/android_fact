@@ -5,17 +5,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import io.realm.RealmModel
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
-import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
-import ru.smartro.worknote.service.network.response.breakdown.BreakDownResponse
-import ru.smartro.worknote.service.network.response.cancelation_reason.CancelationReasonResponse
-import ru.smartro.worknote.service.network.response.failure_reason.FailureReasonResponse
-import ru.smartro.worknote.service.network.response.work_order.WorkOrderResponse
-import ru.smartro.worknote.service.network.response.work_order.Workorder
+import ru.smartro.worknote.work.WorkOrderResponse
+import ru.smartro.worknote.work.Workorder
 
 class WayTaskViewModel(application: Application) : BaseViewModel(application) {
 

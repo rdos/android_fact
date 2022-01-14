@@ -1,21 +1,15 @@
 package ru.smartro.worknote.ui.platform_serve
 
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
-import kotlinx.android.synthetic.main.item_map_behavior.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
+import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.util.MyUtil.toStr
-import ru.smartro.worknote.util.StatusEnum
 
 // TODO: 22.10.2021 !!!когда?
 class ContainerAdapter(private val listener: ContainerPointClickListener, private val items: ArrayList<ContainerEntity>) :

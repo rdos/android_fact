@@ -9,7 +9,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.JournalAdapter
 import ru.smartro.worknote.adapter.JournalClickListener
 import ru.smartro.worknote.base.AbstractAct
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.work.PlatformEntity
 
 class JournalAct : AbstractAct(), JournalClickListener {
     private val viewModel: JournalViewModel by viewModel()

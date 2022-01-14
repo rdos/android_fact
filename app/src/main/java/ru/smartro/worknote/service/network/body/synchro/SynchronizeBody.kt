@@ -1,6 +1,6 @@
 package ru.smartro.worknote.service.network.body.synchro
 
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.work.PlatformEntity
 
 class SynchronizeBody(
     val wb_id: Int,

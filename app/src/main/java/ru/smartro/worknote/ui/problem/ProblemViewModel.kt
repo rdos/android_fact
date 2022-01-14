@@ -2,8 +2,8 @@ package ru.smartro.worknote.ui.problem
 
 import android.app.Application
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.database.entity.work_order.ContainerEntity
-import ru.smartro.worknote.service.database.entity.work_order.PlatformEntity
+import ru.smartro.worknote.work.ContainerEntity
+import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.util.ProblemEnum
 
 class ProblemViewModel(application: Application) : BaseViewModel(application) {

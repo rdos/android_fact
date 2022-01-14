@@ -1,6 +1,6 @@
 package ru.smartro.worknote.adapter.listener
 
-import ru.smartro.worknote.service.database.entity.work_order.ImageEntity
+import ru.smartro.worknote.work.ImageEntity
 
 interface ImageClickListener {
     fun imageDetailClicked(imageBase64: ImageEntity)

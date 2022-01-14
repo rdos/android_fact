@@ -131,7 +131,7 @@ fun AppCompatActivity.showCompleteWaybill(): View {
 fun AppCompatActivity.showDialogFillKgoVolume(): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_fill_kgo, null)
+    val view = inflater.inflate(R.layout.dialog_fill_kgo, null)
     builder.setView(view)
     showCustomDialog(builder)
     return view
