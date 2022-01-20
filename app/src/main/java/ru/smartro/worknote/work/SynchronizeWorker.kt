@@ -104,7 +104,7 @@ class SynchronizeWorker(
         val gson = Gson()
         val bodyInStringFormat = gson.toJson(synchronizeBody)
         deleteOutputDirectory("ttest", null)
-        val file: File = File(getOutputDirectory("ttest", null), "filename.json")
+        val file: File = File(getOutputDirectory("ttest", null), "synchro.json")
 
         //This point and below is responsible for the write operation
 

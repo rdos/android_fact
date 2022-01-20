@@ -361,10 +361,14 @@ class RealmRepository(private val realm: Realm) {
             realm.where(ContainerEntity::class.java)
                 .findAll()
         )
-
+        Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
         allContainers.forEach { container ->
-            val filledVolume = container.constructiveVolume!! * (container.convertVolumeToPercent() / 100)
-            totalContainersVolume += filledVolume
+            container.volume?.let{
+                val filledVolume = container.constructiveVolume!! * (container.convertVolumeToPercent() / 100)
+                Log.d(TAG, "findContainersVolume.filledVolume=${filledVolume}")
+                totalContainersVolume += filledVolume
+                Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
+            }
         }
         Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
 
