@@ -6,135 +6,130 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin_default"
-    app:cardCornerRadius="32dp">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+    app:cardCornerRadius="32dp"
+    >
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageButton
-                android:id="@+id/ibtn_dialog_platform_clicked_dtl__close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:padding="@dimen/margin_default"
-                android:src="@drawable/ic_close"
-                android:layout_marginEnd="@dimen/margin_default"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tv_dialog_platform_clicked_dtl__name"/>
-
-            <TextView
-                android:id="@+id/tv_dialog_platform_clicked_dtl__address"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_default"
-                android:layout_marginTop="16dp"
-                android:textColor="@color/black"
-                app:layout_constraintEnd_toStartOf="@id/ibtn_dialog_platform_clicked_dtl__close"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="г. Москва, ул Пушкина д4" />
-
-            <TextView
-                android:id="@+id/tv_dialog_platform_clicked_dtl__name"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_min"
-                android:layout_marginBottom="@dimen/margin_min"
-                android:gravity="center"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:autoLink="phone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__address"
-                tools:text="Наименование из логистики. " />
-
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_dialog_platform_clicked_dtl"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_default"
-                android:layout_marginHorizontal="@dimen/margin_default"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__name"
-                app:layout_constraintBottom_toTopOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt"
-                tools:itemCount="3"
-                tools:listitem="@layout/item_dialog_platform_clicked_dtl" />
-
-            <TextView
-                android:id="@+id/tv_dialog_platform_clicked_dtl__order_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_min"
-                android:gravity="center"
-                android:textColor="@color/gray"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_dialog_platform_clicked_dtl"
-                tools:text="Order Time. " />
-
-            <TextView
-                android:id="@+id/tv_dialog_platform_clicked_dtl__containers_cnt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__order_time"
-                tools:text="999 конт. на площадке" />
-
-            <TextView
-                android:id="@+id/tv_dialog_platform_clicked_dtl__platform_contact"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:padding="@dimen/margin_default"
-                android:autoLink="phone"
-                android:textColorLink="@color/colorPrimary"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt"
-                tools:text="Для связи +79111124594 Вася" />
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cv_dialog_platform_clicked_dtl__serve_again"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:elevation="16dp"
-                app:cardCornerRadius="32dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__platform_contact"
-                tools:visibility="visible">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
+                android:orientation="vertical"
+                >
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_default"
-                    android:gravity="center_vertical">
-
-                    <Button
-                        android:id="@+id/btn_dialog_platform_clicked_dtl__serve_again"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+                    <TextView
+                        android:id="@+id/tv_dialog_platform_clicked_dtl__address"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="@dimen/margin_default"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/black"
+                        tools:text="г. Москва, ул Пушкина д4" />
+                    <ImageButton
+                        android:id="@+id/ibtn_dialog_platform_clicked_dtl__close"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="8"
-                        android:paddingHorizontal="@dimen/margin_max"
-                        android:background="@drawable/bg_button_gray"
-                        android:text="@string/dialog_platform_clicked_dtl__serve_again"
-                        android:textColor="@color/white"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:background="@android:color/transparent"
+                        android:padding="@dimen/margin_default"
+                        android:src="@drawable/ic_close"
+                        android:layout_marginEnd="@dimen/margin_default" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
+                <TextView
+                    android:id="@+id/tv_dialog_platform_clicked_dtl__name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_min"
+                    android:layout_marginBottom="@dimen/margin_min"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:autoLink="phone"
+                    tools:text="Наименование из логистики. " />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_dialog_platform_clicked_dtl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_default"
+                    android:layout_marginHorizontal="@dimen/margin_default"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_dialog_platform_clicked_dtl" />
+
+                <TextView
+                    android:id="@+id/tv_dialog_platform_clicked_dtl__order_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_min"
+                    android:gravity="center"
+                    android:textColor="@color/gray"
+                    android:visibility="gone"
+                    tools:text="Order Time. " />
+
+                <TextView
+                    android:id="@+id/tv_dialog_platform_clicked_dtl__containers_cnt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/black"
+                    tools:text="999 конт. на площадке" />
+
+                <TextView
+                    android:id="@+id/tv_dialog_platform_clicked_dtl__platform_contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:padding="@dimen/margin_default"
+                    android:autoLink="phone"
+                    android:textColorLink="@color/colorPrimary"
+                    tools:text="Для связи +79111124594 Вася" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.core.widget.NestedScrollView>
+        
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_dialog_platform_clicked_dtl__serve_again"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="16dp"
+            app:cardCornerRadius="32dp"
+            tools:visibility="visible">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/margin_default"
+                android:gravity="center_vertical">
+
+                <Button
+                    android:id="@+id/btn_dialog_platform_clicked_dtl__serve_again"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:paddingHorizontal="@dimen/margin_max"
+                    android:background="@drawable/bg_button_gray"
+                    android:text="@string/dialog_platform_clicked_dtl__serve_again"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_dialog_platform_clicked_dtl__start_serve"
@@ -142,8 +137,7 @@
             android:layout_height="wrap_content"
             android:elevation="16dp"
             app:cardCornerRadius="32dp"
-            app:layout_constraintTop_toBottomOf="@id/cv_dialog_platform_clicked_dtl__serve_again"
-            app:layout_constraintBottom_toBottomOf="parent">
+            >
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -186,11 +180,7 @@
                     android:background="@drawable/bg_circle_button"
                     android:src="@drawable/ic_route"
                     app:layout_constraintTop_toTopOf="parent" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </androidx.cardview.widget.CardView>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.cardview.widget.CardView>
