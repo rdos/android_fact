@@ -1,16 +1,25 @@
+.deploy-sed: &deploy-sed |
+  curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'${TELEGRAM_CHAT_ID}'", "text": "✅ '${CI_ENVIRONMENT_NAME}' deployed - '${CI_ENVIRONMENT_URL}' tag - '${CI_COMMIT_TAG}'", "disable_notification": true}' "https://api.telegram.org/bot${TELEGRAM_API_TOKEN}/sendMessage"
+
 stages:
   - build
+
 build:
+  tags:
+    - docker
   stage: build
-  image: jangrewe/gitlab-ci-android
+  image: registry.gitlab.smartro.ru:5005/infra/docker:android
   before_script:
-    #- export GRADLE_USER_HOME=$(pwd)/.gradle
-    #- export BUILD_NUMBER=$(git rev-list --count ${CI_BUILD_REF})
-    #- export BUILD_COMMIT_SHA=${CI_COMMIT_SHA}
     - chmod +x ./gradlew
+    - sed -i 's|__VERSION_CODE__|'"$CI_PIPELINE_ID"'|g' ./VERSION
+    - sed -i 's|__VERSION_NAME__|'"$CI_COMMIT_TAG"'|g' ./VERSION
   script:
     - ./gradlew clean assembleDebug
+    - ./gradlew assembleDebugRC
+    - *deploy-sed
   artifacts:
-    paths:
-      - app/build/outputs/
-
+    paths: ["app/build/outputs/apk/"]
+    expire_in: 1 week
+  only:
+    - SR-3291
+    - tags
