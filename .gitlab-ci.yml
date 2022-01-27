@@ -16,10 +16,13 @@ build:
   script:
     - ./gradlew clean assembleDebug
     - ./gradlew assembleDebugRC
+    - cd "android_fact/app/build/outputs/apk/debug/"
+    - export FILENAME=$(ls)
     - *deploy-sed
-  artifacts:
-    paths: ["app/build/outputs/apk/"]
-    expire_in: 1 week
+    - curl -F chat_id=${TELEGRAM_CHAT_ID} -F documet=@${FILENAME} https://api.telegram.org/bot${TELEGRAM_API_TOKEN}/sendDocument
+  #artifacts:
+  #  paths: ["app/build/outputs/apk/"]
+  #  expire_in: 1 week
   only:
     - SR-3291
     - tags
