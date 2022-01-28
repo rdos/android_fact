@@ -17,9 +17,9 @@ build:
     - ./gradlew clean assembleDebug
     - ./gradlew assembleDebugRC
     - cd "app/build/outputs/apk/debug/"
-    - export FILENAME=$(ls)
+    - export APK=$(ls | grep apk)
     - *deploy-sed
-    - 'curl -H "Authorization: token ${DEPLOYGATE_TOKEN}" -F "file=@./app/build/outputs/apk/debug/*.apk" -F "message=$CI_COMMIT_MESSAGE" "https://deploygate.com/api/users/develsoyuz/apps"'
+    - 'curl -H "Authorization: token ${DEPLOYGATE_TOKEN}" -F "file=@./app/build/outputs/apk/debug/${APK}" -F "message=$CI_COMMIT_MESSAGE" "https://deploygate.com/api/users/develsoyuz/apps"'
   #artifacts:
   #  paths: ["app/build/outputs/apk/"]
   #  expire_in: 1 week
