@@ -19,7 +19,7 @@ build:
     - cd "app/build/outputs/apk/debug/"
     - export FILENAME=$(ls)
     - *deploy-sed
-    - curl -F chat_id=${TELEGRAM_CHAT_ID} -F documet=@${FILENAME} https://api.telegram.org/bot${TELEGRAM_API_TOKEN}/sendDocument
+    - 'curl -H "Authorization: token ${DEPLOYGATE_TOKEN}" -F "file=@./app/build/outputs/apk/debug/*.apk" -F "message=$CI_COMMIT_MESSAGE" "https://deploygate.com/api/users/develsoyuz/apps"'
   #artifacts:
   #  paths: ["app/build/outputs/apk/"]
   #  expire_in: 1 week
