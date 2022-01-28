@@ -21,11 +21,11 @@ build:
     - ./gradlew assembleDebugRC
     - cd "app/build/outputs/apk/debug/"
     - export APK=$(ls | grep apk)
-    - *deploy-sed
     - *publish-apk
     - cd "../debugRC/"
     - export APK=$(ls | grep apk)
     - *publish-apk
+    - *deploy-sed
   #artifacts:
   #  paths: ["app/build/outputs/apk/"]
   #  expire_in: 1 week
