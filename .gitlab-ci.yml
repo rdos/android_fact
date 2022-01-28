@@ -23,7 +23,7 @@ build:
     - export APK=$(ls | grep apk)
     - *deploy-sed
     - *publish-apk
-    - cd "app/build/outputs/apk/debugRC/"
+    - cd "../debugRC/"
     - export APK=$(ls | grep apk)
     - *publish-apk
   #artifacts:
