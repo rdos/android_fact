@@ -1,5 +1,5 @@
 .deploy-sed: &deploy-sed |
-  curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'${TELEGRAM_CHAT_ID}'", "text": "✅ '${CI_ENVIRONMENT_NAME}' commit - '$CI_COMMIT_REF_SLUG' commit_message - '$CI_COMMIT_MESSAGE' tag - '${CI_COMMIT_TAG}'", "disable_notification": true}' "https://api.telegram.org/bot${TELEGRAM_API_TOKEN}/sendMessage"
+  curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'${TELEGRAM_CHAT_ID}'", "text": "✅ '${CI_ENVIRONMENT_NAME}' commit - '${CI_COMMIT_REF_SLUG}' commit_message - '${CI_COMMIT_MESSAGE}' tag - '${CI_COMMIT_TAG}'", "disable_notification": true}' "https://api.telegram.org/bot${TELEGRAM_API_TOKEN}/sendMessage"
 
 .publish-apk: &publish-apk |
   curl -H "Authorization: token ${DEPLOYGATE_TOKEN}" -F "file=@${APK}" -F "message=$CI_COMMIT_MESSAGE" "https://deploygate.com/api/users/develsoyuz/apps"
