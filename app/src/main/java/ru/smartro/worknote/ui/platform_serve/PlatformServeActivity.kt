@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -92,13 +93,15 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             mPlatformEntity = mViewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
             mIsServeAgain = it.getBooleanExtra("mIsServeAgain", false)
         }
-        supportActionBar?.title = "${mPlatformEntity.address}"
-//        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        supportActionBar?.hide()
+//        supportActionBar?.title =
+        val actvAddress = findViewById<AppCompatTextView>(R.id.actv_act_platform_serve__address)
+        actvAddress.text = "${mPlatformEntity.address}"
         initContainer()
         if (!mPlatformEntity.isStartServeVolume()) {
             initBeforeMedia()
         }
-
+//        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         val acbProblem = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__problem)
         setNotUseButtonStyleAlpha(acbProblem)
         if (mPlatformEntity.failureMedia.size > 0) {
@@ -220,6 +223,16 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 //                }
 //            }
 //        }
+        actvAddress.setOnClickListener { view ->
+//            v.get
+//            view = cast()
+//            actvAddress.maxLines = if (actvAddress.maxLines > 0)  1 else 3 /** \ */
+            if (actvAddress.maxLines < 3) {
+                actvAddress.maxLines = 3
+            } else {
+                actvAddress.maxLines = 1
+            }
+        }
     }
 
     private fun setUseButtonStyleAlpha(appCompatButton: AppCompatButton) {

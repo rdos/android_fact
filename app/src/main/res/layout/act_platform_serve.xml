@@ -7,6 +7,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actv_act_platform_serve__address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_max"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:background="@color/colorPrimary"
+        android:text="+id\aptv_act_platform_serve__address"
+        />
+
     <TextView
         android:id="@+id/tv_activity_platform_serve__point_info"
         android:layout_width="wrap_content"
