@@ -1,11 +1,22 @@
-.deploy-sed: &deploy-sed |
-  curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'${TELEGRAM_CHAT_ID}'", "text": "✅ '${CI_ENVIRONMENT_NAME}' commit - '${CI_COMMIT_REF_SLUG}' commit_message - "'${CI_COMMIT_MESSAGE}'" tag - '${CI_COMMIT_TAG}'", "disable_notification": true}' "https://api.telegram.org/bot${TELEGRAM_API_TOKEN}/sendMessage"
+#.deploy-sed: &deploy-sed |
+#  curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "'${TELEGRAM_CHAT_ID}'", "text": "✅ '${CI_ENVIRONMENT_NAME}' commit - '${CI_COMMIT_REF_SLUG}' commit_message - "'${CI_COMMIT_MESSAGE}'" tag - '${CI_COMMIT_TAG}'", "disable_notification": true}' "https://api.telegram.org/bot${TELEGRAM_API_TOKEN}/sendMessage"
+variables:
+  URL: "https://api.telegram.org/bot$TELEGRAM_API_TOKEN/sendMessage"
 
 .publish-apk: &publish-apk |
   curl -H "Authorization: token ${DEPLOYGATE_TOKEN}" -F "file=@${APK}" -F "message=$CI_COMMIT_MESSAGE" "https://deploygate.com/api/users/develsoyuz/apps"
 
 stages:
   - build
+
+# send telegramm notifications on pipeline status
+.notification_template: &notifi
+  stage: notify
+  image: curlimages/curl
+  tags:
+    - shared
+  script: curl -s --max-time 10 -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&text=$TEXT" $URL
+
 
 build:
   tags:
@@ -26,9 +37,18 @@ build:
     - export APK=$(ls | grep apk)
     - *publish-apk
     - *deploy-sed
-  #artifacts:
-  #  paths: ["app/build/outputs/apk/"]
-  #  expire_in: 1 week
   only:
     - SR-3291
     - tags
+
+notification_on_success:
+  <<: *notifi
+  variables:
+    TEXT: "Deploy status: ✅%0AProject:+$CI_PROJECT_NAME%0ACommit_message:${CI_COMMIT_MESSAGE}%0AURL:+$CI_PROJECT_URL/pipelines/$CI_PIPELINE_ID/%0ABranch:+$CI_COMMIT_REF_SLUG"
+  when: on_success
+
+#notification_on_failure:
+#  <<: *notifi
+#  variables:
+#    TEXT: "Deploy status: ❌%0AProject:+$CI_PROJECT_NAME%0AURL:+$CI_PROJECT_URL/pipelines/$CI_PIPELINE_ID/%0ABranch:+$CI_COMMIT_REF_SLUG"
+#  when: on_failure
