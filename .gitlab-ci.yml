@@ -8,6 +8,7 @@ variables:
 
 stages:
   - build
+  - notify
 
 # send telegramm notifications on pipeline status
 .notification_template: &notifi
