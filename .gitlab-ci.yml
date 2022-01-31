@@ -35,7 +35,6 @@ build:
     - export APK=$(ls | grep apk)
     - *publish-apk
   only:
-    - SR-3291
     - tags
 
 notification_on_success:
