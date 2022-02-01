@@ -42,6 +42,8 @@ notification_on_success:
   variables:
     TEXT: "Deploy status: ✅%0AProject:+$CI_PROJECT_NAME%0ACommit_message:${CI_COMMIT_MESSAGE}%0AURL:+$CI_PROJECT_URL/pipelines/$CI_PIPELINE_ID/%0ABranch:+$CI_COMMIT_REF_SLUG"
   when: on_success
+  needs:
+    - job: build
 #notification_on_failure:
 #  <<: *notifi
 #  variables:
