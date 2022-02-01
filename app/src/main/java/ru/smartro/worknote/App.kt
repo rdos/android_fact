@@ -1,6 +1,7 @@
 package ru.smartro.worknote
 
 import android.app.Application
+import android.util.Log
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.sentry.Sentry
@@ -30,6 +31,15 @@ class App : Application() {
             androidContext(this@App)
             modules(getModule())
         }
+
+        // Add a breadcrumb that will be sent with the next event(s)
+
+//
+//        try {
+//            throw Exception("This is a devel.")
+//        } catch (e: Exception) {
+//            Sentry.captureException(e)
+//        }
     }
 
     private fun initRealm() {
@@ -61,7 +71,7 @@ class App : Application() {
 
         SentryAndroid.init(this) { options ->
             options.beforeBreadcrumb = BeforeBreadcrumbCallback { breadcrumb, _ ->
-                if ("a.spammy.Logger" == breadcrumb.category) {
+                     if ("a.spammy.Logger" == breadcrumb.category) {
                     null
                 } else {
                     breadcrumb

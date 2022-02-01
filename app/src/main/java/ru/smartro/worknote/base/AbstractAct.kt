@@ -3,9 +3,20 @@ package ru.smartro.worknote.base
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import io.sentry.Sentry
 
+//        try {
+//            throw Exception("This is a devel.")
+//        } catch (e: Exception) {
+//            Sentry.captureException(e)
+//        }
 abstract class AbstractAct : AppCompatActivity() {
-    protected var TAG : String = "--Aaa${this::class.simpleName}"
+    protected var TAG : String = "${this::class.simpleName}"
+
+    protected fun logSentry(text: String) {
+        Sentry.addBreadcrumb("${TAG} : $text")
+        Log.i(TAG, "onCreate")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,6 +1,8 @@
 package ru.smartro.worknote.base
 
+import android.util.Log
 import androidx.fragment.app.Fragment
+import io.sentry.Sentry
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -8,6 +10,10 @@ import java.util.*
 abstract class AbstractFragment : Fragment(){
     protected var TAG : String = "--Aaa${this::class.simpleName}"
 
+    protected fun logSentry(text: String) {
+        Sentry.addBreadcrumb("${TAG} : $text")
+        Log.i(TAG, "onCreate")
+    }
                                     //    companion object {
                                     //        private const val TAG = "CameraXBasic"
                                     //        private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"

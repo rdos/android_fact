@@ -16,6 +16,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import io.realm.Realm
+import io.sentry.Sentry
 import kotlinx.coroutines.delay
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.AppPreferences
@@ -33,7 +34,11 @@ class SynchronizeWorker(
     params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
-    private val TAG = "SynchronizeWorker--AaA"
+    private val TAG = "SynchronizeWorker"
+    protected fun logSentry(text: String) {
+        Sentry.addBreadcrumb("${TAG} : $text")
+        Log.i(TAG, "onCreate")
+    }
     private val mNetworkRepository = NetworkRepository(applicationContext)
     private val mDeviceId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
     private val mMinutesInSec = 30 * 60
@@ -59,7 +64,7 @@ class SynchronizeWorker(
                 long = currentCoordinate.substringAfter("#").toDouble()
             }
             val timeBeforeRequest: Long
-            Log.d(TAG, " SYNCHRONIZE STARTED")
+            logSentry(" SYNCHRONIZE STARTED")
             val lastSynchroTime = AppPreferences.lastSynchroTime
             val platforms: List<PlatformEntity>
 
