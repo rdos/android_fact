@@ -23,6 +23,7 @@ build:
   image: registry.gitlab.smartro.ru:5005/infra/docker:android
   before_script:
     - chmod +x ./gradlew
+    - cp VERSION.example VERSION
     - sed -i 's|__VERSION_CODE__|'"$CI_PIPELINE_ID"'|g' ./VERSION
     - sed -i 's|__VERSION_NAME__|'"$CI_COMMIT_TAG"'|g' ./VERSION
   script:
@@ -35,6 +36,7 @@ build:
     - export APK=$(ls | grep apk)
     - *publish-apk
   only:
+    - SR-3814
     - tags
 
 notification_on_success:
