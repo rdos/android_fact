@@ -1,33 +1,39 @@
 package ru.smartro.worknote.ui.choose.way_task_4
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
-import androidx.appcompat.app.AlertDialog
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_choose.*
-import kotlinx.android.synthetic.main.alert_accept_task.view.*
+import kotlinx.android.synthetic.main.item_choose.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.WayTaskAdapter
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.ProgressBody
+import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.work.Workorder
 import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
 
-class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
+class WayTaskActivity : AbstractAct() {
+    private var mWorkorders: List<Workorder> = emptyList()
     private val viewModel: WayTaskViewModel by viewModel()
-    private lateinit var adapter: WayTaskAdapter
-    private lateinit var mSelectedWayInfo: Workorder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,8 +46,8 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
                 val data = result.data
                 when (result.status) {
                     Status.SUCCESS -> {
-                        adapter = WayTaskAdapter(data!!.data.workorders as ArrayList<Workorder>, this)
-                        choose_rv.adapter = adapter
+                        mWorkorders = data!!.data.workorders
+                        choose_rv.adapter = WayTaskAdapter(mWorkorders)
                         loadingHide()
                     }
                     Status.ERROR -> {
@@ -56,31 +62,42 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
             })
 
         next_btn.setOnClickListener {
-            if (adapter.getSelectedId() == -1) {
-                toast("Выберите задание")
-            } else {
-                val inflater = this.layoutInflater
-                val view = inflater.inflate(R.layout.alert_accept_task, null)
-                val builder = AlertDialog.Builder(this).setView(view)
-                builder.setCancelable(false)
-                val dialog = builder.create()
-                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                dialog.show()
+            gotoProgressWorkOrder(mWorkorders)
+        }
+    }
 
-                view.accept_btn.setOnClickListener {
-                    dialog.dismiss()
-                    AppPreferences.wayTaskId = adapter.getSelectedId()
-                    loadingShow()
-                    saveFailReason()
-                    saveCancelWayReason()
-                    saveBreakDownTypes()
+    fun gotoProgressWorkOrder(workorders: List<Workorder>) {
+//        AppPreferences.wayTaskId = workorder.id
+        loadingShow()
+        try {
+            saveFailReason()
+            saveCancelWayReason()
+            saveBreakDownTypes()
 //                    val hand = Handler(Looper.getMainLooper())
-                    acceptProgress()
-                }
-
-                view.dismiss_btn.setOnClickListener {
-                    dialog.dismiss()
-                }
+            for (workorder in workorders) {
+                logSentry(workorder.name)
+                val result = acceptProgress(workorder)
+                    when (result.status) {
+                        Status.SUCCESS -> {
+                            logSentry("acceptProgress Status.SUCCESS ")
+                            AppPreferences.isHasTask = true
+                            viewModel.insertWayTask(workorder)
+                        }
+                        else -> {
+                            logSentry( "acceptProgress Status.ERROR")
+                            toast(result.msg)
+                            AppPreferences.isHasTask = false
+                            break
+                        }
+                    }
+            }
+        } finally {
+            loadingHide()
+            if (AppPreferences.isHasTask) {
+                val intent = Intent(this, MapActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                finish()
             }
         }
     }
@@ -130,33 +147,13 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
         })
     }
 
-    private fun acceptProgress() {
+    private fun acceptProgress(workorder: Workorder): Resource<EmptyResponse> {
         Log.d(TAG, "acceptProgress.before")
-        viewModel.progress(AppPreferences.wayTaskId, ProgressBody(MyUtil.timeStamp()))
-            .observe(this, Observer { result ->
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        Log.d(TAG, "acceptProgress Status.SUCCESS ")
-                        loadingHide()
-                        AppPreferences.isHasTask = true
-                        viewModel.insertWayTask(mSelectedWayInfo)
-                        val intent = Intent(this, MapActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
-                        finish()
-                    }
-                    else -> {
-                        Log.d(TAG, "acceptProgress Status.ERROR")
-                        toast(result.msg)
-                        loadingHide()
-                    }
-                }
-            })
+        val res = viewModel.progress(workorder.id, ProgressBody(MyUtil.timeStamp()))
+        return res
+
     }
 
-    override fun selectedWayTask(model: Workorder) {
-        mSelectedWayInfo = model
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -165,6 +162,67 @@ class WayTaskActivity : AbstractAct(), WayTaskAdapter.SelectListener {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    inner class WayTaskAdapter(private val p_workorderList: List<Workorder>) :
+        RecyclerView.Adapter<WayTaskAdapter.OwnerViewHolder>() {
+        private var checkedPosition = -1
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_choose, parent, false)
+            return OwnerViewHolder(view)
+        }
+
+        override fun getItemCount(): Int {
+            return p_workorderList.size
+        }
+
+        override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
+            val workorder = p_workorderList[position]
+
+            if (checkedPosition == -1) {
+                holder.itemView.choose_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
+                holder.itemView.choose_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
+
+            } else {
+                if (checkedPosition == holder.adapterPosition) {
+                    holder.itemView.choose_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.colorPrimary))
+                    holder.itemView.choose_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
+                } else {
+                    holder.itemView.choose_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
+                    holder.itemView.choose_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
+                }
+            }
+
+            holder.itemView.choose_title.text = workorder.name
+            holder.itemView.setOnClickListener {
+                holder.itemView.choose_cardview.isVisible = true
+                if (checkedPosition != holder.adapterPosition) {
+                    holder.itemView.choose_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.colorPrimary))
+                    holder.itemView.choose_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
+                    notifyItemChanged(checkedPosition)
+                    checkedPosition = holder.adapterPosition
+
+                    val workorderList = mutableListOf<Workorder>()
+                    workorderList.add(workorder)
+                    gotoProgressWorkOrder(workorderList)
+
+                }
+            }
+        }
+
+//        fun getSelectedId(): Int {
+//            return if (checkedPosition != -1) {
+//                p_workorderList[checkedPosition].id
+//            } else {
+//                -1
+//            }
+//        }
+
+        inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        }
+
     }
 
 }

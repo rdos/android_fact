@@ -59,6 +59,7 @@ open class KGOEntity(
     }
 
 open class PlatformEntity(
+    var workorderId: Int = Inull,
     @SerializedName("address")
     var address: String? = null,
     @SerializedName("after_media")

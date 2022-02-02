@@ -1,4 +1,4 @@
-version.code=__VERSION_CODE__
-version.name=__VERSION_NAME__
+version.code=1
+version.name=0.0.0.0
 
 ИСПРАВЛЕНО В ВЕРСИИ 2_1_35 и выше

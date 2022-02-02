@@ -169,4 +169,5 @@ dependencies {
     implementation "io.sentry:sentry-android:$sentry_version"
     implementation "io.sentry:sentry-android-okhttp:$sentry_version"
 
+    implementation 'com.github.amit12297:VerticalChipGroupAndroid:1.0'
 }

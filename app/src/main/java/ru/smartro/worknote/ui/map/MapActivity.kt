@@ -1,22 +1,30 @@
 package ru.smartro.worknote.ui.map
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.*
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.av.verticalchipgroup.CustomChipGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.chip.Chip
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKit
 import com.yandex.mapkit.MapKitFactory
@@ -30,7 +38,6 @@ import com.yandex.mapkit.map.*
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.runtime.Error
 import com.yandex.runtime.ui_view.ViewProvider
-import io.realm.RealmList
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
@@ -38,30 +45,34 @@ import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.behavior_platforms.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.*
+import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
+import ru.smartro.worknote.showInfoDialog
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalAct
 import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.SynchronizeWorker
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
-
-import ru.smartro.worknote.base.AbstractAct
-import ru.smartro.worknote.isShowForUser
 
 
 class MapActivity : AbstractAct(),
     /*UserLocationObjectListener,*/ MapObjectTapListener,
     PlatformAdapter.PlatformClickListener, LocationListener {
+    private lateinit var mEndWorkOrder: AppCompatButton
+    private lateinit var mLlcMap: LinearLayoutCompat
+    private val mFilteredWayTaskIds: MutableList<Int> = mutableListOf()
+    private lateinit var mPlatforms: List<PlatformEntity>
     var drivingModeState = false
 
     private val REQUEST_EXIT = 41
@@ -90,15 +101,51 @@ class MapActivity : AbstractAct(),
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
         setContentView(R.layout.activity_map)
+
+        showInfoDialog("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
+//        val chipGroup = findViewById<ChipGroup>(R.id.chip_group)
+//        val textView = TextView(this)
+//        textView.text = "AAAAAAAAAAAAAAAAAAAa"
+//        chipGroup.addView(textView)
+
+        mLlcMap = findViewById<LinearLayoutCompat>(R.id.llc_activity_map)
+        mEndWorkOrder = findViewById<AppCompatButton>(R.id.acb_activity_map__end_workorder)
+        mLlcMap.isVisible = false
+//        mEndWorkOrder.isVisible = false
+        mPlatforms = viewModel.findPlatforms()
+        initChipGroup()
         initSynchronizeWorker()
         initMapView(false)
         initBottomBehavior()
         initUserLocation()
         initDriveMode()
+
         // TODO: 21.10.2021 r_dos 
 //        map_toast.setOnClickListener{
 //            toast("${AppPreferences.wayBillId}")
 //        }
+    }
+
+    private fun initChipGroup() {
+        val inflater = LayoutInflater.from(this)
+        val chipGroup = findViewById<View>(R.id.chipGroup) as CustomChipGroup
+        val wayTasks = viewModel.getWayTasks()
+        for (wayTask in wayTasks) {
+            val newChip = inflater.inflate(R.layout.layout_chip_entry, chipGroup, false) as Chip
+            newChip.text = wayTask.name
+            newChip.tag = wayTask.id
+            chipGroup.addView(newChip)
+            newChip.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) {
+                    mFilteredWayTaskIds.add(wayTask.id!!)
+                } else {
+                    mFilteredWayTaskIds.remove(wayTask.id!!)
+                }
+                initMapView(true)
+                initBottomBehavior()
+            }
+        }
     }
 
     private fun initDriveMode() {
@@ -159,21 +206,26 @@ class MapActivity : AbstractAct(),
     }
 
     private fun initMapView(isUpdateView: Boolean) {
-        viewModel.findWayTask().let {
+        mPlatforms.let {
             val mapObjectCollection = map_view.map.mapObjects
             if (isUpdateView) {
+                mapObjectCollection.clear()
                 mapObjectCollection.removeTapListener(mapObjectTapListener)
             }
-            addPlaceMarks(this, mapObjectCollection, it.platforms)
+
+            addPlaceMarks(this, mapObjectCollection, it)
             mapObjectCollection.addTapListener(mapObjectTapListener)
         }
+
     }
 
     private fun getIconViewProvider(_context: Context, _platform: PlatformEntity): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
-
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
+
         iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconDrawableResId()))
+
+
 //            iv.backgroundd==
 //            val resultIcon =  View(_context).apply { background =  }
         val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
@@ -185,6 +237,12 @@ class MapActivity : AbstractAct(),
                 tv.setTextColor(_platform.getOrderTimeColor(this))
                 tv.isVisible = true
             }
+        }
+
+        if (_platform.workorderId in mFilteredWayTaskIds) {
+            iv.alpha = 0.1f
+            result.alpha = 0.1f
+            tv.alpha = 0.1f
         }
 
         return ViewProvider(result)
@@ -226,7 +284,7 @@ class MapActivity : AbstractAct(),
 //        return bitmap
 //    }
 
-    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: RealmList<PlatformEntity>) {
+    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: List<PlatformEntity>) {
 //        val source = BitmapFactory.decodeResource(context.resources, R.drawable.your_icon_name)
 // создаем mutable копию, чтобы можно было рисовать поверх
 // создаем mutable копию, чтобы можно было рисовать поверх
@@ -237,7 +295,6 @@ class MapActivity : AbstractAct(),
 // рисуем текст на канвасе аналогично примеру выше
 
         platforms.forEach {
-
             mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!), getIconViewProvider(context, it))
 //            mapObjectCollection.addPlacemark(Point(it.coords[0]!!, it.coords[1]!!),
 //                ImageProvider.fromBitmap(drawSimpleBitmap("number")))
@@ -292,13 +349,13 @@ class MapActivity : AbstractAct(),
 //    }
 
     private fun initBottomBehavior() {
-        viewModel.findWayTask().let {
+        mPlatforms.let {
 
             bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
             val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-            val platformsArray = it.platforms
-            platformsArray.sortBy { it.updateAt }
-            map_behavior_rv.adapter = PlatformAdapter(this, platformsArray)
+            val platformsArray = it
+            platformsArray.sortedBy { it.updateAt }
+            map_behavior_rv.adapter = PlatformAdapter(this, platformsArray, mFilteredWayTaskIds)
 
             map_behavior_header.setOnClickListener {
                 if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
@@ -306,7 +363,7 @@ class MapActivity : AbstractAct(),
                 else
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
-            val hasNotServedPlatform = it.platforms.any { found -> found.status == StatusEnum.NEW }
+            val hasNotServedPlatform = it.any { found -> found.status == StatusEnum.NEW }
             if (hasNotServedPlatform) {
                 map_behavior_send_btn.background = getDrawable(R.drawable.bg_button_red)
                 map_behavior_send_btn.text = getString(R.string.finish_way_now)
@@ -355,6 +412,8 @@ class MapActivity : AbstractAct(),
             }
         }
     }
+
+
 
     private fun finishWay(boolean: Boolean) {
         if (!boolean) {
@@ -497,6 +556,7 @@ class MapActivity : AbstractAct(),
 
     override fun onResume() {
         super.onResume()
+        mPlatforms = viewModel.findPlatforms()
         initMapView(true)
         initBottomBehavior()
         locationManager = mapKit.createLocationManager()

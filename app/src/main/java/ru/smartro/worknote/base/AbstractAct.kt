@@ -15,7 +15,7 @@ abstract class AbstractAct : AppCompatActivity() {
 
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
-        Log.i(TAG, "onCreate")
+        Log.i(TAG + "Sent", text)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

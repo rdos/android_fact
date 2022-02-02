@@ -64,8 +64,12 @@ class MapViewModel(application: Application) : BaseViewModel(application) {
         db.clearData()
     }
 
-    fun findWayTask(): WayTaskEntity {
-        return db.findWayTask()
+    fun findPlatforms(): List<PlatformEntity> {
+        return db.findPlatforms()
+    }
+
+    fun getWayTasks(): List<WayTaskEntity> {
+        return db.findWayTasks()
     }
 
     fun findLastPlatforms() =

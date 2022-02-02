@@ -1,5 +1,10 @@
 package ru.smartro.worknote
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.app.AlertDialog
 import android.app.Application
 import android.util.Log
 import io.realm.Realm
@@ -18,6 +23,14 @@ import ru.smartro.worknote.util.MyUtil
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.*
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
+import android.view.Gravity
+import android.view.Window
+import android.view.WindowManager
+import androidx.core.view.isVisible
+import ru.smartro.worknote.base.AbstractAct
+
 
 class App : Application() {
     override fun onCreate() {
@@ -40,6 +53,24 @@ class App : Application() {
 //        } catch (e: Exception) {
 //            Sentry.captureException(e)
 //        }
+
+//        val objectAnimator: ObjectAnimator = ObjectAnimator.ofFloat(
+//            mLlcMap, "alpha", 0f
+//        )
+//        objectAnimator.setDuration(4000);
+//
+//        objectAnimator.addListener(object : AnimatorListenerAdapter() {
+//            override fun onAnimationEnd(animation: Animator?) {
+//                super.onAnimationEnd(animation)
+//                mLlcMap.isVisible=false
+//            }
+//        })
+//        val animatorSet = AnimatorSet()
+//        animatorSet.playTogether(objectAnimator)
+//        animatorSet.start()
+//
+        val policy = ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
     }
 
     private fun initRealm() {
@@ -104,4 +135,23 @@ fun Any.getDeviceTime(format: String = "yyyy-MM-dd HH:mm:ss"): String {
 
 fun Any.getDeviceDateTime(): Date {
     return Date()
+}
+
+fun AbstractAct.showInfoDialog(text: String? = "") {
+    window.decorView.rootView?.let {
+        val dlg = AlertDialog.Builder(it.context, R.style.Theme_Inventory_Dialog)
+            .setMessage(text)
+            .create()
+        try {
+            val window: Window? = dlg.window
+            val wlp: WindowManager.LayoutParams = window!!.attributes
+
+            wlp.gravity = Gravity.TOP
+            wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
+            window.attributes = wlp
+        } catch (ex: Exception) {
+
+        }
+        dlg.show()
+    }
 }

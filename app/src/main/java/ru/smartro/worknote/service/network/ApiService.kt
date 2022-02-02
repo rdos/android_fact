@@ -1,5 +1,6 @@
 package ru.smartro.worknote.service.network
 
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 import ru.smartro.worknote.service.network.body.AuthBody
@@ -60,7 +61,7 @@ interface ApiService {
     suspend fun served(@Body body: ServiceResultBody): Response<ServedResponse>
 
     @POST("workorder/{id}/progress")
-    suspend fun progress(@Path("id") id: Int, @Body time: ProgressBody): Response<EmptyResponse>
+    fun progress(@Path("id") id: Int, @Body time: ProgressBody): Call<EmptyResponse>
 
     @POST("workorder/{id}/complete")
     suspend fun complete(@Path("id") id: Int, @Body time: CompleteWayBody): Response<EmptyResponse>

@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
-import io.realm.RealmList
 import kotlinx.android.synthetic.main.item_map_behavior.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.isShowForUser
@@ -17,7 +16,8 @@ import ru.smartro.worknote.util.StatusEnum
 
 class PlatformAdapter(
     private val listener: PlatformClickListener,
-    private val items: RealmList<PlatformEntity>
+    private val items: List<PlatformEntity>,
+    private val mFilteredWayTaskIds: MutableList<Int>
 ) : RecyclerView.Adapter<PlatformAdapter.PlatformViewHolder>() {
     private var checkedPosition = -1
 
@@ -33,7 +33,10 @@ class PlatformAdapter(
 
     override fun onBindViewHolder(holder: PlatformViewHolder, position: Int) {
         val item = items[position]
-
+        holder.itemView.alpha = 1f
+        if (item.workorderId in mFilteredWayTaskIds) {
+            holder.itemView.alpha = 0.1f
+        }
         if (checkedPosition == -1) {
             holder.itemView.map_behavior_expl.collapse()
         } else {

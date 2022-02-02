@@ -45,7 +45,7 @@ class WayTaskViewModel(application: Application) : BaseViewModel(application) {
         return db.createObjectFromJson(clazz, json)
     }
 
-    fun progress(id: Int, body: ProgressBody): LiveData<Resource<EmptyResponse>> {
+    fun progress(id: Int, body: ProgressBody): Resource<EmptyResponse> {
         return network.progress(id, body)
     }
 

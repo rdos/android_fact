@@ -19,7 +19,7 @@
         android:id="@+id/next_btn"
         android:layout_width="match_parent"
         android:textColor="@color/white"
-        android:text="@string/choose"
+        android:text="@string/choose_all_in"
         android:layout_margin="@dimen/margin_default"
         android:background="@drawable/bg_button"
         android:layout_height="wrap_content"

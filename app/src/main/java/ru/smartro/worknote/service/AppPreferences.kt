@@ -88,17 +88,23 @@ object AppPreferences {
             it.putString("wayBillNumber", value)
         }
 
+
+
+    // TODO: 01.02.2022
     var wayTaskId: Int
         get() = preferences.getInt("wayTaskId", 0)
         set(value) = preferences.edit {
             it.putInt("wayTaskId", value)
         }
+    
+
 
     var isHasTask: Boolean
         get() = preferences.getBoolean("thisUserHasTask", false)
         set(value) = preferences.edit {
             it.putBoolean("thisUserHasTask", value)
         }
+
 
     var workerStatus: Boolean
         get() = preferences.getBoolean("workerStatus", true)
@@ -114,7 +120,6 @@ object AppPreferences {
         wayBillId = 0
         //TODO: rNull!!
         wayBillNumber = "rNull"
-        wayTaskId = 0
         isHasTask = false
         workerStatus = false
     }

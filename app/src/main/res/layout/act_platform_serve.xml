@@ -16,7 +16,7 @@
         android:ellipsize="end"
         android:textStyle="bold"
         android:textColor="@color/white"
-        android:textSize="11sp"
+        android:textSize="15sp"
         android:background="@color/colorPrimary"
         android:text="+id\aptv_act_platform_serve__address"
         />
