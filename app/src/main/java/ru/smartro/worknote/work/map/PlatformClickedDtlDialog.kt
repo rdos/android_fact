@@ -42,7 +42,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //onBindViewHolder
         super.onViewCreated(view, savedInstanceState)
-        mCurrentActivity = requireActivity() as MapActivity
+        mCurrentActivity = requireActivity() as MapAct
 
         val spanCount = min(_platform.containers.size, 10)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_dialog_platform_clicked_dtl)
@@ -140,7 +140,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
 
         //коммент инициализации
         platform_location.setOnClickListener {
-            val currentActivity = requireActivity() as MapActivity
+            val currentActivity = requireActivity() as MapAct
             val drivingModeState = currentActivity.drivingModeState
             if (drivingModeState) {
                 currentActivity.warningClearNavigator("У вас уже есть построенный маршрут. Отменить старый и построить новый?")

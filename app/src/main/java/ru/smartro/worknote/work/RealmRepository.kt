@@ -77,6 +77,12 @@ class RealmRepository(private val mRealm: Realm) {
         }
     }
 
+    fun clearWorkOrders() {
+        mRealm.executeTransaction { realm ->
+            realm.delete(WayTaskEntity:: class.java)
+        }
+    }
+
     fun clearData() {
         mRealm.executeTransaction { realm ->
             realm.deleteAll()

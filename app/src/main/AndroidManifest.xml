@@ -65,11 +65,11 @@
             android:name=".ui.platform_serve.PlatformServeActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.map.MapActivity"
+            android:name=".ui.map.MapAct"
             android:screenOrientation="portrait"
             android:theme="@style/NoToolbar" />
         <activity
-            android:name=".ui.choose.way_task_4.WayTaskActivity"
+            android:name=".ui.choose.way_task_4.TaskWorkorderAct"
             android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity

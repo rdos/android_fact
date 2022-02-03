@@ -1,10 +1,8 @@
 package ru.smartro.worknote.ui.choose.way_task_4
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -12,28 +10,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
+import io.realm.RealmModel
 import kotlinx.android.synthetic.main.activity_choose.*
 import kotlinx.android.synthetic.main.item_choose.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
-import ru.smartro.worknote.service.network.body.ProgressBody
-import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.work.Workorder
-import ru.smartro.worknote.ui.map.MapActivity
-import ru.smartro.worknote.util.MyUtil
+import ru.smartro.worknote.ui.map.MapAct
+import ru.smartro.worknote.work.WorkOrderResponse
 
-class WayTaskActivity : AbstractAct() {
-    private var mWorkorders: List<Workorder> = emptyList()
-    private val viewModel: WayTaskViewModel by viewModel()
+class TaskWorkorderAct : AbstractAct() {
+
+    private val vm: WayTaskViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,15 +40,17 @@ class WayTaskActivity : AbstractAct() {
         supportActionBar?.title = "Выберите сменное задание"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         loadingShow()
-        viewModel.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayBillId)
+        vm.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayBillId)
             .observe(this, Observer { result ->
                 val data = result.data
                 when (result.status) {
                     Status.SUCCESS -> {
-                        mWorkorders = data!!.data.workorders
-                        choose_rv.adapter = WayTaskAdapter(mWorkorders)
+                        val workorders = data!!.data.workorders
+                        vm.db.clearWorkOrders()
+                        vm.insertWayTask(workorders)
+                        choose_rv.adapter = WayTaskAdapter(workorders)
                         loadingHide()
-                    }
+                        }
                     Status.ERROR -> {
                         toast(result.msg)
                         loadingHide()
@@ -62,97 +63,40 @@ class WayTaskActivity : AbstractAct() {
             })
 
         next_btn.setOnClickListener {
-            gotoProgressWorkOrder(mWorkorders)
+            // TODO: добавить логирование
+            gotoShowMapAct(null)
         }
     }
 
-    fun gotoProgressWorkOrder(workorders: List<Workorder>) {
+    fun gotoShowMapAct(workorderId: Int?) {
 //        AppPreferences.wayTaskId = workorder.id
-        loadingShow()
-        try {
-            saveFailReason()
-            saveCancelWayReason()
-            saveBreakDownTypes()
-//                    val hand = Handler(Looper.getMainLooper())
-            for (workorder in workorders) {
-                logSentry(workorder.name)
-                val result = acceptProgress(workorder)
-                    when (result.status) {
-                        Status.SUCCESS -> {
-                            logSentry("acceptProgress Status.SUCCESS ")
-                            AppPreferences.isHasTask = true
-                            viewModel.insertWayTask(workorder)
-                        }
-                        else -> {
-                            logSentry( "acceptProgress Status.ERROR")
-                            toast(result.msg)
-                            AppPreferences.isHasTask = false
-                            break
-                        }
-                    }
-            }
-        } finally {
-            loadingHide()
-            if (AppPreferences.isHasTask) {
-                val intent = Intent(this, MapActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-                finish()
-            }
+        //        r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+//        todo:show must go on ))
+        val intent = Intent(this, MapAct::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        workorderId?.let {
+            intent.putExtra( ACT_PUT_EXTRA_NAME, workorderId)
         }
-    }
-
-    private fun saveBreakDownTypes() {
-        viewModel.getBreakDownTypes().observe(this, Observer { result ->
-            when (result.status) {
-                Status.SUCCESS -> {
-                    // TODO: ПО голове себе постучи
-                    Log.d(TAG, "saveBreakDownTypes. Status.SUCCESS")
-                }
-                Status.ERROR -> {
-                    toast(result.msg)
-                }
-                else -> Log.d(TAG, "saveBreakDownTypes:")
-            }
-
-        })
-    }
-
-    private fun saveFailReason() {
-        Log.i(TAG, "saveFailReason.before")
-        viewModel.getFailReason().observe(this, Observer { result ->
-            when (result.status) {
-                Status.SUCCESS -> {
-                    Log.d(TAG, "saveFailReason. Status.SUCCESS")
-                }
-                Status.ERROR -> {
-                    toast(result.msg)
-                }
-            }
-        })
-    }
-
-    private fun saveCancelWayReason() {
-        Log.d(TAG, "saveCancelWayReason.before")
-        viewModel.getCancelWayReason().observe(this, Observer { result ->
-            when (result.status) {
-                Status.SUCCESS -> {
-                    Log.d(TAG, "saveCancelWayReason. Status.SUCCESS")
-                }
-                Status.ERROR -> {
-                    Log.d(TAG, "saveCancelWayReason. Status.ERROR")
-                    toast(result.msg)
-                }
-            }
-        })
-    }
-
-    private fun acceptProgress(workorder: Workorder): Resource<EmptyResponse> {
-        Log.d(TAG, "acceptProgress.before")
-        val res = viewModel.progress(workorder.id, ProgressBody(MyUtil.timeStamp()))
-        return res
+        startActivity(intent)
+        finish()
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
+        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
 
     }
+
+
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -203,9 +147,9 @@ class WayTaskActivity : AbstractAct() {
                     notifyItemChanged(checkedPosition)
                     checkedPosition = holder.adapterPosition
 
-                    val workorderList = mutableListOf<Workorder>()
-                    workorderList.add(workorder)
-                    gotoProgressWorkOrder(workorderList)
+                    val workorderList = mutableListOf<Int>()
+                    workorderList.add(workorder.id)
+                    gotoShowMapAct(null)
 
                 }
             }
@@ -223,6 +167,40 @@ class WayTaskActivity : AbstractAct() {
 
         }
 
+
     }
+
+    open class WayTaskViewModel(application: Application) : BaseViewModel(application) {
+
+/*
+    fun getWayTask(wayId: Int, wayTaskBody: WayTaskBody): LiveData<Resource<WayTaskResponse>> {
+        return network.getWayTask(wayId, wayTaskBody)
+    }
+
+*/
+
+        fun insertWayTask(workorderList: List<Workorder>) {
+            db.clearWorkOrders()
+            for (workorder in workorderList) {
+                try {
+                    db.insertWayTask(workorder)
+                } catch (ex: Exception) {
+//                    logSentry("insertWayTask.ex.Exception" + ex.message)
+                }
+            }
+        }
+        fun getWorkOrder(organisationId: Int, wayId: Int): LiveData<Resource<WorkOrderResponse>> {
+            Log.d("AAA", "getWorkOrder")
+            return network.getWorkOder(organisationId, wayId)
+        }
+
+        fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
+            return db.createObjectFromJson(clazz, json)
+        }
+
+
+
+    }
+
 
 }

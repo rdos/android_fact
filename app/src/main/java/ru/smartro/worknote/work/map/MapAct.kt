@@ -1,10 +1,7 @@
 package ru.smartro.worknote.ui.map
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,10 +11,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -25,35 +24,38 @@ import androidx.work.WorkManager
 import com.av.verticalchipgroup.CustomChipGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
-import com.yandex.mapkit.Animation
-import com.yandex.mapkit.MapKit
-import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.*
 import com.yandex.mapkit.directions.DirectionsFactory
-import com.yandex.mapkit.directions.driving.DrivingRoute
-import com.yandex.mapkit.directions.driving.DrivingRouter
-import com.yandex.mapkit.directions.driving.DrivingSession
+import com.yandex.mapkit.directions.driving.*
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.location.*
 import com.yandex.mapkit.map.*
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.runtime.Error
 import com.yandex.runtime.ui_view.ViewProvider
-import kotlinx.android.synthetic.main.activity_map.*
+import kotlinx.android.synthetic.main.act_map.*
+import kotlinx.android.synthetic.main.act_map__bottom_behavior.*
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
-import kotlinx.android.synthetic.main.behavior_platforms.*
+import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
+import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
+import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.showInfoDialog
+import ru.smartro.worknote.service.network.response.EmptyResponse
+import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
+import ru.smartro.worknote.ui.choose.way_list_3.WayBillActivity
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalAct
 import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity
@@ -62,11 +64,14 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.SynchronizeWorker
+import ru.smartro.worknote.work.WayTaskEntity
+import ru.smartro.worknote.work.Workorder
+import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 
-class MapActivity : AbstractAct(),
+class MapAct : AbstractAct(),
     /*UserLocationObjectListener,*/ MapObjectTapListener,
     PlatformAdapter.PlatformClickListener, LocationListener {
     private lateinit var mEndWorkOrder: AppCompatButton
@@ -78,7 +83,7 @@ class MapActivity : AbstractAct(),
     private val REQUEST_EXIT = 41
     private var firstTime = true
     private var isOnPointFirstTime = true
-    private val viewModel: MapViewModel by viewModel()
+    private val vm: MapViewModel by viewModel()
 
     private val mapObjectTapListener = this as MapObjectTapListener
 
@@ -95,14 +100,98 @@ class MapActivity : AbstractAct(),
     private lateinit var locationManager: LocationManager
     private lateinit var mapKit: MapKit
 
+    private fun saveBreakDownTypes() {
+        vm.getBreakDownTypes().observe(this, Observer { result ->
+            when (result.status) {
+                Status.SUCCESS -> {
+                    // TODO: ПО голове себе постучи
+                    Log.d(TAG, "saveBreakDownTypes. Status.SUCCESS")
+                }
+                Status.ERROR -> {
+                    toast(result.msg)
+                }
+                else -> Log.d(TAG, "saveBreakDownTypes:")
+            }
+
+        })
+    }
+
+    private fun saveFailReason() {
+        Log.i(TAG, "saveFailReason.before")
+        vm.getFailReason().observe(this, Observer { result ->
+            when (result.status) {
+                Status.SUCCESS -> {
+                    Log.d(TAG, "saveFailReason. Status.SUCCESS")
+                }
+                Status.ERROR -> {
+                    toast(result.msg)
+                }
+            }
+        })
+    }
+
+    private fun saveCancelWayReason() {
+        Log.d(TAG, "saveCancelWayReason.before")
+        vm.getCancelWayReason().observe(this, Observer { result ->
+            when (result.status) {
+                Status.SUCCESS -> {
+                    Log.d(TAG, "saveCancelWayReason. Status.SUCCESS")
+                }
+                Status.ERROR -> {
+                    Log.d(TAG, "saveCancelWayReason. Status.ERROR")
+                    toast(result.msg)
+                }
+            }
+        })
+    }
+
+    private fun acceptProgress(workorder: Workorder): Resource<EmptyResponse> {
+        Log.d(TAG, "acceptProgress.before")
+        val res = vm.progress(workorder.id, ProgressBody(MyUtil.timeStamp()))
+        return res
+
+    }
+
+    fun gotoProgressWorkOrder(workorders: List<Workorder>) {
+//        AppPreferences.wayTaskId = workorder.id
+        loadingShow()
+        try {
+            saveFailReason()
+            saveCancelWayReason()
+            saveBreakDownTypes()
+//                    val hand = Handler(Looper.getMainLooper())
+            for (workorder in workorders) {
+                logSentry(workorder.name)
+                val result = acceptProgress(workorder)
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        logSentry("acceptProgress Status.SUCCESS ")
+                        AppPreferences.isHasTask = true
+                        vm.insertWayTask(workorder)
+                    }
+                    else -> {
+                        logSentry( "acceptProgress Status.ERROR")
+                        toast(result.msg)
+                        AppPreferences.isHasTask = false
+                        break
+                    }
+                }
+            }
+        } finally {
+            loadingHide()
+
+        }
+
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
-        setContentView(R.layout.activity_map)
+        setContentView(R.layout.act_map)
 
-        showInfoDialog("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
 
 //        val chipGroup = findViewById<ChipGroup>(R.id.chip_group)
 //        val textView = TextView(this)
@@ -113,8 +202,8 @@ class MapActivity : AbstractAct(),
         mEndWorkOrder = findViewById<AppCompatButton>(R.id.acb_activity_map__end_workorder)
         mLlcMap.isVisible = false
 //        mEndWorkOrder.isVisible = false
-        mPlatforms = viewModel.findPlatforms()
-        initChipGroup()
+        mPlatforms = vm.findPlatforms()
+//        initChipGroup()
         initSynchronizeWorker()
         initMapView(false)
         initBottomBehavior()
@@ -130,9 +219,9 @@ class MapActivity : AbstractAct(),
     private fun initChipGroup() {
         val inflater = LayoutInflater.from(this)
         val chipGroup = findViewById<View>(R.id.chipGroup) as CustomChipGroup
-        val wayTasks = viewModel.getWayTasks()
+        val wayTasks = vm.getWayTasks()
         for (wayTask in wayTasks) {
-            val newChip = inflater.inflate(R.layout.layout_chip_entry, chipGroup, false) as Chip
+            val newChip = inflater.inflate(R.layout.act_map__workorder__checkbox, chipGroup, false) as Chip
             newChip.text = wayTask.name
             newChip.tag = wayTask.id
             chipGroup.addView(newChip)
@@ -170,7 +259,7 @@ class MapActivity : AbstractAct(),
         }
 
         log_fab.setOnClickListener {
-            startActivity(Intent(this@MapActivity, JournalAct::class.java))
+            startActivity(Intent(this@MapAct, JournalAct::class.java))
         }
 
     }
@@ -357,7 +446,7 @@ class MapActivity : AbstractAct(),
             platformsArray.sortedBy { it.updateAt }
             map_behavior_rv.adapter = PlatformAdapter(this, platformsArray, mFilteredWayTaskIds)
 
-            map_behavior_header.setOnClickListener {
+            act_map__bottom_behavior__header.setOnClickListener {
                 if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 else
@@ -372,7 +461,7 @@ class MapActivity : AbstractAct(),
                 map_behavior_send_btn.text = getString(R.string.finish_way)
             }
             map_behavior_send_btn.setOnClickListener {
-                val lastPlatforms = viewModel.findLastPlatforms()
+                val lastPlatforms = vm.findLastPlatforms()
                 if (lastPlatforms.isEmpty()) {
                     finishWay(hasNotServedPlatform)
                 } else {
@@ -389,7 +478,7 @@ class MapActivity : AbstractAct(),
                     warningAlert("Не все данные отправлены нa сервер").let {
                         it.accept_btn.setOnClickListener {
                             loadingShow()
-                            viewModel.sendLastPlatforms(synchronizeBody).observe(this, { result ->
+                            vm.sendLastPlatforms(synchronizeBody).observe(this, { result ->
                                     when (result.status) {
                                         Status.SUCCESS -> {
                                             loadingHide()
@@ -424,16 +513,16 @@ class MapActivity : AbstractAct(),
     }
 
     private fun earlyCompleteWayBill() {
-        val allReasons = viewModel.findCancelWayReason()
+        val allReasons = vm.findCancelWayReason()
         showDialogEarlyComplete(allReasons).let { view ->
-            val totalVolume = viewModel.findContainersVolume()
+            val totalVolume = vm.findContainersVolume()
             view.unload_value_et.setText("$totalVolume")
             view.accept_btn.setOnClickListener {
                 if (!view.reason_et.text.isNullOrEmpty() &&
                     (view.early_volume_tg.isChecked || view.early_weight_tg.isChecked)
                     && !view.unload_value_et.text.isNullOrEmpty()
                 ) {
-                    val failureId = viewModel.findCancelWayReasonByValue(view.reason_et.text.toString())
+                    val failureId = vm.findCancelWayReasonByValue(view.reason_et.text.toString())
                     val unloadValue = round(
                         view.unload_value_et.text.toString().toDouble() * 100
                     ) / 100
@@ -441,11 +530,11 @@ class MapActivity : AbstractAct(),
                     val body = EarlyCompleteBody(failureId, MyUtil.timeStamp(), unloadType, unloadValue)
                     loadingShow()
 
-                    viewModel.earlyComplete(AppPreferences.wayTaskId, body)
-                        .observe(this@MapActivity, Observer { result ->
+                    vm.earlyComplete(AppPreferences.wayTaskId, body)
+                        .observe(this@MapAct, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
-                                    viewModel.finishTask(this)
+                                    vm.finishTask(this)
                                 }
                                 Status.ERROR -> {
                                     toast(result.msg)
@@ -468,7 +557,7 @@ class MapActivity : AbstractAct(),
     }
 
     private fun successCompleteWayBill() {
-        val totalVolume = viewModel.findContainersVolume()
+        val totalVolume = vm.findContainersVolume()
         showCompleteWaybill().run {
             this.comment_et.setText("$totalVolume")
             this.accept_btn.setOnClickListener {
@@ -480,11 +569,11 @@ class MapActivity : AbstractAct(),
                         unloadType = unloadType, unloadValue = unloadValue.toString()
                     )
                     loadingShow()
-                    viewModel.completeWay(AppPreferences.wayTaskId, body)
-                        .observe(this@MapActivity, Observer { result ->
+                    vm.completeWay(AppPreferences.wayTaskId, body)
+                        .observe(this@MapAct, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
-                                    viewModel.finishTask(this@MapActivity)
+                                    vm.finishTask(this@MapAct)
                                 }
                                 Status.ERROR -> {
                                     toast(result.msg)
@@ -538,7 +627,7 @@ class MapActivity : AbstractAct(),
         try {
             mapObjects.clear()
             selectedPlatformToNavigate = checkPoint
-            viewModel.buildMapNavigator(currentLocation, checkPoint, drivingRouter, drivingSession)
+            vm.buildMapNavigator(currentLocation, checkPoint, drivingRouter, drivingSession)
             drivingModeState = true
             navigator_toggle_fab.isVisible = drivingModeState
             hideDialog()
@@ -556,7 +645,7 @@ class MapActivity : AbstractAct(),
 
     override fun onResume() {
         super.onResume()
-        mPlatforms = viewModel.findPlatforms()
+        mPlatforms = vm.findPlatforms()
         initMapView(true)
         initBottomBehavior()
         locationManager = mapKit.createLocationManager()
@@ -615,10 +704,140 @@ class MapActivity : AbstractAct(),
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
         val placeMark = mapObject as PlacemarkMapObject
         val coordinate = placeMark.geometry
-        val clickedPlatform = viewModel.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
+        val clickedPlatform = vm.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
         val platformClickedDtlDialog = PlatformClickedDtlDialog(clickedPlatform, coordinate)
         platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
         return true
     }
+
+
+
+
+    /**
+    ))НА//СМЕХОПАНОРАМА.яRостb.кИвИн, НО за ТОЛЬКО СРАЗУ же галка]точка[очно даже к гадалке не ходиТЕ
+    ))на//СМЕХОПАНОРАМА.яРость.КВН, НО за ТОЛЬКО СРАЗУ же гал]ка+оч[но к гадалке не ходи D.а/же
+    возьмите вот говор вот простонародье вот суть Мне(мне)и точно не мне)ярость не про r_dos::mafka и R_dos
+    http://Я́РОСТЬ, -и, ж Состояние сильного недовольства, крайнего возмущения кем-, чем-л.; Син.: гнев, бешенство, раздражение.
+    Mafka.Ева/s/,А галака не гадалка,
+     */
+
+    open class MapViewModel(application: Application) : BaseViewModel(application) {
+
+
+        fun completeWay(id: Int, completeWayBody: CompleteWayBody): LiveData<Resource<EmptyResponse>> {
+            return network.completeWay(id, completeWayBody)
+        }
+
+        fun earlyComplete(id: Int, body: EarlyCompleteBody): LiveData<Resource<EmptyResponse>> {
+            return network.earlyComplete(id, body)
+        }
+
+        fun finishTask(context: AppCompatActivity) {
+            Log.i(TAG, "clearData")
+            context.loadingHide()
+            WorkManager.getInstance(context).cancelUniqueWork("UploadData")
+            clearData()
+            AppPreferences.isHasTask = false
+            context.showSuccessComplete().let {
+                it.finish_accept_btn.setOnClickListener {
+                    context.startActivity(Intent(context, WayBillActivity::class.java))
+                    context.finish()
+                }
+                it.exit_btn.setOnClickListener {
+                    MyUtil.logout(context)
+                }
+            }
+        }
+
+        fun clearData() {
+            Log.i(TAG, "clearData")
+            db.clearData()
+        }
+
+        fun findPlatforms(): List<PlatformEntity> {
+            return db.findPlatforms()
+        }
+
+        fun getWayTasks(): List<WayTaskEntity> {
+            return db.findWayTasks()
+        }
+
+        fun findLastPlatforms() =
+            db.findLastPlatforms()
+
+        fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
+            return db.findPlatformByCoordinate(lat, lon)
+        }
+
+        fun sendLastPlatforms(body: SynchronizeBody): LiveData<Resource<SynchronizeResponse>> {
+            return network.sendLastPlatforms(body)
+        }
+
+        fun findCancelWayReason(): List<CancelWayReasonEntity> {
+            return db.findCancelWayReason()
+        }
+
+        fun findCancelWayReasonByValue(reason: String): Int {
+            return db.findCancelWayReasonByValue(reason)
+        }
+
+        fun findContainersVolume(): Double =
+            db.findContainersVolume()
+
+        fun buildMapNavigator(currentLocation: Location,
+                              checkPoint: Point, drivingRouter: DrivingRouter,
+                              drivingSession: DrivingSession.DrivingRouteListener) {
+            val drivingOptions = DrivingOptions()
+            drivingOptions.routesCount = 1
+            drivingOptions.avoidTolls = true
+            val vehicleOptions = VehicleOptions()
+            val requestPoints = ArrayList<RequestPoint>()
+            requestPoints.add(
+                RequestPoint(
+                    currentLocation.position,
+                    RequestPointType.WAYPOINT,
+                    null
+                )
+            )
+            requestPoints.add(
+                RequestPoint(
+                    checkPoint,
+                    RequestPointType.WAYPOINT,
+                    null
+                )
+            )
+            drivingRouter.requestRoutes(requestPoints, drivingOptions, vehicleOptions, drivingSession)
+        }
+
+        fun getBreakDownTypes(): LiveData<Resource<Nothing>> {
+            return network.getBreakDownTypes()
+        }
+
+
+        fun getFailReason(): LiveData<Resource<Nothing>> {
+            return network.getFailReason()
+        }
+
+        fun getCancelWayReason(): LiveData<Resource<Nothing>> {
+            return network.getCancelWayReason()
+        }
+
+        fun insertWayTask(response: Workorder) {
+            db.insertWayTask(response)
+        }
+
+        fun progress(id: Int, body: ProgressBody): Resource<EmptyResponse> {
+            return network.progress(id, body)
+        }
+
+
+    }
+
+
+
+
+
+
+
 
 }

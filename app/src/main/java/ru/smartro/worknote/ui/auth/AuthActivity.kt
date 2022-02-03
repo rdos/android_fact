@@ -2,7 +2,6 @@ package ru.smartro.worknote.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_auth.*
@@ -17,8 +16,6 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
-import ru.smartro.worknote.ui.choose.way_list_3.WayBillActivity
-import ru.smartro.worknote.ui.map.MapActivity
 import ru.smartro.worknote.util.MyUtil
 
 class AuthActivity : AbstractAct() {

@@ -4,17 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.map.MapActivity">
+    tools:context=".ui.map.MapAct">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+
 
         <com.yandex.mapkit.mapview.MapView
             android:id="@+id/map_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+        <include layout="@layout/act_map__workorder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llc_activity_map"
@@ -97,6 +104,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <include layout="@layout/behavior_platforms" />
+    <include layout="@layout/act_map__bottom_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

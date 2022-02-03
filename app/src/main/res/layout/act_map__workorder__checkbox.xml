@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.chip.Chip
+<androidx.appcompat.widget.AppCompatCheckBox
+    android:id="@+id/act_map__workorder__checkbox"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/Widget.MaterialComponents.Chip.Choice"
-    android:theme="@style/Theme.MaterialComponents.Light"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:text="id/act_map_layout__checkbox"
     />

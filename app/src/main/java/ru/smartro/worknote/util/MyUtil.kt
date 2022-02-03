@@ -25,7 +25,7 @@ import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
-import ru.smartro.worknote.ui.map.MapActivity
+import ru.smartro.worknote.ui.map.MapAct
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat
@@ -175,7 +175,7 @@ object MyUtil {
 
     fun getNextActClazz__todo(hasTask: Boolean): Class<out AbstractAct> {
         return if (hasTask) {
-            MapActivity::class.java
+            MapAct::class.java
         } else {
             OrganisationActivity::class.java
         }

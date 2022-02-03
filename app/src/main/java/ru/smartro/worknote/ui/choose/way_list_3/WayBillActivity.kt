@@ -21,7 +21,7 @@ import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.WayListBody
 import ru.smartro.worknote.service.network.response.way_list.Data
 import ru.smartro.worknote.ui.choose.vehicle_2.VehicleActivity
-import ru.smartro.worknote.ui.choose.way_task_4.WayTaskActivity
+import ru.smartro.worknote.ui.choose.way_task_4.TaskWorkorderAct
 import ru.smartro.worknote.util.MyUtil
 import java.text.SimpleDateFormat
 import java.util.*
@@ -81,7 +81,7 @@ class WayBillActivity : AbstractAct() {
             if (adapter.getSelectedId() != -1) {
                 AppPreferences.wayBillId = adapter.getSelectedId()
                 AppPreferences.wayBillNumber = adapter.getSelectedNumber()
-                startActivity(Intent(this, WayTaskActivity::class.java))
+                startActivity(Intent(this, TaskWorkorderAct::class.java))
             }
         }
 

@@ -137,21 +137,3 @@ fun Any.getDeviceDateTime(): Date {
     return Date()
 }
 
-fun AbstractAct.showInfoDialog(text: String? = "") {
-    window.decorView.rootView?.let {
-        val dlg = AlertDialog.Builder(it.context, R.style.Theme_Inventory_Dialog)
-            .setMessage(text)
-            .create()
-        try {
-            val window: Window? = dlg.window
-            val wlp: WindowManager.LayoutParams = window!!.attributes
-
-            wlp.gravity = Gravity.TOP
-            wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
-            window.attributes = wlp
-        } catch (ex: Exception) {
-
-        }
-        dlg.show()
-    }
-}
