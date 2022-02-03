@@ -1,27 +1,32 @@
-package ru.smartro.worknote.work.map.choose
+package ru.smartro.worknote.work.ac.choose
 
 import android.Manifest
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_choose.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.OwnerAdapter
 import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.response.organisation.Organisation
+import ru.smartro.worknote.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.util.MyUtil
 
-class OrganisationActivity : AbstractAct() {
+class OwnerAct : AbstractAct() {
     private val viewModel: OrganisationViewModel by viewModel()
     private lateinit var adapter: OwnerAdapter
     private val PERMISSIONS = arrayOf(
@@ -78,5 +83,11 @@ class OrganisationActivity : AbstractAct() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         MyUtil.onMenuOptionClicked(this, item.itemId)
         return super.onOptionsItemSelected(item)
+    }
+
+    open class OrganisationViewModel(application: Application) : BaseViewModel(application) {
+        fun getOwners(): LiveData<Resource<OrganisationResponse>> {
+            return network.getOwners()
+        }
     }
 }

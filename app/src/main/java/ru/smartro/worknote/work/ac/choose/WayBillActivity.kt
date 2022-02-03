@@ -1,25 +1,29 @@
-package ru.smartro.worknote.work.map.choose
+package ru.smartro.worknote.work.ac.choose
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.isVisible
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_choose.choose_rv
 import kotlinx.android.synthetic.main.activity_choose.act_choose_select_all
 import kotlinx.android.synthetic.main.activity_way_bill.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.WayBillAdapter
 import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.WayListBody
 import ru.smartro.worknote.service.network.response.way_list.Data
+import ru.smartro.worknote.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.util.MyUtil
 import java.text.SimpleDateFormat
 import java.util.*
@@ -99,4 +103,13 @@ class WayBillActivity : AbstractAct() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    open class WayListViewModel(application: Application) : BaseViewModel(application) {
+
+        fun getWayList(body : WayListBody): LiveData<Resource<WayListResponse>> {
+            return network.getWayList(body)
+        }
+
+    }
+
 }

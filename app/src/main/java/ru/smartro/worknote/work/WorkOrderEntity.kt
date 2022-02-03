@@ -19,25 +19,88 @@ import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
-open class WayTaskEntity(
+open class WorkOrderEntity(
     @PrimaryKey
-    @SerializedName("id")
     var id: Int? = null,
-    @SerializedName("accounting")
-    var accounting: Int? = null,
-    @SerializedName("beginned_at")
-    var beginnedAt: String? = null,
-    @SerializedName("finished_at")
-    var finishedAt: String? = null,
-    @SerializedName("name")
     var name: String? = null,
-    @SerializedName("platforms")
     var platforms: RealmList<PlatformEntity> = RealmList(),
-    @SerializedName("start")
     var start: StartEntity? = null,
-    @SerializedName("unload")
-    var unload: UnloadEntity? = null
-) : Serializable, RealmObject()
+//    var unload: UnloadEntity? = null,
+
+    var cnt_platform: Int? = Inull,
+    var cnt_container: Int? = Inull,
+    var cnt_platform_status_new: Int? = Inull,
+    var cnt_platform_status_success: Int? = Inull,
+    var cnt_platform_status_error: Int? = Inull,
+    // ErrorS False fail exception
+    var cnt_container_status_new: Int? = Inull,
+    var cnt_container_status_success: Int? = Inull,
+    var cnt_container_status_error: Int? = Inull,
+
+    var create_at: String? = null,
+    var update_at: String? = null,
+    var progress_at: String? = null,
+    var close_at: String? = null,
+    ) : Serializable, RealmObject() {
+    init {
+        calcAndSaveStatisticsInfo(realm)
+    }
+
+    fun calcAndSaveStatisticsInfo(p_realm: Realm) {
+        val platformsCnt = platforms.size + 1
+        var platformsStatusNewCnt = 0
+        var platformsStatusSuccessCnt = 0
+        var platformsStatusErrorCnt = 0
+
+        var containersCnt = 0
+        var containersStatusNewCnt = 0
+        var containersStatusSuccessCnt = 0
+        var containersStatusErrorCnt = 0
+        for (platform in platforms) {
+            /** статистика для PlatformEntity*/
+            if(platform.status == StatusEnum.NEW) {
+                platformsStatusNewCnt++
+            }
+            if(platform.status == StatusEnum.SUCCESS) {
+                platformsStatusSuccessCnt++
+            }
+            if(platform.status == StatusEnum.ERROR) {
+                platformsStatusErrorCnt++
+            }
+            /** статистика для ContainerEntity*/
+            platform.containers.forEach {
+                containersCnt++
+                if(it.status == StatusEnum.NEW) {
+                    containersStatusNewCnt++
+                }
+                if(it.status == StatusEnum.SUCCESS) {
+                    containersStatusSuccessCnt++
+                }
+                if(it.status == StatusEnum.ERROR) {
+                    containersStatusErrorCnt++
+                }
+
+            }
+        }
+        realm.executeTransaction { itRealm ->
+            val workOrderEntity = itRealm.where(WorkOrderEntity::class.java)
+                .equalTo("id", this.id)
+                .findFirst()
+            if (workOrderEntity != null) {
+                workOrderEntity.cnt_platform = platformsCnt
+                workOrderEntity.cnt_platform_status_new = platformsStatusNewCnt
+                workOrderEntity.cnt_platform_status_success = platformsStatusSuccessCnt
+                workOrderEntity.cnt_platform_status_error = platformsStatusErrorCnt
+                workOrderEntity.cnt_container = containersCnt
+                workOrderEntity.cnt_container_status_new = containersStatusNewCnt
+                workOrderEntity.cnt_container_status_success = containersStatusSuccessCnt
+                workOrderEntity.cnt_container_status_error = containersStatusErrorCnt
+
+                itRealm.insert(workOrderEntity)
+            }
+        }
+    }
+}
 
 open class StartEntity(
     var coords: RealmList<Double> = RealmList(),

@@ -96,15 +96,6 @@ object AppPreferences {
         set(value) = preferences.edit {
             it.putInt("wayTaskId", value)
         }
-    
-
-
-    var isHasTask: Boolean
-        get() = preferences.getBoolean("thisUserHasTask", false)
-        set(value) = preferences.edit {
-            it.putBoolean("thisUserHasTask", value)
-        }
-
 
     var workerStatus: Boolean
         get() = preferences.getBoolean("workerStatus", true)
@@ -120,7 +111,6 @@ object AppPreferences {
         wayBillId = 0
         //TODO: rNull!!
         wayBillNumber = "rNull"
-        isHasTask = false
         workerStatus = false
     }
 

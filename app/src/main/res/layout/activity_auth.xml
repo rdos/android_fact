@@ -5,7 +5,7 @@
     android:id="@+id/baseview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.auth.AuthActivity">
+    tools:context=".work.ac.StartAct">
 
     <LinearLayout
         android:id="@+id/ll_activity_auth"

@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.map
+package ru.smartro.worknote.work.ac.map
 
 import android.view.LayoutInflater
 import android.view.View

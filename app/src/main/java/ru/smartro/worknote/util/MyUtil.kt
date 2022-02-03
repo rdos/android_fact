@@ -23,9 +23,9 @@ import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.ui.auth.AuthActivity
-import ru.smartro.worknote.work.map.choose.OrganisationActivity
-import ru.smartro.worknote.work.map.MapAct
+import ru.smartro.worknote.work.ac.StartAct
+import ru.smartro.worknote.work.ac.choose.OwnerAct
+import ru.smartro.worknote.work.ac.map.MapAct
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat
@@ -89,7 +89,7 @@ object MyUtil {
     fun onMenuOptionClicked(context: Context, id: Int) {
         when (id) {
             R.id.change_organisation -> {
-                context.startActivity(Intent(context, OrganisationActivity::class.java))
+                context.startActivity(Intent(context, OwnerAct::class.java))
             }
             R.id.logout -> {
                 logout(context)
@@ -98,7 +98,7 @@ object MyUtil {
     }
 
     fun logout(context: Context) {
-        val intent = Intent(context, AuthActivity::class.java)
+        val intent = Intent(context, StartAct::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
         AppPreferences.clear()
@@ -177,7 +177,7 @@ object MyUtil {
         return if (hasTask) {
             MapAct::class.java
         } else {
-            OrganisationActivity::class.java
+            OwnerAct::class.java
         }
     }
 }

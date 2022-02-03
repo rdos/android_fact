@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.map.choose
+package ru.smartro.worknote.work.ac.choose
 
 import android.app.Application
 import android.content.Intent
@@ -27,7 +27,7 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.work.Workorder
-import ru.smartro.worknote.work.map.MapAct
+import ru.smartro.worknote.work.ac.map.MapAct
 import ru.smartro.worknote.work.WorkOrderResponse
 
 class TaskWorkorderAct : AbstractAct() {
@@ -46,7 +46,7 @@ class TaskWorkorderAct : AbstractAct() {
                 when (result.status) {
                     Status.SUCCESS -> {
                         val workorders = data!!.data.workorders
-                        vm.db.clearWorkOrders()
+                        vm.db.deleteWorkOrders()
                         vm.insertWayTask(workorders)
                         choose_rv.adapter = WayTaskAdapter(workorders)
                         loadingHide()
@@ -180,7 +180,7 @@ class TaskWorkorderAct : AbstractAct() {
 */
 
         fun insertWayTask(workorderList: List<Workorder>) {
-            db.clearWorkOrders()
+            db.deleteWorkOrders()
             for (workorder in workorderList) {
                 try {
                     db.insertWayTask(workorder)

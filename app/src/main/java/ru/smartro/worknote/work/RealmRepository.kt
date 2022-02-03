@@ -13,10 +13,12 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.ProblemEnum
 import ru.smartro.worknote.util.StatusEnum
+import java.lang.Exception
 import kotlin.math.round
 
-class RealmRepository(private val mRealm: Realm) {
-    private val TAG: String = "RealmRepository--AAA"
+class RealmRepository(private val p_realm: Realm) {
+    private val TAG: String = "RealmRepository"
+
     fun insertWayTask(workorder: Workorder) {
 
         fun mapMedia(data: List<String>): RealmList<ImageEntity> {
@@ -61,36 +63,48 @@ class RealmRepository(private val mRealm: Realm) {
             coords = RealmList(data.coords[0], data.coords[1]), name = data.name, id = data.id
         )
 
-        fun mapUnload(data: Unload) = UnloadEntity(
-            coords = RealmList(data.coords[0], data.coords[1]), name = data.name, id = data.id
-        )
 
-        val wayTask = WayTaskEntity(
-            id = workorder.id, accounting = workorder.accounting,
-            beginnedAt = workorder.beginnedAt, finishedAt = workorder.finishedAt,
+        val wayTask = WorkOrderEntity(
+            id = workorder.id,
             name = workorder.name, platforms = mapPlatforms(workorder.platforms, workorder.id),
-            start = mapStart(workorder.start), unload = mapUnload(workorder.unload)
+            start = mapStart(workorder.start)
         )
 
-        mRealm.executeTransaction { realm ->
+        insertWorkOrders(wayTask)
+    }
+
+    private fun insertWorkOrders(wayTask: WorkOrderEntity) {
+        p_realm.executeTransaction { realm ->
+            wayTask.calcAndSaveStatisticsInfo(p_realm)
             realm.insert(wayTask)
         }
     }
 
-    fun clearWorkOrders() {
-        mRealm.executeTransaction { realm ->
-            realm.delete(WayTaskEntity:: class.java)
+    //нет знаний =_know от слова -know ledge
+    //0 -не уверен что нужно = ??!
+    private fun refreshRealm_know0(){
+        try {
+            p_realm.refresh()
+        } catch (ex:Exception){
+            // TODO:
+        }
+    }
+
+    fun deleteWorkOrders() {
+        refreshRealm_know0()
+        p_realm.executeTransaction { realm ->
+            realm.delete(WorkOrderEntity:: class.java)
         }
     }
 
     fun clearData() {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             realm.deleteAll()
         }
     }
 
     fun insertBreakDown(entities: List<BreakDownEntity>) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }
     }
@@ -99,7 +113,7 @@ class RealmRepository(private val mRealm: Realm) {
     //  так надо чтобы возможно поймать плавающую ошибку :(
     fun insertFailReason(entities: List<FailReasonEntity>) {
         Log.d(TAG, "insertFailReason.before ${entities.size}")
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }
         Log.d(TAG, "insertFailReason.after")
@@ -107,7 +121,7 @@ class RealmRepository(private val mRealm: Realm) {
 
     fun insertCancelWayReason(entities: List<CancelWayReasonEntity>) {
         Log.d(TAG, "insertCancelWayReason.before  ${entities.size}")
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }
     }
@@ -125,26 +139,26 @@ class RealmRepository(private val mRealm: Realm) {
     }
 
     fun findAllFailReason(): List<String> {
-        val found = mRealm.copyFromRealm(mRealm.where(FailReasonEntity::class.java).findAll())
+        val found = p_realm.copyFromRealm(p_realm.where(FailReasonEntity::class.java).findAll())
         return found.map { it.problem!! }
     }
 
     fun findAllBreakDown(): List<String> {
-        val found = mRealm.copyFromRealm(mRealm.where(BreakDownEntity::class.java).findAll())
+        val found = p_realm.copyFromRealm(p_realm.where(BreakDownEntity::class.java).findAll())
         return found.map { it.problem!! }
     }
 
     fun findCancelWayReason(): List<CancelWayReasonEntity> {
-        return mRealm.copyFromRealm(mRealm.where(CancelWayReasonEntity::class.java).findAll())
+        return p_realm.copyFromRealm(p_realm.where(CancelWayReasonEntity::class.java).findAll())
     }
 
     fun findCancelWayReasonByValue(reason: String): Int {
-        return mRealm.where(CancelWayReasonEntity::class.java).equalTo("problem", reason)
+        return p_realm.where(CancelWayReasonEntity::class.java).equalTo("problem", reason)
             .findFirst()?.id!!
     }
 
     fun updateSelectionVolume(platformId: Int, volumePickup: Double?) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()
@@ -159,7 +173,7 @@ class RealmRepository(private val mRealm: Realm) {
 
     /** добавление заполненности контейнера **/
     fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?, comment: String?) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
                 .findFirst()!!
@@ -178,7 +192,7 @@ class RealmRepository(private val mRealm: Realm) {
     }
 
     fun updateContainersVolumeIfnNull(platformId: Int, volume: Double) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()
@@ -201,11 +215,11 @@ class RealmRepository(private val mRealm: Realm) {
 
 
     fun clearContainerVolume(platformId: Int, containerId: Int) {
-        mRealm.executeTransaction {
-            val container = mRealm.where(ContainerEntity::class.java)
+        p_realm.executeTransaction {
+            val container = p_realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
                 .findFirst()!!
-            val platformEntity = mRealm.where(PlatformEntity::class.java)
+            val platformEntity = p_realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             container.volume = null
@@ -224,7 +238,7 @@ class RealmRepository(private val mRealm: Realm) {
         Log.d(TAG, "updateContainerProblem.containerId=${containerId}, problemComment=${problemComment}")
         Log.d(TAG, "updateContainerProblem.problemType=${problemType}, problem=${problem}")
         Log.d(TAG, "updateContainerProblem.failProblem=${failProblem}")
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
                 .findFirst()!!
@@ -256,7 +270,7 @@ class RealmRepository(private val mRealm: Realm) {
     }
 
     fun updatePlatformProblem(platformId: Int, failureComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val platform = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()!!
@@ -293,7 +307,7 @@ class RealmRepository(private val mRealm: Realm) {
     }
 
     fun updatePlatformStatus(platformId: Int, status: String) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val platform = realm.where(PlatformEntity::class.java).equalTo("platformId", platformId)
                 .findFirst()!!
             if (platform.status == StatusEnum.NEW) {
@@ -303,31 +317,31 @@ class RealmRepository(private val mRealm: Realm) {
         }
     }
 
-    fun findWayTasks(): List<WayTaskEntity> {
-        val res = mRealm.where(WayTaskEntity::class.java).findAll()
+    fun findWayTasks(): List<WorkOrderEntity> {
+        val res = p_realm.where(WorkOrderEntity::class.java).findAll()
         if (res != null) {
-            return mRealm.copyFromRealm(res)
+            return p_realm.copyFromRealm(res)
         }
         return emptyList()
     }
 
     fun findPlatforms(): List<PlatformEntity> {
-        mRealm.refresh()
+        p_realm.refresh()
         // TODO: 25.10.2021 !!!???
         //  return WayTaskEntity() is fail
 
-        val res = mRealm.where(PlatformEntity::class.java).findAll()
+        val res = p_realm.where(PlatformEntity::class.java).findAll()
         if (res != null) {
-            return mRealm.copyFromRealm(res)
+            return p_realm.copyFromRealm(res)
         }
         return emptyList()
     }
 
     fun findLastPlatforms(): List<PlatformEntity> {
-        mRealm.refresh()
+        p_realm.refresh()
         val lastSynchroTime = AppPreferences.lastSynchroTime
-        return mRealm.copyFromRealm(
-            mRealm.where(PlatformEntity::class.java).greaterThan("updateAt", lastSynchroTime)
+        return p_realm.copyFromRealm(
+            p_realm.where(PlatformEntity::class.java).greaterThan("updateAt", lastSynchroTime)
                 .findAll()
         )
     }
@@ -335,14 +349,14 @@ class RealmRepository(private val mRealm: Realm) {
     fun findPlatforms30min(): List<PlatformEntity> {
         val minutes = 30 * 60 * 1000
         val lastSynchroTime = AppPreferences.lastSynchroTime
-        return mRealm.where(PlatformEntity::class.java)
+        return p_realm.where(PlatformEntity::class.java)
             .greaterThan("updateAt", lastSynchroTime)
             .lessThanOrEqualTo("updateAt", lastSynchroTime + minutes)
             .findAll()
     }
 
     fun updatePlatformNetworkStatus(list: List<PlatformEntity>) {
-        mRealm.executeTransaction {
+        p_realm.executeTransaction {
             list.forEach {
                 val platform = findPlatformEntity(it.platformId!!)
                 if (platform.status != StatusEnum.NEW && !platform.networkStatus!!) {
@@ -353,17 +367,17 @@ class RealmRepository(private val mRealm: Realm) {
     }
 
     fun findAllPlatforms(): List<PlatformEntity> {
-        return mRealm.copyFromRealm(
-            mRealm.where(PlatformEntity::class.java)
+        return p_realm.copyFromRealm(
+            p_realm.where(PlatformEntity::class.java)
                 .findAll()
         )
     }
 
     fun findAllContainerInPlatform(platformId: Int): List<ContainerEntity> {
-        val platform = mRealm.where(PlatformEntity::class.java)
+        val platform = p_realm.where(PlatformEntity::class.java)
             .equalTo("platformId", platformId)
             .findFirst()!!
-        return mRealm.copyFromRealm(platform.containers)
+        return p_realm.copyFromRealm(platform.containers)
     }
 
     fun findContainersVolume(): Double {
@@ -372,8 +386,8 @@ class RealmRepository(private val mRealm: Realm) {
         Log.d(TAG, "findContainersVolume.before")
 
 
-        val allContainers = mRealm.copyFromRealm(
-            mRealm.where(ContainerEntity::class.java)
+        val allContainers = p_realm.copyFromRealm(
+            p_realm.where(ContainerEntity::class.java)
                 .findAll()
         )
         Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
@@ -387,8 +401,8 @@ class RealmRepository(private val mRealm: Realm) {
         }
         Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
 
-        val allPlatforms = mRealm.copyFromRealm(
-            mRealm.where(PlatformEntity::class.java)
+        val allPlatforms = p_realm.copyFromRealm(
+            p_realm.where(PlatformEntity::class.java)
                 .findAll()
         )
 
@@ -412,44 +426,44 @@ class RealmRepository(private val mRealm: Realm) {
     }
 
     fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
-        return mRealm.copyFromRealm(
-            mRealm.where(PlatformEntity::class.java)
+        return p_realm.copyFromRealm(
+            p_realm.where(PlatformEntity::class.java)
                 .findAll()
         ).find { it.coords[0] == lat && it.coords[1] == lon }!!
     }
 
     fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
-        return mRealm.copyFromRealm(mRealm.createObjectFromJson(clazz, json)!!)
+        return p_realm.copyFromRealm(p_realm.createObjectFromJson(clazz, json)!!)
     }
 
     fun findPlatformEntity(platformId: Int): PlatformEntity {
-        return mRealm.where(PlatformEntity::class.java)
+        return p_realm.where(PlatformEntity::class.java)
             .equalTo("platformId", platformId)
             .findFirst()!!
     }
 
     fun findContainerEntity(containerId: Int) =
-        mRealm.where(ContainerEntity::class.java)
+        p_realm.where(ContainerEntity::class.java)
             .equalTo("containerId", containerId)
             .findFirst()!!
 
     fun findCountContainerIsServed(): List<Int> {
-        val result = mRealm.copyFromRealm(mRealm.where(ContainerEntity::class.java).findAll())
+        val result = p_realm.copyFromRealm(p_realm.where(ContainerEntity::class.java).findAll())
         val servedContainersCount = result.filter { it.status != StatusEnum.NEW }.size
         val allCount = result.size
         return listOf(servedContainersCount, allCount)
     }
 
     fun findCountPlatformIsServed(): List<Int> {
-        val result = mRealm.copyFromRealm(mRealm.where(PlatformEntity::class.java).findAll())
+        val result = p_realm.copyFromRealm(p_realm.where(PlatformEntity::class.java).findAll())
         val servedPlatformsCount = result.filter { it.status != StatusEnum.NEW }.size
         val allCount = result.size
         return listOf(servedPlatformsCount, allCount)
     }
 
     fun findPlatformsIsServed(): List<PlatformEntity> {
-        val result = mRealm.copyFromRealm(
-            mRealm.where(PlatformEntity::class.java).findAll().sort("updateAt")
+        val result = p_realm.copyFromRealm(
+            p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
         val filteredList = result.filter { it.status != StatusEnum.NEW }
         return filteredList
@@ -458,7 +472,7 @@ class RealmRepository(private val mRealm: Realm) {
 
     /** добавление фото в платформу **/
     fun updatePlatformMedia(imageFor: Int, platformId: Int, imageBase64: String, coords: Point) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val imageEntity = ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
@@ -490,7 +504,7 @@ class RealmRepository(private val mRealm: Realm) {
 
     // TODO: 29.10.2021 !!!???
     fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
-        mRealm.executeTransaction { realm: Realm ->
+        p_realm.executeTransaction { realm: Realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId)
                 .findFirst()!!
@@ -503,7 +517,7 @@ class RealmRepository(private val mRealm: Realm) {
     }
 
     fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String, coords: Point) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val containerEntity = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
                 .findFirst()!!
@@ -519,7 +533,7 @@ class RealmRepository(private val mRealm: Realm) {
 
     /** удалить фото с контейнера **/
     fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val containerEntity = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
                 .findFirst()!!
@@ -533,7 +547,7 @@ class RealmRepository(private val mRealm: Realm) {
 
     /** удалить фото с платформы **/
     fun removePlatformMedia(imageFor: Int, imageBase64: ImageEntity, platformId: Int) {
-        mRealm.executeTransaction { realm ->
+        p_realm.executeTransaction { realm ->
             val platformEntity = realm.where(PlatformEntity::class.java)
                 .equalTo("platformId", platformId).findFirst()
             when (imageFor) {
@@ -567,4 +581,21 @@ class RealmRepository(private val mRealm: Realm) {
     }
 
 
+    private fun notHasWorkOrderInProgress(): Boolean {
+        var res = false
+        p_realm.executeTransaction { realm ->
+            val workOrders = realm.where(WorkOrderEntity::class.java).findAll()
+            for (workOrder in workOrders) {
+                res = workOrder.progress_at == null
+                if (res) {
+                    return@executeTransaction
+                }
+            }
+        }
+        return res
+    }
+
+    fun hasWorkOrderInProgress(): Boolean {
+        return !notHasWorkOrderInProgress()
+    }
 }

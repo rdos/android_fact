@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".work.map.MapAct">
+    tools:context=".work.ac.map.MapAct">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,11 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-        <include layout="@layout/act_map__workorder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-            />
+        <include layout="@layout/act_map__workorder"/>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llc_activity_map"

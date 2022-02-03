@@ -65,24 +65,24 @@
             android:name=".ui.platform_serve.PlatformServeActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="ru.smartro.worknote.work.map.MapAct"
+            android:name="ru.smartro.worknote.work.ac.map.MapAct"
             android:screenOrientation="portrait"
             android:theme="@style/NoToolbar" />
         <activity
-            android:name="ru.smartro.worknote.work.map.choose.TaskWorkorderAct"
+            android:name="ru.smartro.worknote.work.ac.choose.TaskWorkorderAct"
             android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name="ru.smartro.worknote.work.map.choose.WayBillActivity"
+            android:name="ru.smartro.worknote.work.ac.choose.WayBillActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="ru.smartro.worknote.work.map.choose.VehicleActivity"
+            android:name="ru.smartro.worknote.work.ac.choose.VehicleActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="ru.smartro.worknote.work.map.choose.OrganisationActivity"
+            android:name="ru.smartro.worknote.work.ac.choose.OwnerAct"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.auth.AuthActivity"
+            android:name=".work.ac.StartAct"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>

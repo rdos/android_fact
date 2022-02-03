@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.map
+package ru.smartro.worknote.work.ac.map
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -55,7 +55,7 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
-import ru.smartro.worknote.work.map.choose.WayBillActivity
+import ru.smartro.worknote.work.ac.choose.WayBillActivity
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalAct
 import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity
@@ -64,12 +64,14 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.StatusEnum
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.SynchronizeWorker
-import ru.smartro.worknote.work.WayTaskEntity
+import ru.smartro.worknote.work.WorkOrderEntity
 import ru.smartro.worknote.work.Workorder
 import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
+// TODO:r_dos!  checked, Mem
+//AppPreferences.isHasTask = false
 
 class MapAct : AbstractAct(),
     /*UserLocationObjectListener,*/ MapObjectTapListener,
@@ -166,13 +168,13 @@ class MapAct : AbstractAct(),
                 when (result.status) {
                     Status.SUCCESS -> {
                         logSentry("acceptProgress Status.SUCCESS ")
-                        AppPreferences.isHasTask = true
+//                        AppPreferences.isHasTask = true
                         vm.insertWayTask(workorder)
                     }
                     else -> {
                         logSentry( "acceptProgress Status.ERROR")
                         toast(result.msg)
-                        AppPreferences.isHasTask = false
+//                        AppPreferences.isHasTask = false
                         break
                     }
                 }
@@ -737,7 +739,7 @@ class MapAct : AbstractAct(),
             context.loadingHide()
             WorkManager.getInstance(context).cancelUniqueWork("UploadData")
             clearData()
-            AppPreferences.isHasTask = false
+//            AppPreferences.isHasTask = false
             context.showSuccessComplete().let {
                 it.finish_accept_btn.setOnClickListener {
                     context.startActivity(Intent(context, WayBillActivity::class.java))
@@ -758,7 +760,7 @@ class MapAct : AbstractAct(),
             return db.findPlatforms()
         }
 
-        fun getWayTasks(): List<WayTaskEntity> {
+        fun getWayTasks(): List<WorkOrderEntity> {
             return db.findWayTasks()
         }
 

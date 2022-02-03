@@ -1,4 +1,4 @@
-package ru.smartro.worknote.adapter
+package ru.smartro.worknote.work.ac.choose
 
 import android.view.LayoutInflater
 import android.view.View

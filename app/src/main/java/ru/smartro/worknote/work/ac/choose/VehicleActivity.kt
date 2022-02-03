@@ -1,21 +1,26 @@
-package ru.smartro.worknote.work.map.choose
+package ru.smartro.worknote.work.ac.choose
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_choose.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.adapter.VehicleAdapter
 import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.response.vehicle.Vehicle
+import ru.smartro.worknote.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.util.MyUtil
 
 class VehicleActivity : AbstractAct() {
@@ -70,4 +75,16 @@ class VehicleActivity : AbstractAct() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    open class VehicleViewModel(application: Application) : BaseViewModel(application) {
+
+        fun getVehicle(organisationId: Int): LiveData<Resource<VehicleResponse>> {
+            return network.getVehicle(organisationId)
+        }
+/*
+    fun getCars(authModel: AuthBody): LiveData<Resource<CarsResponse>> {
+        return network.aut h(authModel)*/
+
+    }
+
 }

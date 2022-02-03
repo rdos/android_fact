@@ -23,8 +23,8 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.NetworkRepository
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.ui.auth.AuthActivity
 import ru.smartro.worknote.util.MyUtil
+import ru.smartro.worknote.work.ac.StartAct
 import java.io.File
 import java.io.FileOutputStream
 
@@ -153,7 +153,7 @@ class SynchronizeWorker(
 
     private fun showNotification(context: Context, ongoing: Boolean, content: String, title: String) {
         val channelId = "M_CH_ID"
-        val fullScreenIntent = Intent(context, AuthActivity::class.java)
+        val fullScreenIntent = Intent(context, StartAct::class.java)
         fullScreenIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val fullScreenPendingIntent =
             PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT)
