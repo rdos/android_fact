@@ -1,10 +1,9 @@
-package ru.smartro.worknote.ui.choose.vehicle_2
+package ru.smartro.worknote.work.map.choose
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_choose.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -17,7 +16,6 @@ import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.response.vehicle.Vehicle
-import ru.smartro.worknote.ui.choose.way_list_3.WayBillActivity
 import ru.smartro.worknote.util.MyUtil
 
 class VehicleActivity : AbstractAct() {
@@ -50,7 +48,7 @@ class VehicleActivity : AbstractAct() {
 
         })
 
-        next_btn.setOnClickListener {
+        act_choose_select_all.setOnClickListener {
             if (adapter.getSelectedId() != -1) {
                 AppPreferences.vehicleId = adapter.getSelectedId()
                 startActivity(Intent(this, WayBillActivity::class.java))

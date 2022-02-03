@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.map
+package ru.smartro.worknote.work.map
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -55,7 +55,7 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
-import ru.smartro.worknote.ui.choose.way_list_3.WayBillActivity
+import ru.smartro.worknote.work.map.choose.WayBillActivity
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalAct
 import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity

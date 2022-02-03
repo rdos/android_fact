@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.map
+package ru.smartro.worknote.work.map
 
 import android.content.Intent
 import android.graphics.Color

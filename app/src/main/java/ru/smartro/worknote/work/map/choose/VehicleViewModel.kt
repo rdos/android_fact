@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.choose.vehicle_2
+package ru.smartro.worknote.work.map.choose
 
 import android.app.Application
 import androidx.lifecycle.LiveData

@@ -24,8 +24,8 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.ui.auth.AuthActivity
-import ru.smartro.worknote.ui.choose.owner_1.OrganisationActivity
-import ru.smartro.worknote.ui.map.MapAct
+import ru.smartro.worknote.work.map.choose.OrganisationActivity
+import ru.smartro.worknote.work.map.MapAct
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat

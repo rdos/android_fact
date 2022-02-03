@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.choose.way_task_4
+package ru.smartro.worknote.work.map.choose
 
 import android.app.Application
 import android.content.Intent
@@ -27,7 +27,7 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.work.Workorder
-import ru.smartro.worknote.ui.map.MapAct
+import ru.smartro.worknote.work.map.MapAct
 import ru.smartro.worknote.work.WorkOrderResponse
 
 class TaskWorkorderAct : AbstractAct() {
@@ -62,7 +62,7 @@ class TaskWorkorderAct : AbstractAct() {
                 }
             })
 
-        next_btn.setOnClickListener {
+        act_choose_select_all.setOnClickListener {
             // TODO: добавить логирование
             gotoShowMapAct(null)
         }

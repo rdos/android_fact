@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.choose.way_list_3
+package ru.smartro.worknote.work.map.choose
 
 import android.app.Application
 import androidx.lifecycle.LiveData

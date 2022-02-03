@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.choose.owner_1
+package ru.smartro.worknote.work.map.choose
 
 import android.Manifest
 import android.content.Intent
@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_choose.*
@@ -20,7 +19,6 @@ import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.response.organisation.Organisation
-import ru.smartro.worknote.ui.choose.vehicle_2.VehicleActivity
 import ru.smartro.worknote.util.MyUtil
 
 class OrganisationActivity : AbstractAct() {
@@ -62,7 +60,7 @@ class OrganisationActivity : AbstractAct() {
             }
         })
 
-        next_btn.setOnClickListener {
+        act_choose_select_all.setOnClickListener {
             if (adapter.getSelectedId() != -1) {
                 AppPreferences.organisationId = adapter.getSelectedId()
                 Log.d("OwnerActivity", "getSelectedId: ${adapter.getSelectedId()}")

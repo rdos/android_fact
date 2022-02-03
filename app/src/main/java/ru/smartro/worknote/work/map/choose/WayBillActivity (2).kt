@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.choose.way_list_3
+package ru.smartro.worknote.work.map.choose
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.MenuItem
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_choose.choose_rv
-import kotlinx.android.synthetic.main.activity_choose.next_btn
+import kotlinx.android.synthetic.main.activity_choose.act_choose_select_all
 import kotlinx.android.synthetic.main.activity_way_bill.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
@@ -20,8 +20,6 @@ import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.WayListBody
 import ru.smartro.worknote.service.network.response.way_list.Data
-import ru.smartro.worknote.ui.choose.vehicle_2.VehicleActivity
-import ru.smartro.worknote.ui.choose.way_task_4.TaskWorkorderAct
 import ru.smartro.worknote.util.MyUtil
 import java.text.SimpleDateFormat
 import java.util.*
@@ -77,7 +75,7 @@ class WayBillActivity : AbstractAct() {
             }
         })
 
-        next_btn.setOnClickListener {
+        act_choose_select_all.setOnClickListener {
             if (adapter.getSelectedId() != -1) {
                 AppPreferences.wayBillId = adapter.getSelectedId()
                 AppPreferences.wayBillNumber = adapter.getSelectedNumber()

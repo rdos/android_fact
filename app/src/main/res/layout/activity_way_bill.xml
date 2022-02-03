@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.choose.owner_1.OrganisationActivity">
+    tools:context=".work.map.choose.OrganisationActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/choose_rv"
@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/next_btn"
+        app:layout_constraintBottom_toTopOf="@id/act_choose_select_all"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -26,7 +26,7 @@
         tools:visibility="visible" />
 
     <Button
-        android:id="@+id/next_btn"
+        android:id="@+id/act_choose_select_all"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/choose"

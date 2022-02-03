@@ -65,21 +65,21 @@
             android:name=".ui.platform_serve.PlatformServeActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.map.MapAct"
+            android:name="ru.smartro.worknote.work.map.MapAct"
             android:screenOrientation="portrait"
             android:theme="@style/NoToolbar" />
         <activity
-            android:name=".ui.choose.way_task_4.TaskWorkorderAct"
+            android:name="ru.smartro.worknote.work.map.choose.TaskWorkorderAct"
             android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.choose.way_list_3.WayBillActivity"
+            android:name="ru.smartro.worknote.work.map.choose.WayBillActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.choose.vehicle_2.VehicleActivity"
+            android:name="ru.smartro.worknote.work.map.choose.VehicleActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.choose.owner_1.OrganisationActivity"
+            android:name="ru.smartro.worknote.work.map.choose.OrganisationActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.auth.AuthActivity"
