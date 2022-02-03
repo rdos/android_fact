@@ -79,7 +79,7 @@ class VehicleActivity : AbstractAct() {
     open class VehicleViewModel(application: Application) : BaseViewModel(application) {
 
         fun getVehicle(organisationId: Int): LiveData<Resource<VehicleResponse>> {
-            return network.getVehicle(organisationId)
+            return networkDat.getVehicle(organisationId)
         }
 /*
     fun getCars(authModel: AuthBody): LiveData<Resource<CarsResponse>> {

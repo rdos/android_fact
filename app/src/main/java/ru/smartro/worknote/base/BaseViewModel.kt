@@ -13,8 +13,8 @@ import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {
     protected var TAG : String = "--Aaa${this::class.simpleName}"
-    protected val network = NetworkRepository(application.applicationContext)
-    val db = RealmRepository(Realm.getDefaultInstance())
+    val networkDat = NetworkRepository(application.applicationContext)
+    val baseDat = RealmRepository(Realm.getDefaultInstance())
 
     /**
     fun getRealm(): RealmRepository {

@@ -7,7 +7,7 @@ import ru.smartro.worknote.work.PlatformEntity
 class JournalViewModel(application: Application) : BaseViewModel(application) {
 
     fun findPlatformsIsServed(): List<PlatformEntity> {
-        return db.findPlatformsIsServed()
+        return baseDat.findPlatformsIsServed()
     }
 //
 //    fun findWayTask(): WayTaskEntity {

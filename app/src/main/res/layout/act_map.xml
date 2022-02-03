@@ -19,24 +19,6 @@
 
         <include layout="@layout/act_map__workorder"/>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/llc_activity_map"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/acb_activity_map__end_workorder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Досрочно завершить"
-                />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
         <com.av.verticalchipgroup.CustomChipGroup
             android:id="@+id/chipGroup"
             android:layout_width="wrap_content"

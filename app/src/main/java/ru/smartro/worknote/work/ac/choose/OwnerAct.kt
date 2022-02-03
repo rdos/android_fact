@@ -87,7 +87,7 @@ class OwnerAct : AbstractAct() {
 
     open class OrganisationViewModel(application: Application) : BaseViewModel(application) {
         fun getOwners(): LiveData<Resource<OrganisationResponse>> {
-            return network.getOwners()
+            return networkDat.getOwners()
         }
     }
 }

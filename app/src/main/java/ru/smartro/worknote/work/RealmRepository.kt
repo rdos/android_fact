@@ -5,6 +5,7 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.Realm
 import io.realm.RealmList
 import io.realm.RealmModel
+import io.realm.RealmQuery
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
@@ -19,14 +20,14 @@ import kotlin.math.round
 class RealmRepository(private val p_realm: Realm) {
     private val TAG: String = "RealmRepository"
 
-    fun insertWayTask(workorder: Workorder) {
+    fun insertWayTask(woRKoRDeRknow1: WoRKoRDeR_know1) {
 
         fun mapMedia(data: List<String>): RealmList<ImageEntity> {
             return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0, coords = RealmList()) }
         }
 
         // TODO: 29.10.2021 ! it.volume = 0.0 ??Error
-        fun mapContainers(list: List<Container>): RealmList<ContainerEntity> {
+        fun mapContainers(list: List<CoNTaiNeR_know1>): RealmList<ContainerEntity> {
             return list.mapTo(RealmList()) {
 //                var volumeReal : Double? = null
 //                if (it.volume >  0) {
@@ -44,11 +45,11 @@ class RealmRepository(private val p_realm: Realm) {
             }
         }
 
-        fun mapPlatforms(data: List<Platform>, workorderId: Int): RealmList<PlatformEntity> {
+        fun mapPlatforms(data: List<Platform_know1>, workorderId: Int): RealmList<PlatformEntity> {
             return data.mapTo(RealmList()) {
                 PlatformEntity(
                     workorderId = workorderId, address = it.address, afterMedia = mapMedia(it.afterMedia),
-                    beforeMedia = mapMedia(it.beforeMedia), beginnedAt = it.beginnedAt, containers = mapContainers(it.containers),
+                    beforeMedia = mapMedia(it.beforeMedia), beginnedAt = it.beginnedAt, containers = mapContainers(it.coNTaiNeRKnow1s),
                     coords = RealmList(it.coords[0], it.coords[1]), failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
                     finishedAt = it.finishedAt, platformId = it.id,
@@ -59,27 +60,80 @@ class RealmRepository(private val p_realm: Realm) {
             }
         }
 
-        fun mapStart(data: Start) = StartEntity(
+        fun mapStart(data: STaRT_know1) = StartEntity(
             coords = RealmList(data.coords[0], data.coords[1]), name = data.name, id = data.id
         )
 
 
         val wayTask = WorkOrderEntity(
-            id = workorder.id,
-            name = workorder.name, platforms = mapPlatforms(workorder.platforms, workorder.id),
-            start = mapStart(workorder.start)
+            id = woRKoRDeRknow1.id,
+            name = woRKoRDeRknow1.name, platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id),
+            start = mapStart(woRKoRDeRknow1.STaRTknow1)
         )
 
-        insertWorkOrders(wayTask)
+        insUpdWorkOrders(wayTask)
     }
 
-    private fun insertWorkOrders(wayTask: WorkOrderEntity) {
+    /** WORKORDER_ST ***WORKORDER_ART*** WORKORDER_ST ***WORKORDER_ART*** */
+    /** WORKORDER_ST ***WORKORDER_ART*** WORKORDER_ST ***WORKORDER_ART*** */
+    /** WORKORDER_ST ***WORKORDER_ART*** WORKORDER_ST ***WORKORDER_ART*** */
+    private fun notHasWorkOrderInProgress(): Boolean {
+        var res = false
         p_realm.executeTransaction { realm ->
-            wayTask.calcAndSaveStatisticsInfo(p_realm)
-            realm.insert(wayTask)
+            val workOrders = realm.where(WorkOrderEntity::class.java).findAll()
+            for (workOrder in workOrders) {
+                res = workOrder.progress_at == null
+                if (res) {
+                    return@executeTransaction
+                }
+            }
+        }
+        return res
+    }
+
+    /** WORKORDER_ST ***WORKORDER_ART*** WORKORDER_ST ***WORKORDER_ART*** */
+    fun deleteWorkOrders() {
+        refreshRealm_know0()
+        p_realm.executeTransaction { realm ->
+            realm.delete(WorkOrderEntity:: class.java)
         }
     }
 
+    private fun insUpdWorkOrders(wayTask: WorkOrderEntity) {
+        p_realm.executeTransaction { realm ->
+            wayTask.calcAndSaveStatisticsInfo(p_realm)
+            realm.insertOrUpdate(wayTask)
+        }
+    }
+
+    fun setProgressData(newWorkOrder: WorkOrderEntity) {
+        newWorkOrder.progress_at = MyUtil.currentTime()
+        p_realm.executeTransaction { realm ->
+            // TODO:r_dos0
+            insUpdWorkOrders(newWorkOrder)
+        }
+    }
+    
+
+    fun findWorkOrders(workOrderId: Int?): List<WorkOrderEntity> {
+        var res = emptyList<WorkOrderEntity>()
+        p_realm.executeTransaction { realm ->
+            val query = realm.where(WorkOrderEntity::class.java)
+            val workOrderS = query.equalTo("id", workOrderId!!).findAll()
+            if(workOrderS.isNotEmpty()){
+                res = realm.copyFromRealm(workOrderS)
+            }
+
+        }
+        return res
+    }
+
+    fun hasWorkOrderInProgress(): Boolean {
+        return !notHasWorkOrderInProgress()
+    }
+
+    /** WORKORDER_END ***WORKORDER_END***WORKORDER_END*****WORKORDER_END***WORKORDER_END******** */
+    /** WORKORDER_END ***WORKORDER_END***WORKORDER_END*****WORKORDER_END***WORKORDER_END*******/
     //нет знаний =_know от слова -know ledge
     //0 -не уверен что нужно = ??!
     private fun refreshRealm_know0(){
@@ -87,13 +141,6 @@ class RealmRepository(private val p_realm: Realm) {
             p_realm.refresh()
         } catch (ex:Exception){
             // TODO:
-        }
-    }
-
-    fun deleteWorkOrders() {
-        refreshRealm_know0()
-        p_realm.executeTransaction { realm ->
-            realm.delete(WorkOrderEntity:: class.java)
         }
     }
 
@@ -580,22 +627,9 @@ class RealmRepository(private val p_realm: Realm) {
         entity?.updateAt = MyUtil.timeStamp()
     }
 
-
-    private fun notHasWorkOrderInProgress(): Boolean {
-        var res = false
-        p_realm.executeTransaction { realm ->
-            val workOrders = realm.where(WorkOrderEntity::class.java).findAll()
-            for (workOrder in workOrders) {
-                res = workOrder.progress_at == null
-                if (res) {
-                    return@executeTransaction
-                }
-            }
-        }
-        return res
+    fun setNextProcessDate(workOrder: WorkOrderEntity) {
+        //психи крики всем РОСТ
     }
 
-    fun hasWorkOrderInProgress(): Boolean {
-        return !notHasWorkOrderInProgress()
-    }
+
 }

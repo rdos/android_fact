@@ -9,48 +9,48 @@ import ru.smartro.worknote.work.PlatformEntity
 class PlatformServeViewModel(application: Application) : BaseViewModel(application) {
 
     fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?, comment: String?) {
-        db.updateContainerVolume(platformId, containerId, volume, comment)
+        baseDat.updateContainerVolume(platformId, containerId, volume, comment)
     }
 
     fun updateContainersVolumeIfnNull(platformId: Int, volume: Double) {
         // TODO: 23.12.2021 когда.
-        db.updateContainersVolumeIfnNull(platformId, volume)
+        baseDat.updateContainersVolumeIfnNull(platformId, volume)
     }
 
     fun updateSelectionVolume(platformId: Int, volume: Double?) {
-        db.updateSelectionVolume(platformId, volume)
+        baseDat.updateSelectionVolume(platformId, volume)
     }
 
     fun clearContainerVolume(platformId: Int, containerId: Int) {
-        db.clearContainerVolume(platformId, containerId)
+        baseDat.clearContainerVolume(platformId, containerId)
     }
 
     fun updatePlatformStatus(platformId: Int, status: String) {
-        db.updatePlatformStatus(platformId, status)
+        baseDat.updatePlatformStatus(platformId, status)
     }
 
     fun findPlatformEntity(platformId: Int): PlatformEntity {
-        return db.findPlatformEntity(platformId)
+        return baseDat.findPlatformEntity(platformId)
     }
 
     fun findContainerEntity(containerId: Int): ContainerEntity {
-        return db.findContainerEntity(containerId)
+        return baseDat.findContainerEntity(containerId)
     }
 
     fun findAllContainerInPlatform(platformId: Int): List<ContainerEntity> {
-        return db.findAllContainerInPlatform(platformId)
+        return baseDat.findAllContainerInPlatform(platformId)
     }
 
     fun removePlatformMedia(photoFor: Int, image: ImageEntity, platformId: Int) {
-        db.removePlatformMedia(photoFor, image, platformId)
+        baseDat.removePlatformMedia(photoFor, image, platformId)
     }
 
     fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
-        db.removeContainerMedia(platformId, containerId, imageBase64)
+        baseDat.removeContainerMedia(platformId, containerId, imageBase64)
     }
 
     fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
-        db.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
+        baseDat.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
     }
 
 

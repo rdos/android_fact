@@ -3,14 +3,17 @@ package ru.smartro.worknote.work
 import com.google.gson.annotations.SerializedName
 
 
-data class WorkOrderResponse(
+
+//todo:r_dos::_know0=знаешь точно, что ОСТАВИТЬ И НУЖНО ВСЕМУ коГду(а))
+//       _know1=а это не ОСТАВЛЯТЬ
+data class WorkOrderResponse_know1(
     @SerializedName("data")
-    val data: WorkOrderData,
+    val dataKnow100: WorkOrderData_know100,
     @SerializedName("success")
     val success: Boolean
 )
 
-data class Workorder(
+data class WoRKoRDeR_know1(
     @SerializedName("id")
     val id: Int,
     @SerializedName("accounting")
@@ -22,9 +25,9 @@ data class Workorder(
     @SerializedName("name")
     val name: String,
     @SerializedName("platforms")
-    val platforms: List<Platform>,
+    val platformKnow1s: List<Platform_know1>,
     @SerializedName("start")
-    val start: Start,
+    val STaRTknow1: STaRT_know1,
     @SerializedName("unload")
     val unload: Unload
 )
@@ -38,7 +41,7 @@ data class Unload(
     val name: String
 )
 
-data class Start(
+data class STaRT_know1(
     @SerializedName("coords")
     val coords: List<Double>,
     @SerializedName("id")
@@ -47,7 +50,7 @@ data class Start(
     val name: String
 )
 
-data class Platform(
+data class Platform_know1(
     @SerializedName("address")
     val address: String,
     @SerializedName("status")
@@ -61,7 +64,7 @@ data class Platform(
     @SerializedName("beginned_at")
     val beginnedAt: String,
     @SerializedName("containers")
-    val containers: List<Container>,
+    val coNTaiNeRKnow1s: List<CoNTaiNeR_know1>,
     @SerializedName("coords")
     val coords: List<Double>,
     @SerializedName("failure_media")
@@ -90,7 +93,7 @@ data class Platform(
     var orderAlertTime: String? = null,
 )
 
-data class WorkOrderData(
+data class WorkOrderData_know100(
     @SerializedName("id")
     val id: Int,
     @SerializedName("number")
@@ -100,10 +103,10 @@ data class WorkOrderData(
     @SerializedName("order_date")
     val orderDate: String,
     @SerializedName("workorders")
-    val workorders: List<Workorder>
+    val woRKoRDeRknow1s: List<WoRKoRDeR_know1>
 )
 
-data class Container(
+data class CoNTaiNeR_know1(
     @SerializedName("client")
     val client: String,
     @SerializedName("contacts")

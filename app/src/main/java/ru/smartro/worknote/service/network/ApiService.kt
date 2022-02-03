@@ -24,7 +24,7 @@ import ru.smartro.worknote.service.network.response.served.ServedResponse
 import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.service.network.response.way_list.WayListResponse
-import ru.smartro.worknote.work.WorkOrderResponse
+import ru.smartro.worknote.work.WorkOrderResponse_know1
 
 interface ApiService {
 
@@ -63,7 +63,8 @@ interface ApiService {
     @POST("workorder/{id}/progress")
     fun progress(@Path("id") id: Int, @Body time: ProgressBody): Call<EmptyResponse>
 
-    @POST("workorder/{id}/complete")
+    //find   vs.networkDat.completeWay(-11, body)
+    @POST("workorder/{id}/c11omplete")
     suspend fun complete(@Path("id") id: Int, @Body time: CompleteWayBody): Response<EmptyResponse>
 
     @GET("work_order_cancelation_reason")
@@ -72,13 +73,14 @@ interface ApiService {
     @GET("work_order_cancelation_reason")
     suspend fun getCancelWayReasonNoLv(): Response<CancelationReasonResponse>
 
-    @POST("workorder/{id}/early_complete")
+    //см  vs.networkDat.earlyComplete(-111, body)
+    @POST("workorder/{id}/early_comp2ete")
     suspend fun earlyComplete(@Path("id") id: Int, @Body body: EarlyCompleteBody): Response<EmptyResponse>
 
     @POST("synchro")
     suspend fun postSynchro(@Body time: SynchronizeBody): Response<SynchronizeResponse>
 
     @POST("synchro/{o_id}/{w_id}")
-    suspend fun getWorkOrder(@Path("o_id") organisationId: Int, @Path("w_id") waybillId: Int): Response<WorkOrderResponse>
+    suspend fun getWorkOrder(@Path("o_id") organisationId: Int, @Path("w_id") waybillId: Int): Response<WorkOrderResponse_know1>
 
 }

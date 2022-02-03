@@ -21,8 +21,8 @@ import java.util.*
 
 open class WorkOrderEntity(
     @PrimaryKey
-    var id: Int? = null,
-    var name: String? = null,
+    var id: Int = Inull,
+    var name: String = Snull,
     var platforms: RealmList<PlatformEntity> = RealmList(),
     var start: StartEntity? = null,
 //    var unload: UnloadEntity? = null,

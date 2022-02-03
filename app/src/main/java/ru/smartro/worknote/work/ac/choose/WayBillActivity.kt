@@ -107,7 +107,7 @@ class WayBillActivity : AbstractAct() {
     open class WayListViewModel(application: Application) : BaseViewModel(application) {
 
         fun getWayList(body : WayListBody): LiveData<Resource<WayListResponse>> {
-            return network.getWayList(body)
+            return networkDat.getWayList(body)
         }
 
     }

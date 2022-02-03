@@ -89,14 +89,6 @@ object AppPreferences {
         }
 
 
-
-    // TODO: 01.02.2022
-    var wayTaskId: Int
-        get() = preferences.getInt("wayTaskId", 0)
-        set(value) = preferences.edit {
-            it.putInt("wayTaskId", value)
-        }
-
     var workerStatus: Boolean
         get() = preferences.getBoolean("workerStatus", true)
         set(value) = preferences.edit {

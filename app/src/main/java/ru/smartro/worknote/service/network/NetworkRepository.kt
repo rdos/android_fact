@@ -267,7 +267,7 @@ class NetworkRepository(private val context: Context) {
         }
     }*/
 
-    fun getWorkOder(organisationId: Int, wayId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
+    fun getWorkOrder(organisationId: Int, wayId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
         Log.i(TAG, "getWorkOder.before")
 
         try {

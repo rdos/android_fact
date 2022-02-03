@@ -3,14 +3,12 @@ package ru.smartro.worknote.work.ac.choose
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmModel
@@ -24,11 +22,9 @@ import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.service.AppPreferences
-import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
-import ru.smartro.worknote.work.Workorder
+import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.map.MapAct
-import ru.smartro.worknote.work.WorkOrderResponse
 
 class TaskWorkorderAct : AbstractAct() {
 
@@ -40,13 +36,13 @@ class TaskWorkorderAct : AbstractAct() {
         supportActionBar?.title = "Выберите сменное задание"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         loadingShow()
-        vm.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayBillId)
+        // TODO:r_dos!!пох их код
+        vm.networkDat.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayBillId)
             .observe(this, Observer { result ->
                 val data = result.data
                 when (result.status) {
                     Status.SUCCESS -> {
-                        val workorders = data!!.data.workorders
-                        vm.db.deleteWorkOrders()
+                        val workorders = data!!.dataKnow100.woRKoRDeRknow1s
                         vm.insertWayTask(workorders)
                         choose_rv.adapter = WayTaskAdapter(workorders)
                         loadingHide()
@@ -108,7 +104,7 @@ class TaskWorkorderAct : AbstractAct() {
         return super.onOptionsItemSelected(item)
     }
 
-    inner class WayTaskAdapter(private val p_workorderList: List<Workorder>) :
+    inner class WayTaskAdapter(private val p_woRKoRDeRknow1List: List<WoRKoRDeR_know1>) :
         RecyclerView.Adapter<WayTaskAdapter.OwnerViewHolder>() {
         private var checkedPosition = -1
 
@@ -118,11 +114,11 @@ class TaskWorkorderAct : AbstractAct() {
         }
 
         override fun getItemCount(): Int {
-            return p_workorderList.size
+            return p_woRKoRDeRknow1List.size
         }
 
         override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
-            val workorder = p_workorderList[position]
+            val workorder = p_woRKoRDeRknow1List[position]
 
             if (checkedPosition == -1) {
                 holder.itemView.choose_cardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
@@ -173,29 +169,27 @@ class TaskWorkorderAct : AbstractAct() {
     open class WayTaskViewModel(application: Application) : BaseViewModel(application) {
 
 /*
-    fun getWayTask(wayId: Int, wayTaskBody: WayTaskBody): LiveData<Resource<WayTaskResponse>> {
-        return network.getWayTask(wayId, wayTaskBody)
-    }
+        fun getWorkOrder(organisationId: Int, wayId: Int): LiveData<Resource<WorkOrderResponse_know1>> {
+            Log.d("AAA", "getWorkOrder")
+            return :r_dos)цент неОтроПа
+        }
+
 
 */
 
-        fun insertWayTask(workorderList: List<Workorder>) {
-            db.deleteWorkOrders()
-            for (workorder in workorderList) {
+        fun insertWayTask(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
+            baseDat.deleteWorkOrders()
+            for (workorder in woRKoRDeRknow1List) {
                 try {
-                    db.insertWayTask(workorder)
+                    baseDat.insertWayTask(workorder)
                 } catch (ex: Exception) {
 //                    logSentry("insertWayTask.ex.Exception" + ex.message)
                 }
             }
         }
-        fun getWorkOrder(organisationId: Int, wayId: Int): LiveData<Resource<WorkOrderResponse>> {
-            Log.d("AAA", "getWorkOrder")
-            return network.getWorkOder(organisationId, wayId)
-        }
 
         fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
-            return db.createObjectFromJson(clazz, json)
+            return baseDat.createObjectFromJson(clazz, json)
         }
 
 

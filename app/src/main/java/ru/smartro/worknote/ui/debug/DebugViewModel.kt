@@ -6,11 +6,11 @@ import ru.smartro.worknote.base.BaseViewModel
 class DebugViewModel(application: Application) : BaseViewModel(application) {
 
   fun findContainerProgress () : List<Int>{
-      return db.findCountContainerIsServed()
+      return baseDat.findCountContainerIsServed()
   }
 
   fun findPlatformProgress () : List<Int>{
-      return db.findCountPlatformIsServed()
+      return baseDat.findCountPlatformIsServed()
   }
 
 }

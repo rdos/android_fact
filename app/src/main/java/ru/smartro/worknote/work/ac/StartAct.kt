@@ -24,7 +24,7 @@ import ru.smartro.worknote.work.ac.choose.OwnerAct
 import ru.smartro.worknote.util.MyUtil
 
 class StartAct : AbstractAct() {
-    private val vm: AuthViewModel by viewModel()
+    private val viewModel_know0: AuthViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ class StartAct : AbstractAct() {
         }
         // TODO: 01.11.2021 !! !
         if (AppPreferences.isLogined) {
-            val isHasTask = vm.db.hasWorkOrderInProgress()
+            val isHasTask = viewModel_know0.baseDat.hasWorkOrderInProgress()
             if (isHasTask) {
                 startActivity(Intent(this, MyUtil.getNextActClazz__todo(isHasTask)))
             } else {
@@ -52,7 +52,7 @@ class StartAct : AbstractAct() {
         auth_enter.setOnClickListener {
             if (!auth_login.text.isNullOrBlank() && !auth_password.text.isNullOrBlank()) {
                 loadingShow()
-                vm.auth(AuthBody(auth_login.text.toString(), auth_password.text.toString()))
+                viewModel_know0.auth(AuthBody(auth_login.text.toString(), auth_password.text.toString()))
                     .observe(this, Observer { result ->
                         val data = result.data
                         when (result.status) {
@@ -103,7 +103,7 @@ class StartAct : AbstractAct() {
    open class AuthViewModel(application: Application) : BaseViewModel(application) {
 
         fun auth(authModel: AuthBody): LiveData<Resource<AuthResponse>> {
-            return network.auth(authModel)
+            return networkDat.auth(authModel)
         }
     }
 }

@@ -10,27 +10,27 @@ class ProblemViewModel(application: Application) : BaseViewModel(application) {
 
 
     fun findPlatformEntity(platformId: Int): PlatformEntity {
-        return db.findPlatformEntity(platformId)
+        return baseDat.findPlatformEntity(platformId)
     }
 
     fun findContainerEntity(containerId: Int): ContainerEntity {
-        return db.findContainerEntity(containerId)
+        return baseDat.findContainerEntity(containerId)
     }
 
     fun updateContainerProblem(platformId: Int, containerId: Int, problemComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
-        db.updateContainerProblem(platformId, containerId, problemComment, problemType, problem, failProblem)
+        baseDat.updateContainerProblem(platformId, containerId, problemComment, problemType, problem, failProblem)
     }
 
     fun updatePlatformProblem(platformId: Int, problemComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
-        db.updatePlatformProblem(platformId, problemComment, problemType, problem, failProblem)
+        baseDat.updatePlatformProblem(platformId, problemComment, problemType, problem, failProblem)
     }
 
     fun findBreakDown(): List<String> {
-        return db.findAllBreakDown()
+        return baseDat.findAllBreakDown()
     }
 
     fun findFailReason(): List<String> {
-        return db.findAllFailReason()
+        return baseDat.findAllFailReason()
     }
 
 }

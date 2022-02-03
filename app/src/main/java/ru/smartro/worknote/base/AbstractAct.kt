@@ -13,11 +13,14 @@ import ru.smartro.worknote.Inull
 //        }
 abstract class AbstractAct : AppCompatActivity() {
 
-
     protected var TAG : String = "${this::class.simpleName}"
+
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
         Log.i(TAG + "Sent", text)
+    }
+    protected fun logSentry(data: Int) {
+        logSentry(data.toString())
     }
 
 
@@ -62,4 +65,11 @@ abstract class AbstractAct : AppCompatActivity() {
         Log.d(TAG, "onDestroy")
 
     }
+
+
 }
+
+//TODO: find next шагай)_/gotoAdd = Add -> create->ПОТОМ->Save->ПОТОМ Show
+/** :r_dos::_1n0w0=переделать, удалить=не то 100% внимание /
+:yo-11now0 пудов, но форма странная.
+        */
