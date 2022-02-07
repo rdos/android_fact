@@ -1,12 +1,15 @@
 package ru.smartro.worknote.base
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.sentry.Sentry
+import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
+import ru.smartro.worknote.work.ac.map.MapAct
 import java.lang.Exception
 
 //        try {
@@ -27,6 +30,29 @@ abstract class AbstractAct : AppCompatActivity() {
     protected fun logSentry(data: Int) {
         logSentry(data.toString())
     }
+
+    protected fun sendMessage(intent: Intent) {
+        startActivity(intent)
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//        workorderId?.let {
+//            intent.putExtra(PUT_EXTRA_PARAM_ID, workorderId)
+//        }
+//        startActivity(intent)
+/**   intent: ей я сообщениею.
+ * AppPreferences: ей это же она сообщение(эй это я сообщение)ей это же она сообщение
+        savedInstanceState: ей ей, Пацаны, вы е попутали? это она сообщение.)):()
+    } */}
+    protected val isDevelMode: Boolean
+        get() {
+            var result = false
+            if (BuildConfig.BUILD_TYPE == "debug") {
+                result = BuildConfig.VERSION_NAME == "0.0.0.0-STAGE"
+            }
+            if (BuildConfig.BUILD_TYPE == "debugRC") {
+                result = BuildConfig.VERSION_NAME == "0.0.0.0-STAGE"
+            }
+            return result
+        }
 
     protected fun setAntiErrorClick(itemView: View) {
         itemView.isEnabled = false

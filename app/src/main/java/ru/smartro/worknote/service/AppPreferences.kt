@@ -96,7 +96,6 @@ object AppPreferences {
         }
 
     fun clear() {
-        isLogined = false
         accessToken = ""
         vehicleId = 0
         organisationId = 0
@@ -116,6 +115,16 @@ object AppPreferences {
             // TODO: 24.12.2021  /\
         }
         return result
+    }
+
+    fun isDevelMode() {
+//        accessToken = ""
+        vehicleId = 0
+        organisationId = 0
+        wayBillId = 0
+        //TODO: rNull!!
+//        wayBillNumber = "rNull"
+        workerStatus = false
     }
 
 }

@@ -40,7 +40,6 @@ import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
@@ -61,7 +60,8 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.SynchronizeWorker
 import ru.smartro.worknote.work.WorkOrderEntity
-import ru.smartro.worknote.work.ac.choose.StartWayBillAct
+import ru.smartro.worknote.work.ac.StartAct
+import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
@@ -166,7 +166,19 @@ class MapAct : AbstractAct(),
     }
 
     private fun setDevelMode() {
-        if (BuildConfig.BUILD_TYPE != "debugProd") {
+        if (isDevelMode) {
+            mAcbInfo.setOnLongClickListener {
+                //ВОТ тут прошло 3 или больше секунды с начала нажатия
+                //можно что-то запустить
+                WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
+                vs.clearData()
+                val intent = Intent(this, StartWayBillAct::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                this.startActivity(intent)
+                AppPreferences.isDevelMode()
+                return@setOnLongClickListener true
+            }
+
 //            mAcbInfo.setOnTouchListener(object : View.OnTouchListener {
 //                var startTime: Long = 0
 //                override fun onTouch(v: View?, event: MotionEvent): Boolean {

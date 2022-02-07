@@ -8,7 +8,6 @@
     android:layout_gravity="center"
     android:orientation="vertical">
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_act_start_waybill"
         android:layout_width="match_parent"

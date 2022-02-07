@@ -1,10 +1,9 @@
-package ru.smartro.worknote.work.ac.choose
+package ru.smartro.worknote.work.ac.checklist
 
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,7 +28,6 @@ import java.util.*
 
 class StartWayBillAct : AbstractAct() {
     private val viewModel: WayListViewModel by viewModel()
-    private lateinit var adapter: WayBillAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +81,12 @@ class StartWayBillAct : AbstractAct() {
             }
         })
 
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(this, StartVehicleAct::class.java)
+        sendMessage(intent)
+//        super.onBackPressed()
     }
 
     private fun gotoNextAct(wayBillId: Int, wayBillNumber: String) {

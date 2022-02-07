@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ac.choose
+package ru.smartro.worknote.work.ac.checklist
 
 import android.app.Application
 import android.content.Intent
@@ -9,8 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

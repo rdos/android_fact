@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ac.choose
+package ru.smartro.worknote.work.ac.checklist
 
 import android.app.Application
 import android.content.Intent

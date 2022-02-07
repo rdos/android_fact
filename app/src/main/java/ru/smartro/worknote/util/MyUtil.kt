@@ -24,7 +24,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ac.choose.StartOwnerAct
+import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import ru.smartro.worknote.work.ac.map.MapAct
 import java.io.ByteArrayOutputStream
 import java.io.InputStream

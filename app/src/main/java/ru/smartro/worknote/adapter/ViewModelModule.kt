@@ -9,10 +9,10 @@ import ru.smartro.worknote.work.ac.map.MapAct
 import ru.smartro.worknote.ui.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.ui.problem.ProblemViewModel
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ac.choose.StartOwnerAct
-import ru.smartro.worknote.work.ac.choose.StartWorkOrderAct
-import ru.smartro.worknote.work.ac.choose.StartVehicleAct
-import ru.smartro.worknote.work.ac.choose.StartWayBillAct
+import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
+import ru.smartro.worknote.work.ac.checklist.StartWorkOrderAct
+import ru.smartro.worknote.work.ac.checklist.StartVehicleAct
+import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
 
 val viewModelModule = module {
     viewModel { StartAct.AuthViewModel(androidApplication()) }

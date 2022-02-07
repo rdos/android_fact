@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ac.choose
+package ru.smartro.worknote.work.ac.checklist
 
 import android.Manifest
 import android.app.Application
@@ -24,7 +24,6 @@ import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.response.organisation.Organisation
 import ru.smartro.worknote.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.util.MyUtil
-import java.lang.Exception
 
 //todo:r_dos choose in checklist(как у QA)
 class StartOwnerAct : AbstractAct() {

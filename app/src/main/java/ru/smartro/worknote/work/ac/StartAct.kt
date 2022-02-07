@@ -20,7 +20,7 @@ import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.service.network.response.auth.AuthResponse
-import ru.smartro.worknote.work.ac.choose.StartOwnerAct
+import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import ru.smartro.worknote.util.MyUtil
 
 class StartAct : AbstractAct() {
@@ -60,12 +60,14 @@ class StartAct : AbstractAct() {
                 auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
                 return@setOnLongClickListener true
             }
-            if (BuildConfig.VERSION_NAME == "0.0.0.0-STAGE") {
-                auth_login.setText("admin@smartro.ru")
-                auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
-                clickAuthEnter()
-            }
         }
+
+        if (isDevelMode) {
+            auth_login.setText("admin@smartro.ru")
+            auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
+            clickAuthEnter()
+        }
+
 
 /*        auth_enter.setOnLongClickListener {
             auth_login.setText("gkh2@smartro.ru")
@@ -84,7 +86,6 @@ class StartAct : AbstractAct() {
                         Status.SUCCESS -> {
                             loadingHide()
                             toast("Вы авторизованы")
-                            AppPreferences.isLogined = true
                             AppPreferences.userLogin = auth_login.text.toString()
                             AppPreferences.accessToken = data!!.data.token
                             startActivity(Intent(this, StartOwnerAct::class.java))
