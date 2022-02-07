@@ -40,6 +40,7 @@ import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
@@ -47,13 +48,11 @@ import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.work.ac.choose.StartWayBillAct
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalAct
 import ru.smartro.worknote.ui.platform_serve.PlatformServeActivity
@@ -62,9 +61,10 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.SynchronizeWorker
 import ru.smartro.worknote.work.WorkOrderEntity
-import java.util.ArrayList
+import ru.smartro.worknote.work.ac.choose.StartWayBillAct
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
+
 
 //todo:FOR-_dos val hasNotServedPlatform = platforms.any { found -> found.status == StatusEnum.NEW }
 // TODO:r_dos! а то checked, Mem РАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тут
@@ -118,10 +118,11 @@ class MapAct : AbstractAct(),
             getNetDATEsetBaseDate(workOrderS)
         }
         mAcbInfo = findViewById<AppCompatButton>(R.id.acb_act_map__info)
+
         mAcbInfo.setOnClickListener {
             showInfoDialog().let {
-                initWorkOrderInfo(it)
                 mAcbComplete = it.findViewById(R.id.acb_act_map__workoder_info__complete)
+                initWorkOrderInfo(it)
                 mAcbComplete.isEnabled = false
                 mAcbComplete.setOnClickListener{
                     gotoComplete()
@@ -129,15 +130,19 @@ class MapAct : AbstractAct(),
                 val actvInfo = it.findViewById<AppCompatTextView>(R.id.actv_act_map__workoder_info)
 
                 val workOrders = getWorkOrders()
-                var infoText = "Статистика\n_______\n"
+                var infoText = "Статистика\n_______"
                 for(workOrder in workOrders) {
-                    infoText += "\n${workOrder.id} ${workOrder.name}"
-                    infoText += "\n_____"
-                    infoText += "\nКол-во платформ: ${workOrder.cnt_platform}"
-                    infoText += "\nКонтейнеров всего/обслуженно/осталось/проблемные:\n"
-                    infoText += "${workOrder.cnt_container}/${workOrder.cnt_container_status_success}/"
-                    val progressCnt = workOrder.cnt_container - workOrder.cnt_container_status_success - workOrder.cnt_container_status_error
-                    infoText += "$progressCnt/${workOrder.cnt_container_status_error}/}"
+                    infoText += "\n${workOrder.id} ${workOrder.name}________"
+                    infoText += "\nПлощадки:   всего ${workOrder.cnt_platform}"
+                    infoText += "\nобслуженно/осталось/проблемы:\n"
+                    infoText += "${workOrder.cnt_platform_status_success}"
+                    infoText += "/${workOrder.cntPlatformProgress()}"
+                    infoText += "/${workOrder.cnt_platform_status_error}"
+                    infoText += "\nКонтейнеры:   всего ${workOrder.cnt_container}"
+                    infoText += "\nобслуженно/осталось/проблемы:\n"
+                    infoText += "${workOrder.cnt_container_status_success}"
+                    infoText += "/${workOrder.cntContainerProgress()}"
+                    infoText += "/${workOrder.cnt_container_status_error}\n"
                 }
 
                 actvInfo.text = infoText
@@ -157,11 +162,36 @@ class MapAct : AbstractAct(),
 //        map_toast.setOnClickListener{
 //            toast("${AppPreferences.wayBillId}")
 //        }
+        setDevelMode()
+    }
+
+    private fun setDevelMode() {
+        if (BuildConfig.BUILD_TYPE != "debugProd") {
+            mAcbInfo.setOnTouchListener(object : View.OnTouchListener {
+                var startTime: Long = 0
+                override fun onTouch(v: View?, event: MotionEvent): Boolean {
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> startTime = System.currentTimeMillis()
+                        MotionEvent.ACTION_MOVE -> {}
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            val totalTime: Long = System.currentTimeMillis() - startTime
+                            val totalSecunds = totalTime / 1000
+                            if (totalSecunds >= 5) {
+                                //ВОТ тут прошло 3 или больше секунды с начала нажатия
+                                //можно что-то запустить
+                                WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
+                                vs.clearData()
+                                MyUtil.logout(this@MapAct)
+                            }
+                        }
+                    }
+                    return true
+                }
+            })
+        }
     }
 
     private fun refreshData() {
-        loadingHide()
-
         mWorkOrderS = vs.baseDat.findWorkOrders()
         mPlatformS = vs.baseDat.findPlatforms()
         initMapView()
@@ -171,14 +201,13 @@ class MapAct : AbstractAct(),
 
     private fun setInfoData() {
         val workOrders = getWorkOrders()
-        var containerCnt = 0
-        var containerProgress = 0
+        var platformCnt = 0
+        var platformProgress = 0
         for(workOrder in workOrders) {
-            containerCnt += workOrder.cnt_container
-            containerProgress += workOrder.cnt_container_status_success!!
-            containerProgress += workOrder.cnt_container_status_error!!
+            platformCnt += workOrder.cnt_platform
+            platformProgress += workOrder.cntPlatformProgress()!!
         }
-        mAcbInfo.text = "${containerProgress} / ${containerCnt}"
+        mAcbInfo.text = "${platformProgress} / ${platformCnt}"
     }
 
     private fun getWorkOrders(extraPramId: Int? = null): List<WorkOrderEntity> {
@@ -238,6 +267,10 @@ class MapAct : AbstractAct(),
         })
     }
 
+    override fun onBackPressed() {
+//        super.onBackPressed()
+    }
+
     private fun oops(){
         toast("United Parcel Service, Inc., Opps!!")
     }
@@ -269,6 +302,7 @@ class MapAct : AbstractAct(),
 //                        AppPreferences.isHasTask = true
                     vs.baseDat.setProgressData(woRKoRDeRknow1)
                     refreshData()
+                    loadingHide()
                 }
                 else -> {
                     logSentry( "acceptProgress Status.ERROR")
@@ -279,7 +313,7 @@ class MapAct : AbstractAct(),
                 }
             }
             if(getWorkOrders().size <= resultStatusList.size) {
-                refreshData()
+                loadingHide()
             }
         })
 
@@ -303,9 +337,12 @@ class MapAct : AbstractAct(),
                         .observe(this@MapAct, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
+                                    loadingHide()
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         vs.finishTask(this@MapAct)
+                                    } else {
+                                        refreshData()
                                     }
                                 }
                                 Status.ERROR -> {
@@ -347,9 +384,12 @@ class MapAct : AbstractAct(),
                         .observe(this@MapAct, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
+                                    loadingHide()
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         vs.finishTask(this)
+                                    }else {
+                                        refreshData()
                                     }
                                 }
                                 Status.ERROR -> {
@@ -465,6 +505,9 @@ class MapAct : AbstractAct(),
             llcInfo.addView(apcbComplete)
             apcbComplete.setOnCheckedChangeListener { compoundButton, b ->
                 setAcbCompleteEnable()
+            }
+            if (workOrders.size == 1) {
+                apcbComplete.isChecked = true
             }
 //            apcbComplete.setOnCheckedChangeListener { buttonView, isChecked ->
 //                if (isChecked) {
@@ -728,10 +771,8 @@ class MapAct : AbstractAct(),
 
     open class MapViewModel(application: Application) : BaseViewModel(application) {
 
-
         fun finishTask(context: AppCompatActivity) {
             Log.i(TAG, "clearData")
-            context.loadingHide()
             WorkManager.getInstance(context).cancelUniqueWork("UploadData")
             clearData()
 //            AppPreferences.isHasTask = false

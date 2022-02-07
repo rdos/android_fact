@@ -52,10 +52,12 @@ fun AppCompatActivity.loadingShow(text: String? = null) {
         val builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
         val view = inflater.inflate(R.layout.alert_loading, null)
-        if (text != null || text != Snull) {
-            val tv = view.findViewById<TextView>(R.id.tv_alert_loading)
-            val oldText = tv.text
-            tv.text = "${text} ${oldText}"
+        text?.let {
+            if (text != Snull) {
+                val tv = view.findViewById<TextView>(R.id.tv_alert_loading)
+                val oldText = tv.text
+                tv.text = "${text} ${oldText}"
+            }
         }
 
         builder.setView(view)

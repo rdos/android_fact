@@ -645,16 +645,22 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     fun setCompleteData(oldWorkOrder: WorkOrderEntity): WorkOrderEntity  {
-        oldWorkOrder.end_at = MyUtil.currentTime()
-        oldWorkOrder.progress_at = null
-        for (platform in oldWorkOrder.platforms) {
-            platform.isWorkOrderComplete = true
-            for (container in platform.containers) {
-                container.isWorkOrderComplete = true
+        var result: WorkOrderEntity = oldWorkOrder
+        p_realm.executeTransaction { realm ->
+            val workOrder = p_realm.where(WorkOrderEntity::class.java).
+            equalTo("id", oldWorkOrder.id).findFirst()!!
+            workOrder.end_at = MyUtil.currentTime()
+            workOrder.progress_at = null
+            for (platform in workOrder.platforms) {
+                platform.isWorkOrderComplete = true
+                for (container in platform.containers) {
+                    container.isWorkOrderComplete = true
+                }
             }
+            result = p_realm.copyFromRealm(workOrder)
         }
-        val newWorkOrder = insUpdWorkOrders(oldWorkOrder, false)
-        return newWorkOrder
+        return result
+
     }
 
     public fun hasNotWorkOrderInProgress(): Boolean {

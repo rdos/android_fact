@@ -45,7 +45,7 @@ open class WorkOrderEntity(
     ) : Serializable, RealmObject() {
 
     fun calcInfoStatistics() {
-        val platformsCnt = platforms.size + 1
+        var platformsCnt = 0
         var platformsStatusNewCnt = 0
         var platformsStatusSuccessCnt = 0
         var platformsStatusErrorCnt = 0
@@ -56,6 +56,7 @@ open class WorkOrderEntity(
         var containersStatusErrorCnt = 0
         for (platform in platforms) {
             /** статистика для PlatformEntity*/
+            platformsCnt++
             if(platform.status == StatusEnum.NEW) {
                 platformsStatusNewCnt++
             }
@@ -88,6 +89,13 @@ open class WorkOrderEntity(
         this.cnt_container_status_new = containersStatusNewCnt
         this.cnt_container_status_success = containersStatusSuccessCnt
         this.cnt_container_status_error = containersStatusErrorCnt
+    }
+
+    fun cntPlatformProgress(): Int {
+        return cnt_platform_status_success + cnt_platform_status_error
+    }
+    fun cntContainerProgress(): Int {
+        return cnt_container_status_success + cnt_container_status_error
     }
 }
 

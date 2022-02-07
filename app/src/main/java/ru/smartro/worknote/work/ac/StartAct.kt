@@ -47,35 +47,7 @@ class StartAct : AbstractAct() {
 
     private fun initViews() {
         auth_enter.setOnClickListener {
-            if (!auth_login.text.isNullOrBlank() && !auth_password.text.isNullOrBlank()) {
-                loadingShow()
-                viewModel_know0.auth(AuthBody(auth_login.text.toString(), auth_password.text.toString()))
-                    .observe(this, Observer { result ->
-                        val data = result.data
-                        when (result.status) {
-                            Status.SUCCESS -> {
-                                loadingHide()
-                                toast("Вы авторизованы")
-                                AppPreferences.isLogined = true
-                                AppPreferences.userLogin = auth_login.text.toString()
-                                AppPreferences.accessToken = data!!.data.token
-                                startActivity(Intent(this, StartOwnerAct::class.java))
-                                finish()
-                            }
-                            Status.ERROR -> {
-                                loadingHide()
-                                toast("Логин или пароль не совпадает")
-                            }
-                            Status.NETWORK -> {
-                                loadingHide()
-                                toast("Проблемы с интернетом")
-                            }
-                        }
-                    })
-            } else {
-                auth_password_out.error = "Проверьте пароль"
-                login_login_out.error = "Проверьте логин"
-            }
+           clickAuthEnter()
         }
 
         if (BuildConfig.BUILD_TYPE == "debugProd") {
@@ -88,6 +60,11 @@ class StartAct : AbstractAct() {
                 auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
                 return@setOnLongClickListener true
             }
+            if (BuildConfig.VERSION_NAME == "0.0.0.0-STAGE") {
+                auth_login.setText("admin@smartro.ru")
+                auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
+                clickAuthEnter()
+            }
         }
 
 /*        auth_enter.setOnLongClickListener {
@@ -97,7 +74,39 @@ class StartAct : AbstractAct() {
         }*/
     }
 
-   open class AuthViewModel(application: Application) : BaseViewModel(application) {
+    private fun clickAuthEnter() {
+        if (!auth_login.text.isNullOrBlank() && !auth_password.text.isNullOrBlank()) {
+            loadingShow()
+            viewModel_know0.auth(AuthBody(auth_login.text.toString(), auth_password.text.toString()))
+                .observe(this, Observer { result ->
+                    val data = result.data
+                    when (result.status) {
+                        Status.SUCCESS -> {
+                            loadingHide()
+                            toast("Вы авторизованы")
+                            AppPreferences.isLogined = true
+                            AppPreferences.userLogin = auth_login.text.toString()
+                            AppPreferences.accessToken = data!!.data.token
+                            startActivity(Intent(this, StartOwnerAct::class.java))
+                            finish()
+                        }
+                        Status.ERROR -> {
+                            loadingHide()
+                            toast("Логин или пароль не совпадает")
+                        }
+                        Status.NETWORK -> {
+                            loadingHide()
+                            toast("Проблемы с интернетом")
+                        }
+                    }
+                })
+        } else {
+            auth_password_out.error = "Проверьте пароль"
+            login_login_out.error = "Проверьте логин"
+        }
+    }
+
+    open class AuthViewModel(application: Application) : BaseViewModel(application) {
 
         fun auth(authModel: AuthBody): LiveData<Resource<AuthResponse>> {
             return networkDat.auth(authModel)

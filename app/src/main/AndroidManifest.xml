@@ -70,7 +70,6 @@
             android:theme="@style/NoToolbar" />
         <activity
             android:name="ru.smartro.worknote.work.ac.choose.StartWorkOrderAct"
-            android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
             android:name="ru.smartro.worknote.work.ac.choose.StartWayBillAct"
