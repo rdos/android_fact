@@ -167,27 +167,27 @@ class MapAct : AbstractAct(),
 
     private fun setDevelMode() {
         if (BuildConfig.BUILD_TYPE != "debugProd") {
-            mAcbInfo.setOnTouchListener(object : View.OnTouchListener {
-                var startTime: Long = 0
-                override fun onTouch(v: View?, event: MotionEvent): Boolean {
-                    when (event.action) {
-                        MotionEvent.ACTION_DOWN -> startTime = System.currentTimeMillis()
-                        MotionEvent.ACTION_MOVE -> {}
-                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                            val totalTime: Long = System.currentTimeMillis() - startTime
-                            val totalSecunds = totalTime / 1000
-                            if (totalSecunds >= 5) {
-                                //ВОТ тут прошло 3 или больше секунды с начала нажатия
-                                //можно что-то запустить
-                                WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
-                                vs.clearData()
-                                MyUtil.logout(this@MapAct)
-                            }
-                        }
-                    }
-                    return true
-                }
-            })
+//            mAcbInfo.setOnTouchListener(object : View.OnTouchListener {
+//                var startTime: Long = 0
+//                override fun onTouch(v: View?, event: MotionEvent): Boolean {
+//                    when (event.action) {
+//                        MotionEvent.ACTION_DOWN -> startTime = System.currentTimeMillis()
+//                        MotionEvent.ACTION_MOVE -> {}
+//                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+//                            val totalTime: Long = System.currentTimeMillis() - startTime
+//                            val totalSecunds = totalTime / 1000
+//                            if (totalSecunds >= 5) {
+//                                //ВОТ тут прошло 3 или больше секунды с начала нажатия
+//                                //можно что-то запустить
+//                                WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
+//                                vs.clearData()
+//                                MyUtil.logout(this@MapAct)
+//                            }
+//                        }
+//                    }
+//                    return true
+//                }
+//            })
         }
     }
 
