@@ -1,10 +1,10 @@
 package ru.smartro.worknote.ui.debug
 
 import android.app.ActivityManager
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
@@ -15,12 +15,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 
 
 class DebugActivity : AbstractAct() {
-    private val viewModel: DebugViewModel by viewModel()
+    private val vs: DebugViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +34,9 @@ class DebugActivity : AbstractAct() {
     }
 
     private fun initViews() {
-        val containerProgress = viewModel.findContainerProgress()
-        val platformProgress = viewModel.findPlatformProgress()
+//        val workOrders = vs.baseDat.findWorkOrders()
+//        val containerProgress = workOrders.
+//        val platformProgress = vs.findPlatformProgress()
 
         val memoryInfo = ActivityManager.MemoryInfo()
         (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
@@ -47,15 +49,15 @@ class DebugActivity : AbstractAct() {
 
         debug_app.text = "Версия приложения: $appVersion"
 
-        debug_container_count.text = "Кол-во обслуженных контейнеров: ${containerProgress[0]}/${containerProgress[1]}"
-        debug_platform_count.text = "Кол-во обслуженных платформ: ${platformProgress[0]}/${platformProgress[1]}"
-        debug_ram_count.text = "ОЗУ используется: $usedMemInPercentage%"
-
-        debug_container_progress.max = containerProgress[1]
-        debug_container_progress.progress = containerProgress[0]
-
-        debug_platform_progress.max = platformProgress[1]
-        debug_platform_progress.progress = platformProgress[0]
+//        debug_container_count.text = "Кол-во обслуженных контейнеров: ${containerProgress[0]}/${containerProgress[1]}"
+//        debug_platform_count.text = "Кол-во обслуженных платформ: ${platformProgress[0]}/${platformProgress[1]}"
+//        debug_ram_count.text = "ОЗУ используется: $usedMemInPercentage%"
+//
+//        debug_container_progress.max = containerProgress[1]
+//        debug_container_progress.progress = containerProgress[0]
+//
+//        debug_platform_progress.max = platformProgress[1]
+//        debug_platform_progress.progress = platformProgress[0]
 
         debug_ram_progress.max = 100
         debug_ram_progress.progress = usedMemInPercentage.toInt()
@@ -105,5 +107,10 @@ class DebugActivity : AbstractAct() {
         super.onStop()
         debug_mapview.onStop()
         MapKitFactory.getInstance().onStop()
+    }
+
+    open class DebugViewModel(application: Application) : BaseViewModel(application) {
+
+
     }
 }

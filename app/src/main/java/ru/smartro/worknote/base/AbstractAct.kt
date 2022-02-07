@@ -2,15 +2,20 @@ package ru.smartro.worknote.base
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.sentry.Sentry
 import ru.smartro.worknote.Inull
+import ru.smartro.worknote.Snull
+import java.lang.Exception
 
 //        try {
 //            throw Exception("This is a devel.")
 //        } catch (e: Exception) {
 //            Sentry.captureException(e)
 //        }
+//todo:r_dos::_know1=знаешь точно, что ОСТАВИТЬ И НУЖНО ВСЕМУ коГду(а))
+//       ::_know0=а это не ОСТАВЛЯТЬ
 abstract class AbstractAct : AppCompatActivity() {
 
     protected var TAG : String = "${this::class.simpleName}"
@@ -23,6 +28,16 @@ abstract class AbstractAct : AppCompatActivity() {
         logSentry(data.toString())
     }
 
+    protected fun setAntiErrorClick(itemView: View) {
+        itemView.isEnabled = false
+        itemView.postDelayed({
+            try {
+                itemView.isEnabled = true
+            } catch (ex: Exception) {
+                // TODO: r_dos 
+            }
+        }, 333)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,11 +45,21 @@ abstract class AbstractAct : AppCompatActivity() {
     }
 
 
-    protected val ACT_PUT_EXTRA_NAME: String = "PUT_EXTRA_PARAM_ID"
+    protected val PUT_EXTRA_PARAM_ID: String = "PUT_EXTRA_PARAM_ID"
     fun getPutExtraParam_ID(): Int {
-        val res = intent.getIntExtra(ACT_PUT_EXTRA_NAME, Inull)
+        val res = intent.getIntExtra(PUT_EXTRA_PARAM_ID, Inull)
         if (res == Inull) {
             logSentry("res == Inull")
+        }
+        return res
+    }
+
+    protected val PUT_EXTRA_PARAM_NAME: String = "PUT_EXTRA_PARAM_TEXT"
+    fun getPutExtraParam_NAME(): String {
+        var res = intent.getStringExtra(PUT_EXTRA_PARAM_NAME)
+        if (res.isNullOrEmpty()) {
+            logSentry("resres.isNullOrEmpty()")
+            res = Snull
         }
         return res
     }

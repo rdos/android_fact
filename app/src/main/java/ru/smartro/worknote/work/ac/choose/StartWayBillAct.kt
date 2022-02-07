@@ -3,14 +3,13 @@ package ru.smartro.worknote.work.ac.choose
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import androidx.core.view.isVisible
+import android.view.*
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import kotlinx.android.synthetic.main.activity_choose.choose_rv
-import kotlinx.android.synthetic.main.activity_choose.act_choose_select_all
-import kotlinx.android.synthetic.main.activity_way_bill.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
@@ -28,15 +27,17 @@ import ru.smartro.worknote.util.MyUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
-class WayBillActivity : AbstractAct() {
+class StartWayBillAct : AbstractAct() {
     private val viewModel: WayListViewModel by viewModel()
     private lateinit var adapter: WayBillAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_way_bill)
+        setContentView(R.layout.act_start_waybill)
         supportActionBar?.title = "Выберите путевой лист"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val rv = findViewById<RecyclerView>(R.id.rv_act_start_waybill)
+        rv.layoutManager = LinearLayoutManager(this)
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val body = WayListBody(
             date = currentDate,
@@ -44,29 +45,32 @@ class WayBillActivity : AbstractAct() {
             vehicleId = AppPreferences.vehicleId
         )
 
-        loadingShow()
+        loadingShow(getPutExtraParam_NAME())
         viewModel.getWayList(body).observe(this, Observer { result ->
             val data = result.data
             when (result.status) {
                 Status.SUCCESS -> {
-                    if (data?.data.isNullOrEmpty()) {
-                        empty_title.isVisible = true
-                        // TODO: 27.10.2021 SR-3259!!!
-                        empty_title.text = getString(R.string.empty_way_task)
-                        logout_btn.isVisible = true
-                        logout_btn.setOnClickListener {
-                            MyUtil.logout(this)
-                        }
-                        choose_vehicle.isVisible = true
-                        choose_vehicle.setOnClickListener {
-                            startActivity(Intent(this, VehicleActivity::class.java))
-                            finish()
-                        }
-                    } else {
-                        adapter = WayBillAdapter(data?.data as ArrayList<Data>)
-                        choose_rv.adapter = adapter
-                    }
                     loadingHide()
+                    val wayBills = data?.data!!
+                    if (wayBills.isNullOrEmpty()) {
+                        logSentry("todo")
+//                        empty_title.isVisible = true
+//                        // TODO: 27.10.2021 SR-3259!!!
+//                        empty_title.text = getString(R.string.empty_way_task)
+//                        logout_btn.isVisible = true
+//                        logout_btn.setOnClickListener {
+//                            MyUtil.logout(this)
+//                        }
+//                        choose_vehicle.isVisible = true
+//                        choose_vehicle.setOnClickListener {
+//                            startActivity(Intent(this, StartVehicleAct::class.java))
+//                            finish()
+                        }
+                    rv.adapter = WayBillAdapter(wayBills)
+                    if (wayBills.size == 1) {
+                        gotoNextAct(wayBills[0].id, wayBills[0].number)
+                    }
+
                 }
                 Status.ERROR -> {
                     toast(result.msg)
@@ -79,14 +83,14 @@ class WayBillActivity : AbstractAct() {
             }
         })
 
-        act_choose_select_all.setOnClickListener {
-            if (adapter.getSelectedId() != -1) {
-                AppPreferences.wayBillId = adapter.getSelectedId()
-                AppPreferences.wayBillNumber = adapter.getSelectedNumber()
-                startActivity(Intent(this, TaskWorkorderAct::class.java))
-            }
-        }
+    }
 
+    private fun gotoNextAct(wayBillId: Int, wayBillNumber: String) {
+        AppPreferences.wayBillId = wayBillId
+        AppPreferences.wayBillNumber = wayBillNumber
+        val intent = Intent(this, StartWorkOrderAct::class.java)
+        intent.putExtra(PUT_EXTRA_PARAM_NAME, wayBillNumber)
+        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -112,4 +116,27 @@ class WayBillActivity : AbstractAct() {
 
     }
 
+    inner class WayBillAdapter(private val items: List<Data>) :
+        RecyclerView.Adapter<WayBillAdapter.OwnerViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item_know1, parent, false)
+            return OwnerViewHolder(view)
+        }
+
+        override fun getItemCount(): Int {
+            return items.size
+        }
+
+        override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
+            val wayBill = items[position]
+            holder.itemView.choose_title.text = wayBill.number
+            holder.itemView.setOnClickListener {
+                setAntiErrorClick(holder.itemView)
+                gotoNextAct(wayBill.id, wayBill.number)
+            }
+        }
+
+        inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    }
 }

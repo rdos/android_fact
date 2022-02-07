@@ -69,17 +69,17 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoToolbar" />
         <activity
-            android:name="ru.smartro.worknote.work.ac.choose.TaskWorkorderAct"
+            android:name="ru.smartro.worknote.work.ac.choose.StartWorkOrderAct"
             android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name="ru.smartro.worknote.work.ac.choose.WayBillActivity"
+            android:name="ru.smartro.worknote.work.ac.choose.StartWayBillAct"
             android:screenOrientation="portrait" />
         <activity
-            android:name="ru.smartro.worknote.work.ac.choose.VehicleActivity"
+            android:name="ru.smartro.worknote.work.ac.choose.StartVehicleAct"
             android:screenOrientation="portrait" />
         <activity
-            android:name="ru.smartro.worknote.work.ac.choose.OwnerAct"
+            android:name="ru.smartro.worknote.work.ac.choose.StartOwnerAct"
             android:screenOrientation="portrait" />
         <activity
             android:name=".work.ac.StartAct"

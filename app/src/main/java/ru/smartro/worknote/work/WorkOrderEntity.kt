@@ -3,6 +3,7 @@ package ru.smartro.worknote.work
 
 import android.content.Context
 import android.graphics.Color
+import android.text.BoringLayout
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.gson.annotations.SerializedName
@@ -27,26 +28,23 @@ open class WorkOrderEntity(
     var start: StartEntity? = null,
 //    var unload: UnloadEntity? = null,
 
-    var cnt_platform: Int? = Inull,
-    var cnt_container: Int? = Inull,
-    var cnt_platform_status_new: Int? = Inull,
-    var cnt_platform_status_success: Int? = Inull,
-    var cnt_platform_status_error: Int? = Inull,
+    var cnt_platform: Int = Inull,
+    var cnt_container: Int = Inull,
+    var cnt_platform_status_new: Int = Inull,
+    var cnt_platform_status_success: Int = Inull,
+    var cnt_platform_status_error: Int = Inull,
     // ErrorS False fail exception
-    var cnt_container_status_new: Int? = Inull,
-    var cnt_container_status_success: Int? = Inull,
-    var cnt_container_status_error: Int? = Inull,
+    var cnt_container_status_new: Int = Inull,
+    var cnt_container_status_success: Int = Inull,
+    var cnt_container_status_error: Int = Inull,
 
-    var create_at: String? = null,
+    var start_at: String? = null,
     var update_at: String? = null,
     var progress_at: String? = null,
-    var close_at: String? = null,
+    var end_at: String? = null,
     ) : Serializable, RealmObject() {
-    init {
-        calcAndSaveStatisticsInfo(realm)
-    }
 
-    fun calcAndSaveStatisticsInfo(p_realm: Realm) {
+    fun calcInfoStatistics() {
         val platformsCnt = platforms.size + 1
         var platformsStatusNewCnt = 0
         var platformsStatusSuccessCnt = 0
@@ -82,23 +80,14 @@ open class WorkOrderEntity(
 
             }
         }
-        realm.executeTransaction { itRealm ->
-            val workOrderEntity = itRealm.where(WorkOrderEntity::class.java)
-                .equalTo("id", this.id)
-                .findFirst()
-            if (workOrderEntity != null) {
-                workOrderEntity.cnt_platform = platformsCnt
-                workOrderEntity.cnt_platform_status_new = platformsStatusNewCnt
-                workOrderEntity.cnt_platform_status_success = platformsStatusSuccessCnt
-                workOrderEntity.cnt_platform_status_error = platformsStatusErrorCnt
-                workOrderEntity.cnt_container = containersCnt
-                workOrderEntity.cnt_container_status_new = containersStatusNewCnt
-                workOrderEntity.cnt_container_status_success = containersStatusSuccessCnt
-                workOrderEntity.cnt_container_status_error = containersStatusErrorCnt
-
-                itRealm.insert(workOrderEntity)
-            }
-        }
+        this.cnt_platform = platformsCnt
+        this.cnt_platform_status_new = platformsStatusNewCnt
+        this.cnt_platform_status_success = platformsStatusSuccessCnt
+        this.cnt_platform_status_error = platformsStatusErrorCnt
+        this.cnt_container = containersCnt
+        this.cnt_container_status_new = containersStatusNewCnt
+        this.cnt_container_status_success = containersStatusSuccessCnt
+        this.cnt_container_status_error = containersStatusErrorCnt
     }
 }
 
@@ -122,7 +111,9 @@ open class KGOEntity(
     }
 
 open class PlatformEntity(
-    var workorderId: Int = Inull,
+    var workOrderId: Int = Inull,
+    var isWorkOrderProgress: Boolean = false,
+    var isWorkOrderComplete: Boolean = false,
     @SerializedName("address")
     var address: String? = null,
     @SerializedName("after_media")
@@ -459,6 +450,9 @@ open class UnloadEntity(
 ) : Serializable, RealmObject()
 
 open class ContainerEntity(
+    var workOrderId: Int = Inull,
+    var isWorkOrderProgress: Boolean = false,
+    var isWorkOrderComplete: Boolean = false,
     @SerializedName("client")
     var client: String? = null,
     @SerializedName("contacts")
@@ -486,7 +480,7 @@ open class ContainerEntity(
     @SerializedName("volume")
     var volume: Double? = null,
     @SerializedName("comment")
-    var comment: String? = null
+    var comment: String? = null,
 ) : Serializable, RealmObject() {
 
     fun convertVolumeToPercent() : Double {

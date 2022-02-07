@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -13,6 +14,7 @@ import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.coroutines.*
 import ru.smartro.worknote.R
+import ru.smartro.worknote.Snull
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 
 private lateinit var loadingDialog: AlertDialog
@@ -45,11 +47,17 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
     Log.d(TAG, "showLoadingDialog.after")
 }
 
-fun AppCompatActivity.loadingShow() {
+fun AppCompatActivity.loadingShow(text: String? = null) {
     try {
         val builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
         val view = inflater.inflate(R.layout.alert_loading, null)
+        if (text != null || text != Snull) {
+            val tv = view.findViewById<TextView>(R.id.tv_alert_loading)
+            val oldText = tv.text
+            tv.text = "${text} ${oldText}"
+        }
+
         builder.setView(view)
         builder.setCancelable(false)
         showLoadingDialog(builder)
@@ -235,7 +243,8 @@ fun AppCompatActivity.warningClearNavigator(title: String): View {
     return view
 }
 
-fun AppCompatActivity.showDialogEarlyComplete(reasons: List<CancelWayReasonEntity>): View {
+fun AppCompatActivity.showDialogEarlyComplete(reasons: List<CancelWayReasonEntity>,
+                                              workOrderId: Int, workOrderName: String): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_failure_finish_way, null)
@@ -244,6 +253,7 @@ fun AppCompatActivity.showDialogEarlyComplete(reasons: List<CancelWayReasonEntit
     view.reason_et.setOnClickListener {
         view.reason_et.showDropDown()
     }
+    view.workorder_name.text = "Итоговые показатели рейса \n${workOrderId}($workOrderName)"
     view.early_weight_tg.setOnCheckedChangeListener { _, b ->
         if (b) {
             view.early_volume_tg.isChecked = !b
@@ -296,7 +306,9 @@ fun AppCompatActivity.hideDialog() {
 
 fun AppCompatActivity.loadingHide() {
     try {
-        loadingDialog.dismiss()
+        if (loadingDialog.isShowing) {
+            loadingDialog.dismiss()
+        }
     } catch (e: Exception) {
         // TODO: 02.11.2021
         Log.e(TAG, "AppCompatActivity.loadingHide", e)

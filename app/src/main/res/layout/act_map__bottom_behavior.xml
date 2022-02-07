@@ -45,19 +45,17 @@
             android:layout_marginBottom="8dp"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/map_behavior_send_btn"
-            app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_map_behavior" />
 
-        <Button
-            android:id="@+id/map_behavior_send_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_default"
-            android:background="@drawable/bg_button"
-            android:text="@string/finish_way"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent" />
+        <!--<Button-->
+        <!--    android:id="@+id/map_behavior_send_btn"-->
+        <!--    android:layout_width="match_parent"-->
+        <!--    android:layout_height="wrap_content"-->
+        <!--    android:layout_margin="@dimen/margin_default"-->
+        <!--    android:background="@drawable/bg_button"-->
+        <!--    android:text="@string/finish_way"-->
+        <!--    android:textColor="@color/white"-->
+        <!--    app:layout_constraintBottom_toBottomOf="parent" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

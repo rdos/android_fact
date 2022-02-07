@@ -24,7 +24,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ac.choose.OwnerAct
+import ru.smartro.worknote.work.ac.choose.StartOwnerAct
 import ru.smartro.worknote.work.ac.map.MapAct
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -89,7 +89,7 @@ object MyUtil {
     fun onMenuOptionClicked(context: Context, id: Int) {
         when (id) {
             R.id.change_organisation -> {
-                context.startActivity(Intent(context, OwnerAct::class.java))
+                context.startActivity(Intent(context, StartOwnerAct::class.java))
             }
             R.id.logout -> {
                 logout(context)
@@ -177,7 +177,7 @@ object MyUtil {
         return if (hasTask) {
             MapAct::class.java
         } else {
-            OwnerAct::class.java
+            StartOwnerAct::class.java
         }
     }
 }

@@ -4,8 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 
 
-//todo:r_dos::_know0=знаешь точно, что ОСТАВИТЬ И НУЖНО ВСЕМУ коГду(а))
-//       _know1=а это не ОСТАВЛЯТЬ
+
 data class WorkOrderResponse_know1(
     @SerializedName("data")
     val dataKnow100: WorkOrderData_know100,

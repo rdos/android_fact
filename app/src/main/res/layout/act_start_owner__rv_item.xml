@@ -1,0 +1,46 @@
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llc_owner_fragment_rv__item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/margin_6"
+    android:paddingEnd="@dimen/margin_6"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/choose_cardview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="@dimen/margin_min"
+        android:layout_marginBottom="@dimen/margin_min"
+        android:gravity="center"
+        app:cardCornerRadius="8dp"
+        >
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/margin_min"
+            android:paddingBottom="@dimen/margin_min"
+            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTintMode="multiply"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground"
+            >
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/aptv_owner_fragment_rv__item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                tools:text="Союз 317"
+                />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_2"
+            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTintMode="multiply"/>
+    </androidx.cardview.widget.CardView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

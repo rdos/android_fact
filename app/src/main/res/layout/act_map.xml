@@ -10,27 +10,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-
         <com.yandex.mapkit.mapview.MapView
             android:id="@+id/map_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-        <include layout="@layout/act_map__workorder"/>
-
-        <com.av.verticalchipgroup.CustomChipGroup
-            android:id="@+id/chipGroup"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb_act_map__info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:rows="3"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="@dimen/margin_default"
+            android:background="@drawable/bg_button"
+            android:textColor="@color/white"
+            android:text="Info 5/0"
             />
 
-
-
+        <!--<include layout="@layout/act_map__workorder_info"/>-->
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/location_fab"

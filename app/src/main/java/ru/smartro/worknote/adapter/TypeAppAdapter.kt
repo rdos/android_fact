@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_choose.view.*
+import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.network.body.TypeAppBody
 
@@ -15,7 +15,7 @@ class TypeAppAdapter(private val items: ArrayList<TypeAppBody>) :
     private var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_choose, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item_know1, parent, false)
         return OwnerViewHolder(view)
     }
 

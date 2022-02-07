@@ -61,10 +61,10 @@ interface ApiService {
     suspend fun served(@Body body: ServiceResultBody): Response<ServedResponse>
 
     @POST("workorder/{id}/progress")
-    fun progress(@Path("id") id: Int, @Body time: ProgressBody): Call<EmptyResponse>
+    suspend fun progress(@Path("id") id: Int, @Body time: ProgressBody): Response<ServedResponse>
 
     //find   vs.networkDat.completeWay(-11, body)
-    @POST("workorder/{id}/c11omplete")
+    @POST("workorder/{id}/complete")
     suspend fun complete(@Path("id") id: Int, @Body time: CompleteWayBody): Response<EmptyResponse>
 
     @GET("work_order_cancelation_reason")
@@ -74,7 +74,7 @@ interface ApiService {
     suspend fun getCancelWayReasonNoLv(): Response<CancelationReasonResponse>
 
     //см  vs.networkDat.earlyComplete(-111, body)
-    @POST("workorder/{id}/early_comp2ete")
+    @POST("workorder/{id}/early_complete")
     suspend fun earlyComplete(@Path("id") id: Int, @Body body: EarlyCompleteBody): Response<EmptyResponse>
 
     @POST("synchro")

@@ -288,25 +288,25 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    fun progress(id: Int, body: ProgressBody): Resource<EmptyResponse> {
+    fun progress(id: Int, body: ProgressBody) = liveData(Dispatchers.IO, TIME_OUT) {
         Log.i(TAG, "progress.before id=${id} body=${body}")
         try {
-            val response = RetrofitClient(context).apiService(true).progress(id, body).execute()
+            val response = RetrofitClient(context).apiService(true).progress(id, body)
             Log.d(TAG, "progress.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
-                    return Resource.success(response.body())
+                    emit(Resource.success(response.body()))
                 }
                 else -> {
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                     Log.d(TAG, "progress.after errorResponse=${errorResponse}")
                     badRequest(response)
-                    return Resource.error("Ошибка ${response.code()}", null)
+                    emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, "progress.after", e)
-            return (Resource.network("Проблемы с подключением интернета", null))
+            emit(Resource.network("Проблемы с подключением интернета", null))
         }
     }
 

@@ -3,14 +3,15 @@ package ru.smartro.worknote.work.ac.choose
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import kotlinx.android.synthetic.main.activity_choose.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.VehicleAdapter
+
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
@@ -23,22 +24,22 @@ import ru.smartro.worknote.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.util.MyUtil
 
-class VehicleActivity : AbstractAct() {
-    private val viewModel: VehicleViewModel by viewModel()
-    private lateinit var adapter: VehicleAdapter
+class StartVehicleAct : AbstractAct() {
+    private val vs: VehicleViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_choose)
+        setContentView(R.layout.act_start_vehicle)
         supportActionBar?.title = "Выберите автомобиль"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        loadingShow()
-        viewModel.getVehicle(AppPreferences.organisationId).observe(this, Observer { result ->
+        val rv = findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
+        rv.layoutManager = LinearLayoutManager(this)
+        loadingShow(getPutExtraParam_NAME())
+        vs.getVehicle(AppPreferences.organisationId).observe(this, Observer { result ->
             val data = result.data
             when (result.status) {
                 Status.SUCCESS -> {
-                    adapter = VehicleAdapter(data?.data as ArrayList<Vehicle>)
-                    choose_rv.adapter = adapter
+                    rv .adapter = VehicleAdapter(data?.data!!)
                     loadingHide()
                 }
                 Status.ERROR -> {
@@ -53,12 +54,6 @@ class VehicleActivity : AbstractAct() {
 
         })
 
-        act_choose_select_all.setOnClickListener {
-            if (adapter.getSelectedId() != -1) {
-                AppPreferences.vehicleId = adapter.getSelectedId()
-                startActivity(Intent(this, WayBillActivity::class.java))
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -87,4 +82,30 @@ class VehicleActivity : AbstractAct() {
 
     }
 
+    inner class VehicleAdapter(private val items: List<Vehicle>) :
+        RecyclerView.Adapter<VehicleAdapter.OwnerViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item_know1, parent, false)
+            return OwnerViewHolder(view)
+        }
+
+        override fun getItemCount(): Int {
+            return items.size
+        }
+
+        override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
+            val vehicle = items[position]
+            holder.itemView.choose_title.text = vehicle.name
+            holder.itemView.setOnClickListener {
+                setAntiErrorClick(holder.itemView)
+                AppPreferences.vehicleId = vehicle.id
+                val intent = Intent(this@StartVehicleAct, StartWayBillAct::class.java)
+                intent.putExtra(PUT_EXTRA_PARAM_NAME, vehicle.name)
+                startActivity(intent)
+            }
+        }
+
+        inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    }
 }

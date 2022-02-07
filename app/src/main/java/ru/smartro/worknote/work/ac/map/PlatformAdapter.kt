@@ -34,7 +34,8 @@ class PlatformAdapter(
     override fun onBindViewHolder(holder: PlatformViewHolder, position: Int) {
         val item = items[position]
         holder.itemView.alpha = 1f
-        if (item.workorderId in mFilteredWayTaskIds) {
+        //фильрация
+        if (item.workOrderId in mFilteredWayTaskIds) {
             holder.itemView.alpha = 0.1f
         }
         if (checkedPosition == -1) {

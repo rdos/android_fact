@@ -4,19 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".work.ac.choose.OwnerAct">
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/choose_rv"
+        android:id="@+id/rv_act_start_workorder"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/act_choose_select_all"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
-    <Button
-        android:id="@+id/act_choose_select_all"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/acb_act_start_workorder__select_all"
         android:layout_width="match_parent"
         android:textColor="@color/white"
         android:text="@string/choose_all_in"
@@ -24,5 +28,4 @@
         android:background="@drawable/bg_button"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

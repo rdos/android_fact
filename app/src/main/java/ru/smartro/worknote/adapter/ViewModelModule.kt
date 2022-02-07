@@ -3,30 +3,30 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import ru.smartro.worknote.ui.camera.CameraViewModel
-import ru.smartro.worknote.ui.debug.DebugViewModel
+import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalViewModel
 import ru.smartro.worknote.work.ac.map.MapAct
 import ru.smartro.worknote.ui.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.ui.problem.ProblemViewModel
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ac.choose.OwnerAct
-import ru.smartro.worknote.work.ac.choose.TaskWorkorderAct
-import ru.smartro.worknote.work.ac.choose.VehicleActivity
-import ru.smartro.worknote.work.ac.choose.WayBillActivity
+import ru.smartro.worknote.work.ac.choose.StartOwnerAct
+import ru.smartro.worknote.work.ac.choose.StartWorkOrderAct
+import ru.smartro.worknote.work.ac.choose.StartVehicleAct
+import ru.smartro.worknote.work.ac.choose.StartWayBillAct
 
 val viewModelModule = module {
     viewModel { StartAct.AuthViewModel(androidApplication()) }
     viewModel {
-        OwnerAct.OrganisationViewModel(androidApplication())
+        StartOwnerAct.OrganisationViewModel(androidApplication())
     }
     viewModel {
-        VehicleActivity.VehicleViewModel(androidApplication())
+        StartVehicleAct.VehicleViewModel(androidApplication())
     }
     viewModel {
-        WayBillActivity.WayListViewModel(androidApplication())
+        StartWayBillAct.WayListViewModel(androidApplication())
     }
     viewModel {
-        TaskWorkorderAct.WayTaskViewModel(androidApplication())
+        StartWorkOrderAct.WayTaskViewModel(androidApplication())
     }
     viewModel {
         MapAct.MapViewModel(androidApplication())
@@ -35,6 +35,6 @@ val viewModelModule = module {
     viewModel { PlatformServeViewModel(androidApplication()) }
     viewModel { CameraViewModel(androidApplication()) }
     viewModel { ProblemViewModel(androidApplication()) }
-    viewModel { DebugViewModel(androidApplication()) }
+    viewModel { DebugActivity.DebugViewModel(androidApplication()) }
     viewModel { JournalViewModel(androidApplication()) }
 }
