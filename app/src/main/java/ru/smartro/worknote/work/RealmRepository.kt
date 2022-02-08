@@ -668,6 +668,11 @@ class RealmRepository(private val p_realm: Realm) {
        return !hasWorkOrderInProgress_know0()
     }
 
+    /** всё что есть объёкт. У объекта есть
+    а) свойства
+    и[hasWorkOrderInProgress_know0.true - это fun или свойства?]нформация
+    b) fun
+    **/
     fun hasWorkOrderInProgress_know0(): Boolean {
         var res = true
         // TODO:rdos из бд лучше же
@@ -677,6 +682,7 @@ class RealmRepository(private val p_realm: Realm) {
                 res = false
             }
         }
+        Log.d(TAG, "hasWorkOrderInProgress_know0.${res}")
         return res
     }
 

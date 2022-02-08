@@ -24,7 +24,7 @@ import ru.smartro.worknote.base.AbstractDialog
 import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.ac.platform_serve.PlatformServeActivity
+import ru.smartro.worknote.work.platform_serve.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.StatusEnum
 import kotlin.math.min

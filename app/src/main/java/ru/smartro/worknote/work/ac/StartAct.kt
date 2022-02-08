@@ -13,8 +13,9 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
-import ru.smartro.worknote.extensions.loadingShow
+import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
@@ -24,8 +25,14 @@ import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import ru.smartro.worknote.util.MyUtil
 
 class StartAct : AbstractAct() {
-    private val viewModel_know0: AuthViewModel by viewModel()
+    private val vm: AuthViewModel by viewModel()
 
+    private fun gotoNextAct() {
+        val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
+//            val isHasTask = true
+        startActivity(Intent(this, MyUtil.getNextActClazz__todo(isHasTask)))
+        finish()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_start)
@@ -35,15 +42,13 @@ class StartAct : AbstractAct() {
             MyUtil.hideKeyboard(this)
         }
         // TODO: 01.11.2021 !! !
-        if (AppPreferences.isLogined) {
-            val isHasTask = viewModel_know0.baseDat.hasWorkOrderInProgress_know0()
-//            val isHasTask = true
-            startActivity(Intent(this, MyUtil.getNextActClazz__todo(isHasTask)))
-            finish()
+        if (AppPreferences.accessToken.isShowForUser()) {
+            gotoNextAct()
         } else {
             initViews()
         }
     }
+
 
     private fun initViews() {
         auth_enter.setOnClickListener {
@@ -78,8 +83,8 @@ class StartAct : AbstractAct() {
 
     private fun clickAuthEnter() {
         if (!auth_login.text.isNullOrBlank() && !auth_password.text.isNullOrBlank()) {
-            loadingShow()
-            viewModel_know0.auth(AuthBody(auth_login.text.toString(), auth_password.text.toString()))
+            showingProgress()
+            vm.auth(AuthBody(auth_login.text.toString(), auth_password.text.toString()))
                 .observe(this, Observer { result ->
                     val data = result.data
                     when (result.status) {
@@ -87,8 +92,11 @@ class StartAct : AbstractAct() {
                             loadingHide()
                             toast("Вы авторизованы")
                             AppPreferences.userLogin = auth_login.text.toString()
+                            if (AppPreferences.accessToken.isNullOrEmpty()) {
+                                oopsTestqA()
+                            }
                             AppPreferences.accessToken = data!!.data.token
-                            startActivity(Intent(this, StartOwnerAct::class.java))
+                            gotoNextAct()
                             finish()
                         }
                         Status.ERROR -> {
@@ -105,6 +113,10 @@ class StartAct : AbstractAct() {
             auth_password_out.error = "Проверьте пароль"
             login_login_out.error = "Проверьте логин"
         }
+    }
+
+    private fun oopsTestqA() {
+
     }
 
     open class AuthViewModel(application: Application) : BaseViewModel(application) {

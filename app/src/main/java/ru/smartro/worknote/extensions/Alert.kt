@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.alert_accept_task.view.title_tv
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.coroutines.*
+import ru.smartro.worknote.A_SLEEP_TIME_1_83__MS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
@@ -47,7 +48,7 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
     Log.d(TAG, "showLoadingDialog.after")
 }
 
-fun AppCompatActivity.loadingShow(text: String? = null) {
+fun AppCompatActivity.showingProgress(text: String? = null) {
     try {
         val builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
@@ -65,7 +66,7 @@ fun AppCompatActivity.loadingShow(text: String? = null) {
         showLoadingDialog(builder)
         view.postDelayed({
             loadingHide()
-        }, 60000)
+        }, A_SLEEP_TIME_1_83__MS)
     } catch (e: Exception) {
         println()
     }
@@ -329,7 +330,7 @@ fun Fragment.loadingHide() {
     }
 }
 
-fun Fragment.loadingShow() {
+fun Fragment.showingProgress() {
     try {
         val builder = AlertDialog.Builder(activity!!)
         val inflater = this.layoutInflater

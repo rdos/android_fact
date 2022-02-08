@@ -45,13 +45,6 @@ object AppPreferences {
             it.putBoolean("isTorchEnabled", value)
         }
 
-
-    var isLogined: Boolean
-        get() = preferences.getBoolean("isLogined", false)
-        set(value) = preferences.edit {
-            it.putBoolean("isLogined", value)
-        }
-
     var organisationId: Int
         get() = preferences.getInt("organisationId", 0)
         set(value) = preferences.edit {
@@ -88,8 +81,8 @@ object AppPreferences {
             it.putBoolean("workerStatus", value)
         }
 
-    fun clear() {
-        accessToken = ""
+    fun dropDatabase() {
+        accessToken = null
         vehicleId = 0
         organisationId = 0
         wayBillId = 0

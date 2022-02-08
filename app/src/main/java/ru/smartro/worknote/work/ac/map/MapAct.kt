@@ -54,7 +54,7 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalAct
-import ru.smartro.worknote.work.ac.platform_serve.PlatformServeActivity
+import ru.smartro.worknote.work.platform_serve.PlatformServeActivity
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.work.PlatformEntity
@@ -111,7 +111,7 @@ class MapAct : AbstractAct(),
         mMapMyYandex = findViewById(R.id.map_view)
         val isWorkOrdersInProgress = vs.baseDat.hasWorkOrderInProgress_know0()
         if (!isWorkOrdersInProgress) {
-            loadingShow()
+            showingProgress()
             val extraPramId = getPutExtraParam_ID()
             val workOrderS = getWorkOrders(extraPramId)
             getNetDATEsetBaseDate(workOrderS)
@@ -339,7 +339,7 @@ class MapAct : AbstractAct(),
                         finishedAt = MyUtil.timeStamp(),
                         unloadType = unloadType, unloadValue = unloadValue.toString()
                     )
-                    loadingShow()
+                    showingProgress()
                     vs.networkDat.completeWay(workOrder.id, body)
                         .observe(this@MapAct, Observer { result ->
                             when (result.status) {
@@ -385,7 +385,7 @@ class MapAct : AbstractAct(),
                     ) / 100
                     val unloadType = if (view.early_volume_tg.isChecked) 1 else 2
                     val body = EarlyCompleteBody(failureId, MyUtil.timeStamp(), unloadType, unloadValue)
-                    loadingShow()
+                    showingProgress()
 
                     vs.networkDat.earlyComplete(workOrder.id, body)
                         .observe(this@MapAct, Observer { result ->
@@ -430,7 +430,7 @@ class MapAct : AbstractAct(),
 
 
     private fun gotoSynchronize(lastPlatforms: List<PlatformEntity>) {
-        loadingShow()
+        showingProgress()
         var lat = 0.0
         var long = 0.0
         val deviceId = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)

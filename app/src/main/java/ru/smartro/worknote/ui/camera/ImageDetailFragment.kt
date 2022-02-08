@@ -15,7 +15,7 @@ import ru.smartro.worknote.base.AbstractDialog
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.warningDelete
 import ru.smartro.worknote.work.ImageEntity
-import ru.smartro.worknote.work.ac.platform_serve.PlatformServeViewModel
+import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 

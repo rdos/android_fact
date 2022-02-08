@@ -14,7 +14,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
-import ru.smartro.worknote.extensions.loadingShow
+import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Resource
@@ -44,7 +44,7 @@ class StartWayBillAct : AbstractAct() {
             vehicleId = AppPreferences.vehicleId
         )
 
-        loadingShow(nameNotFounT)
+        showingProgress(nameNotFounT)
         viewModel.getWayList(body).observe(this, Observer { result ->
             val data = result.data
             when (result.status) {
@@ -85,8 +85,7 @@ class StartWayBillAct : AbstractAct() {
     }
 
     override fun onBackPressed() {
-        val intent = Intent(this, StartVehicleAct::class.java)
-        sendMessage(intent)
+        sendMessage(StartVehicleAct::class.java)
 //        super.onBackPressed()
     }
 

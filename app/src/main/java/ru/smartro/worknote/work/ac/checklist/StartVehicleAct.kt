@@ -15,7 +15,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
-import ru.smartro.worknote.extensions.loadingShow
+import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Resource
@@ -34,7 +34,7 @@ class StartVehicleAct : AbstractAct() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
         rv.layoutManager = LinearLayoutManager(this)
-        loadingShow(getPutExtraParam_NAME())
+        showingProgress(getPutExtraParam_NAME())
         vs.getVehicle(AppPreferences.organisationId).observe(this, Observer { result ->
             val data = result.data
             when (result.status) {

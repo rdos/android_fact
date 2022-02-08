@@ -16,7 +16,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
-import ru.smartro.worknote.extensions.loadingShow
+import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Resource
@@ -46,7 +46,7 @@ class StartOwnerAct : AbstractAct() {
         supportActionBar?.title = "Выберите организацию"
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_owner)
         rv.layoutManager = LinearLayoutManager(this)
-        loadingShow()
+        showingProgress()
         vs.getOwners().observe(this, Observer { result ->
             val data = result.data
             when (result.status) {

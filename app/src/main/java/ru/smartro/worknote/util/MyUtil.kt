@@ -101,7 +101,7 @@ object MyUtil {
         val intent = Intent(context, StartAct::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
-        AppPreferences.clear()
+        AppPreferences.dropDatabase()
     }
 
     fun imageToBase64(imageUri: Uri, rotationDegrees: Float, context: Context): String {
@@ -172,7 +172,7 @@ object MyUtil {
     }
 
     fun Any?.toStr() = this?.toString() ?: ""
-
+    //        MyUtil(эх молодость)
     fun getNextActClazz__todo(hasTask: Boolean): Class<out AbstractAct> {
         return if (hasTask) {
             MapAct::class.java

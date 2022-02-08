@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ac.platform_serve
+package ru.smartro.worknote.work.platform_serve
 
 import android.app.Activity
 import android.content.Intent
@@ -35,6 +35,7 @@ import ru.smartro.worknote.util.StatusEnum
 class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClickListener, SeekBar.OnSeekBarChangeListener{
 
 
+    private lateinit var mEtVolumePickup: TextView
     private var mBackPressedCnt: Int = 3
     private val REQUEST_EXIT = 33
     private lateinit var mPlatformEntity: PlatformEntity
@@ -187,6 +188,7 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
 
         val seekBar = findViewById<SeekBar>(R.id.acsb_activity_platform_serve__seekbar)
         seekBar.setOnSeekBarChangeListener(this)
+//        seekBar.s
         seekBar?.thumb = getThumb(1);
 
         mPlatformEntity.volumePickup?.let{
@@ -232,6 +234,11 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
             } else {
                 actvAddress.maxLines = 1
             }
+        }
+
+        mEtVolumePickup = findViewById<TextView>(R.id.et_act_platformserve__volumepickup)
+        mEtVolumePickup.setOnClickListener {
+
         }
     }
 
@@ -332,13 +339,12 @@ class PlatformServeActivity : AbstractAct(), ContainerAdapter.ContainerPointClic
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-        val tv = findViewById<TextView>(R.id.CustomBtn1)
-        tv.text = "${progress} м³"
+        mEtVolumePickup.text = "${progress} м³"
         if (progress >= 21) {
             seekBar?.progress = 21
         }
         if (progress <= 0) {
-            tv.text = ""
+            mEtVolumePickup.text = ""
         }
 //        seekBar?.setThumb(getThumb(progress));
     }

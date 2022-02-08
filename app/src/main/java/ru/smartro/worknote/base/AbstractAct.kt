@@ -10,7 +10,6 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.work.ac.map.MapAct
 import java.lang.Exception
 
 //        try {
@@ -51,13 +50,18 @@ abstract class AbstractAct : AppCompatActivity() {
         toast("Простите, Произошёл сбой. Inc:)oops!")
     }
 
-    protected fun sendMessage(intent: Intent) {
-        startActivity(intent)
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+    //:))
+    private fun setSpyPutExtraParamId(intent: Intent) {
 //        workorderId?.let {
 //            intent.putExtra(PUT_EXTRA_PARAM_ID, workorderId)
 //        }
-//        startActivity(intent)
+    }
+
+    protected fun sendMessage(clazz: Class<out AbstractAct>) {
+        val intent = Intent(this, clazz::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        setSpyPutExtraParamId(intent)
+        startActivity(intent)
 /**   intent: ей я сообщениею.
  * AppPreferences: ей это же она сообщение(эй это я сообщение)ей это же она сообщение
         savedInstanceState: ей ей, Пацаны, вы е попутали? это она сообщение.)):()
