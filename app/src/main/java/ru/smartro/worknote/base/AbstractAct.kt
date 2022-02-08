@@ -40,6 +40,7 @@ abstract class AbstractAct : AppCompatActivity() {
         return mIsOopsMode!!
     }
 
+    //oops долежн быть один на Act, но на Activity
     protected fun oops(){
         if (mIsOopsMode == true) {
             //CiДУ
