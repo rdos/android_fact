@@ -4,7 +4,6 @@ import android.util.Log
 import com.yandex.mapkit.geometry.Point
 import io.realm.*
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
@@ -45,7 +44,7 @@ class RealmRepository(private val p_realm: Realm) {
         }
 
         fun mapPlatforms(data: List<Platform_know1>, workorderId: Int): RealmList<PlatformEntity> {
-            return data.mapTo(RealmList()) {
+             val result = data.mapTo(RealmList()) {
                 PlatformEntity(
                     workOrderId = workorderId, address = it.address, afterMedia = mapMedia(it.afterMedia),
                     beforeMedia = mapMedia(it.beforeMedia), beginnedAt = it.beginnedAt,
@@ -55,9 +54,11 @@ class RealmRepository(private val p_realm: Realm) {
                     finishedAt = it.finishedAt, platformId = it.id,
                     name = it.name, updateAt = 0, srpId = it.srpId, status = it.status, /** volumeKGO = null,*/ icon = it.icon,
                     orderTimeEnd = it.orderEndTime, orderTimeStart = it.orderStartTime,
-                    orderTimeAlert = it.orderAlertTime, orderTimeWarning = it.orderWarningTime
+                    orderTimeAlert = it.orderAlertTime, orderTimeWarning = it.orderWarningTime,
+                    kgoServed = KGOEntity().copyKGOEntity(it.kgo_served), kgoRemaining = KGOEntity().copyKGOEntity(it.kgo_remaining)
                 )
             }
+            return result
         }
 
         fun mapStart(data: STaRT_know1) = StartEntity(
@@ -439,7 +440,7 @@ class RealmRepository(private val p_realm: Realm) {
 
         allPlatforms.forEach { pl ->
             if (pl.isServedKGONotEmpty()) {
-                pl.servedKGO!!.volume?.let {
+                pl.kgoServed!!.volume?.let {
                     totalKgoVolume += it
                 }
             }
@@ -597,10 +598,10 @@ class RealmRepository(private val p_realm: Realm) {
                     platformEntity!!.pickupMedia.remove(imageBase64)
                 }
                 PhotoTypeEnum.forServedKGO -> {
-                    platformEntity!!.servedKGO!!.media.remove(imageBase64)
+                    platformEntity!!.kgoServed!!.media.remove(imageBase64)
                 }
                 PhotoTypeEnum.forRemainingKGO -> {
-                    platformEntity!!.remainingKGO!!.media.remove(imageBase64)
+                    platformEntity!!.kgoRemaining!!.media.remove(imageBase64)
                 }
             }
             setEntityUpdateAt(platformEntity)

@@ -1,12 +1,6 @@
 package ru.smartro.worknote
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.app.AlertDialog
 import android.app.Application
-import android.util.Log
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.sentry.Sentry
@@ -18,18 +12,12 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import ru.smartro.worknote.di.viewModelModule
-import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.*
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
-import android.view.Gravity
-import android.view.Window
-import android.view.WindowManager
-import androidx.core.view.isVisible
-import ru.smartro.worknote.base.AbstractAct
 
 
 class App : Application() {

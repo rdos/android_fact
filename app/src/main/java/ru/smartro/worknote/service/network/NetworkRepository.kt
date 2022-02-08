@@ -8,7 +8,7 @@ import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
-import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayListBody

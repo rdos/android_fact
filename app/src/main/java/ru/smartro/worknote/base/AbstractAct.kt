@@ -9,6 +9,7 @@ import io.sentry.Sentry
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
+import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.work.ac.map.MapAct
 import java.lang.Exception
 
@@ -21,6 +22,7 @@ import java.lang.Exception
 //       ::_know0=а это не ОСТАВЛЯТЬ
 abstract class AbstractAct : AppCompatActivity() {
 
+    private var mIsOopsMode: Boolean? = false
     protected var TAG : String = "${this::class.simpleName}"
 
     protected fun logSentry(text: String) {
@@ -29,6 +31,23 @@ abstract class AbstractAct : AppCompatActivity() {
     }
     protected fun logSentry(data: Int) {
         logSentry(data.toString())
+    }
+
+
+    protected fun isOopsMode(): Boolean{
+        // TODO:r_dos не сп роста Вам
+//        mIsOopsMode? wft!!
+        return mIsOopsMode!!
+    }
+
+    protected fun oops(){
+        if (mIsOopsMode == true) {
+            //CiДУ
+            logSentry("oops")
+        }
+        mIsOopsMode = true
+
+        toast("Простите, Произошёл сбой. Inc:)oops!")
     }
 
     protected fun sendMessage(intent: Intent) {

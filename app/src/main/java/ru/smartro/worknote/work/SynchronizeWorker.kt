@@ -19,7 +19,6 @@ import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.delay
 import ru.smartro.worknote.R
-import ru.smartro.worknote.service.AppPreferences
 import ru.smartro.worknote.service.network.NetworkRepository
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody

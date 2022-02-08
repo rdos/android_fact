@@ -1,8 +1,9 @@
 package ru.smartro.worknote.work
 
 import com.google.gson.annotations.SerializedName
-
-
+import io.realm.RealmList
+import io.realm.RealmObject
+import java.io.Serializable
 
 
 data class WorkOrderResponse_know1(
@@ -90,6 +91,15 @@ data class Platform_know1(
     var orderWarningTime: String? = null,
     @SerializedName("order_alert_time")
     var orderAlertTime: String? = null,
+
+    var kgo_remaining: KGOEntity_know100? = null,
+    var kgo_served: KGOEntity_know100? = null,
+
+    )
+
+data class KGOEntity_know100(
+    var volume: Double?,
+    var media: List<String>?
 )
 
 data class WorkOrderData_know100(

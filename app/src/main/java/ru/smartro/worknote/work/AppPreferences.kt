@@ -1,4 +1,4 @@
-package ru.smartro.worknote.service
+package ru.smartro.worknote.work
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -82,13 +82,6 @@ object AppPreferences {
             it.putInt("wayListId", value)
         }
 
-    var wayBillNumber: String
-        get() = preferences.getString("wayBillNumber", "rNull")!!
-        set(value) = preferences.edit {
-            it.putString("wayBillNumber", value)
-        }
-
-
     var workerStatus: Boolean
         get() = preferences.getBoolean("workerStatus", true)
         set(value) = preferences.edit {
@@ -100,8 +93,7 @@ object AppPreferences {
         vehicleId = 0
         organisationId = 0
         wayBillId = 0
-        //TODO: rNull!!
-        wayBillNumber = "rNull"
+        //TODO:r_Null!
         workerStatus = false
     }
 
@@ -123,7 +115,6 @@ object AppPreferences {
         organisationId = 0
         wayBillId = 0
         //TODO: rNull!!
-//        wayBillNumber = "rNull"
         workerStatus = false
     }
 

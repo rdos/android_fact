@@ -45,7 +45,7 @@ import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.isShowForUser
-import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.ProgressBody
@@ -60,7 +60,6 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.SynchronizeWorker
 import ru.smartro.worknote.work.WorkOrderEntity
-import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
@@ -283,10 +282,6 @@ class MapAct : AbstractAct(),
 //        super.onBackPressed()
     }
 
-    private fun oops(){
-        toast("United Parcel Service, Inc., Opps!!")
-    }
-
     private fun saveCancelWayReason() {
         Log.d(TAG, "saveCancelWayReason.before")
         vs.networkDat.getCancelWayReason().observe(this, Observer { result ->
@@ -444,7 +439,8 @@ class MapAct : AbstractAct(),
             long = currentCoordinate.substringAfter("#").toDouble()
             lat = currentCoordinate.substringBefore("#").toDouble()
         }
-        val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long),
+        val synchronizeBody = SynchronizeBody(
+            AppPreferences.wayBillId, listOf(lat, long),
             deviceId, lastPlatforms)
 
         vs.networkDat.sendLastPlatforms(synchronizeBody).observe(this) { result ->
@@ -516,10 +512,11 @@ class MapAct : AbstractAct(),
             mCheckBoxList.add(apcbComplete)
             llcInfo.addView(apcbComplete)
             apcbComplete.setOnCheckedChangeListener { compoundButton, b ->
-                setAcbCompleteEnable()
+                acbCompleteIsEnable()
             }
             if (workOrders.size == 1) {
                 apcbComplete.isChecked = true
+                acbCompleteIsEnable()
             }
 //            apcbComplete.setOnCheckedChangeListener { buttonView, isChecked ->
 //                if (isChecked) {
@@ -542,7 +539,7 @@ class MapAct : AbstractAct(),
         return mCheckBoxList
     }
 
-    private fun setAcbCompleteEnable() {
+    private fun acbCompleteIsEnable() {
         val checkBoxList = getWorkOrderInfoCheckBoxs()
         mAcbComplete.isEnabled = false
         for (checkBox in checkBoxList) {

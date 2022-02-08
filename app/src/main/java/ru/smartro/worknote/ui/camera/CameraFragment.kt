@@ -39,7 +39,7 @@ import ru.smartro.worknote.base.AbstractFragment
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File

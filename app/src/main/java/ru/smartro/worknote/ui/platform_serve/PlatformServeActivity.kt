@@ -23,7 +23,7 @@ import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity

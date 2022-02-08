@@ -3,7 +3,6 @@ package ru.smartro.worknote.work
 
 import android.content.Context
 import android.graphics.Color
-import android.text.BoringLayout
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.gson.annotations.SerializedName
@@ -107,15 +106,33 @@ open class StartEntity(
 
 open class KGOEntity(
     var volume: Double? = null,
-    val media: RealmList<ImageEntity> = RealmList()
+    var media: RealmList<ImageEntity> = RealmList()
     ): Serializable, RealmObject() {
         fun isEmpty(): Boolean {
             val result = volume == null
             return result
         }
+
         fun isNotEmpty(): Boolean {
             return !isEmpty()
         }
+
+        fun copyKGOEntity(kgoentityKnow100: KGOEntity_know100?): KGOEntity? {
+            fun mapMedia(data: List<String>): RealmList<ImageEntity> {
+                return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0, coords = RealmList()) }
+            }
+            var result: KGOEntity? = null
+            kgoentityKnow100?.let {
+                this.volume = kgoentityKnow100.volume
+                kgoentityKnow100.media?.let {
+                    this.media = mapMedia(kgoentityKnow100.media!!)
+                }
+
+                result = this
+            }
+            return result
+        }
+
     }
 
 open class PlatformEntity(
@@ -146,9 +163,9 @@ open class PlatformEntity(
     var failureMedia: RealmList<ImageEntity> = RealmList(),
 
     @SerializedName("kgo_remaining")
-    var remainingKGO: KGOEntity? = null,
+    var kgoRemaining: KGOEntity? = null,
     @SerializedName("kgo_served")
-    var servedKGO: KGOEntity? = null,
+    var kgoServed: KGOEntity? = null,
 
     @SerializedName("pickup_volume")
     var volumePickup: Double? = null,
@@ -342,31 +359,31 @@ open class PlatformEntity(
 
 
     private fun initServedKGOEntity() {
-        if (this.servedKGO == null ) {
-            this.servedKGO = createKGOEntity(Realm.getDefaultInstance())
+        if (this.kgoServed == null ) {
+            this.kgoServed = createKGOEntity(Realm.getDefaultInstance())
         }
     }
 
     private fun initRemainingKGOEntity() {
-        if (this.remainingKGO == null ) {
-            this.remainingKGO = createKGOEntity(Realm.getDefaultInstance())
+        if (this.kgoRemaining == null ) {
+            this.kgoRemaining = createKGOEntity(Realm.getDefaultInstance())
         }
     }
 
     fun getServedKGOMediaSize(): Int {
         var res = 0
-        if (this.servedKGO != null ) {
+        if (this.kgoServed != null ) {
 //            this.servedKGO = createServedKGO(Realm.getDefaultInstance())
-            res = this.servedKGO!!.media.size
+            res = this.kgoServed!!.media.size
         }
         return res
     }
 
     fun getRemainingKGOMediaSize(): Int {
             var res = 0
-            if (this.remainingKGO != null ) {
+            if (this.kgoRemaining != null ) {
 //            this.servedKGO = createServedKGO(Realm.getDefaultInstance())
-                res = this.remainingKGO!!.media.size
+                res = this.kgoRemaining!!.media.size
             }
             return res
         }
@@ -380,16 +397,16 @@ open class PlatformEntity(
 
     fun getServedKGOVolume(): String {
         var res = ""
-        if (this.servedKGO != null ) {
-            res = this.servedKGO!!.volume.toStr()
+        if (this.kgoServed != null ) {
+            res = this.kgoServed!!.volume.toStr()
         }
         return res
     }
 
     fun getRemainingKGOVolume(): String {
         var res = ""
-        if (this.remainingKGO != null ) {
-            res = this.remainingKGO!!.volume.toStr()
+        if (this.kgoRemaining != null ) {
+            res = this.kgoRemaining!!.volume.toStr()
         }
         return res
     }
@@ -404,14 +421,14 @@ open class PlatformEntity(
 
     fun addServerKGOMedia(imageEntity: ImageEntity) {
         initServedKGOEntity()
-        this.servedKGO?.let{
+        this.kgoServed?.let{
             it.media.add(imageEntity)
         }
     }
 
     fun addRemainingKGOMedia(imageEntity: ImageEntity) {
         initRemainingKGOEntity()
-        this.remainingKGO?.let{
+        this.kgoRemaining?.let{
             it.media.add(imageEntity)
         }
     }
@@ -424,7 +441,7 @@ open class PlatformEntity(
         } catch (ex: Exception) {
             Log.e("TMP", "setRemainingKGOVolume", ex)
         }
-        this.servedKGO?.let{
+        this.kgoServed?.let{
             it.volume = kgoVolumeDouble
         }
     }
@@ -437,7 +454,7 @@ open class PlatformEntity(
         } catch (ex: Exception) {
             Log.e("TMP", "setRemainingKGOVolume", ex)
         }
-        this.remainingKGO?.let{
+        this.kgoRemaining?.let{
             it.volume = kgoVolumeDouble
         }
     }

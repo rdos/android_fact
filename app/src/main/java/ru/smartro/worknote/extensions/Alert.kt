@@ -63,6 +63,9 @@ fun AppCompatActivity.loadingShow(text: String? = null) {
         builder.setView(view)
         builder.setCancelable(false)
         showLoadingDialog(builder)
+        view.postDelayed({
+            loadingHide()
+        }, 60000)
     } catch (e: Exception) {
         println()
     }

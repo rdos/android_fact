@@ -16,7 +16,7 @@ import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.WayListBody
@@ -32,6 +32,7 @@ class StartWayBillAct : AbstractAct() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_start_waybill)
+        val nameNotFounT = getPutExtraParam_NAME()
         supportActionBar?.title = "Выберите путевой лист"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_waybill)
@@ -43,7 +44,7 @@ class StartWayBillAct : AbstractAct() {
             vehicleId = AppPreferences.vehicleId
         )
 
-        loadingShow(getPutExtraParam_NAME())
+        loadingShow(nameNotFounT)
         viewModel.getWayList(body).observe(this, Observer { result ->
             val data = result.data
             when (result.status) {
@@ -91,7 +92,6 @@ class StartWayBillAct : AbstractAct() {
 
     private fun gotoNextAct(wayBillId: Int, wayBillNumber: String) {
         AppPreferences.wayBillId = wayBillId
-        AppPreferences.wayBillNumber = wayBillNumber
         val intent = Intent(this, StartWorkOrderAct::class.java)
         intent.putExtra(PUT_EXTRA_PARAM_NAME, wayBillNumber)
         startActivity(intent)

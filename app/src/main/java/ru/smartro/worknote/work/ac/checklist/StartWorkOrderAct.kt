@@ -21,7 +21,7 @@ import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.loadingHide
 import ru.smartro.worknote.extensions.loadingShow
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.map.MapAct
@@ -51,7 +51,7 @@ class StartWorkOrderAct : AbstractAct() {
                     Status.SUCCESS -> {
                         loadingHide()
                         val workOrders = data!!.dataKnow100.woRKoRDeRknow1s
-                        vm.insertWayTask(workOrders)
+                        insertWayTask(workOrders)
                         rv.adapter = WayTaskAdapter(workOrders)
                         if (workOrders.size == 1) {
                             gotoNextAct(workOrders[0].id)
@@ -71,7 +71,25 @@ class StartWorkOrderAct : AbstractAct() {
 
     }
 
+    fun insertWayTask(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
+        vm.baseDat.clearBase()
+        for (workorder in woRKoRDeRknow1List) {
+            try {
+                vm.baseDat.insertWayTask(workorder)
+            } catch (ex: Exception) {
+                Log.e(TAG, "insertWayTask", ex)
+                //ups должен быть один, иначе Инспектор скажт слово
+                oops()
+//                    logSentry("insertWayTask.ex.Exception" + ex.message)
+            }
+        }
+    }
+
     fun gotoNextAct(workorderId: Int?) {
+        if (isOopsMode()) {
+            finish()
+            return
+        }
 //        AppPreferences.wayTaskId = workorder.id
         //        r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
         // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
@@ -146,17 +164,6 @@ class StartWorkOrderAct : AbstractAct() {
 
 
 */
-        fun insertWayTask(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
-            baseDat.clearBase()
-            for (workorder in woRKoRDeRknow1List) {
-                try {
-                    baseDat.insertWayTask(workorder)
-                } catch (ex: Exception) {
-                    Log.e(TAG, "insertWayTask", ex)
-//                    logSentry("insertWayTask.ex.Exception" + ex.message)
-                }
-            }
-        }
 
         fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
             return baseDat.createObjectFromJson(clazz, json)

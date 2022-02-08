@@ -16,7 +16,7 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.service.AppPreferences
+import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 
 
@@ -64,7 +64,7 @@ class DebugActivity : AbstractAct() {
 
         debug_organisation.text = "Организация: ${AppPreferences.organisationId}"
         debug_user.text = "Пользователь: ${AppPreferences.userLogin}"
-        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillNumber}"
+//        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillNumber}"
         debug_coordinate.text = "Координаты: ${AppPreferences.currentCoordinate}"
         debug_phone.text = "Устройство: ${MyUtil.getDeviceName()}, Android: ${android.os.Build.VERSION.SDK_INT}"
 
