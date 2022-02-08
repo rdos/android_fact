@@ -62,7 +62,7 @@
                 android:value="true" />
         </activity>
         <activity
-            android:name=".ui.platform_serve.PlatformServeActivity"
+            android:name="ru.smartro.worknote.work.ac.platform_serve.PlatformServeActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="ru.smartro.worknote.work.ac.map.MapAct"

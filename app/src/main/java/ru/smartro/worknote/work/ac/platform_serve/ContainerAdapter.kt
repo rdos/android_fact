@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.platform_serve
+package ru.smartro.worknote.work.ac.platform_serve
 
 import android.util.Log
 import android.view.LayoutInflater

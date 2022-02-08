@@ -6,7 +6,7 @@ import ru.smartro.worknote.ui.camera.CameraViewModel
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalViewModel
 import ru.smartro.worknote.work.ac.map.MapAct
-import ru.smartro.worknote.ui.platform_serve.PlatformServeViewModel
+import ru.smartro.worknote.work.ac.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.ui.problem.ProblemViewModel
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
