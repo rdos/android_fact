@@ -86,7 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_default"
         android:layout_marginBottom="@dimen/margin_default"
-        android:background="@drawable/bg_button"
+        android:background="@drawable/bg_button_alertdialog"
         android:fitsSystemWindows="true"
         android:text="Сохранить"
         android:textColor="@color/white"

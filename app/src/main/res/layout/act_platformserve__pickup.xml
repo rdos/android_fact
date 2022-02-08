@@ -30,16 +30,21 @@
                 android:layout_weight="1"
                 android:paddingStart="47dp"
                 android:paddingEnd="46dp"
-                android:max="24"
+                android:max="62"
                 android:min="0"
                 android:progress="0"
                 />
-            <EditText
+
+            <!---->
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/et_act_platformserve__volumepickup"
-                android:layout_width="0dp"
+                android:layout_width="112dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.18"
-                tools:text="1 м3"/>
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_6"
+                android:paddingBottom="@dimen/margin_6"
+                android:text=" м³"
+                tools:text="99.23 м³" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.cardview.widget.CardView>
 </androidx.appcompat.widget.LinearLayoutCompat>

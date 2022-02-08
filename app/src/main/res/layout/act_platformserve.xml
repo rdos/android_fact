@@ -11,12 +11,15 @@
         android:id="@+id/actv_act_platform_serve__address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/margin_max"
+        android:paddingStart="@dimen/margin_default"
+        android:paddingEnd="@dimen/margin_default"
+        android:paddingTop="@dimen/margin_default"
+        android:padding="@dimen/margin_default"
         android:maxLines="1"
         android:ellipsize="end"
         android:textStyle="bold"
         android:textColor="@color/white"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:background="@color/colorPrimary"
         android:text="+id\aptv_act_platform_serve__address"
         />
@@ -95,7 +98,7 @@
             android:textColor="@color/black" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <include layout="@layout/act_platform_serve__pickup"/>
+    <include layout="@layout/act_platformserve__pickup"/>
     <!--android:progressDrawable="@android:color/transparent"-->
 
     <androidx.appcompat.widget.AppCompatButton

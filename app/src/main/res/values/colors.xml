@@ -11,6 +11,7 @@
 
     <color name="icFocused">#DDFFFFFF</color>
     <color name="blue">#ABC0D1</color>
+    <color name="myCool">#12FFD1</color>
     <color name="icPressed">#AAFFFFFF</color>
     <color name="icActive">#FFFFFFFF</color>
     <color name="light_green">#CDFFC9</color>

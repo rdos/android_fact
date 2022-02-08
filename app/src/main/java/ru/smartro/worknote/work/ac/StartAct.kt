@@ -21,7 +21,6 @@ import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.service.network.response.auth.AuthResponse
-import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import ru.smartro.worknote.util.MyUtil
 
 class StartAct : AbstractAct() {
@@ -54,9 +53,15 @@ class StartAct : AbstractAct() {
         auth_enter.setOnClickListener {
            clickAuthEnter()
         }
-
+        actv_activity_auth__it_test_version.isVisible = true
         if (BuildConfig.BUILD_TYPE == "debugProd") {
+            val versionName = BuildConfig.VERSION_NAME
+            //oopsTestqA
+            val textIsTestEnv = getString(R.string.act_st_art_it_test_version).format(versionName)
+
             actv_activity_auth__it_test_version.isVisible = false
+            actv_activity_auth__it_test_version.text = textIsTestEnv // + actv_activity_auth__it_test_version.text
+
         }
 
         if (BuildConfig.BUILD_TYPE != "debugProd") {
@@ -115,9 +120,6 @@ class StartAct : AbstractAct() {
         }
     }
 
-    private fun oopsTestqA() {
-
-    }
 
     open class AuthViewModel(application: Application) : BaseViewModel(application) {
 

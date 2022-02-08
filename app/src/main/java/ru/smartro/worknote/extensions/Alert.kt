@@ -8,14 +8,17 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.alert_accept_task.view.title_tv
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
+import kotlinx.android.synthetic.main.fragment_camera.*
 import kotlinx.coroutines.*
 import ru.smartro.worknote.A_SLEEP_TIME_1_83__MS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
+import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 
 private lateinit var loadingDialog: AlertDialog
@@ -34,6 +37,16 @@ private fun showCustomDialog(builder: AlertDialog.Builder) {
     }
     Log.d(TAG, "showCustomDialog.after")
 }
+
+fun AbstractAct.showDlgPickup(): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.act_platformserve__pickup__alert_dialog, null)
+    builder.setView(view)
+    showCustomDialog(builder)
+    return view
+}
+
 
 private fun showLoadingDialog(builder: AlertDialog.Builder) {
     Log.i(TAG, "showLoadingDialog.before")
@@ -151,14 +164,6 @@ fun AppCompatActivity.showDialogFillKgoVolume(): View {
     return view
 }
 
-fun AppCompatActivity.showDialogAdditionalVolumeContainer(): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_additional_volume_container, null)
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
 
 fun AppCompatActivity.warningDelete(title: String): View {
     val builder = AlertDialog.Builder(this)

@@ -18,6 +18,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
+import androidx.appcompat.widget.AppCompatButton
+import java.lang.Exception
 
 
 class App : Application() {
@@ -120,5 +122,26 @@ fun Any.getDeviceTime(format: String = "yyyy-MM-dd HH:mm:ss"): String {
 
 fun Any.getDeviceDateTime(): Date {
     return Date()
+}
+
+/** Milliseconds used for UI animations */
+fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 1050L) {
+    postDelayed({
+        try {
+            isPressed = true
+            //                performClick()
+            invalidate()
+        } catch (e: Exception) {
+            print(e)
+        }
+    }, delayBefore)
+    postDelayed({
+        try {
+            invalidate()
+            isPressed = false
+        } catch (e: Exception) {
+            print(e)
+        }
+    }, delayAfter)
 }
 

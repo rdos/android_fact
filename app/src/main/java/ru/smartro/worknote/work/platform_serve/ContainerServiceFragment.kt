@@ -20,7 +20,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
     private val viewModel: PlatformServeViewModel by viewModel()
     private var comment: String? = null
     private var volume: Double? = null
-    private lateinit var parentActivity: PlatformServeActivity
+    private lateinit var parentAct: PlatformServeAct
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parentActivity = requireActivity() as PlatformServeActivity
+        parentAct = requireActivity() as PlatformServeAct
         viewModel.findContainerEntity(containerId).let {
             comment_et.setText(it.comment)
             comment = it.comment
@@ -63,7 +63,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
         if (isNotDefault(volume, comment)) {
             viewModel.updateContainerVolume(platformId, containerId, volume, comment)
         }
-        parentActivity.updateRecyclerview()
+        parentAct.updateRecyclerview()
     }
 
     private fun setVolume(view: View, volume: Double?) {
@@ -117,7 +117,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
         comment = null
         volume = null
         viewModel.clearContainerVolume(platformId, containerId)
-        parentActivity.updateRecyclerview()
+        parentAct.updateRecyclerview()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

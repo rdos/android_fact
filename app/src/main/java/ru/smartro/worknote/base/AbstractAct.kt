@@ -1,5 +1,6 @@
 package ru.smartro.worknote.base
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.work.ac.checklist.StartVehicleAct
 import java.lang.Exception
 
 //        try {
@@ -39,6 +41,11 @@ abstract class AbstractAct : AppCompatActivity() {
         return mIsOopsMode!!
     }
 
+
+    fun oopsTestqA() {
+
+    }
+
     //oops долежн быть один на Act, но на Activity
     protected fun oops(){
         if (mIsOopsMode == true) {
@@ -57,7 +64,9 @@ abstract class AbstractAct : AppCompatActivity() {
 //        }
     }
 
-    protected fun sendMessage(clazz: Class<out AbstractAct>) {
+    protected fun sendMessage(clazz: Class<StartVehicleAct>) {
+        //fragment в помощь!
+//        protected fun sendMessage(clazz: Class<out AbstractAct>) {
         val intent = Intent(this, clazz::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         setSpyPutExtraParamId(intent)

@@ -74,7 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/activity_auth__it_test_version"
+        android:text="@id/actv_activity_auth__it_test_version"
         android:textSize="15sp"
         android:textColor="@color/dark_red"
         app:layout_constraintStart_toStartOf="parent"

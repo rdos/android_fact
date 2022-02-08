@@ -54,7 +54,7 @@ import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalAct
-import ru.smartro.worknote.work.platform_serve.PlatformServeActivity
+import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.work.PlatformEntity
@@ -120,9 +120,11 @@ class MapAct : AbstractAct(),
 
         mAcbInfo.setOnClickListener {
             showInfoDialog().let {
+                //O!
                 mAcbComplete = it.findViewById(R.id.acb_act_map__workoder_info__complete)
-                initWorkOrderInfo(it)
                 mAcbComplete.isEnabled = false
+                //Oo!!
+                initWorkOrderInfo(it)
                 mAcbComplete.setOnClickListener{
                     gotoComplete()
                 }
@@ -516,7 +518,6 @@ class MapAct : AbstractAct(),
             }
             if (workOrders.size == 1) {
                 apcbComplete.isChecked = true
-                acbCompleteIsEnable()
             }
 //            apcbComplete.setOnCheckedChangeListener { buttonView, isChecked ->
 //                if (isChecked) {
@@ -611,7 +612,7 @@ class MapAct : AbstractAct(),
 
 
     override fun startPlatformService(item: PlatformEntity) {
-        val intent = Intent(this, PlatformServeActivity::class.java)
+        val intent = Intent(this, PlatformServeAct::class.java)
         intent.putExtra("platform_id", item.platformId)
         startActivity(intent)
     }
