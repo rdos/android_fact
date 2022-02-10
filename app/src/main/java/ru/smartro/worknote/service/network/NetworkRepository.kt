@@ -410,7 +410,6 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-
 }
 
 private fun <T> badRequest(response: Response<T>) {
@@ -418,7 +417,7 @@ private fun <T> badRequest(response: Response<T>) {
         Sentry.setTag("url", response.raw().request.url.encodedPath)
         Sentry.setTag("http_code", response.code().toString())
         Sentry.setTag("host", response.raw().request.url.host)
-        Sentry.setTag("user", AppPreferences.userLogin)
+//        Sentry.setTag("user", AppPreferences.BoTlogin)
         Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
     }
 }

@@ -63,7 +63,7 @@ class DebugActivity : AbstractAct() {
         debug_ram_progress.progress = usedMemInPercentage.toInt()
 
         debug_organisation.text = "Организация: ${AppPreferences.organisationId}"
-        debug_user.text = "Пользователь: ${AppPreferences.userLogin}"
+//        debug_user.text = "Пользователь: ${AppPreferences.BoTlogin}"
 //        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillNumber}"
         debug_coordinate.text = "Координаты: ${AppPreferences.currentCoordinate}"
         debug_phone.text = "Устройство: ${MyUtil.getDeviceName()}, Android: ${android.os.Build.VERSION.SDK_INT}"

@@ -21,7 +21,19 @@ object AppPreferences {
         editor.apply()
     }
 
-    var accessToken: String?
+    var isCameraSoundEnabled: Boolean
+        get() = preferences.getBoolean("isCameraSoundEnabled", true)
+        set(value) = preferences.edit {
+            it.putBoolean("isCameraSoundEnabled", value)
+        }
+
+    var lastSynchroTimeQueueTwo: Long
+        get() = preferences.getLong("lastSynchroTimeQueueTwo", 0)
+        set(value) = preferences.edit {
+            it.putLong("lastSynchroTimeQueueTwo", value)
+        }
+
+    var token: String?
         get() = preferences.getString("accessToken", "")
         set(value) = preferences.edit {
             it.putString("accessToken", value)
@@ -33,11 +45,11 @@ object AppPreferences {
             it.putString("currentCoordinate", value)
         }
 
-    var userLogin: String
-        get() = preferences.getString("userLogin", "")!!
-        set(value) = preferences.edit {
-            it.putString("userLogin", value)
-        }
+//    var BoTlogin: String
+//        get() = preferences.getString("userLogin", "")!!
+//        set(value) = preferences.edit {
+//            it.putString("userLogin", value)
+//        }
 
     var isTorchEnabled: Boolean
         get() = preferences.getBoolean("isTorchEnabled", true)
@@ -82,7 +94,7 @@ object AppPreferences {
         }
 
     fun dropDatabase() {
-        accessToken = null
+        token = null
         vehicleId = 0
         organisationId = 0
         wayBillId = 0

@@ -23,6 +23,7 @@ class RealmRepository(private val p_realm: Realm) {
             return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0, coords = RealmList()) }
         }
 
+
         // TODO: 29.10.2021 ! it.volume = 0.0 ??Error
         fun mapContainers(list: List<CoNTaiNeR_know1>, workorderId: Int): RealmList<ContainerEntity> {
             return list.mapTo(RealmList()) {
@@ -562,7 +563,6 @@ class RealmRepository(private val p_realm: Realm) {
             setEntityUpdateAt(platformEntity)
         }
     }
-
     /** удалить фото с контейнера **/
     fun removeContainerMedia(platformId: Int, containerId: Int, imageBase64: ImageEntity) {
         p_realm.executeTransaction { realm ->

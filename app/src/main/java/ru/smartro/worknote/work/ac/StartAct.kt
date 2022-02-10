@@ -41,7 +41,7 @@ class StartAct : AbstractAct() {
             MyUtil.hideKeyboard(this)
         }
         // TODO: 01.11.2021 !! !
-        if (AppPreferences.accessToken.isShowForUser()) {
+        if (AppPreferences.token.isShowForUser()) {
             gotoNextAct()
         } else {
             initViews()
@@ -54,7 +54,7 @@ class StartAct : AbstractAct() {
            clickAuthEnter()
         }
         actv_activity_auth__it_test_version.isVisible = true
-        if (BuildConfig.BUILD_TYPE == "debugProd") {
+        if (BuildConfig.BUILD_TYPE != "debugProd") {
             val versionName = BuildConfig.VERSION_NAME
             //oopsTestqA
             val textIsTestEnv = getString(R.string.act_st_art_it_test_version).format(versionName)
@@ -71,12 +71,12 @@ class StartAct : AbstractAct() {
                 return@setOnLongClickListener true
             }
         }
-
-        if (isDevelMode) {
-            auth_login.setText("admin@smartro.ru")
-            auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
-            clickAuthEnter()
-        }
+//
+//        if (isDevelMode) {
+//            auth_login.setText("admin@smartro.ru")
+//            auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
+//            clickAuthEnter()
+//        }
 
 
 /*        auth_enter.setOnLongClickListener {
@@ -96,11 +96,11 @@ class StartAct : AbstractAct() {
                         Status.SUCCESS -> {
                             loadingHide()
                             toast("Вы авторизованы")
-                            AppPreferences.userLogin = auth_login.text.toString()
-                            if (AppPreferences.accessToken.isNullOrEmpty()) {
+//                            AppPreferences.BoTlogin = auth_login.text.toString()
+                            if (AppPreferences.token.isNullOrEmpty()) {
                                 oopsTestqA()
                             }
-                            AppPreferences.accessToken = data!!.data.token
+                            AppPreferences.token = data!!.data.token
                             gotoNextAct()
                             finish()
                         }

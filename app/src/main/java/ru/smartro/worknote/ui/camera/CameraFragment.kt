@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -29,6 +30,8 @@ import androidx.core.view.setPadding
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -451,11 +454,24 @@ class CameraFragment(
 
                             job.launch {
                                 Log.d("AAAAAAA", Thread.currentThread().name)
-                                val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees, requireContext())
+//                                val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees,
+//                                    requireContext())
+
+                                val imageBase64 = Compressor.compress(requireContext(), photoFile) {
+                                    resolution(1024, 768)
+                                    quality(100)
+                                    format(Bitmap.CompressFormat.PNG)
+                                    size(81920) // 2 MB
+                                    destination(photoFile)
+                                }
+
+
                                 if (photoFor == PhotoTypeEnum.forContainerProblem) {
-                                    viewModel.updateContainerMedia(platformId, containerId, imageBase64, AppPreferences.getCurrentLocation())
+                                    viewModel.updateContainerMedia(platformId, containerId,
+                                        imageBase64.readBytes().toString(), AppPreferences.getCurrentLocation())
                                 } else {
-                                    viewModel.updatePlatformMedia(photoFor, platformId, imageBase64, AppPreferences.getCurrentLocation())
+                                    viewModel.updatePlatformMedia(photoFor, platformId,
+                                        imageBase64.readBytes().toString(), AppPreferences.getCurrentLocation())
                                 }
                                 captureButton.isClickable = true
                                 captureButton.isEnabled = true
@@ -488,9 +504,7 @@ class CameraFragment(
             )
             fragment.show(childFragmentManager, "GalleryFragment")
         }
-
         setImageCounter(false)
-
     }
 
     private fun hasFrontCamera(): Boolean {

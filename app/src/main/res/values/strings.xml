@@ -3,7 +3,7 @@
     <string name="yandex_map_key">948e55bc-da44-452d-9629-00898d438ca9</string>
     <string name="sentry_url">https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17</string>
 
-    <string name="act_st_art_it_test_version">Тестовая версия (%s). \n За рабочей версией обратитесь, пожалуйста, в клиентский сервис</string>
+    <string name="act_st_art_it_test_version">Тестовая версия (%1$s). \n За рабочей версией обратитесь, пожалуйста, в клиентский сервис</string>
     <string name="enter_system">Вход в систему</string>
     <string name="login">Логин</string>
     <string name="password">Пароль</string>
