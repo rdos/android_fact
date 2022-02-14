@@ -315,7 +315,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
 //        ³ во во примерно так
         var progressText = progress.toString()
         if (progress <= 0) {
-            progressText = "м³"
+            progressText = ""
         }
 
         etVolumePickup().text = "${progressText} м³"

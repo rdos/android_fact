@@ -93,8 +93,8 @@ class MapAct : AbstractAct(),
     private val MIN_METERS = 50
 
     private lateinit var userLocationLayer: UserLocationLayer
-    private lateinit var drivingRouter: DrivingRouter
-    private lateinit var drivingSession: DrivingSession.DrivingRouteListener
+    private lateinit var mDrivingRouter: DrivingRouter
+    private lateinit var mDrivingSession: DrivingSession.DrivingRouteListener
     private lateinit var currentLocation: Location
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var selectedPlatformToNavigate: Point
@@ -157,13 +157,52 @@ class MapAct : AbstractAct(),
 
         initBottomBehavior()
         initUserLocation()
-        initDriveMode()
 
         // TODO: 21.10.2021 r_dos 
 //        map_toast.setOnClickListener{
 //            toast("${AppPreferences.wayBillId}")
 //        }
+
+
+        navigator_toggle_fab.setOnClickListener {
+            drivingModeState = false
+            navigator_toggle_fab.isVisible = drivingModeState
+            clearMapIbjectsDrive()
+            hideDialog()
+        }
+
+        log_fab.setOnClickListener {
+            startActivity(Intent(this@MapAct, JournalAct::class.java))
+        }
+
+        selectedPlatformToNavigate = Point(0.0, 0.0)
+        mDrivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
+        mDrivingSession = object : DrivingSession.DrivingRouteListener {
+            override fun onDrivingRoutesError(p0: Error) {
+                toast("Ошибка при построении маршрута")
+            }
+
+            override fun onDrivingRoutes(routes: MutableList<DrivingRoute>) {
+
+                routes.forEach { getMapObjectsDrive()?.addPolyline(it.geometry) }
+            }
+
+        }
         setDevelMode()
+    }
+
+    private var mMapObjectsDrive: MapObjectCollection? = null
+
+    private fun clearMapIbjectsDrive() {
+        mMapObjectsDrive?.clear()
+        mMapObjectsDrive = null
+    }
+
+    private fun getMapObjectsDrive(): MapObjectCollection? {
+        if (mMapObjectsDrive == null) {
+            mMapObjectsDrive = getMapObjCollection().addCollection()
+        }
+        return mMapObjectsDrive
     }
 
     private fun setDevelMode() {
@@ -532,9 +571,6 @@ class MapAct : AbstractAct(),
     }
 
 
-
-
-
     private val mCheckBoxList = mutableListOf<AppCompatCheckBox>()
     private fun getWorkOrderInfoCheckBoxs(): List<AppCompatCheckBox> {
         return mCheckBoxList
@@ -552,37 +588,12 @@ class MapAct : AbstractAct(),
     }
 
 
-
     private fun getMapObjCollection(): MapObjectCollection {
         val res = mMapMyYandex.map.mapObjects
         return res
     }
-    private fun initDriveMode() {
-        selectedPlatformToNavigate = Point(0.0, 0.0)
-        drivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
-//        val mapObjCollection = mMapMyYandex.map.mapObjects.addCollection()
-        drivingSession = object : DrivingSession.DrivingRouteListener {
-            override fun onDrivingRoutesError(p0: Error) {
-                toast("Ошибка при построении маршрута")
-            }
 
-            override fun onDrivingRoutes(routes: MutableList<DrivingRoute>) {
-                routes.forEach { getMapObjCollection().addPolyline(it.geometry) }
-            }
 
-        }
-        navigator_toggle_fab.setOnClickListener {
-            drivingModeState = false
-            navigator_toggle_fab.isVisible = drivingModeState
-            getMapObjCollection().clear()
-            hideDialog()
-        }
-
-        log_fab.setOnClickListener {
-            startActivity(Intent(this@MapAct, JournalAct::class.java))
-        }
-
-    }
 
     private fun initSynchronizeWorker() {
         Log.w(TAG, "initSynchronizeWorker.before thread_id=${Thread.currentThread().id}")
@@ -642,17 +653,19 @@ class MapAct : AbstractAct(),
         }
     }
 
+
     fun buildNavigator(checkPoint: Point) {
         try {
-            getMapObjCollection().clear()
+//            getMapObjCollection().clear()
             selectedPlatformToNavigate = checkPoint
-            vs.buildMapNavigator(currentLocation, checkPoint, drivingRouter, drivingSession)
+            vs.buildMapNavigator(currentLocation, checkPoint, mDrivingRouter, mDrivingSession)
             drivingModeState = true
             navigator_toggle_fab.isVisible = drivingModeState
             hideDialog()
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             moveCameraToUser(currentLocation)
-        } catch (e: Exception) {
+        } catch (ex: Exception) {
+            Log.e(TAG, "buildNavigator", ex)
             toast(getString(R.string.error_build_way))
         }
 
@@ -866,7 +879,7 @@ class MapAct : AbstractAct(),
                 it.dismiss_btn.setOnClickListener {
                     drivingModeState = false
                     isOnPointFirstTime = true
-                    getMapObjCollection().clear()
+                    clearMapIbjectsDrive()
                     hideDialog()
                 }
             }

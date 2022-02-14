@@ -447,31 +447,30 @@ class CameraFragment(
                             val imageUri = output.savedUri ?: Uri.fromFile(photoFile)
                             Log.d(TAG, "Photo capture succeeded: $imageUri path: ${imageUri.path}")
                             Log.d(TAG, "Current thread: ${Thread.currentThread()}")
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                setGalleryThumbnail(imageUri)
-                                setImageCounter(true)
-                            }
+                            setGalleryThumbnail(imageUri)
+                            setImageCounter(true)
+
 
                             job.launch {
                                 Log.d("AAAAAAA", Thread.currentThread().name)
-//                                val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees,
-//                                    requireContext())
+                                val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees,
+                                    requireContext())
 
-                                val imageBase64 = Compressor.compress(requireContext(), photoFile) {
-                                    resolution(1024, 768)
-                                    quality(100)
-                                    format(Bitmap.CompressFormat.PNG)
-                                    size(81920) // 2 MB
-                                    destination(photoFile)
-                                }
+//                                val imageBase64 = Compressor.compress(requireContext(), photoFile) {
+//                                    resolution(1024, 768)
+//                                    quality(100)
+//                                    format(Bitmap.CompressFormat.PNG)
+////                                    size(81920) // 2 MB
+//                                    destination(photoFile)
+//                                }
 
 
                                 if (photoFor == PhotoTypeEnum.forContainerProblem) {
                                     viewModel.updateContainerMedia(platformId, containerId,
-                                        imageBase64.readBytes().toString(), AppPreferences.getCurrentLocation())
+                                        imageBase64.toString(), AppPreferences.getCurrentLocation())
                                 } else {
                                     viewModel.updatePlatformMedia(photoFor, platformId,
-                                        imageBase64.readBytes().toString(), AppPreferences.getCurrentLocation())
+                                        imageBase64.toString(), AppPreferences.getCurrentLocation())
                                 }
                                 captureButton.isClickable = true
                                 captureButton.isEnabled = true
