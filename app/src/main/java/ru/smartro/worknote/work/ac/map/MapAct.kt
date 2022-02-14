@@ -188,6 +188,7 @@ class MapAct : AbstractAct(),
             }
 
         }
+
         setDevelMode()
     }
 
@@ -609,7 +610,6 @@ class MapAct : AbstractAct(),
         val platforms = getActualPlatforms()
         bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-        platforms.sortedBy { it.updateAt }
         map_behavior_rv.adapter = PlatformAdapter(this, platforms, mWorkOrderFilteredIds)
 
         act_map__bottom_behavior__header.setOnClickListener {
@@ -691,7 +691,7 @@ class MapAct : AbstractAct(),
         val platforms = getActualPlatforms()
 //        mapsMyYandex.map.mapObjects.removeTapListener(this)
         val mapObjectCollection = getMapObjCollection()
-        mapObjectCollection.clear()
+//        mapObjectCollection.clear()
         mapObjectCollection.removeTapListener(this)
         addPlaceMarks(this, mapObjectCollection, platforms)
         mapObjectCollection.addTapListener(this)

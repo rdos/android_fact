@@ -30,8 +30,6 @@ import androidx.core.view.setPadding
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import id.zelory.compressor.Compressor
-import id.zelory.compressor.constraint.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel

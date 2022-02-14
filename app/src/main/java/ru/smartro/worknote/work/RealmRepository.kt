@@ -356,7 +356,7 @@ class RealmRepository(private val p_realm: Realm) {
         // TODO: 25.10.2021 !!!???
         //  return WayTaskEntity() is fail
 
-        val res = getQueryPlatform().findAll()
+        val res = getQueryPlatform().sort("updateAt").findAll()
         if (res != null) {
             return p_realm.copyFromRealm(res)
         }
