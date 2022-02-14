@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_default"
-        android:text="Фото проблемы"
+        android:text="Фото невывоза"
         android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@id/problem_img"
@@ -93,7 +93,7 @@
                 android:layout_height="match_parent"
                 android:background="@null"
                 android:editable="false"
-                android:hint="Выберите проблему" />
+                android:hint="Выберите невывоз" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

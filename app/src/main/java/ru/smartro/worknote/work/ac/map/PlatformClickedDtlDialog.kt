@@ -123,7 +123,7 @@ class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private va
 
     private fun initButtonsViews() {
         platform_detail_fire.setOnClickListener {
-            warningCameraShow("Сделайте фото проблемы").let {
+            warningCameraShow("Сделайте фото навывоза").let {
                 it.accept_btn.setOnClickListener {
                     hideDialog()
                     val intent = Intent(requireActivity(), ExtremeProblemActivity::class.java)

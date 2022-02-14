@@ -41,10 +41,10 @@ class ExtremeProblemActivity : AbstractAct() {
             platform = viewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
             mIsContainer = it.getBooleanExtra("is_container", false)
             if (mIsContainer) {
-                supportActionBar!!.title = "Проблема контейнера"
+                supportActionBar!!.title = "Невывоз контейнера"
                 container = viewModel.findContainerEntity(it.getIntExtra("container_id", 0))
             } else {
-                supportActionBar!!.title = "Проблема на площадке"
+                supportActionBar!!.title = "Невывоз на площадке"
             }
         }
         initViews()

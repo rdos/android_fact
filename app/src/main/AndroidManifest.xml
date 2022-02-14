@@ -29,10 +29,6 @@
         <activity android:name=".ui.journal.LogDetailActivity" />
         <activity android:name=".ui.debug.DebugActivity" />
         <activity
-            android:name=".ui.problem.ProblemActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Problem" />
-        <activity
             android:name=".ui.problem.ExtremeProblemActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Problem" />

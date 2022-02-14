@@ -35,7 +35,7 @@ class ProblemActivity : AbstractAct() {
         setContentView(R.layout.activity_problem)
         baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
 
-        supportActionBar!!.title = "Проблема на площадке"
+        supportActionBar!!.title = "Невывоз на площадке"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         intent.let {
