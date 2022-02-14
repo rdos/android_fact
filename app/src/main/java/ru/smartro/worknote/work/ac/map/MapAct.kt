@@ -351,7 +351,7 @@ class MapAct : AbstractAct(),
 //                        AppPreferences.isHasTask = true
                     vs.baseDat.setProgressData(woRKoRDeRknow1)
                     refreshData()
-                    loadingHide()
+                    hideProgress()
                 }
                 else -> {
                     logSentry( "acceptProgress Status.ERROR")
@@ -362,7 +362,7 @@ class MapAct : AbstractAct(),
                 }
             }
             if(getWorkOrders().size <= resultStatusList.size) {
-                loadingHide()
+                hideProgress()
             }
         })
 
@@ -386,7 +386,7 @@ class MapAct : AbstractAct(),
                         .observe(this@MapAct, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
-                                    loadingHide()
+                                    hideProgress()
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         vs.finishTask(this@MapAct)
@@ -396,11 +396,11 @@ class MapAct : AbstractAct(),
                                 }
                                 Status.ERROR -> {
                                     toast(result.msg)
-                                    loadingHide()
+                                    hideProgress()
                                 }
                                 Status.NETWORK -> {
                                     toast("Проблемы с интернетом")
-                                    loadingHide()
+                                    hideProgress()
                                 }
                             }
                         })
@@ -433,7 +433,7 @@ class MapAct : AbstractAct(),
                         .observe(this@MapAct, Observer { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
-                                    loadingHide()
+                                    hideProgress()
                                     hideDialog()
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
@@ -444,11 +444,11 @@ class MapAct : AbstractAct(),
                                 }
                                 Status.ERROR -> {
                                     toast(result.msg)
-                                    loadingHide()
+                                    hideProgress()
                                 }
                                 Status.NETWORK -> {
                                     toast("Проблемы с интернетом")
-                                    loadingHide()
+                                    hideProgress()
                                 }
                             }
                         })
@@ -489,16 +489,16 @@ class MapAct : AbstractAct(),
         vs.networkDat.sendLastPlatforms(synchronizeBody).observe(this) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
-                    loadingHide()
+                    hideProgress()
                     completeWorkOrders()
                 }
                 Status.ERROR -> {
                     toast(result.msg)
-                    loadingHide()
+                    hideProgress()
                 }
                 Status.NETWORK -> {
                     toast("Проблемы с интернетом")
-                    loadingHide()
+                    hideProgress()
                 }
             }
         }

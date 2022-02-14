@@ -8,11 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -37,7 +33,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractFragment
-import ru.smartro.worknote.extensions.loadingHide
+import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.work.AppPreferences
@@ -427,7 +423,7 @@ class CameraFragment(
                 }
                 if (currentMediaIsFull) {
                     toast("Разрешенное количество фотографий:3")
-                    loadingHide()
+                    hideProgress()
                 } else {
                     captureButton.isClickable = false
                     captureButton.isEnabled = false

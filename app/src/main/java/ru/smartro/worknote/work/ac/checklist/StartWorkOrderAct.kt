@@ -18,7 +18,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.extensions.loadingHide
+import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.work.AppPreferences
@@ -49,7 +49,7 @@ class StartWorkOrderAct : AbstractAct() {
                 val data = result.data
                 when (result.status) {
                     Status.SUCCESS -> {
-                        loadingHide()
+                        hideProgress()
                         val workOrders = data!!.dataKnow100.woRKoRDeRknow1s
                         insertWayTask(workOrders)
                         rv.adapter = WayTaskAdapter(workOrders)
@@ -59,11 +59,11 @@ class StartWorkOrderAct : AbstractAct() {
                     }
                     Status.ERROR -> {
                         toast(result.msg)
-                        loadingHide()
+                        hideProgress()
                     }
                     Status.NETWORK -> {
                         toast("Проблемы с интернетом")
-                        loadingHide()
+                        hideProgress()
                     }
                 }
             })

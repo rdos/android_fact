@@ -14,7 +14,7 @@ import ru.smartro.worknote.R
 
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.extensions.loadingHide
+import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.work.AppPreferences
@@ -40,15 +40,15 @@ class StartVehicleAct : AbstractAct() {
             when (result.status) {
                 Status.SUCCESS -> {
                     rv .adapter = VehicleAdapter(data?.data!!)
-                    loadingHide()
+                    hideProgress()
                 }
                 Status.ERROR -> {
                     toast(result.msg)
-                    loadingHide()
+                    hideProgress()
                 }
                 Status.NETWORK -> {
                     toast("Проблемы с интернетом")
-                    loadingHide()
+                    hideProgress()
                 }
             }
 

@@ -12,7 +12,7 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.extensions.loadingHide
+import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.isShowForUser
@@ -94,7 +94,7 @@ class StartAct : AbstractAct() {
                     val data = result.data
                     when (result.status) {
                         Status.SUCCESS -> {
-                            loadingHide()
+                            hideProgress()
                             toast("Вы авторизованы")
 //                            AppPreferences.BoTlogin = auth_login.text.toString()
                             if (AppPreferences.token.isNullOrEmpty()) {
@@ -105,11 +105,11 @@ class StartAct : AbstractAct() {
                             finish()
                         }
                         Status.ERROR -> {
-                            loadingHide()
+                            hideProgress()
                             toast("Логин или пароль не совпадает")
                         }
                         Status.NETWORK -> {
-                            loadingHide()
+                            hideProgress()
                             toast("Проблемы с интернетом")
                         }
                     }

@@ -8,12 +8,10 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.alert_accept_task.view.title_tv
 import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
-import kotlinx.android.synthetic.main.fragment_camera.*
 import kotlinx.coroutines.*
 import ru.smartro.worknote.A_SLEEP_TIME_1_83__MS
 import ru.smartro.worknote.R
@@ -78,7 +76,7 @@ fun AppCompatActivity.showingProgress(text: String? = null) {
         builder.setCancelable(false)
         showLoadingDialog(builder)
         view.postDelayed({
-            loadingHide()
+            hideProgress()
         }, A_SLEEP_TIME_1_83__MS)
     } catch (e: Exception) {
         println()
@@ -315,7 +313,7 @@ fun AppCompatActivity.hideDialog() {
     }
 }
 
-fun AppCompatActivity.loadingHide() {
+fun AppCompatActivity.hideProgress() {
     try {
         if (loadingDialog.isShowing) {
             loadingDialog.dismiss()
@@ -326,7 +324,7 @@ fun AppCompatActivity.loadingHide() {
     }
 }
 
-fun Fragment.loadingHide() {
+fun Fragment.hideProgress() {
     try {
         loadingDialog.dismiss()
     } catch (e: Exception) {

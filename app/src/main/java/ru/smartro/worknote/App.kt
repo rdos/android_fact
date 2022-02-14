@@ -98,7 +98,7 @@ class App : Application() {
         }
     }
 }
-const val A_SLEEP_TIME_1_83__MS = 110000L
+const val A_SLEEP_TIME_1_83__MS = 180000L
 const val Snull = "rNull"
 const val Inull = -111
 const val Lnull = -111222333L
