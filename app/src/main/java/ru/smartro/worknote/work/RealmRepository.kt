@@ -716,10 +716,14 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     private fun getQueryPlatform(): RealmQuery<PlatformEntity> {
-        return p_realm.where(PlatformEntity::class.java).equalTo("isWorkOrderProgress", true)
+        return p_realm.where(PlatformEntity::class.java)
+            .equalTo("isWorkOrderProgress", true)
+            .equalTo("isWorkOrderComplete", false)
     }
     private fun getQueryContainer(): RealmQuery<ContainerEntity> {
-        return p_realm.where(ContainerEntity::class.java).equalTo("isWorkOrderProgress", true)
+        return p_realm.where(ContainerEntity::class.java)
+            .equalTo("isWorkOrderProgress", true)
+            .equalTo("isWorkOrderComplete", false)
     }
 
     private fun getWorkOrderQuery(): RealmQuery<WorkOrderEntity> {

@@ -76,6 +76,7 @@ import kotlin.math.round
 class MapAct : AbstractAct(),
     /*UserLocationObjectListener,*/
     PlatformAdapter.PlatformClickListener, LocationListener, MapObjectTapListener {
+    private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mAcbComplete: AppCompatButton
     private lateinit var mMapMyYandex: MapView
@@ -387,6 +388,7 @@ class MapAct : AbstractAct(),
                             when (result.status) {
                                 Status.SUCCESS -> {
                                     hideProgress()
+                                    hideInfoDialog()
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         vs.finishTask(this@MapAct)
@@ -435,6 +437,7 @@ class MapAct : AbstractAct(),
                                 Status.SUCCESS -> {
                                     hideProgress()
                                     hideDialog()
+                                    hideInfoDialog()
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         vs.finishTask(this)
@@ -528,20 +531,30 @@ class MapAct : AbstractAct(),
         val inflater = LayoutInflater.from(this)
         val view = inflater.inflate(R.layout.act_map__workorder_info, null)
         builder.setView(view)
-        val dlg = builder.create()
+        mInfoDialog = builder.create()
         try {
-            val window: Window? = dlg.window
+            val window: Window? = mInfoDialog?.window
             val wlp: WindowManager.LayoutParams = window!!.attributes
 
             wlp.gravity = Gravity.TOP
             wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
             window.attributes = wlp
-            dlg.show()
+            mInfoDialog?.show()
         } catch (ex: Exception) {
-
+            Log.e(TAG, "showInfoDialog", ex)
         }
         return view
     }
+
+    private fun hideInfoDialog() {
+        try {
+            mInfoDialog?.dismiss()
+        } catch (ex: Exception) {
+            // TODO: 02.11.2021
+            Log.e(TAG, "hideInfoDialog", ex)
+        }
+    }
+
 
     private fun initWorkOrderInfo(view: View) {
         val llcInfo = view.findViewById<LinearLayoutCompat>(R.id.llc_act_map__workorder_info)
@@ -871,6 +884,7 @@ class MapAct : AbstractAct(),
     override fun onLocationUpdated(location: Location) {
 //        Log.d("LogDistance", "###################")
         currentLocation = location
+        location.accuracy
         AppPreferences.currentCoordinate = "${location.position.longitude}#${location.position.latitude}"
         val distanceToPoint = MyUtil.calculateDistance(location.position, selectedPlatformToNavigate)
 //        Log.d("LogDistance", "Distance: $distanceToPoint")
