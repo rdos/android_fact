@@ -434,6 +434,7 @@ class MapAct : AbstractAct(),
                             when (result.status) {
                                 Status.SUCCESS -> {
                                     loadingHide()
+                                    hideDialog()
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         vs.finishTask(this)
