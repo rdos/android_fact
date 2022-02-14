@@ -480,12 +480,12 @@ class CameraFragment(
                             }
                         }
                     })
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        mRootView.postDelayed({
-                            mRootView.foreground = ColorDrawable(Color.WHITE)
-                            mRootView.postDelayed({ mRootView.foreground = null }, ANIMATION_FAST_MILLIS)
-                        }, ANIMATION_SLOW_MILLIS)
-                    }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        mRootView.postDelayed({
+//                            mRootView.foreground = ColorDrawable(Color.WHITE)
+//                            mRootView.postDelayed({ mRootView.foreground = null }, ANIMATION_FAST_MILLIS)
+//                        }, ANIMATION_SLOW_MILLIS)
+//                    }
                 }
             }
         }
