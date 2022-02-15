@@ -55,7 +55,7 @@ import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
-import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
+import ru.smartro.worknote.ui.problem.NonPickupPlatformAct
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.SynchronizeWorker
@@ -644,7 +644,7 @@ class MapAct : AbstractAct(),
 
     override fun startPlatformProblem(item: PlatformEntity) {
         hideDialog()
-        val intent = Intent(this, ExtremeProblemActivity::class.java)
+        val intent = Intent(this, NonPickupPlatformAct::class.java)
         intent.putExtra("platform_id", item.platformId)
         startActivityForResult(intent, REQUEST_EXIT)
     }

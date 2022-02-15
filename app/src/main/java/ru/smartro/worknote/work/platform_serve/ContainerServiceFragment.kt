@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.fragment_container_service.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractBottomDialog
-import ru.smartro.worknote.ui.problem.ExtremeProblemActivity
+import ru.smartro.worknote.ui.problem.NonPickupAct
 
 class ContainerServiceFragment(val containerId: Int, val platformId: Int) : AbstractBottomDialog() {
     private val viewModel: PlatformServeViewModel by viewModel()
@@ -49,7 +49,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
             clearContainerVolume()
         }
         enter_info_problem_btn.setOnClickListener {
-            val intent = Intent(requireContext(), ExtremeProblemActivity::class.java)
+            val intent = Intent(requireContext(), NonPickupAct::class.java)
             intent.putExtra("is_container", true)
             intent.putExtra("container_id", containerId)
             intent.putExtra("platform_id", platformId)

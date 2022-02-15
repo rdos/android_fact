@@ -6,7 +6,14 @@ import android.os.Bundle
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import kotlinx.android.synthetic.main.act_start.*
+import kotlinx.android.synthetic.main.act_start.cl_act_start
+import kotlinx.android.synthetic.main.act_start.auth_appversion
+import kotlinx.android.synthetic.main.act_start.actv_activity_auth__it_test_version
+import kotlinx.android.synthetic.main.act_start.auth_enter
+import kotlinx.android.synthetic.main.act_start.auth_login
+import kotlinx.android.synthetic.main.act_start.auth_password_out
+import kotlinx.android.synthetic.main.act_start.login_login_out
+import kotlinx.android.synthetic.main.act_start.auth_password
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
@@ -37,7 +44,7 @@ class StartAct : AbstractAct() {
         setContentView(R.layout.act_start)
         actionBar?.title = "Вход в систему"
         auth_appversion.text = BuildConfig.VERSION_NAME
-        baseview.setOnClickListener {
+        cl_act_start.setOnClickListener {
             MyUtil.hideKeyboard(this)
         }
         // TODO: 01.11.2021 !! !

@@ -16,7 +16,6 @@ import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.failure.FailureBody
-import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.exception.BadRequestException
 import ru.smartro.worknote.service.network.response.EmptyResponse
@@ -50,26 +49,7 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    fun served(body: ServiceResultBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "served")
-        try {
-
-            val response = RetrofitClient(context).apiService(true).served(body)
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    badRequest(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
-
-    fun getVehicle(organisationId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
+      fun getVehicle(organisationId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
         Log.i(TAG, "getVehicle.before")
         try {
             val response = RetrofitClient(context)
@@ -212,60 +192,6 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    fun sendBreakDown(body: BreakdownBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "sendBreakDownsendBreakDownsendBreakDown")
-
-        try {
-            val response = RetrofitClient(context).apiService(true).sendBreakDown(body)
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body(), "${response.code()}"))
-                }
-                else -> {
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
-
-    fun sendFailure(body: FailureBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "sendFailuresendFailuresendFailure")
-
-        try {
-            val response = RetrofitClient(context).apiService(true).sendFailure(body)
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body(), "${response.code()}"))
-                }
-                else -> {
-                    badRequest(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
-/*
-    fun getWayTask(wayId: Int, wayTaskBody: WayTaskBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        try {
-            val response = RetrofitClient(context)
-                .apiService(true).getWayTask(wayId, wayTaskBody)
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    badRequest(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }*/
 
     fun getWorkOrder(organisationId: Int, wayId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
         Log.i(TAG, "getWorkOder.before")

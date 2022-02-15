@@ -487,6 +487,8 @@ open class ContainerEntity(
     var failureMedia: RealmList<ImageEntity> = RealmList(),
     @SerializedName("failure_reason_id")
     var failureReasonId: Int? = null,
+    @SerializedName("breakdown_reason_id")
+    var breakdownReasonId: Int? = null,
 /*    @SerializedName("breakdown_reason_id")
     var breakdownReasonId: Int? = null,*/
     @SerializedName("id")

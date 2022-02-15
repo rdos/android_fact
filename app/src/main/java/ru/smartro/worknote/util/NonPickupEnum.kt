@@ -1,7 +1,6 @@
 package ru.smartro.worknote.util
 
-enum class ProblemEnum {
+enum class NonPickupEnum {
     BREAKDOWN,
-    BOTH,
-    ERROR
+    FAILURE
 }

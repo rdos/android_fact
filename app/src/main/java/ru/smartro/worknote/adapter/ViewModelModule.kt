@@ -5,9 +5,10 @@ import org.koin.dsl.module
 import ru.smartro.worknote.ui.camera.CameraViewModel
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalViewModel
+import ru.smartro.worknote.ui.problem.NonPickupAct
+import ru.smartro.worknote.ui.problem.NonPickupPlatformAct
 import ru.smartro.worknote.work.ac.map.MapAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
-import ru.smartro.worknote.ui.problem.ProblemViewModel
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import ru.smartro.worknote.work.ac.checklist.StartWorkOrderAct
@@ -16,6 +17,7 @@ import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
 
 val viewModelModule = module {
     viewModel { StartAct.AuthViewModel(androidApplication()) }
+
     viewModel {
         StartOwnerAct.OrganisationViewModel(androidApplication())
     }
@@ -31,10 +33,16 @@ val viewModelModule = module {
     viewModel {
         MapAct.MapViewModel(androidApplication())
     }
+    viewModel {
+        NonPickupAct.NonPickupViewModel(androidApplication())
+    }
+
+    viewModel {
+        NonPickupPlatformAct.NonPickupPlatformViewModel(androidApplication())
+    }
 
     viewModel { PlatformServeViewModel(androidApplication()) }
     viewModel { CameraViewModel(androidApplication()) }
-    viewModel { ProblemViewModel(androidApplication()) }
     viewModel { DebugActivity.DebugViewModel(androidApplication()) }
     viewModel { JournalViewModel(androidApplication()) }
 }

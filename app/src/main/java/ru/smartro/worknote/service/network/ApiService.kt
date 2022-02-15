@@ -1,6 +1,5 @@
 package ru.smartro.worknote.service.network
 
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 import ru.smartro.worknote.service.network.body.AuthBody
@@ -10,7 +9,6 @@ import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.service.network.body.failure.FailureBody
-import ru.smartro.worknote.service.network.body.served.ServiceResultBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.response.EmptyResponse
 import ru.smartro.worknote.service.network.response.auth.AuthResponse
@@ -51,14 +49,6 @@ interface ApiService {
 
     @POST("failure")
     suspend fun sendFailure(@Body body: FailureBody): Response<FailureResultResponse>
-
-/*
-    @POST("waybill/{id}")
-    suspend fun getWayTask(@Path("id") wayId: Int, @Body wayTaskBody: WayTaskBody): Response<WayTaskResponse>
-*/
-
-    @POST("served")
-    suspend fun served(@Body body: ServiceResultBody): Response<ServedResponse>
 
     @POST("workorder/{id}/progress")
     suspend fun progress(@Path("id") id: Int, @Body time: ProgressBody): Response<ServedResponse>

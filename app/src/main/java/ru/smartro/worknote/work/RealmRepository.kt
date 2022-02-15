@@ -4,13 +4,12 @@ import android.util.Log
 import com.yandex.mapkit.geometry.Point
 import io.realm.*
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.Snull
 import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
-import ru.smartro.worknote.util.ProblemEnum
+import ru.smartro.worknote.util.NonPickupEnum
 import ru.smartro.worknote.util.StatusEnum
 import java.lang.Exception
 import kotlin.math.round
@@ -286,11 +285,12 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun updateContainerProblem(platformId: Int, containerId: Int, problemComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
+    fun updateNonPickupContainer(platformId: Int, containerId: Int,
+                                 problemComment: String, nonPickupType: NonPickupEnum,
+                                 problem: String) {
         Log.d(TAG, "updateContainerProblem.before platformId=${platformId}")
         Log.d(TAG, "updateContainerProblem.containerId=${containerId}, problemComment=${problemComment}")
-        Log.d(TAG, "updateContainerProblem.problemType=${problemType}, problem=${problem}")
-        Log.d(TAG, "updateContainerProblem.failProblem=${failProblem}")
+        Log.d(TAG, "updateContainerProblem.problemType=${nonPickupType}, problem=${problem}")
         p_realm.executeTransaction { realm ->
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
@@ -298,23 +298,17 @@ class RealmRepository(private val p_realm: Realm) {
             val platform = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
-            when (problemType) {
-                ProblemEnum.BREAKDOWN -> {
+            when (nonPickupType) {
+                NonPickupEnum.BREAKDOWN -> {
                     val problemId = findBreakdownByValue(realm, problem).id
-                    //  container.breakdownReasonId = problemId
+                    container.breakdownReasonId = problemId
                     container.status = StatusEnum.ERROR
                 }
-                ProblemEnum.ERROR -> {
+                NonPickupEnum.FAILURE -> {
                     val problemId = findFailReasonByValue(realm, problem).id
                     container.failureReasonId = problemId
                     container.status = StatusEnum.ERROR
-                }
-                ProblemEnum.BOTH -> {
-                    val breakdownProblemId = findBreakdownByValue(realm, problem).id
-                    val failReasonProblemId = findFailReasonByValue(realm, failProblem!!).id
-                    //      container.breakdownReasonId = breakdownProblemId
-                    container.failureReasonId = failReasonProblemId
-                    container.status = StatusEnum.ERROR
+
                 }
             }
             container.comment = problemComment
@@ -322,38 +316,20 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun updatePlatformProblem(platformId: Int, failureComment: String, problemType: ProblemEnum, problem: String, failProblem: String?) {
+    fun updateNonPickupPlatform(platformId: Int, failureComment: String, problem: String) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
-            when (problemType) {
-                ProblemEnum.ERROR -> {
-                    val problemId = findFailReasonByValue(realm, problem).id
-                    platform.failureReasonId = problemId
-                    var platformStatus = StatusEnum.ERROR
-                    platform.containers.forEach {
-                        if (it.status != StatusEnum.SUCCESS) it.status = StatusEnum.ERROR
-                        else platformStatus = StatusEnum.UNFINISHED
-                    }
-                    platform.status = platformStatus
-                }
-                ProblemEnum.BOTH -> {
-                    val failReasonProblemId = findFailReasonByValue(realm, failProblem!!).id
-                    platform.failureReasonId = failReasonProblemId
-                    var platformStatus = StatusEnum.ERROR
-                    platform.containers.forEach {
-                        if (it.status != StatusEnum.SUCCESS) it.status = StatusEnum.ERROR
-                        else platformStatus = StatusEnum.UNFINISHED
-                    }
-                    platform.status = platformStatus
-                }
-                ProblemEnum.BREAKDOWN -> {
-                    val breakdownReasonId = findBreakdownByValue(realm, problem).id
-                    //platform.breakdownReasonId = breakdownReasonId
-
-                }
+            val problemId = findFailReasonByValue(realm, problem).id
+            platform.failureReasonId = problemId
+            var platformStatus = StatusEnum.ERROR
+            platform.containers.forEach {
+                if (it.status != StatusEnum.SUCCESS) it.status = StatusEnum.ERROR
+                else platformStatus = StatusEnum.UNFINISHED
             }
+            platform.status = platformStatus
+
             platform.failureComment = failureComment
             setEntityUpdateAt(platform)
         }
