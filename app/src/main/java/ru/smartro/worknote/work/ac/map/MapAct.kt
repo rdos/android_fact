@@ -884,8 +884,9 @@ class MapAct : AbstractAct(),
     override fun onLocationUpdated(location: Location) {
 //        Log.d("LogDistance", "###################")
         currentLocation = location
-        location.accuracy
+
         AppPreferences.currentCoordinate = "${location.position.longitude}#${location.position.latitude}"
+        AppPreferences.currentCoordinateAccuracy = location.accuracy.toString()
         val distanceToPoint = MyUtil.calculateDistance(location.position, selectedPlatformToNavigate)
 //        Log.d("LogDistance", "Distance: $distanceToPoint")
         if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {

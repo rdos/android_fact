@@ -3,10 +3,14 @@ package ru.smartro.worknote.work
 import android.content.Context
 import android.content.SharedPreferences
 import com.yandex.mapkit.geometry.Point
+import ru.smartro.worknote.Dnull
+import ru.smartro.worknote.Snull
 import java.lang.Exception
 
 
 object AppPreferences {
+
+
     private const val NAME = ""
     private const val MODE = Context.MODE_PRIVATE
     private lateinit var preferences: SharedPreferences
@@ -39,6 +43,11 @@ object AppPreferences {
             it.putString("accessToken", value)
         }
 
+    var currentCoordinateAccuracy: String
+        get() = preferences.getString("currentCoordinateAccuracy", Snull)!!
+        set(value) = preferences.edit {
+            it.putString("currentCoordinateAccuracy", value)
+        }
     var currentCoordinate: String
         get() = preferences.getString("currentCoordinate", " ")!!
         set(value) = preferences.edit {

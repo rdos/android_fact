@@ -461,10 +461,12 @@ class CameraFragment(
 
                                 if (photoFor == PhotoTypeEnum.forContainerProblem) {
                                     viewModel.updateContainerMedia(platformId, containerId,
-                                        imageBase64.toString(), AppPreferences.getCurrentLocation())
+                                        imageBase64.toString(), AppPreferences.getCurrentLocation(),
+                                        AppPreferences.currentCoordinateAccuracy)
                                 } else {
                                     viewModel.updatePlatformMedia(photoFor, platformId,
-                                        imageBase64.toString(), AppPreferences.getCurrentLocation())
+                                        imageBase64.toString(), AppPreferences.getCurrentLocation(),
+                                        AppPreferences.currentCoordinateAccuracy)
                                 }
                                 captureButton.isClickable = true
                                 captureButton.isEnabled = true

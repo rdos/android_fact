@@ -4,6 +4,7 @@ import android.util.Log
 import com.yandex.mapkit.geometry.Point
 import io.realm.*
 import ru.smartro.worknote.Inull
+import ru.smartro.worknote.Snull
 import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
@@ -20,7 +21,8 @@ class RealmRepository(private val p_realm: Realm) {
     fun insertWayTask(woRKoRDeRknow1: WoRKoRDeR_know1) {
 
         fun mapMedia(data: List<String>): RealmList<ImageEntity> {
-            return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0, coords = RealmList()) }
+            return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0,
+                coords = RealmList()) }
         }
 
 
@@ -533,9 +535,11 @@ class RealmRepository(private val p_realm: Realm) {
 
 
     /** добавление фото в платформу **/
-    fun updatePlatformMedia(imageFor: Int, platformId: Int, imageBase64: String, coords: Point) {
+    fun updatePlatformMedia(imageFor: Int, platformId: Int, imageBase64: String,
+                            coords: Point, currentCoordinateAccuracy: String) {
         p_realm.executeTransaction { realm ->
-            val imageEntity = ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+            val imageEntity = ImageEntity(imageBase64, MyUtil.timeStamp(),
+                RealmList(coords.latitude, coords.longitude), currentCoordinateAccuracy)
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
@@ -578,7 +582,8 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String, coords: Point) {
+    fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String,
+                             coords: Point, currentCoordinateAccuracy: String) {
         p_realm.executeTransaction { realm ->
             val containerEntity = getQueryContainer()
                 .equalTo("containerId", containerId)
@@ -587,7 +592,9 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             containerEntity.failureMedia.add(
-                ImageEntity(imageBase64, MyUtil.timeStamp(), RealmList(coords.latitude, coords.longitude))
+                ImageEntity(imageBase64, MyUtil.timeStamp(),
+                    RealmList(coords.latitude, coords.longitude),
+                    currentCoordinateAccuracy)
             )
             setEntityUpdateAt(platformEntity)
         }

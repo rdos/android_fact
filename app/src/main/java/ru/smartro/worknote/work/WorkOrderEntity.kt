@@ -119,7 +119,8 @@ open class KGOEntity(
 
         fun copyKGOEntity(kgoentityKnow100: KGOEntity_know100?): KGOEntity? {
             fun mapMedia(data: List<String>): RealmList<ImageEntity> {
-                return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0, coords = RealmList()) }
+                return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0,
+                    coords = RealmList())}
             }
             var result: KGOEntity? = null
             kgoentityKnow100?.let {
@@ -545,7 +546,8 @@ open class ContainerEntity(
 open class ImageEntity(
     var image: String? = null,
     var date: Long? = null,
-    var coords: RealmList<Double> = RealmList()
+    var coords: RealmList<Double> = RealmList(),
+    var accuracy: String? = null,
 ) : Serializable, RealmObject()
 
 
