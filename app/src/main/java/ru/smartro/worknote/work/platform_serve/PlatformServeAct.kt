@@ -189,16 +189,21 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
             startActivityForResult(intent, 13)
         }
 
-        actvAddress.setOnClickListener { view ->
+        if (mPlatformEntity.containers.size >= 7 ) {
+            actvAddress.setOnClickListener { view ->
 //            v.get
 //            view = cast()
 //            actvAddress.maxLines = if (actvAddress.maxLines > 0)  1 else 3 /** \ */
-            if (actvAddress.maxLines < 3) {
-                actvAddress.maxLines = 3
-            } else {
-                actvAddress.maxLines = 1
+                if (actvAddress.maxLines < 3) {
+                    actvAddress.maxLines = 3
+                } else {
+                    actvAddress.maxLines = 1
+                }
             }
+        } else {
+            actvAddress.maxLines = 3
         }
+
 
 
         /** VOLUME PICKUP
