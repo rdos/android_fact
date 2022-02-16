@@ -331,6 +331,9 @@ class RealmRepository(private val p_realm: Realm) {
             platform.status = platformStatus
 
             platform.failureComment = failureComment
+            val workOrder = getWorkOrderQuery().equalTo("id", platform.workOrderId)
+                .findFirst()
+            workOrder?.calcInfoStatistics()
             setEntityUpdateAt(platform)
         }
     }
