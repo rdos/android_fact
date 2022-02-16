@@ -514,11 +514,13 @@ class RealmRepository(private val p_realm: Realm) {
 
 
     /** добавление фото в платформу **/
-    fun updatePlatformMedia(imageFor: Int, platformId: Int, imageBase64: String,
-                            coords: Point, currentCoordinateAccuracy: String) {
+    fun updatePlatformMedia(
+        imageFor: Int, platformId: Int, imageBase64: String,
+        coords: Point, currentCoordinateAccuracy: String, lastKnownLocationTime: Long
+    ) {
         p_realm.executeTransaction { realm ->
             val imageEntity = ImageEntity(imageBase64, MyUtil.timeStamp(),
-                RealmList(coords.latitude, coords.longitude), currentCoordinateAccuracy)
+                RealmList(coords.latitude, coords.longitude), currentCoordinateAccuracy, lastKnownLocationTime)
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
@@ -561,8 +563,10 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun updateContainerMedia(platformId: Int, containerId: Int, imageBase64: String,
-                             coords: Point, currentCoordinateAccuracy: String) {
+    fun updateContainerMedia(
+        platformId: Int, containerId: Int, imageBase64: String,
+        coords: Point, currentCoordinateAccuracy: String, lastKnownLocationTime: Long
+    ) {
         p_realm.executeTransaction { realm ->
             val containerEntity = getQueryContainer()
                 .equalTo("containerId", containerId)
@@ -573,7 +577,7 @@ class RealmRepository(private val p_realm: Realm) {
             containerEntity.failureMedia.add(
                 ImageEntity(imageBase64, MyUtil.timeStamp(),
                     RealmList(coords.latitude, coords.longitude),
-                    currentCoordinateAccuracy)
+                    currentCoordinateAccuracy, lastKnownLocationTime)
             )
             setEntityUpdateAt(platformEntity)
         }

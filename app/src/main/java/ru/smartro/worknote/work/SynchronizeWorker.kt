@@ -15,9 +15,12 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
+import com.yandex.mapkit.location.LocationManagerUtils
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.delay
+import ru.smartro.worknote.Dnull
+import ru.smartro.worknote.Lnull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.service.network.NetworkRepository
 import ru.smartro.worknote.service.network.Status
@@ -53,15 +56,19 @@ class SynchronizeWorker(
         }
     }
 
+    private fun isLastLocation(): Boolean {
+        var lastTime: Long = 0
+        val location = LocationManagerUtils.getLastKnownLocation() ?: return false
+        lastTime = location.absoluteTimestamp
+
+        val diff = System.currentTimeMillis() - lastTime
+        return diff <= 33840
+    }
+
+
     private suspend fun synchronizeData(db: RealmRepository) {
         if (AppPreferences.workerStatus) {
-            var lat = 0.0
-            var long = 0.0
-            val currentCoordinate = AppPreferences.currentCoordinate
-            if (currentCoordinate.contains("#")) {
-                lat = currentCoordinate.substringBefore("#").toDouble()
-                long = currentCoordinate.substringAfter("#").toDouble()
-            }
+
             val timeBeforeRequest: Long
             logSentry(" SYNCHRONIZE STARTED")
             val lastSynchroTime = AppPreferences.lastSynchroTime
@@ -77,7 +84,25 @@ class SynchronizeWorker(
                 Log.d(TAG, " SYNCHRONIZE LAST PLATFORMS")
             }
 
-            val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, listOf(lat, long), mDeviceId, platforms)
+            var coords: List<Double> = listOf(0.0, 0.0)
+            val location = LocationManagerUtils.getLastKnownLocation()
+            var lastKnownLocationTime = Lnull
+            if (location == null) {
+                val currentCoordinate = AppPreferences.currentCoordinate
+                if (currentCoordinate.contains("#")) {
+                    val lat = currentCoordinate.substringBefore("#").toDouble()
+                    val long = currentCoordinate.substringAfter("#").toDouble()
+                    coords = listOf(lat, long)
+                }
+            } else {
+                coords = listOf(location.position.latitude, location.position.longitude)
+                lastKnownLocationTime = System.currentTimeMillis() - location.absoluteTimestamp
+                Log.d(TAG, "synchronizeData.lastKnownLocationTime=${lastKnownLocationTime}")
+            }
+
+
+
+            val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, coords, mDeviceId, lastKnownLocationTime, platforms)
 
             saveJSON(synchronizeBody)
             val synchronizeResponse = mNetworkRepository.synchronizeData(synchronizeBody)

@@ -6,5 +6,6 @@ class SynchronizeBody(
     val wb_id: Int,
     val coords: List<Double>,
     val device: String,
+    val lastKnownLocationTime: Long,
     val data: List<PlatformEntity>?
 )

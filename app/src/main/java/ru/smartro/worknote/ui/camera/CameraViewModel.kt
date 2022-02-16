@@ -14,9 +14,11 @@ class CameraViewModel(application: Application) : BaseViewModel(application) {
     fun updatePlatformMedia(
         imageFor: Int, pointId: Int, imageBase64: String,
         coords: Point,
-        currentCoordinateAccuracy: String
-    ) {
-        baseDat.updatePlatformMedia(imageFor, pointId, imageBase64, coords, currentCoordinateAccuracy)
+        currentCoordinateAccuracy: String,
+        lastKnownLocationTime: Long,
+
+        ) {
+        baseDat.updatePlatformMedia(imageFor, pointId, imageBase64, coords, currentCoordinateAccuracy, lastKnownLocationTime)
     }
 //    fun updateImageImageEntity(md5: String, readBytes: ByteArray) {
 //        baseDat.updateImageImageEntity(md5, readBytes)
@@ -24,10 +26,11 @@ class CameraViewModel(application: Application) : BaseViewModel(application) {
     fun updateContainerMedia(
     platformId: Int, containerId: Int, imageBase64: String,
     coords: Point,
-    currentCoordinateAccuracy: String
+    currentCoordinateAccuracy: String,
+    lastKnownLocationTime: Long
 ) {
         baseDat.updateContainerMedia(platformId, containerId, imageBase64, coords,
-            currentCoordinateAccuracy)
+            currentCoordinateAccuracy, lastKnownLocationTime)
     }
 
     fun findContainerEntity(containerId: Int) =

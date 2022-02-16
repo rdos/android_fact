@@ -40,6 +40,7 @@ import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.smartro.worknote.Lnull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
@@ -480,14 +481,25 @@ class MapAct : AbstractAct(),
         var lat = 0.0
         var long = 0.0
         val deviceId = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
-        val currentCoordinate = AppPreferences.currentCoordinate
-        if (currentCoordinate.contains("#")) {
-            long = currentCoordinate.substringAfter("#").toDouble()
-            lat = currentCoordinate.substringBefore("#").toDouble()
+
+        var coords: List<Double> = listOf(0.0, 0.0)
+        val location = LocationManagerUtils.getLastKnownLocation()
+        var lastKnownLocationTime = Lnull
+        if (location == null) {
+            val currentCoordinate = AppPreferences.currentCoordinate
+            if (currentCoordinate.contains("#")) {
+                val lat = currentCoordinate.substringBefore("#").toDouble()
+                val long = currentCoordinate.substringAfter("#").toDouble()
+                coords = listOf(lat, long)
+            }
+        } else {
+            coords = listOf(location.position.latitude, location.position.longitude)
+            lastKnownLocationTime = System.currentTimeMillis() - location.absoluteTimestamp
+            Log.d(TAG, "gotoSynchronize.lastKnownLocationTime=${lastKnownLocationTime}")
         }
         val synchronizeBody = SynchronizeBody(
-            AppPreferences.wayBillId, listOf(lat, long),
-            deviceId, lastPlatforms)
+            AppPreferences.wayBillId, coords,
+            deviceId, lastKnownLocationTime, lastPlatforms)
 
         vs.networkDat.sendLastPlatforms(synchronizeBody).observe(this) { result ->
             when (result.status) {

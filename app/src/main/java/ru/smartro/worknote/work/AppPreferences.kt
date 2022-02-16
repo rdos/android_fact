@@ -3,7 +3,9 @@ package ru.smartro.worknote.work
 import android.content.Context
 import android.content.SharedPreferences
 import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.location.LocationManagerUtils
 import ru.smartro.worknote.Dnull
+import ru.smartro.worknote.Lnull
 import ru.smartro.worknote.Snull
 import java.lang.Exception
 
@@ -119,6 +121,15 @@ object AppPreferences {
             result = Point(lat, long)
         } catch (ex: Exception) {
             // TODO: 24.12.2021  /\
+        }
+        return result
+    }
+
+    fun getLastKnownLocationTime(): Long {
+        var result = Lnull
+        val location = LocationManagerUtils.getLastKnownLocation()
+        if (location != null) {
+            result = System.currentTimeMillis() - location.absoluteTimestamp
         }
         return result
     }

@@ -550,6 +550,7 @@ open class ImageEntity(
     var date: Long? = null,
     var coords: RealmList<Double> = RealmList(),
     var accuracy: String? = null,
+    var lastKnownLocationTime: Long? =null,
 ) : Serializable, RealmObject()
 
 
