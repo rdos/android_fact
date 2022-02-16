@@ -377,7 +377,7 @@ class RealmRepository(private val p_realm: Realm) {
 
     // TODO:
     fun findLastPlatforms(): List<PlatformEntity> {
-        p_realm.refresh()
+//        p_realm.refresh()
         val lastSynchroTime = AppPreferences.lastSynchroTime
         return p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).greaterThan("updateAt", lastSynchroTime)

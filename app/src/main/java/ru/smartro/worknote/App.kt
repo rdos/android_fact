@@ -103,7 +103,7 @@ const val Snull = "rNull"
 const val Inull = -111
 const val Lnull = -111222333L
 const val Fnull = -11.1
-const val Dnull = -111.0
+const val Dnull = -11.1
 const val ErrorsE = "ErrorsE"
 
 fun String?.isShowForUser(): Boolean {

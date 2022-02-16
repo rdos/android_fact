@@ -114,13 +114,18 @@ object AppPreferences {
     }
 
     fun getCurrentLocation(): Point {
-        var result =  Point(55.748813, 37.615462)
+        var result =  Point(Dnull, Dnull)
         try {
             val lat = currentCoordinate.substringBefore("#").toDouble()
             val long = currentCoordinate.substringAfter("#").toDouble()
             result = Point(lat, long)
         } catch (ex: Exception) {
             // TODO: 24.12.2021  /\
+            try {
+                result = LocationManagerUtils.getLastKnownLocation()!!.position
+            } catch (ex: Exception) {
+
+            }
         }
         return result
     }

@@ -84,24 +84,10 @@ class SynchronizeWorker(
                 Log.d(TAG, " SYNCHRONIZE LAST PLATFORMS")
             }
 
-            var coords: List<Double> = listOf(0.0, 0.0)
-            val location = LocationManagerUtils.getLastKnownLocation()
-            var lastKnownLocationTime = Lnull
-            if (location == null) {
-                val currentCoordinate = AppPreferences.currentCoordinate
-                if (currentCoordinate.contains("#")) {
-                    val lat = currentCoordinate.substringBefore("#").toDouble()
-                    val long = currentCoordinate.substringAfter("#").toDouble()
-                    coords = listOf(lat, long)
-                }
-            } else {
-                coords = listOf(location.position.latitude, location.position.longitude)
-                lastKnownLocationTime = System.currentTimeMillis() - location.absoluteTimestamp
-                Log.d(TAG, "synchronizeData.lastKnownLocationTime=${lastKnownLocationTime}")
-            }
 
-
-
+            val location = AppPreferences.getCurrentLocation()
+            val lastKnownLocationTime = AppPreferences.getLastKnownLocationTime()
+            val coords = listOf(location.latitude, location.longitude)
             val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, coords, mDeviceId, lastKnownLocationTime, platforms)
 
             saveJSON(synchronizeBody)
