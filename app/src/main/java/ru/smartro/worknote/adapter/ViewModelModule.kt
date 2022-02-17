@@ -5,8 +5,9 @@ import org.koin.dsl.module
 import ru.smartro.worknote.ui.camera.CameraViewModel
 import ru.smartro.worknote.ui.debug.DebugActivity
 import ru.smartro.worknote.ui.journal.JournalViewModel
-import ru.smartro.worknote.ui.problem.NonPickupAct
-import ru.smartro.worknote.ui.problem.NonPickupPlatformAct
+import ru.smartro.worknote.ui.problem.ContainerBreakdownAct
+import ru.smartro.worknote.ui.problem.ContainerFailureAct
+import ru.smartro.worknote.ui.problem.PlatformFailureAct
 import ru.smartro.worknote.work.ac.map.MapAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.work.ac.StartAct
@@ -34,11 +35,14 @@ val viewModelModule = module {
         MapAct.MapViewModel(androidApplication())
     }
     viewModel {
-        NonPickupAct.NonPickupViewModel(androidApplication())
+        ContainerFailureAct.ContainerFailureViewModel(androidApplication())
+    }
+    viewModel {
+        ContainerBreakdownAct.ContainerBreakdownViewModel(androidApplication())
     }
 
     viewModel {
-        NonPickupPlatformAct.NonPickupPlatformViewModel(androidApplication())
+        PlatformFailureAct.NonPickupPlatformViewModel(androidApplication())
     }
 
     viewModel { PlatformServeViewModel(androidApplication()) }

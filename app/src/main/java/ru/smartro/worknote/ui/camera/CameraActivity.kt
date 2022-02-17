@@ -48,10 +48,15 @@ class CameraActivity : AbstractAct() {
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = getString(R.string.problem_on_point)
             }
-            PhotoTypeEnum.forContainerProblem -> {
+            PhotoTypeEnum.forContainerFailure -> {
                 containerId = intent.getIntExtra("container_id", 0)
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = getString(R.string.problem_container)
+            }
+            PhotoTypeEnum.forContainerBreakdown -> {
+                containerId = intent.getIntExtra("container_id", 0)
+                platformId = intent.getIntExtra("platform_id", 0)
+                supportActionBar?.title = "Поломка контейнера"
             }
             PhotoTypeEnum.forServedKGO -> {
                 platformId = intent.getIntExtra("platform_id", 0)

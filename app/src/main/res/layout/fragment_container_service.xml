@@ -35,8 +35,21 @@
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/enter_info_breakdown"
             app:layout_constraintStart_toEndOf="@id/enter_info_problem_btn"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/enter_info_breakdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:background="@drawable/bg_button_white"
+            app:layout_constraintHorizontal_weight="1"
+            android:padding="8dp"
+            android:src="@drawable/ic_kgo"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <RadioGroup

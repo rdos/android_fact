@@ -59,9 +59,15 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int,
                 image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(platform.failureMedia))
             }
 
-            PhotoTypeEnum.forContainerProblem -> {
+            PhotoTypeEnum.forContainerFailure -> {
                 val container = viewModel.findContainerEntity(containerId)
                 activity?.actionBar?.title = getString(R.string.problem_container)
+                image_title.text = getString(R.string.problem_container)
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(container.failureMedia))
+            }
+            PhotoTypeEnum.forContainerBreakdown -> {
+                val container = viewModel.findContainerEntity(containerId)
+                activity?.actionBar?.title = "Поломка контейнера"
                 image_title.text = getString(R.string.problem_container)
                 image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(container.failureMedia))
             }
@@ -96,8 +102,9 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int,
     override fun imageRemoveClicked(imageBase64: ImageEntity) {
         warningDelete(getString(R.string.warning_detele)).let {
             it.accept_btn.setOnClickListener {
-                if (photoFor == PhotoTypeEnum.forContainerProblem) {
-                    viewModel.removeContainerMedia(platformId, containerId, imageBase64)
+                if (photoFor == PhotoTypeEnum.forContainerBreakdown
+                    || photoFor == PhotoTypeEnum.forContainerFailure) {
+                    viewModel.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
                 } else {
                     viewModel.removePlatformMedia(photoFor, imageBase64, platformId)
                 }

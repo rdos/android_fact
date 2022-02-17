@@ -11,7 +11,7 @@ import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.act_non_pickup.*
+import kotlinx.android.synthetic.main.act_platform_failure.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
@@ -21,16 +21,15 @@ import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
-import ru.smartro.worknote.util.NonPickupEnum
 
-class NonPickupPlatformAct : AbstractAct() {
+class PlatformFailureAct : AbstractAct() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView
     private lateinit var platform: PlatformEntity
     private val viewModel: NonPickupPlatformViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_non_pickup_platform)
+        setContentView(R.layout.act_platform_failure)
         val baseview = findViewById<ConstraintLayout>(R.id.baseview)
         baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

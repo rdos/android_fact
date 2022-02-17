@@ -148,9 +148,13 @@ class CameraFragment(
         val count = if (plus) 1 else 0
         imageCounter.post {
             when (photoFor) {
-                PhotoTypeEnum.forContainerProblem -> {
+                PhotoTypeEnum.forContainerFailure -> {
                     val container = viewModel.findContainerEntity(containerId)
                     imageCounter.text = "${container.failureMedia.size + count}"
+                }
+                PhotoTypeEnum.forContainerBreakdown -> {
+                    val container = viewModel.findContainerEntity(containerId)
+                    imageCounter.text = "${container.breakdownMedia.size + count}"
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
                     val platform = viewModel.findPlatformEntity(platformId)
@@ -337,9 +341,19 @@ class CameraFragment(
                         requireActivity().finish()
                     }
                 }
-                PhotoTypeEnum.forContainerProblem -> {
+                PhotoTypeEnum.forContainerFailure -> {
                     val container = viewModel.findContainerEntity(containerId)
                     if (container.failureMedia.size == 0) {
+                        toast("Сделайте фото")
+                    } else {
+                        requireActivity().setResult(Activity.RESULT_OK)
+                        requireActivity().finish()
+                    }
+                }
+
+                PhotoTypeEnum.forContainerBreakdown  -> {
+                    val container = viewModel.findContainerEntity(containerId)
+                    if (container.breakdownMedia.size == 0) {
                         toast("Сделайте фото")
                     } else {
                         requireActivity().setResult(Activity.RESULT_OK)
@@ -401,9 +415,13 @@ class CameraFragment(
                         val platform = viewModel.findPlatformEntity(platformId)
                         platform.failureMedia.size >= maxPhotoCount
                     }
-                    PhotoTypeEnum.forContainerProblem -> {
+                    PhotoTypeEnum.forContainerFailure -> {
                         val container = viewModel.findContainerEntity(containerId)
                         container.failureMedia.size >= maxPhotoCount
+                    }
+                    PhotoTypeEnum.forContainerBreakdown -> {
+                        val container = viewModel.findContainerEntity(containerId)
+                        container.breakdownMedia.size >= maxPhotoCount
                     }
                     PhotoTypeEnum.forServedKGO -> {
                         val platform = viewModel.findPlatformEntity(platformId)
@@ -459,8 +477,9 @@ class CameraFragment(
 //                                }
 
 
-                                if (photoFor == PhotoTypeEnum.forContainerProblem) {
-                                    viewModel.updateContainerMedia(platformId, containerId,
+                                if (photoFor == PhotoTypeEnum.forContainerBreakdown
+                                    || photoFor == PhotoTypeEnum.forContainerFailure) {
+                                    viewModel.updateContainerMedia(photoFor, platformId, containerId,
                                         imageBase64.toString(), AppPreferences.getCurrentLocation(),
                                         AppPreferences.currentCoordinateAccuracy, AppPreferences.getLastKnownLocationTime())
                                 } else {

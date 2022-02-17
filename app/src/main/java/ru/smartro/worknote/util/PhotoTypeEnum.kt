@@ -11,7 +11,10 @@ object PhotoTypeEnum {
     const val forPlatformProblem = 2
 
     //Проблемы с контейнерами
-    const val forContainerProblem = 3
+    const val forContainerFailure = 3
+
+    //Проблемы с контейнерами
+    const val forContainerBreakdown = 7
 
     //Крупногабаритные отходы.забрал
     const val forServedKGO = 4

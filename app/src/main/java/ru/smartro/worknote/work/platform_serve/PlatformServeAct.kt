@@ -29,8 +29,7 @@ import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
-import ru.smartro.worknote.ui.problem.NonPickupAct
-import ru.smartro.worknote.ui.problem.NonPickupPlatformAct
+import ru.smartro.worknote.ui.problem.PlatformFailureAct
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
 
@@ -115,7 +114,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
            setUseButtonStyleAlpha(acbProblem)
         }
         acbProblem.setOnClickListener {
-            val intent = Intent(this, NonPickupPlatformAct::class.java)
+            val intent = Intent(this, PlatformFailureAct::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId)
             intent.putExtra("isContainerProblem", false)
             startActivityForResult(intent, REQUEST_EXIT)

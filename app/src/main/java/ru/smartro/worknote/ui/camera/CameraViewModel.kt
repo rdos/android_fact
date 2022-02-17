@@ -24,12 +24,13 @@ class CameraViewModel(application: Application) : BaseViewModel(application) {
 //        baseDat.updateImageImageEntity(md5, readBytes)
 //    }
     fun updateContainerMedia(
+    imageFor: Int,
     platformId: Int, containerId: Int, imageBase64: String,
     coords: Point,
     currentCoordinateAccuracy: String,
     lastKnownLocationTime: Long
 ) {
-        baseDat.updateContainerMedia(platformId, containerId, imageBase64, coords,
+        baseDat.updateContainerMedia(imageFor, platformId, containerId, imageBase64, coords,
             currentCoordinateAccuracy, lastKnownLocationTime)
     }
 
