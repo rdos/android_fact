@@ -49,16 +49,17 @@ class SynchronizeWorker(
         Log.w(TAG, "doWork.before thread_id=${Thread.currentThread().id}")
 
         showNotification(context, true, "Не закрывайте приложение", "Служба отправки данных работает")
-        Realm.init(context)
+//        Realm.init(context)
         var db = RealmRepository(Realm.getDefaultInstance())
         while (true) {
-            try {
-                synchronizeData(db)
-            } catch (ex: Exception) {
-                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-                db = RealmRepository(Realm.getDefaultInstance())
-            }
             delay(30_000)
+//            try {
+
+                synchronizeData(db)
+//            } catch (ex: Exception) {
+//                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+//                db = RealmRepository(Realm.getDefaultInstance())
+//            }
         }
     }
 

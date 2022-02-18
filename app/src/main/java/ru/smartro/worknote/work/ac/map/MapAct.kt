@@ -513,7 +513,7 @@ class MapAct : AbstractAct(),
                 val workOrders = getWorkOrders()
                 val workOrderId = checkBox.tag as Int
                 val workOrder = workOrders.find { found -> found.id == workOrderId }
-                if (workOrder!!.cnt_container_status_new <= 0) {
+                if (workOrder!!.cnt_platform_status_new <= 0) {
                     successCompleteWayBill(workOrder)
                 } else {
                     earlyCompleteWorkOrder(workOrder)

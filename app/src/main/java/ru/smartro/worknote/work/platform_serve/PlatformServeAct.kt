@@ -74,8 +74,6 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
-            vm.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
-            vm.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
             setResult(Activity.RESULT_OK)
             finish()
         } else if (requestCode == REQUEST_EXIT) {
@@ -182,6 +180,8 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
 
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
         btnCompleteTask.setOnClickListener {
+            vm.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
+            vm.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
             val intent = Intent(this@PlatformServeAct, CameraActivity::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
