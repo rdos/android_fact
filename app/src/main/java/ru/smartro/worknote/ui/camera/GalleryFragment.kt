@@ -69,7 +69,7 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int,
                 val container = viewModel.findContainerEntity(containerId)
                 activity?.actionBar?.title = "Поломка контейнера"
                 image_title.text = getString(R.string.problem_container)
-                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(container.failureMedia))
+                image_rv.adapter = GalleryPhotoAdapter(listener, requireContext(), ArrayList(container.breakdownMedia))
             }
             PhotoTypeEnum.forServedKGO -> {
                 val  platform = viewModel.findPlatformEntity(platformId)
