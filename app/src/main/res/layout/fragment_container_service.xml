@@ -1,30 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_behavior">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_marginTop="@dimen/margin_default"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        >
 
-        <ImageButton
-            android:id="@+id/enter_info_problem_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_default"
-            android:background="@drawable/bg_button_white"
-            app:layout_constraintHorizontal_weight="1"
-            android:padding="8dp"
-            android:src="@drawable/ic_fire"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/enter_info_tittle"
@@ -35,22 +24,34 @@
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@id/enter_info_breakdown"
-            app:layout_constraintStart_toEndOf="@id/enter_info_problem_btn"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_gravity="center"/>
 
-        <ImageButton
-            android:id="@+id/enter_info_breakdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_default"
-            android:background="@drawable/bg_button_white"
-            app:layout_constraintHorizontal_weight="1"
-            android:padding="8dp"
-            android:src="@drawable/ic_kgo"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/margin_min"
+            android:gravity="center"
+
+            >
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/apb_fragment_container_serve_failure"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_button_problem"
+                android:text="Невывоз"
+                android:textColor="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/apb_fragment_container_serve_breakdown"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_default"
+                android:background="@drawable/bg_button_white"
+                android:text="Поломка"
+                android:textColor="@color/black" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         <RadioGroup
             android:id="@+id/enter_info_percent_rg"
@@ -59,7 +60,6 @@
             android:layout_marginTop="@dimen/margin_default"
             android:gravity="center"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/enter_info_tittle"
             tools:listitem="@layout/item_percent">
 
             <RadioButton
@@ -137,7 +137,7 @@
             android:layout_marginHorizontal="@dimen/margin_default"
             android:layout_marginTop="@dimen/margin_min"
             android:gravity="start"
-            app:layout_constraintTop_toBottomOf="@+id/enter_info_percent_rg">
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/comment_et"
@@ -156,10 +156,9 @@
             android:padding="8dp"
             android:text="@string/clear_comment"
             android:textColor="#0466B5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/comment_et_out" />
+        />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

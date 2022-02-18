@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import kotlinx.android.synthetic.main.fragment_container_service.*
@@ -49,15 +50,16 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
         comment_clear.setOnClickListener {
             clearContainerVolume()
         }
-        enter_info_problem_btn.setOnClickListener {
+        val apbFailure = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_failure)
+        apbFailure.setOnClickListener {
             val intent = Intent(requireContext(), ContainerFailureAct::class.java)
             intent.putExtra("is_container", true)
             intent.putExtra("container_id", containerId)
             intent.putExtra("platform_id", platformId)
             startActivityForResult(intent, 99)
         }
-
-        enter_info_breakdown.setOnClickListener {
+        val apbBreakdown = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_breakdown)
+        apbBreakdown.setOnClickListener {
             val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
             intent.putExtra("is_container", true)
             intent.putExtra("container_id", containerId)
@@ -69,9 +71,9 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        if (isNotDefault(volume, comment)) {
-            viewModel.updateContainerVolume(platformId, containerId, volume, comment)
-        }
+//        if (isNotDefault(volume, comment)) {
+//
+//        }
         parentAct.updateRecyclerview()
     }
 
@@ -81,6 +83,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
             prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             val radioButton = view.findViewById<RadioButton>(checkedId)
             this.volume = toPercent(radioButton.text.toString())
+            viewModel.updateContainerVolume(platformId, containerId, this.volume, comment)
             when (radioButton.isChecked) {
                 true -> {
                     radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
@@ -132,7 +135,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 99 && resultCode == 99) {
-            clearContainerVolume()
+//            clearContainerVolume()
             dismiss()
         }
     }

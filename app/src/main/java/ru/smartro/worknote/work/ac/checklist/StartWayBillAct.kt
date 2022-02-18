@@ -85,8 +85,8 @@ class StartWayBillAct : AbstractAct() {
     }
 
     override fun onBackPressed() {
-        sendMessage(StartVehicleAct::class.java)
-//        super.onBackPressed()
+//        sendMessage(StartVehicleAct::class.java)
+        super.onBackPressed()
     }
 
     private fun gotoNextAct(wayBillId: Int, wayBillNumber: String) {

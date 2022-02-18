@@ -10,6 +10,7 @@ import android.widget.Button
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.act_container_breakdown.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -28,7 +29,7 @@ class ContainerBreakdownAct : AbstractAct() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView
     private lateinit var mAcactvBreakDownIn: AppCompatAutoCompleteTextView
     private lateinit var platform: PlatformEntity
-    private lateinit var container: ContainerEntity
+    private lateinit var mContainer: ContainerEntity
     private val vs: ContainerBreakdownViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +42,7 @@ class ContainerBreakdownAct : AbstractAct() {
         intent.let {
             platform = vs.findPlatformEntity(it.getIntExtra("platform_id", 0))
             supportActionBar!!.title = "Поломка контейнера"
-            container = vs.findContainerEntity(it.getIntExtra("container_id", 0))
+            mContainer = vs.findContainerEntity(it.getIntExtra("container_id", 0))
         }
 
           mAcactvBreakDownIn = findViewById(R.id.acactv_act_non_pickup__breakdown_in)
@@ -56,6 +57,9 @@ class ContainerBreakdownAct : AbstractAct() {
 
         initExtremeProblemPhoto()
 
+        val tietComment = findViewById<TextInputEditText>(R.id.tiet_act_container_breakdown__comment)
+        tietComment.setText(mContainer.comment)
+
         val btnAccept = findViewById<Button>(R.id.btn_non_pickup__accept)
         btnAccept.setOnClickListener {
 
@@ -64,10 +68,10 @@ class ContainerBreakdownAct : AbstractAct() {
                 return@setOnClickListener
             }
             if (!mAcactvBreakDownIn.text.isNullOrEmpty()) {
-                val problemComment = problem_comment.text.toString()
+                val problemComment = tietComment.text.toString()
                 val breakDown1 = mAcactvBreakDownIn.text.toString()
                 vs.baseDat.updateContainerFailure(
-                    platformId = platform.platformId!!, containerId = container.containerId!!,
+                    platformId = platform.platformId!!, containerId = mContainer.containerId!!,
                     problemComment = problemComment, nonPickupType = NonPickupEnum.BREAKDOWN,
                     problem = breakDown1)
 
@@ -80,7 +84,7 @@ class ContainerBreakdownAct : AbstractAct() {
 
 
     private fun initImageView() {
-        Glide.with(this).load(MyUtil.base64ToImage(container.breakdownMedia.last()?.image))
+        Glide.with(this).load(MyUtil.base64ToImage(mContainer.breakdownMedia.last()?.image))
             .into(problem_img)
 
     }
@@ -89,7 +93,7 @@ class ContainerBreakdownAct : AbstractAct() {
         val intent = Intent(this, CameraActivity::class.java)
         intent.putExtra("platform_id", platform.platformId)
         intent.putExtra("photoFor", PhotoTypeEnum.forContainerBreakdown)
-        intent.putExtra("container_id", container.containerId)
+        intent.putExtra("container_id", mContainer.containerId)
         startActivityForResult(intent, 13)
         acb_activity_platform_serve__problem.setOnClickListener {
             startActivityForResult(intent, 13)

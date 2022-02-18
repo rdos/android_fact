@@ -96,7 +96,7 @@
             android:gravity="start">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/problem_comment"
+                android:id="@+id/tiet_act_container_breakdown__comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="13"

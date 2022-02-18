@@ -68,7 +68,7 @@
         app:layout_constraintTop_toBottomOf="@id/selectors">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_act_non_pickup__failure_out"
+            android:id="@+id/til_act_container_failure__out"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -78,7 +78,7 @@
             android:gravity="start">
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/acactv_act_non_pickup__failure_in"
+                android:id="@+id/acactv_act_container_failure__in"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@null"
@@ -96,7 +96,7 @@
             android:gravity="start">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/problem_comment"
+                android:id="@+id/tiet_act_container_failure__comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="13"

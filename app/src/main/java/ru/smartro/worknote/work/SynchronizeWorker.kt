@@ -49,9 +49,15 @@ class SynchronizeWorker(
         Log.w(TAG, "doWork.before thread_id=${Thread.currentThread().id}")
 
         showNotification(context, true, "Не закрывайте приложение", "Служба отправки данных работает")
-        val db = RealmRepository(Realm.getDefaultInstance())
+        Realm.init(context)
+        var db = RealmRepository(Realm.getDefaultInstance())
         while (true) {
-            synchronizeData(db)
+            try {
+                synchronizeData(db)
+            } catch (ex: Exception) {
+                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                db = RealmRepository(Realm.getDefaultInstance())
+            }
             delay(30_000)
         }
     }
@@ -89,6 +95,9 @@ class SynchronizeWorker(
             val lastKnownLocationTime = AppPreferences.getLastKnownLocationTime()
             val coords = listOf(location.latitude, location.longitude)
             val synchronizeBody = SynchronizeBody(AppPreferences.wayBillId, coords, mDeviceId, lastKnownLocationTime, platforms)
+
+            Log.d(TAG, "platforms.size=${platforms.size}")
+
 
             saveJSON(synchronizeBody)
             val synchronizeResponse = mNetworkRepository.synchronizeData(synchronizeBody)

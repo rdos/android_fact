@@ -292,7 +292,8 @@ class NetworkRepository(private val context: Context) {
                     Resource.error("Ошибка ${response.code()}", null)
                 }
             }
-        } catch (e: Exception) {
+        } catch (ex: Exception) {
+            Log.e(TAG, "synchronizeData", ex)
             Resource.network("Проблемы с подключением интернета", null)
         }
     }

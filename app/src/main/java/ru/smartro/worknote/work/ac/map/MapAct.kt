@@ -322,7 +322,7 @@ class MapAct : AbstractAct(),
     }
 
     override fun onBackPressed() {
-//        super.onBackPressed()
+        super.onBackPressed()
     }
 
     private fun saveCancelWayReason() {
