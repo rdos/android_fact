@@ -547,6 +547,30 @@ open class ContainerEntity(
         }
         return ContextCompat.getColor(context, R.color.colorAccent)
     }
+
+    private fun getFailureMediaSize(): Int {
+        var res = 0
+        if (this.failureReasonId != null ) {
+            res = this.failureMedia.size
+        }
+        return res
+    }
+
+    fun isFailureNotEmpty(): Boolean {
+        return getFailureMediaSize() > 0
+    }
+
+    private fun getBreakdownMediaSize(): Int {
+        var res = 0
+        if (this.breakdownReasonId != null ) {
+            res = this.breakdownMedia.size
+        }
+        return res
+    }
+
+    fun isBreakdownNotEmpty(): Boolean {
+        return getBreakdownMediaSize() > 0
+    }
 }
 
 open class ImageEntity(

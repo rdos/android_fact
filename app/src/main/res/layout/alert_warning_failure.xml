@@ -60,7 +60,7 @@
             android:layout_marginBottom="@dimen/margin_default"
             android:padding="@dimen/margin_default"
             android:text="Отменить"
-            android:background="@drawable/bg_button_white"
+            android:background="@drawable/bg_button_green"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

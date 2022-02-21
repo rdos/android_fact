@@ -72,7 +72,6 @@
         <activity
             android:name="ru.smartro.worknote.work.ac.map.MapAct"
             android:screenOrientation="portrait"
-            android:noHistory="true"
             android:theme="@style/NoToolbar" />
 
         <activity

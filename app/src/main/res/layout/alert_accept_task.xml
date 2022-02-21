@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_default"
             android:padding="@dimen/margin_default"
-            android:background="@drawable/bg_button_red"
+            android:background="@drawable/bg_button_red_problem"
             android:text="Отменить"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/accept_btn"

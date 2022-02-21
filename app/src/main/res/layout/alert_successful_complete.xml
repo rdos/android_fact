@@ -56,7 +56,7 @@
             android:layout_marginEnd="@dimen/margin_default"
             android:layout_marginBottom="@dimen/margin_default"
             android:padding="@dimen/margin_default"
-            android:background="@drawable/bg_button_white"
+            android:background="@drawable/bg_button_green"
             android:text="Завершить смену и выйти"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"

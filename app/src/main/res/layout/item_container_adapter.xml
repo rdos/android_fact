@@ -16,7 +16,9 @@
         android:orientation="horizontal"
         android:layout_gravity="center"
         android:gravity="center"
-        android:layout_margin="@dimen/margin_min">
+        android:layout_margin="@dimen/margin_min"
+        android:paddingTop="@dimen/margin_min"
+        android:paddingBottom="@dimen/margin_min">
 
         <TextView
             android:id="@+id/choose_title"

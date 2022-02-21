@@ -38,7 +38,7 @@
             android:layout_marginTop="@dimen/margin_default"
             android:layout_marginEnd="@dimen/margin_default"
             android:layout_marginBottom="@dimen/margin_default"
-            android:background="@drawable/bg_button_red"
+            android:background="@drawable/bg_button_red_problem"
             android:padding="@dimen/margin_default"
             android:text="Удалить фото"
             android:textColor="@color/white"

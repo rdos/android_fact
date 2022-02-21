@@ -8,10 +8,12 @@
     <color name="black">#000</color>
     <color name="dark_red">#ff0000</color>
     <color name="orange">#ff851e</color>
+    <color name="pink">#fff0f5</color>
+    <color name="myCool">#c9f2c9</color>
 
     <color name="icFocused">#DDFFFFFF</color>
     <color name="blue">#ABC0D1</color>
-    <color name="myCool">#12FFD1</color>
+
     <color name="icPressed">#AAFFFFFF</color>
     <color name="icActive">#FFFFFFFF</color>
     <color name="light_green">#CDFFC9</color>

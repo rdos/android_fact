@@ -145,7 +145,7 @@
                 android:layout_marginEnd="@dimen/margin_default"
                 android:layout_marginBottom="@dimen/margin_default"
                 android:layout_weight="0.7"
-                android:background="@drawable/bg_button_white"
+                android:background="@drawable/bg_button_green"
                 android:padding="@dimen/margin_default"
                 android:text="Отменить"
                 android:textColor="@color/black" />

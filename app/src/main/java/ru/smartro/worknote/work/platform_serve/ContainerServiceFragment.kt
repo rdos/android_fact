@@ -65,7 +65,8 @@ class ContainerServiceFragment : AbstractBottomDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentAct = requireActivity() as PlatformServeAct
-        viewModel.findContainerEntity(p_container_id).let {
+        val containerEntity = viewModel.findContainerEntity(p_container_id)
+        containerEntity.let {
             comment_et.setText(it.comment)
             comment = it.comment
             volume = it.volume
@@ -77,6 +78,9 @@ class ContainerServiceFragment : AbstractBottomDialog() {
             clearContainerVolume()
         }
         val apbFailure = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_failure)
+        if (containerEntity.isFailureNotEmpty()) {
+            setUseButtonStyleBackgroundRed(apbFailure)
+        }
         apbFailure.setOnClickListener {
             val intent = Intent(requireContext(), ContainerFailureAct::class.java)
             intent.putExtra("is_container", true)
@@ -85,6 +89,9 @@ class ContainerServiceFragment : AbstractBottomDialog() {
             startActivityForResult(intent, 99)
         }
         val apbBreakdown = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_breakdown)
+        if (containerEntity.isBreakdownNotEmpty()) {
+            setUseButtonStyleBackgroundRed(apbBreakdown)
+        }
         apbBreakdown.setOnClickListener {
             val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
             intent.putExtra("is_container", true)
@@ -93,6 +100,11 @@ class ContainerServiceFragment : AbstractBottomDialog() {
             startActivityForResult(intent, 99)
         }
 
+    }
+
+
+    private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_red__usebutton))
     }
 
     override fun onDismiss(dialog: DialogInterface) {
@@ -136,7 +148,6 @@ class ContainerServiceFragment : AbstractBottomDialog() {
                 percent_125.isChecked = false
             }
         }
-
     }
 
     private fun isNotDefault(volume: Double?, comment: String?): Boolean {

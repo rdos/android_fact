@@ -2,19 +2,13 @@ package ru.smartro.worknote.work.platform_serve
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.MenuItem
-import android.view.View
 import android.widget.Button
-import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -24,7 +18,6 @@ import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.showDlgPickup
 import ru.smartro.worknote.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.simulateClick
 import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
@@ -37,10 +30,7 @@ import ru.smartro.worknote.util.StatusEnum
 class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickListener
 //    , SeekBar.OnSeekBarChangeListener
 {
-
-    private var mVolumePickup: Double? = null
-    //    private var mVolumePickup by Delegates.notNull<Int>()
-    private var etVolumePickup: AppCompatButton? = null
+    private var acbPickup: AppCompatButton? = null
     private var mBackPressedCnt: Int = 3
     private val REQUEST_EXIT = 33
     private lateinit var mPlatformEntity: PlatformEntity
@@ -83,10 +73,10 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
             }
         } else if (resultCode == 101 && requestCode == 101) {
             vm.updatePlatformKGO(mPlatformEntity.platformId!!, mServedKGOVolumeText, isServedKGO = true)
-            setUseButtonStyleAlpha(mAcbKGOServed)
+            setUseButtonStyleBackgroundGreen(mAcbKGOServed)
         } else if (resultCode == 102 && requestCode == 102) {
             vm.updatePlatformKGO(mPlatformEntity.platformId!!, mRemainingKGOVolumeText, isServedKGO = false)
-            setUseButtonStyleAlpha(mAcbKGORemaining)
+            setUseButtonStyleBackgroundGreen(mAcbKGORemaining)
         }
     }
 
@@ -107,9 +97,8 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
         }
 //        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         val acbProblem = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__problem)
-        setNotUseButtonStyleAlpha(acbProblem)
         if (mPlatformEntity.failureMedia.size > 0) {
-           setUseButtonStyleAlpha(acbProblem)
+            setUseButtonStyleBackgroundRed(acbProblem)
         }
         acbProblem.setOnClickListener {
             val intent = Intent(this, PlatformFailureAct::class.java)
@@ -124,9 +113,8 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
 
 
         mAcbKGOServed = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__kgo_served)
-        setNotUseButtonStyleAlpha(mAcbKGOServed)
         if (mPlatformEntity.isServedKGONotEmpty()) {
-            setUseButtonStyleAlpha(mAcbKGOServed)
+            setUseButtonStyleBackgroundGreen(mAcbKGOServed)
         }
         mAcbKGOServed.setOnClickListener {
             showDialogFillKgoVolume().let { view ->
@@ -151,9 +139,9 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
             /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
 
             mAcbKGORemaining = findViewById<AppCompatButton>(R.id.apb_activity_platform_serve__kgo_remaining)
-            setNotUseButtonStyleAlpha(mAcbKGORemaining)
+
             if (mPlatformEntity.isRemainingKGONotEmpty()) {
-                setUseButtonStyleAlpha(mAcbKGORemaining)
+                setUseButtonStyleBackgroundGreen(mAcbKGORemaining)
             }
             mAcbKGORemaining.setOnClickListener {
                 showDialogFillKgoVolume().let { view ->
@@ -207,64 +195,22 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
 
         /** VOLUME PICKUP
          *
-         *
          * */
 
-        mVolumePickup = mPlatformEntity.volumePickup
-        etVolumePickuptext(mVolumePickup)
-
-        val acsbVolubmePickup = findViewById<SeekBar>(R.id.acsb_activity_platform_serve__seekbar)
-        acsbVolubmePickup.thumb = getThumb(1);
-        mVolumePickup?.let{
-            acsbVolubmePickup.progress = it.toInt()
-        }
-        //todo: r_dos seekBar ws acsbVolubmePickup
-        acsbVolubmePickup.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(s: SeekBar?, progress: Int, fromUser: Boolean) {
-                etVolumePickuptext(progress)
-                    //неРазРаб acsbVolubmePickup.max - 13
-                if (progress >= acsbVolubmePickup.max - 13) {
-                    acsbVolubmePickup?.progress = acsbVolubmePickup.max - 13
-                }
-                if (progress <= 0) {
-                    etVolumePickuptext(progress)
-                }
-            }
-
-            override fun onStartTrackingTouch(s: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(s: SeekBar?) {
-                if (acsbVolubmePickup.progress > 0 ) {
-                    vm.updateSelectionVolume(mPlatformEntity.platformId!!, acsbVolubmePickup.progress.toDouble())
-                    gotoMakePhotoForPickup()
-                } else {
-                    vm.updateSelectionVolume(mPlatformEntity.platformId!!, null)
-                }
-            }
-        })
-
-        etVolumePickup().setOnClickListener {
-            etVolumePickup().isEnabled = false
+        acbPickup().setOnClickListener {
+            acbPickup().isEnabled = false
             try {
                 showDlgPickup().let{ dialogView ->
                     val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
-                    mVolumePickup?.let{
-                        tietAdditionalVolumeInM3.setText(mVolumePickup.toString())
+                    mPlatformEntity.volumePickup?.let{
+                        tietAdditionalVolumeInM3.setText(mPlatformEntity.volumePickup.toString())
                     } //mVolumePickup.isShowForUser()
 
                     val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
                     btnOk.setOnClickListener {
                         val volume = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-                        if (volume == null) {
-                            acsbVolubmePickup.progress = 0
-                        }else /** ?.let*/ {
-                            acsbVolubmePickup.progress = acsbVolubmePickup.max - 13
-                        }
 
                         vm.updateSelectionVolume(mPlatformEntity.platformId!!, volume)
-                        etVolumePickuptext(volume)
                         if (volume != null) {
                             gotoMakePhotoForPickup()
                         }
@@ -272,12 +218,12 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
                     }
                 }
             } finally {
-                etVolumePickup().isEnabled = true
+                acbPickup().isEnabled = true
             }
         }
 
         // TODO: r_dos !)!
-        etVolumePickup().simulateClick()
+//        acbPickup().simulateClick()
     }
 
     private fun gotoMakePhotoForPickup() {
@@ -288,67 +234,29 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
     }
 
 
-
     //todo: ответсвенность)
-    private fun etVolumePickup(): AppCompatButton {
+    private fun acbPickup(): AppCompatButton {
             //        etVolumePickup.let {
             //                // mEtVolumePickup = findViewById(R.id.et_act_platformserve__volumepickup)
             //            //  lateinit  Vs componentName(acbTest????)
             //        }
-        if (etVolumePickup == null) {
-            etVolumePickup = findViewById(R.id.et_act_platformserve__volumepickup)
-            if (etVolumePickup == null) {
-                etVolumePickup = AppCompatButton(this)
+        if (acbPickup == null) {
+            acbPickup = findViewById(R.id.acb_activity_platform_serve__pickup)
+            if (acbPickup == null) {
+                acbPickup = AppCompatButton(this)
             }
         }
-        return etVolumePickup!!
+        return acbPickup!!
     }
 
 
-    private fun etVolumePickuptext(progressDouble: Double?) {
-//        var progressText = progress.toString()
-        var progressText = "м³"
-        if (progressDouble != null) {
-             progressText = String.format("%.1f", progressDouble)
-        }
-        etVolumePickup().text = "${progressText}"
-        mVolumePickup = progressDouble
-//
-    }
-    private fun etVolumePickuptext(progress: Int) {
-//        mEtVolumePickupText(progress.toDouble())
-//        ³ во во примерно так
-        var progressText = progress.toString()
-        if (progress <= 0) {
-            progressText = ""
-        }
-
-        etVolumePickup().text = "${progressText} м³"
-        mVolumePickup = progress.toDouble()
+    private fun setUseButtonStyleBackgroundGreen(appCompatButton: AppCompatButton) {
+//        appCompatButton.alpha = 1f
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green__usebutton))
     }
 
-    private fun getThumb(progress: Int): Drawable? {
-        val thumbView: View = LayoutInflater.from(this)
-            .inflate(R.layout.act_platformserve__pickup_seekbarthumb, null, false)
-//        (thumbView.findViewById(R.id.tvProgress) as TextView).text = progress.toString() + ""
-        thumbView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        val bitmap = Bitmap.createBitmap(thumbView.getMeasuredWidth(), thumbView.getMeasuredHeight(), Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        thumbView.layout(0, 0, thumbView.getMeasuredWidth(), thumbView.getMeasuredHeight())
-        thumbView.draw(canvas)
-        return BitmapDrawable(resources, bitmap)
-    }
-
-
-
-
-
-    private fun setUseButtonStyleAlpha(appCompatButton: AppCompatButton) {
-        appCompatButton.alpha = 1f
-    }
-
-    private fun setNotUseButtonStyleAlpha(appCompatButton: AppCompatButton) {
-        appCompatButton.alpha = 0.2f
+    private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_red__usebutton))
     }
 
 //    private fun setButtonKGODrawableEnd(isTakeawayKGO: Boolean) {
@@ -413,8 +321,6 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
     }
 
     override fun startContainerService(item: ContainerEntity) {
-
-
         val fragment = ContainerServiceFragment()
         fragment.addArgument(mPlatformEntity.platformId!!, item.containerId!!)
         fragment.show(supportFragmentManager, "ContainerServiceFragment")
