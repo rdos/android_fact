@@ -71,7 +71,7 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/apb_activity_platform_serve__kgo_remaining"
             android:layout_width="110dp"
-            android:layout_height="wrap_content"
+            android:layout_height="39dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:background="@drawable/bg_button_green"
@@ -80,7 +80,7 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/acb_activity_platform_serve__kgo_served"
             android:layout_width="110dp"
-            android:layout_height="wrap_content"
+            android:layout_height="39dp"
             android:layout_marginStart="@dimen/margin_default"
             app:layout_constraintStart_toEndOf="@id/apb_activity_platform_serve__kgo_remaining"
             app:layout_constraintTop_toTopOf="parent"
@@ -97,14 +97,14 @@
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/margin_6"
         android:paddingEnd="@dimen/margin_min"
-        android:layout_marginTop="@dimen/margin_default"
+        android:layout_marginTop="@dimen/margin_min"
         android:layout_gravity="center"
         >
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/acb_activity_platform_serve__problem"
             android:layout_width="110dp"
-            android:layout_height="wrap_content"
+            android:layout_height="39dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:background="@drawable/bg_button_red"
@@ -114,7 +114,7 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/acb_activity_platform_serve__pickup"
             android:layout_width="110dp"
-            android:layout_height="wrap_content"
+            android:layout_height="39dp"
             android:layout_marginStart="@dimen/margin_default"
             app:layout_constraintStart_toEndOf="@id/acb_activity_platform_serve__problem"
             app:layout_constraintTop_toTopOf="parent"

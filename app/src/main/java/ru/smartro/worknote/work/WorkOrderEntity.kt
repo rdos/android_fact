@@ -65,6 +65,9 @@ open class WorkOrderEntity(
             if(platform.status == StatusEnum.ERROR) {
                 platformsStatusErrorCnt++
             }
+            if(platform.status == StatusEnum.UNFINISHED) {
+                platformsStatusErrorCnt++
+            }
             /** статистика для ContainerEntity*/
             platform.containers.forEach {
                 containersCnt++
@@ -91,10 +94,10 @@ open class WorkOrderEntity(
     }
 
     fun cntPlatformProgress(): Int {
-        return cnt_platform_status_success + cnt_platform_status_error
+        return cnt_platform_status_new
     }
     fun cntContainerProgress(): Int {
-        return cnt_container_status_success + cnt_container_status_error
+        return cnt_container - (cnt_container_status_success + cnt_container_status_error)
     }
 }
 

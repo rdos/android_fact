@@ -120,35 +120,7 @@ class MapAct : AbstractAct(),
         mAcbInfo = findViewById<AppCompatButton>(R.id.acb_act_map__info)
 
         mAcbInfo.setOnClickListener {
-            showInfoDialog().let {
-                //O!
-                mAcbComplete = it.findViewById(R.id.acb_act_map__workoder_info__complete)
-                mAcbComplete.isEnabled = false
-                //Oo!!
-                initWorkOrderInfo(it)
-                mAcbComplete.setOnClickListener{
-                    gotoComplete()
-                }
-                val actvInfo = it.findViewById<AppCompatTextView>(R.id.actv_act_map__workoder_info)
-
-                val workOrders = getWorkOrders()
-                var infoText = "Статистика\n_______"
-                for(workOrder in workOrders) {
-                    infoText += "\n${workOrder.id} ${workOrder.name}________"
-                    infoText += "\nПлощадки:   всего ${workOrder.cnt_platform}"
-                    infoText += "\nобслуженно/осталось/невывоз:\n"
-                    infoText += "${workOrder.cnt_platform_status_success}"
-                    infoText += "/${workOrder.cntPlatformProgress()}"
-                    infoText += "/${workOrder.cnt_platform_status_error}"
-                    infoText += "\nКонтейнеры:   всего ${workOrder.cnt_container}"
-                    infoText += "\nобслуженно/осталось/невывоз:\n"
-                    infoText += "${workOrder.cnt_container_status_success}"
-                    infoText += "/${workOrder.cntContainerProgress()}"
-                    infoText += "/${workOrder.cnt_container_status_error}\n"
-                }
-
-                actvInfo.text = infoText
-            }
+           gotoInfoDialog()
         }
 
         setInfoData()
@@ -191,6 +163,38 @@ class MapAct : AbstractAct(),
         }
 
         setDevelMode()
+    }
+
+    private fun gotoInfoDialog() {
+        showInfoDialog().let {
+            //O!
+            mAcbComplete = it.findViewById(R.id.acb_act_map__workoder_info__complete)
+            mAcbComplete.isEnabled = false
+            //Oo!!
+            initWorkOrderInfo(it)
+            mAcbComplete.setOnClickListener{
+                gotoComplete()
+            }
+            val actvInfo = it.findViewById<AppCompatTextView>(R.id.actv_act_map__workoder_info)
+
+            val workOrders = getWorkOrders()
+            var infoText = "Статистика\n_______"
+            for(workOrder in workOrders) {
+                infoText += "\n${workOrder.id} ${workOrder.name}________"
+                infoText += "\nПлощадки:   всего ${workOrder.cnt_platform}"
+                infoText += "\nобслуженно/осталось/невывоз:\n"
+                infoText += "${workOrder.cnt_platform_status_success}"
+                infoText += "/${workOrder.cntPlatformProgress()}"
+                infoText += "/${workOrder.cnt_platform_status_error}"
+                infoText += "\nКонтейнеры:   всего ${workOrder.cnt_container}"
+                infoText += "\nобслуженно/осталось/невывоз:\n"
+                infoText += "${workOrder.cnt_container_status_success}"
+                infoText += "/${workOrder.cntContainerProgress()}"
+                infoText += "/${workOrder.cnt_container_status_error}\n"
+            }
+
+            actvInfo.text = infoText
+        }
     }
 
     private var mMapObjectsDrive: MapObjectCollection? = null
@@ -259,7 +263,7 @@ class MapAct : AbstractAct(),
         var platformProgress = 0
         for(workOrder in workOrders) {
             platformCnt += workOrder.cnt_platform
-            platformProgress += workOrder.cntPlatformProgress()!!
+            platformProgress += workOrder.cnt_platform - workOrder.cntPlatformProgress()
         }
         mAcbInfo.text = "${platformProgress} / ${platformCnt}"
     }
@@ -626,7 +630,15 @@ class MapAct : AbstractAct(),
             else
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
-            }
+
+        val acbGotoComplete = findViewById<AppCompatButton>(R.id.acb_act_map__bottom_behavior__gotocomplete)
+        acbGotoComplete.setOnClickListener{
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            gotoInfoDialog()
+            gotoComplete()
+        }
+
+    }
 
 
 
