@@ -321,10 +321,6 @@ class MapAct : AbstractAct(),
         })
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
-
     private fun saveCancelWayReason() {
         Log.d(TAG, "saveCancelWayReason.before")
         vs.networkDat.getCancelWayReason().observe(this, Observer { result ->

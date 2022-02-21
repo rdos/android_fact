@@ -13,17 +13,26 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import kotlinx.android.synthetic.main.fragment_container_service.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractBottomDialog
 import ru.smartro.worknote.ui.problem.ContainerBreakdownAct
 import ru.smartro.worknote.ui.problem.ContainerFailureAct
 
-class ContainerServiceFragment(val containerId: Int, val platformId: Int) : AbstractBottomDialog() {
+const val ARGUMENT_NAME__PLATFORM_ID = "ARGUMENT_NAME__PLATFORM_ID"
+const val ARGUMENT_NAME__CONTAINER_ID = "ARGUMENT_NAME__CONTAINER_ID"
+class ContainerServiceFragment : AbstractBottomDialog() {
     private val viewModel: PlatformServeViewModel by viewModel()
     private var comment: String? = null
     private var volume: Double? = null
     private lateinit var parentAct: PlatformServeAct
 
+    private val p_platform_id: Int by lazy {
+        getArgumentPlatformID()
+    }
+    private val p_container_id: Int by lazy {
+        getArgumentContainerID()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
@@ -36,10 +45,27 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
         return inflater.inflate(R.layout.fragment_container_service, container, false)
     }
 
+    fun addArgument(platformId: Int, containerId: Int) {
+        val bundle = Bundle(2)
+        bundle.putInt(ARGUMENT_NAME__PLATFORM_ID, platformId)
+        bundle.putInt(ARGUMENT_NAME__CONTAINER_ID, containerId)
+        this.arguments = bundle
+    }
+
+    private fun getArgumentPlatformID(): Int {
+        val result = requireArguments().getInt(ARGUMENT_NAME__PLATFORM_ID, Inull)
+        return result
+    }
+
+    private fun getArgumentContainerID(): Int {
+        val result = requireArguments().getInt(ARGUMENT_NAME__CONTAINER_ID, Inull)
+        return result
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentAct = requireActivity() as PlatformServeAct
-        viewModel.findContainerEntity(containerId).let {
+        viewModel.findContainerEntity(p_container_id).let {
             comment_et.setText(it.comment)
             comment = it.comment
             volume = it.volume
@@ -54,16 +80,16 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
         apbFailure.setOnClickListener {
             val intent = Intent(requireContext(), ContainerFailureAct::class.java)
             intent.putExtra("is_container", true)
-            intent.putExtra("container_id", containerId)
-            intent.putExtra("platform_id", platformId)
+            intent.putExtra("container_id", p_container_id)
+            intent.putExtra("platform_id", p_platform_id)
             startActivityForResult(intent, 99)
         }
         val apbBreakdown = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_breakdown)
         apbBreakdown.setOnClickListener {
             val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
             intent.putExtra("is_container", true)
-            intent.putExtra("container_id", containerId)
-            intent.putExtra("platform_id", platformId)
+            intent.putExtra("container_id", p_container_id)
+            intent.putExtra("platform_id", p_platform_id)
             startActivityForResult(intent, 99)
         }
 
@@ -83,7 +109,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
             prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             val radioButton = view.findViewById<RadioButton>(checkedId)
             this.volume = toPercent(radioButton.text.toString())
-            viewModel.updateContainerVolume(platformId, containerId, this.volume, comment)
+            viewModel.updateContainerVolume(p_platform_id, p_container_id, this.volume, comment)
             when (radioButton.isChecked) {
                 true -> {
                     radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
@@ -128,7 +154,7 @@ class ContainerServiceFragment(val containerId: Int, val platformId: Int) : Abst
         comment_et.setText(null)
         comment = null
         volume = null
-        viewModel.clearContainerVolume(platformId, containerId)
+        viewModel.clearContainerVolume(p_platform_id, p_container_id)
         parentAct.updateRecyclerview()
     }
 

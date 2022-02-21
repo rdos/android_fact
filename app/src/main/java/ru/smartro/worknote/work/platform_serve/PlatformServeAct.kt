@@ -413,8 +413,11 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
     }
 
     override fun startContainerService(item: ContainerEntity) {
-        ContainerServiceFragment(item.containerId!!, mPlatformEntity.platformId!!)
-            .show(supportFragmentManager, "ContainerServiceFragment")
+
+
+        val fragment = ContainerServiceFragment()
+        fragment.addArgument(mPlatformEntity.platformId!!, item.containerId!!)
+        fragment.show(supportFragmentManager, "ContainerServiceFragment")
     }
 
     override fun onBackPressed() {

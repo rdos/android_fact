@@ -313,51 +313,42 @@ class CameraFragment(
         Log.d(TAG, "updateCameraUi")
 
         //кнопка отправить в камере. Определения для чего делается фото
+        //кнопка отправить в камере. Определения для чего делается фото
         mRootView.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
             when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     if (platform.beforeMedia.size == 0) {
                         toast("Сделайте фото")
-                    } else {
-                        requireActivity().finish()
+                        return@setOnClickListener
                     }
                 }
                 PhotoTypeEnum.forAfterMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     if (platform.afterMedia.size == 0) {
                         toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(Activity.RESULT_OK)
-                        requireActivity().finish()
+                        return@setOnClickListener
                     }
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     if (platform.failureMedia.size == 0) {
                         toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(Activity.RESULT_OK)
-                        requireActivity().finish()
+                        return@setOnClickListener
                     }
                 }
                 PhotoTypeEnum.forContainerFailure -> {
                     val container = viewModel.findContainerEntity(containerId)
                     if (container.failureMedia.size == 0) {
                         toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(Activity.RESULT_OK)
-                        requireActivity().finish()
+                        return@setOnClickListener
                     }
                 }
-
-                PhotoTypeEnum.forContainerBreakdown  -> {
+                PhotoTypeEnum.forContainerBreakdown -> {
                     val container = viewModel.findContainerEntity(containerId)
                     if (container.breakdownMedia.size == 0) {
                         toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(Activity.RESULT_OK)
-                        requireActivity().finish()
+                        return@setOnClickListener
                     }
                 }
 
@@ -365,9 +356,7 @@ class CameraFragment(
                     val platform = viewModel.findPlatformEntity(platformId)
                     if (platform.getServedKGOMediaSize() == 0) {
                         toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(101)
-                        requireActivity().finish()
+                        return@setOnClickListener
                     }
                 }
 
@@ -375,21 +364,16 @@ class CameraFragment(
                     val platform = viewModel.findPlatformEntity(platformId)
                     if (platform.getRemainingKGOMediaSize() == 0) {
                         toast("Сделайте фото")
-                    } else {
-                        requireActivity().setResult(102)
-                        requireActivity().finish()
+                        return@setOnClickListener
                     }
                 }
-
-                PhotoTypeEnum.forPlatformPickupVolume -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
-                    requireActivity().setResult(Activity.RESULT_OK)
-                    requireActivity().finish()
-                }
             }
+            activityFinish(photoFor)
         }
+
         val captureButton = mRootView.findViewById<ImageButton>(R.id.camera_capture_button)
         captureButton.setOnClickListener {
+
             imageCapture?.let { imageCapture ->
                 val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
                 val metadata = Metadata().apply {
@@ -494,12 +478,6 @@ class CameraFragment(
                             }
                         }
                     })
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                        mRootView.postDelayed({
-//                            mRootView.foreground = ColorDrawable(Color.WHITE)
-//                            mRootView.postDelayed({ mRootView.foreground = null }, ANIMATION_FAST_MILLIS)
-//                        }, ANIMATION_SLOW_MILLIS)
-//                    }
                 }
             }
         }
@@ -519,6 +497,43 @@ class CameraFragment(
             fragment.show(childFragmentManager, "GalleryFragment")
         }
         setImageCounter(false)
+    }
+
+    private fun activityFinish(photoType: Int) {
+        when (photoType) {
+            PhotoTypeEnum.forBeforeMedia -> {
+                requireActivity().finish()
+            }
+            PhotoTypeEnum.forAfterMedia -> {
+                requireActivity().setResult(Activity.RESULT_OK)
+                requireActivity().finish()
+            }
+            PhotoTypeEnum.forPlatformProblem -> {
+                requireActivity().setResult(Activity.RESULT_OK)
+                requireActivity().finish()
+            }
+            PhotoTypeEnum.forContainerFailure -> {
+                requireActivity().setResult(Activity.RESULT_OK)
+                requireActivity().finish()
+            }
+            PhotoTypeEnum.forContainerBreakdown -> {
+                requireActivity().setResult(Activity.RESULT_OK)
+                requireActivity().finish()
+            }
+            PhotoTypeEnum.forServedKGO -> {
+                requireActivity().setResult(101)
+                requireActivity().finish()
+            }
+
+            PhotoTypeEnum.forRemainingKGO -> {
+                requireActivity().setResult(102)
+                requireActivity().finish()
+            }
+            PhotoTypeEnum.forPlatformPickupVolume -> {
+                requireActivity().setResult(Activity.RESULT_OK)
+                requireActivity().finish()
+            }
+        }
     }
 
     private fun hasFrontCamera(): Boolean {

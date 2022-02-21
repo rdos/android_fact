@@ -68,10 +68,13 @@
         <activity
             android:name="ru.smartro.worknote.work.platform_serve.PlatformServeAct"
             android:screenOrientation="portrait" />
+
         <activity
             android:name="ru.smartro.worknote.work.ac.map.MapAct"
             android:screenOrientation="portrait"
+            android:noHistory="true"
             android:theme="@style/NoToolbar" />
+
         <activity
             android:name="ru.smartro.worknote.work.ac.checklist.StartWorkOrderAct"
             android:screenOrientation="portrait" />

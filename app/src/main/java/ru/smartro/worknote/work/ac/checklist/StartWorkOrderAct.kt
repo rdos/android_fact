@@ -90,35 +90,15 @@ class StartWorkOrderAct : AbstractAct() {
             finish()
             return
         }
-//        AppPreferences.wayTaskId = workorder.id
-        //        r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-//        todo:show must go on ))
         val intent = Intent(this, MapAct::class.java)
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        //or
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         workorderId?.let {
             intent.putExtra(PUT_EXTRA_PARAM_ID, workorderId)
         }
         startActivity(intent)
         finish()
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-        // r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos! r_dos!
-
     }
-
-
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
