@@ -8,8 +8,12 @@ import ru.smartro.worknote.work.PlatformEntity
 
 class PlatformServeViewModel(application: Application) : BaseViewModel(application) {
 
-    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?, comment: String?) {
-        baseDat.updateContainerVolume(platformId, containerId, volume, comment)
+    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?) {
+        baseDat.updateContainerVolume(platformId, containerId, volume)
+    }
+
+    fun updateContainerComment(platformId: Int, containerId: Int, comment: String?) {
+        baseDat.updateContainerComment(platformId, containerId, comment)
     }
 
     fun updateContainersVolumeIfnNull(platformId: Int, volume: Double) {

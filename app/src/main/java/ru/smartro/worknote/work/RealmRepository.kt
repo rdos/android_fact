@@ -224,7 +224,7 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     /** добавление заполненности контейнера **/
-    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?, comment: String?) {
+    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?) {
         p_realm.executeTransaction { realm ->
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
@@ -233,12 +233,24 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()
             container.volume = volume
-            container.comment = comment
             if (container.status == StatusEnum.NEW) {
                 container.status = StatusEnum.SUCCESS
             }
 
             platformEntity?.beginnedAt = MyUtil.currentTime()
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun updateContainerComment(platformId: Int, containerId: Int, comment: String?) {
+        p_realm.executeTransaction { realm ->
+            val container = realm.where(ContainerEntity::class.java)
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            container.comment = comment
             setEntityUpdateAt(platformEntity)
         }
     }
