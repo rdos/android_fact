@@ -48,6 +48,7 @@
                 android:layout_marginStart="@dimen/margin_default"
                 android:background="@drawable/bg_button_red"
                 android:text="Поломка"
+                android:visibility="gone"
                 android:textColor="@color/black" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
