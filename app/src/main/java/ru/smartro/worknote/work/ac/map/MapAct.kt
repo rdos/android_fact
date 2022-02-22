@@ -568,9 +568,10 @@ class MapAct : AbstractAct(),
             apcbComplete.setOnCheckedChangeListener { compoundButton, b ->
                 acbCompleteIsEnable()
             }
-            if (workOrders.size == 1) {
-                apcbComplete.isChecked = true
-            }
+            apcbComplete.isChecked = true
+//            if (workOrders.size == 1) {
+//                apcbComplete.isChecked = true
+//            }
 //            apcbComplete.setOnCheckedChangeListener { buttonView, isChecked ->
 //                if (isChecked) {
 //                    mFilteredWayTaskIds.add(wayTask.id!!)
@@ -632,10 +633,17 @@ class MapAct : AbstractAct(),
         }
 
         val acbGotoComplete = findViewById<AppCompatButton>(R.id.acb_act_map__bottom_behavior__gotocomplete)
+        if (getWorkOrders().size <= 1) {
+            acbGotoComplete.text = "Завершить маршрут"
+        } else {
+            acbGotoComplete.text ="К завершению маршрута"
+        }
         acbGotoComplete.setOnClickListener{
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             gotoInfoDialog()
-            gotoComplete()
+            if (getWorkOrders().size <= 1) {
+                gotoComplete()
+            }
         }
 
     }

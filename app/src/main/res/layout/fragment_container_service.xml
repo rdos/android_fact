@@ -14,7 +14,6 @@
         android:layout_marginTop="@dimen/margin_default"
         >
 
-
         <TextView
             android:id="@+id/enter_info_tittle"
             android:layout_width="wrap_content"
@@ -37,7 +36,7 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/apb_fragment_container_serve_failure"
                 android:layout_width="110dp"
-                android:layout_height="wrap_content"
+                android:layout_height="39dp"
                 android:background="@drawable/bg_button_red"
                 android:text="Невывоз"
                 android:textColor="@color/black" />
@@ -45,13 +44,12 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/apb_fragment_container_serve_breakdown"
                 android:layout_width="110dp"
-                android:layout_height="wrap_content"
+                android:layout_height="39dp"
                 android:layout_marginStart="@dimen/margin_default"
                 android:background="@drawable/bg_button_red"
                 android:text="Поломка"
                 android:textColor="@color/black" />
         </androidx.appcompat.widget.LinearLayoutCompat>
-
 
         <RadioGroup
             android:id="@+id/enter_info_percent_rg"

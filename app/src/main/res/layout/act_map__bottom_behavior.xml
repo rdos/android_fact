@@ -31,26 +31,39 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/map_behavior_rv"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_map_behavior"
-        app:layout_constraintTop_toBottomOf="@id/act_map__bottom_behavior__header"
-        app:layout_constraintBottom_toTopOf="@id/acb_act_map__bottom_behavior__gotocomplete"/>
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/act_map__bottom_behavior__header">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/acb_act_map__bottom_behavior__gotocomplete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_default"
-        android:background="@drawable/bg_button"
-        android:text="К завершению маршрута"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/map_behavior_rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_map_behavior"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/acb_act_map__bottom_behavior__gotocomplete"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb_act_map__bottom_behavior__gotocomplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_min"
+            android:layout_marginBottom="@dimen/margin_default"
+            android:background="@drawable/bg_button"
+            android:text="К завершению маршрута"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/map_behavior_rv"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
