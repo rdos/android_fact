@@ -48,7 +48,6 @@
                 android:layout_marginStart="@dimen/margin_default"
                 android:background="@drawable/bg_button_red"
                 android:text="Поломка"
-                android:visibility="gone"
                 android:textColor="@color/black" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -145,17 +144,6 @@
                 android:hint="Комментарии..." />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/comment_clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginHorizontal="@dimen/margin_default"
-            android:padding="8dp"
-            android:text="@string/clear_comment"
-            android:textColor="#0466B5"
-        />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

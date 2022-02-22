@@ -21,8 +21,8 @@ import ru.smartro.worknote.base.AbstractBottomDialog
 import ru.smartro.worknote.ui.problem.ContainerBreakdownAct
 import ru.smartro.worknote.ui.problem.ContainerFailureAct
 
-const val ARGUMENT_NAME__PLATFORM_ID = "ARGUMENT_NAME__PLATFORM_ID"
-const val ARGUMENT_NAME__CONTAINER_ID = "ARGUMENT_NAME__CONTAINER_ID"
+private const val ARGUMENT_NAME__PLATFORM_ID = "ARGUMENT_NAME__PLATFORM_ID"
+private const val ARGUMENT_NAME__CONTAINER_ID = "ARGUMENT_NAME__CONTAINER_ID"
 class ContainerServiceFragment : AbstractBottomDialog() {
     private val viewModel: PlatformServeViewModel by viewModel()
     private var volume: Double? = null
@@ -74,6 +74,7 @@ class ContainerServiceFragment : AbstractBottomDialog() {
             enter_info_tittle.text = "Заполненность конт №${it.number}"
         }
         comment_et.addTextChangedListener{
+            // TODO:
             viewModel.updateContainerComment(p_platform_id, p_container_id, it.toString())
         }
 
@@ -101,7 +102,6 @@ class ContainerServiceFragment : AbstractBottomDialog() {
         }
 
     }
-
 
     private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_red__usebutton))
