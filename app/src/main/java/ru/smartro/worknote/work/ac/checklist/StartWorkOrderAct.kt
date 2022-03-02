@@ -146,7 +146,7 @@ class StartWorkOrderAct : AbstractAct() {
 
             if (workOrder.waste_type != null) {
                 holder.itemView.choose_st.text = workOrder.waste_type.name
-                holder.itemView.choose_st.setBackgroundColor(Color.parseColor("#${workOrder.waste_type.color.hex}"))
+                holder.itemView.choose_st.setTextColor(Color.parseColor("#${workOrder.waste_type.color.hex}"))
             }
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
