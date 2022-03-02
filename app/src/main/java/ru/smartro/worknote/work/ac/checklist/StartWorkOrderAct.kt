@@ -2,6 +2,7 @@ package ru.smartro.worknote.work.ac.checklist
 
 import android.app.Application
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,11 +10,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmModel
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
+import kotlinx.android.synthetic.main.item_container_adapter.view.choose_title
+import kotlinx.android.synthetic.main.start_act__rv_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
@@ -28,6 +32,7 @@ import ru.smartro.worknote.work.ac.map.MapAct
 
 class StartWorkOrderAct : AbstractAct() {
 
+    private lateinit var workOrders: List<WoRKoRDeR_know1>
     private val vm: WayTaskViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +45,19 @@ class StartWorkOrderAct : AbstractAct() {
         val acbSelectAll = findViewById<AppCompatButton>(R.id.acb_act_start_workorder__select_all)
         acbSelectAll.setOnClickListener {
             // TODO: добавить логирование
+            if (workOrders.size <= 0) {
+                return@setOnClickListener
+            }
+            var checkName: String? = null
+            for(workOrder in workOrders) {
+                if (checkName == workOrder.waste_type?.name) {
+                    checkName = workOrder.waste_type?.name
+                } else {
+                    toast("Сменные задания с разными типами отходов")
+                    return@setOnClickListener
+                }
+
+            }
             gotoNextAct(null)
         }
         showingProgress(getPutExtraParam_NAME())
@@ -50,7 +68,7 @@ class StartWorkOrderAct : AbstractAct() {
                 when (result.status) {
                     Status.SUCCESS -> {
                         hideProgress()
-                        val workOrders = data!!.dataKnow100.woRKoRDeRknow1s
+                        workOrders = data!!.dataKnow100.woRKoRDeRknow1s
                         insertWayTask(workOrders)
                         rv.adapter = WayTaskAdapter(workOrders)
                         if (workOrders.size == 1) {
@@ -113,7 +131,7 @@ class StartWorkOrderAct : AbstractAct() {
         RecyclerView.Adapter<WayTaskAdapter.OwnerViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item_know1, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item, parent, false)
             return OwnerViewHolder(view)
         }
 
@@ -125,6 +143,11 @@ class StartWorkOrderAct : AbstractAct() {
             val workOrder = p_woRKoRDeRknow1List[position]
 
             holder.itemView.choose_title.text = workOrder.name
+
+            if (workOrder.waste_type != null) {
+                holder.itemView.choose_st.text = workOrder.waste_type.name
+                holder.itemView.choose_st.setBackgroundColor(Color.parseColor("#${workOrder.waste_type.color.hex}"))
+            }
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
                 gotoNextAct(workOrder.id)

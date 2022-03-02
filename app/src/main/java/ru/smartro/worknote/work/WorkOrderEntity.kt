@@ -24,6 +24,9 @@ open class WorkOrderEntity(
     var id: Int = Inull,
     var name: String = Snull,
     var platforms: RealmList<PlatformEntity> = RealmList(),
+    var waste_type_id: Int? = null,
+    var waste_type_name: String? = null,
+    var waste_type_color: String? = null,
     var start: StartEntity? = null,
 //    var unload: UnloadEntity? = null,
 

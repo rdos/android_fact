@@ -99,12 +99,16 @@ class RealmRepository(private val p_realm: Realm) {
             id = woRKoRDeRknow1.id,
             start_at = MyUtil.currentTime(),
             name = woRKoRDeRknow1.name,
+            waste_type_id = woRKoRDeRknow1.waste_type?.id,
+            waste_type_name = woRKoRDeRknow1.waste_type?.name,
+            waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
             platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id),
             start = mapStart(woRKoRDeRknow1.STaRTknow1)
         )
 
         insUpdWorkOrders(wayTask, true)
     }
+
 
     /** WORKORDER_ST ***WORKORDER_ART*** WORKORDER_ST ***WORKORDER_ART*** */
     /** WORKORDER_ST ***WORKORDER_ART*** WORKORDER_ST ***WORKORDER_ART*** */

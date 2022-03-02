@@ -24,6 +24,7 @@ data class WoRKoRDeR_know1(
     val finishedAt: String,
     @SerializedName("name")
     val name: String,
+    val waste_type: WasteType_know1?,
     @SerializedName("platforms")
     val platformKnow1s: List<Platform_know1>,
     @SerializedName("start")
@@ -39,6 +40,19 @@ data class Unload(
     val id: Int,
     @SerializedName("name")
     val name: String
+)
+
+data class WasteType_know1(
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("color")
+    val color: Color_know1
+)
+
+data class Color_know1(
+    val hex: String
 )
 
 data class STaRT_know1(
