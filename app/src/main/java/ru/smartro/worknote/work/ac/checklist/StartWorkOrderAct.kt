@@ -53,7 +53,7 @@ class StartWorkOrderAct : AbstractAct() {
                 if (checkName == workOrder.waste_type?.name) {
                     checkName = workOrder.waste_type?.name
                 } else {
-                    toast("Сменные задания с разными типами отходов")
+                    toast("Нельзя одновременно взять два задания с разными типами отходов")
                     return@setOnClickListener
                 }
 
