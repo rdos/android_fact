@@ -14,11 +14,12 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -168,32 +169,20 @@ class MapAct : AbstractAct(),
     private fun gotoInfoDialog() {
         showInfoDialog().let {
             //O!
-            mAcbComplete = it.findViewById(R.id.acb_act_map__workoder_info__complete)
+            mAcbComplete = it.findViewById(R.id.acb_act_map__workorder_info__complete)
             mAcbComplete.isEnabled = false
             //Oo!!
             initWorkOrderInfo(it)
             mAcbComplete.setOnClickListener{
                 gotoComplete()
             }
-            val actvInfo = it.findViewById<AppCompatTextView>(R.id.actv_act_map__workoder_info)
-
             val workOrders = getWorkOrders()
-            var infoText = "Статистика\n_______"
-            for(workOrder in workOrders) {
-                infoText += "\n${workOrder.id} ${workOrder.name}________"
-                infoText += "\nПлощадки:   всего ${workOrder.cnt_platform}"
-                infoText += "\nобслуженно/осталось/невывоз:\n"
-                infoText += "${workOrder.cnt_platform_status_success}"
-                infoText += "/${workOrder.cntPlatformProgress()}"
-                infoText += "/${workOrder.cnt_platform_status_error}"
-                infoText += "\nКонтейнеры:   всего ${workOrder.cnt_container}"
-                infoText += "\nобслуженно/осталось/невывоз:\n"
-                infoText += "${workOrder.cnt_container_status_success}"
-                infoText += "/${workOrder.cntContainerProgress()}"
-                infoText += "/${workOrder.cnt_container_status_error}\n"
-            }
+//            var infoText = "**Статистика**\n"
+            val rvInfo = it.findViewById<RecyclerView>(R.id.rv_act_map__workorder_info)
+            rvInfo.layoutManager = LinearLayoutManager(this)
+            rvInfo.adapter = InfoAdapter(getWorkOrders())
 
-            actvInfo.text = infoText
+
         }
     }
 
@@ -593,8 +582,12 @@ class MapAct : AbstractAct(),
     private fun acbCompleteIsEnable() {
         val checkBoxList = getWorkOrderInfoCheckBoxs()
         mAcbComplete.isEnabled = false
+        mAcbComplete.text = "Выберите задание"
+        mAcbComplete.background = ContextCompat.getDrawable(this, R.drawable.bg_button_gray)
         for (checkBox in checkBoxList) {
             if (checkBox.isChecked) {
+                mAcbComplete.text = "Завершить маршрут"
+                mAcbComplete.background = ContextCompat.getDrawable(this, R.drawable.bg_button)
                 mAcbComplete.isEnabled = true
                 return
             }
@@ -969,4 +962,78 @@ class MapAct : AbstractAct(),
         MapKitFactory.getInstance().onStart()
     }
 
+    inner class InfoAdapter(private val workOrderS: List<WorkOrderEntity>) :
+        RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InfoViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.act_map__workorder_info__rv, parent, false)
+//            logSentry("BB")
+            return InfoViewHolder(view)
+        }
+
+        override fun getItemCount(): Int {
+            return workOrderS.size
+        }
+
+        override fun onBindViewHolder(holder: InfoViewHolder, position: Int) {
+            val workOrder = workOrderS[position]
+
+            holder.tvName.text = workOrder.name
+            holder.tvPlatformCnt.text = "Площадки - ${workOrder.cnt_platform}"
+            holder.tvPlatformSuccess.text = workOrder.cnt_platform_status_success.toString()
+            holder.tvPlatformError.text = workOrder.cnt_platform_status_error.toString()
+            holder.tvPlatformProgress.text = workOrder.cntPlatformProgress().toString()
+
+            holder.tvContainerCnt.text = "Контейнеры - ${workOrder.cnt_container}"
+            holder.tvContainerSuccess.text = workOrder.cnt_container_status_success.toString()
+            holder.tvContainerError.text = workOrder.cnt_container_status_error.toString()
+            holder.tvContainerProgress.text = workOrder.cntContainerProgress().toString()
+        }
+
+        inner class InfoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val tvName: TextView by lazy {
+                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__name)
+            }
+            val tvPlatformCnt: TextView by lazy {
+                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_cnt)
+            }
+            val tvPlatformSuccess: TextView by lazy {
+                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_success)
+            }
+            val tvPlatformError: TextView by lazy {
+                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_error)
+            }
+            val tvPlatformProgress: TextView by lazy {
+                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_progress)
+            }
+
+            val tvContainerCnt: TextView by lazy {
+                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_cnt)
+            }
+            val tvContainerSuccess: TextView by lazy {
+                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_success)
+            }
+            val tvContainerError: TextView by lazy {
+                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_error)
+            }
+            val tvContainerProgress: TextView by lazy {
+                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_progress)
+            }
+        }
+    }
+
 }
+
+//            for(workOrder in workOrders) {
+//                infoText += "\n${workOrder.id} ${workOrder.name}________"
+//                infoText += "\nПлощадки:   всего ${workOrder.cnt_platform}"
+//                infoText += "\nобслуженно/осталось/невывоз:\n"
+//                infoText += "${workOrder.cnt_platform_status_success}"
+//                infoText += "/${workOrder.cntPlatformProgress()}"
+//                infoText += "/${workOrder.cnt_platform_status_error}"
+//                infoText += "\nКонтейнеры:   всего ${workOrder.cnt_container}"
+//                infoText += "\nобслуженно/осталось/невывоз:\n"
+//                infoText += "${workOrder.cnt_container_status_success}"
+//                infoText += "/${workOrder.cntContainerProgress()}"
+//                infoText += "/${workOrder.cnt_container_status_error}\n"
+//            }
