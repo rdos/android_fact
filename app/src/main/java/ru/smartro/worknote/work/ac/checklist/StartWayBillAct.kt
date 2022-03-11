@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,7 @@ import ru.smartro.worknote.service.network.body.WayListBody
 import ru.smartro.worknote.service.network.response.way_list.Data
 import ru.smartro.worknote.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.util.MyUtil
+import ru.smartro.worknote.work.ac.PERMISSIONS
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,6 +33,9 @@ class StartWayBillAct : AbstractAct() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
+        }
         setContentView(R.layout.act_start_waybill)
         val nameNotFounT = getPutExtraParam_NAME()
         supportActionBar?.title = "Выберите путевой лист"

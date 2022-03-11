@@ -3,6 +3,7 @@ package ru.smartro.worknote.work.platform_serve
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
@@ -63,6 +64,8 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult.requestCode=${requestCode}")
+        Log.d(TAG, "onActivityResult.resultCode=${resultCode}")
         if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
             setResult(Activity.RESULT_OK)
             finish()
@@ -71,6 +74,8 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
                 setResult(Activity.RESULT_OK)
                 finish()
             }
+        } else if (resultCode == -1 && requestCode == 14) {
+            setUseButtonStyleBackgroundGreen(acbPickup())
         } else if (resultCode == 101 && requestCode == 101) {
             vm.updatePlatformKGO(mPlatformEntity.platformId!!, mServedKGOVolumeText, isServedKGO = true)
             setUseButtonStyleBackgroundGreen(mAcbKGOServed)
@@ -196,7 +201,9 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
         /** VOLUME PICKUP
          *
          * */
-
+        if (mPlatformEntity.isPickupNotEmpty()) {
+            setUseButtonStyleBackgroundGreen(acbPickup())
+        }
         acbPickup().setOnClickListener {
             acbPickup().isEnabled = false
             try {
@@ -221,6 +228,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
                 acbPickup().isEnabled = true
             }
         }
+
 
         // TODO: r_dos !)!
 //        acbPickup().simulateClick()

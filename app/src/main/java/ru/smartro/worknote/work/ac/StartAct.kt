@@ -1,5 +1,6 @@
 package ru.smartro.worknote.work.ac
 
+import android.Manifest
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
@@ -30,6 +31,14 @@ import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.util.MyUtil
 
+public val PERMISSIONS = arrayOf(
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    Manifest.permission.READ_EXTERNAL_STORAGE,
+    Manifest.permission.READ_PHONE_STATE,
+    Manifest.permission.LOCATION_HARDWARE,
+    Manifest.permission.ACCESS_NETWORK_STATE
+)
 class StartAct : AbstractAct() {
     private val vm: AuthViewModel by viewModel()
 

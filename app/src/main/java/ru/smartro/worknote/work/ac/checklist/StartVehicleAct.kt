@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,12 +24,16 @@ import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.util.MyUtil
+import ru.smartro.worknote.work.ac.PERMISSIONS
 
 class StartVehicleAct : AbstractAct() {
     private val vs: VehicleViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
+        }
         setContentView(R.layout.act_start_vehicle)
         supportActionBar?.title = "Выберите автомобиль"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

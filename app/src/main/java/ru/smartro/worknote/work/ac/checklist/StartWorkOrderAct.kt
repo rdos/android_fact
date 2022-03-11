@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +28,9 @@ import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Status
+import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.work.WoRKoRDeR_know1
+import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.ac.map.MapAct
 
 class StartWorkOrderAct : AbstractAct() {
@@ -37,6 +40,9 @@ class StartWorkOrderAct : AbstractAct() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
+        }
         setContentView(R.layout.act_start_workorder)
         supportActionBar?.title = "Выберите сменное задание"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -48,7 +54,7 @@ class StartWorkOrderAct : AbstractAct() {
             if (workOrders.size <= 0) {
                 return@setOnClickListener
             }
-            var checkName: String? = null
+            var checkName: String? = workOrders[0].waste_type?.name
             for(workOrder in workOrders) {
                 if (checkName == workOrder.waste_type?.name) {
                     checkName = workOrder.waste_type?.name

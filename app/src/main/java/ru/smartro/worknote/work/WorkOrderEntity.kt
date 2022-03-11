@@ -386,6 +386,19 @@ open class PlatformEntity(
         return res
     }
 
+    fun isPickupNotEmpty(): Boolean {
+        return this.volumePickup != null
+    }
+
+    fun getPickupMediaSize(): Int {
+        var res = 0
+        if (this.pickupMedia.isNotEmpty()) {
+//            this.servedKGO = createServedKGO(Realm.getDefaultInstance())
+            res = this.pickupMedia.size
+        }
+        return res
+    }
+
     fun getRemainingKGOMediaSize(): Int {
             var res = 0
             if (this.kgoRemaining != null ) {
@@ -465,6 +478,8 @@ open class PlatformEntity(
             it.volume = kgoVolumeDouble
         }
     }
+
+
 
 
 //    fun createServedKGO(realm: Realm): KGOEntity {
