@@ -678,6 +678,7 @@ class MapAct : AbstractAct(),
     fun buildNavigator(checkPoint: Point) {
         try {
 //            getMapObjCollection().clear()
+            clearMapIbjectsDrive()
             selectedPlatformToNavigate = checkPoint
             vs.buildMapNavigator(currentLocation, checkPoint, mDrivingRouter, mDrivingSession)
             drivingModeState = true
