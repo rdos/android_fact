@@ -137,19 +137,6 @@
                 android:text="Подтвердить"
                 android:textColor="@color/white" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/dismiss_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_default"
-                android:layout_marginEnd="@dimen/margin_default"
-                android:layout_marginBottom="@dimen/margin_default"
-                android:layout_weight="0.7"
-                android:background="@drawable/bg_button_green"
-                android:padding="@dimen/margin_default"
-                android:text="Отменить"
-                android:textColor="@color/black" />
-
         </LinearLayout>
 
     </LinearLayout>

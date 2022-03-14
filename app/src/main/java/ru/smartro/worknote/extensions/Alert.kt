@@ -10,8 +10,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.alert_accept_task.view.title_tv
-import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
+import kotlinx.android.synthetic.main.alert_clear_navigator.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
+import kotlinx.android.synthetic.main.dialog_early_complete.view.*
 import kotlinx.coroutines.*
 import ru.smartro.worknote.A_SLEEP_TIME_1_83__MS
 import ru.smartro.worknote.R
@@ -194,48 +195,6 @@ fun AppCompatActivity.warningDelete(title: String): View {
 
 
 
-
-fun AppCompatActivity.warningContainerFailure(title: String): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_warning_failure, null)
-    view.title_tv.text = title
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
-
-fun AppCompatActivity.warningAlert(title: String): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_warning, null)
-    builder.setView(view)
-    mCustomDialog = builder.create()
-    view.title_tv.text = title
-    view.dismiss_btn.setOnClickListener {
-        mCustomDialog.dismiss()
-    }
-    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    mCustomDialog.show()
-    return view
-}
-
-fun AppCompatActivity.warningNavigatePlatform(): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_navigate_platform, null)
-    builder.setView(view)
-    builder.setCancelable(false)
-    mCustomDialog = builder.create()
-    view.dismiss_btn.setOnClickListener {
-        mCustomDialog.dismiss()
-    }
-    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    mCustomDialog.show()
-    return view
-}
-
-
 fun AppCompatActivity.warningClearNavigator(title: String): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
@@ -256,7 +215,7 @@ fun AppCompatActivity.showDialogEarlyComplete(reasons: List<CancelWayReasonEntit
                                               workOrderId: Int, workOrderName: String): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_failure_finish_way, null)
+    val view = inflater.inflate(R.layout.dialog_early_complete, null)
     val reasonsString = reasons.map { it.problem }
     view.reason_et.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, reasonsString))
     view.reason_et.setOnClickListener {

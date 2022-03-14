@@ -36,10 +36,11 @@ import com.yandex.runtime.Error
 import com.yandex.runtime.ui_view.ViewProvider
 import kotlinx.android.synthetic.main.act_map.*
 import kotlinx.android.synthetic.main.act_map__bottom_behavior.*
-import kotlinx.android.synthetic.main.alert_failure_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
+import kotlinx.android.synthetic.main.alert_on_point.view.*
 import kotlinx.android.synthetic.main.alert_successful_complete.view.*
+import kotlinx.android.synthetic.main.dialog_early_complete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
@@ -447,9 +448,6 @@ class MapAct : AbstractAct(),
                 } else {
                     toast("Заполните все поля")
                 }
-            }
-            view.dismiss_btn.setOnClickListener {
-                hideDialog()
             }
         }
     }
