@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
+    <!--<androidx.appcompat.widget.AppCompatImageView-->
+    <!--    android:layout_width="wrap_content"-->
+    <!--    android:layout_height="wrap_content"-->
+    <!--    android:src="@drawable/ic_baseline_add_circle_outline_24"-->
+    <!--    />-->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/acb_act_platformserve__pickup_seekbarthumb"
+        android:layout_width="110dp"
+        android:layout_height="39dp"
+        android:background="@drawable/bg_button_green"
+        android:text="+ Подбор"
+        android:textAllCaps="false"
+        android:textColor="@color/black"/>
+
+</LinearLayout>

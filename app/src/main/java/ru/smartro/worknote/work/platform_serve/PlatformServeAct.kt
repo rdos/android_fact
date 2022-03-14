@@ -2,10 +2,17 @@ package ru.smartro.worknote.work.platform_serve
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
@@ -16,22 +23,24 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.extensions.hideDialog
-import ru.smartro.worknote.extensions.showDlgPickup
 import ru.smartro.worknote.extensions.showDialogFillKgoVolume
+import ru.smartro.worknote.extensions.showDlgPickup
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.work.AppPreferences
-import ru.smartro.worknote.work.ContainerEntity
-import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.ui.problem.PlatformFailureAct
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.work.AppPreferences
+import ru.smartro.worknote.work.ContainerEntity
+import ru.smartro.worknote.work.PlatformEntity
 
 
 class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickListener
 //    , SeekBar.OnSeekBarChangeListener
 {
+    private var mVolumePickup: Double? = null
     private var acbPickup: AppCompatButton? = null
+    private var tvVolumePickup: TextView? = null
     private var mBackPressedCnt: Int = 3
     private val REQUEST_EXIT = 33
     private lateinit var mPlatformEntity: PlatformEntity
@@ -74,8 +83,6 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
                 setResult(Activity.RESULT_OK)
                 finish()
             }
-        } else if (resultCode == -1 && requestCode == 14) {
-            setUseButtonStyleBackgroundGreen(acbPickup())
         } else if (resultCode == 101 && requestCode == 101) {
             vm.updatePlatformKGO(mPlatformEntity.platformId!!, mServedKGOVolumeText, isServedKGO = true)
             setUseButtonStyleBackgroundGreen(mAcbKGOServed)
@@ -117,7 +124,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
         /** COPY PAST r_dos!!!*/
 
 
-        mAcbKGOServed = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__kgo_served)
+        mAcbKGOServed = findViewById(R.id.acb_activity_platform_serve__kgo_served)
         if (mPlatformEntity.isServedKGONotEmpty()) {
             setUseButtonStyleBackgroundGreen(mAcbKGOServed)
         }
@@ -131,6 +138,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
                     if (mServedKGOVolumeText.isNullOrBlank()) {
                         return@setOnClickListener
                     }
+
                     val intent = Intent(this@PlatformServeAct, CameraActivity::class.java)
                     intent.putExtra("platform_id", mPlatformEntity.platformId)
                     intent.putExtra("photoFor", PhotoTypeEnum.forServedKGO)
@@ -143,7 +151,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
             /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
 
-            mAcbKGORemaining = findViewById<AppCompatButton>(R.id.apb_activity_platform_serve__kgo_remaining)
+            mAcbKGORemaining = findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
 
             if (mPlatformEntity.isRemainingKGONotEmpty()) {
                 setUseButtonStyleBackgroundGreen(mAcbKGORemaining)
@@ -201,37 +209,75 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
         /** VOLUME PICKUP
          *
          * */
+
+        val acsbVolubmePickup = findViewById<SeekBar>(R.id.acsb_activity_platform_serve__seekbar)
+        acsbVolubmePickup.thumb = getThumb(1);
         if (mPlatformEntity.isPickupNotEmpty()) {
-            setUseButtonStyleBackgroundGreen(acbPickup())
+            acsbVolubmePickup.progress = acsbVolubmePickup.max
+            tvVolumePickuptext(mPlatformEntity.volumePickup)
         }
-        acbPickup().setOnClickListener {
-            acbPickup().isEnabled = false
-            try {
-                showDlgPickup().let{ dialogView ->
-                    val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
-                    mPlatformEntity.volumePickup?.let{
-                        tietAdditionalVolumeInM3.setText(mPlatformEntity.volumePickup.toString())
-                    } //mVolumePickup.isShowForUser()
-
-                    val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
-                    btnOk.setOnClickListener {
-                        val volume = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-
-                        vm.updateSelectionVolume(mPlatformEntity.platformId!!, volume)
-                        if (volume != null) {
-                            gotoMakePhotoForPickup()
-                        }
-                        hideDialog()
-                    }
-                }
-            } finally {
-                acbPickup().isEnabled = true
+        //todo: r_dos seekBar ws acsbVolubmePickup
+        acsbVolubmePickup.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+            private var mProgressAtStartTracking = 0
+            private val SENSITIVITY = 1
+            override fun onProgressChanged(s: SeekBar?, progress: Int, fromUser: Boolean) {
+                tvVolumePickuptext(progress)
+                //неРазРаб acsbVolubmePickup.max - 13
+//                if (progress >= acsbVolubmePickup.max - 13) {
+//                    acsbVolubmePickup?.progress = acsbVolubmePickup.max - 13
+//                }
             }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                mProgressAtStartTracking = seekBar!!.progress;
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                if(Math.abs(mProgressAtStartTracking - seekBar!!.progress) <= SENSITIVITY){
+                    // react to thumb click
+                    onClickPickup(acsbVolubmePickup)
+                    return
+                }
+
+                if (acsbVolubmePickup.progress > 0 ) {
+                    vm.updateSelectionVolume(mPlatformEntity.platformId!!, acsbVolubmePickup.progress.toDouble())
+                    gotoMakePhotoForPickup()
+                } else {
+                    vm.updateSelectionVolume(mPlatformEntity.platformId!!, null)
+                }
+            }
+        })
+
+    }
+
+    private fun onClickPickup(acsbVolubmePickup: SeekBar) {
+        acsbVolubmePickup.isEnabled = false
+        try {
+            showDlgPickup().let{ dialogView ->
+                val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
+                mPlatformEntity.volumePickup?.let{
+                    tietAdditionalVolumeInM3.setText(mPlatformEntity.volumePickup.toString())
+                } //mVolumePickup.isShowForUser()
+
+                val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
+                btnOk.setOnClickListener {
+                    val volume = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
+
+                    vm.updateSelectionVolume(mPlatformEntity.platformId!!, volume)
+                    if (volume == null) {
+                        acsbVolubmePickup.progress = 0
+                        tvVolumePickuptext(volume)
+                    } else {
+                        acsbVolubmePickup.progress = acsbVolubmePickup.max
+                        tvVolumePickuptext(volume)
+                        gotoMakePhotoForPickup()
+                    }
+                    hideDialog()
+                }
+            }
+        } finally {
+            acsbVolubmePickup.isEnabled = true
         }
-
-
-        // TODO: r_dos !)!
-//        acbPickup().simulateClick()
     }
 
     private fun gotoMakePhotoForPickup() {
@@ -241,20 +287,62 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
         startActivityForResult(intent, 14)
     }
 
+    private fun tvVolumePickuptext(progressDouble: Double?) {
+//        var progressText = progress.toString()
+        var progressText = ""
+        if (progressDouble != null) {
+            progressText = String.format("%.1f", progressDouble)
+        }
+        tvVolumePickup().text = "${progressText} м³"
+        mVolumePickup = progressDouble
+//
+    }
+    private fun tvVolumePickuptext(progress: Int) {
+        if (progress < 0) {
+            tvVolumePickuptext(0.0)
+            return
+        }
+        tvVolumePickuptext(progress.toDouble())
+    }
+
+
+
+    private fun getThumb(progress: Int): Drawable? {
+        val thumbView: View = LayoutInflater.from(this)
+            .inflate(R.layout.act_platformserve__pickup_seekbarthumb, null, false)
+//        (thumbView.findViewById(R.id.tvProgress) as TextView).text = progress.toString() + ""
+        thumbView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val bitmap = Bitmap.createBitmap(thumbView.measuredWidth, thumbView.measuredHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        thumbView.layout(0, 0, thumbView.measuredWidth, thumbView.measuredHeight)
+        thumbView.draw(canvas)
+        return BitmapDrawable(resources, bitmap)
+    }
+
 
     //todo: ответсвенность)
-    private fun acbPickup(): AppCompatButton {
-            //        etVolumePickup.let {
-            //                // mEtVolumePickup = findViewById(R.id.et_act_platformserve__volumepickup)
-            //            //  lateinit  Vs componentName(acbTest????)
-            //        }
-        if (acbPickup == null) {
-            acbPickup = findViewById(R.id.acb_activity_platform_serve__pickup)
-            if (acbPickup == null) {
-                acbPickup = AppCompatButton(this)
+//    private fun acbPickup(): AppCompatButton {
+//            //        etVolumePickup.let {
+//            //                // mEtVolumePickup = findViewById(R.id.et_act_platformserve__volumepickup)
+//            //            //  lateinit  Vs componentName(acbTest????)
+//            //        }
+//        if (acbPickup == null) {
+//            acbPickup = thumbView?.findViewById(R.id.acb_act_platformserve__pickup_seekbarthumb)
+//            if (acbPickup == null) {
+//                acbPickup = AppCompatButton(this)
+//            }
+//        }
+//        return acbPickup!!
+//    }
+
+    private fun tvVolumePickup(): TextView {
+        if (tvVolumePickup == null) {
+            tvVolumePickup = findViewById(R.id.et_act_platformserve__volumepickup)
+            if (tvVolumePickup == null) {
+                tvVolumePickup = TextView(this)
             }
         }
-        return acbPickup!!
+        return tvVolumePickup!!
     }
 
 
@@ -262,6 +350,12 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
 //        appCompatButton.alpha = 1f
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green__usebutton))
     }
+
+    private fun setStyleBackgroundGreen(appCompatButton: AppCompatButton) {
+//        appCompatButton.alpha = 1f
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green))
+    }
+
 
     private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_red__usebutton))
