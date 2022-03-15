@@ -16,6 +16,8 @@
         android:layout_height="match_parent"
         android:padding="@dimen/margin_max"
         android:scaleType="centerCrop"
+        android:src="@color/gray"
+        android:visibility="gone"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,8 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layoutDirection="ltr"
-        tools:background="@color/black">
+        android:layoutDirection="ltr">
 
         <ImageButton
             android:id="@+id/camera_capture_button"
@@ -87,6 +88,22 @@
             app:layout_constraintEnd_toEndOf="@id/photo_flash"
             app:layout_constraintStart_toStartOf="@id/photo_flash"
             app:layout_constraintTop_toTopOf="@id/photo_flash" />
+
+        <!--ic_baseline_volume_up_24-->
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/actb_fragment_camera__sound"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="@dimen/margin_max_max"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:background="@drawable/ic_fragment_camera__sound"
+            android:checked="false"
+            android:textOff="@null"
+            android:textOn="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/photo_accept_button"
+            app:layout_constraintVertical_bias="@id/photo_accept_button"
+            />
 
         <TextView
             android:id="@+id/tv_fragment_camera__skip"

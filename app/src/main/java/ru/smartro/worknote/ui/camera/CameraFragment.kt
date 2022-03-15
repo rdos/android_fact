@@ -8,13 +8,16 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.animation.AnimationUtils
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
@@ -232,33 +235,33 @@ class CameraFragment(
 
         val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
-        val orientationEventListener = object : OrientationEventListener(context) {
-            override fun onOrientationChanged(orientation: Int) {
-                // Monitors orientation values to determine the target rotation value
-                when (orientation) {
-                    in 45..134 -> {
-                        rotation = Surface.ROTATION_270
-                        rotationDegrees = 270F
-                    }
-                    in 135..224 -> {
-                        rotation = Surface.ROTATION_180
-                        rotationDegrees = 180F
-                    }
-                    in 225..314 -> {
-                        rotation = Surface.ROTATION_90
-                        rotationDegrees = 90F
-                    }
-                    else -> {
-                        rotation = Surface.ROTATION_0
-                        rotationDegrees = 0F
-                    }
-                }
-                imageCapture?.targetRotation = rotation
-                imageAnalyzer?.targetRotation = rotation
-            }
-        }
+//        val orientationEventListener = object : OrientationEventListener(context) {
+//            override fun onOrientationChanged(orientation: Int) {
+//                // Monitors orientation values to determine the target rotation value
+//                when (orientation) {
+//                    in 45..134 -> {
+//                        rotation = Surface.ROTATION_270
+//                        rotationDegrees = 270F
+//                    }
+//                    in 135..224 -> {
+//                        rotation = Surface.ROTATION_180
+//                        rotationDegrees = 180F
+//                    }
+//                    in 225..314 -> {
+//                        rotation = Surface.ROTATION_90
+//                        rotationDegrees = 90F
+//                    }
+//                    else -> {
+//                        rotation = Surface.ROTATION_0
+//                        rotationDegrees = 0F
+//                    }
+//                }
+//                imageCapture?.targetRotation = rotation
+//                imageAnalyzer?.targetRotation = rotation
+//            }
+//        }
 
-        orientationEventListener.enable()
+//        orientationEventListener.enable()
         preview = Preview.Builder()
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
@@ -372,6 +375,7 @@ class CameraFragment(
         }
 
         val captureButton = mRootView.findViewById<ImageButton>(R.id.camera_capture_button)
+        val acivImage = mRootView.findViewById<AppCompatImageView>(R.id.aciv_fragment_camera)
         captureButton.setOnClickListener {
 
             imageCapture?.let { imageCapture ->
@@ -430,7 +434,11 @@ class CameraFragment(
                     captureButton.isClickable = false
                     captureButton.isEnabled = false
                     captureButton.isPressed = true
-
+                    if (AppPreferences.isCameraSoundEnabled) {
+                        val mp = MediaPlayer.create(requireContext(), R.raw.camera_sound)
+//                    final MediaPlayer mp = MediaPlayer.create(this, R.raw.soho);
+                        mp.start()
+                    }
                     Log.d(TAG, "${rotation}")
 
                     imageCapture.takePicture(outputOptions, cameraExecutor, object : OnImageSavedCallback {
@@ -443,12 +451,29 @@ class CameraFragment(
                             val imageUri = output.savedUri ?: Uri.fromFile(photoFile)
                             Log.d(TAG, "Photo capture succeeded: $imageUri path: ${imageUri.path}")
                             Log.d(TAG, "Current thread: ${Thread.currentThread()}")
+
+
+                            acivImage.post{
+                                acivImage.visibility = View.VISIBLE
+                                mPreviewView.visibility = View.GONE
+//                                val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.my_anim_ttest)
+                                Glide.with(acivImage)
+                                    .load(imageUri)
+                                    .into(acivImage)
+//                                acivImage.startAnimation(animation)
+                            }
+
+                            acivImage.postDelayed({
+                                acivImage.visibility = View.GONE
+                                mPreviewView.visibility = View.VISIBLE
+                                File(imageUri.path!!).delete()
+                            }, 1700)
+
                             setGalleryThumbnail(imageUri)
-                            setImageCounter(true)
-
-
                             job.launch {
                                 Log.d("AAAAAAA", Thread.currentThread().name)
+
+
                                 val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees,
                                     requireContext())
 
@@ -459,6 +484,7 @@ class CameraFragment(
 ////                                    size(81920) // 2 MB
 //                                    destination(photoFile)
 //                                }
+
 
 
                                 if (photoFor == PhotoTypeEnum.forContainerBreakdown
@@ -473,7 +499,7 @@ class CameraFragment(
                                 }
                                 captureButton.isClickable = true
                                 captureButton.isEnabled = true
-                                File(imageUri.path!!).delete()
+                                setImageCounter(false)
                                 job.cancel()
                             }
                         }
@@ -486,6 +512,12 @@ class CameraFragment(
         mActbPhotoFlash?.setOnClickListener {
            AppPreferences.isTorchEnabled = mActbPhotoFlash!!.isChecked
            enableTorch()
+        }
+
+        val actbSound = mRootView.findViewById<AppCompatToggleButton>(R.id.actb_fragment_camera__sound)
+        actbSound.isChecked = AppPreferences.isCameraSoundEnabled
+        actbSound?.setOnClickListener {
+            AppPreferences.isCameraSoundEnabled = actbSound.isChecked
         }
 
         // Listener for button used to view the most recent photo

@@ -132,10 +132,15 @@ object AppPreferences {
 
     fun getLastKnownLocationTime(): Long {
         var result = Lnull
-        val location = LocationManagerUtils.getLastKnownLocation()
-        if (location != null) {
-            result = System.currentTimeMillis() - location.absoluteTimestamp
+        try {
+            val location = LocationManagerUtils.getLastKnownLocation()
+            if (location != null) {
+                result = System.currentTimeMillis() - location.absoluteTimestamp
+            }
+        } catch (ex: Exception) {
+
         }
+
         return result
     }
 
