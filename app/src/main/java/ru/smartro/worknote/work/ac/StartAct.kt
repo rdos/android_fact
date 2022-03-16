@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.isVisible
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.act_start.cl_act_start
@@ -69,13 +70,14 @@ class StartAct : AbstractAct() {
         auth_enter.setOnClickListener {
            clickAuthEnter()
         }
-        actv_activity_auth__it_test_version.isVisible = true
+
+        actv_activity_auth__it_test_version.isVisible = false
         if (BuildConfig.BUILD_TYPE != "debugProd") {
             val versionName = BuildConfig.VERSION_NAME
             //oopsTestqA
             val textIsTestEnv = getString(R.string.act_st_art_it_test_version).format(versionName)
 
-            actv_activity_auth__it_test_version.isVisible = false
+            actv_activity_auth__it_test_version.isVisible = true
             actv_activity_auth__it_test_version.text = textIsTestEnv // + actv_activity_auth__it_test_version.text
 
         }
