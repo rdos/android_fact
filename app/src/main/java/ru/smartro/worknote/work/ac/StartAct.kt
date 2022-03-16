@@ -52,7 +52,7 @@ class StartAct : AbstractAct() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_start)
-        actionBar?.title = "Вход в систему"
+        actionBar?.title = "Вход в Систему"
         auth_appversion.text = BuildConfig.VERSION_NAME
         cl_act_start.setOnClickListener {
             MyUtil.hideKeyboard(this)

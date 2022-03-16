@@ -87,13 +87,14 @@ abstract class AbstractAct : AppCompatActivity() {
             return result
         }
 
+    // TODO: )
     protected fun setAntiErrorClick(itemView: View) {
         itemView.isEnabled = false
         itemView.postDelayed({
             try {
                 itemView.isEnabled = true
             } catch (ex: Exception) {
-                // TODO: r_dos 
+                // TODO: r_dos
             }
         }, 333)
     }

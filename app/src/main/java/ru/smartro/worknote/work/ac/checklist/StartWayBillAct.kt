@@ -38,7 +38,7 @@ class StartWayBillAct : AbstractAct() {
         }
         setContentView(R.layout.act_start_waybill)
         val nameNotFounT = getPutExtraParam_NAME()
-        supportActionBar?.title = "Выберите путевой лист"
+        supportActionBar?.title = "Путевой Лист"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_waybill)
         rv.layoutManager = LinearLayoutManager(this)

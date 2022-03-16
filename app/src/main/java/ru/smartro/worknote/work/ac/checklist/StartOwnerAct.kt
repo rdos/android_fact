@@ -36,7 +36,7 @@ class StartOwnerAct : AbstractAct() {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
         setContentView(R.layout.act_start_owner)
-        supportActionBar?.title = "Выберите организацию"
+        supportActionBar?.title = "Организация"
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_owner)
         rv.layoutManager = LinearLayoutManager(this)
         showingProgress()

@@ -44,7 +44,7 @@ class StartWorkOrderAct : AbstractAct() {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
         setContentView(R.layout.act_start_workorder)
-        supportActionBar?.title = "Выберите сменное задание"
+        supportActionBar?.title = "Сменное Задание"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_workorder)
         rv.layoutManager = LinearLayoutManager(this)
