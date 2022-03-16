@@ -44,7 +44,7 @@
             android:layout_height="0dp"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_map_behavior"
+            tools:listitem="@layout/act_map__bottom_behavior__rv_item"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/acb_act_map__bottom_behavior__gotocomplete"
             />

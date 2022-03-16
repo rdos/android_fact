@@ -99,7 +99,7 @@
             android:layout_height="39dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/bg_button_red"
+            android:background="@drawable/bg_button_red__default"
             android:text="@string/problem_on_point"
             android:textColor="@color/black"
             />
@@ -111,7 +111,7 @@
             app:layout_constraintStart_toEndOf="@id/acb_activity_platform_serve__problem"
             app:layout_constraintEnd_toStartOf="@id/apb_activity_platform_serve__kgo_remaining"
             app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/bg_button_green"
+            android:background="@drawable/bg_button_green__default"
             android:text="КГО"
             android:textColor="@color/black" />
 
@@ -121,7 +121,7 @@
             android:layout_height="39dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/bg_button_green"
+            android:background="@drawable/bg_button_green__default"
             android:text="Заказать Борт"
             android:textColor="@color/black" />
 

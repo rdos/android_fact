@@ -43,10 +43,10 @@ class ContainerAdapter(private val listener: ContainerPointClickListener, privat
         tvVolume.setTextColor(container.getVolumePercentColor(holder.itemView.context))
 
         if (container.isFailureNotEmpty()) {
-            holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.pink))
+            holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red_cool))
         }
         if (container.isBreakdownNotEmpty()) {
-            holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.pink))
+            holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red_cool))
         }
     }
 

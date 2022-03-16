@@ -9,9 +9,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.alert_accept_task.view.title_tv
 import kotlinx.android.synthetic.main.alert_clear_navigator.view.*
+import kotlinx.android.synthetic.main.alert_clear_navigator.view.dismiss_btn
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
+import kotlinx.android.synthetic.main.alert_warning_camera.view.title_tv
 import kotlinx.android.synthetic.main.dialog_early_complete.view.*
 import kotlinx.coroutines.*
 import ru.smartro.worknote.A_SLEEP_TIME_1_83__MS

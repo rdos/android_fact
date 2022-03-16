@@ -4,31 +4,52 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
-import kotlinx.android.synthetic.main.item_map_behavior.view.*
+import kotlinx.android.synthetic.main.act_map__bottom_behavior__rv_item.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.util.StatusEnum
 
 
-class PlatformAdapter(
+class BottomBehaviorAdapter(
     private val listener: PlatformClickListener,
     private val items: List<PlatformEntity>,
     private val mFilteredWayTaskIds: MutableList<Int>
-) : RecyclerView.Adapter<PlatformAdapter.PlatformViewHolder>() {
+) : RecyclerView.Adapter<BottomBehaviorAdapter.PlatformViewHolder>() {
     private var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlatformViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_map_behavior, parent, false)
+            .inflate(R.layout.act_map__bottom_behavior__rv_item, parent, false)
         return PlatformViewHolder(view)
     }
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    private fun setUseButtonStyleBackgroundGreen(view: View) {
+//        appCompatButton.alpha = 1f
+        view.setBackgroundDrawable(ContextCompat.getDrawable(view.context, R.drawable.bg_button_green__usebutton))
+    }
+
+    private fun setUseButtonStyleBackgroundRed(view: View) {
+//        appCompatButton.alpha = 1f
+        view.setBackgroundDrawable(ContextCompat.getDrawable(view.context, R.drawable.bg_button_red__usebutton))
+    }
+
+    // TODO: ну -Гляди_ держись)
+    private fun setDefButtonStyleBackground(view: View) {
+//        appCompatButton.alpha = 1f
+        view.setBackgroundDrawable(ContextCompat.getDrawable(view.context, R.drawable.bg_button_green__default))
+    }
+
+    private fun setUseButtonStyleBackgroundYellow(v: View) {
+        v.setBackgroundDrawable(ContextCompat.getDrawable(v.context, R.drawable.bg_button_orange__usebutton))
     }
 
     override fun onBindViewHolder(holder: PlatformViewHolder, position: Int) {
@@ -48,7 +69,7 @@ class PlatformAdapter(
             }
         }
 
-        holder.itemView.tv_item_map_behavior__address.text = item!!.address
+        holder.itemView.tv_item_map_behavior__address.text = item.address
         val tvName = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__name)
         tvName.isVisible = false
         if (item.name.isShowForUser()) {
@@ -82,7 +103,7 @@ class PlatformAdapter(
         tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
         when (item.status) {
             StatusEnum.NEW -> {
-                holder.itemView.map_behavior_status.isVisible = false
+                setDefButtonStyleBackground(holder.itemView)
                 holder.itemView.setOnClickListener {
                     if (checkedPosition != holder.adapterPosition) {
                         holder.itemView.map_behavior_expl.expand()
@@ -101,25 +122,29 @@ class PlatformAdapter(
                 }
             }
             StatusEnum.SUCCESS -> {
-                holder.itemView.map_behavior_status.isVisible = true
-                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_check)
-                holder.itemView.setOnClickListener {
-                    //nothing
-                }
+                setUseButtonStyleBackgroundGreen(holder.itemView)
+                //                clItemMapBehavior.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.pink))
+
+//                holder.itemView.alpha = 0.6f
+//                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_check)
+//                holder.itemView.setOnClickListener {
+//                    //nothing
+//                }
             }
             StatusEnum.ERROR -> {
-                holder.itemView.map_behavior_status.isVisible = true
-                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_red_check)
-                holder.itemView.setOnClickListener {
-                    //nothing
-                }
+                setUseButtonStyleBackgroundRed(holder.itemView)
+//                clItemMapBehavior.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.pink))
+
             }
             StatusEnum.UNFINISHED -> {
-                holder.itemView.map_behavior_status.isVisible = true
-                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_orange_check)
-                holder.itemView.setOnClickListener {
-                    //nothing
-                }
+                setUseButtonStyleBackgroundYellow(holder.itemView)
+//                holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.orangeCool))
+//                holder.itemView.alpha = 0.6f
+//                holder.itemView.map_behavior_status.isVisible = true
+//                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_orange_check)
+//                holder.itemView.setOnClickListener {
+//                    //nothing
+//                }
             }
         }
 

@@ -353,7 +353,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
 
     private fun setStyleBackgroundGreen(appCompatButton: AppCompatButton) {
 //        appCompatButton.alpha = 1f
-        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green))
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green__default))
     }
 
 

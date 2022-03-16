@@ -37,7 +37,7 @@
                 android:id="@+id/apb_fragment_container_serve_failure"
                 android:layout_width="110dp"
                 android:layout_height="39dp"
-                android:background="@drawable/bg_button_red"
+                android:background="@drawable/bg_button_red__default"
                 android:text="Невывоз"
                 android:textColor="@color/black" />
 
@@ -46,7 +46,7 @@
                 android:layout_width="110dp"
                 android:layout_height="39dp"
                 android:layout_marginStart="@dimen/margin_default"
-                android:background="@drawable/bg_button_red"
+                android:background="@drawable/bg_button_red__default"
                 android:text="Поломка"
                 android:textColor="@color/black" />
         </androidx.appcompat.widget.LinearLayoutCompat>

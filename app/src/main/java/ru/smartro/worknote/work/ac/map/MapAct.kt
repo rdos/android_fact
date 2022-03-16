@@ -77,7 +77,7 @@ import kotlin.math.round
 // TODO: I 12.11.1997 import имя getNetDATEsetBaseDate и там где рядом netDat и SrvDate а где смысл как в python
 class MapAct : AbstractAct(),
     /*UserLocationObjectListener,*/
-    PlatformAdapter.PlatformClickListener, LocationListener, MapObjectTapListener {
+    BottomBehaviorAdapter.PlatformClickListener, LocationListener, MapObjectTapListener {
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mAcbComplete: AppCompatButton
@@ -614,7 +614,7 @@ class MapAct : AbstractAct(),
         val platforms = getActualPlatforms()
         bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-        map_behavior_rv.adapter = PlatformAdapter(this, platforms, mWorkOrderFilteredIds)
+        map_behavior_rv.adapter = BottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
 
         act_map__bottom_behavior__header.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)

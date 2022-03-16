@@ -3,16 +3,18 @@
     <color name="colorPrimary">#17b109</color>
     <color name="colorPrimaryDark">#0F7E05</color>
     <color name="colorAccent">#0A5503</color>
+    <color name="green_cool">#d8ebd1</color>
+
     <color name="white">#fff</color>
     <color name="gray">#6c757d</color>
     <color name="black">#000</color>
     <color name="dark_red">#ff0000</color>
-    <color name="orange">#ff851e</color>
-    <color name="pink">#fff0f5</color>
-    <color name="myCool">#d8ebd1</color>
+    <color name="red_cool">#fff0f5</color>
+    <color name="dark_orange">#ff851e</color>
+    <color name="orange_cool">#ffedcc</color>
 
     <color name="icFocused">#DDFFFFFF</color>
-    <color name="blue">#ABC0D1</color>
+    <color name="blue_cool">#ABC0D1</color>
     <color name="dark_blue">#5295cc</color>
     <color name="icPressed">#AAFFFFFF</color>
     <color name="icActive">#FFFFFFFF</color>
