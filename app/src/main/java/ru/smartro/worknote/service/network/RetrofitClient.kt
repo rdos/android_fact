@@ -8,13 +8,15 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.smartro.worknote.App
 import ru.smartro.worknote.BuildConfig
-import ru.smartro.worknote.work.AppPreferences
+import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.service.network.interceptor.TokenAuthenticator
 import java.util.concurrent.TimeUnit
 
-const val TIME_OUT = 240000L
+
 class RetrofitClient(context: Context) {
+
 
     private val authInterceptor = Interceptor { chain ->
         val newUrl = chain.request().url
@@ -23,7 +25,7 @@ class RetrofitClient(context: Context) {
 
         val newRequest = chain.request()
             .newBuilder()
-            .addHeader("Authorization", "Bearer " + AppPreferences.token)
+            .addHeader("Authorization", "Bearer " + App.getAppParaMS().token)
             .url(newUrl)
             .build()
         chain.proceed(newRequest)

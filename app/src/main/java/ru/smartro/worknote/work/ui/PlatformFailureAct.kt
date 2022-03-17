@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.problem
+package ru.smartro.worknote.work.ui
 
 import android.app.Activity
 import android.app.Application
@@ -14,15 +14,14 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.act_platform_failure.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.ui.camera.CameraActivity
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 
-class PlatformFailureAct : AbstractAct() {
+class PlatformFailureAct : ActNOAbst() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView
     private lateinit var platform: PlatformEntity
     private val viewModel: NonPickupPlatformViewModel by viewModel()
@@ -74,7 +73,7 @@ class PlatformFailureAct : AbstractAct() {
     }
 
     private fun initExtremeProblemPhoto() {
-        val intent = Intent(this, CameraActivity::class.java)
+        val intent = Intent(this, CameraAct::class.java)
         intent.putExtra("platform_id", platform.platformId)
         intent.putExtra("photoFor", PhotoTypeEnum.forPlatformProblem)
         startActivityForResult(intent, 13)

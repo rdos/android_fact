@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.debug
+package ru.smartro.worknote.work.ui
 
 import android.app.ActivityManager
 import android.app.Application
@@ -14,13 +14,12 @@ import kotlinx.android.synthetic.main.activity_debug.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 
 
-class DebugActivity : AbstractAct() {
+class DebugAct : ActNOAbst() {
     private val vs: DebugViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,18 +61,18 @@ class DebugActivity : AbstractAct() {
         debug_ram_progress.max = 100
         debug_ram_progress.progress = usedMemInPercentage.toInt()
 
-        debug_organisation.text = "Организация: ${AppPreferences.organisationId}"
+        debug_organisation.text = "Организация: ${paramS().organisationId}"
 //        debug_user.text = "Пользователь: ${AppPreferences.BoTlogin}"
 //        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillNumber}"
-        debug_coordinate.text = "Координаты: ${AppPreferences.currentCoordinate}"
+        debug_coordinate.text = "Координаты: ${paramS().currentCoordinate}"
         debug_phone.text = "Устройство: ${MyUtil.getDeviceName()}, Android: ${android.os.Build.VERSION.SDK_INT}"
 
         var long = 0.0
         var lat = 0.0
 
         try {
-            long = AppPreferences.currentCoordinate!!.substringAfter("#").toDouble()
-            lat = AppPreferences.currentCoordinate!!.substringBefore("#").toDouble()
+            long = paramS().currentCoordinate!!.substringAfter("#").toDouble()
+            lat = paramS().currentCoordinate!!.substringBefore("#").toDouble()
         } catch (e: Exception) {
 
         }

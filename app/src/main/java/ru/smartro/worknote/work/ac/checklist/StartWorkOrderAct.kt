@@ -11,29 +11,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmModel
-import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import kotlinx.android.synthetic.main.item_container_adapter.view.choose_title
 import kotlinx.android.synthetic.main.start_act__rv_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.ac.map.MapAct
 
-class StartWorkOrderAct : AbstractAct() {
+class StartWorkOrderAct : ActNOAbst() {
 
     private lateinit var workOrders: List<WoRKoRDeR_know1>
     private val vm: WayTaskViewModel by viewModel()
@@ -68,7 +65,7 @@ class StartWorkOrderAct : AbstractAct() {
         }
         showingProgress(getPutExtraParam_NAME())
         // TODO:r_dos!!пох их код
-        vm.networkDat.getWorkOrder(AppPreferences.organisationId, AppPreferences.wayBillId)
+        vm.networkDat.getWorkOrder(paramS().organisationId, paramS().wayBillId)
             .observe(this, Observer { result ->
                 val data = result.data
                 when (result.status) {

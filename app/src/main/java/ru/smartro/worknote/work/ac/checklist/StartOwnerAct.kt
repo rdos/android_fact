@@ -1,6 +1,5 @@
 package ru.smartro.worknote.work.ac.checklist
 
-import android.Manifest
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
@@ -13,12 +12,11 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.start_act__rv_item_know1.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.response.organisation.Organisation
@@ -27,7 +25,7 @@ import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.work.ac.PERMISSIONS
 
 //todo:r_dos choose in checklist(как у QA)
-class StartOwnerAct : AbstractAct() {
+class StartOwnerAct : ActNOAbst() {
     private val vs: OrganisationViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +63,7 @@ class StartOwnerAct : AbstractAct() {
     }
 
     private fun gotoNextAct(owner: Organisation) {
-        AppPreferences.organisationId = owner.id
+        paramS().organisationId = owner.id
         val intent = Intent(this@StartOwnerAct, StartVehicleAct::class.java)
         intent.putExtra(PUT_EXTRA_PARAM_NAME, owner.name)
         startActivity(intent)

@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.showingProgress
@@ -29,12 +29,11 @@ import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.util.MyUtil
-import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.work.ac.PERMISSIONS
 
 
 //todo: DataHolder class
-class StartVehicleAct : AbstractAct() {
+class StartVehicleAct : ActNOAbst() {
     private var myAdapter: VehicleAdapter? = null
     private val vs: VehicleViewModel by viewModel()
 
@@ -51,7 +50,7 @@ class StartVehicleAct : AbstractAct() {
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
         rv.layoutManager = LinearLayoutManager(this)
         showingProgress(getPutExtraParam_NAME())
-        vs.getVehicle(AppPreferences.organisationId).observe(this, Observer { result ->
+        vs.getVehicle(paramS().organisationId).observe(this, Observer { result ->
             val data = result.data
             when (result.status) {
                 Status.SUCCESS -> {
@@ -90,7 +89,7 @@ class StartVehicleAct : AbstractAct() {
     }
 
     private fun gotoNextAct(vehicle: Vehicle) {
-        AppPreferences.vehicleId = vehicle.id
+        paramS().vehicleId = vehicle.id
         val intent = Intent(this@StartVehicleAct, StartWayBillAct::class.java)
         intent.putExtra(PUT_EXTRA_PARAM_NAME, vehicle.name)
         startActivity(intent)

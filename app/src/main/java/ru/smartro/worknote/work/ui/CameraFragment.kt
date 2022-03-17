@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.camera
+package ru.smartro.worknote.work.ui
 
 import android.Manifest
 import android.app.Activity
@@ -13,7 +13,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.view.animation.AnimationUtils
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -35,11 +34,10 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractFragment
+import ru.smartro.worknote.work.abs.AFragment
 import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.simulateClick
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.util.MyUtil
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
@@ -56,7 +54,7 @@ class CameraFragment(
     private val photoFor: Int,
     private val platformId: Int,
     private val containerId: Int
-) : AbstractFragment(),  ImageCounter {
+) : AFragment(), ImageCounter {
 
     private var mActbPhotoFlash: AppCompatToggleButton? = null
     private val KEY_EVENT_ACTION = "key_event_action"
@@ -202,7 +200,7 @@ class CameraFragment(
         broadcastManager = LocalBroadcastManager.getInstance(requireContext())
         val filter = IntentFilter().apply { addAction(KEY_EVENT_ACTION) }
         broadcastManager.registerReceiver(volumeDownReceiver, filter)
-        outputDirectory = CameraActivity.getOutputDirectory(requireContext())
+        outputDirectory = CameraAct.getOutputDirectory(requireContext())
         mPreviewView.post{
             displayId = mPreviewView.display.displayId
             setUpCamera()
@@ -297,8 +295,8 @@ class CameraFragment(
 
     private fun enableTorch() {
         if (mCamera?.cameraInfo?.hasFlashUnit() == true) {
-            mCamera?.cameraControl?.enableTorch(AppPreferences.isTorchEnabled)
-            mActbPhotoFlash?.isChecked = AppPreferences.isTorchEnabled
+            mCamera?.cameraControl?.enableTorch(paramS().isTorchEnabled)
+            mActbPhotoFlash?.isChecked = paramS().isTorchEnabled
         } else {
             Log.e(TAG, "bindCameraUseCases mCamera?.cameraInfo?.hasFlashUnit() == false")
         }
@@ -434,7 +432,7 @@ class CameraFragment(
                     captureButton.isClickable = false
                     captureButton.isEnabled = false
                     captureButton.isPressed = true
-                    if (AppPreferences.isCameraSoundEnabled) {
+                    if (paramS().isCameraSoundEnabled) {
                         val mp = MediaPlayer.create(requireContext(), R.raw.camera_sound)
 //                    final MediaPlayer mp = MediaPlayer.create(this, R.raw.soho);
                         mp.start()
@@ -490,12 +488,12 @@ class CameraFragment(
                                 if (photoFor == PhotoTypeEnum.forContainerBreakdown
                                     || photoFor == PhotoTypeEnum.forContainerFailure) {
                                     viewModel.updateContainerMedia(photoFor, platformId, containerId,
-                                        imageBase64.toString(), AppPreferences.getCurrentLocation(),
-                                        AppPreferences.currentCoordinateAccuracy, AppPreferences.getLastKnownLocationTime())
+                                        imageBase64.toString(), paramS().getCurrentLocation(),
+                                        paramS().currentCoordinateAccuracy, paramS().getLastKnownLocationTime())
                                 } else {
                                     viewModel.updatePlatformMedia(photoFor, platformId,
-                                        imageBase64.toString(), AppPreferences.getCurrentLocation(),
-                                        AppPreferences.currentCoordinateAccuracy, AppPreferences.getLastKnownLocationTime())
+                                        imageBase64.toString(), paramS().getCurrentLocation(),
+                                        paramS().currentCoordinateAccuracy, paramS().getLastKnownLocationTime())
                                 }
                                 captureButton.isClickable = true
                                 captureButton.isEnabled = true
@@ -510,14 +508,14 @@ class CameraFragment(
 
         mActbPhotoFlash = mRootView.findViewById<AppCompatToggleButton>(R.id.photo_flash)
         mActbPhotoFlash?.setOnClickListener {
-           AppPreferences.isTorchEnabled = mActbPhotoFlash!!.isChecked
+           paramS().isTorchEnabled = mActbPhotoFlash!!.isChecked
            enableTorch()
         }
 
         val actbSound = mRootView.findViewById<AppCompatToggleButton>(R.id.actb_fragment_camera__sound)
-        actbSound.isChecked = AppPreferences.isCameraSoundEnabled
+        actbSound.isChecked = paramS().isCameraSoundEnabled
         actbSound?.setOnClickListener {
-            AppPreferences.isCameraSoundEnabled = actbSound.isChecked
+            paramS().isCameraSoundEnabled = actbSound.isChecked
         }
 
         // Listener for button used to view the most recent photo

@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.camera
+package ru.smartro.worknote.work.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -21,8 +21,9 @@ import ru.smartro.worknote.util.PhotoTypeEnum
 
 
 class GalleryFragment(private val platformId: Int, private val photoFor: Int,
-                      private val containerId : Int, private val imageCountListener : ImageCounter)
-    : AbstractBottomDialog(), ImageClickListener, ImageDetailDeleteListener{
+                      private val containerId : Int, private val imageCountListener : ImageCounter
+)
+    : AbstractBottomDialog(), ImageClickListener, ImageDetailDeleteListener {
     private val viewModel: PlatformServeViewModel by viewModel()
     private val listener: ImageClickListener = this
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

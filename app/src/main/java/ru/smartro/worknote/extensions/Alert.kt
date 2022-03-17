@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.alert_clear_navigator.view.*
 import kotlinx.android.synthetic.main.alert_clear_navigator.view.dismiss_btn
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_warning_camera.view.title_tv
@@ -18,8 +17,8 @@ import kotlinx.coroutines.*
 import ru.smartro.worknote.A_SLEEP_TIME_1_83__MS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
-import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
+import ru.smartro.worknote.work.abs.AAct
 
 private lateinit var loadingDialog: AlertDialog
 private lateinit var mCustomDialog: AlertDialog
@@ -38,7 +37,9 @@ private fun showCustomDialog(builder: AlertDialog.Builder) {
     Log.d(TAG, "showCustomDialog.after")
 }
 
-fun AbstractAct.showDlgPickup(): View {
+
+//showDlgPickup!r_dos
+fun AAct.showDlgPickup(): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.act_platformserve__pickup__alert_dialog, null)

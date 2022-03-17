@@ -1,11 +1,10 @@
-package ru.smartro.worknote.ui.scanner
+package ru.smartro.worknote.work.ui
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 
-class ScannerActivity : AbstractAct() {
+class ScannerAct : ActNOAbst() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scanner)

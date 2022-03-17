@@ -2,12 +2,12 @@ package ru.smartro.worknote.di
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-import ru.smartro.worknote.ui.camera.CameraViewModel
-import ru.smartro.worknote.ui.debug.DebugActivity
-import ru.smartro.worknote.ui.journal.JournalViewModel
-import ru.smartro.worknote.ui.problem.ContainerBreakdownAct
-import ru.smartro.worknote.ui.problem.ContainerFailureAct
-import ru.smartro.worknote.ui.problem.PlatformFailureAct
+import ru.smartro.worknote.work.ui.CameraViewModel
+import ru.smartro.worknote.work.ui.DebugAct
+import ru.smartro.worknote.work.ui.JournalViewModel
+import ru.smartro.worknote.work.ui.ContainerBreakdownAct
+import ru.smartro.worknote.work.ui.ContainerFailureAct
+import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.work.ac.map.MapAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.work.ac.StartAct
@@ -47,6 +47,6 @@ val viewModelModule = module {
 
     viewModel { PlatformServeViewModel(androidApplication()) }
     viewModel { CameraViewModel(androidApplication()) }
-    viewModel { DebugActivity.DebugViewModel(androidApplication()) }
+    viewModel { DebugAct.DebugViewModel(androidApplication()) }
     viewModel { JournalViewModel(androidApplication()) }
 }

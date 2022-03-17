@@ -19,18 +19,19 @@ import kotlinx.android.synthetic.main.act_start.auth_password
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
 import ru.smartro.worknote.isShowForUser
-import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.util.MyUtil
+import ru.smartro.worknote.work.abs.ActNOAbst
+import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
+import ru.smartro.worknote.work.ac.map.MapAct
 
 public val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -40,14 +41,15 @@ public val PERMISSIONS = arrayOf(
     Manifest.permission.LOCATION_HARDWARE,
     Manifest.permission.ACCESS_NETWORK_STATE
 )
-class StartAct : AbstractAct() {
+class StartAct : ActNOAbst() {
     private val vm: AuthViewModel by viewModel()
 
     private fun gotoNextAct() {
-        val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
 //            val isHasTask = true
-        startActivity(Intent(this, MyUtil.getNextActClazz__todo(isHasTask)))
+        val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
+        startActivity(Intent(this, if (isHasTask) MapAct::class.java else StartOwnerAct::class.java))
         finish()
+        AppliCation().runLocationService()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,11 +60,12 @@ class StartAct : AbstractAct() {
             MyUtil.hideKeyboard(this)
         }
         // TODO: 01.11.2021 !! !
-        if (AppPreferences.token.isShowForUser()) {
+        if (paramS().token.isShowForUser()) {
             gotoNextAct()
         } else {
             initViews()
         }
+
     }
 
 
@@ -115,10 +118,10 @@ class StartAct : AbstractAct() {
                             hideProgress()
                             toast("Вы авторизованы")
 //                            AppPreferences.BoTlogin = auth_login.text.toString()
-                            if (AppPreferences.token.isNullOrEmpty()) {
+                            if (paramS().token.isNullOrEmpty()) {
                                 oopsTestqA()
                             }
-                            AppPreferences.token = data!!.data.token
+                            paramS().token = data!!.data.token
                             gotoNextAct()
                             finish()
                         }
@@ -136,6 +139,11 @@ class StartAct : AbstractAct() {
             auth_password_out.error = "Проверьте пароль"
             login_login_out.error = "Проверьте логин"
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        AppliCation().stopWorkERS()
     }
 
 

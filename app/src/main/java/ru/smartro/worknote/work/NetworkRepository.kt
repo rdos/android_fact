@@ -8,14 +8,13 @@ import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
-import ru.smartro.worknote.work.AppPreferences
+import ru.smartro.worknote.App
+import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.service.network.body.AuthBody
 import ru.smartro.worknote.service.network.body.ProgressBody
 import ru.smartro.worknote.service.network.body.WayListBody
-import ru.smartro.worknote.service.network.body.breakdown.BreakdownBody
 import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
-import ru.smartro.worknote.service.network.body.failure.FailureBody
 import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.service.network.exception.BadRequestException
 import ru.smartro.worknote.service.network.response.EmptyResponse
@@ -29,6 +28,10 @@ import ru.smartro.worknote.service.network.response.failure_reason.Data
 
 class NetworkRepository(private val context: Context) {
     private val TAG: String = "NetworkRepository--AAA"
+
+    protected fun paramS() : App.SharedPref {
+        return App.getAppParaMS()
+    }
 
     fun auth(model: AuthBody) = liveData(Dispatchers.IO, TIME_OUT) {
         Log.i(TAG, "auth")
@@ -74,7 +77,7 @@ class NetworkRepository(private val context: Context) {
     private fun insertBreakDown(data: List<ru.smartro.worknote.service.network.response.breakdown.Data>?) {
         val db = RealmRepository(Realm.getDefaultInstance())
         val entities = data?.filter {
-            it.attributes.organisationId == AppPreferences.organisationId
+            it.attributes.organisationId == paramS().organisationId
         }?.map {
             BreakDownEntity(it.attributes.id, it.attributes.name)
         }
@@ -108,7 +111,7 @@ class NetworkRepository(private val context: Context) {
         val db = RealmRepository(Realm.getDefaultInstance())
 
         val entities = data?.filter {
-            it.oid == AppPreferences.organisationId
+            it.oid == paramS().organisationId
         }!!.map {
             FailReasonEntity(it.id, it.name)
         }
@@ -142,7 +145,7 @@ class NetworkRepository(private val context: Context) {
         val db = RealmRepository(Realm.getDefaultInstance())
 
         val entities = data?.filter {
-            it.attributes.organisationId == AppPreferences.organisationId
+            it.attributes.organisationId == paramS().organisationId
         }!!.map { CancelWayReasonEntity(it.id, it.attributes.name) }
 
         db.insertCancelWayReason(entities)
@@ -279,7 +282,7 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    suspend fun synchronizeData(body: SynchronizeBody): Resource<SynchronizeResponse> {
+    suspend fun postSynchro(body: SynchronizeBody): Resource<SynchronizeResponse> {
         Log.i(TAG, "synchronizeData.before")
         return try {
             val response = RetrofitClient(context).apiService(true).postSynchro(body)
@@ -337,7 +340,29 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
+
 }
+
+data class Resource<out T>(val status: Status, val data: T?, val msg: String?) {
+    companion object {
+        fun <T> success(data: T?, msg: String = ""): Resource<T> {
+            return Resource(Status.SUCCESS, data, msg)
+        }
+        fun <T> error(msg: String = "", data: T? = null): Resource<T> {
+            return Resource(Status.ERROR, data, msg)
+        }
+        fun <T> network(msg: String = "", data: T? = null): Resource<T> {
+            return Resource(Status.NETWORK, data, msg)
+        }
+    }
+}
+
+enum class Status {
+    SUCCESS,
+    ERROR,
+    NETWORK,
+}
+
 
 private fun <T> badRequest(response: Response<T>) {
     if (response.code() in 400..599) {

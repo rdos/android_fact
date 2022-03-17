@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.journal
+package ru.smartro.worknote.work.ui
 
 import android.app.Application
 import ru.smartro.worknote.base.BaseViewModel

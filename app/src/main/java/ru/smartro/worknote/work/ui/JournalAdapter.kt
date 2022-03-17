@@ -1,4 +1,4 @@
-package ru.smartro.worknote.adapter
+package ru.smartro.worknote.work.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView

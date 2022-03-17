@@ -1,14 +1,16 @@
-package ru.smartro.worknote.base
+package ru.smartro.worknote.work.abs
 
 import android.util.Log
 import androidx.fragment.app.Fragment
 import io.sentry.Sentry
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
+import ru.smartro.worknote.App
 
-abstract class AbstractFragment : Fragment(){
+abstract class AFragment : Fragment(){
     protected var TAG : String = "--Aaa${this::class.simpleName}"
+
+    protected fun paramS() : App.SharedPref {
+        return App.getAppParaMS()
+    }
 
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")

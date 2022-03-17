@@ -3,6 +3,7 @@ package ru.smartro.worknote.work
 import android.util.Log
 import com.yandex.mapkit.geometry.Point
 import io.realm.*
+import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
@@ -394,7 +395,7 @@ class RealmRepository(private val p_realm: Realm) {
     // TODO:
     fun findLastPlatforms(): List<PlatformEntity> {
         refreshRealm_know0()
-        val lastSynchroTime = AppPreferences.lastSynchroTime
+        val lastSynchroTime = App.getAppParaMS().lastSynchroTime
         return p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).greaterThan("updateAt", lastSynchroTime)
                 .findAll()
@@ -404,7 +405,7 @@ class RealmRepository(private val p_realm: Realm) {
     fun findPlatforms30min(): List<PlatformEntity> {
         refreshRealm_know0()
         val minutes = 30 * 60 * 1000
-        val lastSynchroTime = AppPreferences.lastSynchroTime
+        val lastSynchroTime = App.getAppParaMS().lastSynchroTime
         return p_realm.where(PlatformEntity::class.java)
             .greaterThan("updateAt", lastSynchroTime)
             .lessThanOrEqualTo("updateAt", lastSynchroTime + minutes)

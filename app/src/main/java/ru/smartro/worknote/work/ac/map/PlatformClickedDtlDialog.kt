@@ -25,7 +25,7 @@ import ru.smartro.worknote.extensions.*
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
-import ru.smartro.worknote.ui.problem.PlatformFailureAct
+import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.util.StatusEnum
 import kotlin.math.min
 

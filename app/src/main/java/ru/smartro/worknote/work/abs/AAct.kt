@@ -1,16 +1,17 @@
-package ru.smartro.worknote.base
+package ru.smartro.worknote.work.abs
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.sentry.Sentry
+import ru.smartro.worknote.App
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.util.MyUtil.toStr
 import ru.smartro.worknote.work.ac.checklist.StartVehicleAct
 import java.lang.Exception
 
@@ -21,10 +22,56 @@ import java.lang.Exception
 //        }
 //todo:r_dos::_know1=знаешь точно, что ОСТАВИТЬ И НУЖНО ВСЕМУ коГду(а))
 //       ::_know0=а это не ОСТАВЛЯТЬ
-abstract class AbstractAct : AppCompatActivity() {
-
+abstract class AAct : AppCompatActivity() {
     private var mIsOopsMode: Boolean? = false
-    protected var TAG : String = "${this::class.simpleName}"
+
+
+    protected fun AppliCation() : App {
+        return App.getAppliCation()
+    }
+
+    protected fun paramS() : App.SharedPref {
+        return App.getAppParaMS()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+    }
+
+    protected abstract fun onNewGPS()
+
+    public fun newsFROMlocationSERVICE() {
+        onNewGPS()
+    }
+    private var mMethodName: String? = null
+
+    public var TAG : String = "${this::class.simpleName}"
+    private val TAGLOG = "AActLOG"
+    protected fun LOGbefore(method: String, valueName: String = "") {
+        AppliCation().before(method, valueName)
+    }
+
+    private fun logAfterResult(result: String) {
+        Log.d(TAG, "${mMethodName}.after result=${result} ")
+        mMethodName = null
+
+    }
+
+    protected fun LOGafter(res: Boolean? = null) {
+        logAfterResult(res.toStr())
+    }
+
+    protected fun LOGWork(valueNameAndValue: String) {
+        mMethodName?.let {
+            Log.i(TAG, "${TAG}:${mMethodName}.${valueNameAndValue}")
+            return@LOGWork
+        }
+        Log.i(TAG, "${TAG}:${valueNameAndValue}")
+    }
+
+    protected fun LOGWork(valueName: String, value: Int) {
+        LOGWork("${valueName}=$value\"")
+    }
 
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
@@ -41,6 +88,7 @@ abstract class AbstractAct : AppCompatActivity() {
         return mIsOopsMode!!
     }
 
+    public fun isDevelMode() = App.getAppParaMS().isModeDEVEL
 
     fun oopsTestqA() {
 
@@ -75,17 +123,6 @@ abstract class AbstractAct : AppCompatActivity() {
  * AppPreferences: ей это же она сообщение(эй это я сообщение)ей это же она сообщение
         savedInstanceState: ей ей, Пацаны, вы е попутали? это она сообщение.)):()
     } */}
-    protected val isDevelMode: Boolean
-        get() {
-            var result = false
-            if (BuildConfig.BUILD_TYPE == "debug") {
-                result = BuildConfig.VERSION_NAME == "0.0.0.0-STAGE"
-            }
-            if (BuildConfig.BUILD_TYPE == "debugRC") {
-                result = BuildConfig.VERSION_NAME == "0.0.0.0-STAGE"
-            }
-            return result
-        }
 
     // TODO: )
     protected fun setAntiErrorClick(itemView: View) {
@@ -102,6 +139,9 @@ abstract class AbstractAct : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
+
+        AppliCation().runSyncWorkER()
+        AppliCation().runLocationService()
     }
 
 
@@ -132,6 +172,7 @@ abstract class AbstractAct : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        AppliCation().LASTact = this
         Log.d(TAG, "onResume")
     }
 
@@ -153,6 +194,7 @@ abstract class AbstractAct : AppCompatActivity() {
 
 
 }
+
 
 //TODO: find next шагай)_/gotoAdd = Add -> create->ПОТОМ->Save->ПОТОМ Show
 /** :r_dos::_1n0w0=переделать, удалить=не то 100% внимание /

@@ -3,8 +3,6 @@ package ru.smartro.worknote.work.platform_serve
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +16,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.base.AbstractBottomDialog
-import ru.smartro.worknote.ui.problem.ContainerBreakdownAct
-import ru.smartro.worknote.ui.problem.ContainerFailureAct
+import ru.smartro.worknote.work.ui.ContainerBreakdownAct
+import ru.smartro.worknote.work.ui.ContainerFailureAct
 
 private const val ARGUMENT_NAME__PLATFORM_ID = "ARGUMENT_NAME__PLATFORM_ID"
 private const val ARGUMENT_NAME__CONTAINER_ID = "ARGUMENT_NAME__CONTAINER_ID"

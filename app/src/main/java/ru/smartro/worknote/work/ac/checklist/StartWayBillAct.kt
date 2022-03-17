@@ -12,12 +12,11 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 import ru.smartro.worknote.base.BaseViewModel
 import ru.smartro.worknote.extensions.hideProgress
 import ru.smartro.worknote.extensions.showingProgress
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.service.network.Resource
 import ru.smartro.worknote.service.network.Status
 import ru.smartro.worknote.service.network.body.WayListBody
@@ -28,7 +27,7 @@ import ru.smartro.worknote.work.ac.PERMISSIONS
 import java.text.SimpleDateFormat
 import java.util.*
 
-class StartWayBillAct : AbstractAct() {
+class StartWayBillAct : ActNOAbst() {
     private val viewModel: WayListViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +44,8 @@ class StartWayBillAct : AbstractAct() {
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val body = WayListBody(
             date = currentDate,
-            organisationId = AppPreferences.organisationId,
-            vehicleId = AppPreferences.vehicleId
+            organisationId = paramS().organisationId,
+            vehicleId = paramS().vehicleId
         )
 
         showingProgress(nameNotFounT)
@@ -95,7 +94,7 @@ class StartWayBillAct : AbstractAct() {
     }
 
     private fun gotoNextAct(wayBillId: Int, wayBillNumber: String) {
-        AppPreferences.wayBillId = wayBillId
+        paramS().wayBillId = wayBillId
         val intent = Intent(this, StartWorkOrderAct::class.java)
         intent.putExtra(PUT_EXTRA_PARAM_NAME, wayBillNumber)
         startActivity(intent)

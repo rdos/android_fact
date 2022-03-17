@@ -1,16 +1,14 @@
-package ru.smartro.worknote.ui.camera
+package ru.smartro.worknote.work.ui
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
-import android.view.WindowInsetsController
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 import ru.smartro.worknote.extensions.FLAGS_FULLSCREEN
 import ru.smartro.worknote.util.PhotoTypeEnum
 import java.io.File
@@ -19,7 +17,7 @@ const val KEY_EVENT_ACTION = "key_event_action"
 const val KEY_EVENT_EXTRA = "key_event_extra"
 private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
-class CameraActivity : AbstractAct() {
+class CameraAct : ActNOAbst() {
     private var photoFor = 0
     private lateinit var hostLayout: FrameLayout
     private var platformId = 0

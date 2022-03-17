@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.camera
+package ru.smartro.worknote.work.ui
 
 import android.app.Application
 import com.yandex.mapkit.geometry.Point

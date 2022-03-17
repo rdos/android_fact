@@ -21,21 +21,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 import ru.smartro.worknote.extensions.hideDialog
 import ru.smartro.worknote.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.extensions.showDlgPickup
 import ru.smartro.worknote.extensions.toast
-import ru.smartro.worknote.ui.camera.CameraActivity
-import ru.smartro.worknote.ui.problem.PlatformFailureAct
+import ru.smartro.worknote.work.ui.CameraAct
+import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.util.PhotoTypeEnum
 import ru.smartro.worknote.util.StatusEnum
-import ru.smartro.worknote.work.AppPreferences
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 
-class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickListener
+class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListener
 //    , SeekBar.OnSeekBarChangeListener
 {
     private var mVolumePickup: Double? = null
@@ -139,7 +138,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
                         return@setOnClickListener
                     }
 
-                    val intent = Intent(this@PlatformServeAct, CameraActivity::class.java)
+                    val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
                     intent.putExtra("platform_id", mPlatformEntity.platformId)
                     intent.putExtra("photoFor", PhotoTypeEnum.forServedKGO)
                     startActivityForResult(intent, 101)
@@ -166,7 +165,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
                         if (mRemainingKGOVolumeText.isNullOrBlank()) {
                             return@setOnClickListener
                         }
-                        val intent = Intent(this@PlatformServeAct, CameraActivity::class.java)
+                        val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
                         intent.putExtra("platform_id", mPlatformEntity.platformId)
                         intent.putExtra("photoFor", PhotoTypeEnum.forRemainingKGO)
                         startActivityForResult(intent, 102)
@@ -183,7 +182,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
         btnCompleteTask.setOnClickListener {
             vm.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
             vm.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
-            val intent = Intent(this@PlatformServeAct, CameraActivity::class.java)
+            val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
             startActivityForResult(intent, 13)
@@ -281,7 +280,7 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
     }
 
     private fun gotoMakePhotoForPickup() {
-        val intent = Intent(this@PlatformServeAct, CameraActivity::class.java)
+        val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
         intent.putExtra("platform_id", mPlatformEntity.platformId!!)
         intent.putExtra("photoFor", PhotoTypeEnum.forPlatformPickupVolume)
         startActivityForResult(intent, 14)
@@ -370,8 +369,8 @@ class PlatformServeAct : AbstractAct(), ContainerAdapter.ContainerPointClickList
 //    }
 
     private fun initBeforeMedia() {
-        AppPreferences.serviceStartedAt = System.currentTimeMillis() / 1000L
-        val intent = Intent(this@PlatformServeAct, CameraActivity::class.java)
+        paramS().serviceStartedAt = System.currentTimeMillis() / 1000L
+        val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
         intent.putExtra("platform_id", mPlatformEntity.platformId)
         intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
         startActivity(intent)

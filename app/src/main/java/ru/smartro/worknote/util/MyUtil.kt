@@ -21,11 +21,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
-import ru.smartro.worknote.work.AppPreferences
+import ru.smartro.worknote.App
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
-import ru.smartro.worknote.work.ac.map.MapAct
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat
@@ -101,7 +99,7 @@ object MyUtil {
         val intent = Intent(context, StartAct::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
-        AppPreferences.dropDatabase()
+        App.getAppParaMS().dropDatabase()
     }
 
     fun imageToBase64(imageUri: Uri, rotationDegrees: Float, context: Context): String {
@@ -173,11 +171,5 @@ object MyUtil {
 
     fun Any?.toStr() = this?.toString() ?: ""
     //        MyUtil(эх молодость)
-    fun getNextActClazz__todo(hasTask: Boolean): Class<out AbstractAct> {
-        return if (hasTask) {
-            MapAct::class.java
-        } else {
-            StartOwnerAct::class.java
-        }
-    }
+
 }

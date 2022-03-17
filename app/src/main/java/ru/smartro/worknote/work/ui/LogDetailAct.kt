@@ -1,12 +1,12 @@
-package ru.smartro.worknote.ui.journal
+package ru.smartro.worknote.work.ui
 
 import android.os.Bundle
 import android.view.MenuItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractAct
+import ru.smartro.worknote.work.abs.ActNOAbst
 
-class LogDetailActivity : AbstractAct() {
+class LogDetailAct : ActNOAbst() {
     private val viewModel: JournalViewModel by viewModel()
     private var platformId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
