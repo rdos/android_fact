@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ac
+package ru.smartro.worknote.work.ac.map
 
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,9 +8,7 @@ import ru.smartro.worknote.App
 abstract class AFragment : Fragment(){
     protected var TAG : String = "--Aaa${this::class.simpleName}"
 
-    protected fun paramS() : App.SharedPref {
-        return App.getAppParaMS()
-    }
+    protected fun paramS() = App.getAppParaMS()
 
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")

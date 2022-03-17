@@ -1,30 +1,35 @@
-package ru.smartro.worknote.work.ui
+package ru.smartro.worknote.workold.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.work.PlatformEntity
 
-class LogDetailAct : ActNOAbst() {
+class JournalAct : ActNOAbst(), JournalClickListener {
     private val viewModel: JournalViewModel by viewModel()
-    private var platformId = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_journal)
-        supportActionBar!!.title = "Контейнеры"
+        supportActionBar!!.title = "Журнал"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        initViews()
+
+        val rvJournalAct = findViewById<RecyclerView>(R.id.rv_act_journal)
+
+        viewModel.findPlatformsIsServed().let {
+            rvJournalAct.adapter = JournalAdapter(it as ArrayList<PlatformEntity>)
+        }
     }
 
-    private fun initViews() {
-        intent.let {
-            platformId = it.getIntExtra("platform_id", 0)
-        }
-//        viewModel.findAllContainerInPlatform(platformId).let {
-//            log_rv.adapter = LogDetailAdapter(it as ArrayList<ContainerEntity>)
-//        }
+    override fun logDetailClicked(item: PlatformEntity) {
+        startActivity(Intent(this, LogDetailAct::class.java)
+            .putExtra("platform_id", item.platformId))
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -34,4 +39,5 @@ class LogDetailAct : ActNOAbst() {
         }
         return super.onOptionsItemSelected(item)
     }
+
 }

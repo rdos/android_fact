@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ui
+package ru.smartro.worknote.workold.ui
 
 import android.Manifest
 import android.app.Activity
@@ -34,7 +34,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.ac.AFragment
+import ru.smartro.worknote.work.ac.map.AFragment
 import ru.smartro.worknote.workold.extensions.hideProgress
 import ru.smartro.worknote.workold.extensions.simulateClick
 import ru.smartro.worknote.workold.extensions.toast

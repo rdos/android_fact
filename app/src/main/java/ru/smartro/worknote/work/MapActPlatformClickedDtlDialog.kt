@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ac.map
+package ru.smartro.worknote.work
 
 import android.content.Intent
 import android.graphics.Color
@@ -23,13 +23,12 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.workold.base.AbstractDialog
 import ru.smartro.worknote.workold.extensions.*
 import ru.smartro.worknote.isShowForUser
-import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
+import ru.smartro.worknote.workold.ui.PlatformFailureAct
 import ru.smartro.worknote.workold.util.StatusEnum
 import kotlin.math.min
 
-class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : AbstractDialog(), View.OnClickListener {
+class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : AbstractDialog(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
     private var mFirstTime = true
     private var mIsServeAgain = false

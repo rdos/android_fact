@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ac.map
+package ru.smartro.worknote.work
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,15 +11,14 @@ import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.act_map__bottom_behavior__rv_item.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.isShowForUser
-import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.workold.util.StatusEnum
 
 
-class BottomBehaviorAdapter(
+class MapActBottomBehaviorAdapter(
     private val listener: PlatformClickListener,
     private val items: List<PlatformEntity>,
     private val mFilteredWayTaskIds: MutableList<Int>
-) : RecyclerView.Adapter<BottomBehaviorAdapter.PlatformViewHolder>() {
+) : RecyclerView.Adapter<MapActBottomBehaviorAdapter.PlatformViewHolder>() {
     private var checkedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlatformViewHolder {

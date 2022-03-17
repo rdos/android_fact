@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ui
+package ru.smartro.worknote.workold.ui
 
 import android.app.Activity
 import android.app.Application
@@ -10,71 +10,56 @@ import android.widget.Button
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.act_container_failure.*
+import kotlinx.android.synthetic.main.act_platform_failure.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.workold.base.BaseViewModel
 import ru.smartro.worknote.workold.extensions.toast
-import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.workold.util.MyUtil
 import ru.smartro.worknote.workold.util.PhotoTypeEnum
-import ru.smartro.worknote.workold.util.NonPickupEnum
 
-class ContainerFailureAct : ActNOAbst() {
+class PlatformFailureAct : ActNOAbst() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView
-    private lateinit var mAcactvBreakDownIn: AppCompatAutoCompleteTextView
     private lateinit var platform: PlatformEntity
-    private lateinit var mContainer: ContainerEntity
-    private val vs: ContainerFailureViewModel by viewModel()
+    private val viewModel: NonPickupPlatformViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_container_failure)
+        setContentView(R.layout.act_platform_failure)
         val baseview = findViewById<ConstraintLayout>(R.id.baseview)
         baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         intent.let {
-            platform = vs.findPlatformEntity(it.getIntExtra("platform_id", 0))
-            supportActionBar!!.title = "Невывоз контейнера"
-            mContainer = vs.findContainerEntity(it.getIntExtra("container_id", 0))
+            platform = viewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            supportActionBar!!.title = "Невывоз на площадке"
         }
 
-        mAcactvFailureIn = findViewById(R.id.acactv_act_container_failure__in)
-        val failReason = vs.findFailReason()
+        mAcactvFailureIn = findViewById(R.id.acactv_act_non_pickup__failure_in)
+        val failReason = viewModel.findFailReason()
         mAcactvFailureIn.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, failReason))
-        val tilFailureOut = findViewById<TextInputLayout>(R.id.til_act_container_failure__out)
+        val tilFailureOut = findViewById<TextInputLayout>(R.id.til_act_non_pickup__failure_out)
         tilFailureOut.setOnClickListener {
             mAcactvFailureIn.showDropDown()
         }
 
         initExtremeProblemPhoto()
 
-        val tietComment = findViewById<TextInputEditText>(R.id.tiet_act_container_failure__comment)
-        tietComment.setText(mContainer.comment)
-
         val btnAccept = findViewById<Button>(R.id.btn_non_pickup__accept)
         btnAccept.setOnClickListener {
-
-            if (mAcactvFailureIn.text.isNullOrEmpty()) {
-                toast("Выберите причину невывоза")
-                return@setOnClickListener
-            }
             if (!mAcactvFailureIn.text.isNullOrEmpty()) {
-                val problemComment = tietComment.text.toString()
+                val problemComment = problem_comment.text.toString()
                 val failure = mAcactvFailureIn.text.toString()
-                vs.baseDat.updateContainerFailure(
-                    platformId = platform.platformId!!, containerId = mContainer.containerId!!,
-                    problemComment = problemComment, nonPickupType = NonPickupEnum.FAILURE,
-                    problem = failure)
-
+                viewModel.updatePlatformProblem(
+                    platformId = platform.platformId!!,
+                    problemComment = problemComment, problem = failure)
+                setResult(99)
+                finish()
+            } else {
+                toast("Выберите причину невывоза")
             }
-            setResult(99)
-            finish()
         }
 
     }
@@ -82,16 +67,15 @@ class ContainerFailureAct : ActNOAbst() {
 
 
     private fun initImageView() {
-        Glide.with(this).load(MyUtil.base64ToImage(mContainer.failureMedia.last()?.image))
+        val platform = viewModel.findPlatformEntity(platform.platformId!!)
+        Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last()?.image))
             .into(problem_img)
-
     }
 
     private fun initExtremeProblemPhoto() {
         val intent = Intent(this, CameraAct::class.java)
         intent.putExtra("platform_id", platform.platformId)
-        intent.putExtra("photoFor", PhotoTypeEnum.forContainerFailure)
-        intent.putExtra("container_id", mContainer.containerId)
+        intent.putExtra("photoFor", PhotoTypeEnum.forPlatformProblem)
         startActivityForResult(intent, 13)
         acb_activity_platform_serve__problem.setOnClickListener {
             startActivityForResult(intent, 13)
@@ -114,20 +98,15 @@ class ContainerFailureAct : ActNOAbst() {
         return super.onOptionsItemSelected(item)
     }
 
-    class ContainerFailureViewModel(application: Application) : BaseViewModel(application) {
-
+    class NonPickupPlatformViewModel(application: Application) : BaseViewModel(application) {
 
         fun findPlatformEntity(platformId: Int): PlatformEntity {
             return baseDat.findPlatformEntity(platformId)
         }
 
-        fun findContainerEntity(containerId: Int): ContainerEntity {
-            return baseDat.findContainerEntity(containerId)
-        }
-
-
-        fun findBreakDown(): List<String> {
-            return baseDat.findAllBreakDown()
+        fun updatePlatformProblem(platformId: Int, problemComment: String,
+                                  problem: String) {
+            baseDat.updateNonPickupPlatform(platformId, problemComment, problem)
         }
 
         fun findFailReason(): List<String> {

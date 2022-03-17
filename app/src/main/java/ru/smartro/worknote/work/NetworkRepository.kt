@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
 import ru.smartro.worknote.App
 import ru.smartro.worknote.TIME_OUT
+import ru.smartro.worknote.log.AppParaMS
 import ru.smartro.worknote.workold.service.network.body.AuthBody
 import ru.smartro.worknote.workold.service.network.body.ProgressBody
 import ru.smartro.worknote.workold.service.network.body.WayListBody
@@ -29,9 +30,7 @@ import ru.smartro.worknote.workold.service.network.response.failure_reason.Data
 class NetworkRepository(private val context: Context) {
     private val TAG: String = "NetworkRepository--AAA"
 
-    protected fun paramS() : App.SharedPref {
-        return App.getAppParaMS()
-    }
+    protected fun paramS() =  App.getAppParaMS()
 
     fun auth(model: AuthBody) = liveData(Dispatchers.IO, TIME_OUT) {
         Log.i(TAG, "auth")

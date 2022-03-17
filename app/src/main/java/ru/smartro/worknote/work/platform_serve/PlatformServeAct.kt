@@ -26,8 +26,8 @@ import ru.smartro.worknote.workold.extensions.hideDialog
 import ru.smartro.worknote.workold.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.workold.extensions.showDlgPickup
 import ru.smartro.worknote.workold.extensions.toast
-import ru.smartro.worknote.work.ui.CameraAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
+import ru.smartro.worknote.workold.ui.CameraAct
+import ru.smartro.worknote.workold.ui.PlatformFailureAct
 import ru.smartro.worknote.workold.util.PhotoTypeEnum
 import ru.smartro.worknote.workold.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity

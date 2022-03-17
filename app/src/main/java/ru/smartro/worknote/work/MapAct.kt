@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ac.map
+package ru.smartro.worknote.work
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -49,12 +49,10 @@ import ru.smartro.worknote.workold.service.network.body.ProgressBody
 import ru.smartro.worknote.workold.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.workold.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.workold.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.work.ui.DebugAct
-import ru.smartro.worknote.work.ui.JournalAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
+import ru.smartro.worknote.workold.ui.DebugAct
+import ru.smartro.worknote.workold.ui.JournalAct
+import ru.smartro.worknote.workold.ui.PlatformFailureAct
 import ru.smartro.worknote.workold.util.MyUtil
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.WorkOrderEntity
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
@@ -71,7 +69,7 @@ import kotlin.math.round
 // TODO: I 12.11.1997 import имя getNetDATEsetBaseDate и там где рядом netDat и SrvDate а где смысл как в python
 class MapAct : AAct(),
     /*UserLocationObjectListener,*/
-    BottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener {
+    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener {
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mAcbComplete: AppCompatButton
@@ -596,7 +594,7 @@ class MapAct : AAct(),
         val platforms = getActualPlatforms()
         bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-        map_behavior_rv.adapter = BottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
+        map_behavior_rv.adapter = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
 
         act_map__bottom_behavior__header.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
@@ -759,7 +757,7 @@ class MapAct : AAct(),
         val placeMark = mapObject as PlacemarkMapObject
         val coordinate = placeMark.geometry
         val clickedPlatform = vs.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
-        val platformClickedDtlDialog = PlatformClickedDtlDialog(clickedPlatform, coordinate)
+        val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coordinate)
         platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
         return true
     }

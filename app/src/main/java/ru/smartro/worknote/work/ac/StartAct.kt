@@ -31,7 +31,7 @@ import ru.smartro.worknote.workold.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.workold.util.MyUtil
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
-import ru.smartro.worknote.work.ac.map.MapAct
+import ru.smartro.worknote.work.MapAct
 
 public val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,

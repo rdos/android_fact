@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ui
+package ru.smartro.worknote.workold.ui
 
 import android.os.Bundle
 import android.util.Log
