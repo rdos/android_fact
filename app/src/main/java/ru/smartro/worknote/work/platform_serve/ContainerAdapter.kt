@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ContainerEntity
-import ru.smartro.worknote.util.MyUtil.toStr
+import ru.smartro.worknote.workold.util.MyUtil.toStr
 
 // TODO: 22.10.2021 !!!когда?
 class ContainerAdapter(private val listener: ContainerPointClickListener, private val containers: ArrayList<ContainerEntity>) :

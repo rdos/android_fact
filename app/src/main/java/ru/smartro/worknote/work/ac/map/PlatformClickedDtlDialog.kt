@@ -20,13 +20,13 @@ import kotlinx.android.synthetic.main.dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_camera.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractDialog
-import ru.smartro.worknote.extensions.*
+import ru.smartro.worknote.workold.base.AbstractDialog
+import ru.smartro.worknote.workold.extensions.*
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
-import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.workold.util.StatusEnum
 import kotlin.math.min
 
 class PlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : AbstractDialog(), View.OnClickListener {

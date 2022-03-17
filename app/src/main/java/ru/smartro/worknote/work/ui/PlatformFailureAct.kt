@@ -14,12 +14,12 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.act_platform_failure.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.abs.ActNOAbst
-import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.workold.base.BaseViewModel
+import ru.smartro.worknote.workold.extensions.toast
 import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.util.MyUtil
-import ru.smartro.worknote.util.PhotoTypeEnum
+import ru.smartro.worknote.workold.util.MyUtil
+import ru.smartro.worknote.workold.util.PhotoTypeEnum
 
 class PlatformFailureAct : ActNOAbst() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView

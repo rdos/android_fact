@@ -1,7 +1,7 @@
 package ru.smartro.worknote.work.ui
 
 import android.app.Application
-import ru.smartro.worknote.base.BaseViewModel
+import ru.smartro.worknote.workold.base.BaseViewModel
 import ru.smartro.worknote.work.PlatformEntity
 
 class JournalViewModel(application: Application) : BaseViewModel(application) {

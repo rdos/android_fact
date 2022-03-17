@@ -19,11 +19,13 @@ import com.google.gson.Gson
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.delay
-import ru.smartro.worknote.service.network.NetworkRepository
-import ru.smartro.worknote.service.network.Status
-import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.util.MyUtil
-import ru.smartro.worknote.util.MyUtil.toStr
+import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.log.AppParaMS
+import ru.smartro.worknote.workold.service.network.NetworkRepository
+import ru.smartro.worknote.workold.service.network.Status
+import ru.smartro.worknote.workold.service.network.body.synchro.SynchronizeBody
+import ru.smartro.worknote.workold.util.MyUtil
+import ru.smartro.worknote.workold.util.MyUtil.toStr
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.ac.StartAct
@@ -93,7 +95,7 @@ class SYNCworkER(
         return App.getAppliCation()
     }
 
-    private fun paramS() : App.SharedPref {
+    private fun paramS() : AppParaMS {
         return App.getAppParaMS()
     }
 

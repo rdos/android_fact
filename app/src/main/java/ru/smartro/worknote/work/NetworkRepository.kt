@@ -1,4 +1,4 @@
-package ru.smartro.worknote.service.network
+package ru.smartro.worknote.workold.service.network
 
 import android.content.Context
 import android.util.Log
@@ -10,20 +10,20 @@ import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
 import ru.smartro.worknote.App
 import ru.smartro.worknote.TIME_OUT
-import ru.smartro.worknote.service.network.body.AuthBody
-import ru.smartro.worknote.service.network.body.ProgressBody
-import ru.smartro.worknote.service.network.body.WayListBody
-import ru.smartro.worknote.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.service.network.body.early_complete.EarlyCompleteBody
-import ru.smartro.worknote.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.service.network.exception.BadRequestException
-import ru.smartro.worknote.service.network.response.EmptyResponse
-import ru.smartro.worknote.service.network.response.synchronize.SynchronizeResponse
+import ru.smartro.worknote.workold.service.network.body.AuthBody
+import ru.smartro.worknote.workold.service.network.body.ProgressBody
+import ru.smartro.worknote.workold.service.network.body.WayListBody
+import ru.smartro.worknote.workold.service.network.body.complete.CompleteWayBody
+import ru.smartro.worknote.workold.service.network.body.early_complete.EarlyCompleteBody
+import ru.smartro.worknote.workold.service.network.body.synchro.SynchronizeBody
+import ru.smartro.worknote.workold.service.network.exception.BadRequestException
+import ru.smartro.worknote.workold.service.network.response.EmptyResponse
+import ru.smartro.worknote.workold.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
-import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
-import ru.smartro.worknote.service.network.response.failure_reason.Data
+import ru.smartro.worknote.workold.service.database.entity.problem.BreakDownEntity
+import ru.smartro.worknote.workold.service.database.entity.problem.CancelWayReasonEntity
+import ru.smartro.worknote.workold.service.database.entity.problem.FailReasonEntity
+import ru.smartro.worknote.workold.service.network.response.failure_reason.Data
 
 
 class NetworkRepository(private val context: Context) {
@@ -74,7 +74,7 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    private fun insertBreakDown(data: List<ru.smartro.worknote.service.network.response.breakdown.Data>?) {
+    private fun insertBreakDown(data: List<ru.smartro.worknote.workold.service.network.response.breakdown.Data>?) {
         val db = RealmRepository(Realm.getDefaultInstance())
         val entities = data?.filter {
             it.attributes.organisationId == paramS().organisationId
@@ -141,7 +141,7 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    private fun insertCancelWayReason(data: List<ru.smartro.worknote.service.network.response.cancelation_reason.Data>?) {
+    private fun insertCancelWayReason(data: List<ru.smartro.worknote.workold.service.network.response.cancelation_reason.Data>?) {
         val db = RealmRepository(Realm.getDefaultInstance())
 
         val entities = data?.filter {

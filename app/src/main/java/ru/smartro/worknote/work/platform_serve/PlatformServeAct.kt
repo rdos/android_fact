@@ -21,15 +21,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.abs.ActNOAbst
-import ru.smartro.worknote.extensions.hideDialog
-import ru.smartro.worknote.extensions.showDialogFillKgoVolume
-import ru.smartro.worknote.extensions.showDlgPickup
-import ru.smartro.worknote.extensions.toast
+import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.workold.extensions.hideDialog
+import ru.smartro.worknote.workold.extensions.showDialogFillKgoVolume
+import ru.smartro.worknote.workold.extensions.showDlgPickup
+import ru.smartro.worknote.workold.extensions.toast
 import ru.smartro.worknote.work.ui.CameraAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
-import ru.smartro.worknote.util.PhotoTypeEnum
-import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.workold.util.PhotoTypeEnum
+import ru.smartro.worknote.workold.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 

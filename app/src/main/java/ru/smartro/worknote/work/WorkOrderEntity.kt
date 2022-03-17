@@ -11,9 +11,9 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.*
-import ru.smartro.worknote.util.MyUtil.isNotNull
-import ru.smartro.worknote.util.MyUtil.toStr
-import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.workold.util.MyUtil.isNotNull
+import ru.smartro.worknote.workold.util.MyUtil.toStr
+import ru.smartro.worknote.workold.util.StatusEnum
 import java.io.Serializable
 import java.lang.Exception
 import java.text.SimpleDateFormat

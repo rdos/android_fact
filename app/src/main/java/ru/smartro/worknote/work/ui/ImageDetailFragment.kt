@@ -11,13 +11,13 @@ import kotlinx.android.synthetic.main.alert_warning_delete.view.*
 import kotlinx.android.synthetic.main.fragment_image_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractDialog
-import ru.smartro.worknote.extensions.hideDialog
-import ru.smartro.worknote.extensions.warningDelete
+import ru.smartro.worknote.workold.base.AbstractDialog
+import ru.smartro.worknote.workold.extensions.hideDialog
+import ru.smartro.worknote.workold.extensions.warningDelete
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
-import ru.smartro.worknote.util.MyUtil
-import ru.smartro.worknote.util.PhotoTypeEnum
+import ru.smartro.worknote.workold.util.MyUtil
+import ru.smartro.worknote.workold.util.PhotoTypeEnum
 
 
 class ImageDetailFragment(private val platformId: Int, private val containerId : Int,

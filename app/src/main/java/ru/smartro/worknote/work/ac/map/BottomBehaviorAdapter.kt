@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.act_map__bottom_behavior__rv_item.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.workold.util.StatusEnum
 
 
 class BottomBehaviorAdapter(

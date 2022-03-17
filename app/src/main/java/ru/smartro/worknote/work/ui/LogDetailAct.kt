@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.abs.ActNOAbst
+import ru.smartro.worknote.abs.ActNOAbst
 
 class LogDetailAct : ActNOAbst() {
     private val viewModel: JournalViewModel by viewModel()

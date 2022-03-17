@@ -10,14 +10,14 @@ import kotlinx.android.synthetic.main.alert_warning_delete.view.*
 import kotlinx.android.synthetic.main.fragment_gallery_before.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.adapter.GalleryPhotoAdapter
-import ru.smartro.worknote.adapter.listener.ImageClickListener
-import ru.smartro.worknote.base.AbstractBottomDialog
-import ru.smartro.worknote.extensions.hideDialog
-import ru.smartro.worknote.extensions.warningDelete
+import ru.smartro.worknote.workold.adapter.GalleryPhotoAdapter
+import ru.smartro.worknote.workold.adapter.listener.ImageClickListener
+import ru.smartro.worknote.workold.base.AbstractBottomDialog
+import ru.smartro.worknote.workold.extensions.hideDialog
+import ru.smartro.worknote.workold.extensions.warningDelete
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
-import ru.smartro.worknote.util.PhotoTypeEnum
+import ru.smartro.worknote.workold.util.PhotoTypeEnum
 
 
 class GalleryFragment(private val platformId: Int, private val photoFor: Int,

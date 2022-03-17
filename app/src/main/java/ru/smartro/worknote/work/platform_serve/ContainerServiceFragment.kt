@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_container_service.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.AbstractBottomDialog
+import ru.smartro.worknote.workold.base.AbstractBottomDialog
 import ru.smartro.worknote.work.ui.ContainerBreakdownAct
 import ru.smartro.worknote.work.ui.ContainerFailureAct
 

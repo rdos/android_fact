@@ -14,9 +14,9 @@ import kotlinx.android.synthetic.main.activity_debug.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.abs.ActNOAbst
-import ru.smartro.worknote.base.BaseViewModel
-import ru.smartro.worknote.util.MyUtil
+import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.workold.base.BaseViewModel
+import ru.smartro.worknote.workold.util.MyUtil
 
 
 class DebugAct : ActNOAbst() {

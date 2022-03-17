@@ -5,13 +5,13 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.*
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.service.database.entity.problem.BreakDownEntity
-import ru.smartro.worknote.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.service.database.entity.problem.FailReasonEntity
-import ru.smartro.worknote.util.MyUtil
-import ru.smartro.worknote.util.PhotoTypeEnum
-import ru.smartro.worknote.util.NonPickupEnum
-import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.workold.service.database.entity.problem.BreakDownEntity
+import ru.smartro.worknote.workold.service.database.entity.problem.CancelWayReasonEntity
+import ru.smartro.worknote.workold.service.database.entity.problem.FailReasonEntity
+import ru.smartro.worknote.workold.util.MyUtil
+import ru.smartro.worknote.workold.util.PhotoTypeEnum
+import ru.smartro.worknote.workold.util.NonPickupEnum
+import ru.smartro.worknote.workold.util.StatusEnum
 import java.lang.Exception
 import kotlin.math.round
 

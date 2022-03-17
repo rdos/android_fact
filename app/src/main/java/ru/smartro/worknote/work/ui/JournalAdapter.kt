@@ -4,11 +4,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_log.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.base.GenericRecyclerAdapter
-import ru.smartro.worknote.base.ViewHolder
+import ru.smartro.worknote.workold.base.GenericRecyclerAdapter
+import ru.smartro.worknote.workold.base.ViewHolder
 import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.util.MyUtil.toStr
-import ru.smartro.worknote.util.StatusEnum
+import ru.smartro.worknote.workold.util.MyUtil.toStr
+import ru.smartro.worknote.workold.util.StatusEnum
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -6,7 +6,7 @@ import android.view.MenuItem
 import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.abs.ActNOAbst
+import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.work.PlatformEntity
 
 class JournalAct : ActNOAbst(), JournalClickListener {
