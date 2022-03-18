@@ -154,6 +154,8 @@ dependencies {
     implementation 'androidx.camera:camera-view:1.0.0-alpha30'
 
     implementation 'androidx.camera:camera-extensions:1.0.0-alpha30'
+// https://mvnrepository.com/artifact/com.yandex.android/speechkit
+    implementation("com.yandex.android:speechkit:3.12.2")
 
     def nav_version = "2.3.2"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"

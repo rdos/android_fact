@@ -78,6 +78,7 @@ class AndRoid {
 
         constructor(lat: Float, long: Float, time: Long, accuracy: Float) : this(lat.toDouble(), long.toDouble(), time, accuracy)
         constructor(lat: DoubleCool, long: DoubleCool, time: LongCool, accuracy: FloatCool) : this(lat, long, time, accuracy.VAL)
+        constructor(lat: Double, long: Double, time: Long, accuracy: Double) : this(lat, long, time, accuracy.toFloat())
 
         fun PointToListDouble(): List<Double> {
             return listOf(latitude, longitude)

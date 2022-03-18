@@ -10,9 +10,13 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
+import androidx.core.location.LocationManagerCompat
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.location.FilteringMode
+import com.yandex.mapkit.location.LocationManagerUtils
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.sentry.Sentry
@@ -130,15 +134,17 @@ class App : AApp() {
             LOGWork("LocationTIME=${LocationTIME}")
             LocationTIME = location.time
 
-            GPS = AndRoid.PoinT(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY)
+//            GPS = AndRoid.PoinT(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY)
+            GPS = AndRoid.PoinT(LocationManagerUtils.getLastKnownLocation()?.position?.latitude?:LocationLAT,
+                LocationManagerUtils.getLastKnownLocation()?.position?.longitude?:LocationLONG,
+                LocationManagerUtils.getLastKnownLocation()?.absoluteTimestamp?:LocationTIME,
+                LocationManagerUtils.getLastKnownLocation()?.accuracy?:LocationACCURACY.VAL.toDouble())
             if (GPS.isSaveGPS()) {
                 getAppParaMS().addParamLast12nowGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY)
                 GPSpoinT =  getAppParaMS().getLastGPS()
 
                 LASTact?.onNEWfromGPSSrv()
             }
-
-
 
             after()
         }
@@ -180,6 +186,8 @@ class App : AApp() {
             // override fun onLocationChanged(location: Location) {
         MyLocationListener()
         ) // здесь можно указать другие более подходящие вам параметры
+
+//       MapKitFactory.getInstance().createLocationManager().subscribeForLocationUpdates(0.0, 500, 0.0, true, FilteringMode.OFF, null)
     }
 
     fun runSyncWorkER() {

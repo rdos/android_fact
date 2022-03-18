@@ -39,11 +39,14 @@ abstract class AAct : AppCompatActivity() {
 
     protected abstract fun onNewGPS()
 
+    //todo !r_dos onNEW-_Service(Srv) 
     public fun onNEWfromGPSSrv() {
         LOGbefore("onNewGPS")
         onNewGPS()
         LOGafter()
     }
+    // TODO: !r_dos feed(stuff)  
+    
     private var mMethodName: String? = null
 
     public var TAG : String = "${this::class.simpleName}"
