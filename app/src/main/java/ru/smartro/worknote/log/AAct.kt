@@ -45,7 +45,7 @@ abstract class AAct : AppCompatActivity() {
         onNewGPS()
         LOGafter()
     }
-    // TODO: !r_dos feed(stuff)  
+    // TODO: !r_dos feed(stuff)
     
     private var mMethodName: String? = null
 
