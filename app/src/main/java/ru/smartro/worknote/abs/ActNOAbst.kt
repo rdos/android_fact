@@ -5,6 +5,8 @@ import android.util.Log
 import ru.smartro.worknote.log.AAct
 
 abstract class ActNOAbst : AAct() {
+
+    protected fun paramS() = paramS
     override fun onNewGPS() {
 
     }

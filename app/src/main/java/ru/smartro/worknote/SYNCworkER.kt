@@ -19,13 +19,12 @@ import com.google.gson.Gson
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.delay
-import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.log.AppParaMS
-import ru.smartro.worknote.workold.service.network.NetworkRepository
-import ru.smartro.worknote.workold.service.network.Status
-import ru.smartro.worknote.workold.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.workold.util.MyUtil
-import ru.smartro.worknote.workold.util.MyUtil.toStr
+import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
+import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.ac.StartAct
@@ -63,19 +62,38 @@ class SYNCworkER(
     private val TAGLOG = TAG
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
-        Log.i(TAG, "onCreate")
+        Log.i(TAG, "text")
     }
 
+    //SYNCworkER
     fun before(method: String, valueName: String = "") {
         mMethodName = method
         Log.w(TAG, ".thread_id=${Thread.currentThread().id}")
         Log.d(TAGLOG, "${mMethodName}.before")
     }
 
+    fun beforeCycles(s: String) {
+        mMethodName?.let {
+            Log.d(TAGLOG, "${mMethodName}.CYCLes.${s}")
+            return@beforeCycles
+        }
+        Log.d(TAGLOG, "CYCLes.${s}")
+    }
+
+    fun afterCycles() {
+        mMethodName?.let {
+            Log.d(TAGLOG, "${mMethodName}.************-_(:;)")
+            return@afterCycles
+        }
+        Log.d(TAGLOG, ".************-_(:;)")
+    }
+
+    //SYNCworkER
     protected fun after(res: String) {
         logAfterResult(res.toStr())
     }
 
+//    SYNCworkER
     protected fun after(res: Boolean? = null) {
         logAfterResult(res.toStr())
     }
@@ -91,11 +109,11 @@ class SYNCworkER(
 
 
 
-    private fun getApp() : App {
+    private fun getApp(): App {
         return App.getAppliCation()
     }
 
-    private fun paramS() : AppParaMS {
+    private fun paramS(): AppParaMS {
         return App.getAppParaMS()
     }
 
@@ -111,14 +129,19 @@ class SYNCworkER(
 
 //        Realm.init(context)
         var db = RealmRepository(Realm.getDefaultInstance())
-        val DELAY_MS =  if (paramS().isModeDEVEL) 1000 else 30000 as Long
+        val DELAY_MS: Long =  if (paramS().isModeDEVEL) 1_000 else 30_000
         while (true) {
-            before("delay")
+            beforeCycles("while (true)")
             delay(DELAY_MS)
-            after(" while (true) {")
+
             if (paramS().isModeSYNChrONize) {
                 synChrONizationDATA(db)
+            } else {
+                Log.d(TAG, "WORKER STOPPED")
+                dismissNotification()
             }
+
+            afterCycles()
 //            try {
 
 
@@ -132,54 +155,47 @@ class SYNCworkER(
 
 
     private suspend fun synChrONizationDATA(db: RealmRepository) {
-        if (paramS().isModeSYNChrONize) {
+        val timeBeforeRequest: Long
+        logSentry(" SYNCHRONIZE STARTED")
+        val lastSynchroTime = paramS().lastSynchroTime
+        val platforms: List<PlatformEntity>
 
-            val timeBeforeRequest: Long
-            logSentry(" SYNCHRONIZE STARTED")
-            val lastSynchroTime = paramS().lastSynchroTime
-            val platforms: List<PlatformEntity>
-
-            if (lastSynchroTime - MyUtil.timeStamp() > mMinutesInSec) {
-                platforms = db.findPlatforms30min()
-                timeBeforeRequest = lastSynchroTime + mMinutesInSec
-                Log.d(TAG, " SYNCHRONIZE PLATFORMS IN LAST 30 min")
-            } else {
-                platforms = db.findLastPlatforms()
-                timeBeforeRequest = MyUtil.timeStamp()
-                Log.d(TAG, " SYNCHRONIZE LAST PLATFORMS")
-            }
-
-
-            val location = paramS().getCurrentLocation()
-            val lastKnownLocationTime = paramS().getLastKnownLocationTime()
-            val coords = listOf(location.latitude, location.longitude)
-            val synchronizeBody = SynchronizeBody(paramS().wayBillId, coords, mDeviceId, lastKnownLocationTime, platforms)
-
-            Log.d(TAG, "platforms.size=${platforms.size}")
-
-
-            saveJSON(synchronizeBody)
-            val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
-            when (synchronizeResponse.status) {
-                Status.SUCCESS -> {
-                    if (platforms.isNotEmpty()) {
-                        paramS().lastSynchroTime = timeBeforeRequest
-                        db.updatePlatformNetworkStatus(platforms)
-                        Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
-                    } else {
-                        Log.d(TAG, "SYNCHRONIZE SUCCESS: GPS SENT")
-                    }
-                    val alertMsg = synchronizeResponse.data?.alert
-                    if (!alertMsg.isNullOrEmpty()) {
-                        showNotification(false, alertMsg, "Уведомление")
-                    }
-                }
-                Status.ERROR -> Log.e(TAG, "SYNCHRONIZE ERROR")
-                Status.NETWORK -> Log.w(TAG, "SYNCHRONIZE NO INTERNET")
-            }
+        if (lastSynchroTime - MyUtil.timeStamp() > mMinutesInSec) {
+            platforms = db.findPlatforms30min()
+            timeBeforeRequest = lastSynchroTime + mMinutesInSec
+            Log.d(TAG, " SYNCHRONIZE PLATFORMS IN LAST 30 min")
         } else {
-            Log.d(TAG, "WORKER STOPPED")
-            dismissNotification()
+            platforms = db.findLastPlatforms()
+            timeBeforeRequest = MyUtil.timeStamp()
+            Log.d(TAG, " SYNCHRONIZE LAST PLATFORMS")
+        }
+
+
+        val gpsData = paramS().geTLastKnowGPS()
+        val synchronizeBody = SynchronizeBody(paramS().wayBillId, gpsData.PointToListDouble(),
+            mDeviceId, gpsData.PointTimeToLastKnowTime_SRV(), platforms)
+
+        Log.d(TAG, "platforms.size=${platforms.size}")
+
+
+        saveJSON(synchronizeBody)
+        val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
+        when (synchronizeResponse.status) {
+            Status.SUCCESS -> {
+                if (platforms.isNotEmpty()) {
+                    paramS().lastSynchroTime = timeBeforeRequest
+                    db.updatePlatformNetworkStatus(platforms)
+                    Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
+                } else {
+                    Log.d(TAG, "SYNCHRONIZE SUCCESS: GPS SENT")
+                }
+                val alertMsg = synchronizeResponse.data?.alert
+                if (!alertMsg.isNullOrEmpty()) {
+                    showNotification(false, alertMsg, "Уведомление")
+                }
+            }
+            Status.ERROR -> Log.e(TAG, "SYNCHRONIZE ERROR")
+            Status.NETWORK -> Log.w(TAG, "SYNCHRONIZE NO INTERNET")
         }
     }
 
@@ -223,6 +239,9 @@ class SYNCworkER(
     private fun dismissNotification() {
         Log.d(TAG, "dismissNotification.before")
         val notificationManager = NotificationManagerCompat.from(getApp())
+        if (notificationManager.notificationChannels.size <= 0) {
+            return
+        }
         notificationManager.cancelAll()
     }
 

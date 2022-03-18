@@ -15,9 +15,9 @@ import kotlinx.android.synthetic.main.fragment_container_service.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
-import ru.smartro.worknote.workold.base.AbstractBottomDialog
-import ru.smartro.worknote.workold.ui.ContainerBreakdownAct
-import ru.smartro.worknote.workold.ui.ContainerFailureAct
+import ru.smartro.worknote.awORKOLDs.base.AbstractBottomDialog
+import ru.smartro.worknote.work.ui.ContainerBreakdownAct
+import ru.smartro.worknote.work.ui.ContainerFailureAct
 
 private const val ARGUMENT_NAME__PLATFORM_ID = "ARGUMENT_NAME__PLATFORM_ID"
 private const val ARGUMENT_NAME__CONTAINER_ID = "ARGUMENT_NAME__CONTAINER_ID"

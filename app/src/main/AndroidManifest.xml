@@ -24,24 +24,24 @@
         android:extractNativeLibs="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="ru.smartro.worknote.workold.ui.ScannerAct" />
-        <activity android:name="ru.smartro.worknote.workold.ui.JournalAct" />
-        <activity android:name="ru.smartro.worknote.workold.ui.LogDetailAct" />
-        <activity android:name="ru.smartro.worknote.workold.ui.DebugAct" />
+        <activity android:name="ru.smartro.worknote.work.ui.ScannerAct" />
+        <activity android:name="ru.smartro.worknote.work.ui.JournalAct" />
+        <activity android:name="ru.smartro.worknote.work.ui.LogDetailAct" />
+        <activity android:name="ru.smartro.worknote.work.ui.DebugAct" />
         <activity
-            android:name="ru.smartro.worknote.workold.ui.ContainerFailureAct"
+            android:name="ru.smartro.worknote.work.ui.ContainerFailureAct"
             android:screenOrientation="portrait"
             android:theme="@style/Problem" />
         <activity
-            android:name="ru.smartro.worknote.workold.ui.ContainerBreakdownAct"
+            android:name="ru.smartro.worknote.work.ui.ContainerBreakdownAct"
             android:screenOrientation="portrait"
             android:theme="@style/Problem"/>
         <activity
-            android:name="ru.smartro.worknote.workold.ui.PlatformFailureAct"
+            android:name="ru.smartro.worknote.work.ui.PlatformFailureAct"
             android:screenOrientation="portrait"
             android:theme="@style/Problem" />
         <activity
-            android:name="ru.smartro.worknote.workold.ui.CameraAct"
+            android:name="ru.smartro.worknote.work.ui.CameraAct"
             android:screenOrientation="portrait">
             <intent-filter>
                 <!--<action android:name="android.media.action.IMAGE_CAPTURE" />-->

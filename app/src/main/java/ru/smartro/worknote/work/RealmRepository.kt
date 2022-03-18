@@ -5,13 +5,13 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.*
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.workold.service.database.entity.problem.BreakDownEntity
-import ru.smartro.worknote.workold.service.database.entity.problem.CancelWayReasonEntity
-import ru.smartro.worknote.workold.service.database.entity.problem.FailReasonEntity
-import ru.smartro.worknote.workold.util.MyUtil
-import ru.smartro.worknote.workold.util.PhotoTypeEnum
-import ru.smartro.worknote.workold.util.NonPickupEnum
-import ru.smartro.worknote.workold.util.StatusEnum
+import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
+import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
+import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
+import ru.smartro.worknote.awORKOLDs.util.NonPickupEnum
+import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import java.lang.Exception
 import kotlin.math.round
 
@@ -532,13 +532,8 @@ class RealmRepository(private val p_realm: Realm) {
 
 
     /** добавление фото в платформу **/
-    fun updatePlatformMedia(
-        imageFor: Int, platformId: Int, imageBase64: String,
-        coords: Point, currentCoordinateAccuracy: String, lastKnownLocationTime: Long
-    ) {
+    fun updatePlatformMedia(imageFor: Int, platformId: Int, imageEntity: ImageEntity) {
         p_realm.executeTransaction { realm ->
-            val imageEntity = ImageEntity(imageBase64, MyUtil.timeStamp(),
-                RealmList(coords.latitude, coords.longitude), currentCoordinateAccuracy, lastKnownLocationTime)
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
@@ -582,8 +577,7 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     fun updateContainerMedia(imageFor: Int,
-        platformId: Int, containerId: Int, imageBase64: String,
-        coords: Point, currentCoordinateAccuracy: String, lastKnownLocationTime: Long
+        platformId: Int, containerId: Int, imageEntity: ImageEntity
     ) {
         p_realm.executeTransaction { realm ->
             val containerEntity = getQueryContainer()
@@ -592,9 +586,6 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
-            val imageEntity = ImageEntity(imageBase64, MyUtil.timeStamp(),
-                RealmList(coords.latitude, coords.longitude),
-                currentCoordinateAccuracy, lastKnownLocationTime)
             when (imageFor) {
                 PhotoTypeEnum.forContainerFailure -> {
                     containerEntity.failureMedia.add(imageEntity)

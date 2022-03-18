@@ -22,14 +22,14 @@ import com.google.android.material.textfield.TextInputEditText
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
-import ru.smartro.worknote.workold.extensions.hideDialog
-import ru.smartro.worknote.workold.extensions.showDialogFillKgoVolume
-import ru.smartro.worknote.workold.extensions.showDlgPickup
-import ru.smartro.worknote.workold.extensions.toast
-import ru.smartro.worknote.workold.ui.CameraAct
-import ru.smartro.worknote.workold.ui.PlatformFailureAct
-import ru.smartro.worknote.workold.util.PhotoTypeEnum
-import ru.smartro.worknote.workold.util.StatusEnum
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
+import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
+import ru.smartro.worknote.awORKOLDs.extensions.toast
+import ru.smartro.worknote.work.ui.CameraAct
+import ru.smartro.worknote.work.ui.PlatformFailureAct
+import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
+import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 

@@ -20,12 +20,12 @@ import kotlinx.android.synthetic.main.start_act__rv_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
-import ru.smartro.worknote.workold.base.BaseViewModel
-import ru.smartro.worknote.workold.extensions.hideProgress
-import ru.smartro.worknote.workold.extensions.showingProgress
-import ru.smartro.worknote.workold.extensions.toast
-import ru.smartro.worknote.workold.service.network.Status
-import ru.smartro.worknote.workold.util.MyUtil
+import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
+import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
+import ru.smartro.worknote.awORKOLDs.extensions.toast
+import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.MapAct
@@ -119,6 +119,9 @@ class StartWorkOrderAct : ActNOAbst() {
         }
         startActivity(intent)
         finish()
+
+        AppliCation().runSyncWorkER()
+        AppliCation().runLocationService()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

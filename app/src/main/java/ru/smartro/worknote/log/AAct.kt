@@ -9,8 +9,8 @@ import io.sentry.Sentry
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
-import ru.smartro.worknote.workold.extensions.toast
-import ru.smartro.worknote.workold.util.MyUtil.toStr
+import ru.smartro.worknote.awORKOLDs.extensions.toast
+import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.work.ac.checklist.StartVehicleAct
 import java.lang.Exception
 
@@ -29,8 +29,8 @@ abstract class AAct : AppCompatActivity() {
         return App.getAppliCation()
     }
 
-    protected fun paramS() : AppParaMS {
-        return App.getAppParaMS()
+    protected val paramS: AppParaMS by lazy {
+        App.getAppParaMS()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -39,8 +39,10 @@ abstract class AAct : AppCompatActivity() {
 
     protected abstract fun onNewGPS()
 
-    public fun newsFROMlocationSERVICE() {
+    public fun onNEWfromGPSSrv() {
+        LOGbefore("onNewGPS")
         onNewGPS()
+        LOGafter()
     }
     private var mMethodName: String? = null
 
@@ -139,7 +141,7 @@ abstract class AAct : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
 
-        AppliCation().runSyncWorkER()
+//        AppliCation().runSyncWorkER()
         AppliCation().runLocationService()
     }
 

@@ -2,10 +2,9 @@ package ru.smartro.worknote.log
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.yandex.mapkit.geometry.Point
-import com.yandex.mapkit.location.LocationManagerUtils
 import ru.smartro.worknote.*
-import java.lang.Exception
+import ru.smartro.worknote.abs.FloatCool
+import ru.smartro.worknote.andPOIntD.AndRoid
 
 private const val NAME = ""
 private const val MODE = Context.MODE_PRIVATE
@@ -26,24 +25,11 @@ class AppParaMS {
     }
 
     fun init() {
-        mEnv = App.getAppliCation().getSharedPreferences(NAME, MODE)
+        val app = App.getAppliCation()
+        mEnv = app.getSharedPreferences(NAME, MODE)
         isModeWorkER = false
-        isModeDEVEL = mIsDevelMode
-        isModeDEVEL = mIsDevelMode
-        isModeDEVEL = mIsDevelMode
+        isModeDEVEL = app.isDevelMODE()
     }
-
-    private val mIsDevelMode: Boolean
-        get() {
-            var result = false
-            if (BuildConfig.BUILD_TYPE == "debug") {
-                result = BuildConfig.VERSION_NAME == "0.0.0.0-STAGE"
-            }
-            if (BuildConfig.BUILD_TYPE == "debugRC") {
-                result = BuildConfig.VERSION_NAME == "0.0.0.0-STAGE"
-            }
-            return result
-        }
 
     private inline fun SharedPreferences.edit(operation: (SharedPreferences.Editor) -> Unit) {
         val editor = edit()
@@ -69,17 +55,73 @@ class AppParaMS {
             it.putString("accessToken", value)
         }
 
-    var currentCoordinateAccuracy: String
-        get() = mEnv.getString("currentCoordinateAccuracy", Snull)!!
-        set(value) = mEnv.edit {
-            it.putString("currentCoordinateAccuracy", value)
+
+
+    fun isLastGPS(time: Long): Boolean = isLastGPS_priv(time)
+
+    private fun isLastGPS_priv(time: Long?=null): Boolean {
+        val diff = System.currentTimeMillis() - (time?:gpsTIME)
+        return diff <= 3_000
+    }
+
+    fun isLastGPSSaved(): Boolean {
+       return isLastGPS_priv()
+    }
+
+
+    //Any
+    fun getAlwaysGPS(): AndRoid.PoinT {
+        return geTLastKnowGPS()
+    }
+
+    fun geTLastKnowGPS(): AndRoid.PoinT {
+        return AndRoid.PoinT(gpsLAT, gpsLONG, gpsTIME, gpsACCURACY)
+    }
+
+    fun getLastGPS(): AndRoid.PoinT? {
+        var res:AndRoid.PoinT? = null
+        if (isLastGPSSaved()) {
+            res= geTLastKnowGPS()
         }
-    var currentCoordinate: String
-        get() = mEnv.getString("currentCoordinate", " ")!!
-        set(value) = mEnv.edit {
-            it.putString("currentCoordinate", value)
+        return res
+    }
+
+
+
+    fun addParamLast12nowGPS(lat: DoubleCool, long: DoubleCool, time: LongCool, accuracy: FloatCool) {
+        //база
+        gpsLAT = lat.toFloat()
+        gpsLONG = long.toFloat()
+        //базовая основа
+        gpsTIME = time
+        //доп.олни!тельное)
+        gpsACCURACY = accuracy.VAL
+    }
+
+
+    var gpsLAT: Float
+        get() = mEnv.getFloat("gpsLAT", Fnull)
+        private set(value) = mEnv.edit {
+            it.putFloat("gpsLAT", value)
         }
 
+    var gpsLONG: Float
+        get() = mEnv.getFloat("gpsLONG", Fnull)
+        private set(value) = mEnv.edit {
+            it.putFloat("gpsLONG", value)
+        }
+
+    var gpsTIME: Long
+        get() = mEnv.getLong("gpsTIME", 0)
+        set(value) = mEnv.edit {
+            it.putLong("gpsTIME", value)
+        }
+
+    var gpsACCURACY: Float
+        get() = mEnv.getFloat("gpsACCURACY", Fnull)
+        private set(value) = mEnv.edit {
+            it.putFloat("gpsACCURACY", value)
+        }
 //    var BoTlogin: String
 //        get() = preferences.getString("userLogin", "")!!
 //        set(value) = preferences.edit {
@@ -135,7 +177,7 @@ class AppParaMS {
         }
 
     var isModeDEVEL: Boolean
-        get() = mEnv.getBoolean("isModeDEVEL", true)
+        get() = mEnv.getBoolean("isModeDEVEL", false)
         set(value) = mEnv.edit {
             it.putBoolean("isModeDEVEL", value)
         }
@@ -149,43 +191,12 @@ class AppParaMS {
         isModeSYNChrONize = false
     }
 
-    fun getCurrentLocation(): Point {
-        var result = Point(Dnull, Dnull)
-        try {
-            val lat = currentCoordinate.substringBefore("#").toDouble()
-            val long = currentCoordinate.substringAfter("#").toDouble()
-            result = Point(lat, long)
-        } catch (ex: Exception) {
-            // TODO: 24.12.2021  /\
-            try {
-                result = LocationManagerUtils.getLastKnownLocation()!!.position
-            } catch (ex: Exception) {
-
-            }
-        }
-        return result
-    }
-
-    fun getLastKnownLocationTime(): Long {
-        var result = Lnull
-        try {
-            val location = LocationManagerUtils.getLastKnownLocation()
-            if (location != null) {
-                result = System.currentTimeMillis() - location.absoluteTimestamp
-            }
-        } catch (ex: Exception) {
-
-        }
-
-        return result
-    }
-
     fun SETDevelMode() {
 //        accessToken = ""
         vehicleId = 0
         organisationId = 0
         wayBillId = 0
         //TODO: rNull!!
-        isModeSYNChrONize = false
+        isModeSYNChrONize = true
     }
 }

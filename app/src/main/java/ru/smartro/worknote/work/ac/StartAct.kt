@@ -19,16 +19,16 @@ import kotlinx.android.synthetic.main.act_start.auth_password
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
-import ru.smartro.worknote.workold.base.BaseViewModel
-import ru.smartro.worknote.workold.extensions.hideProgress
-import ru.smartro.worknote.workold.extensions.showingProgress
-import ru.smartro.worknote.workold.extensions.toast
+import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
+import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
+import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.isShowForUser
-import ru.smartro.worknote.workold.service.network.Resource
-import ru.smartro.worknote.workold.service.network.Status
-import ru.smartro.worknote.workold.service.network.body.AuthBody
-import ru.smartro.worknote.workold.service.network.response.auth.AuthResponse
-import ru.smartro.worknote.workold.util.MyUtil
+import ru.smartro.worknote.awORKOLDs.service.network.Resource
+import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
+import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import ru.smartro.worknote.work.MapAct
@@ -49,13 +49,16 @@ class StartAct : ActNOAbst() {
         val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
         startActivity(Intent(this, if (isHasTask) MapAct::class.java else StartOwnerAct::class.java))
         finish()
-        AppliCation().runLocationService()
+        if (isHasTask) {
+            AppliCation().runSyncWorkER()
+            AppliCation().runLocationService()
+        }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_start)
         actionBar?.title = "Вход в Систему"
-        auth_appversion.text = BuildConfig.VERSION_NAME
+        auth_appversion.text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
         cl_act_start.setOnClickListener {
             MyUtil.hideKeyboard(this)
         }

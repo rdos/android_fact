@@ -6,7 +6,6 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="SYNCworkER" />
     <option name="TOOL_WINDOW_LOG_LEVEL" value="verbose" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
@@ -15,14 +14,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b1d22915-6f30-4231-95a2-dff5dbc8e951" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/abs/ActAbstract.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/App.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/App.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/SYNCworkER.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/SYNCworkER.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/abs/ActNOAbst.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/abs/ActNOAbst.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/andPOIntD/AndRoid.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/andPOIntD/AndRoid.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/log/AAct.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/log/AAct.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/log/AApp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/log/AApp.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/log/AppParaMS.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/log/AppParaMS.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/MapAct.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/MapAct.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/ac/StartAct.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/ac/StartAct.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/ac/checklist/StartWorkOrderAct.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/ac/checklist/StartWorkOrderAct.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +41,23 @@
       <state>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="SmartRoFact" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="SmartRoFact" type="f1a62948:ProjectNode" />
+                <item name="app" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="SmartRoFact" type="f1a62948:ProjectNode" />
+                <item name="app" type="2d1252cf:ModuleNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -102,7 +119,7 @@
     <property name="project.structure.last.edited" value="SDK Location" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.0" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="experimental" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -220,28 +237,28 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/workold/ui/platform_serve/PlatformServeActivity.kt</url>
+          <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/ui/platform_serve/PlatformServeActivity.kt</url>
           <line>79</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/RealmRepository.kt</url>
-          <line>565</line>
+          <line>560</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/workold/ui/CameraFragment.kt</url>
+          <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/ui/CameraFragment.kt</url>
           <line>446</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/workold/extensions/ViewExtensions.kt</url>
+          <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/awORKOLDs/extensions/ViewExtensions.kt</url>
           <line>17</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/MapAct.kt</url>
-          <line>645</line>
+          <line>638</line>
           <option name="timeStamp" value="40" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
@@ -256,7 +273,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/MapAct.kt</url>
-          <line>670</line>
+          <line>663</line>
           <option name="timeStamp" value="66" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
@@ -296,23 +313,28 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/MapAct.kt</url>
-          <line>490</line>
+          <line>492</line>
           <option name="timeStamp" value="85" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/MapAct.kt</url>
-          <line>492</line>
+          <line>494</line>
           <option name="timeStamp" value="86" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/workold/ui/CameraFragment.kt</url>
+          <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/work/ui/CameraFragment.kt</url>
           <line>376</line>
           <option name="timeStamp" value="88" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/App.kt</url>
-          <line>158</line>
+          <line>204</line>
           <option name="timeStamp" value="89" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/ru/smartro/worknote/log/AppParaMS.kt</url>
+          <line>62</line>
+          <option name="timeStamp" value="96" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
