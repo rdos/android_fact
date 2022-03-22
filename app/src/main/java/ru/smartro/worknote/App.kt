@@ -86,6 +86,9 @@ class App : AApp() {
 //todo: r_dos, use isShowForUser :: e.b.a
     override fun onCreate() {
         super.onCreate()
+        MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
+        MapKitFactory.initialize(this)
+        MapKitFactory.getInstance().createLocationManager()
         mAppliCation = this
         initSentry()
         initRealm()
@@ -123,9 +126,6 @@ class App : AApp() {
         override fun onLocationChanged(location: Location) {
             before("onLocationChanged")
 
-
-
-
             LocationACCURACY.setDATAing(location.accuracy)
             LOGWork("LocationLAT=${LocationLAT}")
             LocationLAT = location.latitude
@@ -135,10 +135,24 @@ class App : AApp() {
             LocationTIME = location.time
 
 //            GPS = AndRoid.PoinT(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY)
-            GPS = AndRoid.PoinT(LocationManagerUtils.getLastKnownLocation()?.position?.latitude?:LocationLAT,
-                LocationManagerUtils.getLastKnownLocation()?.position?.longitude?:LocationLONG,
-                LocationManagerUtils.getLastKnownLocation()?.absoluteTimestamp?:LocationTIME,
-                LocationManagerUtils.getLastKnownLocation()?.accuracy?:LocationACCURACY.VAL.toDouble())
+
+            var yandexLAT: Double? = null
+            var yandexLONG: Double? = null
+            var yandexTIME: Long? = null
+            var yandexACCURACYL: Double? = null
+
+//            try {
+//                yandexLAT = LocationManagerUtils.getLastKnownLocation()?.position?.latitude
+//                yandexLONG = LocationManagerUtils.getLastKnownLocation()?.position?.longitude
+//                yandexTIME = LocationManagerUtils.getLastKnownLocation()?.absoluteTimestamp
+//                yandexACCURACYL = LocationManagerUtils.getLastKnownLocation()?.accuracy
+//            } catch (ex: Throwable) {
+//
+//            }
+            GPS = AndRoid.PoinT(yandexLAT?:LocationLAT,
+                yandexLONG?:LocationLONG,
+                yandexTIME?:LocationTIME,
+                yandexACCURACYL?:LocationACCURACY.VAL.toDouble())
             if (GPS.isSaveGPS()) {
                 getAppParaMS().addParamLast12nowGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY)
                 GPSpoinT =  getAppParaMS().getLastGPS()
@@ -181,13 +195,13 @@ class App : AApp() {
         LOGWork(providerName!!)
         AndRoid.getService().requestLocationUpdates(
             LocationManager.NETWORK_PROVIDER,
-            30_000,
-            10000F,
+            300,
+            100F,
             // override fun onLocationChanged(location: Location) {
         MyLocationListener()
         ) // здесь можно указать другие более подходящие вам параметры
 
-//       MapKitFactory.getInstance().createLocationManager().subscribeForLocationUpdates(0.0, 500, 0.0, true, FilteringMode.OFF, null)
+//      .subscribeForLocationUpdates(0.0, 500, 0.0, true, FilteringMode.OFF, null)
     }
 
     fun runSyncWorkER() {

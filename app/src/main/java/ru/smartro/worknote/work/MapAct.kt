@@ -1,10 +1,9 @@
 package ru.smartro.worknote.work
 
-import android.app.AlertDialog
-import android.app.Application
+import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.location.Location
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -15,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -28,6 +29,7 @@ import com.yandex.mapkit.directions.driving.*
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
 import com.yandex.mapkit.map.*
+import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.mapview.MapView
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
@@ -60,6 +62,7 @@ import ru.smartro.worknote.work.ui.JournalAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import kotlin.math.round
 
+
 //Двигается карта deselectGeoObject()
 //todo:FOR-_dos val hasNotServedPlatform = platforms.any { found -> found.status == StatusEnum.NEW }
 // TODO:r_dos! а то checked, Mem РАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тут
@@ -71,7 +74,8 @@ import kotlin.math.round
 // TODO: I 12.11.1997 import имя getNetDATEsetBaseDate и там где рядом netDat и SrvDate а где смысл как в python
 class MapAct : ActAbstract(),
     /*UserLocationObjectListener,*/
-    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener {
+    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener, InputListener, CameraListener, InertiaMoveListener {
+    private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mAcbComplete: AppCompatButton
@@ -83,7 +87,7 @@ class MapAct : ActAbstract(),
     var drivingModeState = false
 
     private val REQUEST_EXIT = 41
-    private var firstTime = true
+    private var mIsFirstTime = true
     private var isOnPointFirstTime = true
 
     private val MIN_METERS = 50
@@ -91,15 +95,12 @@ class MapAct : ActAbstract(),
     private lateinit var userLocationLayer: UserLocationLayer
     private lateinit var mDrivingRouter: DrivingRouter
     private lateinit var mDrivingSession: DrivingSession.DrivingRouteListener
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 //    private lateinit var selectedPlatformToNavigate: Point
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
-        MapKitFactory.initialize(this)
 
         setContentView(R.layout.act_map)
 
@@ -111,6 +112,13 @@ class MapAct : ActAbstract(),
             val workOrderS = getWorkOrders(extraPramId)
             getNetDATEsetBaseDate(workOrderS)
         }
+        mMapMyYandex.map.addInputListener(this)
+        mMapMyYandex.map.addCameraListener(this)
+        mMapMyYandex.map.addInertiaMoveListener(this)
+//        mMapMyYandex.setOnTouchListener { v, event ->
+//            mIsAUTOMoveCamera = false
+//            false
+//        }
         mAcbInfo = findViewById<AppCompatButton>(R.id.acb_act_map__info)
 
         mAcbInfo.setOnClickListener {
@@ -132,6 +140,7 @@ class MapAct : ActAbstract(),
         gotoMyGPS.setOnClickListener {
             try {
                 AppliCation().runLocationService()
+                mIsAUTOMoveCamera = true
                 moveCameraTo(AppliCation().GPS())
             } catch (e: Exception) {
                 toast("Клиент не найден")
@@ -243,10 +252,100 @@ class MapAct : ActAbstract(),
     private fun refreshData() {
         mWorkOrderS = vs.baseDat.findWorkOrders()
         mPlatformS = vs.baseDat.findPlatforms()
+
+//        procedure1(mPlatformS!!)
+
         initMapView()
         initBottomBehavior()
         setInfoData()
     }
+
+//    private fun procedure1(platformS: List<PlatformEntity>) {
+//        var minLat: Double = platformS[0].coords[0]!!
+//        var maxLat: Double = platformS[0].coords[0]!!
+//
+//        var minLong: Double = platformS[0].coords[1]!!
+//        var maxLong: Double = platformS[0].coords[1]!!
+//
+//        val mapCoordinate = emptyMap<Double?, Double?>().toMutableMap()
+//
+//        for(platform in platformS) {
+//            LOGWork("lat(long)=${platform.coords[0]}(${platform.coords[1]})")
+//            vs.baseDat.updateFailureComment(platform.platformId!!, "")
+//            if (minLat > platform.coords[0]!!) {
+//                minLat = platform.coords[0]!!
+//            }
+//            if (minLong > platform.coords[1]!!) {
+//                minLong = platform.coords[1]!!
+//            }
+//            if (maxLat < platform.coords[0]!!) {
+//                maxLat = platform.coords[0]!!
+//            }
+//            if (maxLong < platform.coords[1]!!) {
+//                maxLong = platform.coords[1]!!
+//            }
+//            mapCoordinate[platform.coords[0]] = platform.coords[1]
+//        }
+//        LOGWork("tit.minLat=${minLat}")
+//        LOGWork("tit.maxLat=${maxLat}")
+//        LOGWork("tit.minLong=${minLong}")
+//        LOGWork("tit.maxLong=${maxLong}")
+//
+//        val regionCnt = 10
+//        val stepLat = (maxLat - minLat) / regionCnt
+//        val stepLong = (maxLong - minLong) / regionCnt
+//
+//        var regionId = 0
+//        var regionStartLat = minLat
+//        var regionEndLat = minLat
+//        var regionStartLong = minLong
+//        var regionEndLong = minLong
+//
+//        for (idx in 1..regionCnt){
+//            if (idx < regionCnt) {
+//                regionEndLat = regionStartLat + stepLat
+//            } else {
+//                regionEndLat = maxLat
+//            }
+//
+//
+//            regionStartLong = minLong
+//            for(jdx in 1..regionCnt) {
+//                regionId++
+//                LOGWork("tit.regionIdregionId=${regionId}")
+//                LOGWork("tit.regionStartLat=${regionStartLat})")
+//                LOGWork("tit.regionEndLat=${regionEndLat})")
+//                if (jdx < regionCnt) {
+//                    regionEndLong = regionStartLong + stepLong
+//                } else {
+//                    regionEndLong = maxLong
+//                }
+//                LOGWork("tit.regionStartLong=${regionStartLong})")
+//                LOGWork("tit.regionEndLong=${regionEndLong})")
+//                for(platform in platformS) {
+//                    if (platform.address == "Ульяновская область, Мелекесский район, Лесной, Дорожная,9") {
+//                        LOGWork("tit.=)")
+//                    }
+//                    val coordLat = platform.coords[0]!!
+//                    val coordLong = platform.coords[1]!!
+//                    val lll = (regionEndLat - regionStartLat) * 0.2
+//                    val sss = (regionEndLong - regionStartLong) * 0.2
+//                    if ((coordLat in regionStartLat-lll..regionEndLat+lll) && (coordLong in regionStartLong-sss..regionEndLong+sss)) {
+//                        vs.baseDat.addFailureComment(platform.platformId!!, regionId.toString())
+//                        LOGWork("tit.regionId=${regionId} for ${coordLat}(${coordLong})")
+//                    }
+//                }
+//                regionStartLong = regionEndLong
+//            }
+//            regionStartLat = regionEndLat
+//        }
+//
+//        LOGWork("tit.stepLat=${stepLat}")
+//        LOGWork("tit.stepLong=${stepLong}")
+//
+//        val sortList = mapCoordinate.toList().sortedBy { (_, value) -> value }
+//        LOGWork("sortList=${sortList[0].first}")
+//    }
 
     private fun setInfoData() {
         val workOrders = getWorkOrders()
@@ -599,9 +698,11 @@ class MapAct : ActAbstract(),
 
     private fun initBottomBehavior() {
         val platforms = getActualPlatforms()
-        bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-        map_behavior_rv.adapter = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
+        bottomSheetBehavior.expandedOffset = 100
+        val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
+        val adapterBottomBehavior = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
+        rvBehavior.adapter = adapterBottomBehavior
 
         act_map__bottom_behavior__header.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
@@ -617,6 +718,7 @@ class MapAct : ActAbstract(),
             acbGotoComplete.text ="К завершению маршрута"
         }
         acbGotoComplete.setOnClickListener{
+
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             gotoInfoDialog()
             if (getWorkOrders().size <= 1) {
@@ -642,6 +744,7 @@ class MapAct : ActAbstract(),
     }
 
     override fun moveCameraPlatform(point: Point) {
+        mIsAUTOMoveCamera = false
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         mMapMyYandex.map.move(CameraPosition(point, 16.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
@@ -668,6 +771,7 @@ class MapAct : ActAbstract(),
             drivingModeState = true
             navigator_toggle_fab.isVisible = drivingModeState
             hideDialog()
+            val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             moveCameraTo(AppliCation().GPS())
         } catch (ex: Exception) {
@@ -715,7 +819,58 @@ class MapAct : ActAbstract(),
 //        rotateImageView(imgCompass, R.drawable.pin_finder, direction)
 //    }
 
+    private fun showNotification(platformId: Int) {
+        val notificationIntent = Intent(this, PlatformServeAct::class.java)
+
+        notificationIntent.putExtra("platform_id", platformId)
+        notificationIntent.putExtra("mIsServeAgain", false)
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0, notificationIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
+//        val CHANNEL_ID = "M_CH_ID"
+        val CHANNEL_ID = "CHANNEL_ID"
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_truck_icon)
+            .setContentTitle("Посылка")
+            .setContentText("Это я, почтальон Печкин. Принес для вас посылку")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setLargeIcon(
+                BitmapFactory.decodeResource(
+                    resources,
+                    R.drawable.ic_add_photo
+                )
+            ) // большая картинка
+            .addAction(R.drawable.ic_arrow_top, "Открыть", pendingIntent)
+            .addAction(R.drawable.ic_bag_green, "Отказаться", pendingIntent)
+            .addAction(R.drawable.ic_bag_red, "Другой вариант", pendingIntent)
+            .setAutoCancel(true) // автоматически закрыть уведомление после нажатия
+
+
+        val notificationManager = NotificationManagerCompat.from(this)
+        notificationManager.notify(-1, builder.build())
+    }
+
     override fun onNewGPS() {
+        val point = AppliCation().GPS()
+        if (mIsFirstTime) {
+            moveCameraTo(point)
+            mIsFirstTime = false
+        }
+        if (mIsAUTOMoveCamera) {
+            moveCameraTo(point)
+        }
+
+        val platformNear = vs.baseDat.findPlatformByCoord(point)
+        if (platformNear != null) {
+            toast("AAAA${platformNear.platformId}")
+            platformNear.platformId?.let { showNotification(it) }
+        }
+
 //        Log.d("LogDistance", "###################")
 //
 //
@@ -735,12 +890,16 @@ class MapAct : ActAbstract(),
 //        } else {
 ////            Log.d("LogDistance", "Distance not arrive")
 //        }
-//        if (firstTime) {
-//            moveCameraTo(AppliCation().LocationPOINT)
-//            firstTime = false
-//        }
+
 //
 //        Log.d("LogDistance", "Location updated")
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        LOGWork("onActivityResult.requestCode=${requestCode}")
+        LOGWork("onActivityResult.resultCode=${resultCode}")
+
     }
 //    override fun onLocationUpdated(location: Location) {
 ////        Log.d("LogDistance", "###################")
@@ -783,6 +942,7 @@ class MapAct : ActAbstract(),
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
         val placeMark = mapObject as PlacemarkMapObject
         val coordinate = placeMark.geometry
+
         val clickedPlatform = vs.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
         val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coordinate)
         platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
@@ -871,6 +1031,7 @@ class MapAct : ActAbstract(),
             val iconProvider = getIconViewProvider(context, platform)
             val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
             mapObjectCollection.addPlacemark(pointYandex, iconProvider)
+
         }
     }
     /**
@@ -1028,6 +1189,33 @@ class MapAct : ActAbstract(),
                 itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_progress)
             }
         }
+    }
+
+    override fun onMapTap(p0: Map, p1: Point) {
+        Log.d("AAAA", "AAAAAAAAAAA")
+    }
+
+    override fun onMapLongTap(p0: Map, p1: Point) {
+        Log.d("AAAA", "BBBBBBBBB")
+
+    }
+
+    override fun onCameraPositionChanged(p0: Map, p1: CameraPosition, p2: CameraUpdateReason, p3: Boolean) {
+        Log.d("AAAA", "AAA111AA11A1AAAAA")
+
+    }
+
+    override fun onStart(p0: Map, p1: CameraPosition) {
+        mIsAUTOMoveCamera = false
+    }
+
+    override fun onCancel(p0: Map, p1: CameraPosition) {
+        Log.d("AAAA", "onCancel")
+
+    }
+
+    override fun onFinish(p0: Map, p1: CameraPosition) {
+        Log.d("AAAA", "onFinish")
     }
 
 }

@@ -96,11 +96,11 @@ class StartAct : ActNOAbst() {
             }
         }
 //
-//        if (isDevelMode) {
-//            auth_login.setText("admin@smartro.ru")
-//            auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
-//            clickAuthEnter()
-//        }
+        if (isDevelMode()) {
+            auth_login.setText("admin@smartro.ru")
+            auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
+            clickAuthEnter()
+        }
 
 
 /*        auth_enter.setOnLongClickListener {

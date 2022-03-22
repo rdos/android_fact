@@ -17,6 +17,7 @@ import kotlinx.coroutines.*
 import ru.smartro.worknote.A_SLEEP_TIME_1_83__MS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
+import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.log.AAct
 
@@ -97,10 +98,10 @@ fun AppCompatActivity.warningCameraShow(title: String): View {
     return view
 }
 
-fun AppCompatActivity.alertOnPoint(): View {
-    val builder = AlertDialog.Builder(this)
+fun AbstractDialog.showAlertPlatformByPoint(): View {
+    val builder = AlertDialog.Builder(this.requireContext())
     val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_on_point, null)
+    val view = inflater.inflate(R.layout.act_map__dialog_platform_clicked_dtl__alert_by_point, null)
     builder.setView(view)
     showCustomDialog(builder)
     return view

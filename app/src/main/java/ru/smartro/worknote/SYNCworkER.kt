@@ -129,12 +129,15 @@ class SYNCworkER(
 
 //        Realm.init(context)
         var db = RealmRepository(Realm.getDefaultInstance())
-        val DELAY_MS: Long =  if (paramS().isModeDEVEL) 1_000 else 30_000
+        showNotificationForce(true, "Не закрывайте приложение", "Служба отправки данных работает")
+        val DELAY_MS: Long =  if (paramS().isModeDEVEL) 5_000 else 30_000
         while (true) {
             beforeCycles("while (true)")
             delay(DELAY_MS)
-
+            
             if (paramS().isModeSYNChrONize) {
+                showNotification(true, "Не закрывайте приложение", "Служба отправки данных работает")
+                Log.d(TAG, "WORKER RUN")
                 synChrONizationDATA(db)
             } else {
                 Log.d(TAG, "WORKER STOPPED")
@@ -202,38 +205,43 @@ class SYNCworkER(
     private fun showNotification(ongoing: Boolean, content: String, title: String) {
         val notificationManager = NotificationManagerCompat.from(getApp())
         if (notificationManager.notificationChannels.size <= 0) {
-            val channelId = "M_CH_ID"
-            val fullScreenIntent = Intent(getApp(), StartAct::class.java)
-            fullScreenIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            val fullScreenPendingIntent =
-                PendingIntent.getActivity(getApp(), 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-            val builder: NotificationCompat.Builder = NotificationCompat.Builder(getApp(), channelId)
-                .run {
-                    setSmallIcon(R.drawable.ic_app)
-                    setLargeIcon(BitmapFactory.decodeResource(getApp().resources, R.drawable.ic_app))
-                    setContentTitle(title)
-                    setContentText(content)
-                    setOngoing(ongoing)
-                    priority = NotificationCompat.PRIORITY_MAX
-                    setDefaults(NotificationCompat.DEFAULT_ALL)
-                    setContentIntent(fullScreenPendingIntent)
-                    setShowWhen(true)
-
-                }
-//        <!--<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />-->
-            if (!ongoing) {
-                builder.setFullScreenIntent(fullScreenPendingIntent, true)
-            }
-            val notification: Notification = builder.build()
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(channelId, "FACT_SERVICE", NotificationManager.IMPORTANCE_HIGH)
-                notificationManager.createNotificationChannel(channel)
-            }
-            notificationManager.notify(1, notification)
+            showNotificationForce(ongoing, content, title)
         } else {
             logSentry("showNotification. notificationManager.notificationChannels.size = ${notificationManager.notificationChannels.size}")
         }
+    }
+
+    private fun showNotificationForce(ongoing: Boolean, content: String, title: String){
+        val notificationManager = NotificationManagerCompat.from(getApp())
+        val channelId = "M_CH_ID"
+        val fullScreenIntent = Intent(getApp(), StartAct::class.java)
+        fullScreenIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val fullScreenPendingIntent =
+            PendingIntent.getActivity(getApp(), 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val builder: NotificationCompat.Builder = NotificationCompat.Builder(getApp(), channelId)
+            .run {
+                setSmallIcon(R.drawable.ic_app)
+                setLargeIcon(BitmapFactory.decodeResource(getApp().resources, R.drawable.ic_app))
+                setContentTitle(title)
+                setContentText(content)
+                setOngoing(ongoing)
+                priority = NotificationCompat.PRIORITY_MAX
+                setDefaults(NotificationCompat.DEFAULT_ALL)
+                setContentIntent(fullScreenPendingIntent)
+                setShowWhen(true)
+
+            }
+//        <!--<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />-->
+        if (!ongoing) {
+            builder.setFullScreenIntent(fullScreenPendingIntent, true)
+        }
+        val notification: Notification = builder.build()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, "FACT_SERVICE", NotificationManager.IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(channel)
+        }
+        notificationManager.notify(1, notification)
     }
 
     private fun dismissNotification() {
@@ -291,6 +299,8 @@ class SYNCworkER(
         if (!file.exists()) file.mkdirs()
         return file
     }
+
+
 
 
 

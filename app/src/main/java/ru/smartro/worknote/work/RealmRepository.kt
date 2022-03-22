@@ -5,6 +5,7 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.*
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
+import ru.smartro.worknote.andPOIntD.AndRoid
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
@@ -63,6 +64,8 @@ class RealmRepository(private val p_realm: Realm) {
                     beginnedAt = it.beginnedAt,
                     containers = mapContainers(it.coNTaiNeRKnow1s, workorderId),
                     coords = RealmList(it.coords[0], it.coords[1]),
+                    coordLat = it.coords[0],
+                    coordLong = it.coords[1],
                     failureMedia = mapMedia(it.failureMedia),
                     failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
                     finishedAt = it.finishedAt,
@@ -355,6 +358,25 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+
+    fun updateFailureComment(platformId: Int, failureComment: String) {
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            platform.failureComment = failureComment
+        }
+    }
+
+    fun addFailureComment(platformId: Int, failureComment: String) {
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            platform.failureComment = platform.failureComment + ";" + failureComment
+        }
+    }
+
     fun updatePlatformStatus(platformId: Int, status: String) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform().equalTo("platformId", platformId)
@@ -389,6 +411,25 @@ class RealmRepository(private val p_realm: Realm) {
         }
         return emptyList()
     }
+
+    fun findPlatformByCoord(point: AndRoid.PoinT): PlatformEntity? {
+        //lat=0,000133755 это 15 метров
+        val LAT15M = 0.000133755
+        val LONG15M = 0.0002232
+//        long=0,0002232 это 15 метров
+        val minLat = point.latitude - LAT15M
+        val maxLat = point.latitude + LAT15M
+        val minLong = point.longitude - LONG15M
+        val maxLong = point.latitude + LONG15M
+        val res = getQueryPlatform()
+            .greaterThanOrEqualTo("coordLat", minLat)
+            .lessThanOrEqualTo("coordLat", maxLat)
+            .greaterThanOrEqualTo("coordLong", minLong)
+            .lessThanOrEqualTo("coordLong", maxLong)
+            .findFirst()
+        return res
+    }
+
 
 
 
@@ -743,4 +784,7 @@ class RealmRepository(private val p_realm: Realm) {
     private fun getWorkOrderQuery(): RealmQuery<WorkOrderEntity> {
         return p_realm.where(WorkOrderEntity::class.java).isNotNull("progress_at")
     }
+
+
+
 }

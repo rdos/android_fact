@@ -83,6 +83,7 @@ class AndRoid {
         fun PointToListDouble(): List<Double> {
             return listOf(latitude, longitude)
         }
+
         
         fun PointTimeToLastKnowTime_SRV(): Long {
             return System.currentTimeMillis() - pointTime

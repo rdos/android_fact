@@ -57,12 +57,14 @@ abstract class AApp : Application() {
     fun isDevelMODE(): Boolean {
         val isResTrue = true
         if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "debugRC") {
-            if (BuildConfig.VERSION_NAME == "1.2.3-STAGE") {
-                return isResTrue
-            }
-            if (BuildConfig.VERSION_CODE <= 0) {
-                return isResTrue
-            }
+            return isResTrue
+            // TODO: ?R_dos
+//            if (BuildConfig.VERSION_NAME == "1.2.3-STAGE") {
+//                return isResTrue
+//            }
+//            if (BuildConfig.VERSION_CODE <= 0) {
+//                return isResTrue
+//            }
         }
         return false
     }

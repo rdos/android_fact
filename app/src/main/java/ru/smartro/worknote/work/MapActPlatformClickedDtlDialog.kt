@@ -16,7 +16,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
-import kotlinx.android.synthetic.main.dialog_platform_clicked_dtl.*
+import kotlinx.android.synthetic.main.act_map__dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_camera.view.*
 import ru.smartro.worknote.R
@@ -35,7 +35,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
     private val mOnClickListener = this as View.OnClickListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.dialog_platform_clicked_dtl, container, false)
+        return inflater.inflate(R.layout.act_map__dialog_platform_clicked_dtl, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -92,17 +92,29 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.btn_dialog_platform_clicked_dtl__serve_again ,
+            R.id.btn_dialog_platform_clicked_dtl__serve_again  -> {
+                gotoNextAct()
+            }
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
-                val intent = Intent(requireActivity(), PlatformServeAct::class.java)
-                intent.putExtra("platform_id", _platform.platformId)
-                intent.putExtra("mIsServeAgain", mIsServeAgain)
-                dismiss()
-                startActivityForResult(intent, 88)
+                showAlertPlatformByPoint().let { view ->
+                    val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
+                    btnOk.setOnClickListener {
+                        gotoNextAct()
+                    }
+                }
             }
         }
 
     }
+
+    private fun gotoNextAct() {
+        val intent = Intent(requireActivity(), PlatformServeAct::class.java)
+        intent.putExtra("platform_id", _platform.platformId)
+        intent.putExtra("mIsServeAgain", mIsServeAgain)
+        dismiss()
+        startActivity(intent)
+    }
+
     override fun onResume() {
         super.onResume()
         val params: WindowManager.LayoutParams? = dialog?.window?.attributes

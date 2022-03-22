@@ -6,7 +6,7 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FloatCool
 import ru.smartro.worknote.andPOIntD.AndRoid
 
-private const val NAME = ""
+private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE
 class AppParaMS {
     private lateinit var mEnv: SharedPreferences

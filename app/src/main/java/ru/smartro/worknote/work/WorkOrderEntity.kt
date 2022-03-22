@@ -166,6 +166,8 @@ open class PlatformEntity(
     var containers: RealmList<ContainerEntity> = RealmList(),
     @SerializedName("coords")
     var coords: RealmList<Double> = RealmList(),
+    var coordLat: Double = Dnull,
+    var coordLong: Double = Dnull,
     @SerializedName("failure_media")
     var failureMedia: RealmList<ImageEntity> = RealmList(),
 
