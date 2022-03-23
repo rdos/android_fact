@@ -150,6 +150,7 @@ class RealmRepository(private val p_realm: Realm) {
     //нет знаний =_know от слова -know ledge
     //0 -не уверен что нужно = ??!
     private fun refreshRealm_know0(){
+        p_realm.refresh()
         try {
             p_realm.refresh()
         } catch (ex:Exception){
@@ -420,7 +421,7 @@ class RealmRepository(private val p_realm: Realm) {
         val minLat = point.latitude - LAT15M
         val maxLat = point.latitude + LAT15M
         val minLong = point.longitude - LONG15M
-        val maxLong = point.latitude + LONG15M
+        val maxLong = point.longitude + LONG15M
         val res = getQueryPlatform()
             .greaterThanOrEqualTo("coordLat", minLat)
             .lessThanOrEqualTo("coordLat", maxLat)

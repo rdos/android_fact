@@ -117,6 +117,20 @@ class AndRoid {
            return resFalse
         }
 
+        fun isThisPoint(coordLat: Double, coordLong: Double): Boolean {
+            //lat=0,000133755 это 15 метров
+            val LAT15M = 0.000133755
+            val LONG15M = 0.0002232
+//        long=0,0002232 это 15 метров
+            val minLat = latitude - LAT15M
+            val maxLat = latitude + LAT15M
+            val minLong = longitude - LONG15M
+            val maxLong = longitude + LONG15M
+
+            val res = coordLat in minLat..maxLat && coordLong in minLong..maxLong
+            return res
+        }
+
         var Location: Location? = null
             get() {
                 if (field == null) {

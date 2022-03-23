@@ -19,6 +19,7 @@ import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.act_map__dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_camera.view.*
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.extensions.*
@@ -96,10 +97,14 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
                 gotoNextAct()
             }
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
-                showAlertPlatformByPoint().let { view ->
-                    val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
-                    btnOk.setOnClickListener {
-                        gotoNextAct()
+                if (App.getAppliCation().GPS().isThisPoint(_platform.coordLat, _platform.coordLong)) {
+                    gotoNextAct()
+                } else {
+                    showAlertPlatformByPoint().let { view ->
+                        val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
+                        btnOk.setOnClickListener {
+                            gotoNextAct()
+                        }
                     }
                 }
             }

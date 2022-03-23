@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -59,7 +60,6 @@ import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
 import kotlin.math.round
 
 
@@ -139,9 +139,10 @@ class MapAct : ActAbstract(),
 
         gotoMyGPS.setOnClickListener {
             try {
-                AppliCation().runLocationService()
+                AppliCation().startLocationService(true)
                 mIsAUTOMoveCamera = true
                 moveCameraTo(AppliCation().GPS())
+                AppliCation().showNotificationForce("AA", "BBB")
             } catch (e: Exception) {
                 toast("Клиент не найден")
             }
@@ -173,9 +174,13 @@ class MapAct : ActAbstract(),
 
         }
 
+        AppliCation().startWorkER()
+        AppliCation().startLocationService()
 
-        onSyNChrON()
+        modeSyNChrON_off(false)
         setDevelMode()
+
+        AppliCation().showNotificationForce("AA", "BBB")
     }
 
 
@@ -213,6 +218,7 @@ class MapAct : ActAbstract(),
 
     private fun setDevelMode() {
         if (isDevelMode()) {
+
             mAcbInfo.setOnLongClickListener {
                 //ВОТ тут прошло 3 или больше секунды с начала нажатия
                 //можно что-то запустить
@@ -221,7 +227,7 @@ class MapAct : ActAbstract(),
                 val intent = Intent(this, StartWayBillAct::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 this.startActivity(intent)
-                paramS().SETDevelMode()
+                paramS().logoutDEVEL()
                 return@setOnLongClickListener true
             }
 
@@ -436,13 +442,13 @@ class MapAct : ActAbstract(),
         Log.d(TAG, "acceptProgress.before")
         vs.networkDat.progress(woRKoRDeRknow1.id, ProgressBody(MyUtil.timeStamp())).observe(this, Observer { result ->
             resultStatusList.add(result.status)
-            onSyNChrON()
+            modeSyNChrON_off(false)
             when (result.status) {
                 Status.SUCCESS -> {
                     logSentry("acceptProgress Status.SUCCESS ")
 //                        AppPreferences.isHasTask = true
                     vs.baseDat.setProgressData(woRKoRDeRknow1)
-                    onSyNChrON()
+                    modeSyNChrON_off(false)
                     refreshData()
                     hideProgress()
                 }
@@ -731,6 +737,20 @@ class MapAct : ActAbstract(),
 
 
     override fun startPlatformService(item: PlatformEntity) {
+        if (App.getAppliCation().GPS().isThisPoint(item.coordLat, item.coordLong)) {
+            gotoNextAct(item)
+        } else {
+            showAlertPlatformByPoint().let { view ->
+                val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
+                btnOk.setOnClickListener {
+                    gotoNextAct(item)
+                }
+            }
+        }
+
+    }
+
+    private fun gotoNextAct(item: PlatformEntity) {
         val intent = Intent(this, PlatformServeAct::class.java)
         intent.putExtra("platform_id", item.platformId)
         startActivity(intent)
@@ -738,9 +758,7 @@ class MapAct : ActAbstract(),
 
     override fun startPlatformProblem(item: PlatformEntity) {
         hideDialog()
-        val intent = Intent(this, PlatformFailureAct::class.java)
-        intent.putExtra("platform_id", item.platformId)
-        startActivityForResult(intent, REQUEST_EXIT)
+        gotoNextAct(item)
     }
 
     override fun moveCameraPlatform(point: Point) {
@@ -819,7 +837,7 @@ class MapAct : ActAbstract(),
 //        rotateImageView(imgCompass, R.drawable.pin_finder, direction)
 //    }
 
-    private fun showNotification(platformId: Int) {
+    private fun showNotification(platformId: Int?, name: String?) {
         val notificationIntent = Intent(this, PlatformServeAct::class.java)
 
         notificationIntent.putExtra("platform_id", platformId)
@@ -831,12 +849,12 @@ class MapAct : ActAbstract(),
             PendingIntent.FLAG_CANCEL_CURRENT
         )
 //        val CHANNEL_ID = "M_CH_ID"
-        val CHANNEL_ID = "CHANNEL_ID"
+        val CHANNEL_ID = "M_CH_ID"
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_truck_icon)
-            .setContentTitle("Посылка")
-            .setContentText("Это я, почтальон Печкин. Принес для вас посылку")
+            .setContentTitle("Вы подъехали к контейнерной площадке ")
+            .setContentText("Контейнерная площадка №${platformId}")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setLargeIcon(
@@ -845,9 +863,7 @@ class MapAct : ActAbstract(),
                     R.drawable.ic_add_photo
                 )
             ) // большая картинка
-            .addAction(R.drawable.ic_arrow_top, "Открыть", pendingIntent)
-            .addAction(R.drawable.ic_bag_green, "Отказаться", pendingIntent)
-            .addAction(R.drawable.ic_bag_red, "Другой вариант", pendingIntent)
+            .addAction(R.drawable.ic_arrow_top, "Начать обслуживание", pendingIntent)
             .setAutoCancel(true) // автоматически закрыть уведомление после нажатия
 
 
@@ -868,7 +884,9 @@ class MapAct : ActAbstract(),
         val platformNear = vs.baseDat.findPlatformByCoord(point)
         if (platformNear != null) {
             toast("AAAA${platformNear.platformId}")
-            platformNear.platformId?.let { showNotification(it) }
+            platformNear.platformId?.let {
+                showNotification(platformNear.platformId, platformNear.name)
+            }
         }
 
 //        Log.d("LogDistance", "###################")
@@ -951,7 +969,7 @@ class MapAct : ActAbstract(),
 
     fun finishTask(context: AppCompatActivity) {
         Log.i(TAG, "clearData")
-        offSyNChrON()
+        modeSyNChrON_off()
         vs.clearData()
 //            AppPreferences.isHasTask = false
         context.showSuccessComplete().let {

@@ -49,19 +49,19 @@ class StartAct : ActNOAbst() {
         val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
         startActivity(Intent(this, if (isHasTask) MapAct::class.java else StartOwnerAct::class.java))
         finish()
-        if (isHasTask) {
-            AppliCation().runSyncWorkER()
-            AppliCation().runLocationService()
-        }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (paramS().isRestartApp) {
+            paramS().AppRestarted()
+        }
         setContentView(R.layout.act_start)
         actionBar?.title = "Вход в Систему"
         auth_appversion.text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
         cl_act_start.setOnClickListener {
             MyUtil.hideKeyboard(this)
         }
+
         // TODO: 01.11.2021 !! !
         if (paramS().token.isShowForUser()) {
             gotoNextAct()

@@ -119,9 +119,6 @@ class StartWorkOrderAct : ActNOAbst() {
         }
         startActivity(intent)
         finish()
-
-        AppliCation().runSyncWorkER()
-        AppliCation().runLocationService()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

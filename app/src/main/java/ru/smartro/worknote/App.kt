@@ -1,6 +1,12 @@
 package ru.smartro.worknote
 
 import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -8,15 +14,15 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
+import android.util.Log
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
-import androidx.core.location.LocationManagerCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.location.FilteringMode
-import com.yandex.mapkit.location.LocationManagerUtils
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.sentry.Sentry
@@ -33,6 +39,7 @@ import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.log.AppParaMS
+import ru.smartro.worknote.work.ac.StartAct
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -43,7 +50,7 @@ private var mAppliCation: App? = null
 //todo: !r_dos true-falseTYPE:
 //fun isSaveGPS(): Boolean { isDevelMODE и стандарт
 //
-
+private const val CHANNEL_ID = "M_CH1_ID"
 class App : AApp() {
     companion object {
         fun getAppliCation(): App = mAppliCation!!
@@ -86,10 +93,13 @@ class App : AApp() {
 //todo: r_dos, use isShowForUser :: e.b.a
     override fun onCreate() {
         super.onCreate()
+
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
         MapKitFactory.getInstance().createLocationManager()
+
         mAppliCation = this
+        Log.i(TAG, "on App created App.onCreate onAppCreate")
         initSentry()
         initRealm()
         startKoin {
@@ -105,6 +115,8 @@ class App : AApp() {
 //        })//        val animatorSet = AnimatorSet()//        animatorSet.playTogether(objectAnimator)//        animatorSet.start()
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
+
+
     }
 
 
@@ -179,7 +191,112 @@ class App : AApp() {
         Realm.setDefaultConfiguration(config.build())
     }
 
-    fun runLocationService() {
+
+
+    public fun showNotification(textContent: String, textTitle: String) {
+        val notificationManager = NotificationManagerCompat.from(this)
+        if (notificationManager.notificationChannels.size <= 0) {
+            showNotificationForce(textContent, textTitle)
+        }
+    }
+
+    public fun showNotificationForce(textContent: String, textTitle: String, id: Int = 1){
+        val notificationManager = NotificationManagerCompat.from(this)
+
+//        val fullScreenIntent = Intent(this, StartAct::class.java)
+//        fullScreenIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//        val fullScreenPendingIntent =
+//            PendingIntent.getActivity(this, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+//        val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, CHANNEL_ID)
+//            .run {
+//                setSmallIcon(R.drawable.ic_app)
+//                setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_app))
+//                setContentTitle(title)
+//                setContentText(content)
+//                setOngoing(true)
+//                priority = NotificationCompat.PRIORITY_MAX
+//                setDefaults(NotificationCompat.DEFAULT_ALL)
+//                setContentIntent(fullScreenPendingIntent)
+//
+//                setShowWhen(true)
+//            }
+////        <!--<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />-->
+////        todo: !R_dos
+//        builder.setFullScreenIntent(fullScreenPendingIntent, true)
+//        builder.setStyle(androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle()
+//            .setMediaSession(MediaSessionCompat(this, CHANNEL_ID).getSessionToken()))
+//
+//        val notification: Notification = builder.build()
+//        notificationManager.notify(id, notification)
+//
+
+
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_app)
+            .setContentTitle(textTitle)
+            .setContentText(textContent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        notificationManager.notify(id, builder.build())
+
+
+        val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val notification = Notification((R.drawable.ic_app, textTitle, textContent)
+        val notificationIntent = Intent(this, StartAct::class.java)
+        notificationIntent.flags = (Intent.FLAG_ACTIVITY_CLEAR_TOP
+                or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val intent = PendingIntent.getActivity(
+            this, 0,
+            notificationIntent, 0
+        )
+        notification.setLatestEventInfo(context, title, message, intent)
+        notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
+        notificationManager.notify(0, notification)
+
+//        val notificationLayout = RemoteViews(packageName, R.layout.app_notification_small)
+//        val notificationLayoutExpanded = RemoteViews(packageName, R.layout.app_notification_small)
+//
+//// Apply the layouts to the notification
+//        val customNotification = NotificationCompat.Builder(this, CHANNEL_ID)
+//            .setSmallIcon(R.drawable.ic_app)
+//            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+//            .setCustomContentView(notificationLayout)
+//            .setCustomBigContentView(notificationLayoutExpanded)
+//            .build()
+
+    }
+
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+    }
+
+    public fun cancelNotification(id: Int? = 1) {
+        Log.d(TAG, "cancelNotification.before")
+        val notificationManager = NotificationManagerCompat.from(this)
+        if (id == null) {
+            notificationManager.cancelAll()
+            LOGWork("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
+            return
+        }
+        notificationManager.cancel(id)
+        LOGWork("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
+    }
+
+
+    fun startLocationService(isForceMode: Boolean=false) {
         before("runLocationService")
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -189,8 +306,17 @@ class App : AApp() {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            LOGWork("ActivityCompat.checkSelfPermission = true")
             return
         }
+
+
+        if(!isForceMode && getAppParaMS().isModeLOCATION) {
+            LOGWork("getAppParaMS().isModeLOCATION=true")
+            after()
+            return
+        }
+//todo:        getAp
         val providerName = AndRoid.getProviderName()
         LOGWork(providerName!!)
         AndRoid.getService().requestLocationUpdates(
@@ -198,28 +324,65 @@ class App : AApp() {
             300,
             100F,
             // override fun onLocationChanged(location: Location) {
-        MyLocationListener()
+            MyLocationListener()
         ) // здесь можно указать другие более подходящие вам параметры
 
+
+//        var gps_enabled = false
+//        var network_enabled = false
+//        val lm = AndRoid.getService()
+//        gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+//        network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+//        var net_loc: Location? = null
+//        var gps_loc: Location? = null
+//        var finalLoc: Location? = null
+//        if (gps_enabled) gps_loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+//        if (network_enabled) net_loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+//        if (gps_loc != null && net_loc != null) {
+//            //smaller the number more accurate result will
+//            finalLoc = if (gps_loc.accuracy > net_loc.accuracy) net_loc else gps_loc
+//            // I used this just to get an idea (if both avail, its upto you which you want to take as I've taken location with more accuracy)
+//        } else {
+//            if (gps_loc != null) {
+//                finalLoc = gps_loc
+//            } else if (net_loc != null) {
+//                finalLoc = net_loc
+//            }
+//        }
+
+//        mLocationManager = mMapKit.createLocationManager()
 //      .subscribeForLocationUpdates(0.0, 500, 0.0, true, FilteringMode.OFF, null)
+
+        getAppParaMS().isModeLOCATION = true
+        after()
     }
 
-    fun runSyncWorkER() {
+
+    fun startWorkER() {
         before("runSyncWorkER")
         if(getAppParaMS().isModeWorkER) {
+            LOGWork("getAppParaMS().isModeWorkER=true")
+            after()
             return
         }
+//todo:        getAppParaMS().isModeWorkER = true
         getAppParaMS().isModeWorkER = true
-        val uploadDataWorkManager = PeriodicWorkRequestBuilder<SYNCworkER>(99, TimeUnit.MINUTES).build()
+
+        val uploadDataWorkManager = PeriodicWorkRequestBuilder<SYNCworkER>(1, TimeUnit.MINUTES).build()
 //        uploadDataWorkManager.id = UUID
         LOGWork("uploadDataWorkManager.id = ${uploadDataWorkManager.id}")
         val operation =  WorkManager.getInstance(getAppliCation())
             .enqueueUniquePeriodicWork("SYNCworkER", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
+
+        // TODO: THIS!!! after(isModeWorkER)
+
         after()
     }
 
     fun stopWorkERS() {
         WorkManager.getInstance(this).cancelAllWork()
+        getAppParaMS().isModeWorkER = false
+
     }
 
 
@@ -248,14 +411,6 @@ class App : AApp() {
 
 }
 
-
-fun AAct.offSyNChrON(){
-    App.getAppParaMS().isModeSYNChrONize = false
-}
-
-fun AAct.onSyNChrON(){
-    App.getAppParaMS().isModeSYNChrONize = true
-}
 
 const val A_SLEEP_TIME_1_83__MS = 180000L
 const val Snull = "rNull"

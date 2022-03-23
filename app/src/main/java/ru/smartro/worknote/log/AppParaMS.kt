@@ -9,6 +9,9 @@ import ru.smartro.worknote.andPOIntD.AndRoid
 private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE
 class AppParaMS {
+
+
+    public var isRestartApp: Boolean = false
     private lateinit var mEnv: SharedPreferences
 
     companion object {
@@ -24,11 +27,14 @@ class AppParaMS {
         }
     }
 
-    fun init() {
+    private fun init() {
         val app = App.getAppliCation()
         mEnv = app.getSharedPreferences(NAME, MODE)
-        isModeWorkER = false
+
+        AppRestarted()
+        isRestartApp = false
         isModeDEVEL = app.isDevelMODE()
+
     }
 
     private inline fun SharedPreferences.edit(operation: (SharedPreferences.Editor) -> Unit) {
@@ -164,39 +170,52 @@ class AppParaMS {
             it.putInt("wayListId", value)
         }
 
-    var isModeSYNChrONize: Boolean
-        get() = mEnv.getBoolean("isSYNCmode", true)
-        set(value) = mEnv.edit {
-            it.putBoolean("isSYNCmode", value)
+
+    var isModeSYNChrONize_FoundError: Boolean = false
+        get() = field
+        set(value) {
+            if (value == field) {
+                return
+            }
+            if (value) {
+                isModeSYNChrONize = false
+                isModeWorkER = false
+            } else {
+                if (field) {
+                    isModeWorkER = true
+                    isModeSYNChrONize = true
+                }
+            }
+            field = value
         }
 
-    var isModeWorkER: Boolean
-        get() = mEnv.getBoolean("isModeWorkER", true)
-        set(value) = mEnv.edit {
-            it.putBoolean("isModeWorkER", value)
-        }
+    var isModeSYNChrONize: Boolean=false
+    var isModeWorkER: Boolean=false
+    var isModeLOCATION: Boolean=false
 
-    var isModeDEVEL: Boolean
-        get() = mEnv.getBoolean("isModeDEVEL", false)
-        set(value) = mEnv.edit {
-            it.putBoolean("isModeDEVEL", value)
-        }
+    var isModeDEVEL: Boolean = false
 
-    fun dropDatabase() {
+    fun logout() {
         token = null
-        vehicleId = 0
-        organisationId = 0
-        wayBillId = 0
+        vehicleId = Inull
+        wayBillId = Inull
         //TODO:r_Null!
         isModeSYNChrONize = false
     }
 
-    fun SETDevelMode() {
+    fun logoutDEVEL() {
 //        accessToken = ""
-        vehicleId = 0
-        organisationId = 0
-        wayBillId = 0
+        vehicleId = Inull
+        wayBillId = Inull
+        isModeSYNChrONize = false
         //TODO: rNull!!
-        isModeSYNChrONize = true
+    }
+
+    fun AppRestarted() {
+        isModeSYNChrONize_FoundError = false
+        isModeSYNChrONize = false
+        isModeWorkER = false
+        isModeLOCATION = false
+        isRestartApp = true
     }
 }

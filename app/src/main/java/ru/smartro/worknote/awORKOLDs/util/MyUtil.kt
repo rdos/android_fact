@@ -99,7 +99,7 @@ object MyUtil {
         val intent = Intent(context, StartAct::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
-        App.getAppParaMS().dropDatabase()
+        App.getAppParaMS().logout()
     }
 
     fun imageToBase64(imageUri: Uri, rotationDegrees: Float, context: Context): String {

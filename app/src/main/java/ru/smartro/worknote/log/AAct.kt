@@ -37,6 +37,18 @@ abstract class AAct : AppCompatActivity() {
         super.onNewIntent(intent)
     }
 
+    //todo: modeSyNChrON_off(false)="читается так="-mode off is enabled? -нет
+    fun modeSyNChrON_off(isEnabled: Boolean = true){
+        if (isEnabled) {
+            paramS.isModeSYNChrONize = false
+        } else{
+            if (!paramS.isModeSYNChrONize) {
+                AppliCation().cancelNotification(null)
+            }
+            paramS.isModeSYNChrONize = true
+        }
+    }
+
     protected abstract fun onNewGPS()
 
     //todo !r_dos onNEW-_Service(Srv) 
@@ -143,9 +155,7 @@ abstract class AAct : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-
-//        AppliCation().runSyncWorkER()
-        AppliCation().runLocationService()
+        AppliCation().startWorkER()
     }
 
 

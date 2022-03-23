@@ -60,9 +60,11 @@
         <entry key="app/src/main/res/layout/alert_end_task.xml" value="0.22239583333333332" />
         <entry key="app/src/main/res/layout/alert_navigate_platform.xml" value="0.22239583333333332" />
         <entry key="app/src/main/res/layout/alert_on_point.xml" value="0.18177083333333333" />
+        <entry key="app/src/main/res/layout/alert_successful_complete.xml" value="0.22239583333333332" />
         <entry key="app/src/main/res/layout/alert_warning.xml" value="0.22239583333333332" />
         <entry key="app/src/main/res/layout/alert_warning_camera.xml" value="0.18177083333333333" />
         <entry key="app/src/main/res/layout/alert_warning_failure.xml" value="0.22239583333333332" />
+        <entry key="app/src/main/res/layout/app_notification_small.xml" value="0.17447916666666666" />
         <entry key="app/src/main/res/layout/dialog_early_complete.xml" value="0.22239583333333332" />
         <entry key="app/src/main/res/layout/dialog_platform_clicked_dtl.xml" value="0.17447916666666666" />
         <entry key="app/src/main/res/layout/fragment_camera.xml" value="0.18645833333333334" />
@@ -72,6 +74,7 @@
         <entry key="app/src/main/res/layout/item_log_detail.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_map_behavior.xml" value="0.25" />
         <entry key="app/src/main/res/layout/layout_chip_entry.xml" value="0.1875" />
+        <entry key="app/src/main/res/layout/notification_small.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/start_act__rv_item_know1.xml" value="0.24375" />
       </map>
     </option>
