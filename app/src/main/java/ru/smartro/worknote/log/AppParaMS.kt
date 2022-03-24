@@ -2,9 +2,9 @@ package ru.smartro.worknote.log
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.FloatCool
-import ru.smartro.worknote.andPOIntD.AndRoid
+import ru.smartro.worknote.andPOintD.PoinT
 
 private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE
@@ -61,48 +61,67 @@ class AppParaMS {
         set(value) = mEnv.edit {
             it.putString("accessToken", value)
         }
-
-
-
+    var deviceId: String
+        get() {
+            var devId = mEnv.getString("deviceId", Snull)!!
+            if (devId == Snull) {
+                devId = App.getAppliCation().getDeviceId()
+                mEnv.edit{
+                    it.putString("deviceId", devId)
+                }
+            }
+            return devId
+        }
+        set(value) {
+            Log.e("deviceId", "deviceIdset(value)")
+            Log.e("deviceId", "deviceIdset(value)")
+            Log.e("deviceId", "deviceIdset(value)")
+            Log.e("deviceId", "deviceIdset(value)")
+            Log.e("deviceId", "deviceIdset(value)")
+            Log.e("deviceId", "deviceIdset(value)")
+            Log.e("deviceId", "deviceIdset(value)")
+        }
     fun isLastGPS(time: Long): Boolean = isLastGPS_priv(time)
-
     private fun isLastGPS_priv(time: Long?=null): Boolean {
         val diff = System.currentTimeMillis() - (time?:gpsTIME)
         return diff <= 3_000
     }
-
     fun isLastGPSSaved(): Boolean {
        return isLastGPS_priv()
     }
-
-
-    //Any
-    fun getAlwaysGPS(): AndRoid.PoinT {
-        return geTLastKnowGPS()
-    }
-
-    fun geTLastKnowGPS(): AndRoid.PoinT {
-        return AndRoid.PoinT(gpsLAT, gpsLONG, gpsTIME, gpsACCURACY)
-    }
-
-    fun getLastGPS(): AndRoid.PoinT? {
-        var res:AndRoid.PoinT? = null
+//    fun getAlwaysGPS(): AndRoid.PoinT {
+//        return geTLastKnowGPS()
+//    }
+//    fun geTLastKnowGPS(): AndRoid.PoinT {
+//        return
+//    }
+    fun getSaveGPS(): PoinT {
+        val res = PoinT(gpsLAT, gpsLONG, gpsTIME, gpsACCURACY)
         if (isLastGPSSaved()) {
-            res= geTLastKnowGPS()
+            return res
         }
+        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
+        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
+        Log.i("getSaveGPS", "if (isLastGPSSaved()) == false")
+        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
+        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
         return res
     }
 
-
-
-    fun addParamLast12nowGPS(lat: DoubleCool, long: DoubleCool, time: LongCool, accuracy: FloatCool) {
+    fun saveLastGPS(lat: DoubleCool, long: DoubleCool, time: LongCool, accuracy: Float) {
         //база
         gpsLAT = lat.toFloat()
         gpsLONG = long.toFloat()
         //базовая основа
         gpsTIME = time
         //доп.олни!тельное)
-        gpsACCURACY = accuracy.VAL
+        gpsACCURACY = accuracy
+    }
+
+
+    fun saveLastGPS(point: PoinT) {
+        //база
+        saveLastGPS(point.latitude, point.longitude, point.getTime(), point.getAccuracy())
     }
 
 
@@ -248,13 +267,6 @@ class AppParaMS {
         isModeSYNChrONize = false
     }
 
-    fun logoutDEVEL() {
-//        accessToken = ""
-        vehicleId = Inull
-        wayBillId = Inull
-        isModeSYNChrONize = false
-        //TODO: rNull!!
-    }
 
     fun AppRestarted() {
         isModeSYNChrONize_FoundError = false

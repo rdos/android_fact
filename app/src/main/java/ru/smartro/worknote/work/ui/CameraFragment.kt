@@ -33,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ac.map.AFragment
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
@@ -484,7 +485,7 @@ class CameraFragment(
 //                                }
 
 
-                                val gps = paramS().getAlwaysGPS()
+                                val gps = App.getAppliCation().gps()
                                 if (photoFor == PhotoTypeEnum.forContainerBreakdown
                                     || photoFor == PhotoTypeEnum.forContainerFailure) {
 

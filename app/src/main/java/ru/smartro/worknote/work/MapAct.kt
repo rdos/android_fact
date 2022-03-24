@@ -3,7 +3,6 @@ package ru.smartro.worknote.work
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -16,14 +15,11 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.*
 import com.yandex.mapkit.directions.DirectionsFactory
@@ -47,7 +43,7 @@ import kotlinx.android.synthetic.main.dialog_early_complete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.ActAbstract
-import ru.smartro.worknote.andPOIntD.AndRoid
+import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
@@ -59,10 +55,10 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBod
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalAct
+import java.util.*
 import kotlin.math.round
 
 
@@ -77,7 +73,7 @@ import kotlin.math.round
 // TODO: I 12.11.1997 import имя getNetDATEsetBaseDate и там где рядом netDat и SrvDate а где смысл как в python
 class MapAct : ActAbstract(),
     /*UserLocationObjectListener,*/
-    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener, InputListener, CameraListener, InertiaMoveListener {
+    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener,  InertiaMoveListener , InputListener {
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
@@ -120,8 +116,8 @@ class MapAct : ActAbstract(),
             val workOrderS = getWorkOrders(extraPramId)
             getNetDATEsetBaseDate(workOrderS)
         }
-        mMapMyYandex.map.addInputListener(this)
-        mMapMyYandex.map.addCameraListener(this)
+//        mMapMyYandex.map.addInputListener(this)
+//        mMapMyYandex.map.addCameraListener(this)
         mMapMyYandex.map.addInertiaMoveListener(this)
 //        mMapMyYandex.setOnTouchListener { v, event ->
 //            mIsAUTOMoveCamera = false
@@ -149,8 +145,7 @@ class MapAct : ActAbstract(),
             try {
                 AppliCation().startLocationService(true)
                 mIsAUTOMoveCamera = true
-                moveCameraTo(AppliCation().GPS())
-                showNotification(1123, "AAAAAAa")
+                moveCameraTo(AppliCation().gps())
             } catch (e: Exception) {
                 toast("Клиент не найден")
             }
@@ -186,9 +181,7 @@ class MapAct : ActAbstract(),
         AppliCation().startLocationService()
 
         modeSyNChrON_off(false)
-        setDevelMode()
-
-        AppliCation().showNotificationForce("AA", "BBB")
+//        setDevelMode()
     }
 
 
@@ -224,44 +217,7 @@ class MapAct : ActAbstract(),
         return mMapObjectsDrive
     }
 
-    private fun setDevelMode() {
-        if (isDevelMode()) {
 
-            mAcbInfo.setOnLongClickListener {
-                //ВОТ тут прошло 3 или больше секунды с начала нажатия
-                //можно что-то запустить
-                WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
-                vs.clearData()
-                val intent = Intent(this, StartAct::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                this.startActivity(intent)
-                paramS().logoutDEVEL()
-                return@setOnLongClickListener true
-            }
-
-//            mAcbInfo.setOnTouchListener(object : View.OnTouchListener {
-//                var startTime: Long = 0
-//                override fun onTouch(v: View?, event: MotionEvent): Boolean {
-//                    when (event.action) {
-//                        MotionEvent.ACTION_DOWN -> startTime = System.currentTimeMillis()
-//                        MotionEvent.ACTION_MOVE -> {}
-//                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-//                            val totalTime: Long = System.currentTimeMillis() - startTime
-//                            val totalSecunds = totalTime / 1000
-//                            if (totalSecunds >= 5) {
-//                                //ВОТ тут прошло 3 или больше секунды с начала нажатия
-//                                //можно что-то запустить
-//                                WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
-//                                vs.clearData()
-//                                MyUtil.logout(this@MapAct)
-//                            }
-//                        }
-//                    }
-//                    return true
-//                }
-//            })
-        }
-    }
 
     private fun refreshData() {
         mWorkOrderS = vs.baseDat.findWorkOrders()
@@ -582,7 +538,7 @@ class MapAct : ActAbstract(),
         showingProgress()
         val deviceId = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
 
-        val gps = AppliCation().GPS()
+        val gps = AppliCation().gps()
 
         val synchronizeBody = SynchronizeBody(
             paramS().wayBillId,
@@ -745,7 +701,7 @@ class MapAct : ActAbstract(),
 
 
     override fun startPlatformService(item: PlatformEntity) {
-        if (App.getAppliCation().GPS().isThisPoint(item.coordLat, item.coordLong)) {
+        if (App.getAppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
             gotoNextAct(item)
         } else {
             showAlertPlatformByPoint().let { view ->
@@ -793,13 +749,13 @@ class MapAct : ActAbstract(),
         try {
 //            getMapObjCollection().clear()
             clearMapIbjectsDrive()
-            vs.buildMapNavigator(AppliCation().GPS(), checkPoint, mDrivingRouter, mDrivingSession)
+            vs.buildMapNavigator(AppliCation().gps(), checkPoint, mDrivingRouter, mDrivingSession)
             drivingModeState = true
             navigator_toggle_fab.isVisible = drivingModeState
             hideDialog()
             val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            moveCameraTo(AppliCation().GPS())
+            moveCameraTo(AppliCation().gps())
         } catch (ex: Exception) {
             Log.e(TAG, "buildNavigator", ex)
             toast(getString(R.string.error_build_way))
@@ -807,7 +763,7 @@ class MapAct : ActAbstract(),
 
     }
 
-    private fun moveCameraTo(pont: AndRoid.PoinT) {
+    private fun moveCameraTo(pont: PoinT) {
         mMapMyYandex.map.move(
             CameraPosition(pont, 15.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null)
@@ -845,42 +801,30 @@ class MapAct : ActAbstract(),
 //        rotateImageView(imgCompass, R.drawable.pin_finder, direction)
 //    }
 
-    private fun showNotification(platformId: Int?, name: String?) {
-        val notificationIntent = Intent(this, PlatformServeAct::class.java)
+    private fun showNotificationPlatfrom(platformId: Int?, name: String?) {
+        val intent = Intent(this, PlatformServeAct::class.java)
 
-        notificationIntent.putExtra("platform_id", platformId)
-        notificationIntent.putExtra("mIsServeAgain", false)
+        intent.putExtra("platform_id", platformId)
+        intent.putExtra("mIsServeAgain", false)
 
         val pendingIntent = PendingIntent.getActivity(
             this,
-            0, notificationIntent,
+            0, intent,
             PendingIntent.FLAG_CANCEL_CURRENT
         )
-//        val CHANNEL_ID = "M_CH_ID"
-        val CHANNEL_ID = "M_CH_ID111"
 
-        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_truck_icon)
-            .setContentTitle("Вы подъехали к контейнерной площадке ")
-            .setContentText("Контейнерная площадка №${platformId}")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setLargeIcon(
-                BitmapFactory.decodeResource(
-                    resources,
-                    R.drawable.ic_add_photo
-                )
-            ) // большая картинка
-            .addAction(R.drawable.ic_arrow_top, "Начать обслуживание", pendingIntent)
-            .setAutoCancel(true) // автоматически закрыть уведомление после нажатия
-
-
-        val notificationManager = NotificationManagerCompat.from(this)
-        notificationManager.notify(-1, builder.build())
+        AppliCation().showNotificationForce(pendingIntent,
+            "Контейнерная площадка №${platformId}",
+            "Вы подъехали к контейнерной площадке",
+            "Начать обслуживание ",
+            this.hashCode(),
+            NOTIFICATION_CHANNEL_ID__MAP_ACT
+        )
     }
 
+
     override fun onNewGPS() {
-        val point = AppliCation().GPS()
+        val point = AppliCation().gps()
         if (mIsFirstTime) {
             moveCameraTo(point)
             mIsFirstTime = false
@@ -890,12 +834,19 @@ class MapAct : ActAbstract(),
         }
 
         val platformNear = vs.baseDat.findPlatformByCoord(point)
-        if (platformNear != null) {
-            toast("AAAA${platformNear.platformId}")
-            platformNear.platformId?.let {
-                showNotification(platformNear.platformId, platformNear.name)
+       platformNear.observe(this, Observer { platformList ->
+            if (!platformList.isNullOrEmpty()) {
+                if (platformList.size == 1) {
+                    val platform = platformList[0]
+                    toast("FFFFFFFFFFFFF${platform.platformId}")
+                    showNotificationPlatfrom(platform.platformId, platform.name)
+                } else {
+                    toast("platformList.size=${platformList.size}")
+                }
+            } else {
+                LOGWork("platformList.is null")
             }
-        }
+       })
 
 //        Log.d("LogDistance", "###################")
 //
@@ -1217,33 +1168,73 @@ class MapAct : ActAbstract(),
         }
     }
 
-    override fun onMapTap(p0: Map, p1: Point) {
-        Log.d("AAAA", "AAAAAAAAAAA")
-    }
 
-    override fun onMapLongTap(p0: Map, p1: Point) {
-        Log.d("AAAA", "BBBBBBBBB")
 
-    }
-
-    override fun onCameraPositionChanged(p0: Map, p1: CameraPosition, p2: CameraUpdateReason, p3: Boolean) {
-        Log.d("AAAA", "AAA111AA11A1AAAAA")
-
-    }
 
     override fun onStart(p0: Map, p1: CameraPosition) {
+//        this as InertiaMoveListener
         mIsAUTOMoveCamera = false
     }
 
     override fun onCancel(p0: Map, p1: CameraPosition) {
-        Log.d("AAAA", "onCancel")
-
+        this as InertiaMoveListener
+//        Log.d("AAAA", "onCancel")
     }
 
     override fun onFinish(p0: Map, p1: CameraPosition) {
-        Log.d("AAAA", "onFinish")
+//        Log.d("AAAA", "onFinish")
+//        this as InertiaMoveListener
     }
 
+    override fun onMapTap(p0: Map, p1: Point) {
+
+    }
+
+    override fun onMapLongTap(p0: Map, p1: Point) {
+        //ВОТ тут прошло 3 или больше секунды с начала нажатия
+        //можно что-то запустить
+        AppliCation().stopWorkERS()
+        vs.clearData()
+        restartApp()
+        paramS().logout()
+    }
+
+    private fun setDevelMode() {
+        if (isDevelMode()) {
+
+            mAcbInfo.setOnLongClickListener {
+                //ВОТ тут прошло 3 или больше секунды с начала нажатия
+                //можно что-то запустить
+                AppliCation().stopWorkERS()
+                vs.clearData()
+                restartApp()
+                paramS().logout()
+                return@setOnLongClickListener true
+            }
+
+//            mAcbInfo.setOnTouchListener(object : View.OnTouchListener {
+//                var startTime: Long = 0
+//                override fun onTouch(v: View?, event: MotionEvent): Boolean {
+//                    when (event.action) {
+//                        MotionEvent.ACTION_DOWN -> startTime = System.currentTimeMillis()
+//                        MotionEvent.ACTION_MOVE -> {}
+//                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+//                            val totalTime: Long = System.currentTimeMillis() - startTime
+//                            val totalSecunds = totalTime / 1000
+//                            if (totalSecunds >= 5) {
+//                                //ВОТ тут прошло 3 или больше секунды с начала нажатия
+//                                //можно что-то запустить
+//                                WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
+//                                vs.clearData()
+//                                MyUtil.logout(this@MapAct)
+//                            }
+//                        }
+//                    }
+//                    return true
+//                }
+//            })
+        }
+    }
 }
 
 
@@ -1258,3 +1249,5 @@ class MapAct : ActAbstract(),
 //                infoText += "${workOrder.cnt_container_status_success}"
 //                infoText += "/${workOrder.cntContainerProgress()}"
 //                infoText += "/${workOrder.cnt_container_status_error}\n"
+
+

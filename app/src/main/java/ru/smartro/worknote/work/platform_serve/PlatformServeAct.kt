@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
@@ -94,11 +95,11 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_platformserve)
-        intent.let {
-            mPlatformEntity = vm.findPlatformEntity(it.getIntExtra("platform_id", 0))
-            mIsServeAgain = it.getBooleanExtra("mIsServeAgain", false)
-        }
         supportActionBar?.hide()
+        
+        mPlatformEntity = vm.baseDat.findPlatformEntity(intent.getIntExtra("platform_id", Inull))
+        mIsServeAgain = intent.getBooleanExtra("mIsServeAgain", false)
+
 //        supportActionBar?.title =
         val actvAddress = findViewById<AppCompatTextView>(R.id.actv_act_platform_serve__address)
         actvAddress.text = "${mPlatformEntity.address}"
@@ -386,7 +387,6 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 //    }
 
     private fun initContainer() {
-        val platform = vm.findPlatformEntity(platformId = mPlatformEntity.platformId!!)
         val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
 //        val arrays = containers as ArrayList<ContainerEntity>
 //        arrays.add(arrays.get(0))
@@ -412,7 +412,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         mConrainerAdapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).recycledViewPool.setMaxRecycledViews(0, 0);
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).adapter = mConrainerAdapter
-        findViewById<TextView>(R.id.tv_activity_platform_serve__point_info).text = "№${platform.srpId} / ${platform.containers!!.size} конт."
+        findViewById<TextView>(R.id.tv_activity_platform_serve__point_info).text = "№${mPlatformEntity.srpId} / ${mPlatformEntity.containers!!.size} конт."
     }
 
     fun updateRecyclerview() {

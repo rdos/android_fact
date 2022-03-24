@@ -1,7 +1,8 @@
 package ru.smartro.worknote
 
+import android.app.PendingIntent
 import android.content.Context
-import android.provider.Settings.Secure
+import android.content.Intent
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -14,8 +15,10 @@ import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
+import ru.smartro.worknote.log.AppParaMS
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.RealmRepository
+import ru.smartro.worknote.work.ac.StartAct
 import java.io.File
 import java.io.FileOutputStream
 
@@ -37,58 +40,57 @@ class SYNCworkER(
 
 
     private val mNetworkRepository = NetworkRepository(applicationContext)
-    private val mDeviceId = Secure.getString(p_application.contentResolver, Secure.ANDROID_ID)
-    private val mMinutesInSec = 30 * 60
 
 
-    private fun showWorkERNotification(isForceMode: Boolean = false,
-                                       content: String = "Не закрывайте приложение",
-                                       title: String = "Служба отправки данных работает") {
-//        if (isForceMode) {
-//            App.getAppliCation().showNotificationForce(content, title)
-//        } else {
-//            App.getAppliCation().showNotification(content, title)
-//        }
+    private fun showWorkERNotification(isForceMode: Boolean = true,
+                                       contentText: String = "Не закрывайте приложение",
+                                       titleText: String = "Служба отправки данных работает") {
+
+        val intent = Intent(applicationContext, StartAct::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val pendingIntent =  PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        if (isForceMode) {
+            App.getAppliCation().showNotificationForce(pendingIntent, contentText, titleText)
+        } else {
+            App.getAppliCation().showNotification(pendingIntent, contentText, titleText)
+        }
     }
 
-    private fun showWorkERROR(isForceMode: Boolean,
-                              content: String ,
-                              title: String) {
-        showWorkERNotification(isForceMode, content, title)
+    private val db: RealmRepository by lazy {
+        RealmRepository(Realm.getDefaultInstance())
+    }
+
+    private fun showWorkERROR(contentText: String="ОШИБКА служба ОТПРАВКИ данных НЕ работает",
+                              title: String=contentText) {
+        showWorkERNotification(true, contentText, title)
     }
 
     override suspend fun doWork(): Result {
-        before("doWork")
+        beforeLOG("doWork")
         val params = App.getAppParaMS()
         params.isModeSYNChrONize_FoundError = false
         try {
-            var db = RealmRepository(Realm.getDefaultInstance())
-            val DELAY_MS: Long =  if (App.getAppParaMS().isModeDEVEL) 5_000 else 30_000
+
+            val DELAY_MS: Long =  if (App.getAppParaMS().isModeDEVEL) 11_011 else 30_000
             while (true) {
-                beforeCycles("while (true)")
+                INcyclEStart("while (true)")
 
-
+                delay(DELAY_MS)
                 if (params.isModeSYNChrONize) {
                     showWorkERNotification()
-                    Log.d(TAG, "SYNCworkER RUN")
-                    synChrONizationDATA(db)
+                    LOGWork( "SYNCworkER RUN")
+                    synChrONizationDATA()
                 } else {
-                    Log.d(TAG, "SYNCworkER STOPPED")
-                    showWorkERNotification(true,"Служба отправки данных остановлена", "Служба отправки данных НЕ работает")
+                    LOGWork("SYNCworkER STOPPED")
+                    showWorkERNotification(contentText = "Служба отправки данных остановлена",
+                        titleText = "Служба отправки данных НЕ работает")
                 }
-                delay(DELAY_MS)
-                afterCycles()
-//            try {
-
-
-//            } catch (ex: Exception) {
-//                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-//                db = RealmRepository(Realm.getDefaultInstance())
-//            }
+                INcyclEStop()
             } //todo: while (true) {
         } catch (ex: Throwable) {
             params.isModeSYNChrONize_FoundError = true
-            showWorkERROR(true, "ОШИБКА Служба отправки данных НЕ работает", "Служба отправки данных НЕ работает")
+            showWorkERROR()
+            Log.e(TAG, ex.message, ex)
             return Result.retry()
         }
 //        Realm.init(context)
@@ -97,12 +99,14 @@ class SYNCworkER(
 
 
 
-    private suspend fun synChrONizationDATA(db: RealmRepository) {
+    private suspend fun synChrONizationDATA() {
+        beforeLOG("synChrONizationDATA")
         val timeBeforeRequest: Long
         logSentry("SYNCworkER STARTED")
         val lastSynchroTime =App.getAppParaMS().lastSynchroTime
         val platforms: List<PlatformEntity>
 
+        val mMinutesInSec = 30 * 60
         if (lastSynchroTime - MyUtil.timeStamp() > mMinutesInSec) {
             platforms = db.findPlatforms30min()
             timeBeforeRequest = lastSynchroTime + mMinutesInSec
@@ -110,13 +114,16 @@ class SYNCworkER(
         } else {
             platforms = db.findLastPlatforms()
             timeBeforeRequest = MyUtil.timeStamp()
-            Log.d(TAG, "SYNCworkER LAST PLATFORMS")
+            LOGWork("SYNCworkER LAST PLATFORMS")
         }
 
 
-        val gpsData =App.getAppParaMS().geTLastKnowGPS()
-        val synchronizeBody = SynchronizeBody(App.getAppParaMS().wayBillId, gpsData.PointToListDouble(),
-            mDeviceId, gpsData.PointTimeToLastKnowTime_SRV(), platforms)
+        val gps = App.getAppliCation().gps()
+        val synchronizeBody = SynchronizeBody(App.getAppParaMS().wayBillId,
+            gps.PointToListDouble(),
+            AppParaMS().deviceId,
+            gps.PointTimeToLastKnowTime_SRV(),
+            platforms)
 
         Log.d(TAG, "platforms.size=${platforms.size}")
 
@@ -129,9 +136,9 @@ class SYNCworkER(
                 if (platforms.isNotEmpty()) {
                    App.getAppParaMS().lastSynchroTime = timeBeforeRequest
                     db.updatePlatformNetworkStatus(platforms)
-                    Log.d(TAG, "SYNCHRONIZE SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
+                    Log.d(TAG, "SYNCworkER SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
                 } else {
-                    Log.d(TAG, "SYNCHRONIZE SUCCESS: GPS SENT")
+                    Log.d(TAG, "SYNCworkER SUCCESS: GPS SENT")
                 }
                 val alertMsg = synchronizeResponse.data?.alert
                 if (!alertMsg.isNullOrEmpty()) {
@@ -139,9 +146,11 @@ class SYNCworkER(
 //                    App.getAppliCation().showNotification(alertMsg, "Уведомление")
                 }
             }
-            Status.ERROR -> Log.e(TAG, "SYNCHRONIZE ERROR")
-            Status.NETWORK -> Log.w(TAG, "SYNCHRONIZE NO INTERNET")
+            Status.ERROR -> Log.e(TAG, "SYNCworkER ERROR")
+            Status.NETWORK -> Log.w(TAG, "SYNCworkER NO INTERNET")
         }
+        LOGafterLOG()
+
     }
 
 
@@ -217,35 +226,35 @@ class SYNCworkER(
     }
 
     //SYNCworkER
-    fun before(method: String, valueName: String = "") {
+    fun beforeLOG(method: String, valueName: String = "") {
         mMethodName = method
         Log.w(TAG, ".thread_id=${Thread.currentThread().id}")
         Log.d(TAGLOG, "${mMethodName}.before")
     }
 
-    fun beforeCycles(s: String) {
+    fun INcyclEStart(s: String) {
         mMethodName?.let {
             Log.d(TAGLOG, "${mMethodName}.CYCLes.${s}")
-            return@beforeCycles
+            return@INcyclEStart
         }
         Log.d(TAGLOG, "CYCLes.${s}")
     }
 
-    fun afterCycles() {
+    fun INcyclEStop() {
         mMethodName?.let {
             Log.d(TAGLOG, "${mMethodName}.************-_(:;)")
-            return@afterCycles
+            return@INcyclEStop
         }
         Log.d(TAGLOG, ".************-_(:;)")
     }
 
     //SYNCworkER
-    protected fun after(res: String) {
+    protected fun LOGafterLOG(res: String) {
         logAfterResult(res.toStr())
     }
 
     //    SYNCworkER
-    protected fun after(res: Boolean? = null) {
+    protected fun LOGafterLOG(res: Boolean? = null) {
         logAfterResult(res.toStr())
     }
 
@@ -261,3 +270,74 @@ class SYNCworkER(
 
 }
 
+/**
+ *
+ *
+ *
+SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+if (!prefs.getBoolean("firstTime", false)) {
+
+Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+
+AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+Calendar calendar = Calendar.getInstance();
+calendar.setTimeInMillis(System.currentTimeMillis());
+calendar.set(Calendar.HOUR_OF_DAY, 7);
+calendar.set(Calendar.MINUTE, 0);
+calendar.set(Calendar.SECOND, 1);
+
+manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+AlarmManager.INTERVAL_DAY, pendingIntent);
+
+SharedPreferences.Editor editor = prefs.edit();
+editor.putBoolean("firstTime", true);
+editor.apply();
+}
+
+ublic class AlarmReceiver extends BroadcastReceiver {
+@Override
+public void onReceive(Context context, Intent intent) {
+// show toast
+Toast.makeText(context, "Alarm running", Toast.LENGTH_SHORT).show();
+}
+}
+
+
+public class DeviceBootReceiver extends BroadcastReceiver {
+@Override
+public void onReceive(Context context, Intent intent) {
+if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+// on device boot compelete, reset the alarm
+Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+
+AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+Calendar calendar = Calendar.getInstance();
+calendar.setTimeInMillis(System.currentTimeMillis());
+calendar.set(Calendar.HOUR_OF_DAY, 7);
+calendar.set(Calendar.MINUTE, 0);
+calendar.set(Calendar.SECOND, 1);
+
+manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+AlarmManager.INTERVAL_DAY, pendingIntent);
+}
+}
+}
+
+
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+
+
+<receiver android:name=".DeviceBootReceiver">
+<intent-filter>
+<action android:name="android.intent.action.BOOT_COMPLETED" />
+</intent-filter>
+</receiver>
+<receiver android:name=".AlarmReceiver" />
+
+ * */

@@ -1,8 +1,9 @@
 package ru.smartro.worknote.log
 
 import android.app.Application
+import android.provider.Settings
 import android.util.Log
-import com.yandex.mapkit.geometry.Point
+import ru.smartro.worknote.App
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 
@@ -18,7 +19,7 @@ abstract class AApp : Application() {
     private val TAGLOG = "AAppLOG"
 
 
-    fun before(method: String, valueName: String = "") {
+    fun beforeLOG(method: String, valueName: String = "") {
         mMethodName = method
         Log.w(TAG, ".thread_id=${Thread.currentThread().id}")
         Log.d(TAGLOG, "${mMethodName}.before")
@@ -33,24 +34,24 @@ abstract class AApp : Application() {
         mMethodName = null
     }
 
-    protected fun after(res: Boolean? = null) {
+    protected fun LOGafterLOG(res: Boolean? = null) {
         logAfterResult(res.toStr())
     }
 
-    protected fun LOGWork(valueNameAndValue: String) {
+    protected fun log(valueNameAndValue: String) {
         mMethodName?.let {
             Log.i(TAGLOG, "${TAGLOG}:${mMethodName}.${valueNameAndValue}")
-            return@LOGWork
+            return@log
         }
         Log.i(TAGLOG, "${TAGLOG}:${valueNameAndValue}")
     }
 
-    protected fun LOGWork(valueName: String, value: Int) {
-        LOGWork("${valueName}=$value")
+    protected fun log(valueName: String, value: Int) {
+        log("${valueName}=$value")
     }
 
-    protected fun LOGWork(valueName: String, value: String) {
-        LOGWork("${valueName}=$value")
+    protected fun log(valueName: String, value: String) {
+        log("${valueName}=$value")
     }
 
 
@@ -67,6 +68,15 @@ abstract class AApp : Application() {
 //            }
         }
         return false
+    }
+
+    fun getDeviceId(): String {
+//        log("${Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)}")
+        try {
+            return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        } catch (ex: Throwable) {
+            return "ThrowableDeviceId"
+        }
     }
 
 

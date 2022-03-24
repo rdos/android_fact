@@ -1,17 +1,17 @@
-package ru.smartro.worknote.abs
+package ru.smartro.worknote.andPOintD
 
-import ru.smartro.worknote.App
 import ru.smartro.worknote.Fnull
+import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.log.AApp
 
 class FloatCool(tagName: String? = null, valueName: String? = null): AbsObject(tagName, valueName) {
 
     constructor(valueName: String, app: AApp) : this(app.TAG, valueName)
-    var VAL: Float = Fnull
+    var LET: Float = Fnull
 
     fun setDATAing(float: Float) {
         LOGWork(float.toString())
-        VAL = float
+        LET = float
     }
 
 }

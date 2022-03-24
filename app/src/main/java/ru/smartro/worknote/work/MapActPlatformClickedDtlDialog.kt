@@ -97,7 +97,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
                 gotoNextAct()
             }
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
-                if (App.getAppliCation().GPS().isThisPoint(_platform.coordLat, _platform.coordLong)) {
+                if (App.getAppliCation().gps().isThisPoint(_platform.coordLat, _platform.coordLong)) {
                     gotoNextAct()
                 } else {
                     showAlertPlatformByPoint().let { view ->

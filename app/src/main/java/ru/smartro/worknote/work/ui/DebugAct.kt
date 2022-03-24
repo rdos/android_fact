@@ -63,12 +63,12 @@ class DebugAct : ActNOAbst() {
         debug_organisation.text = "Организация: ${paramS().ownerId}"
 //        debug_user.text = "Пользователь: ${AppPreferences.BoTlogin}"
 //        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillNumber}"
-        debug_coordinate.text = "Координаты: ${AppliCation().GPS()}"
+        debug_coordinate.text = "Координаты: ${AppliCation().gps()}"
         debug_phone.text = "Устройство: ${MyUtil.getDeviceName()}, Android: ${android.os.Build.VERSION.SDK_INT}"
 
-        debug_mapview.map.mapObjects.addPlacemark(AppliCation().GPS(), ImageProvider.fromResource(this, R.drawable.ic_euro_blue))
+        debug_mapview.map.mapObjects.addPlacemark(AppliCation().gps(), ImageProvider.fromResource(this, R.drawable.ic_euro_blue))
         debug_mapview.map.move(
-            CameraPosition(AppliCation().GPS(), 12.0f, 0.0f, 0.0f),
+            CameraPosition(AppliCation().gps(), 12.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null
         )
         debug_mapview.map.isScrollGesturesEnabled = false

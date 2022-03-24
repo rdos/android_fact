@@ -11,6 +11,7 @@ import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
+import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartVehicleAct
 import java.lang.Exception
 
@@ -64,7 +65,7 @@ abstract class AAct : AppCompatActivity() {
     public var TAG : String = "${this::class.simpleName}"
     private val TAGLOG = "AActLOG"
     protected fun LOGbefore(method: String, valueName: String = "") {
-        AppliCation().before(method, valueName)
+        AppliCation().beforeLOG(method, valueName)
     }
 
     private fun logAfterResult(result: String) {
@@ -95,6 +96,22 @@ abstract class AAct : AppCompatActivity() {
     }
     protected fun logSentry(data: Int) {
         logSentry(data.toString())
+    }
+
+    fun INcyclEStart(s: String) {
+        mMethodName?.let {
+            Log.d(TAGLOG, "${mMethodName}.CYCLes.${s}")
+            return@INcyclEStart
+        }
+        Log.d(TAGLOG, "CYCLes.${s}")
+    }
+
+    fun INcyclEStop() {
+        mMethodName?.let {
+            Log.d(TAGLOG, "${mMethodName}.************-_(:;)")
+            return@INcyclEStop
+        }
+        Log.d(TAGLOG, ".************-_(:;)")
     }
 
 
@@ -204,6 +221,12 @@ abstract class AAct : AppCompatActivity() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
 
+    }
+
+    protected fun restartApp() {
+        val intent = Intent(this, StartAct::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        this.startActivity(intent)
     }
 
 

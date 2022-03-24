@@ -33,9 +33,6 @@ class PlatformServeViewModel(application: Application) : BaseViewModel(applicati
         baseDat.updatePlatformStatus(platformId, status)
     }
 
-    fun findPlatformEntity(platformId: Int): PlatformEntity {
-        return baseDat.findPlatformEntity(platformId)
-    }
 
     fun findContainerEntity(containerId: Int): ContainerEntity {
         return baseDat.findContainerEntity(containerId)

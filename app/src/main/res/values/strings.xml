@@ -83,6 +83,6 @@
     <string name="start_serve_again">Продолжить обслуживание</string>
     <string name="dialog_platform_clicked_dtl__serve_again">Редактировать / Дополнить</string>
     <string name="problem_container">Невывоз контейнера</string>
-    <string name="channel_description">RDOS_desc_channal</string>
-    <string name="channel_name">RDOS_CHANNAL_NAM</string>
+    <string name="channel_description">CHANNEL_DESCRIPTION_FACT_WORKNOTE</string>
+    <string name="channel_name">CHANNEL_NAME_FACT_WORKNOTE</string>
 </resources>
