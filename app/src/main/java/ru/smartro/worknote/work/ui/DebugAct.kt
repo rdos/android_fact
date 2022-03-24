@@ -60,7 +60,7 @@ class DebugAct : ActNOAbst() {
         debug_ram_progress.max = 100
         debug_ram_progress.progress = usedMemInPercentage.toInt()
 
-        debug_organisation.text = "Организация: ${paramS().organisationId}"
+        debug_organisation.text = "Организация: ${paramS().ownerId}"
 //        debug_user.text = "Пользователь: ${AppPreferences.BoTlogin}"
 //        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillNumber}"
         debug_coordinate.text = "Координаты: ${AppliCation().GPS()}"

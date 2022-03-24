@@ -36,7 +36,6 @@ class StartWayBillAct : ActNOAbst() {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
         setContentView(R.layout.act_start_waybill)
-        modeSyNChrON_off()
 
         val nameNotFounT = getPutExtraParam_NAME()
         supportActionBar?.title = "Путевой Лист"
@@ -46,8 +45,8 @@ class StartWayBillAct : ActNOAbst() {
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val body = WayListBody(
             date = currentDate,
-            organisationId = paramS().organisationId,
-            vehicleId = paramS().vehicleId
+            organisationId = paramS().getOwnerId(),
+            vehicleId = paramS().getVehicleId()
         )
 
         showingProgress(nameNotFounT)
@@ -97,8 +96,9 @@ class StartWayBillAct : ActNOAbst() {
 
     private fun gotoNextAct(wayBillId: Int, wayBillNumber: String) {
         paramS().wayBillId = wayBillId
+        paramS().wayBillNumber = wayBillNumber
         val intent = Intent(this, StartWorkOrderAct::class.java)
-        intent.putExtra(PUT_EXTRA_PARAM_NAME, wayBillNumber)
+        intent.putExtra(PUT_EXTRA_PARAM_NAME, paramS().wayBillNumber)
         startActivity(intent)
     }
 

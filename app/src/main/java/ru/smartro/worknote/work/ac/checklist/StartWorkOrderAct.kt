@@ -65,7 +65,7 @@ class StartWorkOrderAct : ActNOAbst() {
         }
         showingProgress(getPutExtraParam_NAME())
         // TODO:r_dos!!пох их код
-        vm.networkDat.getWorkOrder(paramS().organisationId, paramS().wayBillId)
+        vm.networkDat.getWorkOrder(paramS().getOwnerId(), paramS().wayBillId)
             .observe(this, Observer { result ->
                 val data = result.data
                 when (result.status) {

@@ -46,16 +46,51 @@ class StartVehicleAct : ActNOAbst() {
 
         supportActionBar?.title = "Автомобиль"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        if (paramS().vehicleId != null) {
+            gotoNextAct(paramS().vehicleId!!, paramS().vehicleName!!)
+        }
 //        supportActionBar?.hide()
+        /**====================================================================================== */
+        val etVehicleFilter = findViewById<EditText>(R.id.et_act_start_vehicle__filter)
+//        val textWatcher = TextWatcher()
+        etVehicleFilter.addTextChangedListener { text: Editable? ->
+            myAdapter?.let {
+                myAdapter!!.updateList(text.toString())
+            }
+        }
+        etVehicleFilter.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(etVehicleFilter.windowToken, 0)
+                return@OnEditorActionListener true
+            }
+            false
+        })
+
+
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
         rv.layoutManager = LinearLayoutManager(this)
+        /**====================================================================================== */
+        /**====================================================================================== */
+
+
+
         showingProgress(getPutExtraParam_NAME())
-        vs.getVehicle(paramS().organisationId).observe(this, Observer { result ->
+        vs.getVehicle(paramS().getOwnerId()).observe(this, Observer { result ->
             val data = result.data
             when (result.status) {
                 Status.SUCCESS -> {
                     myAdapter = VehicleAdapter(data?.data!!)
                     rv . adapter = myAdapter
+                    if (isDevelMode()) {
+                        etVehicleFilter.setText("Тигуан")
+                        val vehicle = myAdapter!!.findVehicleByName("Тигуан")
+                        vehicle?.let {
+                            gotoNextAct(vehicle.id, vehicle.name)
+                        }
+                    }
                     hideProgress()
                 }
                 Status.ERROR -> {
@@ -69,29 +104,14 @@ class StartVehicleAct : ActNOAbst() {
             }
         })
 
-        val etVehicleFilter = findViewById<EditText>(R.id.et_act_start_vehicle__filter)
-//        val textWatcher = TextWatcher()
-        etVehicleFilter.addTextChangedListener { text: Editable? ->
-            myAdapter?.let {
-                myAdapter!!.updateList(text.toString())
-            }
-        }
 
-        etVehicleFilter.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-                imm?.hideSoftInputFromWindow(etVehicleFilter.windowToken, 0)
-                return@OnEditorActionListener true
-            }
-            false
-        })
     }
 
-    private fun gotoNextAct(vehicle: Vehicle) {
-        paramS().vehicleId = vehicle.id
+    private fun gotoNextAct(vehicleId: Int, vehicleName: String) {
+        paramS().vehicleId = vehicleId
+        paramS().ownerName = vehicleName
         val intent = Intent(this@StartVehicleAct, StartWayBillAct::class.java)
-        intent.putExtra(PUT_EXTRA_PARAM_NAME, vehicle.name)
+        intent.putExtra(PUT_EXTRA_PARAM_NAME, paramS().ownerName)
         startActivity(intent)
     }
 
@@ -127,6 +147,10 @@ class StartVehicleAct : ActNOAbst() {
         private var mItems: List<Vehicle> = vehicleList
         private var mItemsBefore: List<Vehicle> = vehicleList
 
+        fun findVehicleByName(vehicleName: String): Vehicle? {
+            val res = mItems.find { vehicle -> vehicle.name == vehicleName}
+            return res
+        }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item_know1, parent, false)
             return OwnerViewHolder(view)
@@ -162,7 +186,7 @@ class StartVehicleAct : ActNOAbst() {
             holder.itemView.choose_title.text = vehicle.name
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
-                gotoNextAct(vehicle)
+                gotoNextAct(vehicle.id, vehicle.name)
             }
         }
 

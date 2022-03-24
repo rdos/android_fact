@@ -75,7 +75,7 @@ class NetworkRepository(private val context: Context) {
     private fun insertBreakDown(data: List<ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.Data>?) {
         val db = RealmRepository(Realm.getDefaultInstance())
         val entities = data?.filter {
-            it.attributes.organisationId == paramS().organisationId
+            it.attributes.organisationId == paramS().ownerId
         }?.map {
             BreakDownEntity(it.attributes.id, it.attributes.name)
         }
@@ -109,7 +109,7 @@ class NetworkRepository(private val context: Context) {
         val db = RealmRepository(Realm.getDefaultInstance())
 
         val entities = data?.filter {
-            it.oid == paramS().organisationId
+            it.oid == paramS().ownerId
         }!!.map {
             FailReasonEntity(it.id, it.name)
         }
@@ -143,7 +143,7 @@ class NetworkRepository(private val context: Context) {
         val db = RealmRepository(Realm.getDefaultInstance())
 
         val entities = data?.filter {
-            it.attributes.organisationId == paramS().organisationId
+            it.attributes.organisationId == paramS().ownerId
         }!!.map { CancelWayReasonEntity(it.id, it.attributes.name) }
 
         db.insertCancelWayReason(entities)

@@ -232,27 +232,27 @@ class App : AApp() {
 
 
 
-        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_app)
-            .setContentTitle(textTitle)
-            .setContentText(textContent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+//            .setSmallIcon(R.drawable.ic_app)
+//            .setContentTitle(textTitle)
+//            .setContentText(textContent)
+//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//
+//        notificationManager.notify(id, builder.build())
 
-        notificationManager.notify(id, builder.build())
 
-
-        val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        val notification = Notification((R.drawable.ic_app, textTitle, textContent)
-        val notificationIntent = Intent(this, StartAct::class.java)
-        notificationIntent.flags = (Intent.FLAG_ACTIVITY_CLEAR_TOP
-                or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        val intent = PendingIntent.getActivity(
-            this, 0,
-            notificationIntent, 0
-        )
-        notification.setLatestEventInfo(context, title, message, intent)
-        notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
-        notificationManager.notify(0, notification)
+//        val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+//        val notification = Notification((R.drawable.ic_app, textTitle, textContent)
+//        val notificationIntent = Intent(this, StartAct::class.java)
+//        notificationIntent.flags = (Intent.FLAG_ACTIVITY_CLEAR_TOP
+//                or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+//        val intent = PendingIntent.getActivity(
+//            this, 0,
+//            notificationIntent, 0
+//        )
+//        notification.setLatestEventInfo(context, title, message, intent)
+//        notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
+//        notificationManager.notify(0, notification)
 
 //        val notificationLayout = RemoteViews(packageName, R.layout.app_notification_small)
 //        val notificationLayoutExpanded = RemoteViews(packageName, R.layout.app_notification_small)

@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -56,6 +57,8 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBo
 import ru.smartro.worknote.awORKOLDs.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.work.ac.PERMISSIONS
+import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
@@ -102,6 +105,11 @@ class MapAct : ActAbstract(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
+        }
+
+
         setContentView(R.layout.act_map)
 
         mMapMyYandex = findViewById(R.id.map_view)
@@ -142,7 +150,7 @@ class MapAct : ActAbstract(),
                 AppliCation().startLocationService(true)
                 mIsAUTOMoveCamera = true
                 moveCameraTo(AppliCation().GPS())
-                AppliCation().showNotificationForce("AA", "BBB")
+                showNotification(1123, "AAAAAAa")
             } catch (e: Exception) {
                 toast("Клиент не найден")
             }
@@ -224,7 +232,7 @@ class MapAct : ActAbstract(),
                 //можно что-то запустить
                 WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
                 vs.clearData()
-                val intent = Intent(this, StartWayBillAct::class.java)
+                val intent = Intent(this, StartAct::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 this.startActivity(intent)
                 paramS().logoutDEVEL()
@@ -849,7 +857,7 @@ class MapAct : ActAbstract(),
             PendingIntent.FLAG_CANCEL_CURRENT
         )
 //        val CHANNEL_ID = "M_CH_ID"
-        val CHANNEL_ID = "M_CH_ID"
+        val CHANNEL_ID = "M_CH_ID111"
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_truck_icon)
@@ -974,7 +982,7 @@ class MapAct : ActAbstract(),
 //            AppPreferences.isHasTask = false
         context.showSuccessComplete().let {
             it.finish_accept_btn.setOnClickListener {
-                context.startActivity(Intent(context, StartWayBillAct::class.java))
+                context.startActivity(Intent(context, StartAct::class.java))
                 context.finish()
             }
             it.exit_btn.setOnClickListener {

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.start_act__rv_item_know1.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
@@ -37,35 +38,65 @@ class StartOwnerAct : ActNOAbst() {
         supportActionBar?.title = "Организация"
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_owner)
         rv.layoutManager = LinearLayoutManager(this)
-        showingProgress()
-        vs.getOwners().observe(this, Observer { result ->
-            val data = result.data
-            when (result.status) {
-                Status.SUCCESS -> {
-                    val owners = data!!.data.organisations
-                    rv.adapter = OwnerAdapter(owners)
-                    if (owners.size == 1) {
-                        gotoNextAct(owners[0])
+        if (paramS().ownerId == null) {
+            showingProgress()
+            vs.getOwners().observe(this, Observer { result ->
+                val data = result.data
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        val owners = data!!.data.organisations
+                        rv.adapter = OwnerAdapter(owners)
+                        if (owners.size == 1) {
+                            gotoNextAct( owners[0].id, owners[0].name)
+                        }
+                        hideProgress()
                     }
-                    hideProgress()
+                    Status.ERROR -> {
+                        toast(result.msg)
+                        hideProgress()
+                    }
+                    Status.NETWORK -> {
+                        toast("Проблемы с интернетом")
+                        hideProgress()
+                    }
                 }
-                Status.ERROR -> {
-                    toast(result.msg)
-                    hideProgress()
-                }
-                Status.NETWORK -> {
-                    toast("Проблемы с интернетом")
-                    hideProgress()
-                }
-            }
-        })
+            })
+        } else {
+            gotoNextAct(paramS().ownerId!!, paramS().ownerName!!)
+        }
+
 
     }
 
-    private fun gotoNextAct(owner: Organisation) {
-        paramS().organisationId = owner.id
+//    private fun sendRequest() {
+//        vs.getOwners().observe(this, Observer { result ->
+//            val data = result.data
+//            when (result.status) {
+//                Status.SUCCESS -> {
+//                    val owners = data!!.data.organisations
+//                    rv.adapter = OwnerAdapter(owners)
+//                    if (owners.size == 1) {
+//                        gotoNextAct(owners[0])
+//                    }
+//                    hideProgress()
+//                }
+//                Status.ERROR -> {
+//                    toast(result.msg)
+//                    hideProgress()
+//                }
+//                Status.NETWORK -> {
+//                    toast("Проблемы с интернетом")
+//                    hideProgress()
+//                }
+//            }
+//        })
+//    }
+
+    private fun gotoNextAct(ownerId: Int, ownerName: String) {
+        paramS().ownerId = ownerId
+        paramS().ownerName = ownerName
         val intent = Intent(this@StartOwnerAct, StartVehicleAct::class.java)
-        intent.putExtra(PUT_EXTRA_PARAM_NAME, owner.name)
+        intent.putExtra(PUT_EXTRA_PARAM_NAME, paramS().ownerName)
         startActivity(intent)
     }
 
@@ -103,7 +134,7 @@ class StartOwnerAct : ActNOAbst() {
             holder.itemView.choose_title.text = owner.name
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
-                gotoNextAct(owner)
+                gotoNextAct(owner.id, owner.name)
 
             }
         }

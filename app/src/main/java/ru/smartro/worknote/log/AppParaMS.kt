@@ -11,6 +11,7 @@ private const val MODE = Context.MODE_PRIVATE
 class AppParaMS {
 
 
+
     public var isRestartApp: Boolean = false
     private lateinit var mEnv: SharedPreferences
 
@@ -140,11 +141,31 @@ class AppParaMS {
             it.putBoolean("isTorchEnabled", value)
         }
 
-    var organisationId: Int
-        get() = mEnv.getInt("organisationId", 0)
-        set(value) = mEnv.edit {
-            it.putInt("organisationId", value)
+    fun getOwnerId(): Int {
+        return ownerId?: Inull
+    }
+
+    var ownerId: Int?
+        get() {
+            val tmp = mEnv.getInt("ownerId", Inull)
+            if (tmp == Inull) {
+                return null
+            }
+            return tmp
         }
+        set(value) = mEnv.edit {
+            if (value == null) {
+                return@edit
+            }
+            it.putInt("ownerId", value)
+        }
+
+    var ownerName: String?
+        get() = mEnv.getString("ownerName", "")
+        set(value) = mEnv.edit {
+            it.putString("ownerName", value)
+        }
+
 
     var lastSynchroTime: Long
         get() = mEnv.getLong("lastSynchronizeTime", 0)
@@ -158,18 +179,42 @@ class AppParaMS {
             it.putLong("serviceStartedAt", value)
         }
 
-    var vehicleId: Int
-        get() = mEnv.getInt("vehicleId", 0)
+    fun getVehicleId(): Int {
+        return vehicleId?: Inull
+    }
+
+    var vehicleId: Int?
+        get() {
+            val tmp = mEnv.getInt("vehicleId", Inull)
+            if (tmp == Inull) {
+                return null
+            }
+            return tmp
+        }
         set(value) = mEnv.edit {
+            if (value == null) {
+                return@edit
+            }
             it.putInt("vehicleId", value)
         }
 
-    var wayBillId: Int
-        get() = mEnv.getInt("wayListId", 0)
+    var vehicleName: String?
+        get() = mEnv.getString("vehicleName", "")
         set(value) = mEnv.edit {
-            it.putInt("wayListId", value)
+            it.putString("vehicleName", value)
         }
 
+
+    var wayBillId: Int
+        get() = mEnv.getInt("wayBillId", 0)
+        set(value) = mEnv.edit {
+            it.putInt("wayBillId", value)
+        }
+    var wayBillNumber: String?
+        get() = mEnv.getString("wayBillNumber", "")
+        set(value) = mEnv.edit {
+            it.putString("wayBillNumber", value)
+        }
 
     var isModeSYNChrONize_FoundError: Boolean = false
         get() = field
