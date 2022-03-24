@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work
+package ru.smartro.worknote
 
 import android.app.*
 import android.content.Context
@@ -41,7 +41,6 @@ import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import kotlinx.android.synthetic.main.dialog_early_complete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
@@ -53,6 +52,10 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBo
 import ru.smartro.worknote.awORKOLDs.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
+import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
+import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.WorkOrderEntity
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
@@ -67,10 +70,12 @@ import kotlin.math.round
 // TODO:r_dos! а то checked, Mem РАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тут
 //AppPreferences.isHasTask = false
 //override fun onResume() {  mPlatforms = vs.findPlatfor
+
 // бот getNetDATEsetBaseDate вот таких бы(ой, касты) нам меньше(или НА код  Г а ВСЕ ) , жена как и супруга в доле, но gam(e)_версия а не тип игры 3)1_2
 //AppPreferences.wayBillId AppPreferences.organisationId
 //AppPreferences.wayBillNumber  AppPreferences.vehicleId
 // TODO: I 12.11.1997 import имя getNetDATEsetBaseDate и там где рядом netDat и SrvDate а где смысл как в python
+/** 29.06.  -2+2001+3   05.11))*/
 class MapAct : ActAbstract(),
     /*UserLocationObjectListener,*/
     MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener,  InertiaMoveListener , InputListener {

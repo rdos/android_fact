@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.act_map__dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_camera.view.*
 import ru.smartro.worknote.App
+import ru.smartro.worknote.MapAct
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.extensions.*

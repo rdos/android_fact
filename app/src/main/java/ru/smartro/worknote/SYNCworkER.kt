@@ -30,8 +30,6 @@ import java.io.FileOutputStream
 //    set() {}
 
 
-
-
 class SYNCworkER(
     p_application: Context,
     params: WorkerParameters

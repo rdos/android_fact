@@ -70,7 +70,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="ru.smartro.worknote.work.MapAct"
+            android:name="ru.smartro.worknote.MapAct"
             android:screenOrientation="portrait"
             android:theme="@style/NoToolbar" />
 

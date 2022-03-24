@@ -13,7 +13,10 @@ class AppParaMS {
 
 
     public var isRestartApp: Boolean = false
-    private lateinit var mEnv: SharedPreferences
+    //todo: mEnv? что за ЗАЯЦ/?)
+    private val sharedPref__env: SharedPreferences by lazy {
+        App.getAppliCation().getSharedPreferences(NAME, MODE)
+    }
 
     companion object {
         private var MSINStance: AppParaMS? = null
@@ -30,7 +33,7 @@ class AppParaMS {
 
     private fun init() {
         val app = App.getAppliCation()
-        mEnv = app.getSharedPreferences(NAME, MODE)
+
 
         AppRestarted()
         isRestartApp = false
@@ -45,28 +48,28 @@ class AppParaMS {
     }
 
     var isCameraSoundEnabled: Boolean
-        get() = mEnv.getBoolean("isCameraSoundEnabled", true)
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getBoolean("isCameraSoundEnabled", true)
+        set(value) = sharedPref__env.edit {
             it.putBoolean("isCameraSoundEnabled", value)
         }
 
     var lastSynchroTimeQueueTwo: Long
-        get() = mEnv.getLong("lastSynchroTimeQueueTwo", 0)
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getLong("lastSynchroTimeQueueTwo", 0)
+        set(value) = sharedPref__env.edit {
             it.putLong("lastSynchroTimeQueueTwo", value)
         }
 
     var token: String?
-        get() = mEnv.getString("accessToken", "")
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getString("accessToken", "")
+        set(value) = sharedPref__env.edit {
             it.putString("accessToken", value)
         }
     var deviceId: String
         get() {
-            var devId = mEnv.getString("deviceId", Snull)!!
+            var devId = sharedPref__env.getString("deviceId", Snull)!!
             if (devId == Snull) {
                 devId = App.getAppliCation().getDeviceId()
-                mEnv.edit{
+                sharedPref__env.edit{
                     it.putString("deviceId", devId)
                 }
             }
@@ -126,26 +129,26 @@ class AppParaMS {
 
 
     var gpsLAT: Float
-        get() = mEnv.getFloat("gpsLAT", Fnull)
-        private set(value) = mEnv.edit {
+        get() = sharedPref__env.getFloat("gpsLAT", Fnull)
+        private set(value) = sharedPref__env.edit {
             it.putFloat("gpsLAT", value)
         }
 
     var gpsLONG: Float
-        get() = mEnv.getFloat("gpsLONG", Fnull)
-        private set(value) = mEnv.edit {
+        get() = sharedPref__env.getFloat("gpsLONG", Fnull)
+        private set(value) = sharedPref__env.edit {
             it.putFloat("gpsLONG", value)
         }
 
     var gpsTIME: Long
-        get() = mEnv.getLong("gpsTIME", 0)
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getLong("gpsTIME", 0)
+        set(value) = sharedPref__env.edit {
             it.putLong("gpsTIME", value)
         }
 
     var gpsACCURACY: Float
-        get() = mEnv.getFloat("gpsACCURACY", Fnull)
-        private set(value) = mEnv.edit {
+        get() = sharedPref__env.getFloat("gpsACCURACY", Fnull)
+        private set(value) = sharedPref__env.edit {
             it.putFloat("gpsACCURACY", value)
         }
 //    var BoTlogin: String
@@ -155,8 +158,8 @@ class AppParaMS {
 //        }
 
     var isTorchEnabled: Boolean
-        get() = mEnv.getBoolean("isTorchEnabled", true)
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getBoolean("isTorchEnabled", true)
+        set(value) = sharedPref__env.edit {
             it.putBoolean("isTorchEnabled", value)
         }
 
@@ -166,13 +169,13 @@ class AppParaMS {
 
     var ownerId: Int?
         get() {
-            val tmp = mEnv.getInt("ownerId", Inull)
+            val tmp = sharedPref__env.getInt("ownerId", Inull)
             if (tmp == Inull) {
                 return null
             }
             return tmp
         }
-        set(value) = mEnv.edit {
+        set(value) = sharedPref__env.edit {
             if (value == null) {
                 return@edit
             }
@@ -180,21 +183,21 @@ class AppParaMS {
         }
 
     var ownerName: String?
-        get() = mEnv.getString("ownerName", "")
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getString("ownerName", "")
+        set(value) = sharedPref__env.edit {
             it.putString("ownerName", value)
         }
 
 
     var lastSynchroTime: Long
-        get() = mEnv.getLong("lastSynchronizeTime", 0)
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getLong("lastSynchronizeTime", 0)
+        set(value) = sharedPref__env.edit {
             it.putLong("lastSynchronizeTime", value)
         }
 
     var serviceStartedAt: Long
-        get() = mEnv.getLong("serviceStartedAt", 0L)
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getLong("serviceStartedAt", 0L)
+        set(value) = sharedPref__env.edit {
             it.putLong("serviceStartedAt", value)
         }
 
@@ -204,13 +207,13 @@ class AppParaMS {
 
     var vehicleId: Int?
         get() {
-            val tmp = mEnv.getInt("vehicleId", Inull)
+            val tmp = sharedPref__env.getInt("vehicleId", Inull)
             if (tmp == Inull) {
                 return null
             }
             return tmp
         }
-        set(value) = mEnv.edit {
+        set(value) = sharedPref__env.edit {
             if (value == null) {
                 return@edit
             }
@@ -218,20 +221,20 @@ class AppParaMS {
         }
 
     var vehicleName: String?
-        get() = mEnv.getString("vehicleName", "")
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getString("vehicleName", "")
+        set(value) = sharedPref__env.edit {
             it.putString("vehicleName", value)
         }
 
 
     var wayBillId: Int
-        get() = mEnv.getInt("wayBillId", 0)
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getInt("wayBillId", 0)
+        set(value) = sharedPref__env.edit {
             it.putInt("wayBillId", value)
         }
     var wayBillNumber: String?
-        get() = mEnv.getString("wayBillNumber", "")
-        set(value) = mEnv.edit {
+        get() = sharedPref__env.getString("wayBillNumber", "")
+        set(value) = sharedPref__env.edit {
             it.putString("wayBillNumber", value)
         }
 

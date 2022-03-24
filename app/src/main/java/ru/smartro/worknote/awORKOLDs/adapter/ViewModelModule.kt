@@ -8,7 +8,7 @@ import ru.smartro.worknote.work.ui.JournalViewModel
 import ru.smartro.worknote.work.ui.ContainerBreakdownAct
 import ru.smartro.worknote.work.ui.ContainerFailureAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
-import ru.smartro.worknote.work.MapAct
+import ru.smartro.worknote.MapAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct

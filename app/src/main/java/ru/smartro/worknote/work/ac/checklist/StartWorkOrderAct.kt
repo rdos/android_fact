@@ -28,7 +28,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.PERMISSIONS
-import ru.smartro.worknote.work.MapAct
+import ru.smartro.worknote.MapAct
 
 class StartWorkOrderAct : ActNOAbst() {
 
