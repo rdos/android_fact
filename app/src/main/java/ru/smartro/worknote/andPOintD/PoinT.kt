@@ -62,10 +62,10 @@ class PoinT(latitude: Double, longitude: Double,
     fun isSaveGPS(): Boolean {
         val resFalse = false
 
-        if (App.getAppParaMS().isLastGPSSaved()) {
+        if (App.getAppParaMS().iSoldGPSdataSaved()) {
             return resFalse
         }
-        if (App.getAppParaMS().isLastGPS(pointTime)) {
+        if (App.getAppParaMS().isOldGPSbaseDate(pointTime)) {
             return true
         }
 

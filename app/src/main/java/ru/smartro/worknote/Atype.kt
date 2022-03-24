@@ -5,8 +5,6 @@ package ru.smartro.worknote
 //fun isSaveGPS(): Boolean { isDevelMODE и стандарт
 data class Atype(val isTrue: Boolean)
 
-
-
 /** FOR Ttesting  *FOR Ttesting  *FOR Ttesting  *FOR Ttesting  *FOR Ttesting  *FOR Ttesting  */
 /** FOR Ttesting  *FOR Ttesting  *FOR Ttesting  *FOR Ttesting  *FOR Ttesting  *FOR Ttesting  */
 //

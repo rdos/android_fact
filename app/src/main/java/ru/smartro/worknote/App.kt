@@ -173,8 +173,12 @@ class App : AApp() {
 //                yandexLONG?:LocationLONG,
 //                yandexTIME?:LocationTIME,
 //                yandexACCURACYL?:LocationACCURACY.VAL.toDouble())
-            if (getAppParaMS().isLastGPSSaved()) {
-                if (getAppParaMS().isLastGPS(LocationTIME)) {
+
+            //OLD DATA Принцип разделения интерфейсов говорит о том, что слишком «толстые» интерфейсы необходимо разделять на более маленькие и специфические, чтобы программные сущности маленьких интерфейсов знали только о методах, которые необходимы им в работе.
+            // В итоге, ПО НЕ ИМЕЕТ ШНАСА УЗНАТЬ О коллеках)) И КАК СЛЕД.СТВИЕ)) yes при изменении метода интерфейса не должны меняться СОпрограммные сущности
+            // , которые этот метод не используют.
+            if (getAppParaMS().iSoldGPSdataSaved()) {
+                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
                     getAppParaMS().saveLastGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY.LET)
                     LASTact?.onNEWfromGPSSrv()
                 }
@@ -205,8 +209,13 @@ class App : AApp() {
         if (notificationManager.notificationChannels.size <= 0) {
             showNotificationForce(pendingIntent, contentText, title)
         } else {
-//            logSentry("showNotification. notificationManager.notificationChannels.size = ${notificationManager.notificationChannels.size}")
+            logSentry("showNotification. notificationManager.notificationChannels.size = ${notificationManager.notificationChannels.size}")
         }
+    }
+
+    protected fun logSentry(text: String) {
+        Sentry.addBreadcrumb("${TAG} : $text")
+        log("${text}")
     }
 
 //    var alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager

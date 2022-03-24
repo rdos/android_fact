@@ -79,18 +79,23 @@ class AppParaMS {
             Log.e("deviceId", "deviceIdset(value)")
             Log.e("deviceId", "deviceIdset(value)")
             Log.e("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
+            Log.w("deviceId", "deviceIdset(value)")
             Log.e("deviceId", "deviceIdset(value)")
             Log.e("deviceId", "deviceIdset(value)")
             Log.e("deviceId", "deviceIdset(value)")
         }
-    fun isLastGPS(time: Long): Boolean = isLastGPS_priv(time)
-    private fun isLastGPS_priv(time: Long?=null): Boolean {
+
+//    base = device ОКРУЖЕНИЕ...
+    fun isOldGPSbaseDate(time: Long): Boolean = isTimeForSaveData(time)
+
+    private fun isTimeForSaveData(time: Long?=null): Boolean {
         val diff = System.currentTimeMillis() - (time?:gpsTIME)
-        return diff <= 3_000
+        val res =  diff >= 6_310
+        Log.w("AppParaMS", "res=${res} time=${time} gpsTIME=${gpsTIME}")
+        return res
     }
-    fun isLastGPSSaved(): Boolean {
-       return isLastGPS_priv()
+    fun iSoldGPSdataSaved(): Boolean {
+       return isTimeForSaveData()
     }
 //    fun getAlwaysGPS(): AndRoid.PoinT {
 //        return geTLastKnowGPS()
@@ -100,7 +105,7 @@ class AppParaMS {
 //    }
     fun getSaveGPS(): PoinT {
         val res = PoinT(gpsLAT, gpsLONG, gpsTIME, gpsACCURACY)
-        if (isLastGPSSaved()) {
+        if (iSoldGPSdataSaved()) {
             return res
         }
         Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
@@ -141,7 +146,7 @@ class AppParaMS {
         }
 
     var gpsTIME: Long
-        get() = sharedPref__env.getLong("gpsTIME", 0)
+        get() = sharedPref__env.getLong("gpsTIME",  System.currentTimeMillis())
         set(value) = sharedPref__env.edit {
             it.putLong("gpsTIME", value)
         }
