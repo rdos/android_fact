@@ -78,14 +78,15 @@ class SYNCworkER(
                 }
                 INcyclEStop()
             } //todo: while (true) {
-        } catch (ex: Throwable) {
+        } catch (eXthr: Throwable) {
+            Log.e(TAG, eXthr.message, eXthr)
             params.isModeSYNChrONize_FoundError = true
             showWorkERROR()
-            Log.e(TAG, ex.message, ex)
-            return Result.retry()
+            throw eXthr
+//            return Result.retry()
         }
 //        Realm.init(context)
-        return Result.failure()
+//        return Result.failure()
     }
 
 

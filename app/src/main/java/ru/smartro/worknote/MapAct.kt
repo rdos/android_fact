@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -101,6 +102,62 @@ class MapAct : ActAbstract(),
     private lateinit var mDrivingSession: DrivingSession.DrivingRouteListener
 //    private lateinit var selectedPlatformToNavigate: Point
 
+    override fun onNewGPS() {
+        LOGWork("onNewGPS")
+        val point = AppliCation().gps()
+        if (mIsFirstTime) {
+            moveCameraTo(point)
+            mIsFirstTime = false
+        }
+        if (mIsAUTOMoveCamera) {
+            moveCameraTo(point)
+        }
+
+        val platformNear = vs.baseDat.findPlatformByCoord(point)
+        if (platformNear == null) {
+            LOGWork("platformList.is null")
+        } else {
+            toast("FFFFFFFFFFFFF${platformNear.platformId}")
+            showNotificationPlatfrom(platformNear.platformId, platformNear.name)
+        }
+
+//       platformNear.observe(this, Observer { platformList ->
+//        if (!platformNear.isNullOrEmpty()) {
+//            if (platformNear.size == 1) {
+//                val platform = platformNear[0]
+//                toast("FFFFFFFFFFFFF${platform.platformId}")
+//                showNotificationPlatfrom(platform.platformId, platform.name)
+//            } else {
+//                toast("platformList.size=${platformList.size}")
+//            }
+//        } else {
+//            LOGWork("platformList.is null")
+//        }
+//       })
+
+//        Log.d("LogDistance", "###################")
+//
+//
+//
+//        val distanceToPoint = MyUtil.calculateDistance(AppliCation().LocationPOINT, selectedPlatformToNavigate)
+////        Log.d("LogDistance", "Distance: $distanceToPoint")
+//        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
+//            isOnPointFirstTime = false
+//            alertOnPoint().let {
+//                it.dismiss_btn.setOnClickListener {
+//                    drivingModeState = false
+//                    isOnPointFirstTime = true
+//                    clearMapIbjectsDrive()
+//                    hideDialog()
+//                }
+//            }
+//        } else {
+////            Log.d("LogDistance", "Distance not arrive")
+//        }
+
+//
+//        Log.d("LogDistance", "Location updated")
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -165,7 +222,8 @@ class MapAct : ActAbstract(),
             clearMapIbjectsDrive()
             hideDialog()
         }
-        log_fab.setOnClickListener {
+        val gotoLogActMapAPIB = findViewById<AppCompatImageButton>(R.id.goto_log__act_map__apib)
+        gotoLogActMapAPIB.setOnClickListener {
             startActivity(Intent(this@MapAct, JournalAct::class.java))
         }
 
@@ -827,62 +885,7 @@ class MapAct : ActAbstract(),
     }
 
 
-    override fun onNewGPS() {
-        LOGWork("onNewGPS")
-        val point = AppliCation().gps()
-        if (mIsFirstTime) {
-            moveCameraTo(point)
-            mIsFirstTime = false
-        }
-        if (mIsAUTOMoveCamera) {
-            moveCameraTo(point)
-        }
 
-        val platformNear = vs.baseDat.findPlatformByCoord(point)
-        if (platformNear == null) {
-            LOGWork("platformList.is null")
-        } else {
-            toast("FFFFFFFFFFFFF${platformNear.platformId}")
-            showNotificationPlatfrom(platformNear.platformId, platformNear.name)
-        }
-
-//       platformNear.observe(this, Observer { platformList ->
-//        if (!platformNear.isNullOrEmpty()) {
-//            if (platformNear.size == 1) {
-//                val platform = platformNear[0]
-//                toast("FFFFFFFFFFFFF${platform.platformId}")
-//                showNotificationPlatfrom(platform.platformId, platform.name)
-//            } else {
-//                toast("platformList.size=${platformList.size}")
-//            }
-//        } else {
-//            LOGWork("platformList.is null")
-//        }
-//       })
-
-//        Log.d("LogDistance", "###################")
-//
-//
-//
-//        val distanceToPoint = MyUtil.calculateDistance(AppliCation().LocationPOINT, selectedPlatformToNavigate)
-////        Log.d("LogDistance", "Distance: $distanceToPoint")
-//        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
-//            isOnPointFirstTime = false
-//            alertOnPoint().let {
-//                it.dismiss_btn.setOnClickListener {
-//                    drivingModeState = false
-//                    isOnPointFirstTime = true
-//                    clearMapIbjectsDrive()
-//                    hideDialog()
-//                }
-//            }
-//        } else {
-////            Log.d("LogDistance", "Distance not arrive")
-//        }
-
-//
-//        Log.d("LogDistance", "Location updated")
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

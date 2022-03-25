@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
+import android.widget.RemoteViews
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -40,8 +41,7 @@ import ru.smartro.worknote.log.AppParaMS
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-
-
+//даже немцы загоняют tsch=8 showTODO))
 private var mAppliCation: App? = null
 
 class App : AApp() {
@@ -224,7 +224,9 @@ class App : AApp() {
                               notifyId: Int =1,
                               channelId: String = NOTIFICATION_CHANNEL_ID__DEFAULT){
         log("showNotificationForce.textContent={$textContent}")
+
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channelId)
+
         builder.setSmallIcon(R.drawable.ic_app)
             .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_app))
             .setContentTitle(textTitle)
@@ -235,12 +237,16 @@ class App : AApp() {
             .setShowWhen(true)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
 
-
-    if (actionName !=null) {
-        builder.addAction(R.drawable.ic_arrow_top, actionName, pendingIntent)
-        builder.setAutoCancel(true)  // автоматически закрыть уведомление после нажатия
-        builder.setFullScreenIntent(pendingIntent, true)
-    }
+        /** Get the layouts to use in the custom notification */
+        val notificationLayout = RemoteViews(packageName, R.layout.app_notification_small)
+        /***    val notificationLayoutExpanded = RemoteViews(packageName, R.layout.notification_large) */
+        builder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
+        builder.setCustomContentView(notificationLayout)
+        if (actionName !=null) {
+            builder.addAction(R.drawable.ic_arrow_top, actionName, pendingIntent)
+            builder.setAutoCancel(true)  // автоматически закрыть уведомление после нажатия
+            builder.setFullScreenIntent(pendingIntent, true)
+        }
         val notification: Notification = builder.build()
         createNotificationChannel().notify(notifyId, notification)
     }

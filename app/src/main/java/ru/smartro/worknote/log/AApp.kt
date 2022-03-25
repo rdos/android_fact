@@ -53,15 +53,13 @@ abstract class AApp : Application() {
     protected fun log(valueName: String, value: String) {
         log("${valueName}=$value")
     }
+
     fun setDevelMODE(): Boolean {
         val isResTrue = false
-        if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "debugRC") {
-            if (BuildConfig.VERSION_CODE == 1234567890) {
-                return isResTrue
-            }
-            return isResTrue
+        if ((BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "debugRC") && (BuildConfig.VERSION_CODE == 1234567890)) {
+            return true
         }
-        return false
+        return isResTrue
     }
 
     fun getDeviceId(): String {

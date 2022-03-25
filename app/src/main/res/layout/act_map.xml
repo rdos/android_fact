@@ -66,8 +66,8 @@
             app:layout_constraintStart_toStartOf="@id/gotoMyGPS"
             tools:visibility="visible" />
 
-        <ImageButton
-            android:id="@+id/log_fab"
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/goto_log__act_map__apib"
             android:layout_width="43dp"
             android:layout_height="43dp"
             android:layout_marginBottom="8dp"
