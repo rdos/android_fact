@@ -37,7 +37,7 @@ class AppParaMS {
 
         AppRestarted()
         isRestartApp = false
-        isModeDEVEL = app.isDevelMODE()
+        isModeDEVEL = app.setDevelMODE()
 
     }
 
@@ -95,7 +95,7 @@ class AppParaMS {
         return res
     }
     fun iSoldGPSdataSaved(): Boolean {
-       return isTimeForSaveData()
+           return isTimeForSaveData()
     }
 //    fun getAlwaysGPS(): AndRoid.PoinT {
 //        return geTLastKnowGPS()
@@ -105,14 +105,14 @@ class AppParaMS {
 //    }
     fun getSaveGPS(): PoinT {
         val res = PoinT(gpsLAT, gpsLONG, gpsTIME, gpsACCURACY)
-        if (iSoldGPSdataSaved()) {
-            return res
-        }
-        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
-        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
-        Log.i("getSaveGPS", "if (isLastGPSSaved()) == false")
-        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
-        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
+//        if (iSoldGPSdataSaved()) {
+//            return res
+//        }
+//        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
+//        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
+//        Log.i("getSaveGPS", "if (isLastGPSSaved()) == false")
+//        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
+//        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
         return res
     }
 
@@ -126,32 +126,30 @@ class AppParaMS {
         gpsACCURACY = accuracy
     }
 
-
     fun saveLastGPS(point: PoinT) {
         //база
         saveLastGPS(point.latitude, point.longitude, point.getTime(), point.getAccuracy())
     }
 
-
-    var gpsLAT: Float
+    private var gpsLAT: Float
         get() = sharedPref__env.getFloat("gpsLAT", Fnull)
         private set(value) = sharedPref__env.edit {
             it.putFloat("gpsLAT", value)
         }
 
-    var gpsLONG: Float
+    private var gpsLONG: Float
         get() = sharedPref__env.getFloat("gpsLONG", Fnull)
         private set(value) = sharedPref__env.edit {
             it.putFloat("gpsLONG", value)
         }
 
-    var gpsTIME: Long
+    private var gpsTIME: Long
         get() = sharedPref__env.getLong("gpsTIME",  System.currentTimeMillis())
         set(value) = sharedPref__env.edit {
             it.putLong("gpsTIME", value)
         }
 
-    var gpsACCURACY: Float
+    private var gpsACCURACY: Float
         get() = sharedPref__env.getFloat("gpsACCURACY", Fnull)
         private set(value) = sharedPref__env.edit {
             it.putFloat("gpsACCURACY", value)

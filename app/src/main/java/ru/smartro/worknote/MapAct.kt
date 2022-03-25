@@ -128,7 +128,7 @@ class MapAct : ActAbstract(),
 //            mIsAUTOMoveCamera = false
 //            false
 //        }
-        mAcbInfo = findViewById<AppCompatButton>(R.id.acb_act_map__info)
+        mAcbInfo = findViewById(R.id.acb_act_map__info)
 
         mAcbInfo.setOnClickListener {
            gotoInfoDialog()
@@ -138,7 +138,6 @@ class MapAct : ActAbstract(),
 
         initMapView()
         initBottomBehavior()
-
 
         userLocationLayer = MapKitFactory.getInstance().createUserLocationLayer(mMapMyYandex.mapWindow)
         userLocationLayer.isVisible = true
@@ -829,6 +828,7 @@ class MapAct : ActAbstract(),
 
 
     override fun onNewGPS() {
+        LOGWork("onNewGPS")
         val point = AppliCation().gps()
         if (mIsFirstTime) {
             moveCameraTo(point)
@@ -839,19 +839,26 @@ class MapAct : ActAbstract(),
         }
 
         val platformNear = vs.baseDat.findPlatformByCoord(point)
-       platformNear.observe(this, Observer { platformList ->
-            if (!platformList.isNullOrEmpty()) {
-                if (platformList.size == 1) {
-                    val platform = platformList[0]
-                    toast("FFFFFFFFFFFFF${platform.platformId}")
-                    showNotificationPlatfrom(platform.platformId, platform.name)
-                } else {
-                    toast("platformList.size=${platformList.size}")
-                }
-            } else {
-                LOGWork("platformList.is null")
-            }
-       })
+        if (platformNear == null) {
+            LOGWork("platformList.is null")
+        } else {
+            toast("FFFFFFFFFFFFF${platformNear.platformId}")
+            showNotificationPlatfrom(platformNear.platformId, platformNear.name)
+        }
+
+//       platformNear.observe(this, Observer { platformList ->
+//        if (!platformNear.isNullOrEmpty()) {
+//            if (platformNear.size == 1) {
+//                val platform = platformNear[0]
+//                toast("FFFFFFFFFFFFF${platform.platformId}")
+//                showNotificationPlatfrom(platform.platformId, platform.name)
+//            } else {
+//                toast("platformList.size=${platformList.size}")
+//            }
+//        } else {
+//            LOGWork("platformList.is null")
+//        }
+//       })
 
 //        Log.d("LogDistance", "###################")
 //

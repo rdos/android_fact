@@ -178,10 +178,10 @@ class App : AApp() {
             // В итоге, ПО НЕ ИМЕЕТ ШНАСА УЗНАТЬ О коллеках)) И КАК СЛЕД.СТВИЕ)) yes при изменении метода интерфейса не должны меняться СОпрограммные сущности
             // , которые этот метод не используют.
             if (getAppParaMS().iSoldGPSdataSaved()) {
-                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
+//                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
                     getAppParaMS().saveLastGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY.LET)
                     LASTact?.onNEWfromGPSSrv()
-                }
+//                }
             }
             LOGafterLOG()
         }
@@ -205,11 +205,11 @@ class App : AApp() {
 
     fun showNotification(pendingIntent: PendingIntent, contentText: String, title: String) {
         val notificationManager = NotificationManagerCompat.from(this)
-        log("showNotification.textContent={$contentText}")
         if (notificationManager.notificationChannels.size <= 0) {
+            log("showNotification.textContent={$contentText}")
             showNotificationForce(pendingIntent, contentText, title)
         } else {
-            logSentry("showNotification. notificationManager.notificationChannels.size = ${notificationManager.notificationChannels.size}")
+//            logSentry("showNotification. notificationManager.notificationChannels.size = ${notificationManager.notificationChannels.size}")
         }
     }
 

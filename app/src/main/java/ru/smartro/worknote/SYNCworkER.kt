@@ -34,12 +34,7 @@ class SYNCworkER(
     p_application: Context,
     params: WorkerParameters
 ) : CoroutineWorker(p_application, params) {
-
-
-
     private val mNetworkRepository = NetworkRepository(applicationContext)
-
-
     private fun showWorkERNotification(isForceMode: Boolean = true,
                                        contentText: String = "Не закрывайте приложение",
                                        titleText: String = "Служба отправки данных работает") {
@@ -68,14 +63,12 @@ class SYNCworkER(
         val params = App.getAppParaMS()
         params.isModeSYNChrONize_FoundError = false
         try {
-
             val DELAY_MS: Long =  if (App.getAppParaMS().isModeDEVEL) 11_011 else 30_000
             while (true) {
                 INcyclEStart("while (true)")
-
                 delay(DELAY_MS)
                 if (params.isModeSYNChrONize) {
-                    showWorkERNotification()
+                    showWorkERNotification(false)
                     LOGWork( "SYNCworkER RUN")
                     synChrONizationDATA()
                 } else {

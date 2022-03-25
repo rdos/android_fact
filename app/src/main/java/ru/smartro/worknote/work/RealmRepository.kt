@@ -405,7 +405,7 @@ class RealmRepository(private val p_realm: Realm) {
         return emptyList()
     }
 
-    fun findPlatformByCoord(point: Point): LiveRealmData<PlatformEntity> {
+    fun findPlatformByCoord(point: Point): PlatformEntity? {
         //lat=0,000133755 это 15 метров
         val LAT15M = 0.000133755
         val LONG15M = 0.0002232
@@ -414,14 +414,39 @@ class RealmRepository(private val p_realm: Realm) {
         val maxLat = point.latitude + LAT15M
         val minLong = point.longitude - LONG15M
         val maxLong = point.longitude + LONG15M
-        val res = getQueryPlatform()
+        val platformByCoord = getQueryPlatform()
             .greaterThanOrEqualTo("coordLat", minLat)
             .lessThanOrEqualTo("coordLat", maxLat)
             .greaterThanOrEqualTo("coordLong", minLong)
             .lessThanOrEqualTo("coordLong", maxLong)
-            .findAllAsync()
-        return res.asLiveData()
+            .findAll()
+        if (platformByCoord.isNullOrEmpty()) {
+            return null
+        }
+        val res = p_realm.copyFromRealm(platformByCoord.get(0)!!)
+        if (res != null) {
+            Log.w(TAG, "res.address=${res.address}")
+        }
+        return res
     }
+
+//    fun findPlatformByCoord(point: Point): LiveRealmData<PlatformEntity> {
+//        //lat=0,000133755 это 15 метров
+//        val LAT15M = 0.000133755
+//        val LONG15M = 0.0002232
+////        long=0,0002232 это 15 метров
+//        val minLat = point.latitude - LAT15M
+//        val maxLat = point.latitude + LAT15M
+//        val minLong = point.longitude - LONG15M
+//        val maxLong = point.longitude + LONG15M
+//        val res = getQueryPlatform()
+//            .greaterThanOrEqualTo("coordLat", minLat)
+//            .lessThanOrEqualTo("coordLat", maxLat)
+//            .greaterThanOrEqualTo("coordLong", minLong)
+//            .lessThanOrEqualTo("coordLong", maxLong)
+//            .findAllAsync()
+//        return res.asLiveData()
+//    }
 
 
 

@@ -53,19 +53,13 @@ abstract class AApp : Application() {
     protected fun log(valueName: String, value: String) {
         log("${valueName}=$value")
     }
-
-
-    fun isDevelMODE(): Boolean {
-        val isResTrue = true
+    fun setDevelMODE(): Boolean {
+        val isResTrue = false
         if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "debugRC") {
+            if (BuildConfig.VERSION_CODE == 1234567890) {
+                return isResTrue
+            }
             return isResTrue
-            // TODO: ?R_dos
-//            if (BuildConfig.VERSION_NAME == "1.2.3-STAGE") {
-//                return isResTrue
-//            }
-//            if (BuildConfig.VERSION_CODE <= 0) {
-//                return isResTrue
-//            }
         }
         return false
     }

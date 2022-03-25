@@ -1,6 +1,6 @@
 package ru.smartro.worknote
 
-
+//корректировка нужна ?gpSPoinT
 //todo: !r_dos true-falseTYPE: замок, Ключ (переключа́тель, выключа́тель)
 //fun isSaveGPS(): Boolean { isDevelMODE и стандарт
 data class Atype(val isTrue: Boolean)
