@@ -231,24 +231,28 @@ class App : AApp() {
             .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_app))
             .setContentTitle(textTitle)
             .setContentText(textContent)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setOngoing(false)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setShowWhen(true)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
 
         /** Get the layouts to use in the custom notification */
-        val notificationLayout = RemoteViews(packageName, R.layout.app_notification_small)
-        /***    val notificationLayoutExpanded = RemoteViews(packageName, R.layout.notification_large) */
-        builder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
-        builder.setCustomContentView(notificationLayout)
+//        val notificationLayout = RemoteViews(packageName, R.layout.app_notification_small)
+//        val notificationLayoutExpanded = RemoteViews(packageName, R.layout.app_notification_small)
+//        builder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
+//        builder.setCustomContentView(notificationLayout)
+//        builder.setCustomBigContentView(notificationLayoutExpanded)
         if (actionName !=null) {
             builder.addAction(R.drawable.ic_arrow_top, actionName, pendingIntent)
             builder.setAutoCancel(true)  // автоматически закрыть уведомление после нажатия
             builder.setFullScreenIntent(pendingIntent, true)
+            builder.setOngoing(false)
+        } else {
+            builder.setOngoing(true)
         }
         val notification: Notification = builder.build()
-        createNotificationChannel().notify(notifyId, notification)
+        log("notifyId=${notifyId}")
+        createNotificationChannel(channelId).notify(notifyId, notification)
     }
 
     private fun createNotificationChannel(channelId: String = NOTIFICATION_CHANNEL_ID__DEFAULT): NotificationManagerCompat {
@@ -257,7 +261,7 @@ class App : AApp() {
 
         val name = getString(R.string.channel_name)
         val descriptionText = getString(R.string.channel_description)
-        val importance = NotificationManagerCompat.IMPORTANCE_MAX
+        val importance = NotificationManagerCompat.IMPORTANCE_HIGH
         val channel = NotificationChannel(channelId, name, importance).apply {
             description = descriptionText
         }

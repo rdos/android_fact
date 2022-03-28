@@ -66,6 +66,8 @@ import java.util.*
 import kotlin.math.round
 
 
+//todo:R_dos!!!
+//todo: тодо:!r_dos
 //Двигается карта deselectGeoObject()
 //todo:FOR-_dos val hasNotServedPlatform = platforms.any { found -> found.status == StatusEnum.NEW }
 // TODO:r_dos! а то checked, Mem РАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тут
@@ -115,10 +117,14 @@ class MapAct : ActAbstract(),
 
         val platformNear = vs.baseDat.findPlatformByCoord(point)
         if (platformNear == null) {
-            LOGWork("platformList.is null")
+            LOGWork("platformNear.is null")
+            for ((key, value) in mNotifyMap) {
+                App.getAppliCation().cancelNotification(key)
+                mNotifyMap.remove(key)
+            }
         } else {
-            toast("FFFFFFFFFFFFF${platformNear.platformId}")
-            showNotificationPlatfrom(platformNear.platformId, platformNear.name)
+//            toast("FFFFFFFFFFFFF${platformNear.srpId}")
+            showNotificationPlatfrom(platformNear.srpId!!, platformNear.name)
         }
 
 //       platformNear.observe(this, Observer { platformList ->
@@ -242,7 +248,8 @@ class MapAct : ActAbstract(),
         AppliCation().startWorkER()
         AppliCation().startLocationService()
 
-        modeSyNChrON_off(false)
+        //todo:  R_dos!!! modeSyNChrON_off(false)
+        paramS.isModeSYNChrONize = true
 //        setDevelMode()
     }
 
@@ -863,10 +870,12 @@ class MapAct : ActAbstract(),
 //        rotateImageView(imgCompass, R.drawable.pin_finder, direction)
 //    }
 
-    private fun showNotificationPlatfrom(platformId: Int?, name: String?) {
+
+    val mNotifyMap = mutableMapOf<Int, Long>()
+    private fun showNotificationPlatfrom(srpId: Int, name: String?) {
         val intent = Intent(this, PlatformServeAct::class.java)
 
-        intent.putExtra("platform_id", platformId)
+        intent.putExtra("srpId", srpId)
         intent.putExtra("mIsServeAgain", false)
 
         val pendingIntent = PendingIntent.getActivity(
@@ -874,12 +883,16 @@ class MapAct : ActAbstract(),
             0, intent,
             PendingIntent.FLAG_CANCEL_CURRENT
         )
-
+//        (;:)
+        if (mNotifyMap.containsKey(srpId)) {
+            return
+        }
+        mNotifyMap.put(srpId, -1)
         AppliCation().showNotificationForce(pendingIntent,
-            "Контейнерная площадка №${platformId}",
+            "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",
             "Начать обслуживание ",
-            this.hashCode(),
+            srpId,
             NOTIFICATION_CHANNEL_ID__MAP_ACT
         )
     }

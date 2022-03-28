@@ -62,13 +62,13 @@ class SYNCworkER(
         beforeLOG("doWork")
         val params = App.getAppParaMS()
         params.isModeSYNChrONize_FoundError = false
+        showWorkERNotification(true)
         try {
             val DELAY_MS: Long =  if (App.getAppParaMS().isModeDEVEL) 11_011 else 30_000
             while (true) {
                 INcyclEStart("while (true)")
                 delay(DELAY_MS)
                 if (params.isModeSYNChrONize) {
-                    showWorkERNotification(false)
                     LOGWork( "SYNCworkER RUN")
                     synChrONizationDATA()
                 } else {
@@ -79,7 +79,7 @@ class SYNCworkER(
                 INcyclEStop()
             } //todo: while (true) {
         } catch (eXthr: Throwable) {
-            Log.e(TAG, eXthr.message, eXthr)
+            Log.e(TAG, "eXthr.message", eXthr)
             params.isModeSYNChrONize_FoundError = true
             showWorkERROR()
             throw eXthr
@@ -124,7 +124,6 @@ class SYNCworkER(
         val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
         when (synchronizeResponse.status) {
             Status.SUCCESS -> {
-//                throw java.lang.Exception("ex")
                 if (platforms.isNotEmpty()) {
                    App.getAppParaMS().lastSynchroTime = timeBeforeRequest
                     db.updatePlatformNetworkStatus(platforms)

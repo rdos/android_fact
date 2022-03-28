@@ -415,6 +415,7 @@ class RealmRepository(private val p_realm: Realm) {
         val minLong = point.longitude - LONG15M
         val maxLong = point.longitude + LONG15M
         val platformByCoord = getQueryPlatform()
+            .equalTo("status", "new")
             .greaterThanOrEqualTo("coordLat", minLat)
             .lessThanOrEqualTo("coordLat", maxLat)
             .greaterThanOrEqualTo("coordLong", minLong)
