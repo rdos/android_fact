@@ -12,7 +12,7 @@
         android:id="@+id/rv_act_journal"
         android:layout_width="match_parent"
         tools:itemCount="4"
-        tools:listitem="@layout/item_log"
+        tools:listitem="@layout/act_messager__rv_item"
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />

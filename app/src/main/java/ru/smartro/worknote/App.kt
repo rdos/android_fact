@@ -237,7 +237,10 @@ class App : AApp() {
             .setDefaults(NotificationCompat.DEFAULT_ALL)
 
         /** Get the layouts to use in the custom notification */
+
 //        val notificationLayout = RemoteViews(packageName, R.layout.app_notification_small)
+//        notificationLayout.setTextViewText(R.id.notification_title, "Custom notification text");
+//        notificationLayout.setOnClickPendingIntent(R.id.notification_title, pendingIntent);
 //        val notificationLayoutExpanded = RemoteViews(packageName, R.layout.app_notification_small)
 //        builder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
 //        builder.setCustomContentView(notificationLayout)

@@ -1140,7 +1140,7 @@ class MapAct : ActAbstract(),
         RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InfoViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.act_map__workorder_info__rv, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.act_map__workorder_info__rv_item, parent, false)
 //            logSentry("BB")
             return InfoViewHolder(view)
         }

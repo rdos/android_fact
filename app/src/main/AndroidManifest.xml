@@ -26,7 +26,6 @@
         android:theme="@style/AppTheme">
         <activity android:name="ru.smartro.worknote.work.ui.ScannerAct" />
         <activity android:name="ru.smartro.worknote.work.ui.JournalAct" />
-        <activity android:name="ru.smartro.worknote.work.ui.LogDetailAct" />
         <activity android:name="ru.smartro.worknote.work.ui.DebugAct" />
         <activity
             android:name="ru.smartro.worknote.work.ui.ContainerFailureAct"

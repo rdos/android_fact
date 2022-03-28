@@ -331,4 +331,4 @@ AlarmManager.INTERVAL_DAY, pendingIntent);
 </receiver>
 <receiver android:name=".AlarmReceiver" />
 
- * */
+!r_dos * R_dos!!!*/

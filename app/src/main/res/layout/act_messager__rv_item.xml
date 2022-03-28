@@ -43,7 +43,6 @@
             android:layout_height="24dp"
             android:layout_marginVertical="8dp"
             android:layout_marginEnd="@dimen/margin_default"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/log_item_content"
             tools:src="@drawable/ic_clock" />
@@ -59,6 +58,56 @@
             app:layout_constraintEnd_toStartOf="@id/log_item_status"
             app:layout_constraintTop_toTopOf="@id/log_item_status" />
 
+
+        <TextView
+            android:id="@+id/tv_act_messager__media_before"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/log_item_time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tv_act_messager__media_after"
+            android:text="Фото до"/>
+        <ImageView
+            android:id="@+id/img_act_messager__media_before"
+            android:layout_width="wrap_content"
+            android:layout_height="130dp"
+            android:src="@drawable/ic_many_blue"
+            android:layout_gravity="center"
+            app:layout_constraintBaseline_creator="@id/tv_act_messager__media_before"
+            app:layout_constraintTop_toBottomOf="@id/tv_act_messager__media_before"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/img_act_messager__media_after"
+            />
+
+        <TextView
+            android:id="@+id/tv_act_messager__media_after"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tv_act_messager__media_before"
+            app:layout_constraintTop_toBottomOf="@id/log_item_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="Фото после"/>
+        <ImageView
+            android:id="@+id/img_act_messager__media_after"
+            android:layout_width="wrap_content"
+            android:layout_height="130dp"
+            android:src="@drawable/ic_many_blue"
+            android:layout_gravity="center"
+            app:layout_constraintBaseline_creator="@id/tv_act_messager__media_after"
+            app:layout_constraintStart_toEndOf="@id/img_act_messager__media_before"
+            app:layout_constraintTop_toBottomOf="@id/tv_act_messager__media_after"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+        <!--<androidx.appcompat.widget.LinearLayoutCompat-->
+        <!--    android:id="@+id/ll_behavior"-->
+        <!--    android:layout_width="match_parent"-->
+        <!--    android:layout_height="100dp"-->
+        <!--    android:orientation="vertical"-->
+        <!--    app:layout_constraintTop_toBottomOf="@id/log_item_time"-->
+        <!--    app:layout_constraintStart_toStartOf="parent"-->
+        <!--    >-->
+
+        <!--</androidx.appcompat.widget.LinearLayoutCompat>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
