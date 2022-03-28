@@ -11,7 +11,7 @@
         android:id="@+id/log_msg"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
+        android:layout_marginStart="64dp"
         android:layout_marginEnd="@dimen/margin_default"
         android:background="@drawable/bg_msg"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,28 +37,16 @@
             android:text="Отрпавление "
             app:layout_constraintTop_toBottomOf="@id/log_item_title" />
 
-        <!--<ImageView-->
-        <!--    android:id="@+id/log_items_img"-->
-        <!--    android:layout_width="200dp"-->
-        <!--    android:layout_height="200dp"-->
-        <!--    app:layout_constraintTop_toBottomOf="@id/log_item_content"-->
-        <!--    app:layout_constraintStart_toStartOf="parent"-->
-        <!--    app:layout_constraintEnd_toEndOf="parent"-->
-        <!--    />-->
-
-
         <ImageView
             android:id="@+id/log_item_status"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginVertical="8dp"
             android:layout_marginEnd="@dimen/margin_default"
-            app:layout_constraintTop_toBottomOf="@id/log_items_img"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/log_item_content"
             tools:src="@drawable/ic_clock" />
-
 
         <TextView
             android:id="@+id/log_item_time"
