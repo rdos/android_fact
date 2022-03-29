@@ -7,6 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.sentry.Sentry
 import ru.smartro.worknote.App
+import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.awORKOLDs.extensions.toast
@@ -121,7 +122,12 @@ abstract class AAct : AppCompatActivity() {
         return mIsOopsMode!!
     }
 
-    public fun isDevelMode() = App.getAppParaMS().isModeDEVEL
+    public fun isDevelMode(): Boolean{
+        if (BuildConfig.BUILD_TYPE == "release") {
+            return false
+        }
+        return App.getAppParaMS().isModeDEVEL
+    }
 
     fun oopsTestqA() {
 
