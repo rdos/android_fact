@@ -5,14 +5,8 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.act_map__bottom_behavior.*
 import kotlinx.android.synthetic.main.act_messager__rv_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
@@ -28,12 +22,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class JournalAct : ActNOAbst() {
+class JournalChatAct : ActNOAbst() {
     private val viewModel: JournalViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_messager)
+        setContentView(R.layout.act_journalchat)
         supportActionBar!!.title = "Журнал"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

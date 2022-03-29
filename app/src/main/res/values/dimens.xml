@@ -8,7 +8,6 @@
     <dimen name="margin_max_max">32dp</dimen>
     <dimen name="app_camera_height">256</dimen>
 
-    <dimen name="margin_xsmall">16dp</dimen>
     <dimen name="margin_small">32dp</dimen>
     <dimen name="margin_medium">48dp</dimen>
     <dimen name="margin_large">64dp</dimen>

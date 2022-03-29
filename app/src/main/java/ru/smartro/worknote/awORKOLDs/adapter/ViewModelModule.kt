@@ -43,5 +43,5 @@ val viewModelModule = module {
     viewModel { PlatformServeViewModel(androidApplication()) }
     viewModel { CameraViewModel(androidApplication()) }
     viewModel { DebugAct.DebugViewModel(androidApplication()) }
-    viewModel { JournalAct.JournalViewModel(androidApplication()) }
+    viewModel { JournalChatAct.JournalViewModel(androidApplication()) }
 }

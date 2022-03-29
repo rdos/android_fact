@@ -61,7 +61,7 @@ import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
-import ru.smartro.worknote.work.ui.JournalAct
+import ru.smartro.worknote.work.ui.JournalChatAct
 import java.util.*
 import kotlin.math.round
 
@@ -230,7 +230,7 @@ class MapAct : ActAbstract(),
         }
         val gotoLogActMapAPIB = findViewById<AppCompatImageButton>(R.id.goto_log__act_map__apib)
         gotoLogActMapAPIB.setOnClickListener {
-            startActivity(Intent(this@MapAct, JournalAct::class.java))
+            startActivity(Intent(this@MapAct, JournalChatAct::class.java))
         }
 
         mDrivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
