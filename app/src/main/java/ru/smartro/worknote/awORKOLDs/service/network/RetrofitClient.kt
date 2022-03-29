@@ -65,6 +65,12 @@ class RetrofitClient(context: Context) {
                 else
                     retrofit("https://auth.smartro.ru/api/").create(ApiService::class.java)
             }
+            "release" -> {
+                return if (isWorkNote)
+                    retrofit("https://wn-api.smartro.ru/api/fact/").create(ApiService::class.java)
+                else
+                    retrofit("https://auth.smartro.ru/api/").create(ApiService::class.java)
+            }
             "debugRC" -> {
                 return if (isWorkNote)
                     retrofit("https://worknote-back.rc.smartro.ru/api/fact/").create(ApiService::class.java)
