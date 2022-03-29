@@ -37,7 +37,7 @@
             android:contentDescription="@string/back_button_alt"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginStart="@dimen/margin_xsmall"
+            android:layout_marginStart="@dimen/margin_default"
             android:layout_marginTop="@dimen/margin_small"
             android:layout_width="@dimen/round_button_small"
             android:layout_height="@dimen/round_button_small"

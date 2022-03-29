@@ -55,14 +55,24 @@ class JournalChatAct : ActNOAbst() {
             val dateFormat = SimpleDateFormat("HH:mm")
             val resultDate: String = dateFormat.format(date)
             val imgBefore = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_before)
-            Glide.with(imgBefore)
-                .load(MyUtil.base64ToImage(item.beforeMedia[0]?.image))
-                .into(imgBefore)
+            if (item.beforeMedia.size > 0) {
+                Glide.with(imgBefore)
+                    .load(MyUtil.base64ToImage(item.beforeMedia[0]?.image))
+                    .into(imgBefore)
+                holder.itemView.tv_act_messager__media_before.text = "Фото(1 из ${item.beforeMedia.size}) до обслуживания"
+            } else {
+                holder.itemView.tv_act_messager__media_before.text = "beforeMedia пусто"
+            }
+            if (item.afterMedia.size > 0) {
+                val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
+                Glide.with(imgAfter)
+                    .load(MyUtil.base64ToImage(item.afterMedia[0]?.image))
+                    .into(imgAfter)
+                holder.itemView.tv_act_messager__media_after.text = "Фото(1 из ${item.afterMedia.size}) после обслуживания"
+            } else {
+                holder.itemView.tv_act_messager__media_before.text = "afterMedia пусто"
+            }
 
-            val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
-            Glide.with(imgAfter)
-                .load(MyUtil.base64ToImage(item.afterMedia[0]?.image))
-                .into(imgAfter)
 //            val llBehavior = holder.itemView.findViewById<ConstraintLayout>(R.id.ll_behavior)
 //            val bottomSheetBehavior = BottomSheetBehavior.from(llBehavior)
 ////            bottomSheetBehavior.expandedOffset = 100
