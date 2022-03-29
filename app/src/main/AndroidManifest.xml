@@ -24,22 +24,22 @@
         android:supportsRtl="true"
         android:allowBackup="false"
         android:theme="@style/AppTheme">
-        <activity  android:exported="true" android:name="ru.smartro.worknote.work.ui.ScannerAct" />
-        <activity  android:exported="true" android:name="ru.smartro.worknote.work.ui.JournalAct" />
-        <activity  android:exported="true" android:name="ru.smartro.worknote.work.ui.DebugAct" />
-        <activity  android:exported="true"
+        <activity  android:exported="false" android:name="ru.smartro.worknote.work.ui.ScannerAct" />
+        <activity  android:exported="false" android:name="ru.smartro.worknote.work.ui.JournalAct" />
+        <activity  android:exported="false" android:name="ru.smartro.worknote.work.ui.DebugAct" />
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.ui.ContainerFailureAct"
             android:screenOrientation="portrait"
             android:theme="@style/Problem" />
-        <activity  android:exported="true"
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.ui.ContainerBreakdownAct"
             android:screenOrientation="portrait"
             android:theme="@style/Problem"/>
-        <activity  android:exported="true"
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.ui.PlatformFailureAct"
             android:screenOrientation="portrait"
             android:theme="@style/Problem" />
-        <activity  android:exported="true"
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.ui.CameraAct"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -49,7 +49,7 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <intent-filter android:autoVerify="true">
+            <intent-filter android:autoVerify="true" >
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -64,25 +64,25 @@
                 android:name="android.notch_support"
                 android:value="true" />
         </activity>
-        <activity  android:exported="true"
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.platform_serve.PlatformServeAct"
             android:screenOrientation="portrait" />
 
-        <activity  android:exported="true"
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.MapAct"
             android:screenOrientation="portrait"
             android:theme="@style/NoToolbar" />
 
-        <activity  android:exported="true"
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.ac.checklist.StartWorkOrderAct"
             android:screenOrientation="portrait" />
-        <activity  android:exported="true"
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.ac.checklist.StartWayBillAct"
             android:screenOrientation="portrait" />
-        <activity  android:exported="true"
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.ac.checklist.StartVehicleAct"
             android:screenOrientation="portrait" />
-        <activity  android:exported="true"
+        <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.ac.checklist.StartOwnerAct"
             android:screenOrientation="portrait" />
         <activity  android:exported="true"

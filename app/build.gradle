@@ -9,7 +9,9 @@ android {
     compileSdkVersion 32
     buildToolsVersion "30.0.3"
 
-
+    buildFeatures {
+        viewBinding = true
+    }
     defaultConfig {
         applicationId "ru.smartro.worknote"
         minSdkVersion 26
@@ -152,7 +154,7 @@ dependencies {
 
     implementation 'androidx.camera:camera-extensions:1.1.0-beta02'
 // https://mvnrepository.com/artifact/com.yandex.android/speechkit
-    implementation("com.yandex.android:speechkit:3.12.2")
+//    implementation("com.yandex.android:speechkit:3.12.2")
 
 
     implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
