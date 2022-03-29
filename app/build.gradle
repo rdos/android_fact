@@ -4,11 +4,11 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 
+android.defaultConfig.ndk.debugSymbolLevel = 'FULL'
 
 android {
     compileSdkVersion 32
-    buildToolsVersion "30.0.3"
-
+    buildToolsVersion "32.1.0-rc1"
     buildFeatures {
         viewBinding = true
     }
@@ -75,6 +75,10 @@ android {
             signingConfig signingConfigs.release
             resValue "string", "app_name", "Fact"
             minifyEnabled false
+
+            // Includes the default ProGuard rules files that are packaged with
+            // the Android Gradle plugin. To learn more, go to the section about
+            // R8 configuration files.
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
@@ -101,7 +105,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.0"
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
