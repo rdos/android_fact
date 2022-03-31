@@ -6,8 +6,8 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.sentry.Sentry
+import net.cachapa.expandablelayout.BuildConfig
 import ru.smartro.worknote.App
-import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.awORKOLDs.extensions.toast
@@ -55,7 +55,7 @@ abstract class AAct : AppCompatActivity() {
 
     //todo !r_dos onNEW-_Service(Srv) 
     public fun onNEWfromGPSSrv() {
-        LOGbefore("onNewGPS")
+        beforeLOG("onNewGPS")
         onNewGPS()
         LOGafter()
     }
@@ -65,7 +65,7 @@ abstract class AAct : AppCompatActivity() {
 
     public var TAG : String = "${this::class.simpleName}"
     private val TAGLOG = "AActLOG"
-    protected fun LOGbefore(method: String, valueName: String = "") {
+    protected fun beforeLOG(method: String, valueName: String = "") {
         AppliCation().beforeLOG(method, valueName)
     }
 
@@ -79,16 +79,16 @@ abstract class AAct : AppCompatActivity() {
         logAfterResult(res.toStr())
     }
 
-    protected fun LOGWork(valueNameAndValue: String) {
+    protected fun log(valueNameAndValue: String) {
         mMethodName?.let {
             Log.i(TAG, "${TAG}:${mMethodName}.${valueNameAndValue}")
-            return@LOGWork
+            return@log
         }
         Log.i(TAG, "${TAG}:${valueNameAndValue}")
     }
 
-    protected fun LOGWork(valueName: String, value: Int) {
-        LOGWork("${valueName}=$value\"")
+    protected fun log(valueName: String, value: Int) {
+        log("${valueName}=$value\"")
     }
 
     protected fun logSentry(text: String) {

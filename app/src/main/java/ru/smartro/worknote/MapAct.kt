@@ -66,7 +66,7 @@ import java.util.*
 import kotlin.math.round
 
 
-//todo:R_dos!!!
+//todo:R_dos)!!
 //todo: тодо:!r_dos
 //Двигается карта deselectGeoObject()
 //todo:FOR-_dos val hasNotServedPlatform = platforms.any { found -> found.status == StatusEnum.NEW }
@@ -105,7 +105,7 @@ class MapAct : ActAbstract(),
 //    private lateinit var selectedPlatformToNavigate: Point
 
     override fun onNewGPS() {
-        LOGWork("onNewGPS")
+        log("onNewGPS")
         val point = AppliCation().gps()
         if (mIsFirstTime) {
             moveCameraTo(point)
@@ -117,7 +117,7 @@ class MapAct : ActAbstract(),
 
         val platformNear = vs.baseDat.findPlatformByCoord(point)
         if (platformNear == null) {
-            LOGWork("platformNear.is null")
+            log("platformNear.is null")
             for ((key, value) in mNotifyMap) {
                 App.getAppliCation().cancelNotification(key)
                 mNotifyMap.remove(key)
@@ -184,13 +184,9 @@ class MapAct : ActAbstract(),
             val workOrderS = getWorkOrders(extraPramId)
             getNetDATEsetBaseDate(workOrderS)
         }
-//        mMapMyYandex.map.addInputListener(this)
-//        mMapMyYandex.map.addCameraListener(this)
+
         mMapMyYandex.map.addInertiaMoveListener(this)
-//        mMapMyYandex.setOnTouchListener { v, event ->
-//            mIsAUTOMoveCamera = false
-//            false
-//        }
+        mMapMyYandex.map.addInputListener(this)
         mAcbInfo = findViewById(R.id.acb_act_map__info)
 
         mAcbInfo.setOnClickListener {
@@ -206,7 +202,7 @@ class MapAct : ActAbstract(),
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.isAutoZoomEnabled = true
-//        userLocationLayer.setObjectListener(this)
+        userLocationLayer.setObjectListener(this)
 
         gotoMyGPS.setOnClickListener {
             try {
@@ -299,92 +295,6 @@ class MapAct : ActAbstract(),
         setInfoData()
     }
 
-//    private fun procedure1(platformS: List<PlatformEntity>) {
-//        var minLat: Double = platformS[0].coords[0]!!
-//        var maxLat: Double = platformS[0].coords[0]!!
-//
-//        var minLong: Double = platformS[0].coords[1]!!
-//        var maxLong: Double = platformS[0].coords[1]!!
-//
-//        val mapCoordinate = emptyMap<Double?, Double?>().toMutableMap()
-//
-//        for(platform in platformS) {
-//            LOGWork("lat(long)=${platform.coords[0]}(${platform.coords[1]})")
-//            vs.baseDat.updateFailureComment(platform.platformId!!, "")
-//            if (minLat > platform.coords[0]!!) {
-//                minLat = platform.coords[0]!!
-//            }
-//            if (minLong > platform.coords[1]!!) {
-//                minLong = platform.coords[1]!!
-//            }
-//            if (maxLat < platform.coords[0]!!) {
-//                maxLat = platform.coords[0]!!
-//            }
-//            if (maxLong < platform.coords[1]!!) {
-//                maxLong = platform.coords[1]!!
-//            }
-//            mapCoordinate[platform.coords[0]] = platform.coords[1]
-//        }
-//        LOGWork("tit.minLat=${minLat}")
-//        LOGWork("tit.maxLat=${maxLat}")
-//        LOGWork("tit.minLong=${minLong}")
-//        LOGWork("tit.maxLong=${maxLong}")
-//
-//        val regionCnt = 10
-//        val stepLat = (maxLat - minLat) / regionCnt
-//        val stepLong = (maxLong - minLong) / regionCnt
-//
-//        var regionId = 0
-//        var regionStartLat = minLat
-//        var regionEndLat = minLat
-//        var regionStartLong = minLong
-//        var regionEndLong = minLong
-//
-//        for (idx in 1..regionCnt){
-//            if (idx < regionCnt) {
-//                regionEndLat = regionStartLat + stepLat
-//            } else {
-//                regionEndLat = maxLat
-//            }
-//
-//
-//            regionStartLong = minLong
-//            for(jdx in 1..regionCnt) {
-//                regionId++
-//                LOGWork("tit.regionIdregionId=${regionId}")
-//                LOGWork("tit.regionStartLat=${regionStartLat})")
-//                LOGWork("tit.regionEndLat=${regionEndLat})")
-//                if (jdx < regionCnt) {
-//                    regionEndLong = regionStartLong + stepLong
-//                } else {
-//                    regionEndLong = maxLong
-//                }
-//                LOGWork("tit.regionStartLong=${regionStartLong})")
-//                LOGWork("tit.regionEndLong=${regionEndLong})")
-//                for(platform in platformS) {
-//                    if (platform.address == "Ульяновская область, Мелекесский район, Лесной, Дорожная,9") {
-//                        LOGWork("tit.=)")
-//                    }
-//                    val coordLat = platform.coords[0]!!
-//                    val coordLong = platform.coords[1]!!
-//                    val lll = (regionEndLat - regionStartLat) * 0.2
-//                    val sss = (regionEndLong - regionStartLong) * 0.2
-//                    if ((coordLat in regionStartLat-lll..regionEndLat+lll) && (coordLong in regionStartLong-sss..regionEndLong+sss)) {
-//                        vs.baseDat.addFailureComment(platform.platformId!!, regionId.toString())
-//                        LOGWork("tit.regionId=${regionId} for ${coordLat}(${coordLong})")
-//                    }
-//                }
-//                regionStartLong = regionEndLong
-//            }
-//            regionStartLat = regionEndLat
-//        }
-//
-//        LOGWork("tit.stepLat=${stepLat}")
-//        LOGWork("tit.stepLong=${stepLong}")
-//
-//        val sortList = mapCoordinate.toList().sortedBy { (_, value) -> value }
-//        LOGWork("sortList=${sortList[0].first}")
-//    }
 
     private fun setInfoData() {
         val workOrders = getWorkOrders()
@@ -902,8 +812,8 @@ class MapAct : ActAbstract(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        LOGWork("onActivityResult.requestCode=${requestCode}")
-        LOGWork("onActivityResult.resultCode=${resultCode}")
+        log("onActivityResult.requestCode=${requestCode}")
+        log("onActivityResult.resultCode=${resultCode}")
 
     }
 //    override fun onLocationUpdated(location: Location) {
@@ -1017,17 +927,17 @@ class MapAct : ActAbstract(),
 /** РИСУЕМ МАШИНКУ, нормальную ic_truck_icon.png*/
     override fun onObjectAdded(userLocationView: UserLocationView) {
         userLocationView.accuracyCircle.isVisible =true
-        userLocationLayer.setObjectListener(this)
+//        userLocationLayer.setObjectListener(this)
     }
 
     override fun onObjectRemoved(p0: UserLocationView) {
 //        TODO("Not yet implemented")
-        LOGWork("onObjectRemoved")
+        log("onObjectRemoved")
     }
 
     override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) {
 //        TODO("Not yet implemented")
-        LOGWork("onObjectUpdated")
+        log("onObjectUpdated")
 
     }
 
@@ -1214,29 +1124,26 @@ class MapAct : ActAbstract(),
 //        this as InertiaMoveListener
     }
 
-    override fun onMapTap(p0: Map, p1: Point) {
 
+
+    override fun onMapTap(p0: Map, p1: Point) {
+//        TODO("Not yet implemented")
+        log("onMapTap")
     }
 
     override fun onMapLongTap(p0: Map, p1: Point) {
         //ВОТ тут прошло 3 или больше секунды с начала нажатия
         //можно что-то запустить
-        AppliCation().stopWorkERS()
-        vs.clearData()
-        restartApp()
-        paramS().logout()
+        Shutdown()
     }
+
 
     private fun setDevelMode() {
         if (isDevelMode()) {
-
             mAcbInfo.setOnLongClickListener {
                 //ВОТ тут прошло 3 или больше секунды с начала нажатия
                 //можно что-то запустить
-                AppliCation().stopWorkERS()
-                vs.clearData()
-                restartApp()
-                paramS().logout()
+                Shutdown()
                 return@setOnLongClickListener true
             }
 
@@ -1263,6 +1170,13 @@ class MapAct : ActAbstract(),
 //            })
         }
     }
+
+    private fun Shutdown() {
+        AppliCation().stopWorkERS()
+        vs.clearData()
+        restartApp()
+        paramS().logout()
+    }
 }
 
 
@@ -1279,3 +1193,90 @@ class MapAct : ActAbstract(),
 //                infoText += "/${workOrder.cnt_container_status_error}\n"
 
 
+
+//    private fun procedure1(platformS: List<PlatformEntity>) {
+//        var minLat: Double = platformS[0].coords[0]!!
+//        var maxLat: Double = platformS[0].coords[0]!!
+//
+//        var minLong: Double = platformS[0].coords[1]!!
+//        var maxLong: Double = platformS[0].coords[1]!!
+//
+//        val mapCoordinate = emptyMap<Double?, Double?>().toMutableMap()
+//
+//        for(platform in platformS) {
+//            LOGWork("lat(long)=${platform.coords[0]}(${platform.coords[1]})")
+//            vs.baseDat.updateFailureComment(platform.platformId!!, "")
+//            if (minLat > platform.coords[0]!!) {
+//                minLat = platform.coords[0]!!
+//            }
+//            if (minLong > platform.coords[1]!!) {
+//                minLong = platform.coords[1]!!
+//            }
+//            if (maxLat < platform.coords[0]!!) {
+//                maxLat = platform.coords[0]!!
+//            }
+//            if (maxLong < platform.coords[1]!!) {
+//                maxLong = platform.coords[1]!!
+//            }
+//            mapCoordinate[platform.coords[0]] = platform.coords[1]
+//        }
+//        LOGWork("tit.minLat=${minLat}")
+//        LOGWork("tit.maxLat=${maxLat}")
+//        LOGWork("tit.minLong=${minLong}")
+//        LOGWork("tit.maxLong=${maxLong}")
+//
+//        val regionCnt = 10
+//        val stepLat = (maxLat - minLat) / regionCnt
+//        val stepLong = (maxLong - minLong) / regionCnt
+//
+//        var regionId = 0
+//        var regionStartLat = minLat
+//        var regionEndLat = minLat
+//        var regionStartLong = minLong
+//        var regionEndLong = minLong
+//
+//        for (idx in 1..regionCnt){
+//            if (idx < regionCnt) {
+//                regionEndLat = regionStartLat + stepLat
+//            } else {
+//                regionEndLat = maxLat
+//            }
+//
+//
+//            regionStartLong = minLong
+//            for(jdx in 1..regionCnt) {
+//                regionId++
+//                LOGWork("tit.regionIdregionId=${regionId}")
+//                LOGWork("tit.regionStartLat=${regionStartLat})")
+//                LOGWork("tit.regionEndLat=${regionEndLat})")
+//                if (jdx < regionCnt) {
+//                    regionEndLong = regionStartLong + stepLong
+//                } else {
+//                    regionEndLong = maxLong
+//                }
+//                LOGWork("tit.regionStartLong=${regionStartLong})")
+//                LOGWork("tit.regionEndLong=${regionEndLong})")
+//                for(platform in platformS) {
+//                    if (platform.address == "Ульяновская область, Мелекесский район, Лесной, Дорожная,9") {
+//                        LOGWork("tit.=)")
+//                    }
+//                    val coordLat = platform.coords[0]!!
+//                    val coordLong = platform.coords[1]!!
+//                    val lll = (regionEndLat - regionStartLat) * 0.2
+//                    val sss = (regionEndLong - regionStartLong) * 0.2
+//                    if ((coordLat in regionStartLat-lll..regionEndLat+lll) && (coordLong in regionStartLong-sss..regionEndLong+sss)) {
+//                        vs.baseDat.addFailureComment(platform.platformId!!, regionId.toString())
+//                        LOGWork("tit.regionId=${regionId} for ${coordLat}(${coordLong})")
+//                    }
+//                }
+//                regionStartLong = regionEndLong
+//            }
+//            regionStartLat = regionEndLat
+//        }
+//
+//        LOGWork("tit.stepLat=${stepLat}")
+//        LOGWork("tit.stepLong=${stepLong}")
+//
+//        val sortList = mapCoordinate.toList().sortedBy { (_, value) -> value }
+//        LOGWork("sortList=${sortList[0].first}")
+//    }

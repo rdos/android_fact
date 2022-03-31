@@ -36,7 +36,7 @@ class StartWayBillAct : ActNOAbst() {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
         setContentView(R.layout.act_start_waybill)
-
+                                                            //!r_dos//!r_dos//!r_dos//!r_dos
         val nameNotFounT = getPutExtraParam_NAME()
         supportActionBar?.title = "Путевой Лист"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

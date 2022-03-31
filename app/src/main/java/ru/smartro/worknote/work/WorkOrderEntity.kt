@@ -19,6 +19,7 @@ import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 open class WorkOrderEntity(
     @PrimaryKey
     var id: Int = Inull,
@@ -220,7 +221,9 @@ open class PlatformEntity(
 //        }
         return getIconFromStatus(this.status)
     }
+    private val MBAth="Bath"
 
+    fun istypoMiB(): Boolean = this.icon == MBAth
     private fun getIconFromStatus(p_status: String?): Int {
         return when (this.icon) {
             "bunker" ->
@@ -257,6 +260,13 @@ open class PlatformEntity(
                     StatusEnum.SUCCESS -> R.drawable.ic_metal_green
                     StatusEnum.ERROR -> R.drawable.ic_metal_red
                     else -> R.drawable.ic_metal_orange
+                }
+            "Bath" ->
+                when (p_status) {
+                    StatusEnum.NEW -> R.drawable.ic_two_sync_b
+                    StatusEnum.SUCCESS -> R.drawable.ic_two_sync_g
+                    StatusEnum.ERROR -> R.drawable.ic_two_sync_red
+                    else -> R.drawable.ic_two_sync_orange
                 }
             else ->
                 //many
