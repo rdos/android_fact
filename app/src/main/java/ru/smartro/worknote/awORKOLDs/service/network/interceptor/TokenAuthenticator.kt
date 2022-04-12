@@ -9,14 +9,15 @@ import okhttp3.Response
 import okhttp3.Route
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
+
 class TokenAuthenticator(val context: Context) : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
         Log.w("TokenAuthenticator", "authenticate")
-        MyUtil.logout(context)
-        val realm = Realm.getDefaultInstance()
-        realm.executeTransaction {
-            realm.deleteAll()
-        }
+//        MyUtil.logout(context)
+//        val realm = Realm.getDefaultInstance()
+//        realm.executeTransaction {
+//            realm.deleteAll()
+//        }
         return null
     }
 }
