@@ -313,8 +313,10 @@ class App : AApp() {
             return
         }
 //todo:        getAp
-        val providerName = AndRoid.getProviderName()
-        log(providerName!!)
+//        val providerName = AndRoid.getProviderName()
+//        if (providerName.isNullOrEmpty()) {
+//
+//        }
         AndRoid.getService().requestLocationUpdates(
             LocationManager.NETWORK_PROVIDER,
             300,
