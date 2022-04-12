@@ -78,7 +78,7 @@ class StartAct : ActNOAbst() {
         }
 
         actv_activity_auth__it_test_version.isVisible = false
-        if (BuildConfig.BUILD_TYPE != "debugProd" || BuildConfig.BUILD_TYPE != "release") {
+        if (BuildConfig.BUILD_TYPE != "debugProd" && BuildConfig.BUILD_TYPE != "release") {
             val versionName = BuildConfig.VERSION_NAME
             //oopsTestqA
             val textIsTestEnv = getString(R.string.act_st_art_it_test_version).format(versionName)
@@ -88,7 +88,7 @@ class StartAct : ActNOAbst() {
 
         }
 
-        if (BuildConfig.BUILD_TYPE != "debugProd" || BuildConfig.BUILD_TYPE != "release") {
+        if (BuildConfig.BUILD_TYPE != "debugProd" && BuildConfig.BUILD_TYPE != "release") {
             auth_enter.setOnLongClickListener {
                 auth_login.setText("admin@smartro.ru")
                 auth_password.setText("xot1ieG5ro~hoa,ng4Sh")

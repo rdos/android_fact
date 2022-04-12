@@ -89,9 +89,10 @@ class AppParaMS {
     fun isOldGPSbaseDate(time: Long): Boolean = isTimeForSaveData(time)
 
     private fun isTimeForSaveData(time: Long?=null): Boolean {
-        val diff = System.currentTimeMillis() - (time?:gpsTIME)
-        val res =  diff >= 6_310
-        Log.w("AppParaMS", "res=${res} time=${time} gpsTIME=${gpsTIME}")
+        val currentTimeMS = System.currentTimeMillis()
+        val diff = currentTimeMS - (time?:gpsTIME)
+        val res =  diff >= 30_000
+        Log.w("AppParaMS", "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
         return res
     }
     fun iSoldGPSdataSaved(): Boolean {
@@ -144,7 +145,7 @@ class AppParaMS {
         }
 
     private var gpsTIME: Long
-        get() = sharedPref__env.getLong("gpsTIME",  System.currentTimeMillis())
+        get() = sharedPref__env.getLong("gpsTIME", Lnull)
         set(value) = sharedPref__env.edit {
             it.putLong("gpsTIME", value)
         }

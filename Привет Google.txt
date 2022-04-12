@@ -1,1 +1,4 @@
   , а куда делось во"просительное слово.Дышать это как, зачем?"
+
+SR-3834[Android] Fact доступен в google playstore
+https://jira.smartro.ru/browse/SR-3834

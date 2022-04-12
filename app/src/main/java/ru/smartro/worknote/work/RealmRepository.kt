@@ -405,15 +405,19 @@ class RealmRepository(private val p_realm: Realm) {
         return emptyList()
     }
 
-    fun findPlatformByCoord(point: Point): PlatformEntity? {
+    fun findPlatformByCoord(point: Point, accuracy: Float): PlatformEntity? {
         //lat=0,000133755 это 15 метров
-        val LAT15M = 0.000133755
-        val LONG15M = 0.0002232
+        val LAT15M = 0.000008917
+        val LONG15M = 0.00001488
 //        long=0,0002232 это 15 метров
-        val minLat = point.latitude - LAT15M
-        val maxLat = point.latitude + LAT15M
-        val minLong = point.longitude - LONG15M
-        val maxLong = point.longitude + LONG15M
+        var koef = 15f
+        if (accuracy >= koef) {
+            koef = accuracy
+        }
+        val minLat = point.latitude - LAT15M*koef
+        val maxLat = point.latitude + LAT15M*koef
+        val minLong = point.longitude - LONG15M*koef
+        val maxLong = point.longitude + LONG15M*koef
         val platformByCoord = getQueryPlatform()
             .equalTo("status", "new")
             .greaterThanOrEqualTo("coordLat", minLat)

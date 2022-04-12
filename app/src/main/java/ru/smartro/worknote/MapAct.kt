@@ -115,7 +115,7 @@ class MapAct : ActAbstract(),
             moveCameraTo(point)
         }
 
-        val platformNear = vs.baseDat.findPlatformByCoord(point)
+        val platformNear = vs.baseDat.findPlatformByCoord(point, point.getAccuracy())
         if (platformNear == null) {
             log("platformNear.is null")
             for ((key, value) in mNotifyMap) {
