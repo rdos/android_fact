@@ -86,7 +86,10 @@ class PoinT(latitude: Double, longitude: Double,
         return res
     }
 
-
+    fun showForUser(): String {
+        val resTrue = "${this.latitude} , ${this.longitude}"
+        return resTrue
+    }
 
 
     companion object {

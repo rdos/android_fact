@@ -8,6 +8,7 @@ import android.view.MenuItem
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.mapview.MapView
 import com.yandex.runtime.image.ImageProvider
 import kotlinx.android.synthetic.main.activity_debug.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -19,13 +20,12 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
 
 class DebugAct : ActNOAbst() {
+    private lateinit var mMapView: MapView
     private val vs: DebugViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_debug)
-        MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
-        MapKitFactory.initialize(this)
         supportActionBar!!.title = "Дебаг экран"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         initViews()
@@ -63,17 +63,18 @@ class DebugAct : ActNOAbst() {
         debug_organisation.text = "Организация: ${paramS().ownerId}"
 //        debug_user.text = "Пользователь: ${AppPreferences.BoTlogin}"
 //        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillNumber}"
-        debug_coordinate.text = "Координаты: ${AppliCation().gps()}"
+        debug_coordinate.text = "Координаты: ${AppliCation().gps().showForUser()}"
         debug_phone.text = "Устройство: ${MyUtil.getDeviceName()}, Android: ${android.os.Build.VERSION.SDK_INT}"
 
-        debug_mapview.map.mapObjects.addPlacemark(AppliCation().gps(), ImageProvider.fromResource(this, R.drawable.ic_euro_blue))
-        debug_mapview.map.move(
+        mMapView = findViewById(R.id.debug_mapview)
+        mMapView.map.mapObjects.addPlacemark(AppliCation().gps(), ImageProvider.fromResource(this, R.drawable.ic_euro_blue))
+        mMapView.map.move(
             CameraPosition(AppliCation().gps(), 12.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null
         )
-        debug_mapview.map.isScrollGesturesEnabled = false
-        debug_mapview.map.isZoomGesturesEnabled = false
-        debug_mapview.map.isRotateGesturesEnabled = false
+        mMapView.map.isScrollGesturesEnabled = false
+        mMapView.map.isZoomGesturesEnabled = false
+        mMapView.map.isRotateGesturesEnabled = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -87,18 +88,15 @@ class DebugAct : ActNOAbst() {
 
     override fun onStart() {
         super.onStart()
-        debug_mapview.onStart()
+        mMapView.onStart()
         MapKitFactory.getInstance().onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        debug_mapview.onStop()
+        mMapView.onStop()
         MapKitFactory.getInstance().onStop()
     }
 
-    open class DebugViewModel(application: Application) : BaseViewModel(application) {
-
-
-    }
+    open class DebugViewModel(application: Application) : BaseViewModel(application)
 }
