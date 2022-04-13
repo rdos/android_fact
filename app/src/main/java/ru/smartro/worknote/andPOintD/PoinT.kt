@@ -8,7 +8,8 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.ImageEntity
 
 class PoinT(latitude: Double, longitude: Double,
-            private val pointTime: Long, private val pointAccuracy: Float
+    // TODO:
+            private val pointTime: Long?, private val pointAccuracy: Float?
 ): Point(latitude, longitude) {
     //todo: !r_dos find fun gpSPoinT()
     //  todo: r_dos, use isShowForUser :: e.b.a
@@ -23,6 +24,9 @@ class PoinT(latitude: Double, longitude: Double,
     constructor() : this(Dnull, Dnull, Lnull, Fnull) {
         isFakeGPS = true
     }
+
+    constructor(lat: Double, long: Double) : this(lat, long, null, null)
+
     constructor(lat: Float, long: Float, time: Long, accuracy: Float) : this(lat.toDouble(), long.toDouble(), time, accuracy)
     constructor(lat: DoubleCool, long: DoubleCool, time: LongCool, accuracy: FloatCool) : this(lat, long, time, accuracy.LET)
     constructor(lat: Double, long: Double, time: Long, accuracy: Double) : this(lat, long, time, accuracy.toFloat())
@@ -32,16 +36,16 @@ class PoinT(latitude: Double, longitude: Double,
     }
 
     fun getTime(): Long {
-        return pointTime
+        return pointTime!!
     }
 
     fun getAccuracy(): Float {
-        return pointAccuracy
+        return pointAccuracy!!
     }
 
 
     fun PointTimeToLastKnowTime_SRV(): Long {
-        return System.currentTimeMillis() - pointTime
+        return System.currentTimeMillis() - pointTime!!
     }
 
     fun PointTOBaseData(): RealmList<Double> {
@@ -69,7 +73,7 @@ class PoinT(latitude: Double, longitude: Double,
         if (App.getAppParaMS().iSoldGPSdataSaved()) {
             return resFalse
         }
-        if (App.getAppParaMS().isOldGPSbaseDate(pointTime)) {
+        if (App.getAppParaMS().isOldGPSbaseDate(pointTime!!)) {
             return true
         }
 

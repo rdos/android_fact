@@ -62,6 +62,7 @@ import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
+import ru.smartro.worknote.work.ui.PlatformFailureAct
 import java.util.*
 import kotlin.math.round
 
@@ -693,22 +694,30 @@ class MapAct : ActAbstract(),
 
     }
 
-    private fun gotoNextAct(item: PlatformEntity) {
-        val intent = Intent(this, PlatformServeAct::class.java)
-        intent.putExtra("platform_id", item.platformId)
-        startActivity(intent)
+    //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
+    //тодо)) код фанатика m4 из cs)))
+    private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
+        val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PlatformServeAct::class.java else PlatformFailureAct::class.java)
+        intent.putExtra("platform_id", plaform.platformId)
+
+        if (todoParamREQUEST_EXIT == Inull) {
+            startActivity(intent)
+        } else {
+            startActivityForResult(intent, todoParamREQUEST_EXIT)
+        }
     }
 
-    override fun startPlatformProblem(item: PlatformEntity) {
+
+    override fun startPlatformProblem(plaform: PlatformEntity) {
         hideDialog()
-        gotoNextAct(item)
+        gotoNextAct(plaform, REQUEST_EXIT)
     }
 
-    override fun moveCameraPlatform(point: Point) {
+    override fun moveCameraPlatform(point: PoinT) {
         mIsAUTOMoveCamera = false
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        mMapMyYandex.map.move(CameraPosition(point, 16.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 1F), null)
+        moveCameraTo(point)
     }
 
     override fun navigatePlatform(checkPoint: Point) {
@@ -742,12 +751,12 @@ class MapAct : ActAbstract(),
 
     }
 
+
     private fun moveCameraTo(pont: PoinT) {
         mMapMyYandex.map.move(
             CameraPosition(pont, 15.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null)
     }
-
 
 //    override fun onLocationStatusUpdated(locationStatus: LocationStatus) {
 //        logSentry("onLocationStatusUpdated ${locationStatus.name.toStr()}")

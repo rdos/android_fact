@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.act_map__bottom_behavior__rv_item.view.*
 import ru.smartro.worknote.R
+import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+
 
 
 class MapActBottomBehaviorAdapter(
@@ -90,7 +92,7 @@ class MapActBottomBehaviorAdapter(
         holder.itemView.map_behavior_container_count.text = "${item.containers.size} $containerString"
 
         holder.itemView.map_behavior_coordinate.setOnClickListener {
-            listener.moveCameraPlatform(Point(item.coords[0]!!, item.coords[1]!!))
+            listener.moveCameraPlatform(PoinT(item.coords[0]!!, item.coords[1]!!))
         }
         holder.itemView.map_behavior_location.setOnClickListener {
             listener.navigatePlatform(Point(item.coords[0]!!, item.coords[1]!!))
@@ -156,7 +158,7 @@ class MapActBottomBehaviorAdapter(
     interface PlatformClickListener {
         fun startPlatformService(item: PlatformEntity)
         fun startPlatformProblem(item: PlatformEntity)
-        fun moveCameraPlatform(point: Point)
+        fun moveCameraPlatform(point: PoinT)
         fun navigatePlatform(checkPoint: Point)
     }
 }
