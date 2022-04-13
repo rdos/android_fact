@@ -221,9 +221,9 @@ open class PlatformEntity(
 //        }
         return getIconFromStatus(this.status)
     }
-    private val MBAth="Bath"
 
-    fun istypoMiB(): Boolean = this.icon == MBAth
+    fun istypoMiB(): Boolean = this.icon == "Bath"
+
     private fun getIconFromStatus(p_status: String?): Int {
         return when (this.icon) {
             "bunker" ->
