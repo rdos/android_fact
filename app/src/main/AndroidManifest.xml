@@ -25,7 +25,9 @@
         android:allowBackup="false"
         android:theme="@style/AppTheme">
      <activity android:name="ru.smartro.worknote.work.ui.ScannerAct" />
+        
         <activity android:name="ru.smartro.worknote.work.ui.JournalChatAct" />
+
         <activity android:name="ru.smartro.worknote.work.ui.DebugAct" />
         <activity
             android:name="ru.smartro.worknote.work.ui.ContainerFailureAct"

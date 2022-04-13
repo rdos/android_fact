@@ -44,8 +44,12 @@ class PoinT(latitude: Double, longitude: Double,
         return System.currentTimeMillis() - pointTime
     }
 
-    fun PointTOBaseDate(): RealmList<Double> {
+    fun PointTOBaseData(): RealmList<Double> {
         return RealmList(latitude, longitude)
+    }
+
+    fun PointTOBaseDate(): RealmList<Double> {
+        return RealmList(longitude, latitude)
     }
 
     fun PoinAccuracyTO_SRV(): String {
