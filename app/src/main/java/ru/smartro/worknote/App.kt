@@ -180,7 +180,12 @@ class App : AApp() {
             if (getAppParaMS().iSoldGPSdataSaved()) {
 //                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
                     getAppParaMS().saveLastGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY.LET)
-                    LASTact?.onNEWfromGPSSrv()
+                    try {
+                        LASTact?.onNEWfromGPSSrv()
+                    } catch (ex: Exception) {
+                        logSentry("Exception!!! LASTact?.onNEWfromGPSSrv()")
+                        log("Exception!!! LASTact?.onNEWfromGPSSrv()")
+                    }
 //                }
             }
             LOGafterLOG()
