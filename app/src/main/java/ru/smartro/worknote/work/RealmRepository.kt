@@ -470,10 +470,10 @@ class RealmRepository(private val p_realm: Realm) {
         refreshRealm_know0()
         val minutes = 30 * 60 * 1000
         val lastSynchroTime = App.getAppParaMS().lastSynchroTime
-        return p_realm.where(PlatformEntity::class.java)
+        return p_realm.copyFromRealm(p_realm.where(PlatformEntity::class.java)
             .greaterThan("updateAt", lastSynchroTime)
             .lessThanOrEqualTo("updateAt", lastSynchroTime + minutes)
-            .findAll()
+            .findAll())
     }
 
 
