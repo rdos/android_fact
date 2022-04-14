@@ -35,6 +35,7 @@ class SYNCworkER(
     params: WorkerParameters
 ) : CoroutineWorker(p_application, params) {
     private val mNetworkRepository = NetworkRepository(applicationContext)
+    // TODO: r_dos....кака код))раз
     private fun showWorkERNotification(isForceMode: Boolean = true,
                                        contentText: String = "Не закрывайте приложение",
                                        titleText: String = "Служба отправки данных работает") {
@@ -54,32 +55,47 @@ class SYNCworkER(
     }
 
     private fun showWorkERROR(contentText: String="ОШИБКА служба ОТПРАВКИ данных НЕ работает",
-                              title: String=contentText) {
+                              title: String="Попробуйте перезайти в приложение") {
         showWorkERNotification(true, contentText, title)
     }
 
+    // TODO: r_dos.)))кака код...лох это судьба))два
     override suspend fun doWork(): Result {
         beforeLOG("doWork")
+        var isFirstRun: Boolean = true
+        var isModeSyncOldVal = false
+
         val params = App.getAppParaMS()
         params.isModeSYNChrONize_FoundError = false
-        showWorkERNotification(true)
+
         try {
             val DELAY_MS: Long =  if (App.getAppParaMS().isModeDEVEL) 11_011 else 30_000
             while (true) {
                 INcyclEStart("while (true)")
                 delay(DELAY_MS)
+                if (isModeSyncOldVal != params.isModeSYNChrONize) {
+                    isFirstRun = true
+                }
+                isModeSyncOldVal = params.isModeSYNChrONize
                 if (params.isModeSYNChrONize) {
                     LOGWork( "SYNCworkER RUN")
                     synChrONizationDATA()
+                    if (isFirstRun) {
+                        showWorkERNotification(true)
+                    }
                 } else {
                     LOGWork("SYNCworkER STOPPED")
-                    showWorkERNotification(contentText = "Служба отправки данных остановлена",
-                        titleText = "Служба отправки данных НЕ работает")
+                    if (isFirstRun) {
+                        showWorkERNotification(true, contentText = "Служба отправки данных не работает",
+                            titleText = "Отправка Данных ПРИОСТАНОВЛЕНА")
+                    }
                 }
+                isFirstRun = false
                 INcyclEStop()
             } //todo: while (true) {
         } catch (eXthr: Throwable) {
             Log.e(TAG, "eXthr.message", eXthr)
+//            аккуратней::r_dos
             params.isModeSYNChrONize_FoundError = true
             showWorkERROR()
             throw eXthr

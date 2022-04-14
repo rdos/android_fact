@@ -4,12 +4,12 @@ import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
@@ -70,7 +70,7 @@ class StartWayBillAct : ActNOAbst() {
 //                            startActivity(Intent(this, StartVehicleAct::class.java))
 //                            finish()
                         }
-                    rv.adapter = WayBillAdapter(wayBills)
+                    rv.adapter = WaybillAdapter(wayBills)
                     if (wayBills.size == 1) {
                         gotoNextAct(wayBills[0].id, wayBills[0].number)
                     }
@@ -125,27 +125,39 @@ class StartWayBillAct : ActNOAbst() {
 
     }
 
-    inner class WayBillAdapter(private val items: List<Data>) :
-        RecyclerView.Adapter<WayBillAdapter.OwnerViewHolder>() {
+    inner class WaybillAdapter(private val items: List<Data>) :
+        RecyclerView.Adapter<WaybillAdapter.WaybillViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item_know1, parent, false)
-            return OwnerViewHolder(view)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WaybillViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.act_start_waybill__rv_item, parent, false)
+            return WaybillViewHolder(view)
         }
 
         override fun getItemCount(): Int {
             return items.size
         }
 
-        override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: WaybillViewHolder, position: Int) {
             val wayBill = items[position]
-            holder.itemView.choose_title.text = wayBill.number
+            holder.tvNumber.text = wayBill.number
+            holder.tvDriverName.text = wayBill.driver
+            holder.tvRouteName.text = wayBill.route_name
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
                 gotoNextAct(wayBill.id, wayBill.number)
             }
         }
-
-        inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+        // WayBill и уТВерждение
+        inner class WaybillViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val tvNumber: TextView by lazy {
+                itemView.findViewById(R.id.act_start_waybill__rv_item__number)
+            }
+            val tvDriverName: TextView by lazy {
+                itemView.findViewById(R.id.act_start_waybill__rv_item__driver)
+            }
+            val tvRouteName: TextView by lazy {
+                itemView.findViewById(R.id.act_start_waybill__rv_item__route_name)
+            }
+        }
     }
 }
