@@ -155,7 +155,8 @@ class MapAct : ActAbstract(),
 //        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
 //            isOnPointFirstTime = false
 //            alertOnPoint().let {
-//                it.dismiss_btn.setOnClickListener {
+//                it.
+    //                dismiss_btn.setOnClickListener {
 //                    drivingModeState = false
 //                    isOnPointFirstTime = true
 //                    clearMapIbjectsDrive()

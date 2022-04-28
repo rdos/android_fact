@@ -52,9 +52,9 @@ class PoinT(latitude: Double, longitude: Double,
         return RealmList(latitude, longitude)
     }
 
-    fun PointTOBaseDate(): RealmList<Double> {
-        return RealmList(longitude, latitude)
-    }
+//    fun PointTOBaseDate(): RealmList<Double> {
+//        return RealmList(longitude, latitude)
+//    }
 
     fun PoinAccuracyTO_SRV(): String {
         return pointAccuracy.toString()
@@ -62,7 +62,7 @@ class PoinT(latitude: Double, longitude: Double,
 
     fun inImageEntity(imageBase64: String): ImageEntity {
         val imageEntity = ImageEntity(imageBase64, MyUtil.timeStamp(),
-            PointTOBaseDate(), PoinAccuracyTO_SRV(), PointTimeToLastKnowTime_SRV())
+            PointTOBaseData(), PoinAccuracyTO_SRV(), PointTimeToLastKnowTime_SRV())
         return imageEntity
     }
 
