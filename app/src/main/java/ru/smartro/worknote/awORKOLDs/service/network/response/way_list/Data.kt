@@ -9,10 +9,6 @@ data class Data(
     val id: Int,
     @SerializedName("number")
     val number: String,
-    @SerializedName("driver")
-    val driver: String,
-    @SerializedName("route_name")
-    val route_name: String,
     @SerializedName("oid")
     val oid: Int
 )
