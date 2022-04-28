@@ -86,9 +86,6 @@ class StartAct : ActNOAbst() {
             actv_activity_auth__it_test_version.isVisible = true
             actv_activity_auth__it_test_version.text = textIsTestEnv // + actv_activity_auth__it_test_version.text
 
-        }
-
-        if (BuildConfig.BUILD_TYPE != "debugProd" && BuildConfig.BUILD_TYPE != "release") {
             auth_enter.setOnLongClickListener {
                 auth_login.setText("admin@smartro.ru")
                 auth_password.setText("xot1ieG5ro~hoa,ng4Sh")

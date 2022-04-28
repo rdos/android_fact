@@ -140,8 +140,6 @@ class StartWayBillAct : ActNOAbst() {
         override fun onBindViewHolder(holder: WaybillViewHolder, position: Int) {
             val wayBill = items[position]
             holder.tvNumber.text = wayBill.number
-            holder.tvDriverName.text = wayBill.driver
-            holder.tvRouteName.text = wayBill.route_name
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
                 gotoNextAct(wayBill.id, wayBill.number)

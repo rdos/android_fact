@@ -12,6 +12,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
     defaultConfig {
         applicationId "ru.smartro.worknote"
         minSdkVersion 26

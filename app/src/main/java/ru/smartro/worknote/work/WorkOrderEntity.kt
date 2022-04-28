@@ -222,7 +222,7 @@ open class PlatformEntity(
         return getIconFromStatus(this.status)
     }
 
-    fun istypoMiB(): Boolean = this.icon == "Bath"
+    fun isTypoMiB(): Boolean = this.icon == "Bath"
 
     private fun getIconFromStatus(p_status: String?): Int {
         return when (this.icon) {

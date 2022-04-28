@@ -6,8 +6,8 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.sentry.Sentry
-import net.cachapa.expandablelayout.BuildConfig
 import ru.smartro.worknote.App
+import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.awORKOLDs.extensions.toast
@@ -70,7 +70,7 @@ abstract class AAct : AppCompatActivity() {
     }
 
     private fun logAfterResult(result: String) {
-        Log.d(TAG, "${mMethodName}.after result=${result} ")
+        log("${mMethodName}.after result=${result} ")
         mMethodName = null
 
     }

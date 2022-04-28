@@ -116,7 +116,9 @@ class MapAct : ActAbstract(),
             moveCameraTo(point)
         }
 
+
         val platformNear = vs.baseDat.findPlatformByCoord(point, point.getAccuracy())
+
         if (platformNear == null) {
             log("platformNear.is null")
             for ((key, value) in mNotifyMap) {
@@ -124,8 +126,10 @@ class MapAct : ActAbstract(),
                 mNotifyMap.remove(key)
             }
         } else {
-//            toast("FFFFFFFFFFFFF${platformNear.srpId}")
-            showNotificationPlatfrom(platformNear.srpId!!, platformNear.name)
+//            toast("FFFFFFFFFFFFF${platformNear.srpId}")]
+            if (!platformNear?.isTypoMiB()) {
+                showNotificationPlatfrom(platformNear.srpId!!, platformNear.name)
+            }
         }
 
 //       platformNear.observe(this, Observer { platformList ->
@@ -975,6 +979,7 @@ class MapAct : ActAbstract(),
 
 
         fun clearData() {
+            Log.i(TAG, "clearData")
             Log.i(TAG, "clearData")
             baseDat.clearBase()
         }

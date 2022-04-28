@@ -25,17 +25,17 @@
             <TextView
                 android:id="@+id/act_start_waybill__rv_item__number"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="act_start_waybill__rv_item__number" />
 
-
             <TextView
                 android:id="@+id/act_start_waybill__rv_item__route_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="act_start_waybill__rv_item__route_name"
@@ -43,8 +43,8 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
         <TextView
             android:id="@+id/act_start_waybill__rv_item__driver"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:gravity="center"
             android:ellipsize="end"
             android:maxLines="1"

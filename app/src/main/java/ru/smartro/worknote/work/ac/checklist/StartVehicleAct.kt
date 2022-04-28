@@ -72,21 +72,21 @@ class StartVehicleAct : ActNOAbst() {
 
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
         rv.layoutManager = LinearLayoutManager(this)
-        /**====================================================================================== */
-        /**====================================================================================== */
+            /**====================================================================================== */
+            /**====================================================================================== */
 
 
 
-        showingProgress(getPutExtraParam_NAME())
-        vs.getVehicle(paramS().getOwnerId()).observe(this, Observer { result ->
-            val data = result.data
-            when (result.status) {
-                Status.SUCCESS -> {
-                    myAdapter = VehicleAdapter(data?.data!!)
-                    rv . adapter = myAdapter
-                    if (isDevelMode()) {
-                        etVehicleFilter.setText("Тигуан")
-                        val vehicle = myAdapter!!.findVehicleByName("Тигуан")
+            showingProgress(getPutExtraParam_NAME())
+            vs.getVehicle(paramS().getOwnerId()).observe(this, Observer { result ->
+                val data = result.data
+                when (result.status) {
+                            Status.SUCCESS -> {
+                                myAdapter = VehicleAdapter(data?.data!!)
+                                rv . adapter = myAdapter
+                                if (isDevelMode()) {
+                            etVehicleFilter.setText("Тигуан")
+                            val vehicle = myAdapter!!.findVehicleByName("Тигуан")
                         vehicle?.let {
                             gotoNextAct(vehicle.id, vehicle.name)
                         }
