@@ -128,7 +128,8 @@ class MapAct : ActAbstract(),
         } else {
 //            toast("FFFFFFFFFFFFF${platformNear.srpId}")]
             if (!platformNear?.isTypoMiB()) {
-                showNotificationPlatfrom(platformNear.srpId!!, platformNear.name)
+                // TODO: !!!r_dos
+                showNotificationPlatfrom(platformNear.platformId, platformNear.srpId!!, platformNear.name)
             }
         }
 
@@ -796,10 +797,12 @@ class MapAct : ActAbstract(),
 
 
     val mNotifyMap = mutableMapOf<Int, Long>()
-    private fun showNotificationPlatfrom(srpId: Int, name: String?) {
+    private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, name: String?) {
         val intent = Intent(this, PlatformServeAct::class.java)
 
+        // TODO: !!?R_dos
         intent.putExtra("srpId", srpId)
+        intent.putExtra("platform_id", platformId)
         intent.putExtra("mIsServeAgain", false)
 
         val pendingIntent = PendingIntent.getActivity(
