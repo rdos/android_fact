@@ -50,12 +50,15 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-
 class CameraFragment(
     private val photoFor: Int,
     private val platformId: Int,
     private val containerId: Int
 ) : AFragment(), ImageCounter {
+
+    private val maxPhotoCount = 3
+    private var lastPhotoTakenAt = 0L
+    private var VOLUME_DOWN_PHOTO_DELAY = 2000
 
     private var mActbPhotoFlash: AppCompatToggleButton? = null
     private val KEY_EVENT_ACTION = "key_event_action"
@@ -89,9 +92,12 @@ class CameraFragment(
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.getIntExtra(KEY_EVENT_EXTRA, KeyEvent.KEYCODE_UNKNOWN)) {
                 KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                    val shutter = mRootView
-                        .findViewById<ImageButton>(R.id.camera_capture_button)
-                    shutter.simulateClick()
+                    if(System.currentTimeMillis() - lastPhotoTakenAt > VOLUME_DOWN_PHOTO_DELAY) {
+                        lastPhotoTakenAt = System.currentTimeMillis()
+                        val shutter = mRootView
+                            .findViewById<ImageButton>(R.id.camera_capture_button)
+                        shutter.simulateClick()
+                    }
                 }
             }
         }
@@ -386,7 +392,6 @@ class CameraFragment(
                 val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
                     .setMetadata(metadata).build()
 
-                val maxPhotoCount = 3
 //                val flashMode = if (photo_flash.isChecked) FLASH_MODE_ON else FLASH_MODE_OFF
 //                imageCapture.flashMode = flashMode
                 val currentMediaIsFull = when (photoFor) {
@@ -427,7 +432,7 @@ class CameraFragment(
                     }
                 }
                 if (currentMediaIsFull) {
-                    toast("Разрешенное количество фотографий:3")
+                    toast("Разрешенное количество фотографий: 3")
                     hideProgress()
                 } else {
                     captureButton.isClickable = false
@@ -438,7 +443,7 @@ class CameraFragment(
 //                    final MediaPlayer mp = MediaPlayer.create(this, R.raw.soho);
                         mp.start()
                     }
-                    Log.d(TAG, "${rotation}")
+                    Log.d(TAG, "$rotation")
 
                     imageCapture.takePicture(outputOptions, cameraExecutor, object : OnImageSavedCallback {
                         override fun onError(exc: ImageCaptureException) {
@@ -587,7 +592,6 @@ class CameraFragment(
         super.onDestroy()
         cameraProvider?.unbindAll()
     }
-
 
 //    private class LuminosityAnalyzer:ImageAnalysis.Analyzer{
 //        private var lastAnalyzedTimestamp = 0L
