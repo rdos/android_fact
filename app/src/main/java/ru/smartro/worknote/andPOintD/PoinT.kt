@@ -31,10 +31,6 @@ class PoinT(latitude: Double, longitude: Double,
     constructor(lat: DoubleCool, long: DoubleCool, time: LongCool, accuracy: FloatCool) : this(lat, long, time, accuracy.LET)
     constructor(lat: Double, long: Double, time: Long, accuracy: Double) : this(lat, long, time, accuracy.toFloat())
 
-    fun PointToListDouble(): List<Double> {
-        return listOf(latitude, longitude)
-    }
-
     fun getTime(): Long {
         return pointTime!!
     }
@@ -49,12 +45,8 @@ class PoinT(latitude: Double, longitude: Double,
     }
 
     fun PointTOBaseData(): RealmList<Double> {
-        return RealmList(latitude, longitude)
+        return RealmList(longitude, latitude)
     }
-
-//    fun PointTOBaseDate(): RealmList<Double> {
-//        return RealmList(longitude, latitude)
-//    }
 
     fun PoinAccuracyTO_SRV(): String {
         return pointAccuracy.toString()

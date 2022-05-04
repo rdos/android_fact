@@ -72,6 +72,13 @@ class JournalChatAct : ActNOAbst() {
             } else {
                 holder.itemView.tv_act_messager__media_before.text = "afterMedia пусто"
             }
+            if (item.failureMedia.size > 0) {
+                val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
+                Glide.with(imgAfter)
+                    .load(MyUtil.base64ToImage(item.failureMedia[0]?.image))
+                    .into(imgAfter)
+                holder.itemView.tv_act_messager__media_after.text = "Фото из failureMedia ${item.failureMedia.size})"
+            }
 
 //            val llBehavior = holder.itemView.findViewById<ConstraintLayout>(R.id.ll_behavior)
 //            val bottomSheetBehavior = BottomSheetBehavior.from(llBehavior)

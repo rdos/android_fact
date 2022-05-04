@@ -40,9 +40,10 @@
 
         <TextView
             android:id="@+id/tv_act_messager__media_before"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Фото до"
+            app:layout_constraintHeight_default="spread"
             app:layout_constraintEnd_toStartOf="@+id/tv_act_messager__media_after"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/log_item_content" />
@@ -60,9 +61,10 @@
 
         <TextView
             android:id="@+id/tv_act_messager__media_after"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Фото после"
+            android:maxLines="2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_act_messager__media_before"
             app:layout_constraintTop_toBottomOf="@id/log_item_content" />

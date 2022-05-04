@@ -527,7 +527,7 @@ class MapAct : ActAbstract(),
 
         val synchronizeBody = SynchronizeBody(
             paramS().wayBillId,
-            gps.PointToListDouble(),
+            gps.PointTOBaseData(),
             deviceId,
             gps.PointTimeToLastKnowTime_SRV(),
             lastPlatforms)

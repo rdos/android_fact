@@ -128,7 +128,7 @@ class SYNCworkER(
 
         val gps = App.getAppliCation().gps()
         val synchronizeBody = SynchronizeBody(App.getAppParaMS().wayBillId,
-            gps.PointToListDouble(),
+            gps.PointTOBaseData(),
             AppParaMS().deviceId,
             gps.PointTimeToLastKnowTime_SRV(),
             platforms)
