@@ -10,7 +10,6 @@ class CameraViewModel(application: Application) : BaseViewModel(application) {
         return baseDat.findPlatformEntity(platformId)
     }
 
-
     fun findContainerEntity(containerId: Int) =
         baseDat.findContainerEntity(containerId)
 
