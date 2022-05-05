@@ -83,6 +83,7 @@ import kotlin.math.round
 class MapAct : ActAbstract(),
     /*UserLocationObjectListener,*/
     MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener,  InertiaMoveListener , InputListener {
+//    private lateinit var mMapObjectCollection: MapObjectCollection
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
@@ -863,12 +864,21 @@ class MapAct : ActAbstract(),
 
     private fun initMapView() {
         val platforms = getActualPlatforms()
-//        mapsMyYandex.map.mapObjects.removeTapListener(this)
-        val mapObjectCollection = mMapMyYandex.map.mapObjects
-//        mapObjectCollection.clear()
-        mapObjectCollection.removeTapListener(this)
-        addPlaceMarks(this, mapObjectCollection, platforms)
-        mapObjectCollection.addTapListener(this)
+
+        val mMapObjectCollection = mMapMyYandex.map.mapObjects
+        mMapObjectCollection.clear()
+
+        addPlaceMarks(this, mMapObjectCollection, platforms)
+        mMapObjectCollection.addTapListener(this)
+    }
+
+    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: List<PlatformEntity>) {
+        for(platform in platforms) {
+            val iconProvider = getIconViewProvider(context, platform)
+            val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
+            mapObjectCollection.addPlacemark(pointYandex, iconProvider)
+
+        }
     }
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
@@ -958,14 +968,7 @@ class MapAct : ActAbstract(),
 
     }
 
-    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: List<PlatformEntity>) {
-        for(platform in platforms) {
-            val iconProvider = getIconViewProvider(context, platform)
-            val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
-            mapObjectCollection.addPlacemark(pointYandex, iconProvider)
 
-        }
-    }
     /**
 //        val source = BitmapFactory.decodeResource(context.resources, R.drawable.your_icon_name)
 // создаем mutable копию, чтобы можно было рисовать поверх
