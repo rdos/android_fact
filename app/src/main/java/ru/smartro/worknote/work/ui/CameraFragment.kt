@@ -2,10 +2,6 @@ package ru.smartro.worknote.work.ui
 
 import android.Manifest
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.media.MediaPlayer
@@ -25,7 +21,6 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.CoroutineScope
@@ -57,18 +52,11 @@ class CameraFragment(
 ) : AFragment(), ImageCounter {
 
     private val maxPhotoCount = 3
-    private var lastPhotoTakenAt = 0L
-    private var VOLUME_DOWN_PHOTO_DELAY = 2000
 
     private var mActbPhotoFlash: AppCompatToggleButton? = null
-    private val KEY_EVENT_ACTION = "key_event_action"
-    private val KEY_EVENT_EXTRA = "key_event_extra"
-    private val ANIMATION_FAST_MILLIS = 50L
-    private val ANIMATION_SLOW_MILLIS = 100L
     private lateinit var mRootView: View
     private lateinit var mPreviewView: PreviewView
     private lateinit var outputDirectory: File
-    private lateinit var broadcastManager: LocalBroadcastManager
 
     private val PERMISSIONS_REQUEST_CODE = 10
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
@@ -87,21 +75,6 @@ class CameraFragment(
 
     private var rotation = Surface.ROTATION_0
     private var rotationDegrees = 0F
-
-    private val volumeDownReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.getIntExtra(KEY_EVENT_EXTRA, KeyEvent.KEYCODE_UNKNOWN)) {
-                KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                    if(System.currentTimeMillis() - lastPhotoTakenAt > VOLUME_DOWN_PHOTO_DELAY) {
-                        lastPhotoTakenAt = System.currentTimeMillis()
-                        val shutter = mRootView
-                            .findViewById<ImageButton>(R.id.camera_capture_button)
-                        shutter.simulateClick()
-                    }
-                }
-            }
-        }
-    }
 
     override fun onResume() {
         super.onResume()
@@ -123,7 +96,6 @@ class CameraFragment(
     override fun onDestroyView() {
         super.onDestroyView()
         cameraExecutor.shutdown()
-        broadcastManager.unregisterReceiver(volumeDownReceiver)
         //  displayManager.unregisterDisplayListener(displayListener)
     }
 
@@ -204,9 +176,6 @@ class CameraFragment(
         mRootView = view
         mPreviewView = mRootView.findViewById(R.id.view_finder)
         cameraExecutor = Executors.newSingleThreadExecutor()
-        broadcastManager = LocalBroadcastManager.getInstance(requireContext())
-        val filter = IntentFilter().apply { addAction(KEY_EVENT_ACTION) }
-        broadcastManager.registerReceiver(volumeDownReceiver, filter)
         outputDirectory = CameraAct.getOutputDirectory(requireContext())
         mPreviewView.post{
             displayId = mPreviewView.display.displayId
