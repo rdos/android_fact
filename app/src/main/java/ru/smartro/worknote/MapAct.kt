@@ -866,8 +866,8 @@ class MapAct : ActAbstract(),
         val platforms = getActualPlatforms()
 
         val mMapObjectCollection = mMapMyYandex.map.mapObjects
+        mMapObjectCollection.removeTapListener(this)
         mMapObjectCollection.clear()
-
         addPlaceMarks(this, mMapObjectCollection, platforms)
         mMapObjectCollection.addTapListener(this)
     }
@@ -886,6 +886,7 @@ class MapAct : ActAbstract(),
         val coordinate = placeMark.geometry
 
         val clickedPlatform = vs.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
+        Log.w("RRRR", "onMapObjectTap")
         val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coordinate)
         platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
         return true
@@ -907,7 +908,7 @@ class MapAct : ActAbstract(),
         }
     }
 
-    private fun getIconViewProvider(_context: Context, _platform: PlatformEntity): ViewProvider {
+    private fun getIconViewProvider (_context: Context, _platform: PlatformEntity): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
         iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconDrawableResId()))
