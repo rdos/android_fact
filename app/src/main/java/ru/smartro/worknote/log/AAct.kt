@@ -6,10 +6,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.sentry.Sentry
-import ru.smartro.worknote.App
-import ru.smartro.worknote.BuildConfig
-import ru.smartro.worknote.Inull
-import ru.smartro.worknote.Snull
+import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.work.ac.StartAct
@@ -123,10 +120,7 @@ abstract class AAct : AppCompatActivity() {
     }
 
     public fun isDevelMode(): Boolean{
-        if (BuildConfig.BUILD_TYPE == "release") {
-            return false
-        }
-        return App.getAppParaMS().isModeDEVEL
+        return AppliCation().isDevelMode()
     }
 
     fun oopsTestqA() {

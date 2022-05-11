@@ -93,7 +93,8 @@ class StartWorkOrderAct : ActNOAbst() {
     }
 
     fun insertWayTask(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
-        vm.baseDat.clearBase()
+
+        vm.baseDat.clearDataBase()
         for (workorder in woRKoRDeRknow1List) {
             try {
                 vm.baseDat.insertWayTask(workorder)

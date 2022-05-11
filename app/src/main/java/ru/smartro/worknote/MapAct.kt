@@ -83,7 +83,7 @@ import kotlin.math.round
 /** 29.06.  -2+2001+3   05.11))*/
 class MapAct : ActAbstract(),
     /*UserLocationObjectListener,*/
-    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener,  InertiaMoveListener , InputListener {
+    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener,  InertiaMoveListener {
 //    private lateinit var mMapObjectCollection: MapObjectCollection
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
@@ -192,7 +192,6 @@ class MapAct : ActAbstract(),
         }
 
         mMapMyYandex.map.addInertiaMoveListener(this)
-        mMapMyYandex.map.addInputListener(this)
         mAcbInfo = findViewById(R.id.acb_act_map__info)
 
         mAcbInfo.setOnClickListener {
@@ -893,9 +892,9 @@ class MapAct : ActAbstract(),
     }
 
     fun finishTask(context: AppCompatActivity) {
-        Log.i(TAG, "clearData")
+        Log.i(TAG, "finishTask")
         modeSyNChrON_off()
-        vs.clearData()
+        vs.baseDat.clearDataBase()
 //            AppPreferences.isHasTask = false
         context.showSuccessComplete().let {
             it.finish_accept_btn.setOnClickListener {
@@ -983,22 +982,6 @@ class MapAct : ActAbstract(),
      */
 
     open class MapViewModel(application: Application) : BaseViewModel(application) {
-
-
-
-        fun clearData() {
-            Log.i(TAG, "clearData")
-            Log.i(TAG, "clearData")
-            baseDat.clearBase()
-        }
-
-        fun findPlatforms(): List<PlatformEntity> {
-            return baseDat.findPlatforms()
-        }
-
-        fun getWayTasks(): List<WorkOrderEntity> {
-            return baseDat.findWayTasks()
-        }
 
         fun findLastPlatforms() =
             baseDat.findLastPlatforms()
@@ -1146,59 +1129,6 @@ class MapAct : ActAbstract(),
 //        this as InertiaMoveListener
     }
 
-
-
-    override fun onMapTap(p0: Map, p1: Point) {
-//        TODO("Not yet implemented")
-        log("onMapTap")
-    }
-
-    override fun onMapLongTap(p0: Map, p1: Point) {
-        //ВОТ тут прошло 3 или больше секунды с начала нажатия
-        //можно что-то запустить
-        Shutdown()
-    }
-
-
-    private fun setDevelMode() {
-        if (isDevelMode()) {
-            mAcbInfo.setOnLongClickListener {
-                //ВОТ тут прошло 3 или больше секунды с начала нажатия
-                //можно что-то запустить
-                Shutdown()
-                return@setOnLongClickListener true
-            }
-
-//            mAcbInfo.setOnTouchListener(object : View.OnTouchListener {
-//                var startTime: Long = 0
-//                override fun onTouch(v: View?, event: MotionEvent): Boolean {
-//                    when (event.action) {
-//                        MotionEvent.ACTION_DOWN -> startTime = System.currentTimeMillis()
-//                        MotionEvent.ACTION_MOVE -> {}
-//                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-//                            val totalTime: Long = System.currentTimeMillis() - startTime
-//                            val totalSecunds = totalTime / 1000
-//                            if (totalSecunds >= 5) {
-//                                //ВОТ тут прошло 3 или больше секунды с начала нажатия
-//                                //можно что-то запустить
-//                                WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
-//                                vs.clearData()
-//                                MyUtil.logout(this@MapAct)
-//                            }
-//                        }
-//                    }
-//                    return true
-//                }
-//            })
-        }
-    }
-
-    private fun Shutdown() {
-        AppliCation().stopWorkERS()
-        vs.clearData()
-        restartApp()
-        paramS().logout()
-    }
 }
 
 

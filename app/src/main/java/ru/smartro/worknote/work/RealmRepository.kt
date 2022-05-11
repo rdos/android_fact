@@ -169,7 +169,7 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun clearBase() {
+    fun clearDataBase() {
         p_realm.executeTransaction { realm ->
             realm.deleteAll()
         }

@@ -1,4 +1,4 @@
-package ru.smartro.worknote.log
+package ru.smartro.worknote
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -64,6 +64,7 @@ class AppParaMS {
         set(value) = sharedPref__env.edit {
             it.putString("accessToken", value)
         }
+
     var deviceId: String
         get() {
             var devId = sharedPref__env.getString("deviceId", Snull)!!

@@ -37,7 +37,6 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp
-import ru.smartro.worknote.log.AppParaMS
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -100,7 +99,7 @@ class App : AApp() {
 
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
-        MapKitFactory.getInstance().createLocationManager()
+//        MapKitFactory.getInstance().createLocationManager()
 
         mAppliCation = this
         Log.i(TAG, "on App created App.onCreate onAppCreate")
@@ -369,6 +368,14 @@ class App : AApp() {
     }
 
 
+    private fun getSentryEnvironment(): String {
+        var res = BuildConfig.BUILD_TYPE
+        if (isDevelMode()) {
+            res = "${res}_isDevelMode"
+        }
+        logSentry(res)
+        return res
+    }
 
     private fun initSentry() {
         Sentry.init { options ->
@@ -388,7 +395,16 @@ class App : AApp() {
                     breadcrumb
                 }
             }
+
+            options.environment = getSentryEnvironment()
         }
+    }
+
+    fun isDevelMode(): Boolean {
+        if (BuildConfig.BUILD_TYPE == "release") {
+            return false
+        }
+        return App.getAppParaMS().isModeDEVEL
     }
 
 

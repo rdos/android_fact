@@ -4,6 +4,7 @@ import android.app.Application
 import android.provider.Settings
 import android.util.Log
 import ru.smartro.worknote.App
+import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 
