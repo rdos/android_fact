@@ -1,6 +1,7 @@
 package ru.smartro.worknote.work.platform_serve
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -38,6 +39,10 @@ import ru.smartro.worknote.work.PlatformEntity
 class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListener
 //    , SeekBar.OnSeekBarChangeListener
 {
+    private val THUMB_INACTIVE = "Inactive"
+    private val THUMB_ACTIVE = "Active"
+    private var prevVolumeValue: Double? = null
+    private var newVolumeValue: Double? = null
     private var mVolumePickup: Double? = null
     private var acbPickup: AppCompatButton? = null
     private var tvVolumePickup: TextView? = null
@@ -55,48 +60,11 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
     private lateinit var mAcbKGORemaining: AppCompatButton
     private lateinit var mAcbKGOServed: AppCompatButton
 
-//    override fun onClick(buttonView: View) {
-//        Log.d(TAG, "onClick.before id=${buttonView.id}")
-//
-//        when(buttonView.id) {
-//            R.id.btn_alert_kgo__takeaway -> {
-//                onAlertButtonKgoClick(buttonView.rootView, true)
-//                setButtonKGODrawableEnd(true)
-//            }
-//            R.id.btn_alert_kgo__no_takeaway -> {
-//                onAlertButtonKgoClick(buttonView.rootView,false)
-//                setButtonKGODrawableEnd(false)
-//            }
-//        }
-//
-//    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "onActivityResult.requestCode=${requestCode}")
-        Log.d(TAG, "onActivityResult.resultCode=${resultCode}")
-        if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
-            setResult(Activity.RESULT_OK)
-            finish()
-        } else if (requestCode == REQUEST_EXIT) {
-            if (resultCode == 99) {
-                setResult(Activity.RESULT_OK)
-                finish()
-            }
-        } else if (resultCode == 101 && requestCode == 101) {
-            vm.updatePlatformKGO(mPlatformEntity.platformId!!, mServedKGOVolumeText, isServedKGO = true)
-            setUseButtonStyleBackgroundGreen(mAcbKGOServed)
-        } else if (resultCode == 102 && requestCode == 102) {
-            vm.updatePlatformKGO(mPlatformEntity.platformId!!, mRemainingKGOVolumeText, isServedKGO = false)
-            setUseButtonStyleBackgroundGreen(mAcbKGORemaining)
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_platformserve)
         supportActionBar?.hide()
-        
+
         mPlatformEntity = vm.baseDat.findPlatformEntity(intent.getIntExtra("platform_id", Inull))
         mIsServeAgain = intent.getBooleanExtra("mIsServeAgain", false)
 
@@ -144,39 +112,39 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
                     intent.putExtra("photoFor", PhotoTypeEnum.forServedKGO)
                     startActivityForResult(intent, 101)
                     hideDialog()
-                    }
                 }
             }
+        }
 
         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
-            /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
+        /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
 
-            mAcbKGORemaining = findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
+        mAcbKGORemaining = findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
 
-            if (mPlatformEntity.isRemainingKGONotEmpty()) {
-                setUseButtonStyleBackgroundGreen(mAcbKGORemaining)
-            }
-            mAcbKGORemaining.setOnClickListener {
-                showDialogFillKgoVolume().let { view ->
-                    val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
-                    tietKGOVolumeIn.setText(mPlatformEntity.getRemainingKGOVolume())
-                    val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
-                    btnSave.setOnClickListener{
-                        mRemainingKGOVolumeText = tietKGOVolumeIn.text.toString()
-                        if (mRemainingKGOVolumeText.isNullOrBlank()) {
-                            return@setOnClickListener
-                        }
-                        val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
-                        intent.putExtra("platform_id", mPlatformEntity.platformId)
-                        intent.putExtra("photoFor", PhotoTypeEnum.forRemainingKGO)
-                        startActivityForResult(intent, 102)
-                        hideDialog()
+        if (mPlatformEntity.isRemainingKGONotEmpty()) {
+            setUseButtonStyleBackgroundGreen(mAcbKGORemaining)
+        }
+        mAcbKGORemaining.setOnClickListener {
+            showDialogFillKgoVolume().let { view ->
+                val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
+                tietKGOVolumeIn.setText(mPlatformEntity.getRemainingKGOVolume())
+                val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
+                btnSave.setOnClickListener{
+                    mRemainingKGOVolumeText = tietKGOVolumeIn.text.toString()
+                    if (mRemainingKGOVolumeText.isNullOrBlank()) {
+                        return@setOnClickListener
                     }
+                    val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
+                    intent.putExtra("platform_id", mPlatformEntity.platformId)
+                    intent.putExtra("photoFor", PhotoTypeEnum.forRemainingKGO)
+                    startActivityForResult(intent, 102)
+                    hideDialog()
                 }
             }
-            /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
-            /** COPY PAST r_dos!!!*/
-            /** COPY PAST END*/     /** COPY PAST END*/   /** COPY PAST END*/ /** COPY PAST END*/
+        }
+        /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/         /** COPY PAST r_dos!!!*/
+        /** COPY PAST r_dos!!!*/
+        /** COPY PAST END*/     /** COPY PAST END*/   /** COPY PAST END*/ /** COPY PAST END*/
 
 
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
@@ -204,54 +172,92 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
             actvAddress.maxLines = 3
         }
 
-
-
         /** VOLUME PICKUP
          *
          * */
 
-        val acsbVolubmePickup = findViewById<SeekBar>(R.id.acsb_activity_platform_serve__seekbar)
-        acsbVolubmePickup.thumb = getThumb(1);
+        val acsbVolumePickup = findViewById<SeekBar>(R.id.acsb_activity_platform_serve__seekbar)
+        acsbVolumePickup.thumb = getThumb()
         if (mPlatformEntity.isPickupNotEmpty()) {
-            acsbVolubmePickup.progress = acsbVolubmePickup.max
+            acsbVolumePickup.progress = acsbVolumePickup.max
             tvVolumePickuptext(mPlatformEntity.volumePickup)
         }
-        //todo: r_dos seekBar ws acsbVolubmePickup
-        acsbVolubmePickup.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+        //todo: r_dos seekBar ws acsbVolumePickup
+        acsbVolumePickup.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             private var mProgressAtStartTracking = 0
             private val SENSITIVITY = 1
             override fun onProgressChanged(s: SeekBar?, progress: Int, fromUser: Boolean) {
                 tvVolumePickuptext(progress)
-                //неРазРаб acsbVolubmePickup.max - 13
-//                if (progress >= acsbVolubmePickup.max - 13) {
-//                    acsbVolubmePickup?.progress = acsbVolubmePickup.max - 13
+                if(progress > 0 && acsbVolumePickup.tag != THUMB_ACTIVE){
+                    acsbVolumePickup.thumb = getThumb(R.drawable.bg_button_green__usebutton)
+                    acsbVolumePickup.tag = THUMB_ACTIVE
+                } else if(progress <= 0 && acsbVolumePickup.tag != THUMB_INACTIVE) {
+                    acsbVolumePickup.thumb = getThumb()
+                    acsbVolumePickup.tag = THUMB_INACTIVE
+                }
+//                неРазРаб acsbVolumePickup.max - 13
+//                if (progress >= acsbVolumePickup.max - 13) {
+//                    acsbVolumePickup?.progress = acsbVolumePickup.max - 13
 //                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                mProgressAtStartTracking = seekBar!!.progress;
+                mProgressAtStartTracking = seekBar!!.progress
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 if(Math.abs(mProgressAtStartTracking - seekBar!!.progress) <= SENSITIVITY){
                     // react to thumb click
-                    onClickPickup(acsbVolubmePickup)
+                    onClickPickup(acsbVolumePickup)
                     return
                 }
 
-                if (acsbVolubmePickup.progress > 0 ) {
-                    vm.updateSelectionVolume(mPlatformEntity.platformId!!, acsbVolubmePickup.progress.toDouble())
+                if (acsbVolumePickup.progress > 0 ) {
+                    newVolumeValue = acsbVolumePickup.progress.toDouble()
                     gotoMakePhotoForPickup()
                 } else {
                     vm.updateSelectionVolume(mPlatformEntity.platformId!!, null)
+                    prevVolumeValue = null
                 }
             }
         })
 
     }
 
-    private fun onClickPickup(acsbVolubmePickup: SeekBar) {
-        acsbVolubmePickup.isEnabled = false
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult.requestCode=${requestCode}")
+        Log.d(TAG, "onActivityResult.resultCode=${resultCode}")
+        if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
+            setResult(Activity.RESULT_OK)
+            finish()
+        } else if (requestCode == REQUEST_EXIT) {
+            if (resultCode == 99) {
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
+        } else if (resultCode == 101 && requestCode == 101) {
+            vm.updatePlatformKGO(mPlatformEntity.platformId!!, mServedKGOVolumeText, isServedKGO = true)
+            setUseButtonStyleBackgroundGreen(mAcbKGOServed)
+        } else if (resultCode == 102 && requestCode == 102) {
+            vm.updatePlatformKGO(mPlatformEntity.platformId!!, mRemainingKGOVolumeText, isServedKGO = false)
+            setUseButtonStyleBackgroundGreen(mAcbKGORemaining)
+        } else if (requestCode == 14 && resultCode == 404) {
+            val acsbVolumePickup = findViewById<SeekBar>(R.id.acsb_activity_platform_serve__seekbar)
+            acsbVolumePickup.progress = prevVolumeValue?.toInt() ?: 0
+            vm.updateSelectionVolume(mPlatformEntity.platformId!!, prevVolumeValue)
+            tvVolumePickuptext(prevVolumeValue)
+        } else if (requestCode == 14 && resultCode == 14) {
+            val acsbVolumePickup = findViewById<SeekBar>(R.id.acsb_activity_platform_serve__seekbar)
+            vm.updateSelectionVolume(mPlatformEntity.platformId!!, newVolumeValue)
+            acsbVolumePickup.progress = newVolumeValue?.toInt() ?: (prevVolumeValue?.toInt() ?: 0)
+            prevVolumeValue = newVolumeValue
+            tvVolumePickuptext(prevVolumeValue)
+        }
+    }
+
+    private fun onClickPickup(acsbVolumePickup: SeekBar) {
+        acsbVolumePickup.isEnabled = false
         try {
             showDlgPickup().let{ dialogView ->
                 val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
@@ -262,21 +268,18 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
                 val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
                 btnOk.setOnClickListener {
                     val volume = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-
                     vm.updateSelectionVolume(mPlatformEntity.platformId!!, volume)
                     if (volume == null) {
-                        acsbVolubmePickup.progress = 0
-                        tvVolumePickuptext(volume)
+                        acsbVolumePickup.progress = 0
                     } else {
-                        acsbVolubmePickup.progress = acsbVolubmePickup.max
-                        tvVolumePickuptext(volume)
+                        newVolumeValue = volume
                         gotoMakePhotoForPickup()
                     }
                     hideDialog()
                 }
             }
         } finally {
-            acsbVolubmePickup.isEnabled = true
+            acsbVolumePickup.isEnabled = true
         }
     }
 
@@ -289,11 +292,12 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 
     private fun tvVolumePickuptext(progressDouble: Double?) {
 //        var progressText = progress.toString()
-        var progressText = ""
-        if (progressDouble != null) {
-            progressText = String.format("%.1f", progressDouble)
-        }
-        tvVolumePickup().text = "${progressText} м³"
+        val progressText = if (progressDouble != null)
+            String.format("%.1f", progressDouble)
+        else
+            String.format("%.1f", 0.0)
+
+        tvVolumePickup().text = "$progressText м³"
         mVolumePickup = progressDouble
 //
     }
@@ -305,11 +309,14 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         tvVolumePickuptext(progress.toDouble())
     }
 
-
-
-    private fun getThumb(progress: Int): Drawable? {
+    private fun getThumb(background: Int? = null): Drawable? {
+        Log.d("TEST:::", "THUMB ${background == null}")
         val thumbView: View = LayoutInflater.from(this)
             .inflate(R.layout.act_platformserve__pickup_seekbarthumb, null, false)
+        if(background != null)
+            thumbView
+                .findViewById<AppCompatButton>(R.id.acb_act_platformserve__pickup_seekbarthumb)
+                .setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green__usebutton))
 //        (thumbView.findViewById(R.id.tvProgress) as TextView).text = progress.toString() + ""
         thumbView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val bitmap = Bitmap.createBitmap(thumbView.measuredWidth, thumbView.measuredHeight, Bitmap.Config.ARGB_8888)
@@ -318,7 +325,6 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         thumbView.draw(canvas)
         return BitmapDrawable(resources, bitmap)
     }
-
 
     //todo: ответсвенность)
 //    private fun acbPickup(): AppCompatButton {
@@ -370,11 +376,12 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 //    }
 
     private fun initBeforeMedia() {
+        Log.d("TEST:::", "InitBeforeMedia")
         paramS().serviceStartedAt = System.currentTimeMillis() / 1000L
         val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
         intent.putExtra("platform_id", mPlatformEntity.platformId)
         intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
-        startActivity(intent)
+        startActivityForResult(intent, 1001)
         hideDialog()
     }
 
@@ -446,5 +453,21 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         }
         return super.onOptionsItemSelected(item)
     }
+
+//    override fun onClick(buttonView: View) {
+//        Log.d(TAG, "onClick.before id=${buttonView.id}")
+//
+//        when(buttonView.id) {
+//            R.id.btn_alert_kgo__takeaway -> {
+//                onAlertButtonKgoClick(buttonView.rootView, true)
+//                setButtonKGODrawableEnd(true)
+//            }
+//            R.id.btn_alert_kgo__no_takeaway -> {
+//                onAlertButtonKgoClick(buttonView.rootView,false)
+//                setButtonKGODrawableEnd(false)
+//            }
+//        }
+//
+//    }
 
 }

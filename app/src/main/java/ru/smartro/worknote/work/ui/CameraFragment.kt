@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -32,7 +33,6 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ac.map.AFragment
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
-import ru.smartro.worknote.awORKOLDs.extensions.simulateClick
 import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
@@ -81,6 +81,21 @@ class CameraFragment(
         enableTorch()
     }
 
+    //    @SuppressLint("MissingPermission")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mRootView = view
+        mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.GONE
+        mPreviewView = mRootView.findViewById(R.id.view_finder)
+        cameraExecutor = Executors.newSingleThreadExecutor()
+        outputDirectory = CameraAct.getOutputDirectory(requireContext())
+        mPreviewView.post{
+            displayId = mPreviewView.display.displayId
+            setUpCamera()
+            updateCameraUi()
+        }
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
@@ -120,70 +135,76 @@ class CameraFragment(
                 .apply(RequestOptions.circleCropTransform())
                 .into(thumbnail)
         }
-
     }
 
     private fun setImageCounter(plus: Boolean) {
         val imageCounter = mRootView.findViewById<TextView>(R.id.image_counter)
         val count = if (plus) 1 else 0
+
+        var mediaSize = 0
+
         imageCounter.post {
             when (photoFor) {
                 PhotoTypeEnum.forContainerFailure -> {
                     val container = viewModel.findContainerEntity(containerId)
-                    imageCounter.text = "${container.failureMedia.size + count}"
+                    mediaSize = container.failureMedia.size + count
+                    imageCounter.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forContainerBreakdown -> {
                     val container = viewModel.findContainerEntity(containerId)
-                    imageCounter.text = "${container.breakdownMedia.size + count}"
+                    mediaSize = container.breakdownMedia.size + count
+                    imageCounter.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    imageCounter.text = "${platform.failureMedia.size + count}"
+                    mediaSize = platform.failureMedia.size + count
+                    imageCounter.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forAfterMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    imageCounter.text = "${platform.afterMedia.size + count}"
+                    mediaSize = platform.afterMedia.size + count
+                    imageCounter.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    imageCounter.text = "${platform.beforeMedia.size + count}"
+                    mediaSize = platform.beforeMedia.size + count
+                    imageCounter.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forServedKGO -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    imageCounter.text = "${platform.getServedKGOMediaSize() + count}"
+                    mediaSize = platform.getServedKGOMediaSize() + count
+                    imageCounter.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forRemainingKGO -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    imageCounter.text = "${platform.getRemainingKGOMediaSize() + count}"
+                    mediaSize = platform.getRemainingKGOMediaSize() + count
+                    imageCounter.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forPlatformPickupVolume -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    val imageCount = platform.pickupMedia.size + count
-                    imageCounter.text = "${imageCount}"
-
-                    val tvSkip = mRootView.findViewById<TextView>(R.id.tv_fragment_camera__skip)
-                    tvSkip.isVisible = imageCount <= 0
-
+                    mediaSize = platform.pickupMedia.size + count
+                    imageCounter.text = "$mediaSize"
+                    val btnCancel = mRootView.findViewById<TextView>(R.id.btn_cancel)
+                    btnCancel.isVisible = mediaSize <= 0
+                    mRootView.findViewById<Button>(R.id.photo_accept_button)
+                        .visibility = if(mediaSize <= 0) View.GONE else View.VISIBLE
+                    btnCancel.setOnClickListener {
+                        activityFinish(photoFor, 404)
+                    }
+                }
+            }
+            mRootView.findViewById<Button>(R.id.photo_accept_button).apply {
+                if(mediaSize <= 0) {
+                    setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_light_gray))
+                } else {
+                    setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                    setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_green_interactive))
                 }
             }
         }
 
     }
-
-//    @SuppressLint("MissingPermission")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mRootView = view
-        mPreviewView = mRootView.findViewById(R.id.view_finder)
-        cameraExecutor = Executors.newSingleThreadExecutor()
-        outputDirectory = CameraAct.getOutputDirectory(requireContext())
-        mPreviewView.post{
-            displayId = mPreviewView.display.displayId
-            setUpCamera()
-            updateCameraUi()
-        }
-    }
-
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -236,6 +257,7 @@ class CameraFragment(
 //        }
 
 //        orientationEventListener.enable()
+
         preview = Preview.Builder()
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
@@ -289,61 +311,52 @@ class CameraFragment(
     private fun updateCameraUi() {
         Log.d(TAG, "updateCameraUi")
 
-        //кнопка отправить в камере. Определения для чего делается фото
-        //кнопка отправить в камере. Определения для чего делается фото
-        mRootView.findViewById<ImageButton>(R.id.photo_accept_button).setOnClickListener {
-            when (photoFor) {
+        if(photoFor == PhotoTypeEnum.forPlatformPickupVolume){
+            mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.VISIBLE
+        }
+
+        mRootView.findViewById<Button>(R.id.photo_accept_button).setOnClickListener {
+            var mediaSize = when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.beforeMedia.size == 0) {
-                        toast("Сделайте фото")
-                        return@setOnClickListener
-                    }
+                    platform.beforeMedia.size
                 }
                 PhotoTypeEnum.forAfterMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.afterMedia.size == 0) {
-                        toast("Сделайте фото")
-                        return@setOnClickListener
-                    }
+                    platform.afterMedia.size
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.failureMedia.size == 0) {
-                        toast("Сделайте фото")
-                        return@setOnClickListener
-                    }
+                    platform.failureMedia.size
                 }
                 PhotoTypeEnum.forContainerFailure -> {
                     val container = viewModel.findContainerEntity(containerId)
-                    if (container.failureMedia.size == 0) {
-                        toast("Сделайте фото")
-                        return@setOnClickListener
-                    }
+                    container.failureMedia.size
                 }
                 PhotoTypeEnum.forContainerBreakdown -> {
                     val container = viewModel.findContainerEntity(containerId)
-                    if (container.breakdownMedia.size == 0) {
-                        toast("Сделайте фото")
-                        return@setOnClickListener
-                    }
+                    container.breakdownMedia.size
                 }
 
                 PhotoTypeEnum.forServedKGO -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.getServedKGOMediaSize() == 0) {
-                        toast("Сделайте фото")
-                        return@setOnClickListener
-                    }
+                    platform.getServedKGOMediaSize()
                 }
 
                 PhotoTypeEnum.forRemainingKGO -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    if (platform.getRemainingKGOMediaSize() == 0) {
-                        toast("Сделайте фото")
-                        return@setOnClickListener
-                    }
+                    platform.getRemainingKGOMediaSize()
                 }
+
+                PhotoTypeEnum.forPlatformPickupVolume -> {
+                    val platform = viewModel.findPlatformEntity(platformId)
+                    platform.getPickupMediaSize()
+                }
+                else -> 0
+            }
+            if (mediaSize == 0) {
+                toast("Сделайте фото")
+                return@setOnClickListener
             }
             activityFinish(photoFor)
         }
@@ -425,7 +438,6 @@ class CameraFragment(
                             Log.d(TAG, "Photo capture succeeded: $imageUri path: ${imageUri.path}")
                             Log.d(TAG, "Current thread: ${Thread.currentThread()}")
 
-
                             acivImage.post{
                                 acivImage.visibility = View.VISIBLE
                                 mPreviewView.visibility = View.GONE
@@ -440,12 +452,11 @@ class CameraFragment(
                                 acivImage.visibility = View.GONE
                                 mPreviewView.visibility = View.VISIBLE
                                 File(imageUri.path!!).delete()
-                            }, 1700)
+                            }, 500)
 
                             setGalleryThumbnail(imageUri)
                             job.launch {
                                 Log.d("AAAAAAA", Thread.currentThread().name)
-
 
                                 val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees,
                                     requireContext())
@@ -457,7 +468,6 @@ class CameraFragment(
 ////                                    size(81920) // 2 MB
 //                                    destination(photoFile)
 //                                }
-
 
                                 val gps = App.getAppliCation().gps()
                                 if (photoFor == PhotoTypeEnum.forContainerBreakdown
@@ -498,44 +508,33 @@ class CameraFragment(
             )
             fragment.show(childFragmentManager, "GalleryFragment")
         }
+
         setImageCounter(false)
     }
 
-    private fun activityFinish(photoType: Int) {
-        when (photoType) {
-            PhotoTypeEnum.forBeforeMedia -> {
-                requireActivity().finish()
-            }
-            PhotoTypeEnum.forAfterMedia -> {
-                requireActivity().setResult(Activity.RESULT_OK)
-                requireActivity().finish()
-            }
-            PhotoTypeEnum.forPlatformProblem -> {
-                requireActivity().setResult(Activity.RESULT_OK)
-                requireActivity().finish()
-            }
-            PhotoTypeEnum.forContainerFailure -> {
-                requireActivity().setResult(Activity.RESULT_OK)
-                requireActivity().finish()
-            }
-            PhotoTypeEnum.forContainerBreakdown -> {
-                requireActivity().setResult(Activity.RESULT_OK)
-                requireActivity().finish()
-            }
-            PhotoTypeEnum.forServedKGO -> {
+    private fun activityFinish(photoType: Int, resultCode: Int = -1) {
+        when {
+            photoType == PhotoTypeEnum.forServedKGO -> {
                 requireActivity().setResult(101)
-                requireActivity().finish()
             }
 
-            PhotoTypeEnum.forRemainingKGO -> {
+            photoType == PhotoTypeEnum.forRemainingKGO -> {
                 requireActivity().setResult(102)
-                requireActivity().finish()
             }
-            PhotoTypeEnum.forPlatformPickupVolume -> {
+
+            photoType == PhotoTypeEnum.forPlatformPickupVolume -> {
+                if(resultCode != -1)
+                    requireActivity().setResult(resultCode)
+                else
+                    requireActivity().setResult(14)
+            }
+
+            photoType != PhotoTypeEnum.forBeforeMedia -> {
                 requireActivity().setResult(Activity.RESULT_OK)
-                requireActivity().finish()
             }
         }
+
+        requireActivity().finish()
     }
 
     private fun hasFrontCamera(): Boolean {
@@ -597,6 +596,7 @@ class CameraFragment(
 //
 //
 //    }
+
 }
 
 

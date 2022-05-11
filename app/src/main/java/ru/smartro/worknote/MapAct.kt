@@ -63,6 +63,7 @@ import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
+import ru.smartro.worknote.work.ui.utils.CenterSmoothScroller
 import java.util.*
 import kotlin.math.round
 
@@ -97,9 +98,6 @@ class MapAct : ActAbstract(),
 
     private val REQUEST_EXIT = 41
     private var mIsFirstTime = true
-    private var isOnPointFirstTime = true
-
-    private val MIN_METERS = 50
 
     private lateinit var userLocationLayer: UserLocationLayer
     private lateinit var mDrivingRouter: DrivingRouter
@@ -122,13 +120,13 @@ class MapAct : ActAbstract(),
 
         if (platformNear == null) {
             log("platformNear.is null")
-            for ((key, value) in mNotifyMap) {
+            for ((key, _) in mNotifyMap) {
                 App.getAppliCation().cancelNotification(key)
                 mNotifyMap.remove(key)
             }
         } else {
 //            toast("FFFFFFFFFFFFF${platformNear.srpId}")]
-            if (!platformNear?.isTypoMiB()) {
+            if (!platformNear.isTypoMiB()) {
                 // TODO: !!!r_dos
                 showNotificationPlatfrom(platformNear.platformId, platformNear.srpId!!, platformNear.name)
             }
@@ -268,7 +266,6 @@ class MapAct : ActAbstract(),
             mAcbComplete.setOnClickListener{
                 gotoComplete()
             }
-            val workOrders = getWorkOrders()
 //            var infoText = "**Статистика**\n"
             val rvInfo = it.findViewById<RecyclerView>(R.id.rv_act_map__workorder_info)
             rvInfo.layoutManager = LinearLayoutManager(this)
@@ -312,7 +309,7 @@ class MapAct : ActAbstract(),
             platformCnt += workOrder.cnt_platform
             platformProgress += workOrder.cnt_platform - workOrder.cntPlatformProgress()
         }
-        mAcbInfo.text = "${platformProgress} / ${platformCnt}"
+        mAcbInfo.text = "$platformProgress / $platformCnt"
     }
 
     private fun getWorkOrders(extraPramId: Int? = null): List<WorkOrderEntity> {
@@ -343,7 +340,7 @@ class MapAct : ActAbstract(),
     }
 
     private fun saveBreakDownTypes() {
-        vs.networkDat.getBreakDownTypes().observe(this, Observer { result ->
+        vs.networkDat.getBreakDownTypes().observe(this) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     // TODO: ПО голове себе постучи
@@ -355,12 +352,12 @@ class MapAct : ActAbstract(),
                 else -> Log.d(TAG, "saveBreakDownTypes:")
             }
 
-        })
+        }
     }
 
     private fun saveFailReason() {
         Log.i(TAG, "saveFailReason.before")
-        vs.networkDat.getFailReason().observe(this, Observer { result ->
+        vs.networkDat.getFailReason().observe(this) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     Log.d(TAG, "saveFailReason. Status.SUCCESS")
@@ -369,12 +366,12 @@ class MapAct : ActAbstract(),
                     toast(result.msg)
                 }
             }
-        })
+        }
     }
 
     private fun saveCancelWayReason() {
         Log.d(TAG, "saveCancelWayReason.before")
-        vs.networkDat.getCancelWayReason().observe(this, Observer { result ->
+        vs.networkDat.getCancelWayReason().observe(this) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     Log.d(TAG, "saveCancelWayReason. Status.SUCCESS")
@@ -383,15 +380,17 @@ class MapAct : ActAbstract(),
                     Log.d(TAG, "saveCancelWayReason. Status.ERROR")
                     toast(result.msg)
                 }
-                else -> { oops()}
+                else -> {
+                    oops()
+                }
             }
-        })
+        }
     }
 
-    val resultStatusList = mutableListOf<Status>()
+    private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(woRKoRDeRknow1: WorkOrderEntity) {
         Log.d(TAG, "acceptProgress.before")
-        vs.networkDat.progress(woRKoRDeRknow1.id, ProgressBody(MyUtil.timeStamp())).observe(this, Observer { result ->
+        vs.networkDat.progress(woRKoRDeRknow1.id, ProgressBody(MyUtil.timeStamp())).observe(this) { result ->
             resultStatusList.add(result.status)
             modeSyNChrON_off(false)
             when (result.status) {
@@ -404,17 +403,17 @@ class MapAct : ActAbstract(),
                     hideProgress()
                 }
                 else -> {
-                    logSentry( "acceptProgress Status.ERROR")
+                    logSentry("acceptProgress Status.ERROR")
                     toast(result.msg)
 //                        AppPreferences.isHasTask = false
                     vs.baseDat.setNextProcessDate(woRKoRDeRknow1)
 //                    break
                 }
             }
-            if(getWorkOrders().size <= resultStatusList.size) {
+            if (getWorkOrders().size <= resultStatusList.size) {
                 hideProgress()
             }
-        })
+        }
 
     }
 
@@ -433,7 +432,7 @@ class MapAct : ActAbstract(),
                     )
                     showingProgress()
                     vs.networkDat.completeWay(workOrder.id, body)
-                        .observe(this@MapAct, Observer { result ->
+                        .observe(this@MapAct) { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
                                     hideProgress()
@@ -454,7 +453,7 @@ class MapAct : ActAbstract(),
                                     hideProgress()
                                 }
                             }
-                        })
+                        }
                 } else {
                     toast("Выберите тип показателей")
                 }
@@ -481,7 +480,7 @@ class MapAct : ActAbstract(),
                     showingProgress()
 
                     vs.networkDat.earlyComplete(workOrder.id, body)
-                        .observe(this@MapAct, Observer { result ->
+                        .observe(this@MapAct) { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
                                     hideProgress()
@@ -490,7 +489,7 @@ class MapAct : ActAbstract(),
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         finishTask(this)
-                                    }else {
+                                    } else {
                                         refreshData()
                                     }
                                 }
@@ -503,7 +502,7 @@ class MapAct : ActAbstract(),
                                     hideProgress()
                                 }
                             }
-                        })
+                        }
                 } else {
                     toast("Заполните все поля")
                 }
@@ -685,7 +684,12 @@ class MapAct : ActAbstract(),
 
     }
 
-
+    override fun onPlatformClicked(position: Int) {
+        val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
+        rvBehavior.layoutManager?.startSmoothScroll(CenterSmoothScroller(this).apply {
+            targetPosition = position
+        })
+    }
 
     override fun startPlatformService(item: PlatformEntity) {
         if (App.getAppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
@@ -714,7 +718,6 @@ class MapAct : ActAbstract(),
         }
     }
 
-
     override fun startPlatformProblem(plaform: PlatformEntity) {
         hideDialog()
         gotoNextAct(plaform, REQUEST_EXIT)
@@ -739,7 +742,6 @@ class MapAct : ActAbstract(),
         }
     }
 
-
     fun buildNavigator(checkPoint: Point) {
         try {
 //            getMapObjCollection().clear()
@@ -757,7 +759,6 @@ class MapAct : ActAbstract(),
         }
 
     }
-
 
     private fun moveCameraTo(pont: PoinT) {
         mMapMyYandex.map.move(
@@ -796,9 +797,8 @@ class MapAct : ActAbstract(),
 //        rotateImageView(imgCompass, R.drawable.pin_finder, direction)
 //    }
 
-
     val mNotifyMap = mutableMapOf<Int, Long>()
-    private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, name: String?) {
+    private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, string: String?) {
         val intent = Intent(this, PlatformServeAct::class.java)
 
         // TODO: !!?R_dos
@@ -815,7 +815,7 @@ class MapAct : ActAbstract(),
         if (mNotifyMap.containsKey(srpId)) {
             return
         }
-        mNotifyMap.put(srpId, -1)
+        mNotifyMap[srpId] = -1
         AppliCation().showNotificationForce(pendingIntent,
             "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",

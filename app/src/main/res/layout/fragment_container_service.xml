@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:layout_marginTop="@dimen/margin_min"
+            android:layout_marginTop="4dp"
             android:gravity="center"
 
             >
@@ -37,6 +37,7 @@
                 android:id="@+id/apb_fragment_container_serve_failure"
                 android:layout_width="110dp"
                 android:layout_height="39dp"
+                android:layout_margin="4dp"
                 android:background="@drawable/bg_button_red__default"
                 android:text="Невывоз"
                 android:textColor="@color/black" />
@@ -46,6 +47,7 @@
                 android:layout_width="110dp"
                 android:layout_height="39dp"
                 android:layout_marginStart="@dimen/margin_default"
+                android:layout_margin="4dp"
                 android:background="@drawable/bg_button_red__default"
                 android:text="Поломка"
                 android:textColor="@color/black" />
@@ -55,7 +57,7 @@
             android:id="@+id/enter_info_percent_rg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_default"
+            android:layout_marginTop="12dp"
             android:gravity="center"
             android:orientation="horizontal"
             tools:listitem="@layout/item_percent">
