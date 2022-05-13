@@ -17,13 +17,11 @@ import kotlinx.android.synthetic.main.act_start.auth_password_out
 import kotlinx.android.synthetic.main.act_start.login_login_out
 import kotlinx.android.synthetic.main.act_start.auth_password
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.BuildConfig
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.extensions.toast
-import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.awORKOLDs.service.network.Resource
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
@@ -31,7 +29,6 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
-import ru.smartro.worknote.MapAct
 
 public val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -46,6 +43,7 @@ class StartAct : ActNOAbst() {
 
     private fun gotoNextAct() {
 //            val isHasTask = true
+
         val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
         startActivity(Intent(this, if (isHasTask) MapAct::class.java else StartOwnerAct::class.java))
         finish()
@@ -108,8 +106,11 @@ class StartAct : ActNOAbst() {
     }
 
     private fun clickAuthEnter() {
+        // TODO: rename  auth_login to user_name
         if (!auth_login.text.isNullOrBlank() && !auth_password.text.isNullOrBlank()) {
             showingProgress()
+            paramS().userName = auth_login.text.toString()
+            AppliCation().sentryAddTag("user_name", App.getAppParaMS().userName)
             vm.auth(AuthBody(auth_login.text.toString(), auth_password.text.toString()))
                 .observe(this, Observer { result ->
                     val data = result.data
