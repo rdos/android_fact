@@ -83,7 +83,7 @@ class StartVehicleAct : ActNOAbst() {
                 when (result.status) {
                             Status.SUCCESS -> {
                                 myAdapter = VehicleAdapter(data?.data!!)
-                                rv . adapter = myAdapter
+                                rv.adapter = myAdapter
                                 if (isDevelMode()) {
                             etVehicleFilter.setText("Тигуан")
                             val vehicle = myAdapter!!.findVehicleByName("Тигуан")

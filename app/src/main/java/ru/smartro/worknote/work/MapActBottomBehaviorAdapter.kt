@@ -106,8 +106,11 @@ class MapActBottomBehaviorAdapter(
             StatusEnum.NEW -> {
                 setDefButtonStyleBackground(holder.itemView)
                 holder.itemView.setOnClickListener {
-                    if (checkedPosition != holder.adapterPosition) {
-                        holder.itemView.map_behavior_expl.expand()
+                    if (!holder.itemView.map_behavior_expl.isExpanded) {
+                        listener.onPlatformClicked(position)
+                        holder.itemView.postDelayed({
+                            holder.itemView.map_behavior_expl.expand()
+                        }, 500)
                         if (item.isStartServe()) {
                             holder.itemView.map_behavior_start_service.setText(R.string.start_serve_again)
                         }
@@ -119,6 +122,8 @@ class MapActBottomBehaviorAdapter(
                         }
                         notifyItemChanged(checkedPosition)
                         checkedPosition = holder.adapterPosition
+                    } else {
+                        holder.itemView.map_behavior_expl.collapse(true)
                     }
                 }
             }
@@ -156,6 +161,7 @@ class MapActBottomBehaviorAdapter(
     }
 
     interface PlatformClickListener {
+        fun onPlatformClicked(position: Int)
         fun startPlatformService(item: PlatformEntity)
         fun startPlatformProblem(item: PlatformEntity)
         fun moveCameraPlatform(point: PoinT)

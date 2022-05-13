@@ -15,7 +15,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
-import ru.smartro.worknote.log.AppParaMS
+import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.ac.StartAct

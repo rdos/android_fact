@@ -171,5 +171,4 @@ class ContainerServiceFragment : AbstractBottomDialog() {
             else -> 1.25
         }
     }
-
 }

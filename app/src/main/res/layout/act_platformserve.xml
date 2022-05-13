@@ -45,85 +45,44 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/start_act__rv_item_know1" />
 
-    <!--<androidx.appcompat.widget.AppCompatButton-->
-    <!--    android:id="@+id/acb_fragment_container_service__selection"-->
-    <!--    android:layout_width="wrap_content"-->
-    <!--    android:layout_height="45dp"-->
-    <!--    android:layout_marginStart="@dimen/margin_min"-->
-    <!--    android:layout_marginTop="8dp"-->
-    <!--    android:paddingStart="8dp"-->
-    <!--    android:paddingEnd="@dimen/margin_default"-->
-    <!--    app:layout_constraintStart_toStartOf="parent"-->
-    <!--    app:layout_constraintTop_toBottomOf="@id/platform_service_rv"-->
-    <!--    android:background="@drawable/bg_button_white"-->
-    <!--    android:drawableStart="@drawable/ic_baseline_add_circle_outline_24"-->
-    <!--    android:text="Подбор"-->
-    <!--    android:textAllCaps="false"-->
-    <!--    android:textColor="@color/black"/>-->
-
-                                                <!--<androidx.constraintlayout.widget.ConstraintLayout-->
-                                                <!--    android:layout_width="match_parent"-->
-                                                <!--    android:layout_height="wrap_content"-->
-                                                <!--    android:paddingStart="@dimen/margin_default"-->
-                                                <!--    android:paddingEnd="@dimen/margin_default"-->
-                                                <!--    android:layout_marginTop="@dimen/margin_min"-->
-                                                <!--    >-->
-
-                                                <!--    &lt;!&ndash;<androidx.appcompat.widget.AppCompatButton&ndash;&gt;-->
-                                                <!--    &lt;!&ndash;    android:id="@+id/acb_activity_platform_serve__pickup"&ndash;&gt;-->
-                                                <!--    &lt;!&ndash;    android:layout_width="110dp"&ndash;&gt;-->
-                                                <!--    &lt;!&ndash;    android:layout_height="39dp"&ndash;&gt;-->
-                                                <!--    &lt;!&ndash;    app:layout_constraintStart_toStartOf="parent"&ndash;&gt;-->
-                                                <!--    &lt;!&ndash;    app:layout_constraintTop_toTopOf="parent"&ndash;&gt;-->
-                                                <!--    &lt;!&ndash;    android:background="@drawable/bg_button_green"&ndash;&gt;-->
-                                                <!--    &lt;!&ndash;    android:text="Подбор"&ndash;&gt;-->
-                                                <!--    &lt;!&ndash;    android:textColor="@color/black" />&ndash;&gt;-->
-
-
-
-
-                                                <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
-    <!--android:progressDrawable="@android:color/transparent"-->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_min"
-        android:paddingStart="@dimen/margin_6"
-        android:paddingEnd="@dimen/margin_6"
         >
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/acb_activity_platform_serve__problem"
             android:layout_width="110dp"
             android:layout_height="39dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:background="@drawable/bg_button_red__default"
+            android:layout_margin="5dp"
             android:text="@string/problem_on_point"
             android:textColor="@color/black"
-            />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/acb_activity_platform_serve__kgo_served"
             android:layout_width="110dp"
             android:layout_height="39dp"
-            app:layout_constraintStart_toEndOf="@id/acb_activity_platform_serve__problem"
-            app:layout_constraintEnd_toStartOf="@id/apb_activity_platform_serve__kgo_remaining"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="5dp"
             android:background="@drawable/bg_button_green__default"
             android:text="КГО"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/apb_activity_platform_serve__kgo_remaining"
+            app:layout_constraintStart_toEndOf="@id/acb_activity_platform_serve__problem" app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/apb_activity_platform_serve__kgo_remaining"
             android:layout_width="110dp"
             android:layout_height="39dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="5dp"
             android:background="@drawable/bg_button_green__default"
             android:text="Заказать Борт"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

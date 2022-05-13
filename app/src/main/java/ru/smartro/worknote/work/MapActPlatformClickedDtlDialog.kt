@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //onBindViewHolder
         super.onViewCreated(view, savedInstanceState)
+        Log.w("RRRRRR", "R_dos")
         mCurrentActivity = requireActivity() as MapAct
 
         val spanCount = min(_platform.containers.size, 10)

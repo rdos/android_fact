@@ -63,6 +63,7 @@ import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
+import ru.smartro.worknote.work.ui.utils.CenterSmoothScroller
 import java.util.*
 import kotlin.math.round
 
@@ -82,7 +83,7 @@ import kotlin.math.round
 /** 29.06.  -2+2001+3   05.11))*/
 class MapAct : ActAbstract(),
     /*UserLocationObjectListener,*/
-    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener,  InertiaMoveListener , InputListener {
+    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener,  InertiaMoveListener {
 //    private lateinit var mMapObjectCollection: MapObjectCollection
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
@@ -97,9 +98,6 @@ class MapAct : ActAbstract(),
 
     private val REQUEST_EXIT = 41
     private var mIsFirstTime = true
-    private var isOnPointFirstTime = true
-
-    private val MIN_METERS = 50
 
     private lateinit var userLocationLayer: UserLocationLayer
     private lateinit var mDrivingRouter: DrivingRouter
@@ -122,13 +120,13 @@ class MapAct : ActAbstract(),
 
         if (platformNear == null) {
             log("platformNear.is null")
-            for ((key, value) in mNotifyMap) {
+            for ((key, _) in mNotifyMap) {
                 App.getAppliCation().cancelNotification(key)
                 mNotifyMap.remove(key)
             }
         } else {
 //            toast("FFFFFFFFFFFFF${platformNear.srpId}")]
-            if (!platformNear?.isTypoMiB()) {
+            if (!platformNear.isTypoMiB()) {
                 // TODO: !!!r_dos
                 showNotificationPlatfrom(platformNear.platformId, platformNear.srpId!!, platformNear.name)
             }
@@ -194,7 +192,6 @@ class MapAct : ActAbstract(),
         }
 
         mMapMyYandex.map.addInertiaMoveListener(this)
-        mMapMyYandex.map.addInputListener(this)
         mAcbInfo = findViewById(R.id.acb_act_map__info)
 
         mAcbInfo.setOnClickListener {
@@ -268,7 +265,6 @@ class MapAct : ActAbstract(),
             mAcbComplete.setOnClickListener{
                 gotoComplete()
             }
-            val workOrders = getWorkOrders()
 //            var infoText = "**Статистика**\n"
             val rvInfo = it.findViewById<RecyclerView>(R.id.rv_act_map__workorder_info)
             rvInfo.layoutManager = LinearLayoutManager(this)
@@ -312,7 +308,7 @@ class MapAct : ActAbstract(),
             platformCnt += workOrder.cnt_platform
             platformProgress += workOrder.cnt_platform - workOrder.cntPlatformProgress()
         }
-        mAcbInfo.text = "${platformProgress} / ${platformCnt}"
+        mAcbInfo.text = "$platformProgress / $platformCnt"
     }
 
     private fun getWorkOrders(extraPramId: Int? = null): List<WorkOrderEntity> {
@@ -343,7 +339,7 @@ class MapAct : ActAbstract(),
     }
 
     private fun saveBreakDownTypes() {
-        vs.networkDat.getBreakDownTypes().observe(this, Observer { result ->
+        vs.networkDat.getBreakDownTypes().observe(this) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     // TODO: ПО голове себе постучи
@@ -355,12 +351,12 @@ class MapAct : ActAbstract(),
                 else -> Log.d(TAG, "saveBreakDownTypes:")
             }
 
-        })
+        }
     }
 
     private fun saveFailReason() {
         Log.i(TAG, "saveFailReason.before")
-        vs.networkDat.getFailReason().observe(this, Observer { result ->
+        vs.networkDat.getFailReason().observe(this) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     Log.d(TAG, "saveFailReason. Status.SUCCESS")
@@ -369,12 +365,12 @@ class MapAct : ActAbstract(),
                     toast(result.msg)
                 }
             }
-        })
+        }
     }
 
     private fun saveCancelWayReason() {
         Log.d(TAG, "saveCancelWayReason.before")
-        vs.networkDat.getCancelWayReason().observe(this, Observer { result ->
+        vs.networkDat.getCancelWayReason().observe(this) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     Log.d(TAG, "saveCancelWayReason. Status.SUCCESS")
@@ -383,15 +379,17 @@ class MapAct : ActAbstract(),
                     Log.d(TAG, "saveCancelWayReason. Status.ERROR")
                     toast(result.msg)
                 }
-                else -> { oops()}
+                else -> {
+                    oops()
+                }
             }
-        })
+        }
     }
 
-    val resultStatusList = mutableListOf<Status>()
+    private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(woRKoRDeRknow1: WorkOrderEntity) {
         Log.d(TAG, "acceptProgress.before")
-        vs.networkDat.progress(woRKoRDeRknow1.id, ProgressBody(MyUtil.timeStamp())).observe(this, Observer { result ->
+        vs.networkDat.progress(woRKoRDeRknow1.id, ProgressBody(MyUtil.timeStamp())).observe(this) { result ->
             resultStatusList.add(result.status)
             modeSyNChrON_off(false)
             when (result.status) {
@@ -404,17 +402,17 @@ class MapAct : ActAbstract(),
                     hideProgress()
                 }
                 else -> {
-                    logSentry( "acceptProgress Status.ERROR")
+                    logSentry("acceptProgress Status.ERROR")
                     toast(result.msg)
 //                        AppPreferences.isHasTask = false
                     vs.baseDat.setNextProcessDate(woRKoRDeRknow1)
 //                    break
                 }
             }
-            if(getWorkOrders().size <= resultStatusList.size) {
+            if (getWorkOrders().size <= resultStatusList.size) {
                 hideProgress()
             }
-        })
+        }
 
     }
 
@@ -433,7 +431,7 @@ class MapAct : ActAbstract(),
                     )
                     showingProgress()
                     vs.networkDat.completeWay(workOrder.id, body)
-                        .observe(this@MapAct, Observer { result ->
+                        .observe(this@MapAct) { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
                                     hideProgress()
@@ -454,7 +452,7 @@ class MapAct : ActAbstract(),
                                     hideProgress()
                                 }
                             }
-                        })
+                        }
                 } else {
                     toast("Выберите тип показателей")
                 }
@@ -481,7 +479,7 @@ class MapAct : ActAbstract(),
                     showingProgress()
 
                     vs.networkDat.earlyComplete(workOrder.id, body)
-                        .observe(this@MapAct, Observer { result ->
+                        .observe(this@MapAct) { result ->
                             when (result.status) {
                                 Status.SUCCESS -> {
                                     hideProgress()
@@ -490,7 +488,7 @@ class MapAct : ActAbstract(),
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         finishTask(this)
-                                    }else {
+                                    } else {
                                         refreshData()
                                     }
                                 }
@@ -503,7 +501,7 @@ class MapAct : ActAbstract(),
                                     hideProgress()
                                 }
                             }
-                        })
+                        }
                 } else {
                     toast("Заполните все поля")
                 }
@@ -685,7 +683,12 @@ class MapAct : ActAbstract(),
 
     }
 
-
+    override fun onPlatformClicked(position: Int) {
+        val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
+        rvBehavior.layoutManager?.startSmoothScroll(CenterSmoothScroller(this).apply {
+            targetPosition = position
+        })
+    }
 
     override fun startPlatformService(item: PlatformEntity) {
         if (App.getAppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
@@ -714,7 +717,6 @@ class MapAct : ActAbstract(),
         }
     }
 
-
     override fun startPlatformProblem(plaform: PlatformEntity) {
         hideDialog()
         gotoNextAct(plaform, REQUEST_EXIT)
@@ -739,7 +741,6 @@ class MapAct : ActAbstract(),
         }
     }
 
-
     fun buildNavigator(checkPoint: Point) {
         try {
 //            getMapObjCollection().clear()
@@ -757,7 +758,6 @@ class MapAct : ActAbstract(),
         }
 
     }
-
 
     private fun moveCameraTo(pont: PoinT) {
         mMapMyYandex.map.move(
@@ -796,9 +796,8 @@ class MapAct : ActAbstract(),
 //        rotateImageView(imgCompass, R.drawable.pin_finder, direction)
 //    }
 
-
     val mNotifyMap = mutableMapOf<Int, Long>()
-    private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, name: String?) {
+    private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, string: String?) {
         val intent = Intent(this, PlatformServeAct::class.java)
 
         // TODO: !!?R_dos
@@ -815,7 +814,7 @@ class MapAct : ActAbstract(),
         if (mNotifyMap.containsKey(srpId)) {
             return
         }
-        mNotifyMap.put(srpId, -1)
+        mNotifyMap[srpId] = -1
         AppliCation().showNotificationForce(pendingIntent,
             "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",
@@ -866,8 +865,8 @@ class MapAct : ActAbstract(),
         val platforms = getActualPlatforms()
 
         val mMapObjectCollection = mMapMyYandex.map.mapObjects
+        mMapObjectCollection.removeTapListener(this)
         mMapObjectCollection.clear()
-
         addPlaceMarks(this, mMapObjectCollection, platforms)
         mMapObjectCollection.addTapListener(this)
     }
@@ -886,15 +885,16 @@ class MapAct : ActAbstract(),
         val coordinate = placeMark.geometry
 
         val clickedPlatform = vs.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
+        Log.w("RRRR", "onMapObjectTap")
         val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coordinate)
         platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
         return true
     }
 
     fun finishTask(context: AppCompatActivity) {
-        Log.i(TAG, "clearData")
+        Log.i(TAG, "finishTask")
         modeSyNChrON_off()
-        vs.clearData()
+        vs.baseDat.clearDataBase()
 //            AppPreferences.isHasTask = false
         context.showSuccessComplete().let {
             it.finish_accept_btn.setOnClickListener {
@@ -907,7 +907,7 @@ class MapAct : ActAbstract(),
         }
     }
 
-    private fun getIconViewProvider(_context: Context, _platform: PlatformEntity): ViewProvider {
+    private fun getIconViewProvider (_context: Context, _platform: PlatformEntity): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
         iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconDrawableResId()))
@@ -982,22 +982,6 @@ class MapAct : ActAbstract(),
      */
 
     open class MapViewModel(application: Application) : BaseViewModel(application) {
-
-
-
-        fun clearData() {
-            Log.i(TAG, "clearData")
-            Log.i(TAG, "clearData")
-            baseDat.clearBase()
-        }
-
-        fun findPlatforms(): List<PlatformEntity> {
-            return baseDat.findPlatforms()
-        }
-
-        fun getWayTasks(): List<WorkOrderEntity> {
-            return baseDat.findWayTasks()
-        }
 
         fun findLastPlatforms() =
             baseDat.findLastPlatforms()
@@ -1145,59 +1129,6 @@ class MapAct : ActAbstract(),
 //        this as InertiaMoveListener
     }
 
-
-
-    override fun onMapTap(p0: Map, p1: Point) {
-//        TODO("Not yet implemented")
-        log("onMapTap")
-    }
-
-    override fun onMapLongTap(p0: Map, p1: Point) {
-        //ВОТ тут прошло 3 или больше секунды с начала нажатия
-        //можно что-то запустить
-        Shutdown()
-    }
-
-
-    private fun setDevelMode() {
-        if (isDevelMode()) {
-            mAcbInfo.setOnLongClickListener {
-                //ВОТ тут прошло 3 или больше секунды с начала нажатия
-                //можно что-то запустить
-                Shutdown()
-                return@setOnLongClickListener true
-            }
-
-//            mAcbInfo.setOnTouchListener(object : View.OnTouchListener {
-//                var startTime: Long = 0
-//                override fun onTouch(v: View?, event: MotionEvent): Boolean {
-//                    when (event.action) {
-//                        MotionEvent.ACTION_DOWN -> startTime = System.currentTimeMillis()
-//                        MotionEvent.ACTION_MOVE -> {}
-//                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-//                            val totalTime: Long = System.currentTimeMillis() - startTime
-//                            val totalSecunds = totalTime / 1000
-//                            if (totalSecunds >= 5) {
-//                                //ВОТ тут прошло 3 или больше секунды с начала нажатия
-//                                //можно что-то запустить
-//                                WorkManager.getInstance(this@MapAct).cancelUniqueWork("UploadData")
-//                                vs.clearData()
-//                                MyUtil.logout(this@MapAct)
-//                            }
-//                        }
-//                    }
-//                    return true
-//                }
-//            })
-        }
-    }
-
-    private fun Shutdown() {
-        AppliCation().stopWorkERS()
-        vs.clearData()
-        restartApp()
-        paramS().logout()
-    }
 }
 
 

@@ -1,4 +1,4 @@
-package ru.smartro.worknote
+package ru.smartro.worknote.log
 
 //корректировка нужна ?gpSPoinT
 //todo: !r_dos true-falseTYPE: замок, Ключ (переключа́тель, выключа́тель)
