@@ -3,6 +3,7 @@ package ru.smartro.worknote
 import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -10,6 +11,8 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
@@ -222,10 +225,37 @@ class App : AApp() {
         log("${text}")
     }
 
+    fun showAlertNotification(message: String) {
+        log("showAlertNotification.textContent={$message}")
+        val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID__MAP_ACT)
+
+        val customView = RemoteViews(packageName, R.layout.notification_alert).apply {
+            setTextViewText(R.id.alert_title, "Оповещение")
+            setTextViewText(R.id.alert_message, message)
+        }
+
+        builder.setSmallIcon(R.drawable.ic_app)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_app))
+            .setContent(customView)
+            .setCustomHeadsUpContentView(customView)
+            .setCustomContentView(customView)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setAutoCancel(true)
+
+        val notification: Notification = builder.build()
+        createNotificationChannel(NOTIFICATION_CHANNEL_ID__MAP_ACT).notify(8, notification)
+        Handler(Looper.getMainLooper()).postDelayed({
+            (applicationContext.getSystemService(NOTIFICATION_SERVICE)
+                    as NotificationManager).cancel(8)
+        }, 5000)
+
+    }
+
 //    var alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
     fun showNotificationForce(pendingIntent: PendingIntent, textContent: String, textTitle: String,
                               actionName: String? = null,
-                              notifyId: Int =1,
+                              notifyId: Int = 1,
                               channelId: String = NOTIFICATION_CHANNEL_ID__DEFAULT){
         log("showNotificationForce.textContent={$textContent}")
 

@@ -56,6 +56,20 @@ class RetrofitClient(context: Context) {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
+    fun testApiService(): ApiService {
+        return when (BuildConfig.BUILD_TYPE) {
+            "debugProd", "release" -> {
+                retrofit("https://wn-api.smartro.ru/api/").create(ApiService::class.java)
+            }
+            "debugRC" -> {
+                retrofit("https://worknote-back.rc.smartro.ru/api/").create(ApiService::class.java)
+            }
+            else -> {
+                retrofit("https://worknote-back.stage.smartro.ru/api/").create(ApiService::class.java)
+            }
+        }
+    }
+
     fun apiService(isWorkNote: Boolean): ApiService {
         // переключатель для разных API
         when (BuildConfig.BUILD_TYPE) {

@@ -16,6 +16,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBod
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.AppParaMS
+import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.ac.StartAct
@@ -80,6 +81,7 @@ class SYNCworkER(
                 if (params.isModeSYNChrONize) {
                     LOGWork( "SYNCworkER RUN")
                     synChrONizationDATA()
+                    ping()
                     if (isFirstRun) {
                         showWorkERNotification(true)
                     }
@@ -105,7 +107,20 @@ class SYNCworkER(
 //        return Result.failure()
     }
 
+    private suspend fun ping() {
+        beforeLOG("PING STARTED ::::")
+        val pingResponse = mNetworkRepository.ping(PingBody("ping"))
+        when (pingResponse.status) {
+            Status.SUCCESS -> {
+                Log.d("TEST :::: ", pingResponse.data.toString())
+                (applicationContext as App).showAlertNotification("${pingResponse.data?.payload?.message}")
+            }
+            Status.ERROR -> Log.e(TAG, "Ping ERROR ${pingResponse.msg}")
+            Status.NETWORK -> Log.w(TAG, "Ping NO INTERNET")
+        }
 
+        LOGafterLOG()
+    }
 
     private suspend fun synChrONizationDATA() {
         beforeLOG("synChrONizationDATA")
