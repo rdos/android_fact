@@ -354,13 +354,22 @@ class RealmRepository(private val p_realm: Realm) {
             val platform = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
+
             val problemId = findFailReasonByValue(realm, problem).id
             platform.failureReasonId = problemId
-            var platformStatus = StatusEnum.ERROR
             platform.containers.forEach {
-                if (it.status != StatusEnum.SUCCESS) it.status = StatusEnum.ERROR
-                else platformStatus = StatusEnum.UNFINISHED
+                if (it.status != StatusEnum.SUCCESS) {
+                    it.status = StatusEnum.ERROR
+                }
             }
+
+            val isAllSuccess = platform.containers.all { el -> el.status == StatusEnum.SUCCESS  }
+            val isAllError = platform.containers.all { el -> el.status == StatusEnum.ERROR  }
+
+            val platformStatus =
+                if(isAllSuccess) StatusEnum.SUCCESS
+                else if(isAllError) StatusEnum.ERROR
+                else StatusEnum.UNFINISHED
             platform.status = platformStatus
 
             platform.failureComment = failureComment
@@ -375,11 +384,19 @@ class RealmRepository(private val p_realm: Realm) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform().equalTo("platformId", platformId)
                 .findFirst()!!
-            if (platform.status == StatusEnum.NEW) {
-                platform.status = status
-            }
+
+            val isAllSuccess = platform.containers.all { el -> el.status == StatusEnum.SUCCESS  }
+            val isAllError = platform.containers.all { el -> el.status == StatusEnum.ERROR  }
+
+            val platformStatus =
+                if(isAllSuccess) StatusEnum.SUCCESS
+                else if(isAllError) StatusEnum.ERROR
+                else StatusEnum.UNFINISHED
+            platform.status = platformStatus
+
             val workOrder = getWorkOrderQuery().equalTo("id", platform.workOrderId)
                 .findFirst()
+
             workOrder?.calcInfoStatistics()
 
             setEntityUpdateAt(platform)
