@@ -454,7 +454,7 @@ class CameraFragment(
                                 File(imageUri.path!!).delete()
                             }, 500)
 
-                            setGalleryThumbnail(imageUri)
+
                             job.launch {
                                 Log.d("AAAAAAA", Thread.currentThread().name)
 
@@ -470,16 +470,22 @@ class CameraFragment(
 //                                }
 
                                 val gps = App.getAppliCation().gps()
-                                if (photoFor == PhotoTypeEnum.forContainerBreakdown
-                                    || photoFor == PhotoTypeEnum.forContainerFailure) {
-
-                                    viewModel.baseDat.updateContainerMedia(photoFor, platformId, containerId, gps.inImageEntity(imageBase64))
+                                val imageEntity = gps.inImageEntity(imageBase64)
+                                if (imageEntity.isCheckedData()) {
+                                    if (photoFor == PhotoTypeEnum.forContainerBreakdown
+                                        || photoFor == PhotoTypeEnum.forContainerFailure
+                                    ) {
+                                        viewModel.baseDat.updateContainerMedia(photoFor, platformId, containerId, imageEntity)
+                                    } else {
+                                        viewModel.baseDat.updatePlatformMedia(photoFor, platformId, imageEntity)
+                                    }
+                                    setImageCounter(false)
+                                    setGalleryThumbnail(imageUri)
                                 } else {
-                                    viewModel.baseDat.updatePlatformMedia(photoFor, platformId, gps.inImageEntity(imageBase64))
+                                    toast("Извините, произошла ошибка во время сохранения фото. \n повторите, пожалуйста, попытку")
                                 }
                                 captureButton.isClickable = true
                                 captureButton.isEnabled = true
-                                setImageCounter(false)
                                 job.cancel()
                             }
                         }

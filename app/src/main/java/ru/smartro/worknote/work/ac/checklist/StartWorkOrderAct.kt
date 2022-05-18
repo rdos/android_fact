@@ -37,6 +37,7 @@ class StartWorkOrderAct : ActNOAbst() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hideProgress()
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
@@ -59,7 +60,6 @@ class StartWorkOrderAct : ActNOAbst() {
                     toast("Нельзя одновременно взять два задания с разными типами отходов")
                     return@setOnClickListener
                 }
-
             }
             gotoNextAct(null)
         }
@@ -70,13 +70,13 @@ class StartWorkOrderAct : ActNOAbst() {
                 val data = result.data
                 when (result.status) {
                     Status.SUCCESS -> {
-                        hideProgress()
                         workOrders = data!!.dataKnow100.woRKoRDeRknow1s
                         insertWayTask(workOrders)
                         rv.adapter = WayTaskAdapter(workOrders)
                         if (workOrders.size == 1) {
                             gotoNextAct(workOrders[0].id)
                         }
+                        hideProgress()
                     }
                     Status.ERROR -> {
                         toast(result.msg)

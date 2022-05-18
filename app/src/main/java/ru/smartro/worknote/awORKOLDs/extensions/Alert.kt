@@ -64,6 +64,7 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
 }
 
 fun AppCompatActivity.showingProgress(text: String? = null) {
+    hideProgress()
     try {
         val builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
