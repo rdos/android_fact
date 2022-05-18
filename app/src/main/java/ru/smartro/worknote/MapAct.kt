@@ -289,14 +289,24 @@ class MapAct : ActAbstract(),
 
 
     private fun refreshData() {
+        Log.w(TAG, "r_dos findWorkOrders.before")
         mWorkOrderS = vs.baseDat.findWorkOrders()
+        Log.w(TAG, "r_dos findWorkOrders.after")
+        Log.d(TAG, "r_dos findPlatforms.before")
         mPlatformS = vs.baseDat.findPlatforms()
+        Log.i(TAG, "r_dos findPlatforms.after")
+
 
 //        procedure1(mPlatformS!!)
-
+        Log.w(TAG, "r_dos initMapView.before")
         initMapView()
+        Log.w(TAG, "r_dos initMapView.after")
+        Log.i(TAG, "r_dos initBottomBehavior.before")
         initBottomBehavior()
+        Log.i(TAG, "r_dos initBottomBehavior.after")
+        Log.d(TAG, "r_dos setInfoData.before")
         setInfoData()
+        Log.d(TAG, "r_dos setInfoData.after")
     }
 
 
@@ -683,13 +693,6 @@ class MapAct : ActAbstract(),
 
     }
 
-    override fun onPlatformClicked(position: Int) {
-        val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
-        rvBehavior.layoutManager?.startSmoothScroll(CenterSmoothScroller(this).apply {
-            targetPosition = position
-        })
-    }
-
     override fun startPlatformService(item: PlatformEntity) {
         if (App.getAppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
             gotoNextAct(item)
@@ -698,6 +701,7 @@ class MapAct : ActAbstract(),
                 val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
                 btnOk.setOnClickListener {
                     gotoNextAct(item)
+                    hideDialog()
                 }
             }
         }
@@ -1031,8 +1035,10 @@ class MapAct : ActAbstract(),
 
     override fun onStart() {
         super.onStart()
+        Log.w(TAG, "r_dos/onStart.before")
         mMapMyYandex.onStart()
         MapKitFactory.getInstance().onStart()
+        Log.w(TAG, "r_dos/onStart.after")
     }
 
     override fun onResume() {

@@ -395,16 +395,23 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     fun findPlatforms(): List<PlatformEntity> {
+        Log.w(TAG, "r_dos/findPlatforms.before")
         p_realm.refresh()
         var res = emptyList<PlatformEntity>()
         // TODO: 25.10.2021 !!!???
         //  return WayTaskEntity() is fail
-
+        Log.w(TAG, "r_dos/findAll.before")
         val realmResults = getQueryPlatform().sort("updateAt").findAll()
+        Log.w(TAG, "r_dos/findAll.after")
         if (realmResults != null) {
+            Log.w(TAG, "r_dos/copyFromRealm.before")
             res = p_realm.copyFromRealm(realmResults)
+            Log.w(TAG, "r_dos/copyFromRealm.after")
+            Log.w(TAG, "r_dos/setEmptyImageEntity.before")
             setEmptyImageEntity(res)
+            Log.w(TAG, "r_dos/setEmptyImageEntity.after")
         }
+        Log.w(TAG, "r_dos/findPlatforms.after")
         return res
     }
 
