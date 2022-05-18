@@ -5,8 +5,6 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.*
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.andPOintD.LiveRealmData
-import ru.smartro.worknote.andPOintD.asLiveData
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
@@ -132,6 +130,9 @@ class RealmRepository(private val p_realm: Realm) {
 
             if(workOrderS.isNotEmpty()){
                 res = realm.copyFromRealm(workOrderS)
+                res.forEach { workOrderEntity ->
+                    setEmptyImageEntity(workOrderEntity.platforms)
+                }
             }
 
         }
@@ -205,7 +206,7 @@ class RealmRepository(private val p_realm: Realm) {
         )
     }
 
-    fun findFailReasonByValue(realm: Realm, problem: String): FailReasonEntity {
+    private fun findFailReasonByValue(realm: Realm, problem: String): FailReasonEntity {
         return realm.where(FailReasonEntity::class.java).equalTo("problem", problem).findFirst()!!
 
     }
@@ -395,14 +396,32 @@ class RealmRepository(private val p_realm: Realm) {
 
     fun findPlatforms(): List<PlatformEntity> {
         p_realm.refresh()
+        var res = emptyList<PlatformEntity>()
         // TODO: 25.10.2021 !!!???
         //  return WayTaskEntity() is fail
 
-        val res = getQueryPlatform().sort("updateAt").findAll()
-        if (res != null) {
-            return p_realm.copyFromRealm(res)
+        val realmResults = getQueryPlatform().sort("updateAt").findAll()
+        if (realmResults != null) {
+            res = p_realm.copyFromRealm(realmResults)
+            setEmptyImageEntity(res)
         }
-        return emptyList()
+        return res
+    }
+
+    private fun setEmptyImageEntity(platforms: List<PlatformEntity>) {
+        val emptyImageEntityList = RealmList<ImageEntity>()
+        platforms.forEach { platform ->
+            platform.afterMedia = emptyImageEntityList
+            platform.beforeMedia = emptyImageEntityList
+            platform.failureMedia = emptyImageEntityList
+            platform.pickupMedia = emptyImageEntityList
+            platform.kgoRemaining?.media = emptyImageEntityList
+            platform.kgoServed?.media = emptyImageEntityList
+            platform.containers.forEach { container ->
+                container.failureMedia = emptyImageEntityList
+                container.breakdownMedia = emptyImageEntityList
+            }
+        }
     }
 
     fun findPlatformByCoord(point: Point, accuracy: Float): PlatformEntity? {
