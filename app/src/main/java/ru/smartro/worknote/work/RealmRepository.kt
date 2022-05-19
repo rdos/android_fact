@@ -5,6 +5,7 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.*
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
+import ru.smartro.worknote.andPOintD.LiveRealmData
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
@@ -12,6 +13,7 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.NonPickupEnum
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import java.util.*
 import kotlin.math.round
 
 
@@ -112,8 +114,59 @@ class RealmRepository(private val p_realm: Realm) {
         insUpdWorkOrders(wayTask, true)
     }
 
+    fun findWayTasks(): List<WorkOrderEntity> {
+        val res = p_realm.where(WorkOrderEntity::class.java).findAll()
+        if (res != null) {
+            return p_realm.copyFromRealm(res)
+        }
+        return emptyList()
+    }
+    fun <T:RealmObject> RealmResults<T>.asLiveData() = LiveRealmData<T>(this)
+
+    fun findPlatformsLive(): LiveRealmData<PlatformEntity> {
+        return LiveRealmData(getQueryPlatform().sort("updateAt").findAllAsync())
+    }
+
+
+
+    fun findPlatforms(): List<PlatformEntity> {
+        Log.w(TAG, "r_dos/findPlatforms.before")
+        p_realm.refresh()
+        var res = emptyList<PlatformEntity>()
+        // TODO: 25.10.2021 !!!???
+        //  return WayTaskEntity() is fail
+        Log.w(TAG, "r_dos/findAll.before")
+        val realmResults = getQueryPlatform().sort("updateAt").findAll()
+        Log.w(TAG, "r_dos/findAll.after")
+        if (realmResults != null) {
+            Log.w(TAG, "r_dos/copyFromRealm.before")
+            res = p_realm.copyFromRealm(realmResults)
+            Log.w(TAG, "r_dos/copyFromRealm.after")
+            Log.w(TAG, "r_dos/setEmptyImageEntity.before")
+            setEmptyImageEntity(res)
+            Log.w(TAG, "r_dos/setEmptyImageEntity.after")
+        }
+        Log.w(TAG, "r_dos/findPlatforms.after")
+        return res
+    }
+
 
     /** WORKORDER_ST ***WORKORDER_ART*** WORKORDER_ST ***WORKORDER_ART*** */
+    fun findWorkOrdersLive(workOrderId: Int? = null): LiveRealmData<WorkOrderEntity> {
+        val workOrderS: RealmResults<WorkOrderEntity>
+        if (workOrderId == null) {
+            workOrderS = getWorkOrderQuery().findAllAsync()
+        } else {
+            if (workOrderId == Inull) {
+                workOrderS = p_realm.where(WorkOrderEntity::class.java).findAllAsync()
+            } else {
+                workOrderS = p_realm.where(WorkOrderEntity::class.java).equalTo("id", workOrderId).findAllAsync()
+            }
+        }
+
+        return LiveRealmData(workOrderS)
+    }
+
     fun findWorkOrders(workOrderId: Int? = null): List<WorkOrderEntity> {
         var res = emptyList<WorkOrderEntity>()
         p_realm.executeTransaction { realm ->
@@ -386,29 +439,9 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun findWayTasks(): List<WorkOrderEntity> {
-        val res = p_realm.where(WorkOrderEntity::class.java).findAll()
-        if (res != null) {
-            return p_realm.copyFromRealm(res)
-        }
-        return emptyList()
-    }
 
-    fun findPlatforms(): List<PlatformEntity> {
-        p_realm.refresh()
-        var res = emptyList<PlatformEntity>()
-        // TODO: 25.10.2021 !!!???
-        //  return WayTaskEntity() is fail
 
-        val realmResults = getQueryPlatform().sort("updateAt").findAll()
-        if (realmResults != null) {
-            res = p_realm.copyFromRealm(realmResults)
-            setEmptyImageEntity(res)
-        }
-        return res
-    }
-
-    private fun setEmptyImageEntity(platforms: List<PlatformEntity>) {
+    fun setEmptyImageEntity(platforms: List<PlatformEntity>) {
         val emptyImageEntityList = RealmList<ImageEntity>()
         platforms.forEach { platform ->
             platform.afterMedia = emptyImageEntityList

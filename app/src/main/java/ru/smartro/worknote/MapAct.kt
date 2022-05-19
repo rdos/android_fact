@@ -18,7 +18,6 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -43,6 +42,7 @@ import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import kotlinx.android.synthetic.main.dialog_early_complete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.abs.ActAbstract
+import ru.smartro.worknote.andPOintD.LiveRealmData
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
@@ -63,7 +63,6 @@ import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
-import ru.smartro.worknote.work.ui.utils.CenterSmoothScroller
 import java.util.*
 import kotlin.math.round
 
@@ -106,6 +105,7 @@ class MapAct : ActAbstract(),
 
     override fun onNewGPS() {
         log("onNewGPS")
+
         val point = AppliCation().gps()
         if (mIsFirstTime) {
             moveCameraTo(point)
@@ -114,7 +114,6 @@ class MapAct : ActAbstract(),
         if (mIsAUTOMoveCamera) {
             moveCameraTo(point)
         }
-
 
         val platformNear = vs.baseDat.findPlatformByCoord(point, point.getAccuracy())
 
@@ -221,7 +220,7 @@ class MapAct : ActAbstract(),
 
 
         debug_fab.setOnClickListener {
-            startActivity(Intent(this, DebugAct::class.java))
+            startActivityForResult(Intent(this, DebugAct::class.java), -111)
         }
         navigator_toggle_fab.setOnClickListener {
             drivingModeState = false
@@ -288,15 +287,36 @@ class MapAct : ActAbstract(),
 
 
 
-    private fun refreshData() {
-        mWorkOrderS = vs.baseDat.findWorkOrders()
-        mPlatformS = vs.baseDat.findPlatforms()
+    private fun onRefreshData() {
+        // TODO: )))
+        Log.w(TAG, "r_dos findWorkOrders.before")
+        vs.baseDat.findWorkOrdersLive().observe(this@MapAct) {
+            mWorkOrderS = it
+            mWorkOrderS?.forEach { workOrderEntity ->
+                vs.baseDat.setEmptyImageEntity(workOrderEntity.platforms)
+            }
+            Log.d(TAG, "r_dos findPlatforms.before")
+            vs.baseDat.findPlatformsLive().observe(this@MapAct) { it ->
+                mPlatformS = it
+                mPlatformS?.let { platforms ->
+                        vs.baseDat.setEmptyImageEntity(platforms)
+                    }
+                Log.i(TAG, "r_dos findPlatforms.after")
+                //        procedure1(mPlatformS!!)
+                Log.w(TAG, "r_dos initMapView.before")
+                initMapView()
+                Log.w(TAG, "r_dos initMapView.after")
+                Log.i(TAG, "r_dos initBottomBehavior.before")
+                initBottomBehavior()
+                Log.i(TAG, "r_dos initBottomBehavior.after")
+                Log.d(TAG, "r_dos setInfoData.before")
+                setInfoData()
+                Log.d(TAG, "r_dos setInfoData.after")
+            }
 
-//        procedure1(mPlatformS!!)
 
-        initMapView()
-        initBottomBehavior()
-        setInfoData()
+        }
+        Log.i(TAG, "r_dos findWorkOrders.after")
     }
 
 
@@ -313,7 +333,9 @@ class MapAct : ActAbstract(),
 
     private fun getWorkOrders(extraPramId: Int? = null): List<WorkOrderEntity> {
         if (mWorkOrderS == null) {
+            Log.d(TAG, "r_dos/getWorkOrders.before")
             mWorkOrderS = vs.baseDat.findWorkOrders(extraPramId)
+            Log.i(TAG, "r_dos/getWorkOrders.after")
         }
         return mWorkOrderS!!
     }
@@ -398,7 +420,7 @@ class MapAct : ActAbstract(),
 //                        AppPreferences.isHasTask = true
                     vs.baseDat.setProgressData(woRKoRDeRknow1)
                     modeSyNChrON_off(false)
-                    refreshData()
+                    onRefreshData()
                     hideProgress()
                 }
                 else -> {
@@ -440,7 +462,7 @@ class MapAct : ActAbstract(),
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         finishTask(this@MapAct)
                                     } else {
-                                        refreshData()
+                                        onRefreshData()
                                     }
                                 }
                                 Status.ERROR -> {
@@ -489,7 +511,7 @@ class MapAct : ActAbstract(),
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         finishTask(this)
                                     } else {
-                                        refreshData()
+                                        onRefreshData()
                                     }
                                 }
                                 Status.ERROR -> {
@@ -683,13 +705,6 @@ class MapAct : ActAbstract(),
 
     }
 
-    override fun onPlatformClicked(position: Int) {
-        val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
-        rvBehavior.layoutManager?.startSmoothScroll(CenterSmoothScroller(this).apply {
-            targetPosition = position
-        })
-    }
-
     override fun startPlatformService(item: PlatformEntity) {
         if (App.getAppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
             gotoNextAct(item)
@@ -698,6 +713,7 @@ class MapAct : ActAbstract(),
                 val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
                 btnOk.setOnClickListener {
                     gotoNextAct(item)
+                    hideDialog()
                 }
             }
         }
@@ -829,8 +845,8 @@ class MapAct : ActAbstract(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        log("onActivityResult.requestCode=${requestCode}")
-        log("onActivityResult.resultCode=${resultCode}")
+        log("r_dos//onActivityResult.requestCode=${requestCode}")
+        log("r_dos//onActivityResult.resultCode=${resultCode}")
 
     }
 //    override fun onLocationUpdated(location: Location) {
@@ -1031,13 +1047,17 @@ class MapAct : ActAbstract(),
 
     override fun onStart() {
         super.onStart()
+        Log.w(TAG, "r_dos/onStart.before")
         mMapMyYandex.onStart()
         MapKitFactory.getInstance().onStart()
+        Log.w(TAG, "r_dos/onStart.after")
     }
 
     override fun onResume() {
         super.onResume()
-        refreshData()
+        Log.e(TAG, "r_dos/onResume.before")
+        onRefreshData()
+        Log.e(TAG, "r_dos/onResume.after")
     }
 
     override fun onStop() {

@@ -13,7 +13,7 @@ abstract class ActNOAbst : AAct() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate")
+        Log.d(TAG, "onCreate(ActNOAbst)")
 // TODO: !r_dos 
 //        AppliCation().stopWorkERS()
      
