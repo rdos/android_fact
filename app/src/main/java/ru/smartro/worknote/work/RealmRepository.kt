@@ -619,11 +619,10 @@ class RealmRepository(private val p_realm: Realm) {
         return resultRound
     }
 
-    fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
+    fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity? {
         return p_realm.copyFromRealm(
-            p_realm.where(PlatformEntity::class.java)
-                .findAll()
-        ).find { it.coords[0] == lat && it.coords[1] == lon }!!
+            getQueryPlatform().findAll()
+        ).find { it.coords[0] == lat && it.coords[1] == lon }
     }
 
     fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
@@ -631,6 +630,7 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     fun findPlatformEntity(platformId: Int): PlatformEntity {
+        Log.d("PLATFORM ID :::", "$platformId")
         if(platformId == Inull) {
             return PlatformEntity(name="findPlatformEntity.platformId==Inull")
         }
