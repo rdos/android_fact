@@ -345,6 +345,7 @@ class MapAct : ActAbstract(),
         if (mPlatformS == null || isForceGetBaseData) {
             mPlatformS = vs.baseDat.findPlatforms()
         }
+
         return mPlatformS!!
     }
 
@@ -724,6 +725,7 @@ class MapAct : ActAbstract(),
     //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
     //тодо)) код фанатика m4 из cs)))
     private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
+        Log.d("GOTONEXTACT platform ::: ", "${plaform.platformId} : progress ${plaform.isWorkOrderProgress} : success ${plaform.isWorkOrderComplete}")
         val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PlatformServeAct::class.java else PlatformFailureAct::class.java)
         intent.putExtra("platform_id", plaform.platformId)
 
@@ -880,7 +882,7 @@ class MapAct : ActAbstract(),
 
     private fun initMapView() {
         val platforms = getActualPlatforms()
-
+        Log.d("initMapView : platforms :::", "${platforms.joinToString { el -> "{" + "id: ${el.platformId}, progress: ${el.isWorkOrderProgress}, complete: ${el.isWorkOrderComplete}" + "}" }}")
         val mMapObjectCollection = mMapMyYandex.map.mapObjects
         mMapObjectCollection.removeTapListener(this)
         mMapObjectCollection.clear()
@@ -901,6 +903,10 @@ class MapAct : ActAbstract(),
         val coordinate = placeMark.geometry
 
         val clickedPlatform = vs.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
+        if(clickedPlatform == null) {
+            toast("Платформа не найдена")
+            return false
+        }
         Log.w("RRRR", "onMapObjectTap")
         val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coordinate)
         platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
@@ -1002,7 +1008,7 @@ class MapAct : ActAbstract(),
         fun findLastPlatforms() =
             baseDat.findLastPlatforms()
 
-        fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
+        fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity? {
             return baseDat.findPlatformByCoordinate(lat, lon)
         }
 
