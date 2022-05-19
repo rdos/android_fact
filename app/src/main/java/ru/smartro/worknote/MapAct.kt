@@ -717,8 +717,8 @@ class MapAct : ActAbstract(),
             showAlertPlatformByPoint().let { view ->
                 val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
                 btnOk.setOnClickListener {
-                    gotoNextAct(item)
                     hideDialog()
+                    gotoNextAct(item)
                 }
             }
         }
