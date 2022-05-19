@@ -4,6 +4,8 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.provider.Settings
 import android.util.Log
 import android.view.*
@@ -42,7 +44,6 @@ import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import kotlinx.android.synthetic.main.dialog_early_complete.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.abs.ActAbstract
-import ru.smartro.worknote.andPOintD.LiveRealmData
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
@@ -312,6 +313,7 @@ class MapAct : ActAbstract(),
                 Log.i(TAG, "r_dos initBottomBehavior.after")
                 Log.d(TAG, "r_dos setInfoData.before")
                 setInfoData()
+                hideProgress()
                 Log.d(TAG, "r_dos setInfoData.after")
             }
 
@@ -677,6 +679,7 @@ class MapAct : ActAbstract(),
     private fun initBottomBehavior() {
         val platforms = getActualPlatforms()
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+
         bottomSheetBehavior.expandedOffset = 100
         val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
         val adapterBottomBehavior = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
@@ -704,6 +707,7 @@ class MapAct : ActAbstract(),
             }
         }
 
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     override fun startPlatformService(item: PlatformEntity) {
@@ -1041,9 +1045,6 @@ class MapAct : ActAbstract(),
             drivingRouter.requestRoutes(requestPoints, drivingOptions, vehicleOptions, drivingSession)
         }
     }
-
-
-
 
     override fun onStart() {
         super.onStart()
