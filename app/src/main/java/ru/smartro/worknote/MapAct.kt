@@ -291,19 +291,20 @@ class MapAct : ActAbstract(),
         // TODO: )))
         Log.w(TAG, "r_dos findWorkOrders.before")
         vs.baseDat.findWorkOrdersLive().observe(this@MapAct) {
-            mWorkOrderS = it
-            mWorkOrderS?.forEach { workOrderEntity ->
+            it?.forEach { workOrderEntity ->
                 vs.baseDat.setEmptyImageEntity(workOrderEntity.platforms)
             }
+            mWorkOrderS = it
             Log.d(TAG, "r_dos findPlatforms.before")
             vs.baseDat.findPlatformsLive().observe(this@MapAct) { it ->
-                mPlatformS = it
-                mPlatformS?.let { platforms ->
+
+                it?.let { platforms ->
                         vs.baseDat.setEmptyImageEntity(platforms)
                     }
                 Log.i(TAG, "r_dos findPlatforms.after")
                 //        procedure1(mPlatformS!!)
                 Log.w(TAG, "r_dos initMapView.before")
+                mPlatformS = it
                 initMapView()
                 Log.w(TAG, "r_dos initMapView.after")
                 Log.i(TAG, "r_dos initBottomBehavior.before")
@@ -892,7 +893,6 @@ class MapAct : ActAbstract(),
             val iconProvider = getIconViewProvider(context, platform)
             val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
             mapObjectCollection.addPlacemark(pointYandex, iconProvider)
-
         }
     }
 
@@ -1050,14 +1050,14 @@ class MapAct : ActAbstract(),
         Log.w(TAG, "r_dos/onStart.before")
         mMapMyYandex.onStart()
         MapKitFactory.getInstance().onStart()
+        Log.e(TAG, "r_dos/onResume.before")
+        onRefreshData()
+        Log.e(TAG, "r_dos/onResume.after")
         Log.w(TAG, "r_dos/onStart.after")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.e(TAG, "r_dos/onResume.before")
-        onRefreshData()
-        Log.e(TAG, "r_dos/onResume.after")
     }
 
     override fun onStop() {
