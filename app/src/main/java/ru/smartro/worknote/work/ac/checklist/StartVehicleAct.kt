@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
@@ -33,9 +34,13 @@ import ru.smartro.worknote.work.ac.PERMISSIONS
 
 
 //todo: DataHolder class
-class StartVehicleAct : ActNOAbst() {
+class StartVehicleAct : ActAbstract() {
     private var myAdapter: VehicleAdapter? = null
     private val vs: VehicleViewModel by viewModel()
+
+    override fun onNewGPS() {
+        // TODO: r_dos!!!
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
