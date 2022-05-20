@@ -333,7 +333,7 @@ class CameraFragment(
         }
         mBtnAcceptPhoto = mRootView.findViewById(R.id.photo_accept_button)
         mBtnAcceptPhoto?.setOnClickListener {
-            var mediaSize = when (photoFor) {
+            val mediaSize = when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     platform.beforeMedia.size
@@ -341,7 +341,6 @@ class CameraFragment(
                 PhotoTypeEnum.forAfterMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     platform.afterMedia.size
-                    showingProgress()
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
                     val platform = viewModel.findPlatformEntity(platformId)
@@ -372,9 +371,14 @@ class CameraFragment(
                 }
                 else -> 0
             }
+            Log.d("MEDIASIZE :::: ", "$mediaSize")
             if (mediaSize == 0) {
                 toast("Сделайте фото")
                 return@setOnClickListener
+            }
+
+            if (photoFor == PhotoTypeEnum.forAfterMedia) {
+                showingProgress()
             }
             activityFinish(photoFor)
         }

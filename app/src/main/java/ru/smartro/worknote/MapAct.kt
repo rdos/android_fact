@@ -862,7 +862,6 @@ class MapAct : ActAbstract(),
 
     private fun initMapView() {
         val platforms = getActualPlatforms()
-        Log.d("initMapView : platforms :::", "${platforms.joinToString { el -> "{" + "id: ${el.platformId}, progress: ${el.isWorkOrderProgress}, complete: ${el.isWorkOrderComplete}" + "}" }}")
         val mMapObjectCollection = mMapMyYandex.map.mapObjects
         mMapObjectCollection.removeTapListener(this)
         mMapObjectCollection.clear()
