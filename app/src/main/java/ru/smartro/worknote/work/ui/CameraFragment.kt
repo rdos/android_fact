@@ -67,7 +67,6 @@ class CameraFragment(
     private val PERMISSIONS_REQUEST_CODE = 10
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
-    private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
@@ -95,9 +94,10 @@ class CameraFragment(
         mPreviewView = mRootView.findViewById(R.id.view_finder)
         cameraExecutor = Executors.newSingleThreadExecutor()
         outputDirectory = CameraAct.getOutputDirectory(requireContext())
-        displayId = mPreviewView.display.displayId
-        setUpCamera()
-        updateCameraUi()
+        mPreviewView.post{
+            setUpCamera()
+            updateCameraUi()
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
