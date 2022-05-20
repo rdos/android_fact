@@ -29,12 +29,15 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.MapAct
+import ru.smartro.worknote.abs.ActAbstract
 
-class StartWorkOrderAct : ActNOAbst() {
+class StartWorkOrderAct : ActAbstract() {
 
     private lateinit var workOrders: List<WoRKoRDeR_know1>
     private val vm: WayTaskViewModel by viewModel()
-
+    override fun onNewGPS() {
+        // TODO: r_dos!!!
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hideProgress()
