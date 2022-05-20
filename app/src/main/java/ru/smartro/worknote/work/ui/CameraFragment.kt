@@ -130,7 +130,7 @@ class CameraFragment(
         thumbnail.post {
             // Remove thumbnail padding
             thumbnail.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
-            Glide.with(thumbnail)
+            Glide.with(App.getAppliCation())
                 .load(uri)
                 .apply(RequestOptions.circleCropTransform())
                 .into(thumbnail)
@@ -442,7 +442,7 @@ class CameraFragment(
                                 acivImage.visibility = View.VISIBLE
                                 mPreviewView.visibility = View.GONE
 //                                val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.my_anim_ttest)
-                                Glide.with(acivImage)
+                                Glide.with(App.getAppliCation())
                                     .load(imageUri)
                                     .into(acivImage)
 //                                acivImage.startAnimation(animation)
