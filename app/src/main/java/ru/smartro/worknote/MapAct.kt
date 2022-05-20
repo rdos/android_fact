@@ -289,37 +289,14 @@ class MapAct : ActAbstract(),
 
 
     private fun onRefreshData() {
-        // TODO: )))
-        Log.w(TAG, "r_dos findWorkOrders.before")
-        vs.baseDat.findWorkOrdersLive().observe(this@MapAct) {
-            it?.forEach { workOrderEntity ->
-                vs.baseDat.setEmptyImageEntity(workOrderEntity.platforms)
-            }
-            mWorkOrderS = it
-            Log.d(TAG, "r_dos findPlatforms.before")
-            vs.baseDat.findPlatformsLive().observe(this@MapAct) { it ->
+        mWorkOrderS = vs.baseDat.findWorkOrders()
+        mPlatformS = vs.baseDat.findPlatforms()
 
-                it?.let { platforms ->
-                        vs.baseDat.setEmptyImageEntity(platforms)
-                    }
-                Log.i(TAG, "r_dos findPlatforms.after")
-                //        procedure1(mPlatformS!!)
-                Log.w(TAG, "r_dos initMapView.before")
-                mPlatformS = it
-                initMapView()
-                Log.w(TAG, "r_dos initMapView.after")
-                Log.i(TAG, "r_dos initBottomBehavior.before")
-                initBottomBehavior()
-                Log.i(TAG, "r_dos initBottomBehavior.after")
-                Log.d(TAG, "r_dos setInfoData.before")
-                setInfoData()
-                hideProgress()
-                Log.d(TAG, "r_dos setInfoData.after")
-            }
+//        procedure1(mPlatformS!!)
 
-
-        }
-        Log.i(TAG, "r_dos findWorkOrders.after")
+        initMapView()
+        initBottomBehavior()
+        setInfoData()
     }
 
 
@@ -707,7 +684,6 @@ class MapAct : ActAbstract(),
                 gotoComplete()
             }
         }
-
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
@@ -1057,14 +1033,14 @@ class MapAct : ActAbstract(),
         Log.w(TAG, "r_dos/onStart.before")
         mMapMyYandex.onStart()
         MapKitFactory.getInstance().onStart()
-        Log.e(TAG, "r_dos/onResume.before")
-        onRefreshData()
-        Log.e(TAG, "r_dos/onResume.after")
         Log.w(TAG, "r_dos/onStart.after")
     }
 
     override fun onResume() {
         super.onResume()
+        Log.e(TAG, "r_dos/onResume.before")
+        onRefreshData()
+        Log.e(TAG, "r_dos/onResume.after")
     }
 
     override fun onStop() {
