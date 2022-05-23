@@ -12,6 +12,7 @@ abstract class AFragment : Fragment(){
 
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
+        // TODO: )))
         Log.i(TAG, "onCreate")
     }
                                     //    companion object {

@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
@@ -94,8 +95,16 @@ class DebugAct : ActNOAbst() {
 
     override fun onStop() {
         super.onStop()
+        Log.e(TAG, "r_dos/DebugAct.onStop.before")
         mMapView.onStop()
         MapKitFactory.getInstance().onStop()
+        Log.e(TAG, "r_dos/DebugAct.onStop.after")
+    }
+
+    override fun onPause() {
+        Log.w(TAG, "r_dos/DebugAct.onPause.before")
+        super.onPause()
+        Log.w(TAG, "r_dos/DebugAct.onPause.after")
     }
 
     open class DebugViewModel(application: Application) : BaseViewModel(application)

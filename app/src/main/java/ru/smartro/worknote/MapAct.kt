@@ -4,6 +4,8 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.provider.Settings
 import android.util.Log
 import android.view.*
@@ -18,7 +20,6 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -63,7 +64,6 @@ import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
-import ru.smartro.worknote.work.ui.utils.CenterSmoothScroller
 import java.util.*
 import kotlin.math.round
 
@@ -106,6 +106,7 @@ class MapAct : ActAbstract(),
 
     override fun onNewGPS() {
         log("onNewGPS")
+
         val point = AppliCation().gps()
         if (mIsFirstTime) {
             moveCameraTo(point)
@@ -114,7 +115,6 @@ class MapAct : ActAbstract(),
         if (mIsAUTOMoveCamera) {
             moveCameraTo(point)
         }
-
 
         val platformNear = vs.baseDat.findPlatformByCoord(point, point.getAccuracy())
 
@@ -221,7 +221,7 @@ class MapAct : ActAbstract(),
 
 
         debug_fab.setOnClickListener {
-            startActivity(Intent(this, DebugAct::class.java))
+            startActivityForResult(Intent(this, DebugAct::class.java), -111)
         }
         navigator_toggle_fab.setOnClickListener {
             drivingModeState = false
@@ -288,7 +288,7 @@ class MapAct : ActAbstract(),
 
 
 
-    private fun refreshData() {
+    private fun onRefreshData() {
         mWorkOrderS = vs.baseDat.findWorkOrders()
         mPlatformS = vs.baseDat.findPlatforms()
 
@@ -313,7 +313,9 @@ class MapAct : ActAbstract(),
 
     private fun getWorkOrders(extraPramId: Int? = null): List<WorkOrderEntity> {
         if (mWorkOrderS == null) {
+            Log.d(TAG, "r_dos/getWorkOrders.before")
             mWorkOrderS = vs.baseDat.findWorkOrders(extraPramId)
+            Log.i(TAG, "r_dos/getWorkOrders.after")
         }
         return mWorkOrderS!!
     }
@@ -322,6 +324,7 @@ class MapAct : ActAbstract(),
         if (mPlatformS == null || isForceGetBaseData) {
             mPlatformS = vs.baseDat.findPlatforms()
         }
+
         return mPlatformS!!
     }
 
@@ -398,7 +401,7 @@ class MapAct : ActAbstract(),
 //                        AppPreferences.isHasTask = true
                     vs.baseDat.setProgressData(woRKoRDeRknow1)
                     modeSyNChrON_off(false)
-                    refreshData()
+                    onRefreshData()
                     hideProgress()
                 }
                 else -> {
@@ -440,7 +443,7 @@ class MapAct : ActAbstract(),
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         finishTask(this@MapAct)
                                     } else {
-                                        refreshData()
+                                        onRefreshData()
                                     }
                                 }
                                 Status.ERROR -> {
@@ -489,7 +492,7 @@ class MapAct : ActAbstract(),
                                     if (vs.baseDat.hasNotWorkOrderInProgress()) {
                                         finishTask(this)
                                     } else {
-                                        refreshData()
+                                        onRefreshData()
                                     }
                                 }
                                 Status.ERROR -> {
@@ -654,6 +657,7 @@ class MapAct : ActAbstract(),
     private fun initBottomBehavior() {
         val platforms = getActualPlatforms()
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+
         bottomSheetBehavior.expandedOffset = 100
         val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
         val adapterBottomBehavior = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
@@ -680,14 +684,7 @@ class MapAct : ActAbstract(),
                 gotoComplete()
             }
         }
-
-    }
-
-    override fun onPlatformClicked(position: Int) {
-        val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
-        rvBehavior.layoutManager?.startSmoothScroll(CenterSmoothScroller(this).apply {
-            targetPosition = position
-        })
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     override fun startPlatformService(item: PlatformEntity) {
@@ -697,6 +694,7 @@ class MapAct : ActAbstract(),
             showAlertPlatformByPoint().let { view ->
                 val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
                 btnOk.setOnClickListener {
+                    hideDialog()
                     gotoNextAct(item)
                 }
             }
@@ -707,6 +705,7 @@ class MapAct : ActAbstract(),
     //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
     //тодо)) код фанатика m4 из cs)))
     private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
+        Log.d("GOTONEXTACT platform ::: ", "${plaform.platformId} : progress ${plaform.isWorkOrderProgress} : success ${plaform.isWorkOrderComplete}")
         val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PlatformServeAct::class.java else PlatformFailureAct::class.java)
         intent.putExtra("platform_id", plaform.platformId)
 
@@ -829,8 +828,8 @@ class MapAct : ActAbstract(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        log("onActivityResult.requestCode=${requestCode}")
-        log("onActivityResult.resultCode=${resultCode}")
+        log("r_dos//onActivityResult.requestCode=${requestCode}")
+        log("r_dos//onActivityResult.resultCode=${resultCode}")
 
     }
 //    override fun onLocationUpdated(location: Location) {
@@ -863,7 +862,6 @@ class MapAct : ActAbstract(),
 
     private fun initMapView() {
         val platforms = getActualPlatforms()
-
         val mMapObjectCollection = mMapMyYandex.map.mapObjects
         mMapObjectCollection.removeTapListener(this)
         mMapObjectCollection.clear()
@@ -876,7 +874,6 @@ class MapAct : ActAbstract(),
             val iconProvider = getIconViewProvider(context, platform)
             val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
             mapObjectCollection.addPlacemark(pointYandex, iconProvider)
-
         }
     }
 
@@ -885,6 +882,10 @@ class MapAct : ActAbstract(),
         val coordinate = placeMark.geometry
 
         val clickedPlatform = vs.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
+        if(clickedPlatform == null) {
+            toast("Платформа не найдена")
+            return false
+        }
         Log.w("RRRR", "onMapObjectTap")
         val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coordinate)
         platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
@@ -986,7 +987,7 @@ class MapAct : ActAbstract(),
         fun findLastPlatforms() =
             baseDat.findLastPlatforms()
 
-        fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
+        fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity? {
             return baseDat.findPlatformByCoordinate(lat, lon)
         }
 
@@ -1026,18 +1027,19 @@ class MapAct : ActAbstract(),
         }
     }
 
-
-
-
     override fun onStart() {
         super.onStart()
+        Log.w(TAG, "r_dos/onStart.before")
         mMapMyYandex.onStart()
         MapKitFactory.getInstance().onStart()
+        Log.w(TAG, "r_dos/onStart.after")
     }
 
     override fun onResume() {
         super.onResume()
-        refreshData()
+        Log.e(TAG, "r_dos/onResume.before")
+        onRefreshData()
+        Log.e(TAG, "r_dos/onResume.after")
     }
 
     override fun onStop() {
