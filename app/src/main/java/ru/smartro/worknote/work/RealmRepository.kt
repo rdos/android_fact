@@ -6,7 +6,6 @@ import io.realm.*
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.andPOintD.LiveRealmData
-import ru.smartro.worknote.andPOintD.asLiveData
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
@@ -14,6 +13,7 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.NonPickupEnum
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import java.util.*
 import kotlin.math.round
 
 
@@ -114,8 +114,59 @@ class RealmRepository(private val p_realm: Realm) {
         insUpdWorkOrders(wayTask, true)
     }
 
+    fun findWayTasks(): List<WorkOrderEntity> {
+        val res = p_realm.where(WorkOrderEntity::class.java).findAll()
+        if (res != null) {
+            return p_realm.copyFromRealm(res)
+        }
+        return emptyList()
+    }
+    fun <T:RealmObject> RealmResults<T>.asLiveData() = LiveRealmData<T>(this)
+
+    fun findPlatformsLive(): LiveRealmData<PlatformEntity> {
+        return LiveRealmData(getQueryPlatform().sort("updateAt").findAllAsync())
+    }
+
+
+
+    fun findPlatforms(): List<PlatformEntity> {
+        Log.w(TAG, "r_dos/findPlatforms.before")
+        p_realm.refresh()
+        var res = emptyList<PlatformEntity>()
+        // TODO: 25.10.2021 !!!???
+        //  return WayTaskEntity() is fail
+        Log.w(TAG, "r_dos/findAll.before")
+        val realmResults = getQueryPlatform().sort("updateAt").findAll()
+        Log.w(TAG, "r_dos/findAll.after")
+        if (realmResults != null) {
+            Log.w(TAG, "r_dos/copyFromRealm.before")
+            res = p_realm.copyFromRealm(realmResults)
+            Log.w(TAG, "r_dos/copyFromRealm.after")
+            Log.w(TAG, "r_dos/setEmptyImageEntity.before")
+            setEmptyImageEntity(res)
+            Log.w(TAG, "r_dos/setEmptyImageEntity.after")
+        }
+        Log.w(TAG, "r_dos/findPlatforms.after")
+        return res
+    }
+
 
     /** WORKORDER_ST ***WORKORDER_ART*** WORKORDER_ST ***WORKORDER_ART*** */
+    fun findWorkOrdersLive(workOrderId: Int? = null): LiveRealmData<WorkOrderEntity> {
+        val workOrderS: RealmResults<WorkOrderEntity>
+        if (workOrderId == null) {
+            workOrderS = getWorkOrderQuery().findAllAsync()
+        } else {
+            if (workOrderId == Inull) {
+                workOrderS = p_realm.where(WorkOrderEntity::class.java).findAllAsync()
+            } else {
+                workOrderS = p_realm.where(WorkOrderEntity::class.java).equalTo("id", workOrderId).findAllAsync()
+            }
+        }
+
+        return LiveRealmData(workOrderS)
+    }
+
     fun findWorkOrders(workOrderId: Int? = null): List<WorkOrderEntity> {
         var res = emptyList<WorkOrderEntity>()
         p_realm.executeTransaction { realm ->
@@ -132,6 +183,9 @@ class RealmRepository(private val p_realm: Realm) {
 
             if(workOrderS.isNotEmpty()){
                 res = realm.copyFromRealm(workOrderS)
+                res.forEach { workOrderEntity ->
+                    setEmptyImageEntity(workOrderEntity.platforms)
+                }
             }
 
         }
@@ -205,7 +259,7 @@ class RealmRepository(private val p_realm: Realm) {
         )
     }
 
-    fun findFailReasonByValue(realm: Realm, problem: String): FailReasonEntity {
+    private fun findFailReasonByValue(realm: Realm, problem: String): FailReasonEntity {
         return realm.where(FailReasonEntity::class.java).equalTo("problem", problem).findFirst()!!
 
     }
@@ -353,13 +407,22 @@ class RealmRepository(private val p_realm: Realm) {
             val platform = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
+
             val problemId = findFailReasonByValue(realm, problem).id
             platform.failureReasonId = problemId
-            var platformStatus = StatusEnum.ERROR
             platform.containers.forEach {
-                if (it.status != StatusEnum.SUCCESS) it.status = StatusEnum.ERROR
-                else platformStatus = StatusEnum.UNFINISHED
+                if (it.status != StatusEnum.SUCCESS) {
+                    it.status = StatusEnum.ERROR
+                }
             }
+
+            val isAllSuccess = platform.containers.all { el -> el.status == StatusEnum.SUCCESS  }
+            val isAllError = platform.containers.all { el -> el.status == StatusEnum.ERROR  }
+
+            val platformStatus =
+                if(isAllSuccess) StatusEnum.SUCCESS
+                else if(isAllError) StatusEnum.ERROR
+                else StatusEnum.UNFINISHED
             platform.status = platformStatus
 
             platform.failureComment = failureComment
@@ -374,35 +437,41 @@ class RealmRepository(private val p_realm: Realm) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform().equalTo("platformId", platformId)
                 .findFirst()!!
-            if (platform.status == StatusEnum.NEW) {
-                platform.status = status
-            }
+
+            val isAllSuccess = platform.containers.all { el -> el.status == StatusEnum.SUCCESS  }
+            val isAllError = platform.containers.all { el -> el.status == StatusEnum.ERROR  }
+
+            val platformStatus =
+                if(isAllSuccess) StatusEnum.SUCCESS
+                else if(isAllError) StatusEnum.ERROR
+                else StatusEnum.UNFINISHED
+            platform.status = platformStatus
+
             val workOrder = getWorkOrderQuery().equalTo("id", platform.workOrderId)
                 .findFirst()
+
             workOrder?.calcInfoStatistics()
 
             setEntityUpdateAt(platform)
         }
     }
 
-    fun findWayTasks(): List<WorkOrderEntity> {
-        val res = p_realm.where(WorkOrderEntity::class.java).findAll()
-        if (res != null) {
-            return p_realm.copyFromRealm(res)
-        }
-        return emptyList()
-    }
 
-    fun findPlatforms(): List<PlatformEntity> {
-        p_realm.refresh()
-        // TODO: 25.10.2021 !!!???
-        //  return WayTaskEntity() is fail
 
-        val res = getQueryPlatform().sort("updateAt").findAll()
-        if (res != null) {
-            return p_realm.copyFromRealm(res)
+    fun setEmptyImageEntity(platforms: List<PlatformEntity>) {
+        val emptyImageEntityList = RealmList<ImageEntity>()
+        platforms.forEach { platform ->
+            platform.afterMedia = emptyImageEntityList
+            platform.beforeMedia = emptyImageEntityList
+            platform.failureMedia = emptyImageEntityList
+            platform.pickupMedia = emptyImageEntityList
+            platform.kgoRemaining?.media = emptyImageEntityList
+            platform.kgoServed?.media = emptyImageEntityList
+            platform.containers.forEach { container ->
+                container.failureMedia = emptyImageEntityList
+                container.breakdownMedia = emptyImageEntityList
+            }
         }
-        return emptyList()
     }
 
     fun findPlatformByCoord(point: Point, accuracy: Float): PlatformEntity? {
@@ -550,11 +619,10 @@ class RealmRepository(private val p_realm: Realm) {
         return resultRound
     }
 
-    fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity {
+    fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity? {
         return p_realm.copyFromRealm(
-            p_realm.where(PlatformEntity::class.java)
-                .findAll()
-        ).find { it.coords[0] == lat && it.coords[1] == lon }!!
+            getQueryPlatform().findAll()
+        ).find { it.coords[0] == lat && it.coords[1] == lon }
     }
 
     fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
@@ -562,6 +630,7 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     fun findPlatformEntity(platformId: Int): PlatformEntity {
+        Log.d("PLATFORM ID :::", "$platformId")
         if(platformId == Inull) {
             return PlatformEntity(name="findPlatformEntity.platformId==Inull")
         }
