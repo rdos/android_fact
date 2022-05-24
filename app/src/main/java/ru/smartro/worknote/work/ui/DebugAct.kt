@@ -33,10 +33,19 @@ class DebugAct : ActNOAbst() {
     }
 
     private fun initViews() {
-//        val workOrders = vs.baseDat.findWorkOrders()
+        val workOrders = vs.baseDat.findWorkOrders()
 //        val containerProgress = workOrders.
 //        val platformProgress = vs.findPlatformProgress()
-
+        var platformCnt = 0
+        var platformProgress = 0
+        var containerCnt = 0
+        var containerProgress = 0
+        for(workOrder in workOrders) {
+            platformCnt += workOrder.cnt_platform
+            platformProgress += workOrder.cntPlatformProgress()
+            containerCnt += workOrder.cnt_container
+            containerProgress += workOrder.cntContainerProgress()
+        }
         val memoryInfo = ActivityManager.MemoryInfo()
         (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
         val nativeHeapSize = memoryInfo.totalMem
@@ -47,28 +56,25 @@ class DebugAct : ActNOAbst() {
         val appVersion = BuildConfig.VERSION_NAME
 
         debug_app.text = "Версия приложения: $appVersion"
+        debug_ram_count.text = "ОЗУ используется: $usedMemInPercentage%"
 
-//        debug_container_count.text = "Кол-во обслуженных контейнеров: ${containerProgress[0]}/${containerProgress[1]}"
-//        debug_platform_count.text = "Кол-во обслуженных платформ: ${platformProgress[0]}/${platformProgress[1]}"
-//        debug_ram_count.text = "ОЗУ используется: $usedMemInPercentage%"
-//
-//        debug_container_progress.max = containerProgress[1]
-//        debug_container_progress.progress = containerProgress[0]
-//
-//        debug_platform_progress.max = platformProgress[1]
-//        debug_platform_progress.progress = platformProgress[0]
+        debug_platform_count.text = "Кол-во обслуженных платформ: ${platformProgress}/${platformCnt}"
+        debug_platform_progress.max = platformCnt
+        debug_platform_progress.progress = platformProgress
+        debug_container_count.text = "Кол-во обслуженных контейнеров: ${containerProgress}/${containerCnt}"
+        debug_container_progress.max = containerProgress
+        debug_container_progress.progress = containerProgress
 
         debug_ram_progress.max = 100
         debug_ram_progress.progress = usedMemInPercentage.toInt()
 
         debug_organisation.text = "Организация: ${paramS().ownerId}"
-//        debug_user.text = "Пользователь: ${AppPreferences.BoTlogin}"
-//        debug_waybill.text = "Путевой лист: ${AppPreferences.wayBillNumber}"
+//        debug_user.text = "Пользователь: ${paramS().user_name}"
+        debug_waybill.text = "Путевой лист: ${paramS().wayBillNumber}"
         debug_coordinate.text = "Координаты: ${AppliCation().gps().showForUser()}"
         debug_phone.text = "Устройство: ${MyUtil.getDeviceName()}, Android: ${android.os.Build.VERSION.SDK_INT}"
 
         mMapView = findViewById(R.id.debug_mapview)
-        mMapView.map.mapObjects.addPlacemark(AppliCation().gps(), ImageProvider.fromResource(this, R.drawable.ic_euro_blue))
         mMapView.map.move(
             CameraPosition(AppliCation().gps(), 12.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null

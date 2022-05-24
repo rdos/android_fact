@@ -13,7 +13,7 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.service.network.interceptor.TokenAuthenticator
 import java.util.concurrent.TimeUnit
-
+import ru.smartro.worknote.awORKOLDs.service.network.ApiService
 
 class RetrofitClient(context: Context) {
 
