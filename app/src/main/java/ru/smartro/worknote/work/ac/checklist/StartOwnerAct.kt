@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.start_act__rv_item_know1.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
@@ -26,9 +27,11 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.ac.PERMISSIONS
 
 //todo:r_dos choose in checklist(как у QA)
-class StartOwnerAct : ActNOAbst() {
+class StartOwnerAct : ActAbstract() {
     private val vs: OrganisationViewModel by viewModel()
-
+    override fun onNewGPS() {
+        // TODO: r_dos!!!
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {

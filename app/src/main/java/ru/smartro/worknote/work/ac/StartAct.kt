@@ -29,6 +29,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
+import ru.smartro.worknote.abs.ActAbstract
 
 public val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -38,7 +39,7 @@ public val PERMISSIONS = arrayOf(
     Manifest.permission.LOCATION_HARDWARE,
     Manifest.permission.ACCESS_NETWORK_STATE
 )
-class StartAct : ActNOAbst() {
+class StartAct : ActAbstract() {
     private val vm: AuthViewModel by viewModel()
 
     private fun gotoNextAct() {
@@ -47,6 +48,9 @@ class StartAct : ActNOAbst() {
         val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
         startActivity(Intent(this, if (isHasTask) MapAct::class.java else StartOwnerAct::class.java))
         finish()
+    }
+    override fun onNewGPS() {
+        // TODO: r_dos!!!
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

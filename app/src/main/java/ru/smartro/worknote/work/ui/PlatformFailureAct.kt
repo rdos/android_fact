@@ -16,6 +16,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -57,15 +58,14 @@ class PlatformFailureAct : ActNOAbst() {
                     problemComment = problemComment, problem = failure)
                 setResult(99)
                 finish()
+                showingProgress()
             } else {
                 toast("Выберите причину невывоза")
             }
         }
 
     }
-
-
-
+    
     private fun initImageView() {
         val platform = viewModel.findPlatformEntity(platform.platformId!!)
         Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last()?.image))
