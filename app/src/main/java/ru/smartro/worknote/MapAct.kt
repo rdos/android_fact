@@ -84,7 +84,7 @@ import kotlin.math.round
 class MapAct : ActAbstract(),
     /*UserLocationObjectListener,*/
     MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener,  InertiaMoveListener {
-//    private lateinit var mMapObjectCollection: MapObjectCollection
+    private var mMapObjectCollection: MapObjectCollection? = null
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
@@ -279,6 +279,7 @@ class MapAct : ActAbstract(),
         mMapObjectsDrive = null
     }
 
+    //1
     private fun getMapObjectsDrive(): MapObjectCollection? {
         if (mMapObjectsDrive == null) {
             mMapObjectsDrive = mMapMyYandex.map.mapObjects.addCollection()
@@ -862,18 +863,25 @@ class MapAct : ActAbstract(),
 
     private fun initMapView() {
         val platforms = getActualPlatforms()
-        val mMapObjectCollection = mMapMyYandex.map.mapObjects
-        mMapObjectCollection.removeTapListener(this)
-        mMapObjectCollection.clear()
+        mMapObjectCollection?.clear()
+        try {
+            mMapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
+        } catch (ex: Exception) {
+            Log.e(TAG, "eXthr.message", ex)
+            // TODO: :)!!!
+            mMapObjectCollection = null
+        }
+
+        mMapObjectCollection?.removeTapListener(this)
         addPlaceMarks(this, mMapObjectCollection, platforms)
-        mMapObjectCollection.addTapListener(this)
+        mMapObjectCollection?.addTapListener(this)
     }
 
-    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection, platforms: List<PlatformEntity>) {
+    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection?, platforms: List<PlatformEntity>) {
         for(platform in platforms) {
             val iconProvider = getIconViewProvider(context, platform)
             val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
-            mapObjectCollection.addPlacemark(pointYandex, iconProvider)
+            mapObjectCollection?.addPlacemark(pointYandex, iconProvider)
         }
     }
 
