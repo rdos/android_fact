@@ -69,7 +69,7 @@ class DebugAct : ActNOAbst() {
         debug_ram_progress.progress = usedMemInPercentage.toInt()
 
         debug_organisation.text = "Организация: ${paramS().ownerId}"
-//        debug_user.text = "Пользователь: ${paramS().user_name}"
+        debug_user.text = "Пользователь: ${paramS().userName}"
         debug_waybill.text = "Путевой лист: ${paramS().wayBillNumber}"
         debug_coordinate.text = "Координаты: ${AppliCation().gps().showForUser()}"
         debug_phone.text = "Устройство: ${MyUtil.getDeviceName()}, Android: ${android.os.Build.VERSION.SDK_INT}"
