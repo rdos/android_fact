@@ -23,6 +23,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.NonPickupEnum
+import ru.smartro.worknote.work.cam.CameraAct
 
 class ContainerBreakdownAct : ActNOAbst() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView

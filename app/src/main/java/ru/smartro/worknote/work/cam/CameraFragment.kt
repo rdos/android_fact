@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ui
+package ru.smartro.worknote.work.cam
 
 import android.Manifest
 import android.app.Activity
@@ -28,7 +28,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
@@ -44,7 +43,6 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.abs
-import kotlin.math.log
 import kotlin.math.max
 import kotlin.math.min
 

@@ -1,7 +1,6 @@
 package ru.smartro.worknote.work.platform_serve
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -28,7 +27,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
 import ru.smartro.worknote.awORKOLDs.extensions.toast
-import ru.smartro.worknote.work.ui.CameraAct
+import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum

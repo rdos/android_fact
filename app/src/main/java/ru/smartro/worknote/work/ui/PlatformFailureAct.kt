@@ -21,6 +21,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
+import ru.smartro.worknote.work.cam.CameraAct
 
 class PlatformFailureAct : ActNOAbst() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView

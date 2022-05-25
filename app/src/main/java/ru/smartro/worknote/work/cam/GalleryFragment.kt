@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ui
+package ru.smartro.worknote.work.cam
 
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +18,8 @@ import ru.smartro.worknote.awORKOLDs.extensions.warningDelete
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
+import ru.smartro.worknote.work.ui.ImageDetailDeleteListener
+import ru.smartro.worknote.work.ui.ImageDetailFragment
 
 
 class GalleryFragment(private val platformId: Int, private val photoFor: Int,
