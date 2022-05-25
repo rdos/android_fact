@@ -64,6 +64,7 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
 }
 
 fun AppCompatActivity.showingProgress(text: String? = null) {
+    hideProgress()
     try {
         val builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
@@ -275,14 +276,21 @@ fun Fragment.warningDelete(title: String): View {
     return view
 }
 
-fun AppCompatActivity.hideDialog() {
-    try {
-        mCustomDialog.dismiss()
-    } catch (e: Exception) {
-        // TODO: 02.11.2021
-        Log.e(TAG, "AppCompatActivity.hideDialog", e)
-    }
+fun Fragment.hideDialog() {
+    hideCustomDialog()
 }
+fun AppCompatActivity.hideDialog() {
+    hideCustomDialog()
+}
+
+    private fun hideCustomDialog() {
+        try {
+            mCustomDialog.dismiss()
+        } catch (e: Exception) {
+            // TODO: 02.11.2021
+            Log.e(TAG, "AppCompatActivity.hideDialog", e)
+        }
+    }
 
 fun AppCompatActivity.hideProgress() {
     try {
@@ -315,26 +323,6 @@ fun Fragment.showingProgress() {
     } catch (e: Exception) {
         // TODO: 02.11.2021
         Log.e(TAG, "Fragment.loadingShow", e)
-    }
-}
-
-fun Fragment.hideDialog(time: Long = 0) {
-    try {
-        println("rdos-A")
-        CoroutineScope(Dispatchers.IO).launch {
-            println("rdos-AB")
-            delay(time)
-            withContext(Dispatchers.Main) {
-                mCustomDialog.dismiss()
-            }
-            println("rdos-ABC")
-        }
-        println("rdos-ABCD")
-
-
-    } catch (e: Exception) {
-        // TODO: 02.11.2021
-        Log.e(TAG, "Fragment.hideDialog", e)
     }
 }
 

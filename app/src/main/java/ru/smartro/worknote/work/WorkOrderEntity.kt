@@ -612,6 +612,27 @@ open class ImageEntity(
     var coords: RealmList<Double> = RealmList(),
     var accuracy: String? = null,
     var lastKnownLocationTime: Long? =null,
-) : Serializable, RealmObject()
+) : Serializable, RealmObject() {
+
+    fun isCheckedData(): Boolean {
+        val res = false
+        if (date == null) {
+            return res
+        }
+        if (date!! <= 0) {
+            return res
+        }
+        if (image == null) {
+            return res
+        }
+        if (image!!.substring(0, 22) != "data:image/png;base64,") {
+                return res
+            }
+        if (coords.size <= 0) {
+            return res
+        }
+        return true
+    }
+}
 
 

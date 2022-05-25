@@ -28,11 +28,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ac.map.AFragment
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
+import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
@@ -42,6 +44,7 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.abs
+import kotlin.math.log
 import kotlin.math.max
 import kotlin.math.min
 
@@ -51,17 +54,19 @@ class CameraFragment(
     private val containerId: Int
 ) : AFragment(), ImageCounter {
 
+    private var mThumbNail: ImageButton? = null
+    private var mImageCounter: TextView? = null
     private val maxPhotoCount = 3
 
     private var mActbPhotoFlash: AppCompatToggleButton? = null
     private lateinit var mRootView: View
+    private var mBtnAcceptPhoto: Button? = null
     private lateinit var mPreviewView: PreviewView
     private lateinit var outputDirectory: File
 
     private val PERMISSIONS_REQUEST_CODE = 10
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
-    private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
@@ -90,7 +95,6 @@ class CameraFragment(
         cameraExecutor = Executors.newSingleThreadExecutor()
         outputDirectory = CameraAct.getOutputDirectory(requireContext())
         mPreviewView.post{
-            displayId = mPreviewView.display.displayId
             setUpCamera()
             updateCameraUi()
         }
@@ -126,82 +130,89 @@ class CameraFragment(
     }
 
     private fun setGalleryThumbnail(uri: Uri) {
-        val thumbnail = mRootView.findViewById<ImageButton>(R.id.photo_view_button)
-        thumbnail.post {
-            // Remove thumbnail padding
-            thumbnail.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
-            Glide.with(App.getAppliCation())
-                .load(uri)
-                .apply(RequestOptions.circleCropTransform())
-                .into(thumbnail)
+        try {
+            mThumbNail?.let {
+                it.post {
+                    // Remove thumbnail padding
+                    Glide.with(App.getAppliCation())
+                        .load(uri)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(mThumbNail!!)
+                }
+            }
+        } catch (ex: Exception) {
+            logSentry("setGalleryThumbnail и try{}catch")
+            Log.e(TAG, "setGalleryThumbnail и try{}catch", ex)
         }
     }
 
     private fun setImageCounter(plus: Boolean) {
-        val imageCounter = mRootView.findViewById<TextView>(R.id.image_counter)
         val count = if (plus) 1 else 0
-
         var mediaSize = 0
-
-        imageCounter.post {
+        mImageCounter?.post{
             when (photoFor) {
                 PhotoTypeEnum.forContainerFailure -> {
                     val container = viewModel.findContainerEntity(containerId)
                     mediaSize = container.failureMedia.size + count
-                    imageCounter.text = "$mediaSize"
+                    mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forContainerBreakdown -> {
                     val container = viewModel.findContainerEntity(containerId)
                     mediaSize = container.breakdownMedia.size + count
-                    imageCounter.text = "$mediaSize"
+                    mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     mediaSize = platform.failureMedia.size + count
-                    imageCounter.text = "$mediaSize"
+                    mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forAfterMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     mediaSize = platform.afterMedia.size + count
-                    imageCounter.text = "$mediaSize"
+                    mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     mediaSize = platform.beforeMedia.size + count
-                    imageCounter.text = "$mediaSize"
+                    mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forServedKGO -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     mediaSize = platform.getServedKGOMediaSize() + count
-                    imageCounter.text = "$mediaSize"
+                    mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forRemainingKGO -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     mediaSize = platform.getRemainingKGOMediaSize() + count
-                    imageCounter.text = "$mediaSize"
+                    mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forPlatformPickupVolume -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     mediaSize = platform.pickupMedia.size + count
-                    imageCounter.text = "$mediaSize"
+                    mImageCounter?.text = "$mediaSize"
                     val btnCancel = mRootView.findViewById<TextView>(R.id.btn_cancel)
                     btnCancel.isVisible = mediaSize <= 0
-                    mRootView.findViewById<Button>(R.id.photo_accept_button)
-                        .visibility = if(mediaSize <= 0) View.GONE else View.VISIBLE
+                    mBtnAcceptPhoto?.visibility = if(mediaSize <= 0) View.GONE else View.VISIBLE
                     btnCancel.setOnClickListener {
                         activityFinish(photoFor, 404)
                     }
                 }
             }
-            mRootView.findViewById<Button>(R.id.photo_accept_button).apply {
-                if(mediaSize <= 0) {
-                    setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-                    setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_light_gray))
-                } else {
-                    setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                    setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_green_interactive))
+            try {
+                mBtnAcceptPhoto?.apply {
+                    if(mediaSize <= 0) {
+                        setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                        setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_light_gray))
+                    } else {
+                        setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                        setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_green_interactive))
+                    }
                 }
+            } catch (ex: Exception) {
+                logSentry("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
+                Log.e(TAG, "setImageCounter.mBtnAcceptPhoto?.apply и try{}catch", ex)
             }
+
         }
 
     }
@@ -311,12 +322,17 @@ class CameraFragment(
     private fun updateCameraUi() {
         Log.d(TAG, "updateCameraUi")
 
+        mImageCounter = mRootView.findViewById(R.id.image_counter)
+        mThumbNail = mRootView.findViewById(R.id.photo_view_button)
+        //todo: !!!
+        mThumbNail?.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
+
         if(photoFor == PhotoTypeEnum.forPlatformPickupVolume){
             mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.VISIBLE
         }
-
-        mRootView.findViewById<Button>(R.id.photo_accept_button).setOnClickListener {
-            var mediaSize = when (photoFor) {
+        mBtnAcceptPhoto = mRootView.findViewById(R.id.photo_accept_button)
+        mBtnAcceptPhoto?.setOnClickListener {
+            val mediaSize = when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
                     platform.beforeMedia.size
@@ -354,9 +370,14 @@ class CameraFragment(
                 }
                 else -> 0
             }
+            Log.d("MEDIASIZE :::: ", "$mediaSize")
             if (mediaSize == 0) {
                 toast("Сделайте фото")
                 return@setOnClickListener
+            }
+
+            if (photoFor == PhotoTypeEnum.forAfterMedia) {
+                showingProgress()
             }
             activityFinish(photoFor)
         }
@@ -454,7 +475,7 @@ class CameraFragment(
                                 File(imageUri.path!!).delete()
                             }, 500)
 
-                            setGalleryThumbnail(imageUri)
+
                             job.launch {
                                 Log.d("AAAAAAA", Thread.currentThread().name)
 
@@ -470,16 +491,22 @@ class CameraFragment(
 //                                }
 
                                 val gps = App.getAppliCation().gps()
-                                if (photoFor == PhotoTypeEnum.forContainerBreakdown
-                                    || photoFor == PhotoTypeEnum.forContainerFailure) {
-
-                                    viewModel.baseDat.updateContainerMedia(photoFor, platformId, containerId, gps.inImageEntity(imageBase64))
+                                val imageEntity = gps.inImageEntity(imageBase64)
+                                if (imageEntity.isCheckedData()) {
+                                    if (photoFor == PhotoTypeEnum.forContainerBreakdown
+                                        || photoFor == PhotoTypeEnum.forContainerFailure
+                                    ) {
+                                        viewModel.baseDat.updateContainerMedia(photoFor, platformId, containerId, imageEntity)
+                                    } else {
+                                        viewModel.baseDat.updatePlatformMedia(photoFor, platformId, imageEntity)
+                                    }
+                                    setImageCounter(false)
+                                    setGalleryThumbnail(imageUri)
                                 } else {
-                                    viewModel.baseDat.updatePlatformMedia(photoFor, platformId, gps.inImageEntity(imageBase64))
+                                    toast("Извините, произошла ошибка во время сохранения фото. \n повторите, пожалуйста, попытку")
                                 }
                                 captureButton.isClickable = true
                                 captureButton.isEnabled = true
-                                setImageCounter(false)
                                 job.cancel()
                             }
                         }
@@ -501,7 +528,7 @@ class CameraFragment(
         }
 
         // Listener for button used to view the most recent photo
-        mRootView.findViewById<ImageButton>(R.id.photo_view_button).setOnClickListener {
+        mThumbNail?.setOnClickListener {
             val fragment = GalleryFragment(
                 platformId = platformId, photoFor = photoFor,
                 containerId = containerId, imageCountListener = this

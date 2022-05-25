@@ -107,10 +107,8 @@ class MapActBottomBehaviorAdapter(
                 setDefButtonStyleBackground(holder.itemView)
                 holder.itemView.setOnClickListener {
                     if (!holder.itemView.map_behavior_expl.isExpanded) {
-                        listener.onPlatformClicked(position)
-                        holder.itemView.postDelayed({
-                            holder.itemView.map_behavior_expl.expand()
-                        }, 500)
+//                        listener.onPlatformClicked(position)
+                        holder.itemView.map_behavior_expl.expand()
                         if (item.isStartServe()) {
                             holder.itemView.map_behavior_start_service.setText(R.string.start_serve_again)
                         }
@@ -161,7 +159,7 @@ class MapActBottomBehaviorAdapter(
     }
 
     interface PlatformClickListener {
-        fun onPlatformClicked(position: Int)
+//        fun onPlatformClicked(position: Int)
         fun startPlatformService(item: PlatformEntity)
         fun startPlatformProblem(item: PlatformEntity)
         fun moveCameraPlatform(point: PoinT)
