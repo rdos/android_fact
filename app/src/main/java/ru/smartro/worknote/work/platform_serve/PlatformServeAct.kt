@@ -428,7 +428,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
     }
 
     override fun startContainerService(item: ContainerEntity) {
-        val fragment = ContainerServiceFragment()
+        val fragment = ContainerServeBottomDialog()
         fragment.addArgument(mPlatformEntity.platformId!!, item.containerId!!)
         fragment.show(supportFragmentManager, "ContainerServiceFragment")
     }

@@ -30,6 +30,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.App
+import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ac.map.AFragment
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
@@ -37,6 +38,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
+import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -46,12 +48,13 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class CameraFragment(
+open class CameraFragment(
     private val photoFor: Int,
     private val platformId: Int,
     private val containerId: Int
 ) : AFragment(), ImageCounter {
 
+    private var mIsNoLimitPhoto: Boolean = false
     private var mThumbNail: ImageButton? = null
     private var mImageCounter: TextView? = null
     private val maxPhotoCount = 3
@@ -96,6 +99,9 @@ class CameraFragment(
             setUpCamera()
             updateCameraUi()
         }
+        //todo:!!!r_dos
+        mIsNoLimitPhoto = requireActivity().intent.getBooleanExtra("isNoLimitPhoto", false)
+        Log.w(TAG, "mIsNoLimitPhoto=${mIsNoLimitPhoto}")
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -167,12 +173,12 @@ class CameraFragment(
                 }
                 PhotoTypeEnum.forAfterMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    mediaSize = platform.afterMedia.size + count
+                    mediaSize = count + getCountAfterMedia(platform)
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    mediaSize = platform.beforeMedia.size + count
+                    mediaSize = count + getCountBeforeMedia(platform)
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forServedKGO -> {
@@ -334,11 +340,11 @@ class CameraFragment(
             val mediaSize = when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    platform.beforeMedia.size
+                    getCountBeforeMedia(platform)
                 }
                 PhotoTypeEnum.forAfterMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
-                    platform.afterMedia.size
+                    getCountAfterMedia(platform)
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
                     val platform = viewModel.findPlatformEntity(platformId)
@@ -399,11 +405,13 @@ class CameraFragment(
                 val currentMediaIsFull = when (photoFor) {
                     PhotoTypeEnum.forAfterMedia -> {
                         val platform = viewModel.findPlatformEntity(platformId)
-                        platform.afterMedia.size >= maxPhotoCount
+                        //todo: фильтер конечно же...!!!
+                        getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
                     }
                     PhotoTypeEnum.forBeforeMedia -> {
                         val platform = viewModel.findPlatformEntity(platformId)
-                        platform.beforeMedia.size >= maxPhotoCount
+                        //todo: фильтер конечно же лучше переписать)))) !!!
+                        getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
                     }
                     PhotoTypeEnum.forPlatformProblem -> {
                         val platform = viewModel.findPlatformEntity(platformId)
@@ -490,7 +498,7 @@ class CameraFragment(
 //                                }
 
                                 val gps = App.getAppliCation().gps()
-                                val imageEntity = gps.inImageEntity(imageBase64)
+                                val imageEntity = gps.inImageEntity(imageBase64, mIsNoLimitPhoto)
                                 if (imageEntity.isCheckedData()) {
                                     if (photoFor == PhotoTypeEnum.forContainerBreakdown
                                         || photoFor == PhotoTypeEnum.forContainerFailure
@@ -536,6 +544,26 @@ class CameraFragment(
         }
 
         setImageCounter(false)
+    }
+
+    private fun getCountAfterMedia(platform: PlatformEntity): Int {
+        var res = Inull
+        if (mIsNoLimitPhoto) {
+            res = platform.afterMedia.size
+        } else {
+           res = platform.afterMedia.filter {!it.isNoLimitPhoto }.size
+        }
+        return res
+    }
+
+    private fun getCountBeforeMedia(platform: PlatformEntity): Int {
+        var res = Inull
+        if (mIsNoLimitPhoto) {
+            res = platform.beforeMedia.size
+        } else {
+            res = platform.beforeMedia.filter {!it.isNoLimitPhoto }.size
+        }
+        return res
     }
 
     private fun activityFinish(photoType: Int, resultCode: Int = -1) {
