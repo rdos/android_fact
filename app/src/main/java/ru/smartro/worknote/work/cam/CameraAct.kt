@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.FrameLayout
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.extensions.FLAGS_FULLSCREEN
@@ -82,13 +83,11 @@ class CameraAct : ActNOAbst() {
     }
 
     companion object {
-        fun getOutputDirectory(context: Context): File {
-            val appContext = context.applicationContext
-            val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
-                File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() }
-            }
-            return if (mediaDir != null && mediaDir.exists())
-                mediaDir else appContext.filesDir
+        fun getOutputFL(): File {
+            val dirPath = App.getAppliCation().filesDir.absolutePath
+            val file = File(dirPath)
+            if (!file.exists()) file.mkdirs()
+            return file
         }
     }
 

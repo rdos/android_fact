@@ -1,6 +1,7 @@
 package ru.smartro.worknote.awORKOLDs.util
 
 import android.Manifest
+import android.R.attr.path
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -9,23 +10,27 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Matrix
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.yandex.mapkit.geometry.Point
-import ru.smartro.worknote.R
 import ru.smartro.worknote.App
+import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -102,17 +107,21 @@ object MyUtil {
         App.getAppParaMS().logout()
     }
 
-    fun imageToBase64(imageUri: Uri, rotationDegrees: Float, context: Context): String {
-        val imageStream: InputStream? = context.contentResolver.openInputStream(imageUri)
-        val selectedImage = BitmapFactory.decodeStream(imageStream)
+    fun imageToBase64(imageUri: Uri, context: Context): String {
+
+
+
+//        val selectedImage = BitmapFactory.decodeStream(imageStream)
         val matrix = Matrix()
-        matrix.preRotate(rotationDegrees)
-        val rotatedBitmap = Bitmap.createBitmap(selectedImage, 0, 0, selectedImage.width, selectedImage.height, matrix, true)
-        val compressedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, 320, 620, false)
-        val baos = ByteArrayOutputStream()
-        compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val b: ByteArray = baos.toByteArray()
-        return "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
+//        Log.w("TAGS", "selectedImage.width= ${selectedImage.width}, selectedImage.height = ${selectedImage.height}" )
+//        val rotatedBitmap = Bitmap.createBitmap(selectedImage, 0, 0, selectedImage.width, selectedImage.height, matrix, true)
+//        val compressedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, 1280 , 960, false)
+
+//        selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+
+
+
+        return "data:image/png;base64,}"
     }
 
     fun base64ToImage(encodedImage: String?): Bitmap {

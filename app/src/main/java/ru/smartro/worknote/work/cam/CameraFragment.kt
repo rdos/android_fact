@@ -3,106 +3,216 @@ package ru.smartro.worknote.work.cam
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
-import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.ac.map.AFragment
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.ac.map.AFragment
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
+
+//todo:
+/**
+val imageBase64 = Compressor.compress(requireContext(), photoFile) {
+resolution(1024, 768)
+quality(100)
+format(Bitmap.CompressFormat.PNG)
+//                                    size(81920) // 2 MB
+destination(photoFile)
+}
+ */
 
 open class CameraFragment(
     private val photoFor: Int,
     private val platformId: Int,
     private val containerId: Int
-) : AFragment(), ImageCounter {
+) : AFragment(), ImageCounter, OnImageSavedCallback {
 
     private var mIsNoLimitPhoto: Boolean = false
+    private var mCameraUIContainer: ConstraintLayout? = null
+    private var mCaptureButton: ImageButton? = null
+    private lateinit var mCameraController: LifecycleCameraController
+    private var mAcivImage: AppCompatImageView? = null
     private var mThumbNail: ImageButton? = null
     private var mImageCounter: TextView? = null
     private val maxPhotoCount = 3
-
+    private val mCameraExecutor = Executors.newSingleThreadExecutor()
     private var mActbPhotoFlash: AppCompatToggleButton? = null
     private lateinit var mRootView: View
     private var mBtnAcceptPhoto: Button? = null
     private lateinit var mPreviewView: PreviewView
-    private lateinit var outputDirectory: File
 
     private val PERMISSIONS_REQUEST_CODE = 10
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
-    private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
-    private var preview: Preview? = null
-    private var imageCapture: ImageCapture? = null
-    private var imageAnalyzer: ImageAnalysis? = null
-    private var mCamera: Camera? = null
-    private var cameraProvider: ProcessCameraProvider? = null
-
     private val viewModel: CameraViewModel by viewModel()
-
-    private lateinit var cameraExecutor: ExecutorService
-
-    private var rotation = Surface.ROTATION_0
-    private var rotationDegrees = 0F
 
     override fun onResume() {
         super.onResume()
         enableTorch()
     }
 
-    //    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mRootView = view
         mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.GONE
+        mCameraUIContainer = mRootView.findViewById<ConstraintLayout>(R.id.camera_ui_container)
         mPreviewView = mRootView.findViewById(R.id.view_finder)
-        cameraExecutor = Executors.newSingleThreadExecutor()
-        outputDirectory = CameraAct.getOutputDirectory(requireContext())
-        mPreviewView.post{
-            setUpCamera()
-            updateCameraUi()
-        }
+        //todo: mCameraController в App???
+        mCameraController = LifecycleCameraController(requireContext())
+        val outputSize = CameraController.OutputSize(AspectRatio.RATIO_4_3)
+        mCameraController.previewTargetSize = outputSize
+        mCameraController.imageCaptureTargetSize = outputSize
+        mCameraController.bindToLifecycle(viewLifecycleOwner)
+        mCameraController.isTapToFocusEnabled = true
+//        CameraXConfig()
+//        val ins = ProcessCameraProvider.getInstance(App.getAppliCation())
+//        ProcessCameraProvider.configureInstance()
+        initViews()
+        mCameraController.setZoomRatio(.5000F)
+
+        mPreviewView.controller = mCameraController
+//        mPreviewView.post{
+//            setUpCamera()
+//            updateCameraUi()
+//        }
         //todo:!!!r_dos
         mIsNoLimitPhoto = requireActivity().intent.getBooleanExtra("isNoLimitPhoto", false)
         Log.w(TAG, "mIsNoLimitPhoto=${mIsNoLimitPhoto}")
     }
+
+    private fun takePicture() {
+        if (isCurrentMediaIsFull()) {
+            toast("Разрешенное количество фотографий: 3")
+            hideProgress()
+        } else {
+//            captureButton.isClickable = false
+
+//            captureButton.isPressed = true
+            val photoFile = createFile(CameraAct.getOutputFL(), FILENAME, PHOTO_EXTENSION)
+
+            val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+            if (paramS().isCameraSoundEnabled) {
+                val mp = MediaPlayer.create(requireContext(), R.raw.camera_sound)
+                mp.start()
+            }
+            mCameraController.takePicture(outputOptions, mCameraExecutor, this)
+        }
+    }
+
+    override fun onImageSaved(outputFileResults: OutputFileResults) {
+        val imageUri = outputFileResults.savedUri!!
+        Log.d("TAGS", "Photo capture succeeded: $imageUri path: ${imageUri.path}")
+        Log.d("TAGS", "Current thread: ${Thread.currentThread()}")
+        setImageCounter(true)
+        setGalleryThumbnail(imageUri)
+        mAcivImage?.post {
+            mAcivImage!!.visibility = View.VISIBLE
+            mPreviewView.visibility = View.GONE
+            mCameraUIContainer?.visibility = View.GONE
+
+//  val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.my_anim_ttest)
+            Glide.with(mAcivImage!!)
+                .load(imageUri)
+                .into(mAcivImage!!)
+//  acivImage.startAnimation(animation)
+        }
+
+        mAcivImage?.postDelayed({
+            mAcivImage?.visibility = View.GONE
+            mPreviewView.visibility = View.VISIBLE
+            mCameraUIContainer?.visibility = View.VISIBLE
+        }, 1000)
+
+
+        Log.d("TAGS", Thread.currentThread().name)
+        //todo: хз!!!,,,???
+        Glide.with(App.getAppliCation())
+            .asBitmap()
+            .load(imageUri)
+            .into(object : CustomTarget<Bitmap?>() {
+                private val TOAST_TEXT: String = "Извините, произошла ошибка во время сохранения фото. \n повторите, пожалуйста, попытку"
+
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                    try {
+                        Log.d("TAGS", Thread.currentThread().name)
+                        val baos = ByteArrayOutputStream()
+                        resource.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                        val b: ByteArray = baos.toByteArray()
+                        Log.w("TAGS", b.size.toString())
+                        val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
+                        val gps = App.getAppliCation().gps()
+                        val imageEntity = gps.inImageEntity(imageBase64, mIsNoLimitPhoto)
+                        if (imageEntity.isCheckedData()) {
+                            if (photoFor == PhotoTypeEnum.forContainerBreakdown
+                                || photoFor == PhotoTypeEnum.forContainerFailure
+                            ) {
+                                viewModel.baseDat.updateContainerMedia(photoFor, platformId, containerId, imageEntity)
+                            } else {
+                                viewModel.baseDat.updatePlatformMedia(photoFor, platformId, imageEntity)
+                            }
+                        } else {
+                            toast(TOAST_TEXT)
+                        }
+                    } catch (ex: Exception) {
+                        Log.e(TAG, "eXthr.message", ex)
+                        toast(TOAST_TEXT)
+                    } finally {
+                        File(imageUri.path!!).deleteOnExit()
+                        mCaptureButton?.isEnabled = true
+                    }
+
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {}
+            })
+
+//            MyUtil.imageToBase64(imageUri, requireContext())
+//                                File(imageUri.path!!).delete()
+//            captureButton.isClickable = true
+//            captureButton.isEnabled = true
+
+    }
+
+    override fun onError(exception: ImageCaptureException) {
+        toast("Извините, произошла ошибка \n повторите, пожалуйста, попытку")
+        Log.e("TAGS", "Photo capture failed: ${exception.message}", exception)
+    }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -118,7 +228,6 @@ open class CameraFragment(
 
     override fun onDestroyView() {
         super.onDestroyView()
-        cameraExecutor.shutdown()
         //  displayManager.unregisterDisplayListener(displayListener)
     }
 
@@ -141,12 +250,14 @@ open class CameraFragment(
                     Glide.with(mThumbNail!!)
                         .load(uri)
                         .apply(RequestOptions.circleCropTransform())
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(mThumbNail!!)
                 }
             }
         } catch (ex: Exception) {
             logSentry("setGalleryThumbnail и try{}catch")
-            Log.e(TAG, "setGalleryThumbnail и try{}catch", ex)
+            Log.i(TAG, "setGalleryThumbnail и try{}catch")
+            Log.e(TAG, "eXthr.message", ex)
         }
 
     }
@@ -215,122 +326,32 @@ open class CameraFragment(
                 }
             } catch (ex: Exception) {
                 logSentry("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
-                Log.e(TAG, "setImageCounter.mBtnAcceptPhoto?.apply и try{}catch", ex)
+                Log.i(TAG, "setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
+                Log.e(TAG, "eXthr.message", ex)
             }
 
         }
 
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        updateCameraUi()
-    }
-
-    private fun setUpCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-        cameraProviderFuture.addListener(Runnable {
-            cameraProvider = cameraProviderFuture.get()
-            lensFacing = when {
-                hasFrontCamera() -> CameraSelector.LENS_FACING_BACK
-                else -> throw IllegalStateException("Back and front camera are unavailable")
-            }
-            bindCameraUseCases()
-        }, ContextCompat.getMainExecutor(requireContext()))
-    }
-
-    private fun bindCameraUseCases() {
-        val screenAspectRatio = aspectRatio(320, 620)
-        Log.d(TAG, "Preview aspect ratio: $screenAspectRatio")
-        val cameraProvider = cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
-
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-
-//        val orientationEventListener = object : OrientationEventListener(context) {
-//            override fun onOrientationChanged(orientation: Int) {
-//                // Monitors orientation values to determine the target rotation value
-//                when (orientation) {
-//                    in 45..134 -> {
-//                        rotation = Surface.ROTATION_270
-//                        rotationDegrees = 270F
-//                    }
-//                    in 135..224 -> {
-//                        rotation = Surface.ROTATION_180
-//                        rotationDegrees = 180F
-//                    }
-//                    in 225..314 -> {
-//                        rotation = Surface.ROTATION_90
-//                        rotationDegrees = 90F
-//                    }
-//                    else -> {
-//                        rotation = Surface.ROTATION_0
-//                        rotationDegrees = 0F
-//                    }
-//                }
-//                imageCapture?.targetRotation = rotation
-//                imageAnalyzer?.targetRotation = rotation
-//            }
-//        }
-
-//        orientationEventListener.enable()
-
-        preview = Preview.Builder()
-            .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(rotation)
-            .build()
-
-        imageCapture = ImageCapture.Builder()
-            .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(rotation)
-//            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-            .setCaptureMode(CAPTURE_MODE_MAXIMIZE_QUALITY)
-            .setFlashMode(FLASH_MODE_OFF)
-            .build()
-
-        imageAnalyzer = ImageAnalysis.Builder()
-            .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(rotation)
-            .build()
-
-        cameraProvider.unbindAll()
-
-        try {
-            mCamera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageCapture, imageAnalyzer
-            )
-            enableTorch()
-            preview?.setSurfaceProvider(mPreviewView.surfaceProvider)
-
-        } catch (exc: Exception) {
-            Log.e(TAG, "Use case binding failed", exc)
-        }
-
-    }
+//    override fun onConfigurationChanged(newConfig: Configuration) {
+//        super.onConfigurationChanged(newConfig)
+//        updateCameraUi()
+//    }
 
     private fun enableTorch() {
-        if (mCamera?.cameraInfo?.hasFlashUnit() == true) {
-            mCamera?.cameraControl?.enableTorch(paramS().isTorchEnabled)
+        if (mPreviewView.controller?.cameraInfo?.hasFlashUnit() == true) {
+            mPreviewView.controller?.enableTorch(paramS().isTorchEnabled)
             mActbPhotoFlash?.isChecked = paramS().isTorchEnabled
         } else {
             Log.e(TAG, "bindCameraUseCases mCamera?.cameraInfo?.hasFlashUnit() == false")
         }
     }
 
-    private fun aspectRatio(width: Int, height: Int): Int {
-        val previewRatio = max(width, height).toDouble() / min(width, height)
-        if (abs(previewRatio - RATIO_4_3_VALUE) <= abs(previewRatio - RATIO_16_9_VALUE)) {
-            return AspectRatio.RATIO_4_3
-        }
-        return AspectRatio.RATIO_16_9
-    }
-
-    private fun updateCameraUi() {
-        Log.d(TAG, "updateCameraUi")
+    private fun initViews() {
+        Log.d("TAGS", "initViews")
 
         mImageCounter = mRootView.findViewById(R.id.image_counter)
-        mThumbNail = mRootView.findViewById(R.id.photo_view_button)
-        //todo: !!!
-        mThumbNail?.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
 
         if(photoFor == PhotoTypeEnum.forPlatformPickupVolume){
             mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.VISIBLE
@@ -387,146 +408,35 @@ open class CameraFragment(
             activityFinish(photoFor)
         }
 
-        val captureButton = mRootView.findViewById<ImageButton>(R.id.camera_capture_button)
-        val acivImage = mRootView.findViewById<AppCompatImageView>(R.id.aciv_fragment_camera)
-        captureButton.setOnClickListener {
 
-            imageCapture?.let { imageCapture ->
-                val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
-                val metadata = Metadata().apply {
-                    isReversedHorizontal = lensFacing == CameraSelector.LENS_FACING_FRONT
-                }
-
-                val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
-                    .setMetadata(metadata).build()
-
-//                val flashMode = if (photo_flash.isChecked) FLASH_MODE_ON else FLASH_MODE_OFF
-//                imageCapture.flashMode = flashMode
-                val currentMediaIsFull = when (photoFor) {
-                    PhotoTypeEnum.forAfterMedia -> {
-                        val platform = viewModel.findPlatformEntity(platformId)
-                        //todo: фильтер конечно же...!!!
-                        getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
-                    }
-                    PhotoTypeEnum.forBeforeMedia -> {
-                        val platform = viewModel.findPlatformEntity(platformId)
-                        //todo: фильтер конечно же лучше переписать)))) !!!
-                        getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
-                    }
-                    PhotoTypeEnum.forPlatformProblem -> {
-                        val platform = viewModel.findPlatformEntity(platformId)
-                        platform.failureMedia.size >= maxPhotoCount
-                    }
-                    PhotoTypeEnum.forContainerFailure -> {
-                        val container = viewModel.findContainerEntity(containerId)
-                        container.failureMedia.size >= maxPhotoCount
-                    }
-                    PhotoTypeEnum.forContainerBreakdown -> {
-                        val container = viewModel.findContainerEntity(containerId)
-                        container.breakdownMedia.size >= maxPhotoCount
-                    }
-                    PhotoTypeEnum.forServedKGO -> {
-                        val platform = viewModel.findPlatformEntity(platformId)
-                        platform.getServedKGOMediaSize() >= maxPhotoCount
-                    }
-                    PhotoTypeEnum.forRemainingKGO -> {
-                        val platform = viewModel.findPlatformEntity(platformId)
-                        platform.getRemainingKGOMediaSize() >= maxPhotoCount
-                    }
-                    PhotoTypeEnum.forPlatformPickupVolume -> {
-                        val platform = viewModel.findPlatformEntity(platformId)
-                        platform.pickupMedia.size >= maxPhotoCount
-                    }
-                    else -> {
-                        false
-                    }
-                }
-                if (currentMediaIsFull) {
-                    toast("Разрешенное количество фотографий: 3")
-                    hideProgress()
-                } else {
-                    captureButton.isClickable = false
-                    captureButton.isEnabled = false
-                    captureButton.isPressed = true
-                    if (paramS().isCameraSoundEnabled) {
-                        val mp = MediaPlayer.create(requireContext(), R.raw.camera_sound)
-//                    final MediaPlayer mp = MediaPlayer.create(this, R.raw.soho);
-                        mp.start()
-                    }
-                    Log.d(TAG, "$rotation")
-
-                    imageCapture.takePicture(outputOptions, cameraExecutor, object : OnImageSavedCallback {
-                        override fun onError(exc: ImageCaptureException) {
-                            Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                        }
-
-                        override fun onImageSaved(output: OutputFileResults) {
-                            val job = CoroutineScope(Dispatchers.Main)
-                            val imageUri = output.savedUri ?: Uri.fromFile(photoFile)
-                            Log.d(TAG, "Photo capture succeeded: $imageUri path: ${imageUri.path}")
-                            Log.d(TAG, "Current thread: ${Thread.currentThread()}")
-
-                            acivImage.post{
-                                acivImage.visibility = View.VISIBLE
-                                mPreviewView.visibility = View.GONE
-//                                val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.my_anim_ttest)
-                                Glide.with(acivImage)
-                                    .load(imageUri)
-                                    .into(acivImage)
-//                                acivImage.startAnimation(animation)
-                            }
-
-                            acivImage.postDelayed({
-                                acivImage.visibility = View.GONE
-                                mPreviewView.visibility = View.VISIBLE
-                                File(imageUri.path!!).delete()
-                            }, 500)
-
-
-                            job.launch {
-                                Log.d("AAAAAAA", Thread.currentThread().name)
-
-                                val imageBase64 = MyUtil.imageToBase64(imageUri, rotationDegrees,
-                                    requireContext())
-
-//                                val imageBase64 = Compressor.compress(requireContext(), photoFile) {
-//                                    resolution(1024, 768)
-//                                    quality(100)
-//                                    format(Bitmap.CompressFormat.PNG)
-////                                    size(81920) // 2 MB
-//                                    destination(photoFile)
-//                                }
-
-                                val gps = App.getAppliCation().gps()
-                                val imageEntity = gps.inImageEntity(imageBase64, mIsNoLimitPhoto)
-                                if (imageEntity.isCheckedData()) {
-                                    if (photoFor == PhotoTypeEnum.forContainerBreakdown
-                                        || photoFor == PhotoTypeEnum.forContainerFailure
-                                    ) {
-                                        viewModel.baseDat.updateContainerMedia(photoFor, platformId, containerId, imageEntity)
-                                    } else {
-                                        viewModel.baseDat.updatePlatformMedia(photoFor, platformId, imageEntity)
-                                    }
-                                    setImageCounter(false)
-                                    setGalleryThumbnail(imageUri)
-                                } else {
-                                    toast("Извините, произошла ошибка во время сохранения фото. \n повторите, пожалуйста, попытку")
-                                }
-                                captureButton.isClickable = true
-                                captureButton.isEnabled = true
-                                job.cancel()
-                            }
-                        }
-                    })
-                }
-            }
-        }
-
+        mCaptureButton = mRootView.findViewById<ImageButton>(R.id.camera_capture_button)
+        mAcivImage = mRootView.findViewById<AppCompatImageView>(R.id.aciv_fragment_camera)
         mActbPhotoFlash = mRootView.findViewById<AppCompatToggleButton>(R.id.photo_flash)
-        mActbPhotoFlash?.setOnClickListener {
-           paramS().isTorchEnabled = mActbPhotoFlash!!.isChecked
-           enableTorch()
-        }
+        mCameraController.initializationFuture.addListener({
+            Log.d("TAGS", "initializationFuture")
+            if (hasBackCamera()) {
+                mCaptureButton?.setOnClickListener {
+                    mCaptureButton?.isEnabled = false
+                    try {
+                        takePicture()
+                    } catch (ex: Exception) {
+                        toast("Извините, произошла ошибка \n повторите, пожалуйста, попытку")
+                        Log.e(TAG, "eXthr.message", ex)
+                        mCaptureButton?.isEnabled = true
+                    }
+
+                }
+                mActbPhotoFlash?.setOnClickListener {
+                    paramS().isTorchEnabled = mActbPhotoFlash!!.isChecked
+                    enableTorch()
+                }
+            } else {
+                toast("Извините, но на вашем устройстве \n отсутсвует камера")
+            }
+
+            Log.d("TAGS", Thread.currentThread().name)
+        }, ContextCompat.getMainExecutor(requireContext()))
+
 
         val actbSound = mRootView.findViewById<AppCompatToggleButton>(R.id.actb_fragment_camera__sound)
         actbSound.isChecked = paramS().isCameraSoundEnabled
@@ -535,6 +445,9 @@ open class CameraFragment(
         }
 
         // Listener for button used to view the most recent photo
+        mThumbNail = mRootView.findViewById(R.id.photo_view_button)
+        //todo: !!!
+        mThumbNail?.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
         mThumbNail?.setOnClickListener {
             val fragment = GalleryFragment(
                 platformId = platformId, photoFor = photoFor,
@@ -546,12 +459,57 @@ open class CameraFragment(
         setImageCounter(false)
     }
 
+
+    private fun isCurrentMediaIsFull(): Boolean {
+        val res = when (photoFor) {
+            PhotoTypeEnum.forAfterMedia -> {
+                val platform = viewModel.findPlatformEntity(platformId)
+                //todo: фильтер конечно же...!!!
+                getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
+            }
+            PhotoTypeEnum.forBeforeMedia -> {
+                val platform = viewModel.findPlatformEntity(platformId)
+                //todo: фильтер конечно же лучше переписать)))) !!!
+                getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
+            }
+            PhotoTypeEnum.forPlatformProblem -> {
+                val platform = viewModel.findPlatformEntity(platformId)
+                platform.failureMedia.size >= maxPhotoCount
+            }
+            PhotoTypeEnum.forContainerFailure -> {
+                val container = viewModel.findContainerEntity(containerId)
+                container.failureMedia.size >= maxPhotoCount
+            }
+            PhotoTypeEnum.forContainerBreakdown -> {
+                val container = viewModel.findContainerEntity(containerId)
+                container.breakdownMedia.size >= maxPhotoCount
+            }
+            PhotoTypeEnum.forServedKGO -> {
+                val platform = viewModel.findPlatformEntity(platformId)
+                platform.getServedKGOMediaSize() >= maxPhotoCount
+            }
+            PhotoTypeEnum.forRemainingKGO -> {
+                val platform = viewModel.findPlatformEntity(platformId)
+                platform.getRemainingKGOMediaSize() >= maxPhotoCount
+            }
+            PhotoTypeEnum.forPlatformPickupVolume -> {
+                val platform = viewModel.findPlatformEntity(platformId)
+                platform.pickupMedia.size >= maxPhotoCount
+            }
+            else -> {
+                false
+            }
+        }
+
+        return res
+    }
+
     private fun getCountAfterMedia(platform: PlatformEntity): Int {
         var res = Inull
         if (mIsNoLimitPhoto) {
             res = platform.afterMedia.size
         } else {
-           res = platform.afterMedia.filter {!it.isNoLimitPhoto }.size
+            res = platform.afterMedia.filter {!it.isNoLimitPhoto }.size
         }
         return res
     }
@@ -591,17 +549,24 @@ open class CameraFragment(
         requireActivity().finish()
     }
 
-    private fun hasFrontCamera(): Boolean {
-        return cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
+    //    private fun hasFrontCamera(): Boolean {
+//        return cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
+//    }
+    //todo:???
+    private fun hasBackCamera(): Boolean {
+        return mCameraController.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
     }
 
     companion object {
         private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val PHOTO_EXTENSION = ".jpg"
-        private const val RATIO_4_3_VALUE = 4.0 / 3.0
-        private const val RATIO_16_9_VALUE = 16.0 / 9.0
         private const val MANUAL_FOCUS_DURATION__MS = 8000L
         private const val ANIMATION_MANUAL_FOCUS_DURATION__MS = MANUAL_FOCUS_DURATION__MS / 2
+        //        private fun createFile(baseFolder: File): File {
+//            val res = File(baseFolder, FILENAME)
+//            res.deleteOnExit()
+//            return res
+//        }
         private fun createFile(baseFolder: File, format: String, extension: String) =
             File(baseFolder, SimpleDateFormat(format, Locale.US).format(System.currentTimeMillis()) + extension)
     }
@@ -610,10 +575,43 @@ open class CameraFragment(
         setImageCounter(false)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraProvider?.unbindAll()
-    }
+}
+
+interface ImageCounter {
+    fun mediaSizeChanged()
+}
+
+/**
+ *    val orientationEventListener = object : OrientationEventListener(context) {
+override fun onOrientationChanged(orientation: Int) {
+// Monitors orientation values to determine the target rotation value
+Log.i(TAG, "onOrientationChanged.before.mRotation=${mRotation} orientation=${orientation}")
+when (orientation) {
+in 45..134 -> {
+mRotation = Surface.ROTATION_270
+rotationDegrees = 270F
+}
+in 135..224 -> {
+mRotation = Surface.ROTATION_180
+rotationDegrees = 180F
+}
+in 225..314 -> {
+mRotation = Surface.ROTATION_90
+rotationDegrees = 90F
+}
+else -> {
+mRotation = Surface.ROTATION_0
+rotationDegrees = 0F
+}
+}
+Log.i(TAG, "onOrientationChanged.after.mRotation=${mRotation}")
+mImageCapture?.targetRotation = mRotation
+imageAnalyzer?.targetRotation = mRotation
+}
+}
+
+orientationEventListener.enable()
+ */
 
 //    private class LuminosityAnalyzer:ImageAnalysis.Analyzer{
 //        private var lastAnalyzedTimestamp = 0L
@@ -650,10 +648,3 @@ open class CameraFragment(
 //
 //
 //    }
-
-}
-
-
-interface ImageCounter {
-    fun mediaSizeChanged()
-}
