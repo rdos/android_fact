@@ -101,7 +101,7 @@ class CameraFragment(
 //        val ins = ProcessCameraProvider.getInstance(App.getAppliCation())
 //        ProcessCameraProvider.configureInstance()
         initViews()
-        mCameraController.setZoomRatio(.5000F)
+//        mCameraController.setZoomRatio(.5000F)
 
         mPreviewView.controller = mCameraController
 //        mPreviewView.post{
