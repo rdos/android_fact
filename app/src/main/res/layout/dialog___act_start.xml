@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llc_act_map__workorder_info"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/margin_default">
+<!--android:text="id/acb_act_map__workorder_info__complete"-->
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="У вас есть незавершенный маршрут. Продолжить?"
+        />
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="@color/blue_cool"
+        >
+<!--android:text="id/acb_act_map__workorder_info__complete"-->
+        <Button
+            android:id="@+id/dialog___act_start_point__ie"
+            android:layout_width="110dp"
+            android:layout_height="39dp"
+            android:text="Стереть и начать заново" android:contentDescription="@string/gallery_button_alt"
+            android:background="@drawable/bg_button_red_interactive"
+            />
+<!--android:text="id/acb_act_map__workorder_info__complete"-->
+        <Button
+            android:id="@+id/dialog___act_start_point__ok"
+            android:layout_width="110dp"
+            android:layout_height="39dp"
+            android:gravity="center"
+            android:background="@drawable/bg_button_green_interactive"
+            android:contentDescription="Да, продолжить" android:text="Да, продолжить"
+            android:textColor="@color/black" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+<!--android:text="id/acb_act_map__workorder_info__complete"-->
+</androidx.appcompat.widget.LinearLayoutCompat>

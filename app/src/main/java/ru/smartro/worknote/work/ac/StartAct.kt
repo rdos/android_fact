@@ -1,9 +1,13 @@
 package ru.smartro.worknote.work.ac
 
 import android.Manifest
+import android.app.AlertDialog
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.*
+import android.widget.Button
 import androidx.core.view.isVisible
 
 import androidx.lifecycle.LiveData
@@ -23,16 +27,15 @@ import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.extensions.toast
-import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.awORKOLDs.service.network.Resource
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import ru.smartro.worknote.MapAct
 import ru.smartro.worknote.abs.ActAbstract
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 
 public val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -43,17 +46,44 @@ public val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_NETWORK_STATE
 )
 class StartAct : ActAbstract() {
+    private var mInfoDialog: AlertDialog? = null
     private val vm: AuthViewModel by viewModel()
 
     private fun gotoNextAct() {
 //            val isHasTask = true
         val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
-        startActivity(Intent(this, if (isHasTask) MapAct::class.java else StartOwnerAct::class.java))
-        finish()
+
+        // TODO: 01.11.2021 !! !
+        val inflater = LayoutInflater.from(this)
+        val dialogView = inflater.inflate(R.layout.dialog___act_start, null)
+
+        if (isHasTask) {
+            createInfoDialog(dialogView).let {
+                val btnOk = dialogView.findViewById<Button>(R.id.dialog___act_start_point__ok)
+                btnOk.setOnClickListener {
+                    hideDialog()
+                    startActivity(Intent(this, MapAct::class.java))
+                    finish()
+                }
+                val btnCancel = dialogView.findViewById<Button>(R.id.dialog___act_start_point__ie)
+                btnCancel.setOnClickListener {
+                    hideDialog()
+                    startActivity(Intent(this,  StartOwnerAct::class.java))
+                    finish()
+                }
+            }
+        } else {
+            hideDialog()
+            startActivity(Intent(this,  StartOwnerAct::class.java))
+            finish()
+        }
+
     }
+
     override fun onNewGPS() {
         // TODO: r_dos!!!
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (paramS().isRestartApp) {
@@ -65,18 +95,10 @@ class StartAct : ActAbstract() {
         cl_act_start.setOnClickListener {
             MyUtil.hideKeyboard(this)
         }
-
-        // TODO: 01.11.2021 !! !
-        if (paramS().token.isShowForUser()) {
-            gotoNextAct()
-        } else {
-            initViews()
-        }
-
+        viewInit()
     }
 
-
-    private fun initViews() {
+    private fun viewInit() {
         auth_enter.setOnClickListener {
            clickAuthEnter()
         }
@@ -127,7 +149,6 @@ class StartAct : ActAbstract() {
                             }
                             paramS().token = data!!.data.token
                             gotoNextAct()
-                            finish()
                         }
                         Status.ERROR -> {
                             hideProgress()
@@ -145,12 +166,30 @@ class StartAct : ActAbstract() {
         }
     }
 
+    private fun createInfoDialog(view: View): View {
+//        val dlg = AlertDialog.Builder(this, R.style.Theme_Inventory_Dialog)
+        val builder = AlertDialog.Builder(this)
+
+        builder.setView(view)
+        mInfoDialog = builder.create()
+        try {
+//            val window: Window? = mInfoDialog?.window
+//            val wlp: WindowManager.LayoutParams = window!!.attributes
+
+//            wlp.gravity = Gravity.TOP
+//            wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
+//            window.attributes = wlp
+            mInfoDialog?.show()
+        } catch (ex: Exception) {
+            Log.e(TAG, "showInfoDialog", ex)
+        }
+        return view
+    }
+
     override fun onStop() {
         super.onStop()
         AppliCation().stopWorkERS()
     }
-
-
     open class AuthViewModel(application: Application) : BaseViewModel(application) {
 
         fun auth(authModel: AuthBody): LiveData<Resource<AuthResponse>> {
@@ -158,3 +197,4 @@ class StartAct : ActAbstract() {
         }
     }
 }
+
