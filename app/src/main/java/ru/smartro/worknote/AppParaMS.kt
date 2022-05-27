@@ -267,8 +267,9 @@ class AppParaMS {
 
     var isModeDEVEL: Boolean = false
 
-    fun logout() {
+    fun setLogoutParams() {
         token = null
+        ownerId = Inull
         vehicleId = Inull
         wayBillId = Inull
         //TODO:r_Null!
