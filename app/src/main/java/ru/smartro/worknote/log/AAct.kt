@@ -229,6 +229,13 @@ abstract class AAct : AppCompatActivity() {
         this.startActivity(intent)
     }
 
+    fun logout() {
+        App.getAppParaMS().setLogoutParams()
+        val intent = Intent(this, StartAct::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+    }
+
 
 }
 
