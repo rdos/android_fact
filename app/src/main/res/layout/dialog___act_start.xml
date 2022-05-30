@@ -32,7 +32,7 @@
     <!--android:text="id/acb_act_map__workorder_info__complete"-->
             <Button
                 android:id="@+id/dialog___act_start_point__ie"
-                android:layout_width="140dp"
+                android:layout_width="133dp"
                 android:layout_height="44dp"
                 android:text="Стереть и начать заново"
                 android:contentDescription="@string/gallery_button_alt"
@@ -42,7 +42,7 @@
     <!--android:text="id/acb_act_map__workorder_info__complete"-->
             <Button
                 android:id="@+id/dialog___act_start_point__ok"
-                android:layout_width="140dp"
+                android:layout_width="133dp"
                 android:layout_height="44dp"
                 android:gravity="center"
                 android:background="@drawable/bg_button_green_interactive"
