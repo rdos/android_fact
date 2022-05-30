@@ -269,6 +269,10 @@ class AppParaMS {
 
     fun setLogoutParams() {
         token = null
+        isModeSYNChrONize = false
+    }
+
+    fun setAppRestartParams() {
         ownerId = Inull
         vehicleId = Inull
         wayBillId = Inull
