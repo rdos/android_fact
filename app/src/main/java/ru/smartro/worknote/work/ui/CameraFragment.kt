@@ -134,7 +134,7 @@ class CameraFragment(
             mThumbNail?.let {
                 it.post {
                     // Remove thumbnail padding
-                    Glide.with(mThumbNail!!)
+                    Glide.with(App.getAppliCation())
                         .load(uri)
                         .apply(RequestOptions.circleCropTransform())
                         .into(mThumbNail!!)
@@ -144,7 +144,6 @@ class CameraFragment(
             logSentry("setGalleryThumbnail и try{}catch")
             Log.e(TAG, "setGalleryThumbnail и try{}catch", ex)
         }
-
     }
 
     private fun setImageCounter(plus: Boolean) {
@@ -464,7 +463,7 @@ class CameraFragment(
                                 acivImage.visibility = View.VISIBLE
                                 mPreviewView.visibility = View.GONE
 //                                val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.my_anim_ttest)
-                                Glide.with(acivImage)
+                                Glide.with(App.getAppliCation())
                                     .load(imageUri)
                                     .into(acivImage)
 //                                acivImage.startAnimation(animation)
