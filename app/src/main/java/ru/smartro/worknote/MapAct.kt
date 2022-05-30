@@ -250,11 +250,12 @@ class MapAct : ActAbstract(),
 
         }
 
-        AppliCation().startWorkER()
-        AppliCation().startLocationService()
+
 
         //todo:  R_dos!!! modeSyNChrON_off(false)
         paramS.isModeSYNChrONize = true
+        AppliCation().startWorkER()
+        AppliCation().startLocationService()
 //        setDevelMode()
     }
 

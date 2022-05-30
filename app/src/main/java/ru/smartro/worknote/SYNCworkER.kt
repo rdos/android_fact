@@ -72,7 +72,7 @@ class SYNCworkER(
             val DELAY_MS: Long =  if (App.getAppParaMS().isModeDEVEL) 11_011 else 30_000
             while (true) {
                 INcyclEStart("while (true)")
-                delay(DELAY_MS)
+
                 if (isModeSyncOldVal != params.isModeSYNChrONize) {
                     isFirstRun = true
                 }
@@ -92,6 +92,7 @@ class SYNCworkER(
                 }
                 isFirstRun = false
                 INcyclEStop()
+                delay(DELAY_MS)
             } //todo: while (true) {
         } catch (eXthr: Throwable) {
             Log.e(TAG, "eXthr.message", eXthr)

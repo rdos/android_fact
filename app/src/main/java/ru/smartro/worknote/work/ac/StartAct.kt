@@ -139,11 +139,13 @@ class StartAct : ActAbstract() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppliCation().stopWorkERS()
         if (paramS().isRestartApp) {
             paramS().AppRestarted()
         }
         setContentView(R.layout.act_start)
         actionBar?.title = "Вход в Систему"
+
         auth_appversion.text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
         cl_act_start.setOnClickListener {
             MyUtil.hideKeyboard(this)
@@ -240,12 +242,6 @@ class StartAct : ActAbstract() {
             Log.e(TAG, "showInfoDialog", ex)
         }
         return view
-    }
-
-
-    override fun onStop() {
-        super.onStop()
-        AppliCation().stopWorkERS()
     }
 
     override fun onStart() {
