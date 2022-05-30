@@ -171,7 +171,6 @@ abstract class AAct : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-        AppliCation().startWorkER()
     }
 
 
