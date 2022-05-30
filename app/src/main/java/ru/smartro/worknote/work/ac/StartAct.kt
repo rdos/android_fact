@@ -109,6 +109,7 @@ class StartAct : ActAbstract() {
                         btnOk2.setOnClickListener {
                             hideDialog()
                             hideInfoDialog()
+                            App.getAppParaMS().setAppRestartParams()
                             startActivity(Intent(this,  StartOwnerAct::class.java))
                             finish()
                         }
