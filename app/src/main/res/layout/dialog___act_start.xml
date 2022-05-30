@@ -13,6 +13,7 @@
         android:layout_marginBottom="@dimen/margin_default"
         >
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/dialog___act_start__dialog_string"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="У вас есть незавершенный маршрут. \n Продолжить?"

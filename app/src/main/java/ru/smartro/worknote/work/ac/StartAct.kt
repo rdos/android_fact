@@ -8,14 +8,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Button
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.act_start.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.BuildConfig
-import ru.smartro.worknote.MapAct
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
@@ -25,9 +24,10 @@ import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.awORKOLDs.service.network.Resource
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
+import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.isShowForUser
+import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 
 
@@ -48,6 +48,7 @@ class StartAct : ActAbstract() {
         val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
         if (isHasToken && isHasTask) {
             hideDialog()
+            hideInfoDialog()
             startActivity(Intent(this, MapAct::class.java))
             finish()
             return
@@ -62,18 +63,70 @@ class StartAct : ActAbstract() {
                 val btnOk = dialogView.findViewById<Button>(R.id.dialog___act_start_point__ok)
                 btnOk.setOnClickListener {
                     hideDialog()
+                    hideInfoDialog()
                     startActivity(Intent(this, MapAct::class.java))
                     finish()
                 }
                 val btnCancel = dialogView.findViewById<Button>(R.id.dialog___act_start_point__ie)
                 btnCancel.setOnClickListener {
+                    hideInfoDialog()
+                    showingProgress()
+                    //ниже "супер код"
+                    //todo: copy-past from SYNCworkER
+                    val timeBeforeRequest: Long
+                    val lastSynchroTime = App.getAppParaMS().lastSynchroTime
+                    val platforms: List<PlatformEntity>
+
+                    val mMinutesInSec = 30 * 60
+                    if (lastSynchroTime - MyUtil.timeStamp() > mMinutesInSec) {
+                        platforms = vm.baseDat.findPlatforms30min()
+                        timeBeforeRequest = lastSynchroTime + mMinutesInSec
+                        Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
+                    } else {
+                        platforms =  vm.baseDat.findLastPlatforms()
+                        timeBeforeRequest = MyUtil.timeStamp()
+                        log("SYNCworkER LAST PLATFORMS")
+                    }
+                    val noSentPlatformCnt = platforms.size
+
+
+                    val noServedPlatformCnt = vm.baseDat.findPlatformsIsNew().size
+                    var dialogString = ""
+                    if (noSentPlatformCnt > 0) {
+                        dialogString += "Не отправлено ${noSentPlatformCnt} данных, если не взять в работу, данные не будут отправлены на сервер;"
+                    }
+                    if (noServedPlatformCnt > 0) {
+                        dialogString += "\nНе обслужено ${noServedPlatformCnt} площадок."
+                    }
+
+                    dialogString += "\nВы уверены, что хотите выйти из задания?"
+                    //todo: ))))))))))))))))))))))))))))))))))))))))))))))))))))
+                    val dialogView2 = inflater.inflate(R.layout.dialog___act_start, null)
+                    dialogView2.findViewById<AppCompatTextView>(R.id.dialog___act_start__dialog_string).text = dialogString
+                    createInfoDialog(dialogView2).let {
+                        val btnOk2 = dialogView2.findViewById<Button>(R.id.dialog___act_start_point__ok)
+                        btnOk2.text = "Да, стереть и выйти"
+                        btnOk2.setOnClickListener {
+                            hideDialog()
+                            hideInfoDialog()
+                            startActivity(Intent(this,  StartOwnerAct::class.java))
+                            finish()
+                        }
+                        val btnCancel2 = dialogView2.findViewById<Button>(R.id.dialog___act_start_point__ie)
+                        btnCancel2.text = "Отмена, вернуться в задание"
+                        btnCancel2.setOnClickListener {
+                            hideDialog()
+                            hideInfoDialog()
+                            startActivity(Intent(this, MapAct::class.java))
+                            finish()
+                        }
+                    }
                     hideDialog()
-                    startActivity(Intent(this,  StartOwnerAct::class.java))
-                    finish()
                 }
             }
         } else {
             hideDialog()
+            hideInfoDialog()
             startActivity(Intent(this,  StartOwnerAct::class.java))
             finish()
         }
@@ -166,6 +219,9 @@ class StartAct : ActAbstract() {
         }
     }
 
+    private fun hideInfoDialog() {
+        mInfoDialog?.hide()
+    }
     private fun createInfoDialog(view: View): View {
 //        val dlg = AlertDialog.Builder(this, R.style.Theme_Inventory_Dialog)
         val builder = AlertDialog.Builder(this)
@@ -185,6 +241,7 @@ class StartAct : ActAbstract() {
         }
         return view
     }
+
 
     override fun onStop() {
         super.onStop()

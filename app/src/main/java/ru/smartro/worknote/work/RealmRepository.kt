@@ -666,6 +666,14 @@ class RealmRepository(private val p_realm: Realm) {
         return filteredList
     }
 
+    fun findPlatformsIsNew(): List<PlatformEntity> {
+        val result = p_realm.copyFromRealm(
+            p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
+        )
+        val filteredList = result.filter { it.status == StatusEnum.NEW }
+        return filteredList
+    }
+
 
     /** добавление фото в платформу **/
     fun updatePlatformMedia(imageFor: Int, platformId: Int, imageEntity: ImageEntity) {
