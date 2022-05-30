@@ -114,14 +114,15 @@ class SYNCworkER(
         val lastSynchroTime =App.getAppParaMS().lastSynchroTime
         val platforms: List<PlatformEntity>
 
+        //проблема в секундах синхронизаций
         val mMinutesInSec = 30 * 60
         if (lastSynchroTime - MyUtil.timeStamp() > mMinutesInSec) {
-            platforms = db.findPlatforms30min()
             timeBeforeRequest = lastSynchroTime + mMinutesInSec
+            platforms = db.findPlatforms30min()
             Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
         } else {
-            platforms = db.findLastPlatforms()
             timeBeforeRequest = MyUtil.timeStamp()
+            platforms = db.findLastPlatforms()
             LOGWork("SYNCworkER LAST PLATFORMS")
         }
 
