@@ -104,7 +104,7 @@ class StartAct : ActAbstract() {
                     val dialogView2 = inflater.inflate(R.layout.dialog___act_start, null)
                     dialogView2.findViewById<AppCompatTextView>(R.id.dialog___act_start__dialog_string).text = dialogString
                     createInfoDialog(dialogView2).let {
-                        val btnOk2 = dialogView2.findViewById<Button>(R.id.dialog___act_start_point__ok)
+                        val btnOk2 = dialogView2.findViewById<Button>(R.id.dialog___act_start_point__ie)
                         btnOk2.text = "Да, стереть и выйти"
                         btnOk2.setOnClickListener {
                             hideDialog()
@@ -113,8 +113,8 @@ class StartAct : ActAbstract() {
                             startActivity(Intent(this,  StartOwnerAct::class.java))
                             finish()
                         }
-                        val btnCancel2 = dialogView2.findViewById<Button>(R.id.dialog___act_start_point__ie)
-                        btnCancel2.text = "Отмена, вернуться в задание"
+                        val btnCancel2 = dialogView2.findViewById<Button>(R.id.dialog___act_start_point__ok)
+                        btnCancel2.text = "Вернуться в задание"
                         btnCancel2.setOnClickListener {
                             hideDialog()
                             hideInfoDialog()
