@@ -198,6 +198,10 @@ class MapAct : ActAbstract(),
            gotoInfoDialog()
         }
 
+        val acbLogout = findViewById<AppCompatButton>(R.id.acb_act_map__logout)
+        acbLogout.setOnClickListener {
+            logout()
+        }
         setInfoData()
 
         initMapView()
@@ -903,7 +907,7 @@ class MapAct : ActAbstract(),
                 context.finish()
             }
             it.exit_btn.setOnClickListener {
-                MyUtil.logout(context)
+                logout()
             }
         }
     }

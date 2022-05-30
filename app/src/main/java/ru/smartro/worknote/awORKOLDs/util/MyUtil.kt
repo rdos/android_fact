@@ -22,6 +22,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.R
 import ru.smartro.worknote.App
+import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import java.io.ByteArrayOutputStream
@@ -90,16 +91,10 @@ object MyUtil {
                 context.startActivity(Intent(context, StartOwnerAct::class.java))
             }
             R.id.logout -> {
-                logout(context)
+                //todo:
+                (context as AAct).logout()
             }
         }
-    }
-
-    fun logout(context: Context) {
-        val intent = Intent(context, StartAct::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        context.startActivity(intent)
-        App.getAppParaMS().logout()
     }
 
     fun imageToBase64(imageUri: Uri, rotationDegrees: Float, context: Context): String {
