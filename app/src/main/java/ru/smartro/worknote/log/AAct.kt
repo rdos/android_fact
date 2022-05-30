@@ -22,8 +22,7 @@ import java.lang.Exception
 //       ::_know0=а это не ОСТАВЛЯТЬ
 abstract class AAct : AppCompatActivity() {
     private var mIsOopsMode: Boolean? = false
-
-
+//скольский пол
     protected fun AppliCation() : App {
         return App.getAppliCation()
     }
