@@ -110,6 +110,7 @@ class StartAct : ActAbstract() {
                             hideDialog()
                             hideInfoDialog()
                             App.getAppParaMS().setAppRestartParams()
+                            vm.baseDat.clearDataBase()
                             startActivity(Intent(this,  StartOwnerAct::class.java))
                             finish()
                         }
