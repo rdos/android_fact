@@ -43,7 +43,7 @@
         android:orientation="vertical"
         android:layout_marginTop="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/start_act__rv_item_know1" />
+        tools:listitem="@layout/item_container_adapter" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -71,7 +71,8 @@
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/apb_activity_platform_serve__kgo_remaining"
-            app:layout_constraintStart_toEndOf="@id/acb_activity_platform_serve__problem" app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/acb_activity_platform_serve__problem"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/apb_activity_platform_serve__kgo_remaining"

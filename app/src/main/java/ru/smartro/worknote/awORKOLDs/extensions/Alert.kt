@@ -25,7 +25,7 @@ private lateinit var loadingDialog: AlertDialog
 private lateinit var mCustomDialog: AlertDialog
 private val TAG = "Alert--AAA"
 
-private fun showCustomDialog(builder: AlertDialog.Builder) {
+fun showCustomDialog(builder: AlertDialog.Builder) {
     Log.i(TAG, "showCustomDialog.before")
     try {
         mCustomDialog = builder.create()
@@ -37,7 +37,6 @@ private fun showCustomDialog(builder: AlertDialog.Builder) {
     }
     Log.d(TAG, "showCustomDialog.after")
 }
-
 
 //showDlgPickup!r_dos
 fun AAct.showDlgPickup(): View {

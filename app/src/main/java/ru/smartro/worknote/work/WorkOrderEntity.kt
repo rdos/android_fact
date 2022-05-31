@@ -572,7 +572,7 @@ open class ContainerEntity(
     }
 
     fun getVolumePercentColor(context: Context): Int {
-        if (!this.isActiveToday) {
+        if (!this.isActiveToday && this.volume == null) {
             return Color.GRAY
         }
         if (this.status == StatusEnum.ERROR) {

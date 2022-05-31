@@ -36,9 +36,9 @@ import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 
-class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListener
-//    , SeekBar.OnSeekBarChangeListener
-{
+class PlatformServeAct :
+    ActNOAbst(),
+    ContainerAdapter.ContainerPointClickListener {
     private val THUMB_INACTIVE = "Inactive"
     private val THUMB_ACTIVE = "Active"
     private var prevVolumeValue: Double? = null
@@ -353,12 +353,10 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 
 
     private fun setUseButtonStyleBackgroundGreen(appCompatButton: AppCompatButton) {
-//        appCompatButton.alpha = 1f
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green__usebutton))
     }
 
     private fun setStyleBackgroundGreen(appCompatButton: AppCompatButton) {
-//        appCompatButton.alpha = 1f
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green__default))
     }
 
@@ -366,14 +364,6 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
     private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_red__usebutton))
     }
-
-//    private fun setButtonKGODrawableEnd(isTakeawayKGO: Boolean) {
-//        if (isTakeawayKGO) {
-//            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check) , null)
-//        } else {
-//            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check_gray) , null)
-//        }
-//    }
 
     private fun initBeforeMedia() {
         Log.d("TEST:::", "InitBeforeMedia")
@@ -395,28 +385,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 
     private fun initContainer() {
         val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
-//        val arrays = containers as ArrayList<ContainerEntity>
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-        mConrainerAdapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
+        mConrainerAdapter = ContainerAdapter(this, this, containers as ArrayList<ContainerEntity>)
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).recycledViewPool.setMaxRecycledViews(0, 0);
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).adapter = mConrainerAdapter
         findViewById<TextView>(R.id.tv_activity_platform_serve__point_info).text = "№${mPlatformEntity.srpId} / ${mPlatformEntity.containers!!.size} конт."
@@ -424,6 +393,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 
     fun updateRecyclerview() {
         val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
+        Log.d("TEST :::: ", "Containers: ${containers.joinToString { el -> "VOLUME: ${el.volume} ::: IS ACTIVTE TODAY: ${el.isActiveToday}" }}")
         mConrainerAdapter.updateData(containers as ArrayList<ContainerEntity>)
 //        initAfterMedia()
     }
@@ -453,21 +423,5 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         }
         return super.onOptionsItemSelected(item)
     }
-
-//    override fun onClick(buttonView: View) {
-//        Log.d(TAG, "onClick.before id=${buttonView.id}")
-//
-//        when(buttonView.id) {
-//            R.id.btn_alert_kgo__takeaway -> {
-//                onAlertButtonKgoClick(buttonView.rootView, true)
-//                setButtonKGODrawableEnd(true)
-//            }
-//            R.id.btn_alert_kgo__no_takeaway -> {
-//                onAlertButtonKgoClick(buttonView.rootView,false)
-//                setButtonKGODrawableEnd(false)
-//            }
-//        }
-//
-//    }
 
 }
