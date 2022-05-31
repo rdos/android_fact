@@ -393,8 +393,6 @@ class RealmRepository(private val p_realm: Realm) {
                     val problemId = findFailReasonByValue(realm, problem).id
                     container.failureReasonId = problemId
                     container.status = StatusEnum.ERROR
-                    container.volume = 0.0
-
                 }
             }
             container.comment = problemComment
