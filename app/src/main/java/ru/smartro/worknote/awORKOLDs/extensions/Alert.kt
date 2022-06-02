@@ -302,29 +302,3 @@ fun AppCompatActivity.hideProgress() {
         Log.e(TAG, "AppCompatActivity.loadingHide", e)
     }
 }
-
-fun Fragment.hideProgress() {
-    try {
-        loadingDialog.dismiss()
-    } catch (e: Exception) {
-        // TODO: 02.11.2021
-        Log.e(TAG, "Fragment.loadingHide", e)
-    }
-}
-
-fun Fragment.showingProgress() {
-    try {
-        val builder = AlertDialog.Builder(activity!!)
-        val inflater = this.layoutInflater
-        val view = inflater.inflate(R.layout.alert_loading, null)
-        builder.setView(view)
-        builder.setCancelable(false)
-        showLoadingDialog(builder)
-    } catch (e: Exception) {
-        // TODO: 02.11.2021
-        Log.e(TAG, "Fragment.loadingShow", e)
-    }
-}
-
-
-

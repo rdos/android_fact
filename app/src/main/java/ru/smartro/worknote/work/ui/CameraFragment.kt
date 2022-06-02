@@ -32,6 +32,7 @@ import okhttp3.internal.wait
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.work.ac.map.AFragment
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
@@ -101,6 +102,7 @@ class CameraFragment(
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        (requireActivity() as ActNOAbst).hideProgress()
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (PackageManager.PERMISSION_GRANTED == grantResults.firstOrNull()) {
@@ -124,6 +126,7 @@ class CameraFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (requireActivity() as ActNOAbst).hideProgress()
         if (!MyUtil.hasPermissions(requireContext())) {
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         }
@@ -377,7 +380,7 @@ class CameraFragment(
             }
 
             if (photoFor == PhotoTypeEnum.forAfterMedia) {
-                showingProgress()
+                (requireActivity() as ActNOAbst).showingProgress()
             }
             activityFinish(photoFor)
         }
@@ -436,7 +439,7 @@ class CameraFragment(
                 }
                 if (currentMediaIsFull) {
                     toast("Разрешенное количество фотографий: 3")
-                    hideProgress()
+                    (requireActivity() as ActNOAbst).hideProgress()
                 } else {
                     captureButton.isClickable = false
                     captureButton.isEnabled = false

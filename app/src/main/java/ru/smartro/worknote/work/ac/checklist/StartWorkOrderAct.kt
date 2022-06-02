@@ -153,9 +153,28 @@ class StartWorkOrderAct : ActAbstract() {
                 holder.itemView.choose_st.text = workOrder.waste_type.name
                 holder.itemView.choose_st.setTextColor(Color.parseColor("#${workOrder.waste_type.color.hex}"))
             }
+
+            when {
+                workOrder.beginnedAt != null && workOrder.finishedAt == null -> holder.itemView.wo_status.apply {
+                    text = "В работе"
+                    setTextColor(getColor(R.color.yellow))
+                }
+                workOrder.finishedAt != null -> holder.itemView.wo_status.apply {
+                    text = "Завершено"
+                    setTextColor(getColor(R.color.green))
+                }
+                else -> holder.itemView.wo_status.apply {
+                    text = "Новое"
+                }
+            }
+
             holder.itemView.setOnClickListener {
-                setAntiErrorClick(holder.itemView)
-                gotoNextAct(workOrder.id)
+                if(workOrder.finishedAt == null) {
+                    setAntiErrorClick(holder.itemView)
+                    gotoNextAct(workOrder.id)
+                } else {
+                    toast("Задание завершено")
+                }
             }
         }
         inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
