@@ -416,14 +416,20 @@ class RealmRepository(private val p_realm: Realm) {
                 }
             }
 
-            val isAllSuccess = platform.containers.all { el -> el.status == StatusEnum.SUCCESS  }
-            val isAllError = platform.containers.all { el -> el.status == StatusEnum.ERROR  }
+            val status = when {
+                platform.containers.all { el ->
+                    el.status == StatusEnum.SUCCESS
+                            || el.status == null
+                            || el.status == StatusEnum.NEW
+                } -> StatusEnum.SUCCESS
+                platform.containers.all { el -> el.status == StatusEnum.ERROR } -> StatusEnum.ERROR
+                platform.containers.any { el -> el.status == StatusEnum.ERROR } -> StatusEnum.PARTIAL_PROBLEMS
+                else -> {
+                    StatusEnum.PARTIAL_PROBLEMS
+                }
+            }
 
-            val platformStatus =
-                if(isAllSuccess) StatusEnum.SUCCESS
-                else if(isAllError) StatusEnum.ERROR
-                else StatusEnum.UNFINISHED
-            platform.status = platformStatus
+            platform.status = status
 
             platform.failureComment = failureComment
             val workOrder = getWorkOrderQuery().equalTo("id", platform.workOrderId)
