@@ -22,8 +22,7 @@ import java.lang.Exception
 //       ::_know0=а это не ОСТАВЛЯТЬ
 abstract class AAct : AppCompatActivity() {
     private var mIsOopsMode: Boolean? = false
-
-
+//скольский пол
     protected fun AppliCation() : App {
         return App.getAppliCation()
     }
@@ -172,7 +171,6 @@ abstract class AAct : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-        AppliCation().startWorkER()
     }
 
 
@@ -227,6 +225,13 @@ abstract class AAct : AppCompatActivity() {
         val intent = Intent(this, StartAct::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         this.startActivity(intent)
+    }
+
+    fun logout() {
+        App.getAppParaMS().setLogoutParams()
+        val intent = Intent(this, StartAct::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
 
