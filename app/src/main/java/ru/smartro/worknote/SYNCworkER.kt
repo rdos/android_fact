@@ -73,7 +73,7 @@ class SYNCworkER(
             val DELAY_MS: Long =  if (App.getAppParaMS().isModeDEVEL) 11_011 else 30_000
             while (true) {
                 INcyclEStart("while (true)")
-                delay(DELAY_MS)
+
                 if (isModeSyncOldVal != params.isModeSYNChrONize) {
                     isFirstRun = true
                 }
@@ -94,6 +94,7 @@ class SYNCworkER(
                 }
                 isFirstRun = false
                 INcyclEStop()
+                delay(DELAY_MS)
             } //todo: while (true) {
         } catch (eXthr: Throwable) {
             Log.e(TAG, "eXthr.message", eXthr)
@@ -129,14 +130,15 @@ class SYNCworkER(
         val lastSynchroTime =App.getAppParaMS().lastSynchroTime
         val platforms: List<PlatformEntity>
 
+        //проблема в секундах синхронизаций
         val mMinutesInSec = 30 * 60
         if (lastSynchroTime - MyUtil.timeStamp() > mMinutesInSec) {
-            platforms = db.findPlatforms30min()
             timeBeforeRequest = lastSynchroTime + mMinutesInSec
+            platforms = db.findPlatforms30min()
             Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
         } else {
-            platforms = db.findLastPlatforms()
             timeBeforeRequest = MyUtil.timeStamp()
+            platforms = db.findLastPlatforms()
             LOGWork("SYNCworkER LAST PLATFORMS")
         }
 

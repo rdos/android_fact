@@ -40,7 +40,6 @@ class StartWorkOrderAct : ActAbstract() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        hideProgress()
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
@@ -67,7 +66,6 @@ class StartWorkOrderAct : ActAbstract() {
             gotoNextAct(null)
         }
         showingProgress(getPutExtraParam_NAME())
-        // TODO:r_dos!!пох их код
         vm.networkDat.getWorkOrder(paramS().getOwnerId(), paramS().wayBillId)
             .observe(this, Observer { result ->
                 val data = result.data
