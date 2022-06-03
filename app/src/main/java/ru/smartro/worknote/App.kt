@@ -16,7 +16,6 @@ import android.os.Looper
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
-import android.widget.RemoteViews
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -30,6 +29,8 @@ import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
+import io.sentry.protocol.User
+import kotlinx.android.synthetic.main.act_start.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -106,7 +107,7 @@ class App : AApp() {
 
         mAppliCation = this
         Log.i(TAG, "on App created App.onCreate onAppCreate")
-        initSentry()
+        sentryInit()
         initRealm()
         startKoin {
             androidLogger()
@@ -407,15 +408,16 @@ class App : AApp() {
         return res
     }
 
-    private fun initSentry() {
+    public fun sentryAddTag(key: String, value: String) {
+        Sentry.configureScope { scope ->
+            scope.setTag(key, value)
+        }
+    }
+
+    private fun sentryInit() {
         Sentry.init { options ->
             options.dsn = getString(R.string.sentry_url)
         }
-        Sentry.configureScope { scope ->
-            scope.level = SentryLevel.WARNING
-        }
-        Sentry.setTag("device", MyUtil.getDeviceName()!!)
-        Sentry.setTag("android_api", android.os.Build.VERSION.SDK_INT.toString())
 
         SentryAndroid.init(this) { options ->
             options.beforeBreadcrumb = BeforeBreadcrumbCallback { breadcrumb, _ ->
@@ -428,6 +430,13 @@ class App : AApp() {
 
             options.environment = getSentryEnvironment()
         }
+
+        Sentry.configureScope { scope ->
+            scope.level = SentryLevel.WARNING
+        }
+        sentryAddTag("user_name", getAppParaMS().userName);
+        sentryAddTag("android_api", android.os.Build.VERSION.SDK_INT.toString())
+        sentryAddTag("device_name", MyUtil.getDeviceName()!!)
     }
 
     fun isDevelMode(): Boolean {

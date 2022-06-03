@@ -20,6 +20,7 @@ import java.lang.Exception
 //        }
 //todo:r_dos::_know1=знаешь точно, что ОСТАВИТЬ И НУЖНО ВСЕМУ коГду(а))
 //       ::_know0=а это не ОСТАВЛЯТЬ
+//todo: FYI AAct = AbstractActivity = AAct))  просто незакончено
 abstract class AAct : AppCompatActivity() {
     private var mIsOopsMode: Boolean? = false
 //скольский пол
@@ -217,6 +218,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        AppliCation().LASTact = null
         Log.d(TAG, "onDestroy")
 
     }

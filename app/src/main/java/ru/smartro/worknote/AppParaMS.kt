@@ -65,6 +65,12 @@ class AppParaMS {
             it.putString("accessToken", value)
         }
 
+    var userName: String
+        get() = sharedPref__env.getString("userName", Snull)!!
+        set(value) = sharedPref__env.edit {
+            it.putString("userName", value)
+        }
+
     var deviceId: String
         get() {
             var devId = sharedPref__env.getString("deviceId", Snull)!!

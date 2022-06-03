@@ -384,11 +384,15 @@ enum class Status {
 
 private fun <T> badRequest(response: Response<T>) {
     if (response.code() in 400..599) {
-        Sentry.setTag("url", response.raw().request.url.encodedPath)
+        val urlName = response.raw().request.url.encodedPath
+        Sentry.setTag("url_name", urlName)
         Sentry.setTag("http_code", response.code().toString())
-        Sentry.setTag("host", response.raw().request.url.host)
+        Sentry.setTag("url_host_name", response.raw().request.url.host)
+
 //        Sentry.setTag("user", AppPreferences.BoTlogin)
-        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
+        // TODO: replace  BadRequestException for post  @POST("synchro")
+//        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
+        Sentry.captureException(BadRequestException(urlName))
     }
 }
 
