@@ -50,10 +50,6 @@ class MapActBottomBehaviorAdapter(
     }
 
     private fun setUseButtonStyleBackgroundYellow(v: View) {
-        v.setBackgroundDrawable(ContextCompat.getDrawable(v.context, R.drawable.bg_button_yellow__usebutton))
-    }
-
-    private fun setUseButtonStyleBackgroundOrange(v: View) {
         v.setBackgroundDrawable(ContextCompat.getDrawable(v.context, R.drawable.bg_button_orange__usebutton))
     }
 
@@ -108,11 +104,7 @@ class MapActBottomBehaviorAdapter(
         tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
         when (item.status) {
             StatusEnum.NEW -> {
-                if(item.isStartServe()) {
-                    setUseButtonStyleBackgroundYellow(holder.itemView)
-                } else {
-                    setDefButtonStyleBackground(holder.itemView)
-                }
+                setDefButtonStyleBackground(holder.itemView)
                 holder.itemView.setOnClickListener {
                     if (!holder.itemView.map_behavior_expl.isExpanded) {
 //                        listener.onPlatformClicked(position)
@@ -150,16 +142,6 @@ class MapActBottomBehaviorAdapter(
             }
             StatusEnum.UNFINISHED -> {
                 setUseButtonStyleBackgroundYellow(holder.itemView)
-//                holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.orangeCool))
-//                holder.itemView.alpha = 0.6f
-//                holder.itemView.map_behavior_status.isVisible = true
-//                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_orange_check)
-//                holder.itemView.setOnClickListener {
-//                    //nothing
-//                }
-            }
-            StatusEnum.PARTIAL_PROBLEMS -> {
-                setUseButtonStyleBackgroundOrange(holder.itemView)
 //                holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.orangeCool))
 //                holder.itemView.alpha = 0.6f
 //                holder.itemView.map_behavior_status.isVisible = true

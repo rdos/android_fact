@@ -150,20 +150,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
         btnCompleteTask.setOnClickListener {
             vm.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
-            Log.d("TEST :::", "PLATFORM STATE: ${mPlatformEntity.containers.joinToString { el -> "${el.status}" }}")
-            val status = when {
-                mPlatformEntity.containers.all { el ->
-                    el.status == StatusEnum.SUCCESS
-                    || el.status == null
-                    || el.status == StatusEnum.NEW
-                } -> StatusEnum.SUCCESS
-                mPlatformEntity.containers.all { el -> el.status == StatusEnum.ERROR } -> StatusEnum.ERROR
-                mPlatformEntity.containers.any { el -> el.status == StatusEnum.ERROR } -> StatusEnum.PARTIAL_PROBLEMS
-                else -> {
-                    StatusEnum.PARTIAL_PROBLEMS
-                }
-            }
-            vm.updatePlatformStatus(mPlatformEntity.platformId!!, status)
+            vm.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
             val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
