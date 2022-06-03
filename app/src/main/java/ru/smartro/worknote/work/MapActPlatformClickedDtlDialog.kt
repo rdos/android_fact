@@ -80,7 +80,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
         val btnStartServe = view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
         btnStartServe.setOnClickListener(mOnClickListener)
-        if (_platform.isStartServe()) {
+        if (_platform.getPlatformStatus() == StatusEnum.UNFINISHED) {
             btnStartServe.setText(R.string.start_serve_again)
         }
         val tvName = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__name)
@@ -193,7 +193,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         override fun onBindViewHolder(holder: PlatformClickedDtlHolder, position: Int) {
             val container = _platform.containers[position]
 //            holder.tv_title.text = container!!.number
-            holder.platformImageView.setImageResource(_platform.getIconDrawableResId())
+            holder.platformImageView.setImageResource(_platform.getIconFromStatus())
 
             holder.clParent.setOnClickListener{
                 var toastText = ""

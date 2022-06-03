@@ -173,6 +173,7 @@ class CameraFragment(
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
                     val platform = viewModel.findPlatformEntity(platformId)
+                    Log.d("TEST :::", "LLL ${platform.beforeMedia.size}")
                     mediaSize = platform.beforeMedia.size + count
                     mImageCounter?.text = "$mediaSize"
                 }

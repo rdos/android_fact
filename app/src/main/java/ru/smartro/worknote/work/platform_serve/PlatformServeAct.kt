@@ -72,9 +72,8 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         val actvAddress = findViewById<AppCompatTextView>(R.id.actv_act_platform_serve__address)
         actvAddress.text = "${mPlatformEntity.address}"
         initContainer()
-        if (!mPlatformEntity.isStartServeVolume()) {
-            initBeforeMedia()
-        }
+//        todo/vlad: initBeforeMedia logic
+        initBeforeMedia()
 //        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         val acbProblem = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__problem)
         if (mPlatformEntity.failureMedia.size > 0) {
@@ -149,8 +148,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
         btnCompleteTask.setOnClickListener {
-            vm.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
-            vm.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
+            vm.updatePlatformStatusSuccess(mPlatformEntity.platformId!!)
             val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
@@ -310,7 +308,6 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
     }
 
     private fun getThumb(background: Int? = null): Drawable? {
-        Log.d("TEST:::", "THUMB ${background == null}")
         val thumbView: View = LayoutInflater.from(this)
             .inflate(R.layout.act_platformserve__pickup_seekbarthumb, null, false)
         if(background != null)
@@ -376,7 +373,6 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 //    }
 
     private fun initBeforeMedia() {
-        Log.d("TEST:::", "InitBeforeMedia")
         paramS().serviceStartedAt = System.currentTimeMillis() / 1000L
         val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
         intent.putExtra("platform_id", mPlatformEntity.platformId)
@@ -395,27 +391,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 
     private fun initContainer() {
         val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
-//        val arrays = containers as ArrayList<ContainerEntity>
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
+        Log.d("TEST :::", "INIT containers: ${containers.joinToString(separator = "\n") { el -> "{ ${el.containerId} : ${el.typeName} : ${el.status} }" }}")
         mConrainerAdapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).recycledViewPool.setMaxRecycledViews(0, 0);
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).adapter = mConrainerAdapter
@@ -424,6 +400,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 
     fun updateRecyclerview() {
         val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
+        Log.d("TEST :::", "UPDATE containers: ${containers.joinToString(separator = "\n") { el -> "{ ${el.containerId} : ${el.typeName} : ${el.status} }" }}")
         mConrainerAdapter.updateData(containers as ArrayList<ContainerEntity>)
 //        initAfterMedia()
     }
@@ -438,6 +415,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         mBackPressedCnt--
         if (mBackPressedCnt <= 0) {
             super.onBackPressed()
+            vm.updatePlatformStatusUnfinished(mPlatformEntity.platformId!!)
             toast("Вы не завершили обслуживание КП.")
             return
         }

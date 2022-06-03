@@ -54,10 +54,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBo
 import ru.smartro.worknote.awORKOLDs.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
-import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.WorkOrderEntity
+import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
@@ -662,6 +659,7 @@ class MapAct : ActAbstract(),
 
     private fun initBottomBehavior() {
         val platforms = getActualPlatforms()
+        Log.d("TEST :::", "BOTTOM platforms: ${platforms.joinToString(separator = "\n") { el -> "{ ${el.address} : ${el.status} }" }}")
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
 
         bottomSheetBehavior.expandedOffset = 100
@@ -711,7 +709,6 @@ class MapAct : ActAbstract(),
     //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
     //тодо)) код фанатика m4 из cs)))
     private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
-        Log.d("GOTONEXTACT platform ::: ", "${plaform.platformId} : progress ${plaform.isWorkOrderProgress} : success ${plaform.isWorkOrderComplete}")
         val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PlatformServeAct::class.java else PlatformFailureAct::class.java)
         intent.putExtra("platform_id", plaform.platformId)
 
@@ -868,6 +865,7 @@ class MapAct : ActAbstract(),
 
     private fun initMapView() {
         val platforms = getActualPlatforms()
+        Log.d("TEST :::", "MAP platforms: ${platforms.joinToString(separator = "\n") { el -> "{ ${el.address} : ${el.status} }" }}")
         mMapObjectCollection?.clear()
         try {
             mMapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
@@ -924,7 +922,7 @@ class MapAct : ActAbstract(),
     private fun getIconViewProvider (_context: Context, _platform: PlatformEntity): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
-        iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconDrawableResId()))
+        iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconFromStatus()))
         val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
         tv.isVisible = false
         if (_platform.isOrderTimeWarning()) {

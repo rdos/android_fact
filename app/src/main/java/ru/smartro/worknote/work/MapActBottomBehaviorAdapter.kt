@@ -50,6 +50,10 @@ class MapActBottomBehaviorAdapter(
     }
 
     private fun setUseButtonStyleBackgroundYellow(v: View) {
+        v.setBackgroundDrawable(ContextCompat.getDrawable(v.context, R.drawable.bg_button_yellow__usebutton))
+    }
+
+    private fun setUseButtonStyleBackgroundOrange(v: View) {
         v.setBackgroundDrawable(ContextCompat.getDrawable(v.context, R.drawable.bg_button_orange__usebutton))
     }
 
@@ -87,6 +91,19 @@ class MapActBottomBehaviorAdapter(
             tvOrderTime.isVisible = true
         }
 
+        val tvCurrentStatus = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__status)
+        val status = when(item.getPlatformStatus()) {
+            StatusEnum.NEW -> "Новое"
+            StatusEnum.UNFINISHED -> "Не завершено"
+            StatusEnum.SUCCESS -> "Завершено: успешно"
+            StatusEnum.PARTIAL_PROBLEMS -> "Завершено: частичный невывоз"
+            StatusEnum.ERROR -> "Завершено: невывоз"
+            else -> null
+        }
+        if(status != null)
+            tvCurrentStatus.text =status
+
+
         holder.itemView.map_behavior_scrp_id.text = item.srpId.toString()
         val containerString: String = holder.itemView.context.resources.getQuantityString(R.plurals.container_count, item.containers.size)
         holder.itemView.map_behavior_container_count.text = "${item.containers.size} $containerString"
@@ -102,56 +119,46 @@ class MapActBottomBehaviorAdapter(
         val contactsInfo = item.getContactsInfo()
         tvPlatformContact.text = contactsInfo
         tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
-        when (item.status) {
-            StatusEnum.NEW -> {
-                setDefButtonStyleBackground(holder.itemView)
-                holder.itemView.setOnClickListener {
-                    if (!holder.itemView.map_behavior_expl.isExpanded) {
-//                        listener.onPlatformClicked(position)
-                        holder.itemView.map_behavior_expl.expand()
-                        if (item.isStartServe()) {
-                            holder.itemView.map_behavior_start_service.setText(R.string.start_serve_again)
-                        }
-                        holder.itemView.map_behavior_start_service.setOnClickListener {
-                            listener.startPlatformService(item)
-                        }
-                        holder.itemView.map_behavior_fire.setOnClickListener {
-                            listener.startPlatformProblem(item)
-                        }
-                        notifyItemChanged(checkedPosition)
-                        checkedPosition = holder.adapterPosition
-                    } else {
-                        holder.itemView.map_behavior_expl.collapse(true)
+
+        val currentStatus = item.getPlatformStatus()
+        if(currentStatus == StatusEnum.NEW || currentStatus == StatusEnum.UNFINISHED) {
+            holder.itemView.setOnClickListener {
+                if (!holder.itemView.map_behavior_expl.isExpanded) {
+                    holder.itemView.map_behavior_expl.expand()
+                    holder.itemView.map_behavior_start_service.setOnClickListener {
+                        listener.startPlatformService(item)
                     }
+                    holder.itemView.map_behavior_fire.setOnClickListener {
+                        listener.startPlatformProblem(item)
+                    }
+                    notifyItemChanged(checkedPosition)
+                    checkedPosition = holder.adapterPosition
+                } else {
+                    holder.itemView.map_behavior_expl.collapse(true)
                 }
             }
-            StatusEnum.SUCCESS -> {
-                setUseButtonStyleBackgroundGreen(holder.itemView)
-                //                clItemMapBehavior.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.pink))
+        } else {
+            holder.itemView.setOnClickListener(null)
+        }
 
-//                holder.itemView.alpha = 0.6f
-//                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_check)
-//                holder.itemView.setOnClickListener {
-//                    //nothing
-//                }
-            }
-            StatusEnum.ERROR -> {
-                setUseButtonStyleBackgroundRed(holder.itemView)
-//                clItemMapBehavior.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.pink))
-
+        when (currentStatus) {
+            StatusEnum.NEW -> {
+                setDefButtonStyleBackground(holder.itemView)
             }
             StatusEnum.UNFINISHED -> {
                 setUseButtonStyleBackgroundYellow(holder.itemView)
-//                holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.orangeCool))
-//                holder.itemView.alpha = 0.6f
-//                holder.itemView.map_behavior_status.isVisible = true
-//                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_orange_check)
-//                holder.itemView.setOnClickListener {
-//                    //nothing
-//                }
+                holder.itemView.map_behavior_start_service.setText(R.string.start_serve_again)
+            }
+            StatusEnum.PARTIAL_PROBLEMS -> {
+                setUseButtonStyleBackgroundOrange(holder.itemView)
+            }
+            StatusEnum.SUCCESS -> {
+                setUseButtonStyleBackgroundGreen(holder.itemView)
+            }
+            StatusEnum.ERROR -> {
+                setUseButtonStyleBackgroundRed(holder.itemView)
             }
         }
-
     }
 
     class PlatformViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -159,7 +166,6 @@ class MapActBottomBehaviorAdapter(
     }
 
     interface PlatformClickListener {
-//        fun onPlatformClicked(position: Int)
         fun startPlatformService(item: PlatformEntity)
         fun startPlatformProblem(item: PlatformEntity)
         fun moveCameraPlatform(point: PoinT)
