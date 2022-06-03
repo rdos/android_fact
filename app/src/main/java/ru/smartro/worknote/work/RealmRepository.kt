@@ -393,8 +393,6 @@ class RealmRepository(private val p_realm: Realm) {
                     val problemId = findFailReasonByValue(realm, problem).id
                     container.failureReasonId = problemId
                     container.status = StatusEnum.ERROR
-                    container.volume = 0.0
-
                 }
             }
             container.comment = problemComment
@@ -438,8 +436,10 @@ class RealmRepository(private val p_realm: Realm) {
             val platform = getQueryPlatform().equalTo("platformId", platformId)
                 .findFirst()!!
 
-            val isAllSuccess = platform.containers.all { el -> el.status == StatusEnum.SUCCESS  }
-            val isAllError = platform.containers.all { el -> el.status == StatusEnum.ERROR  }
+            val containersToCheck = platform.containers.filter { el -> el.isActiveToday }
+
+            val isAllSuccess = containersToCheck.all { el -> el.status == StatusEnum.SUCCESS  }
+            val isAllError = containersToCheck.all { el -> el.status == StatusEnum.ERROR  }
 
             val platformStatus =
                 if(isAllSuccess) StatusEnum.SUCCESS

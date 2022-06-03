@@ -279,6 +279,18 @@ open class PlatformEntity(
         }
     }
 
+    fun getInactiveIcon(): Int {
+        return when (this.icon) {
+            "bunker" -> R.drawable.ic_bunker_gray
+            "bag" -> R.drawable.ic_bag_gray
+            "bulk" -> R.drawable.ic_bulk_gray
+            "euro" -> R.drawable.ic_euro_gray
+            "metal" -> R.drawable.ic_metal_gray
+            "Bath" -> R.drawable.ic_two_sync_gray
+            else -> R.drawable.ic_many_gray
+        }
+    }
+
     fun getContactsInfo(): String {
         var result = ""
         this.containers.forEach{ containerEntity ->
@@ -572,7 +584,7 @@ open class ContainerEntity(
     }
 
     fun getVolumePercentColor(context: Context): Int {
-        if (!this.isActiveToday) {
+        if (!this.isActiveToday && this.volume == null) {
             return Color.GRAY
         }
         if (this.status == StatusEnum.ERROR) {

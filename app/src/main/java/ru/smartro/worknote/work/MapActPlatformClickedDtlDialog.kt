@@ -193,7 +193,10 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         override fun onBindViewHolder(holder: PlatformClickedDtlHolder, position: Int) {
             val container = _platform.containers[position]
 //            holder.tv_title.text = container!!.number
-            holder.platformImageView.setImageResource(_platform.getIconDrawableResId())
+            if(container?.isActiveToday == true)
+                holder.platformImageView.setImageResource(_platform.getIconDrawableResId())
+            else if(container?.isActiveToday == false)
+                holder.platformImageView.setImageResource(_platform.getInactiveIcon())
 
             holder.clParent.setOnClickListener{
                 var toastText = ""
@@ -211,17 +214,16 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
                 toast(toastText)
             }
             holder.statusImageView.isVisible = false
-            when (container?.status) {
-                StatusEnum.SUCCESS -> {
-                    holder.statusImageView.isVisible = true
-                    holder.statusImageView.setImageResource(R.drawable.ic_check)
-                }
-                StatusEnum.ERROR -> {
-                    holder.statusImageView.isVisible = true
-                    holder.statusImageView.setImageResource(R.drawable.ic_red_check)
-                }
+
+            if(container?.status == StatusEnum.SUCCESS) {
+                holder.statusImageView.isVisible = true
+                holder.statusImageView.setImageResource(R.drawable.ic_check)
+            } else if(container?.status == StatusEnum.ERROR && container.isActiveToday) {
+                holder.statusImageView.isVisible = true
+                holder.statusImageView.setImageResource(R.drawable.ic_red_check)
             }
         }
+
         inner class PlatformClickedDtlHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 //            val tv_title = itemView.findViewById<TextView>(R.id.tv_item_dialog_platform_clicked_dtl)
             val platformImageView = itemView.findViewById<ImageView>(R.id.ib_item_dialog_platform_clicked_dtl__platform)
