@@ -35,7 +35,6 @@ class StartWayBillAct : ActAbstract() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        hideProgress()
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
@@ -58,7 +57,6 @@ class StartWayBillAct : ActAbstract() {
             val data = result.data
             when (result.status) {
                 Status.SUCCESS -> {
-                    hideProgress()
                     val wayBills = data?.data!!
                     if (wayBills.isNullOrEmpty()) {
                         logSentry("todo")
@@ -78,7 +76,7 @@ class StartWayBillAct : ActAbstract() {
                     if (wayBills.size == 1) {
                         gotoNextAct(wayBills[0].id, wayBills[0].number)
                     }
-
+                    hideProgress()
                 }
                 Status.ERROR -> {
                     toast(result.msg)
@@ -112,6 +110,7 @@ class StartWayBillAct : ActAbstract() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // TODO:  
         MyUtil.onMenuOptionClicked(this, item.itemId)
         when (item.itemId) {
             android.R.id.home -> {
