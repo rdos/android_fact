@@ -38,6 +38,7 @@ public val PERMISSIONS = arrayOf(
     Manifest.permission.READ_PHONE_STATE,
     Manifest.permission.LOCATION_HARDWARE,
     Manifest.permission.ACCESS_NETWORK_STATE
+
 )
 class StartAct : ActAbstract() {
     private var mInfoDialog: AlertDialog? = null
@@ -45,7 +46,7 @@ class StartAct : ActAbstract() {
     // TODO: 27.05.2022 !! !
     private fun gotoNextAct(isHasToken: Boolean = false) {
 //            val isHasTask = true
-        val isHasTask = vm.baseDat.hasWorkOrderInProgress_know0()
+        val isHasTask = vm.baseDat.hasWorkOrderInProgress()
         if (isHasToken && isHasTask) {
             hideDialog()
             hideInfoDialog()
@@ -201,9 +202,6 @@ class StartAct : ActAbstract() {
                             hideProgress()
                             toast("Вы авторизованы")
 //                            AppPreferences.BoTlogin = auth_login.text.toString()
-                            if (paramS().token.isNullOrEmpty()) {
-                                oopsTestqA()
-                            }
                             paramS().token = data!!.data.token
                             gotoNextAct()
                         }

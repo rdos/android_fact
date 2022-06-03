@@ -13,7 +13,6 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.NonPickupEnum
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
-import java.util.*
 import kotlin.math.round
 
 
@@ -114,29 +113,25 @@ class RealmRepository(private val p_realm: Realm) {
         insUpdWorkOrders(wayTask, true)
     }
 
-    fun findWayTasks(): List<WorkOrderEntity> {
-        val res = p_realm.where(WorkOrderEntity::class.java).findAll()
-        if (res != null) {
-            return p_realm.copyFromRealm(res)
-        }
-        return emptyList()
-    }
     fun <T:RealmObject> RealmResults<T>.asLiveData() = LiveRealmData<T>(this)
 
     fun findPlatformsLive(): LiveRealmData<PlatformEntity> {
         return LiveRealmData(getQueryPlatform().sort("updateAt").findAllAsync())
     }
 
-
-
-    fun findPlatforms(): List<PlatformEntity> {
+    fun findPlatforms(workOrderSIntArray: Array<Int>): List<PlatformEntity> {
         Log.w(TAG, "r_dos/findPlatforms.before")
         p_realm.refresh()
         var res = emptyList<PlatformEntity>()
         // TODO: 25.10.2021 !!!???
         //  return WayTaskEntity() is fail
         Log.w(TAG, "r_dos/findAll.before")
-        val realmResults = getQueryPlatform().sort("updateAt").findAll()
+        val realmResults: RealmResults<PlatformEntity>
+        if (workOrderSIntArray.isEmpty()) {
+            realmResults = getQueryPlatform().findAll()
+        } else {
+            realmResults = getQueryPlatform().`in`("workOrderId", workOrderSIntArray).sort("updateAt").findAll()
+        }
         Log.w(TAG, "r_dos/findAll.after")
         if (realmResults != null) {
             Log.w(TAG, "r_dos/copyFromRealm.before")
@@ -167,18 +162,36 @@ class RealmRepository(private val p_realm: Realm) {
         return LiveRealmData(workOrderS)
     }
 
-    fun findWorkOrders(workOrderId: Int? = null): List<WorkOrderEntity> {
+
+    fun findWorkOrders(workOrderSIntArray: Array<Int>): List<WorkOrderEntity> {
         var res = emptyList<WorkOrderEntity>()
         p_realm.executeTransaction { realm ->
             val workOrderS: RealmResults<WorkOrderEntity>
-            if (workOrderId == null) {
+            if (workOrderSIntArray.isEmpty()) {
                 workOrderS = getWorkOrderQuery().findAll()
             } else {
-                if (workOrderId == Inull) {
-                    workOrderS = p_realm.where(WorkOrderEntity::class.java).findAll()
-                } else {
-                    workOrderS = p_realm.where(WorkOrderEntity::class.java).equalTo("id", workOrderId).findAll()
+                workOrderS =getWorkOrderQuery().`in`("id", workOrderSIntArray).findAll()
+            }
+
+            if(workOrderS.isNotEmpty()){
+                res = realm.copyFromRealm(workOrderS)
+                res.forEach { workOrderEntity ->
+                    setEmptyImageEntity(workOrderEntity.platforms)
                 }
+            }
+        }
+        return res
+    }
+
+    fun findWorkOrders_Old(workOrderId: Int? = null): List<WorkOrderEntity> {
+        var res = emptyList<WorkOrderEntity>()
+        p_realm.executeTransaction { realm ->
+            val workOrderS: RealmResults<WorkOrderEntity>
+            // TODO: 03/06/2022 12:12
+            if (workOrderId == null || workOrderId == Inull) {
+                workOrderS = getWorkOrderQuery(true).findAll()
+            } else {
+                workOrderS =getWorkOrderQuery(true).equalTo("id", workOrderId).findAll()
             }
 
             if(workOrderS.isNotEmpty()){
@@ -215,7 +228,6 @@ class RealmRepository(private val p_realm: Realm) {
     //нет знаний =_know от слова -know ledge
     //0 -не уверен что нужно = ??!
     private fun refreshRealm_know0(){
-        p_realm.refresh()
         try {
             p_realm.refresh()
         } catch (ex:Exception){
@@ -851,21 +863,15 @@ class RealmRepository(private val p_realm: Realm) {
 
     }
 
-    public fun hasNotWorkOrderInProgress(): Boolean {
-       return !hasWorkOrderInProgress_know0()
+    fun hasWorkOrderInNotProgress(): Boolean {
+       return !hasWorkOrderInProgress()
     }
 
-    /** всё что есть объёкт. У объекта есть
-    а) свойства
-    и[hasWorkOrderInProgress_know0.true - это fun или свойства?]нформация
-    b) fun
-    **/
-    fun hasWorkOrderInProgress_know0(): Boolean {
+    fun hasWorkOrderInProgress(): Boolean {
         var res = true
-        // TODO:rdos из бд лучше же
         p_realm.executeTransaction { realm ->
-            val workOrders = realm.where(WorkOrderEntity::class.java).isNotNull("progress_at").findAll()
-            if (workOrders.isEmpty()) {
+            val workOrder = getWorkOrderQuery().findFirst()
+            if (workOrder == null) {
                 res = false
             }
         }
@@ -884,8 +890,13 @@ class RealmRepository(private val p_realm: Realm) {
             .equalTo("isWorkOrderComplete", false)
     }
 
-    private fun getWorkOrderQuery(): RealmQuery<WorkOrderEntity> {
-        return p_realm.where(WorkOrderEntity::class.java).isNotNull("progress_at")
+    // TODO:  !r_dos
+    private fun getWorkOrderQuery(isForceMode: Boolean = false): RealmQuery<WorkOrderEntity> {
+        if (isForceMode) {
+            return p_realm.where(WorkOrderEntity::class.java)
+        } else {
+            return p_realm.where(WorkOrderEntity::class.java).isNotNull("progress_at")
+        }
     }
 
 

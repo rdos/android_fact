@@ -33,11 +33,13 @@ import ru.smartro.worknote.abs.ActAbstract
 
 class StartWorkOrderAct : ActAbstract() {
 
-    private lateinit var workOrders: List<WoRKoRDeR_know1>
+    private var workOrders: List<WoRKoRDeR_know1>? = null
     private val vm: WayTaskViewModel by viewModel()
+
     override fun onNewGPS() {
         // TODO: r_dos!!!
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
@@ -50,12 +52,12 @@ class StartWorkOrderAct : ActAbstract() {
         rv.layoutManager = LinearLayoutManager(this)
         val acbSelectAll = findViewById<AppCompatButton>(R.id.acb_act_start_workorder__select_all)
         acbSelectAll.setOnClickListener {
-            // TODO: добавить логирование
-            if (workOrders.size <= 0) {
+            
+            if (workOrders!!.isEmpty()) {
                 return@setOnClickListener
             }
-            var checkName: String? = workOrders[0].waste_type?.name
-            for(workOrder in workOrders) {
+            var checkName: String? = workOrders!![0].waste_type?.name
+            for(workOrder in workOrders!!) {
                 if (checkName == workOrder.waste_type?.name) {
                     checkName = workOrder.waste_type?.name
                 } else {
@@ -72,10 +74,10 @@ class StartWorkOrderAct : ActAbstract() {
                 when (result.status) {
                     Status.SUCCESS -> {
                         workOrders = data!!.dataKnow100.woRKoRDeRknow1s
-                        insertWayTask(workOrders)
-                        rv.adapter = WayTaskAdapter(workOrders)
-                        if (workOrders.size == 1) {
-                            gotoNextAct(workOrders[0].id)
+                        insertWayTask(workOrders!!)
+                        rv.adapter = WayTaskAdapter(workOrders!!)
+                        if (workOrders!!.size == 1) {
+                            gotoNextAct(workOrders!![0].id)
                         }
                         hideProgress()
                     }
@@ -89,30 +91,24 @@ class StartWorkOrderAct : ActAbstract() {
                     }
                 }
             })
-
-
     }
 
-    fun insertWayTask(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
-
+    fun insertWayTask(workOrderList: List<WoRKoRDeR_know1>?) {
+        if (workOrderList == null) {
+            return
+        }
         vm.baseDat.clearDataBase()
-        for (workorder in woRKoRDeRknow1List) {
+        for (workOrder in workOrderList) {
             try {
-                vm.baseDat.insertWayTask(workorder)
+                vm.baseDat.insertWayTask(workOrder)
             } catch (ex: Exception) {
                 Log.e(TAG, "insertWayTask", ex)
-                //ups должен быть один, иначе Инспектор скажт слово
                 oops()
-//                    logSentry("insertWayTask.ex.Exception" + ex.message)
             }
         }
     }
 
     fun gotoNextAct(workorderId: Int?) {
-        if (isOopsMode()) {
-            finish()
-            return
-        }
         val intent = Intent(this, MapAct::class.java)
         //or
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -182,15 +178,6 @@ class StartWorkOrderAct : ActAbstract() {
     }
 
     open class WayTaskViewModel(application: Application) : BaseViewModel(application) {
-
-/*
-        fun getWorkOrder(organisationId: Int, wayId: Int): LiveData<Resource<WorkOrderResponse_know1>> {
-            Log.d("AAA", "getWorkOrder")
-            return :r_dos)цент неОтроПа
-        }
-
-
-*/
 
         fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
             return baseDat.createObjectFromJson(clazz, json)

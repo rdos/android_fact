@@ -16,6 +16,7 @@ import android.os.Looper
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
+import android.widget.RemoteViews
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -454,7 +455,7 @@ private const val NOTIFICATION_CHANNEL_ID__DEFAULT = "FACT_CH_ID"
 const val NOTIFICATION_CHANNEL_ID__MAP_ACT = "FACT_APP_CH_ID"
 
 
-const val A_SLEEP_TIME_1_83__MS = 180000L
+//todo:const val A_SLEEP_TIME_1MIN__MS = 60000L
 const val Snull = "rNull"
 const val Inull = -111
 const val Lnull = 999222333L

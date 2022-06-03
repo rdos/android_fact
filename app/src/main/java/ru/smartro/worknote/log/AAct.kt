@@ -18,16 +18,18 @@ import java.lang.Exception
 //        } catch (e: Exception) {
 //            Sentry.captureException(e)
 //        }
-//todo:r_dos::_know1=знаешь точно, что ОСТАВИТЬ И НУЖНО ВСЕМУ коГду(а))
-//       ::_know0=а это не ОСТАВЛЯТЬ
-//todo: FYI AAct = AbstractActivity = AAct))  просто незакончено
+
 abstract class AAct : AppCompatActivity() {
-    private var mIsOopsMode: Boolean? = false
-//скольский пол
+
     protected fun AppliCation() : App {
         return App.getAppliCation()
     }
 
+    protected fun oops(){
+        toast("Простите, Произошёл сбой. Inc:)oops!")
+    }
+
+    protected fun paramS() = paramS
     protected val paramS: AppParaMS by lazy {
         App.getAppParaMS()
     }
@@ -113,51 +115,10 @@ abstract class AAct : AppCompatActivity() {
     }
 
 
-    protected fun isOopsMode(): Boolean{
-        // TODO:r_dos не сп роста Вам
-//        mIsOopsMode? wft!!
-        return mIsOopsMode!!
-    }
-
     public fun isDevelMode(): Boolean{
         return AppliCation().isDevelMode()
     }
 
-    fun oopsTestqA() {
-
-    }
-
-    //oops долежн быть один на Act, но на Activity
-    protected fun oops(){
-        if (mIsOopsMode == true) {
-            //CiДУ
-            logSentry("oops")
-        }
-        mIsOopsMode = true
-
-        toast("Простите, Произошёл сбой. Inc:)oops!")
-    }
-
-    //:))
-    private fun setSpyPutExtraParamId(intent: Intent) {
-//        workorderId?.let {
-//            intent.putExtra(PUT_EXTRA_PARAM_ID, workorderId)
-//        }
-    }
-
-    protected fun sendMessage(clazz: Class<StartVehicleAct>) {
-        //fragment в помощь!
-//        protected fun sendMessage(clazz: Class<out AbstractAct>) {
-        val intent = Intent(this, clazz::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        setSpyPutExtraParamId(intent)
-        startActivity(intent)
-/**   intent: ей я сообщениею.
- * AppPreferences: ей это же она сообщение(эй это я сообщение)ей это же она сообщение
-        savedInstanceState: ей ей, Пацаны, вы е попутали? это она сообщение.)):()
-    } */}
-
-    // TODO: )
     protected fun setAntiErrorClick(itemView: View) {
         itemView.isEnabled = false
         itemView.postDelayed({
@@ -193,7 +154,6 @@ abstract class AAct : AppCompatActivity() {
         }
         return res
     }
-
 
     override fun onPause() {
         super.onPause()
@@ -235,12 +195,4 @@ abstract class AAct : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
-
-
 }
-
-
-//TODO: find next шагай)_/gotoAdd = Add -> create->ПОТОМ->Save->ПОТОМ Show
-/** :r_dos::_1n0w0=переделать, удалить=не то 100% внимание /
-:yo-11now0 пудов, но форма странная.
-        */
