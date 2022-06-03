@@ -275,7 +275,6 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
                         newVolumeValue = volume
                         gotoMakePhotoForPickup()
                     }
-                    hideDialog()
                 }
             }
         } finally {
@@ -310,7 +309,6 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
     }
 
     private fun getThumb(background: Int? = null): Drawable? {
-        Log.d("TEST:::", "THUMB ${background == null}")
         val thumbView: View = LayoutInflater.from(this)
             .inflate(R.layout.act_platformserve__pickup_seekbarthumb, null, false)
         if(background != null)
@@ -376,13 +374,12 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 //    }
 
     private fun initBeforeMedia() {
-        Log.d("TEST:::", "InitBeforeMedia")
         paramS().serviceStartedAt = System.currentTimeMillis() / 1000L
         val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
         intent.putExtra("platform_id", mPlatformEntity.platformId)
         intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
-        startActivityForResult(intent, 1001)
         hideDialog()
+        startActivityForResult(intent, 1001)
     }
 
 //    // TODO: 28.10.2021 isActiveToday что это за поле?
