@@ -102,6 +102,10 @@ class MapActBottomBehaviorAdapter(
         val contactsInfo = item.getContactsInfo()
         tvPlatformContact.text = contactsInfo
         tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
+        holder.itemView.setOnClickListener {
+            // TODO:
+            //nothing
+        }
         when (item.status) {
             StatusEnum.NEW -> {
                 setDefButtonStyleBackground(holder.itemView)
@@ -131,9 +135,7 @@ class MapActBottomBehaviorAdapter(
 
 //                holder.itemView.alpha = 0.6f
 //                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_check)
-//                holder.itemView.setOnClickListener {
-//                    //nothing
-//                }
+
             }
             StatusEnum.ERROR -> {
                 setUseButtonStyleBackgroundRed(holder.itemView)
@@ -146,9 +148,6 @@ class MapActBottomBehaviorAdapter(
 //                holder.itemView.alpha = 0.6f
 //                holder.itemView.map_behavior_status.isVisible = true
 //                holder.itemView.map_behavior_status.setImageResource(R.drawable.ic_orange_check)
-//                holder.itemView.setOnClickListener {
-//                    //nothing
-//                }
             }
         }
 
