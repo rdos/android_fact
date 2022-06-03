@@ -27,6 +27,18 @@
             android:text="Info 5/0"
             />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb_act_map__logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="@dimen/margin_default"
+            android:background="@drawable/bg_button"
+            android:textColor="@color/white"
+            android:text="Выход из системы"
+            />
+
         <!--<include layout="@layout/act_map__workorder_info"/>-->
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
