@@ -528,7 +528,7 @@ class RealmRepository(private val p_realm: Realm) {
     // TODO:
     fun findLastPlatforms(): List<PlatformEntity> {
         refreshRealm_know0()
-        val lastSynchroTime = App.getAppParaMS().lastSynchroTime
+        val lastSynchroTime = App.getAppParaMS().lastSynchroTime - 1000L
         return p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).greaterThan("updateAt", lastSynchroTime)
                 .findAll()
@@ -538,7 +538,7 @@ class RealmRepository(private val p_realm: Realm) {
     fun findPlatforms30min(): List<PlatformEntity> {
         refreshRealm_know0()
         val minutes = 30 * 60 * 1000
-        val lastSynchroTime = App.getAppParaMS().lastSynchroTime
+        val lastSynchroTime = App.getAppParaMS().lastSynchroTime - 1000L
         return p_realm.copyFromRealm(p_realm.where(PlatformEntity::class.java)
             .greaterThan("updateAt", lastSynchroTime)
             .lessThanOrEqualTo("updateAt", lastSynchroTime + minutes)
@@ -663,6 +663,14 @@ class RealmRepository(private val p_realm: Realm) {
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
         val filteredList = result.filter { it.status != StatusEnum.NEW }
+        return filteredList
+    }
+
+    fun findPlatformsIsNew(): List<PlatformEntity> {
+        val result = p_realm.copyFromRealm(
+            p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
+        )
+        val filteredList = result.filter { it.status == StatusEnum.NEW }
         return filteredList
     }
 
