@@ -18,7 +18,7 @@ import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 
 class MapActBottomBehaviorAdapter(
     private val listener: PlatformClickListener,
-    private val items: List<PlatformEntity>,
+    private var mItemS: List<PlatformEntity>,
     private val mFilteredWayTaskIds: MutableList<Int>
 ) : RecyclerView.Adapter<MapActBottomBehaviorAdapter.PlatformViewHolder>() {
     private var checkedPosition = -1
@@ -29,8 +29,14 @@ class MapActBottomBehaviorAdapter(
         return PlatformViewHolder(view)
     }
 
+    fun updateItemS(newItemS: List<PlatformEntity>) {
+//        logSentry(filterText)
+        mItemS = newItemS
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount(): Int {
-        return items.size
+        return mItemS.size
     }
 
     private fun setUseButtonStyleBackgroundGreen(view: View) {
@@ -54,7 +60,7 @@ class MapActBottomBehaviorAdapter(
     }
 
     override fun onBindViewHolder(holder: PlatformViewHolder, position: Int) {
-        val item = items[position]
+        val item = mItemS[position]
         holder.itemView.alpha = 1f
         //фильрация
         if (item.workOrderId in mFilteredWayTaskIds) {

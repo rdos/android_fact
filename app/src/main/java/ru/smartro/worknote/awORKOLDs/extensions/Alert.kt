@@ -13,8 +13,7 @@ import kotlinx.android.synthetic.main.alert_clear_navigator.view.dismiss_btn
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_warning_camera.view.title_tv
 import kotlinx.android.synthetic.main.dialog_early_complete.view.*
-import kotlinx.coroutines.*
-import ru.smartro.worknote.A_SLEEP_TIME_1_83__MS
+import ru.smartro.worknote.A_SLEEP_TIME_1MIN__MS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
@@ -23,7 +22,7 @@ import ru.smartro.worknote.log.AAct
 
 private lateinit var loadingDialog: AlertDialog
 private lateinit var mCustomDialog: AlertDialog
-private val TAG = "Alert--AAA"
+private val TAG = "Alert.kt"
 
 private fun showCustomDialog(builder: AlertDialog.Builder) {
     Log.i(TAG, "showCustomDialog.before")
@@ -80,9 +79,6 @@ fun AppCompatActivity.showingProgress(text: String? = null) {
         builder.setView(view)
         builder.setCancelable(false)
         showLoadingDialog(builder)
-        view.postDelayed({
-            hideProgress()
-        }, A_SLEEP_TIME_1_83__MS)
     } catch (e: Exception) {
         println()
     }
@@ -294,6 +290,7 @@ fun AppCompatActivity.hideDialog() {
 
 fun AppCompatActivity.hideProgress() {
     try {
+        Log.w(TAG, "hideProgress")
         if (loadingDialog.isShowing) {
             loadingDialog.dismiss()
         }
