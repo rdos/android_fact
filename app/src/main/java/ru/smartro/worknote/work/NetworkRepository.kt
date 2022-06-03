@@ -14,6 +14,7 @@ import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEn
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
+import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
@@ -335,6 +336,25 @@ class NetworkRepository(private val context: Context) {
             }
         } catch (e: Exception) {
             emit(Resource.network("Проблемы с подключением интернета", null))
+        }
+    }
+
+    suspend fun ping(pingBody: PingBody): Resource<PingBody> {
+        Log.i(TAG, "test_ping.before")
+        return try {
+            val response = RetrofitClient(context).testApiService().ping(pingBody)
+            when {
+                response.isSuccessful -> {
+                    Resource.success(response.body())
+                }
+                else -> {
+                    badRequest(response)
+                    Resource.error("Ошибка ${response.code()}", null)
+                }
+            }
+        } catch (ex: Exception) {
+            Log.e(TAG, "test_ping", ex)
+            Resource.network("Проблемы с подключением интернета", null)
         }
     }
 
