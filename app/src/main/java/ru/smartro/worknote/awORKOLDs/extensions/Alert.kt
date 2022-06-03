@@ -13,7 +13,6 @@ import kotlinx.android.synthetic.main.alert_clear_navigator.view.dismiss_btn
 import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_warning_camera.view.title_tv
 import kotlinx.android.synthetic.main.dialog_early_complete.view.*
-import ru.smartro.worknote.A_SLEEP_TIME_1MIN__MS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog

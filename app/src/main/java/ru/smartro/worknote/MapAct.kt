@@ -179,8 +179,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             val workOrderS = vs.baseDat.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
         } else {
-            mInfoDialog = createInfoDialog {
-                //][
+            mInfoDialog = createInfoDialog{
+                onRefreshData()
             }
         }
         mMapMyYandex.map.addInertiaMoveListener(this)
@@ -191,9 +191,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
         setInfoData()
 
-        mInfoDialog?.setOnCancelListener {
-            onRefreshData()
-        }
+
         val acbLogout = findViewById<AppCompatButton>(R.id.acb_act_map__logout)
         acbLogout.setOnClickListener {
             logout()
@@ -265,14 +263,13 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     private fun onRefreshData() {
+        Log.w(TAG, "onRefreshData.init")
         mWorkOrderS = getActualWorkOrderS(true)
         mPlatformS = getActualPlatformS(true)
-
-//        procedure1(mPlatformS!!)
-
         onRefreshMap()
         onRefreshBottomBehavior()
         setInfoData()
+        Log.w(TAG, "onRefreshData.end")
     }
 
     private fun setInfoData() {
@@ -397,6 +394,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
                 onRefreshData()
                 mInfoDialog = createInfoDialog {
                     //]Yes[
+                    onRefreshData()
                 }
                 hideProgress()
             }
@@ -600,6 +598,9 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
         builder.setView(view)
         result = builder.create()
+        result.setOnCancelListener {
+            next()
+        }
         try {
             val window: Window? = result?.window
             val wlp: WindowManager.LayoutParams = window!!.attributes
