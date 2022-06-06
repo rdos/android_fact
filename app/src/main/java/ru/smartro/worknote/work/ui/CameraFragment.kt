@@ -242,7 +242,7 @@ class CameraFragment(
             mThumbNail?.let {
                 it.post {
                     // Remove thumbnail padding
-                    Glide.with(mThumbNail!!)
+                    Glide.with(App.getAppliCation())
                         .load(uri)
                         .apply(RequestOptions.circleCropTransform())
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -254,7 +254,6 @@ class CameraFragment(
             Log.i(TAG, "setGalleryThumbnail и try{}catch")
             Log.e(TAG, "eXthr.message", ex)
         }
-
     }
 
     private fun setImageCounter(plus: Boolean) {
