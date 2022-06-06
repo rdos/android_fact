@@ -193,7 +193,7 @@ open class CameraFragment(
                         Log.e(TAG, "eXthr.message", ex)
                         toast(TOAST_TEXT)
                     } finally {
-                        File(imageUri.path!!).deleteOnExit()
+                        File(imageUri.path!!).delete()
                         mCaptureButton?.isEnabled = true
                     }
 
