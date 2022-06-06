@@ -114,7 +114,11 @@ class SYNCworkER(
         when (pingResponse.status) {
             Status.SUCCESS -> {
                 Log.d("TEST :::: ", pingResponse.data.toString())
-                (applicationContext as App).showAlertNotification("${pingResponse.data?.payload?.message}")
+                val message = pingResponse.data?.payload?.message
+                if(message != null)
+                    (applicationContext as App).showAlertNotification(message)
+                else
+                    Log.e(TAG, "Ping EMPTY MESSAGE ${pingResponse.data}")
             }
             Status.ERROR -> Log.e(TAG, "Ping ERROR ${pingResponse.msg}")
             Status.NETWORK -> Log.w(TAG, "Ping NO INTERNET")
@@ -127,7 +131,7 @@ class SYNCworkER(
         beforeLOG("synChrONizationDATA")
         val timeBeforeRequest: Long
         logSentry("SYNCworkER STARTED")
-        val lastSynchroTime =App.getAppParaMS().lastSynchroTime
+        val lastSynchroTime = App.getAppParaMS().lastSynchroTime
         val platforms: List<PlatformEntity>
 
         //проблема в секундах синхронизаций

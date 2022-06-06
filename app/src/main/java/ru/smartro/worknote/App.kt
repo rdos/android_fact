@@ -248,7 +248,7 @@ class App : AApp() {
         Handler(Looper.getMainLooper()).postDelayed({
             (applicationContext.getSystemService(NOTIFICATION_SERVICE)
                     as NotificationManager).cancel(8)
-        }, 5000)
+        }, 10000)
 
     }
 
