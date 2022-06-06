@@ -8,18 +8,9 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.ImageEntity
 
 class PoinT(latitude: Double, longitude: Double,
-    // TODO:
+    // TODO:!!pointAccuracy: Float?
             private val pointTime: Long?, private val pointAccuracy: Float?
 ): Point(latitude, longitude) {
-    //todo: !r_dos find fun gpSPoinT()
-    //  todo: r_dos, use isShowForUser :: e.b.a
-    //todo: r_dos, use isShowForUser :: e.b.a
-//        private var LocationLAT: DoubleCool = latitude
-//        private var LocationLONG: DoubleCool = longitude
-//        private var LocationTIME: LongCool = pointTime
-
-//        private var LocationACCURACY = FloatCool("LocationACCURACY", this)
-
 
     constructor() : this(Dnull, Dnull, Lnull, Fnull) {
         isFakeGPS = true
@@ -75,17 +66,26 @@ class PoinT(latitude: Double, longitude: Double,
         return resFalse
     }
 
+    //    todo: смотри fun findPlatformByCoord(
+    //если точность меньше либо равно 15 метров используем  констату 15
+    //если больше 15> то точность точность без константа:
+    // LAT15M/15 * ТОЧНОСТЬ GPS
+    // и LONG15M/15 * ТОЧНОСТЬ GPS
     fun isThisPoint(coordLat: Double, coordLong: Double): Boolean {
         //lat=0,000133755 это 15 метров
-        val LAT15M = 0.000133755
-        val LONG15M = 0.0002232
+        val LAT15M = 0.000008917
+        val LONG15M = 0.00001488
 //        long=0,0002232 это 15 метров
-        val minLat = latitude - LAT15M
-        val maxLat = latitude + LAT15M
-        val minLong = longitude - LONG15M
-        val maxLong = longitude + LONG15M
+        var koef = 15f
+        this.pointAccuracy?.let {
+            koef = 15f + it
+        }
+        val minLat = coordLat - LAT15M*koef
+        val maxLat = coordLat + LAT15M*koef
+        val minLong = coordLong - LONG15M*koef
+        val maxLong = coordLong + LONG15M*koef
 
-        val res = coordLat in minLat..maxLat && coordLong in minLong..maxLong
+        val res = this.latitude in minLat..maxLat && this.longitude in minLong..maxLong
         return res
     }
 

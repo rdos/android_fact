@@ -44,7 +44,6 @@ class StartVehicleAct : ActAbstract() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        hideProgress()
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
@@ -53,9 +52,6 @@ class StartVehicleAct : ActAbstract() {
         supportActionBar?.title = "Автомобиль"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (paramS().vehicleId != null) {
-            gotoNextAct(paramS().vehicleId!!, paramS().vehicleName!!)
-        }
 //        supportActionBar?.hide()
         /**====================================================================================== */
         val etVehicleFilter = findViewById<EditText>(R.id.et_act_start_vehicle__filter)
@@ -80,8 +76,6 @@ class StartVehicleAct : ActAbstract() {
         rv.layoutManager = LinearLayoutManager(this)
             /**====================================================================================== */
             /**====================================================================================== */
-
-
 
             showingProgress(getPutExtraParam_NAME())
             vs.getVehicle(paramS().getOwnerId()).observe(this, Observer { result ->
@@ -109,8 +103,6 @@ class StartVehicleAct : ActAbstract() {
                 }
             }
         })
-
-
     }
 
     private fun gotoNextAct(vehicleId: Int, vehicleName: String) {
@@ -127,6 +119,7 @@ class StartVehicleAct : ActAbstract() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // TODO:  
         MyUtil.onMenuOptionClicked(this, item.itemId)
         when (item.itemId) {
             android.R.id.home -> {

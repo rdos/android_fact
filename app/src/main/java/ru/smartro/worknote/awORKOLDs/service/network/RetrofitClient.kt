@@ -43,7 +43,7 @@ class RetrofitClient(context: Context) {
             .addInterceptor(authInterceptor)
             .addInterceptor(httpLoggingInterceptor)
             .addInterceptor(SentryOkHttpInterceptor())
-            .authenticator(TokenAuthenticator(context))
+//            .authenticator(TokenAuthenticator(context))
             .connectTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
             .readTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
             .writeTimeout(TIME_OUT, TimeUnit.MILLISECONDS)

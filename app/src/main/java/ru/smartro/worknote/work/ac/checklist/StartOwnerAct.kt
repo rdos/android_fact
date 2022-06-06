@@ -41,32 +41,28 @@ class StartOwnerAct : ActAbstract() {
         supportActionBar?.title = "Организация"
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_owner)
         rv.layoutManager = LinearLayoutManager(this)
-        if (paramS().ownerId == null) {
-            showingProgress()
-            vs.getOwners().observe(this, Observer { result ->
-                val data = result.data
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        val owners = data!!.data.organisations
-                        rv.adapter = OwnerAdapter(owners)
-                        if (owners.size == 1) {
-                            gotoNextAct( owners[0].id, owners[0].name)
-                        }
-                        hideProgress()
+        showingProgress()
+        vs.getOwners().observe(this, Observer { result ->
+            val data = result.data
+            when (result.status) {
+                Status.SUCCESS -> {
+                    val owners = data!!.data.organisations
+                    rv.adapter = OwnerAdapter(owners)
+                    if (owners.size == 1) {
+                        gotoNextAct(owners[0].id, owners[0].name)
                     }
-                    Status.ERROR -> {
-                        toast(result.msg)
-                        hideProgress()
-                    }
-                    Status.NETWORK -> {
-                        toast("Проблемы с интернетом")
-                        hideProgress()
-                    }
+                    hideProgress()
                 }
-            })
-        } else {
-            gotoNextAct(paramS().ownerId!!, paramS().ownerName!!)
-        }
+                Status.ERROR -> {
+                    toast(result.msg)
+                    hideProgress()
+                }
+                Status.NETWORK -> {
+                    toast("Проблемы с интернетом")
+                    hideProgress()
+                }
+            }
+        })
 
 
     }
@@ -108,6 +104,7 @@ class StartOwnerAct : ActAbstract() {
         return true
     }
 
+    // TODO:  
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         MyUtil.onMenuOptionClicked(this, item.itemId)
         return super.onOptionsItemSelected(item)

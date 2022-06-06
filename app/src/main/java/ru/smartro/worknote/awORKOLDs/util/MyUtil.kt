@@ -28,6 +28,8 @@ import com.bumptech.glide.request.transition.Transition
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
+import ru.smartro.worknote.Inull
+import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import java.io.ByteArrayOutputStream
@@ -92,19 +94,15 @@ object MyUtil {
     fun onMenuOptionClicked(context: Context, id: Int) {
         when (id) {
             R.id.change_organisation -> {
+                App.getAppParaMS().ownerId = Inull
+                App.getAppParaMS().vehicleId = Inull
                 context.startActivity(Intent(context, StartOwnerAct::class.java))
             }
             R.id.logout -> {
-                logout(context)
+                //todo:
+                (context as AAct).logout()
             }
         }
-    }
-
-    fun logout(context: Context) {
-        val intent = Intent(context, StartAct::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        context.startActivity(intent)
-        App.getAppParaMS().logout()
     }
 
     fun imageToBase64(imageUri: Uri, context: Context): String {
