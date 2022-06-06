@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ui
+package ru.smartro.worknote.work.cam
 
 import android.app.Application
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel

@@ -624,6 +624,7 @@ open class ImageEntity(
     var coords: RealmList<Double> = RealmList(),
     var accuracy: String? = null,
     var lastKnownLocationTime: Long? =null,
+    var isNoLimitPhoto: Boolean = false
 ) : Serializable, RealmObject() {
 
     fun isCheckedData(): Boolean {
