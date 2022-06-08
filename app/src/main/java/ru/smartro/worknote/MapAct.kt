@@ -105,7 +105,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             moveCameraTo(point)
         }
 
-        val platformNear = vs.baseDat.findPlatformByCoord(point, point.getAccuracy())
+        val platformNear = vs.baseDat.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
 
         if (platformNear == null) {
             log("platformNear.is null")
@@ -807,7 +807,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         if (mNotifyMap.containsKey(srpId)) {
             return
         }
-        mNotifyMap[srpId] = -1
+        mNotifyMap[srpId] = Lnull
         AppliCation().showNotificationForce(pendingIntent,
             "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",

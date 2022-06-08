@@ -486,8 +486,13 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun findPlatformByCoord(point: Point, accuracy: Float): PlatformEntity? {
-        //lat=0,000133755 это 15 метров
+    // TODO: copy-past см. PoinT.kt
+    fun findPlatformByCoord(coordLat: Double, coordLong: Double, accuracy: Float): PlatformEntity? {
+        var res: PlatformEntity? = null
+        if (accuracy > 50) {
+            return null
+        }
+        //lat=0,000133755 это 15 метров LAT15M
         val LAT15M = 0.000008917
         val LONG15M = 0.00001488
 //        long=0,0002232 это 15 метров
@@ -495,10 +500,10 @@ class RealmRepository(private val p_realm: Realm) {
         if (accuracy >= koef) {
             koef = accuracy
         }
-        val minLat = point.latitude - LAT15M*koef
-        val maxLat = point.latitude + LAT15M*koef
-        val minLong = point.longitude - LONG15M*koef
-        val maxLong = point.longitude + LONG15M*koef
+        val minLat = coordLat - LAT15M*koef
+        val maxLat = coordLat + LAT15M*koef
+        val minLong = coordLong - LONG15M*koef
+        val maxLong = coordLong + LONG15M*koef
         val platformByCoord = getQueryPlatform()
             .equalTo("status", "new")
             .greaterThanOrEqualTo("coordLat", minLat)
@@ -507,11 +512,16 @@ class RealmRepository(private val p_realm: Realm) {
             .lessThanOrEqualTo("coordLong", maxLong)
             .findAll()
         if (platformByCoord.isNullOrEmpty()) {
-            return null
+            return res
         }
-        val res = p_realm.copyFromRealm(platformByCoord.get(0)!!)
-        if (res != null) {
-            Log.w(TAG, "res.address=${res.address}")
+        if (platformByCoord.size == 1) {
+            res = platformByCoord[0]?.let { p_realm.copyFromRealm(it) }
+            if (res != null) {
+                Log.w(TAG, "res.address=${res.address} ")
+            }
+        }
+        if (res == null) {
+            Log.w(TAG, "platformByCoord.count=${platformByCoord.size} ")
         }
         return res
     }
