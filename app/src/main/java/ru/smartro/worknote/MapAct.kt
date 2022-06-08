@@ -423,6 +423,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
                                     hideProgress()
                                     hideInfoDialog()
                                     vs.baseDat.setCompleteData(workOrder)
+                                    removeCheckBoxFromInfoDialog(workOrder.id)
                                     if (vs.baseDat.hasWorkOrderInNotProgress()) {
                                         finishTask(this@MapAct)
                                     } else {
@@ -445,6 +446,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             }
         }
     }
+
+
 
     private fun earlyCompleteWorkOrder(workOrder: WorkOrderEntity) {
         val cancelWayReasonS = vs.baseDat.findCancelWayReason()
@@ -471,6 +474,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
                                     hideProgress()
                                     hideDialog()
                                     hideInfoDialog()
+                                    removeCheckBoxFromInfoDialog(workOrder.id)
                                     vs.baseDat.setCompleteData(workOrder)
                                     if (vs.baseDat.hasWorkOrderInNotProgress()) {
                                         finishTask(this)
@@ -628,6 +632,11 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private val mCheckBoxS = mutableListOf<AppCompatCheckBox>()
     private fun getWorkOrderInfoCheckBoxS(): List<AppCompatCheckBox> {
         return mCheckBoxS
+    }
+
+    private fun removeCheckBoxFromInfoDialog(workOrderId: Int) {
+        val checkBox = mCheckBoxS.filter {(it.tag as Int)== workOrderId}
+        mCheckBoxS.remove(checkBox[0])
     }
 
     private fun acbCompleteIsEnable() {

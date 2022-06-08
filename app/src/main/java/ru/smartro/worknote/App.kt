@@ -18,9 +18,15 @@ import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import android.widget.RemoteViews
 import androidx.appcompat.widget.AppCompatButton
+import androidx.camera.core.AspectRatio
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -48,7 +54,7 @@ import java.util.concurrent.TimeUnit
 //даже немцы загоняют tsch=8 showTODO))
 private var mAppliCation: App? = null
 
-class App : AApp() {
+class App : AApp(), LifecycleOwner {
     companion object {
         fun getAppliCation(): App = mAppliCation!!
         fun getAppParaMS(): AppParaMS = getAppliCation().aPPParamS
@@ -61,6 +67,22 @@ class App : AApp() {
     }
     var LASTact: AAct? = null
 
+    private var mCameraController: LifecycleCameraController? = null
+
+    fun getCameraController():LifecycleCameraController {
+        if (mCameraController == null) {
+            mCameraController = LifecycleCameraController(this)
+            val outputSize = CameraController.OutputSize(AspectRatio.RATIO_4_3)
+            mCameraController!!.previewTargetSize = outputSize
+            mCameraController!!.imageCaptureTargetSize = outputSize
+            mCameraController!!.bindToLifecycle(this)
+            mCameraController!!.isTapToFocusEnabled = true
+//        CameraXConfig()
+//        val ins = ProcessCameraProvider.getInstance(App.getAppliCation())
+//        ProcessCameraProvider.configureInstance()
+        }
+        return mCameraController!!
+    }
 
 
 
@@ -445,6 +467,25 @@ class App : AApp() {
             return false
         }
         return App.getAppParaMS().isModeDEVEL
+    }
+
+    override fun getLifecycle(): Lifecycle {
+        val ll = object :Lifecycle() {
+            override fun addObserver(observer: LifecycleObserver) {
+                log("Not yet addObserver")
+            }
+
+            override fun removeObserver(observer: LifecycleObserver) {
+                log("Not removeObserver implemented")
+
+            }
+
+            override fun getCurrentState(): State {
+                log("Not getCurrentState yet implemented")
+                return State.CREATED
+            }
+        }
+        return ll
     }
 
 

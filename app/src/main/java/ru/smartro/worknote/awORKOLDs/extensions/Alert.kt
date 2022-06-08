@@ -36,7 +36,7 @@ fun showCustomDialog(builder: AlertDialog.Builder) {
     Log.d(TAG, "showCustomDialog.after")
 }
 
-//showDlgPickup!r_dos
+//showDlgPickup!r_dos )=...
 fun AAct.showDlgPickup(): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
