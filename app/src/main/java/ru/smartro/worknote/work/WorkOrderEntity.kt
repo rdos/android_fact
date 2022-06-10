@@ -62,7 +62,7 @@ open class WorkOrderEntity(
         for (platform in platforms) {
             /** статистика для PlatformEntity*/
             platformsCnt++
-            when(platform.status) {
+            when(platform.getPlatformStatus()) {
                 StatusEnum.NEW -> platformsStatusNewCnt++
                 StatusEnum.SUCCESS -> platformsStatusSuccessCnt++
                 StatusEnum.ERROR -> platformsStatusErrorCnt++
@@ -208,9 +208,10 @@ open class PlatformEntity(
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
     fun getPlatformStatus(): String {
-        val hasUnservedContainers = this.containers.any { el -> el.isActiveToday && el.status == StatusEnum.NEW  }
-        val isAllSuccess = this.containers.all { el -> el.isActiveToday && el.status == StatusEnum.SUCCESS }
-        val isAllError = this.containers.all { el -> el.isActiveToday && el.status == StatusEnum.ERROR }
+        val filteredContainers = this.containers.filter { el -> el.isActiveToday }
+        val hasUnservedContainers = filteredContainers.any { el -> el.isActiveToday && el.status == StatusEnum.NEW  }
+        val isAllSuccess = filteredContainers.all { el -> el.isActiveToday && el.status == StatusEnum.SUCCESS }
+        val isAllError = filteredContainers.all { el -> el.isActiveToday && el.status == StatusEnum.ERROR }
 
         val _beforeMediaSize = if(this.beforeMedia.size == 0) this.beforeMediaSize else this.beforeMedia.size
         val _afterMediaSize = if(this.afterMedia.size == 0) this.afterMediaSize else this.afterMedia.size
@@ -222,7 +223,7 @@ open class PlatformEntity(
             _beforeMediaSize != 0 && hasUnservedContainers -> StatusEnum.UNFINISHED
             isAllSuccess -> StatusEnum.SUCCESS
             isAllError -> StatusEnum.ERROR
-            this.containers.all { el -> el.isActiveToday && el.status != StatusEnum.NEW } -> StatusEnum.PARTIAL_PROBLEMS
+            filteredContainers.all { el -> el.status != StatusEnum.NEW } -> StatusEnum.PARTIAL_PROBLEMS
             else -> StatusEnum.UNFINISHED
 
         }
@@ -282,6 +283,18 @@ open class PlatformEntity(
                     StatusEnum.ERROR -> R.drawable.ic_many_red
                     else -> R.drawable.ic_many_orange
                 }
+        }
+    }
+
+    fun getInactiveIcon(): Int {
+        return when (this.icon) {
+            "bunker" -> R.drawable.ic_bunker_gray
+            "bag" -> R.drawable.ic_bag_gray
+            "bulk" -> R.drawable.ic_bulk_gray
+            "euro" -> R.drawable.ic_euro_gray
+            "metal" -> R.drawable.ic_metal_gray
+            "Bath" -> R.drawable.ic_two_sync_gray
+            else -> R.drawable.ic_many_gray
         }
     }
 
@@ -559,7 +572,7 @@ open class ContainerEntity(
     }
 
     fun getVolumePercentColor(context: Context): Int {
-        if (!this.isActiveToday) {
+        if (!this.isActiveToday && this.volume == null) {
             return Color.GRAY
         }
         if (this.status == StatusEnum.ERROR) {

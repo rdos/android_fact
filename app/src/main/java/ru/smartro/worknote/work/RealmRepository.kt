@@ -370,8 +370,6 @@ class RealmRepository(private val p_realm: Realm) {
                     val problemId = findFailReasonByValue(realm, problem).id
                     container.failureReasonId = problemId
                     container.status = StatusEnum.ERROR
-                    container.volume = 0.0
-
                 }
             }
             container.comment = problemComment
@@ -395,11 +393,9 @@ class RealmRepository(private val p_realm: Realm) {
             }
 
             platform.failureComment = failureComment
-
             val workOrder = getWorkOrderQuery().equalTo("id", platform.workOrderId)
                 .findFirst()
             workOrder?.calcInfoStatistics()
-
             setEntityUpdateAt(platform)
         }
     }
@@ -661,7 +657,7 @@ class RealmRepository(private val p_realm: Realm) {
         val result = p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
-        val filteredList = result.filter { it.status == StatusEnum.NEW }
+        val filteredList = result.filter { it.getPlatformStatus() == StatusEnum.NEW }
         return filteredList
     }
 
