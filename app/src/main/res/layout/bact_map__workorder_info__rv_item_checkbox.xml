@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.AppCompatCheckBox
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/act_map__workorder__checkbox"
+    android:id="@+id/act_map__workorder_info__checkbox"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/margin_min"

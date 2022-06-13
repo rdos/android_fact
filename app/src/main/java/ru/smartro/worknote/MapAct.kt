@@ -10,11 +10,9 @@ import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -36,20 +34,15 @@ import com.yandex.runtime.Error
 import com.yandex.runtime.ui_view.ViewProvider
 import kotlinx.android.synthetic.main.act_map.*
 import kotlinx.android.synthetic.main.act_map__bottom_behavior.*
-import kotlinx.android.synthetic.main.alert_finish_way.view.*
-import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
-import kotlinx.android.synthetic.main.alert_successful_complete.view.*
-import kotlinx.android.synthetic.main.dialog_early_complete.view.*
+import kotlinx.android.synthetic.main.alert_clear_navigator.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
+import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
@@ -57,13 +50,11 @@ import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.WorkOrderEntity
 import ru.smartro.worknote.work.ac.PERMISSIONS
-import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import java.util.*
-import kotlin.math.round
 
 
 //todo: тодо:!r_dos
@@ -71,13 +62,16 @@ import kotlin.math.round
 class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
 
+
+    private var mAcbGotoComplete: AppCompatButton? = null
+    private var mAcbComplete: AppCompatButton? = null
+
     private var mAdapterBottomBehavior: MapActBottomBehaviorAdapter? = null
     private var mInfoAdapter: InfoAdapter? = null
     private var mMapObjectCollection: MapObjectCollection? = null
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
-    private lateinit var mAcbComplete: AppCompatButton
     private lateinit var mMapMyYandex: MapView
     private val vs: MapViewModel by viewModel()
     private val mWorkOrderFilteredIds: MutableList<Int> = mutableListOf()
@@ -283,28 +277,32 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         mAcbInfo.text = "$platformProgress / $platformCnt"
     }
 
-    private fun getActualWorkOrderS(isForceMode: Boolean = false): List<WorkOrderEntity> {
+    private fun getActualWorkOrderS(isForceMode: Boolean = false, isFilterMode: Boolean = true): List<WorkOrderEntity> {
         if (mWorkOrderS == null || isForceMode) {
-            mWorkOrderS = vs.baseDat.findWorkOrders(getWorkOrderSFilter())
+            mWorkOrderS = vs.baseDat.findWorkOrders(isFilterMode)
+            if (mWorkOrderS?.isEmpty() == true) {
+                mWorkOrderS = vs.baseDat.findWorkOrders(false)
+            }
         }
         return mWorkOrderS!!
     }
 
-    private fun getWorkOrderSFilter(): Array<Int> {
-        val array = arrayListOf<Int>()
-        mCheckBoxS.forEach { checkBox ->
-            if (checkBox.isChecked) {
-                array.add(checkBox.tag as Int)
-            }
-        }
-        return array.toTypedArray()
-    }
 
     private fun getActualPlatformS(isForceMode: Boolean = false): List<PlatformEntity> {
         if (mPlatformS == null || isForceMode) {
-            mPlatformS = vs.baseDat.findPlatforms(getWorkOrderSFilter())
+            val workOrderS = getActualWorkOrderS(isForceMode)
+            val newPlatformS = mutableListOf<PlatformEntity>()
+            workOrderS.forEach {
+                newPlatformS.addAll(it.platforms)
+            }
+        // TODO: R_dos!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        /**@kotlin.internal.InlineOnly
+        public inline fun <T> compareByDescending(crossinline selector: (T) -> Comparable<*>?): Comparator<T> =
+            Comparator { a, b -> compareValuesBy(b, a, selector) }*/
+            newPlatformS.sortWith(compareByDescending { it.updateAt  })
+            mPlatformS = newPlatformS
+//            mPlatformS = vs.baseDat.findPlatforms(getWorkOrderSFilter())
         }
-
         return mPlatformS!!
     }
 
@@ -402,103 +400,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     }
 
-
-    private fun successCompleteWayBill(workOrder: WorkOrderEntity) {
-        val totalVolume =  vs.baseDat.findContainersVolume(workOrder.id)
-        showCompleteWaybill().run {
-            this.comment_et.setText("$totalVolume")
-            this.accept_btn.setOnClickListener {
-                if (this.weight_tg.isChecked || this.volume_tg.isChecked) {
-                    val unloadType = if (this.volume_tg.isChecked) 1 else 2
-                    val unloadValue = round(this.comment_et.text.toString().toDouble() * 100) / 100
-                    val body = CompleteWayBody(
-                        finishedAt = MyUtil.timeStamp(),
-                        unloadType = unloadType, unloadValue = unloadValue.toString()
-                    )
-                    showingProgress()
-                    vs.networkDat.completeWay(workOrder.id, body)
-                        .observe(this@MapAct) { result ->
-                            when (result.status) {
-                                Status.SUCCESS -> {
-                                    hideProgress()
-                                    hideInfoDialog()
-                                    vs.baseDat.setCompleteData(workOrder)
-                                    removeCheckBoxFromInfoDialog(workOrder.id)
-                                    if (vs.baseDat.hasWorkOrderInNotProgress()) {
-                                        finishTask(this@MapAct)
-                                    } else {
-                                        onRefreshData()
-                                    }
-                                }
-                                Status.ERROR -> {
-                                    toast(result.msg)
-                                    hideProgress()
-                                }
-                                Status.NETWORK -> {
-                                    toast("Проблемы с интернетом")
-                                    hideProgress()
-                                }
-                            }
-                        }
-                } else {
-                    toast("Выберите тип показателей")
-                }
-            }
-        }
-    }
-
-
-
-    private fun earlyCompleteWorkOrder(workOrder: WorkOrderEntity) {
-        val cancelWayReasonS = vs.baseDat.findCancelWayReason()
-        showDialogEarlyComplete(cancelWayReasonS, workOrder.id, workOrder.name).let { view ->
-            val totalVolume = vs.baseDat.findContainersVolume(workOrder.id)
-            view.unload_value_et.setText("$totalVolume")
-            view.accept_btn.setOnClickListener {
-                if (!view.reason_et.text.isNullOrEmpty() &&
-                    (view.early_volume_tg.isChecked || view.early_weight_tg.isChecked)
-                    && !view.unload_value_et.text.isNullOrEmpty()
-                ) {
-                    val failureId = vs.findCancelWayReasonByValue(view.reason_et.text.toString())
-                    val unloadValue = round(
-                        view.unload_value_et.text.toString().toDouble() * 100
-                    ) / 100
-                    val unloadType = if (view.early_volume_tg.isChecked) 1 else 2
-                    val body = EarlyCompleteBody(failureId, MyUtil.timeStamp(), unloadType, unloadValue)
-                    showingProgress()
-
-                    vs.networkDat.earlyComplete(workOrder.id, body)
-                        .observe(this@MapAct) { result ->
-                            when (result.status) {
-                                Status.SUCCESS -> {
-                                    hideProgress()
-                                    hideDialog()
-                                    hideInfoDialog()
-                                    removeCheckBoxFromInfoDialog(workOrder.id)
-                                    vs.baseDat.setCompleteData(workOrder)
-                                    if (vs.baseDat.hasWorkOrderInNotProgress()) {
-                                        finishTask(this)
-                                    } else {
-                                        onRefreshData()
-                                    }
-                                }
-                                Status.ERROR -> {
-                                    toast(result.msg)
-                                    hideProgress()
-                                }
-                                Status.NETWORK -> {
-                                    toast("Проблемы с интернетом")
-                                    hideProgress()
-                                }
-                            }
-                        }
-                } else {
-                    toast("Заполните все поля")
-                }
-            }
-        }
-    }
-
     private fun gotoComplete() {
         val lastPlatforms =  vs.findLastPlatforms()
         if (lastPlatforms.isEmpty()) {
@@ -542,20 +443,9 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
 
     private fun completeWorkOrders() {
-        val checkBoxList = getWorkOrderInfoCheckBoxS()
-        for (checkBox in checkBoxList) {
-            if (checkBox.isChecked) {
-                val workOrders = getActualWorkOrderS()
-                val workOrderId = checkBox.tag as Int
-                val workOrder = workOrders.find { found -> found.id == workOrderId }
-                if (workOrder!!.cnt_platform_status_new <= 0) {
-                    successCompleteWayBill(workOrder)
-                } else {
-                    earlyCompleteWorkOrder(workOrder)
-                }
-            }
-
-        }
+        hideInfoDialog()
+        val intent = Intent(this, TerminateAct::class.java)
+        startActivity(intent)
     }
 
     private fun showInfoDialog() {
@@ -568,36 +458,18 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         val builder = AlertDialog.Builder(this)
         val inflater = LayoutInflater.from(this)
         val view = inflater.inflate(R.layout.act_map__workorder_info, null)
-        val llcInfo = view.findViewById<LinearLayoutCompat>(R.id.llc_act_map__workorder_info)
-        val workOrders = getActualWorkOrderS()
-
-        //O!
-        mAcbComplete = view.findViewById(R.id.acb_act_map__workorder_info__complete)
-        mAcbComplete.isEnabled = false
-        //Oo!!
-        mAcbComplete.setOnClickListener{
-            gotoComplete()
-        }
-        mCheckBoxS.clear()
-        for (workOrder in workOrders) {
-            val apcbComplete = inflater.inflate(R.layout.act_map__workorder_info__checkbox, llcInfo, false) as AppCompatCheckBox
-            apcbComplete.text = "${workOrder.id} ${workOrder.name}"
-            apcbComplete.tag = workOrder.id
-            llcInfo.addView(apcbComplete)
-            apcbComplete.isChecked = true
-            mCheckBoxS.add(apcbComplete)
-        }
-        acbCompleteIsEnable()
-        mCheckBoxS.forEach {
-            it.setOnCheckedChangeListener { compoundButton, b ->
-            acbCompleteIsEnable()
-            }
-        }
-
+        // TODO:
+        val workOrderS = getActualWorkOrderS(true, isFilterMode = false)
 //            var infoText = "**Статистика**\n"
         val rvInfo = view.findViewById<RecyclerView>(R.id.rv_act_map__workorder_info)
+        mAcbComplete = view.findViewById(R.id.acb_act_map__workorder_info__complete)
+        setAcbComplete(workOrderS)
+        mAcbComplete?.setOnClickListener {
+            gotoComplete()
+        }
         rvInfo.layoutManager = LinearLayoutManager(this)
-        mInfoAdapter = InfoAdapter(getActualWorkOrderS())
+
+        mInfoAdapter = InfoAdapter(workOrderS)
         rvInfo.adapter = mInfoAdapter
 
         builder.setView(view)
@@ -628,35 +500,14 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
 
-
-    private val mCheckBoxS = mutableListOf<AppCompatCheckBox>()
-    private fun getWorkOrderInfoCheckBoxS(): List<AppCompatCheckBox> {
-        return mCheckBoxS
-    }
-
-    private fun removeCheckBoxFromInfoDialog(workOrderId: Int) {
-        val checkBox = mCheckBoxS.filter {(it.tag as Int)== workOrderId}
-        mCheckBoxS.remove(checkBox[0])
-    }
-
-    private fun acbCompleteIsEnable() {
-        val checkBoxList = getWorkOrderInfoCheckBoxS()
-        mAcbComplete.isEnabled = false
-        mAcbComplete.text = "Выберите задание"
-        mAcbComplete.background = ContextCompat.getDrawable(this, R.drawable.bg_button_gray)
-        for (checkBox in checkBoxList) {
-            if (checkBox.isChecked) {
-                mAcbComplete.text = "Завершить маршрут"
-                mAcbComplete.background = ContextCompat.getDrawable(this, R.drawable.bg_button)
-                mAcbComplete.isEnabled = true
-                return
-            }
-        }
-    }
-
     private fun onRefreshBottomBehavior() {
         val platforms = getActualPlatformS()
         mAdapterBottomBehavior?.updateItemS(platforms)
+        if (getActualWorkOrderS().size <= 1) {
+            mAcbGotoComplete?.text = "Завершить маршрут"
+        } else {
+            mAcbGotoComplete?.text ="К завершению маршрута"
+        }
     }
     private fun initBottomBehavior() {
         val platforms = getActualPlatformS()
@@ -674,13 +525,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
-        val acbGotoComplete = findViewById<AppCompatButton>(R.id.acb_act_map__bottom_behavior__gotocomplete)
-        if (getActualWorkOrderS().size <= 1) {
-            acbGotoComplete.text = "Завершить маршрут"
-        } else {
-            acbGotoComplete.text ="К завершению маршрута"
-        }
-        acbGotoComplete.setOnClickListener{
+        mAcbGotoComplete = findViewById<AppCompatButton>(R.id.acb_act_map__bottom_behavior__gotocomplete)
+        mAcbGotoComplete?.setOnClickListener{
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             showInfoDialog()
             if (getActualWorkOrderS().size <= 1) {
@@ -902,21 +748,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         return true
     }
 
-    fun finishTask(context: AppCompatActivity) {
-        Log.i(TAG, "finishTask")
-        modeSyNChrON_off()
-        vs.baseDat.clearDataBase()
-//            AppPreferences.isHasTask = false
-        context.showSuccessComplete().let {
-            it.finish_accept_btn.setOnClickListener {
-                context.startActivity(Intent(context, StartAct::class.java))
-                context.finish()
-            }
-            it.exit_btn.setOnClickListener {
-                logout()
-            }
-        }
-    }
 
     private fun getIconViewProvider (_context: Context, _platform: PlatformEntity): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
@@ -1002,11 +833,11 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
 
         fun findCancelWayReason(): List<CancelWayReasonEntity> {
-            return baseDat.findCancelWayReason()
+            return baseDat.findCancelWayReasonEntity()
         }
 
         fun findCancelWayReasonByValue(reason: String): Int {
-            return baseDat.findCancelWayReasonByValue(reason)
+            return baseDat.findCancelWayReasonIdByValue(reason)
         }
 
         fun buildMapNavigator(
@@ -1070,13 +901,17 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             return InfoViewHolder(view)
         }
 
+        private fun saveCheckBoxInWorkorderEntity(workOrder: WorkOrderEntity, isChecked: Boolean) {
+            workOrder.isShowForUser = isChecked
+            vs.baseDat.insUpdWorkOrders(workOrder, false)
+        }
+
         override fun getItemCount(): Int {
             return workOrderS.size
         }
 
         override fun onBindViewHolder(holder: InfoViewHolder, position: Int) {
             val workOrder = workOrderS[position]
-            holder.tvName.text = workOrder.name
             holder.tvPlatformCnt.text = "Площадки - ${workOrder.cnt_platform}"
             holder.tvPlatformSuccess.text = workOrder.cnt_platform_status_success.toString()
             holder.tvPlatformError.text = workOrder.cnt_platform_status_error.toString()
@@ -1086,12 +921,16 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             holder.tvContainerSuccess.text = workOrder.cnt_container_status_success.toString()
             holder.tvContainerError.text = workOrder.cnt_container_status_error.toString()
             holder.tvContainerProgress.text = workOrder.cntContainerProgress().toString()
+            val checkBox = holder.accbCheckBox
+            checkBox.text = "${workOrder.id} ${workOrder.name}"
+            checkBox.isChecked = workOrder.isShowForUser
+            checkBox.setOnCheckedChangeListener { compoundButton, b ->
+                saveCheckBoxInWorkorderEntity(workOrder, compoundButton.isChecked)
+                setAcbComplete(workOrderS)
+            }
         }
 
         inner class InfoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val tvName: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__name)
-            }
             val tvPlatformCnt: TextView by lazy {
                 itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_cnt)
             }
@@ -1117,10 +956,26 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             val tvContainerProgress: TextView by lazy {
                 itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_progress)
             }
+            val accbCheckBox: AppCompatCheckBox by lazy {
+                val checkBox = itemView.findViewById<AppCompatCheckBox>(R.id.act_map__workorder_info__checkbox)
+                checkBox
+            }
         }
     }
 
-
+    private fun setAcbComplete(workOrderS: List<WorkOrderEntity>) {
+        for (workorder in workOrderS) {
+            if (workorder.isShowForUser) {
+                mAcbComplete?.text = "Завершить маршрут"
+                mAcbComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button)
+                mAcbComplete?.isEnabled = true
+                return
+            }
+        }
+        mAcbComplete?.isEnabled = false
+        mAcbComplete?.text = "Выберите задание"
+        mAcbComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button_gray)
+    }
 
 
     override fun onStart(p0: Map, p1: CameraPosition) {
@@ -1139,21 +994,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
 }
-
-
-
-//                infoText += "\nПлощадки:   всего ${workOrder.cnt_platform}"
-//                infoText += "\nобслуженно/осталось/невывоз:\n"
-//                infoText += "${workOrder.cnt_platform_status_success}"
-//                infoText += "/${workOrder.cntPlatformProgress()}"
-//                infoText += "/${workOrder.cnt_platform_status_error}"
-//                infoText += "\nКонтейнеры:   всего ${workOrder.cnt_container}"
-//                infoText += "\nобслуженно/осталось/невывоз:\n"
-//                infoText += "${workOrder.cnt_container_status_success}"
-//                infoText += "/${workOrder.cntContainerProgress()}"
-//                infoText += "/${workOrder.cnt_container_status_error}\n"
-
-
 
 //    private fun procedure1(platformS: List<PlatformEntity>) {
 //        var minLat: Double = platformS[0].coords[0]!!

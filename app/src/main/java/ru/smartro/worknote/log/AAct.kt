@@ -7,7 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.sentry.Sentry
 import ru.smartro.worknote.*
-import ru.smartro.worknote.awORKOLDs.extensions.toast
+ 
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartVehicleAct

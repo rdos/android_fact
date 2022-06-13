@@ -1,4 +1,4 @@
-package ru.smartro.worknote.awORKOLDs.service.network.body.early_complete
+package ru.smartro.worknote.work.net
 
 import com.google.gson.annotations.SerializedName
 
