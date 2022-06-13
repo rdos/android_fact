@@ -372,7 +372,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {
         Log.d(TAG, "acceptProgress.before")
-        vs.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStamp())).observe(this) { result ->
+        vs.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec())).observe(this) { result ->
             resultStatusList.add(result.status)
             modeSyNChrON_off(false)
             when (result.status) {
