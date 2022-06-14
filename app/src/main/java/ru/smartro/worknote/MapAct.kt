@@ -173,7 +173,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             val workOrderS = vs.baseDat.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
         } else {
-            mInfoDialog = createInfoDialog{
+            createInfoDialog{
                 onRefreshData()
             }
         }
@@ -181,7 +181,9 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
         mAcbInfo = findViewById(R.id.acb_act_map__info)
         mAcbInfo.setOnClickListener {
-            createInfoDialog(){ onRefreshData() }
+            createInfoDialog{
+                onRefreshData()
+            }
         }
         setInfoData()
 
@@ -390,7 +392,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             }
             if (workOrderSize == resultStatusList.size) {
                 onRefreshData()
-                mInfoDialog = createInfoDialog {
+                 createInfoDialog {
                     //]Yes[
                     onRefreshData()
                 }
@@ -453,7 +455,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     //todo:::Гавно кодика?*
-    private fun createInfoDialog(next: () -> Any): AlertDialog {
+    private fun createInfoDialog(next: () -> Any) {
         lateinit var result: AlertDialog
         val builder = AlertDialog.Builder(this)
         val inflater = LayoutInflater.from(this)
@@ -487,7 +489,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         } catch (ex: Exception) {
             Log.e(TAG, "eXthr.message", ex)
         }
-        return result
+        mInfoDialog = result
+        mInfoDialog?.show()
     }
 
     private fun hideInfoDialog() {
@@ -529,7 +532,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         mAcbGotoComplete = findViewById<AppCompatButton>(R.id.acb_act_map__bottom_behavior__gotocomplete)
         mAcbGotoComplete?.setOnClickListener{
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            createInfoDialog(){ onRefreshData() }
+            createInfoDialog{ onRefreshData() }
             if (getActualWorkOrderS().size <= 1) {
                 gotoComplete()
             }
@@ -902,9 +905,9 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             return InfoViewHolder(view)
         }
 
-        private fun saveCheckBoxInWorkorderEntity(workOrder: WorkOrderEntity, isChecked: Boolean) {
-            workOrder.isShowForUser = isChecked
-            vs.baseDat.insUpdWorkOrders(workOrder, false)
+        //todo:r_dos!
+        private fun saveCheckBoxInWorkorderEntity(workOrderId: Int, isChecked: Boolean) {
+            vs.baseDat.setWorkOrderIsShowForUser(workOrderId, isChecked)
         }
 
 //        fun updateData
@@ -928,7 +931,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             checkBox.text = "${workOrder.id} ${workOrder.name}"
             checkBox.isChecked = workOrder.isShowForUser
             checkBox.setOnCheckedChangeListener { compoundButton, b ->
-                saveCheckBoxInWorkorderEntity(workOrder, compoundButton.isChecked)
+                saveCheckBoxInWorkorderEntity(workOrder.id, compoundButton.isChecked)
                 setAcbComplete(workOrderS)
             }
         }

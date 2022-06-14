@@ -19,11 +19,11 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
         override fun createFragment(screenKey: String?, data: Any?): Fragment {
             when(screenKey) {
                 SCREEN_EARLY_COMPLETE -> {
-                    val res = CompleteEarlyF.newInstance(data!!)
+                    val res = CompleteEarlyF.newInstance(data)
                     return res
                 }
                 SCREEN_SUCCESS_COMPLETE -> {
-                    val res = CompleteSuccessF.newInstance(data!!)
+                    val res = FinishCompleteF.newInstance(data!!)
                     return res
                 }
 //                case default_LIST_SCREEN:
@@ -49,8 +49,8 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
 //        FRAG
         setContentView(R.layout.a_main)
         supportActionBar?.hide()
-        val workOrderId = getPutExtraParam_ID()
-        val link = getPutExtraParam_NAME()
+//        val workOrderId = getPutExtraParam_ID()
+//        val link = getPutExtraParam_NAME()
         var isLintTrue_successComplet = false
         val workOrderS = App.getAppliCation().getDB().getWorkOrderEntityS(true)
         for (workorder in workOrderS) {
@@ -59,17 +59,13 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
             }
 
         }
-        if (isLintTrue_successComplet) {
-            App.getAppliCation().getRouter().navigateTo(SCREEN_SUCCESS_COMPLETE, workOrderId)
-        } else {
-            App.getAppliCation().getRouter().navigateTo(SCREEN_EARLY_COMPLETE, workOrderId)
-        }
+        App.getAppliCation().getRouter().navigateTo(SCREEN_EARLY_COMPLETE)
     }
 
-                        override fun onBackPressed() {
-                            super.onBackPressed()
-                            finish()
-                        }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
 
     fun navigateToNewRootWithMessage(
         screenKey: String?,

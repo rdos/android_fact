@@ -850,7 +850,16 @@ class RealmRepository(private val p_realm: Realm) {
         return workOrder
     }
 
+    fun setWorkOrderIsShowForUser(workOrderId: Int, isShowForUser: Boolean) {
+        p_realm.executeTransaction { realm ->
+            val workOrderS: RealmResults<WorkOrderEntity>
+            workOrderS = getQueryWorkOrder(true).equalTo("id", workOrderId).findAll()
+            workOrderS.forEach {
+                it.isShowForUser = isShowForUser
+            }
 
+        }
+    }
 
 
     fun setNextProcessDate(workOrder: WorkOrderEntity) {
