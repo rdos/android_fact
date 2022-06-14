@@ -3,113 +3,117 @@
 <androidx.appcompat.widget.LinearLayoutCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/margin_default"
-    android:orientation="vertical">
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/red_cool"
+    >
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/reason_et_out"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginHorizontal="@dimen/margin_default"
-        android:background="@color/white"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_max_max"
+        android:layout_marginEnd="@dimen/margin_max_max"
+        android:layout_marginTop="@dimen/margin_min"
+        android:background="@color/red_cool"
         android:hint="Укажите причину невывоза"
-        android:layout_marginTop="@dimen/margin_default"
         android:gravity="start"
-        app:hintTextColor="@color/dark_red">
+        app:hintTextColor="@color/dark_red"
+        >
 
         <AutoCompleteTextView
             android:id="@+id/actv_f_complete_early__reason"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:padding="8dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/white"
+            android:editable="false"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/margin_default"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/workorder_name"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/acb_f_complete_early__final_results_workorder_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Итоговые показатели рейса"
             android:maxLines="2"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:text="@+id/acb_f_complete_early__final_results_workorder_name"
+            />
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/margin_default"
-            android:layout_marginTop="@dimen/margin_default"
-            android:orientation="horizontal">
+            android:layout_height="28dp"
+            android:orientation="horizontal"
+            android:layout_marginStart="@dimen/margin_max_max"
+            android:layout_marginEnd="@dimen/margin_max_max"
+            >
 
-            <ToggleButton
+            <androidx.appcompat.widget.AppCompatToggleButton
                 android:id="@+id/tb_f_complete_early__type_weight"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="wrap_content"
                 android:textOn="@string/weight_t"
                 android:textOff="@string/weight_t"
                 android:layout_weight="0.5"
-                android:background="@drawable/selector_left_finish" />
+                android:background="@drawable/selector_left_finish"
+                />
 
-            <ToggleButton
+            <androidx.appcompat.widget.AppCompatToggleButton
                 android:id="@+id/tb_f_complete_early__type_volume"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="wrap_content"
                 android:textOn="@string/volume_cub"
                 android:textOff="@string/volume_cub"
                 android:layout_weight="0.5"
-                android:background="@drawable/selector_right_finish" />
+                android:background="@drawable/selector_right_finish"
+                />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginTop="@dimen/margin_min"
+            android:layout_marginStart="@dimen/margin_min"
+            >
 
-        </LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_f_complete_early__total_volume"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/red_cool"
+                android:hint="Выберите вид измерения"
+                android:layout_marginEnd="@dimen/margin_max_max"
+                >
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_f_complete_early__total_volume"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:hint="Выберите вид измерения"
-            android:layout_marginHorizontal="@dimen/margin_default"
-            android:layout_marginTop="@dimen/margin_default">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/tiet_f_complete_early__total_volume"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="numberDecimal"
+                    android:gravity="top" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tiet_f_complete_early__total_volume"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="numberDecimal"
-                android:gravity="top" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/acb_f_complete_early__accept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/margin_default"
+                android:paddingEnd="@dimen/margin_default"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_button_green_interactive"
+                android:text="Подтвердить"
+                />
 
-        </com.google.android.material.textfield.TextInputLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.appcompat.widget.LinearLayoutCompat >
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/margin_default"
-        android:orientation="horizontal">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/acb_f_complete_early__accept"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_default"
-            android:layout_marginTop="@dimen/margin_default"
-            android:layout_marginEnd="@dimen/margin_default"
-            android:layout_marginBottom="@dimen/margin_default"
-            android:layout_weight="0.4"
-            android:background="@drawable/bg_button"
-            android:padding="@dimen/margin_default"
-            android:text="Подтвердить"
-            android:textColor="@color/white" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat >
+        android:layout_height="2dp"
+        android:background="@color/colorPrimary"
+        />
 </androidx.appcompat.widget.LinearLayoutCompat>

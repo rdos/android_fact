@@ -181,7 +181,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
         mAcbInfo = findViewById(R.id.acb_act_map__info)
         mAcbInfo.setOnClickListener {
-           showInfoDialog()
+            createInfoDialog(){ onRefreshData() }
         }
         setInfoData()
 
@@ -493,6 +493,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private fun hideInfoDialog() {
         try {
             mInfoDialog?.dismiss()
+
         } catch (ex: Exception) {
             // TODO: 02.11.2021
             Log.e(TAG, "hideInfoDialog", ex)
@@ -528,7 +529,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         mAcbGotoComplete = findViewById<AppCompatButton>(R.id.acb_act_map__bottom_behavior__gotocomplete)
         mAcbGotoComplete?.setOnClickListener{
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            showInfoDialog()
+            createInfoDialog(){ onRefreshData() }
             if (getActualWorkOrderS().size <= 1) {
                 gotoComplete()
             }
@@ -905,6 +906,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             workOrder.isShowForUser = isChecked
             vs.baseDat.insUpdWorkOrders(workOrder, false)
         }
+
+//        fun updateData
 
         override fun getItemCount(): Int {
             return workOrderS.size

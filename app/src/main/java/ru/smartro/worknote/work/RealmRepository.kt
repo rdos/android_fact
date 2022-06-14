@@ -877,8 +877,7 @@ class RealmRepository(private val p_realm: Realm) {
     fun setCompleteWorkOrderData(oldWorkOrder: WorkOrderEntity): WorkOrderEntity  {
         var result: WorkOrderEntity = oldWorkOrder
         p_realm.executeTransaction { realm ->
-            val workOrder = p_realm.where(WorkOrderEntity::class.java).
-            equalTo("id", oldWorkOrder.id).findFirst()!!
+            val workOrder = getQueryWorkOrder().equalTo("id", oldWorkOrder.id).findFirst()!!
             workOrder.end_at = MyUtil.currentTime()
             workOrder.progress_at = null
             for (platform in workOrder.platforms) {

@@ -24,6 +24,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.exception.BadRequestExcepti
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.RealmRepository
 
 
@@ -273,6 +274,7 @@ class NetworkRepository(private val context: Context) {
                 }
                 else -> {
                     badRequest(response)
+//                    App.getAppliCation().toast(result.msg)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }

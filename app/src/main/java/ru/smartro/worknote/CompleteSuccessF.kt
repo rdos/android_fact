@@ -57,7 +57,7 @@ class CompleteSuccessF : AFragment() {
                     val unloadType = if (this.volume_tg.isChecked) 1 else 2
                     val unloadValue = round(this.comment_et.text.toString().toDouble() * 100) / 100
                     val body = CompleteWayBody(
-                        finishedAt = MyUtil.timeStamp(),
+                        finishedAt = MyUtil.timeStampInSec(),
                         unloadType = unloadType, unloadValue = unloadValue.toString()
                     )
 

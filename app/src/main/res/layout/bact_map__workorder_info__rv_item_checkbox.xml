@@ -11,3 +11,5 @@
     android:button="@null"
     android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
     android:text="id/act_map_layout__checkbox"/>
+
+
