@@ -16,6 +16,8 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -61,7 +63,7 @@ open class CameraFragment(
     private var mIsNoLimitPhoto: Boolean = false
     private var mCameraUIContainer: ConstraintLayout? = null
     private var mCaptureButton: ImageButton? = null
-
+    private lateinit var mCameraController: LifecycleCameraController
     private var mAcivImage: AppCompatImageView? = null
     private var mThumbNail: ImageButton? = null
     private var mImageCounter: TextView? = null
@@ -95,10 +97,19 @@ open class CameraFragment(
         mCameraUIContainer = mRootView.findViewById<ConstraintLayout>(R.id.camera_ui_container)
         mPreviewView = mRootView.findViewById(R.id.view_finder)
         //todo: mCameraController в App???
+        mCameraController = LifecycleCameraController(requireContext())
+        val outputSize = CameraController.OutputSize(AspectRatio.RATIO_4_3)
+        mCameraController.previewTargetSize = outputSize
+        mCameraController.imageCaptureTargetSize = outputSize
+        mCameraController.bindToLifecycle(viewLifecycleOwner)
+        mCameraController.isTapToFocusEnabled = true
+//        CameraXConfig()
+//        val ins = ProcessCameraProvider.getInstance(App.getAppliCation())
+//        ProcessCameraProvider.configureInstance()
         initViews()
 //        mCameraController.setZoomRatio(.5000F)
 
-        mPreviewView.controller = App.getAppliCation().getCameraController()
+        mPreviewView.controller = mCameraController
 //        mPreviewView.post{
 //            setUpCamera()
 //            updateCameraUi()
@@ -123,7 +134,7 @@ open class CameraFragment(
                 val mp = MediaPlayer.create(requireContext(), R.raw.camera_sound)
                 mp.start()
             }
-            App.getAppliCation().getCameraController().takePicture(outputOptions, mCameraExecutor, this)
+            mCameraController.takePicture(outputOptions, mCameraExecutor, this)
         }
     }
 
@@ -402,7 +413,7 @@ open class CameraFragment(
         mCaptureButton = mRootView.findViewById<ImageButton>(R.id.camera_capture_button)
         mAcivImage = mRootView.findViewById<AppCompatImageView>(R.id.aciv_fragment_camera)
         mActbPhotoFlash = mRootView.findViewById<AppCompatToggleButton>(R.id.photo_flash)
-        App.getAppliCation().getCameraController().initializationFuture.addListener({
+        mCameraController.initializationFuture.addListener({
             Log.d("TAGS", "initializationFuture")
             if (hasBackCamera()) {
                 mCaptureButton?.setOnClickListener {
@@ -544,7 +555,7 @@ open class CameraFragment(
 //    }
     //todo:???
     private fun hasBackCamera(): Boolean {
-        return App.getAppliCation().getCameraController().hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
+        return mCameraController.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
     }
 
     companion object {

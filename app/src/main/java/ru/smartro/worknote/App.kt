@@ -20,9 +20,6 @@ import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
-import androidx.camera.core.AspectRatio
-import androidx.camera.view.CameraController
-import androidx.camera.view.LifecycleCameraController
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -57,9 +54,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import ru.terrakok.cicerone.Router
-
 import ru.terrakok.cicerone.NavigatorHolder
-
 import ru.terrakok.cicerone.Cicerone
 
 
@@ -67,7 +62,7 @@ import ru.terrakok.cicerone.Cicerone
 //INSTANCE
 private var INSTANCE: App? = null
 
-class App : AApp(), LifecycleOwner {
+class App : AApp() {
     companion object {
 //        internal lateinit var INSTANCE: App
 //            private set
@@ -86,22 +81,6 @@ class App : AApp(), LifecycleOwner {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
-    private var mCameraController: LifecycleCameraController? = null
-
-    fun getCameraController():LifecycleCameraController {
-        if (mCameraController == null) {
-            mCameraController = LifecycleCameraController(this)
-            val outputSize = CameraController.OutputSize(AspectRatio.RATIO_4_3)
-            mCameraController!!.previewTargetSize = outputSize
-            mCameraController!!.imageCaptureTargetSize = outputSize
-            mCameraController!!.bindToLifecycle(this)
-            mCameraController!!.isTapToFocusEnabled = true
-//        CameraXConfig()
-//        val ins = ProcessCameraProvider.getInstance(App.getAppliCation())
-//        ProcessCameraProvider.configureInstance()
-        }
-        return mCameraController!!
-    }
 
 
 
@@ -518,25 +497,6 @@ class App : AApp(), LifecycleOwner {
             return false
         }
         return App.getAppParaMS().isModeDEVEL
-    }
-
-    override fun getLifecycle(): Lifecycle {
-        val ll = object :Lifecycle() {
-            override fun addObserver(observer: LifecycleObserver) {
-                log("Not yet addObserver")
-            }
-
-            override fun removeObserver(observer: LifecycleObserver) {
-                log("Not removeObserver implemented")
-
-            }
-
-            override fun getCurrentState(): State {
-                log("Not getCurrentState yet implemented")
-                return State.CREATED
-            }
-        }
-        return ll
     }
 
 
