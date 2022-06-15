@@ -11,12 +11,12 @@ import android.widget.AutoCompleteTextView
 import android.widget.ToggleButton
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.alert_successful_complete.view.*
-import kotlinx.android.synthetic.main.f_complete_success___act_map__rv_item.view.*
 import ru.smartro.worknote.awORKOLDs.extensions.showSuccessComplete
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
@@ -30,15 +30,15 @@ import ru.smartro.worknote.work.net.EarlyCompleteBody
 import kotlin.math.round
 
 
-class CompleteEarlyF : AFragment() {
+class CompleteF : AFragment() {
     private lateinit var mReasonAdapter: ReasonAdapter
 
     private lateinit var mDatabase: RealmRepository
 
     companion object {
-        fun newInstance(data: Any?): CompleteEarlyF {
+        fun newInstance(data: Any?): CompleteF {
 //            data as Int
-            val fragment = CompleteEarlyF()
+            val fragment = CompleteF()
 //            fragment.addArgument(data)
             return fragment
         }
@@ -47,6 +47,21 @@ class CompleteEarlyF : AFragment() {
     override fun onGetLayout(): Int {
         return R.layout.f_complete___map_act
     }
+
+
+    private fun setUseButtonStyleBackgroundGreen(appCompatButton: AppCompatButton) {
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(getAct(), R.drawable.bg_button_green__usebutton))
+    }
+
+    private fun setStyleBackgroundGreen(appCompatButton: AppCompatButton) {
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(getAct(), R.drawable.bg_button_green__default))
+    }
+
+
+    private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(getAct(), R.drawable.bg_button_red__usebutton))
+    }
+
 
     /**Activity = это просто view + context + EVENT?*/
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,8 +72,10 @@ class CompleteEarlyF : AFragment() {
 
         val cancelWayReasonS = mDatabase.findCancelWayReasonEntity()
 
-        val rvReason = view.findViewById<RecyclerView>(R.id.rv_f_complete_early__reason)
-        rvReason.layoutManager = LinearLayoutManager(getAct())
+        val rvReason = view.findViewById<RecyclerView>(R.id.rv_f_complete)
+        val llm = LinearLayoutManager(getAct())
+//        llm.
+        rvReason.layoutManager = llm
         mReasonAdapter = ReasonAdapter(workOrderS, cancelWayReasonS)
         rvReason.adapter = mReasonAdapter
 
@@ -66,9 +83,9 @@ class CompleteEarlyF : AFragment() {
 
     inner class ReasonAdapter(private val workOrderS: MutableList<WorkOrderEntity>,
                               private val cancelWayReasonS: List<CancelWayReasonEntity>) :
-        RecyclerView.Adapter<ReasonAdapter.BaseCompleteEarlyViewHolder>() {
+        RecyclerView.Adapter<ReasonAdapter.BaseCompleteViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCompleteEarlyViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCompleteViewHolder {
 
             lateinit var viewHolder: RecyclerView.ViewHolder
 
@@ -87,14 +104,14 @@ class CompleteEarlyF : AFragment() {
                 }
             }
 
-            return viewHolder as BaseCompleteEarlyViewHolder
+            return viewHolder as BaseCompleteViewHolder
         }
 
         override fun getItemCount(): Int {
             return workOrderS.size
         }
 
-        override fun onBindViewHolder(holder: BaseCompleteEarlyViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: BaseCompleteViewHolder, position: Int) {
             val workOrderEntity = workOrderS[position]
             holder.bind(workOrderEntity)
         }
@@ -105,7 +122,7 @@ class CompleteEarlyF : AFragment() {
             return itemViewType
         }
 
-        abstract inner class BaseCompleteEarlyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        abstract inner class BaseCompleteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             abstract fun bind(workOrderEntity: WorkOrderEntity)
         }
 
@@ -126,9 +143,13 @@ class CompleteEarlyF : AFragment() {
             }
         }
 
-        inner class EarlyAdapterViewHolder(itemView: View) : BaseCompleteEarlyViewHolder(itemView) {
+        inner class EarlyAdapterViewHolder(itemView: View) : BaseCompleteViewHolder(itemView) {
             val tiedTotalVolume: TextInputEditText by lazy {
                 val view = itemView.findViewById<TextInputEditText>(R.id.tiet_f_complete_early__total_volume)
+                view
+            }
+            val tilTotalVolume: TextInputLayout by lazy {
+                val view = itemView.findViewById<TextInputLayout>(R.id.til_f_complete_early__total_volume)
                 view
             }
             val actvReason: AutoCompleteTextView by lazy {
@@ -144,50 +165,53 @@ class CompleteEarlyF : AFragment() {
                 view
             }
 
-            val tbVolume: ToggleButton by lazy {
+            val tbTypeVolume: ToggleButton by lazy {
                 val view = itemView.findViewById<ToggleButton>(R.id.tb_f_complete_early__type_volume)
                 //https://jira.smartro.ru/browse/SR-2625
                 view.setOnCheckedChangeListener { _, b ->
                     if (b) {
-                        tbWeight.isChecked = !b
+                        tbTypeWeight.isChecked = !b
                         tilTotalVolume.hint = (getString(R.string.enter_volume_hint))
                     }
                 }
                 view?.isChecked = true
                 view
             }
-            val tbWeight: ToggleButton by lazy {
+            val tbTypeWeight: ToggleButton by lazy {
                 val view = itemView.findViewById<ToggleButton>(R.id.tb_f_complete_early__type_weight)
                 view.setOnCheckedChangeListener { _, b ->
                     if (b) {
-                        tbVolume.isChecked = !b
+                        tbTypeVolume.isChecked = !b
                         tilTotalVolume.hint = (getString(R.string.enter_weight_hint))
                     }
                 }
                 view
             }
-
-            val tilTotalVolume: TextInputLayout by lazy {
-                val view = itemView.findViewById<TextInputLayout>(R.id.til_f_complete_early__total_volume)
+            val acbAccept: AppCompatButton by lazy {
+                val view = itemView.findViewById<AppCompatButton>(R.id.acb_f_complete_early__accept)
                 view
             }
-            public fun setBlueAllIn() {
+                public fun setBlueAllIn() {
 
-            }
+                }
 
             override fun bind(workOrderEntity: WorkOrderEntity) {
                 val totalContainersVolume = mDatabase.findContainersVolume(workOrderEntity.id)
-                this.tiedTotalVolume.setText("$totalContainersVolume")
+                this.tiedTotalVolume.setText("${totalContainersVolume}")
                 this.actvReason/** причина by lazy*/
-                this.tbVolume
-                this.tbWeight
+                this.tbTypeVolume
+                this.tbTypeWeight
                 //todo:
                 val view = this.itemView
                 val acbFinalResultsWorkOrderName = view.findViewById<AppCompatTextView>(R.id.acb_f_complete_early__final_results_workorder_name)
                 acbFinalResultsWorkOrderName.text = "Итоговые показатели рейса ${workOrderEntity.id}(${workOrderEntity.name})"
 
-                val acbAccept = view.findViewById<AppCompatButton>(R.id.acb_f_complete_early__accept)
+
                 acbAccept.setOnClickListener {
+                    if (workOrderEntity.isShowForUser == false) {
+                        toast("Вы завершили Сменного Задания")
+                        return@setOnClickListener
+                    }
                     val hold = this
                     val workOrderId = workOrderEntity.id
                     val workOrder = workOrderEntity
@@ -198,7 +222,7 @@ class CompleteEarlyF : AFragment() {
                         showingProgress()
                         val failureId = mDatabase.findCancelWayReasonIdByValue(reasonText.toString())
                         val totalValue = round(hold.tiedTotalVolume.text.toString().toDouble() * 100) / 100
-                        val totalType = if (hold.tbWeight.isChecked) 2 else 1
+                        val totalType = if (hold.tbTypeVolume.isChecked) 1 else 2
                         val body = EarlyCompleteBody(failureId, MyUtil.timeStampInSec(), totalType, totalValue)
 
                         App.getAppliCation().getNetwork().earlyComplete(workOrderId, body)
@@ -207,10 +231,13 @@ class CompleteEarlyF : AFragment() {
                                 when (result.status) {
                                     Status.SUCCESS -> {
                                         mDatabase.setCompleteWorkOrderData(workOrder)
+                                        setUseButtonStyleBackgroundRed(acbAccept)
+                                        hold.itemView.isEnabled = false
+                                        workOrderEntity.isShowForUser = false
+                                        hideProgress()
                                         if (mDatabase.hasWorkOrderInNotProgress()) {
                                             finishTask_know()
                                         }
-                                        hideProgress()
                                     }
                                     Status.ERROR -> {
                                         hideProgress()
@@ -229,89 +256,78 @@ class CompleteEarlyF : AFragment() {
             }
         }
 
-
-
-
-
-
-        inner class SuccessAdapterViewHolder(itemView: View) : BaseCompleteEarlyViewHolder(itemView) {
+        inner class SuccessAdapterViewHolder(itemView: View) : BaseCompleteViewHolder(itemView) {
             val tiedTotalVolume: TextInputEditText by lazy {
-                val view = itemView.findViewById<TextInputEditText>(R.id.tiet_f_complete_early__total_volume)
+                val view = itemView.findViewById<TextInputEditText>(R.id.tiet_f_complete_success__total_volume)
                 view
             }
-            val actvReason: AutoCompleteTextView by lazy {
-                val view = itemView.findViewById<AutoCompleteTextView>(R.id.actv_f_complete_early__reason)
-                val reasonsString = cancelWayReasonS.map { it.problem }
-                view.setAdapter(ArrayAdapter(getAct(), android.R.layout.simple_dropdown_item_1line, android.R.id.text1, reasonsString))
-                view.setOnClickListener {
-                    view.showDropDown()
-                }
-                view.setOnFocusChangeListener { _, _ ->
-                    view.showDropDown()
-                }
+            val tilTotalVolume: TextInputLayout by lazy {
+                val view = itemView.findViewById<TextInputLayout>(R.id.til_f_complete_success__total_volume)
                 view
             }
-
-            val tbVolume: ToggleButton by lazy {
-                val view = itemView.findViewById<ToggleButton>(R.id.tb_f_complete_early__type_volume)
+            val tbTypeVolume: ToggleButton by lazy {
+                val view = itemView.findViewById<ToggleButton>(R.id.tb_f_complete_success__type_volume)
                 //https://jira.smartro.ru/browse/SR-2625
                 view.setOnCheckedChangeListener { _, b ->
                     if (b) {
-                        tbWeight.isChecked = !b
+                        tbTypeWeight.isChecked = !b
                         tilTotalVolume.hint = (getString(R.string.enter_volume_hint))
                     }
                 }
                 view?.isChecked = true
                 view
             }
-            val tbWeight: ToggleButton by lazy {
-                val view = itemView.findViewById<ToggleButton>(R.id.tb_f_complete_early__type_weight)
+            val tbTypeWeight: ToggleButton by lazy {
+                val view = itemView.findViewById<ToggleButton>(R.id.tb_f_complete_success__type_weight)
                 view.setOnCheckedChangeListener { _, b ->
                     if (b) {
-                        tbVolume.isChecked = !b
+                        tbTypeVolume.isChecked = !b
                         tilTotalVolume.hint = (getString(R.string.enter_weight_hint))
                     }
                 }
                 view
             }
-
-            val tilTotalVolume: TextInputLayout by lazy {
-                val view = itemView.findViewById<TextInputLayout>(R.id.til_f_complete_early__total_volume)
+                val acbAccept: AppCompatButton by lazy {
+                val view = itemView.findViewById<AppCompatButton>(R.id.acb_f_complete_success__accept)
                 view
             }
 
-            override fun bind(workOrderEntity: WorkOrderEntity) {
-                val database = App.getAppliCation().getDB()
-                val totalVolume = App.getAppliCation().getDB().findContainersVolume(workOrderEntity.id)
-                this.itemView.comment_et.setText("$totalVolume")
-                this.itemView.accept_btn.setOnClickListener {
 
-                    if (this.itemView.weight_tg.isChecked || this.itemView.volume_tg.isChecked) {
-                        //TODO:!r_dos надо проверить!unloadType!!unloadType
-                        val unloadType = if (this.itemView.volume_tg.isChecked) 1 else 2
-                        val unloadValue = round(this.itemView.comment_et.text.toString().toDouble() * 100) / 100
+            override fun bind(workOrderEntity: WorkOrderEntity) {
+                val totalContainersVolume = mDatabase.findContainersVolume(workOrderEntity.id)
+                this.tiedTotalVolume.setText("${totalContainersVolume}")
+                /** причина by lazy*/
+                this.tbTypeVolume
+                this.tbTypeWeight
+                this.acbAccept.setOnClickListener {
+                    val hold = this
+                    if (hold.tbTypeWeight.isChecked || hold.tbTypeVolume.isChecked) {
+                        val totalValue = round(hold.tiedTotalVolume.text.toString().toDouble() * 100) / 100
+                        val totalType = if (hold.tbTypeVolume.isChecked) 1 else 2
                         val body = CompleteWayBody(
                             finishedAt = MyUtil.timeStampInSec(),
-                            unloadType = unloadType, unloadValue = unloadValue.toString()
+                            unloadType = totalType, unloadValue = totalValue.toString()
                         )
 
                         App.getAppliCation().getNetwork().completeWay(workOrderEntity.id, body)
                             .observe(viewLifecycleOwner) { result ->
                                 when (result.status) {
                                     Status.SUCCESS -> {
+                                        mDatabase.setCompleteWorkOrderData(workOrderEntity)
+                                        setUseButtonStyleBackgroundGreen(it as AppCompatButton)
+                                        hold.itemView.isEnabled = false
                                         hideProgress()
-                                        database.setCompleteWorkOrderData(workOrderEntity)
-                                        if (database.hasWorkOrderInNotProgress()) {
+                                        if (mDatabase.hasWorkOrderInNotProgress()) {
                                             finishTask_know()
                                         }
                                     }
                                     Status.ERROR -> {
-                                    toast(result.msg)
                                         hideProgress()
+                                        toast(result.msg)
                                     }
                                     Status.NETWORK -> {
-                                        toast("Проблемы с интернетом")
                                         hideProgress()
+                                        toast("Проблемы с интернетом")
                                     }
                                 }
                             }
@@ -320,9 +336,6 @@ class CompleteEarlyF : AFragment() {
                     }
                 }
             }
-
-
         }
-
     }
 }

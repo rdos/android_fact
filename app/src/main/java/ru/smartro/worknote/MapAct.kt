@@ -67,7 +67,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private var mAcbComplete: AppCompatButton? = null
 
     private var mAdapterBottomBehavior: MapActBottomBehaviorAdapter? = null
-    private var mInfoAdapter: InfoAdapter? = null
     private var mMapObjectCollection: MapObjectCollection? = null
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
@@ -172,18 +171,12 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             val extraPramId = getPutExtraParam_ID()
             val workOrderS = vs.baseDat.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
-        } else {
-            createInfoDialog{
-                onRefreshData()
-            }
         }
         mMapMyYandex.map.addInertiaMoveListener(this)
 
         mAcbInfo = findViewById(R.id.acb_act_map__info)
         mAcbInfo.setOnClickListener {
-            createInfoDialog{
-                onRefreshData()
-            }
+            createInfoDialog({})
         }
         setInfoData()
 
@@ -392,10 +385,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             }
             if (workOrderSize == resultStatusList.size) {
                 onRefreshData()
-                 createInfoDialog {
-                    //]Yes[
-                    onRefreshData()
-                }
                 hideProgress()
             }
         }
@@ -465,19 +454,22 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 //            var infoText = "**Статистика**\n"
         val rvInfo = view.findViewById<RecyclerView>(R.id.rv_act_map__workorder_info)
         mAcbComplete = view.findViewById(R.id.acb_act_map__workorder_info__complete)
-        setAcbComplete(workOrderS)
         mAcbComplete?.setOnClickListener {
+            vs.baseDat.setWorkOrderIsShowForUser(workOrderS)
             gotoComplete()
         }
-        rvInfo.layoutManager = LinearLayoutManager(this)
+        setAcbCompleteText(workOrderS)
 
-        mInfoAdapter = InfoAdapter(workOrderS)
-        rvInfo.adapter = mInfoAdapter
+        rvInfo.layoutManager = LinearLayoutManager(this)
+        val infoAdapter = InfoAdapter(workOrderS)
+        rvInfo.adapter = infoAdapter
 
         builder.setView(view)
         result = builder.create()
         result.setOnCancelListener {
+            val workorder: Unit = vs.baseDat.setWorkOrderIsShowForUser(workOrderS)
             next()
+            onRefreshData()
         }
         try {
             val window: Window? = result?.window
@@ -496,7 +488,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private fun hideInfoDialog() {
         try {
             mInfoDialog?.dismiss()
-
         } catch (ex: Exception) {
             // TODO: 02.11.2021
             Log.e(TAG, "hideInfoDialog", ex)
@@ -532,7 +523,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         mAcbGotoComplete = findViewById<AppCompatButton>(R.id.acb_act_map__bottom_behavior__gotocomplete)
         mAcbGotoComplete?.setOnClickListener{
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            createInfoDialog{ onRefreshData() }
+            createInfoDialog(){}
             if (getActualWorkOrderS().size <= 1) {
                 gotoComplete()
             }
@@ -897,7 +888,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         MapKitFactory.getInstance().onStop()
     }
 
-    inner class InfoAdapter(private val workOrderS: List<WorkOrderEntity>) :
+    inner class InfoAdapter(private var p_workOrderS: List<WorkOrderEntity>) :
         RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InfoViewHolder {
@@ -905,19 +896,20 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             return InfoViewHolder(view)
         }
 
-        //todo:r_dos!
-        private fun saveCheckBoxInWorkorderEntity(workOrderId: Int, isChecked: Boolean) {
-            vs.baseDat.setWorkOrderIsShowForUser(workOrderId, isChecked)
-        }
-
-//        fun updateData
+//        //todo:r_dos!
+//        private fun saveCheckBoxInWorkorderEntity(workOrderId: Int, isChecked: Boolean) {
+//
+//        }
+//        fun setNewData(workOrderS : List<WorkOrderEntity>){
+//
+//        }
 
         override fun getItemCount(): Int {
-            return workOrderS.size
+            return p_workOrderS.size
         }
 
         override fun onBindViewHolder(holder: InfoViewHolder, position: Int) {
-            val workOrder = workOrderS[position]
+            val workOrder = p_workOrderS[position]
             holder.tvPlatformCnt.text = "Площадки - ${workOrder.cnt_platform}"
             holder.tvPlatformSuccess.text = workOrder.cnt_platform_status_success.toString()
             holder.tvPlatformError.text = workOrder.cnt_platform_status_error.toString()
@@ -929,11 +921,20 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             holder.tvContainerProgress.text = workOrder.cntContainerProgress().toString()
             val checkBox = holder.accbCheckBox
             checkBox.text = "${workOrder.id} ${workOrder.name}"
+//            checkBox.setOnCheckedChangeListener(null)
             checkBox.isChecked = workOrder.isShowForUser
-            checkBox.setOnCheckedChangeListener { compoundButton, b ->
-                saveCheckBoxInWorkorderEntity(workOrder.id, compoundButton.isChecked)
-                setAcbComplete(workOrderS)
+            checkBox.setOnCheckedChangeListener { buttonView, b ->
+                workOrder.isShowForUser = buttonView.isChecked
+                setAcbCompleteText(p_workOrderS)
+//                mviewWorkorderInfo?.post {
+//                    notifyItemChanged(position)
+//                }
+
             }
+        }
+
+        fun getItemS(): List<WorkOrderEntity> {
+            return p_workOrderS
         }
 
         inner class InfoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -969,7 +970,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
     }
 
-    private fun setAcbComplete(workOrderS: List<WorkOrderEntity>) {
+    private fun setAcbCompleteText(workOrderS: List<WorkOrderEntity>) {
         for (workorder in workOrderS) {
             if (workorder.isShowForUser) {
                 mAcbComplete?.text = "Завершить маршрут"
@@ -983,9 +984,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         mAcbComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button_gray)
     }
 
-
     override fun onStart(p0: Map, p1: CameraPosition) {
-
         mIsAUTOMoveCamera = false
     }
 
@@ -1000,90 +999,3 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
 }
-
-//    private fun procedure1(platformS: List<PlatformEntity>) {
-//        var minLat: Double = platformS[0].coords[0]!!
-//        var maxLat: Double = platformS[0].coords[0]!!
-//
-//        var minLong: Double = platformS[0].coords[1]!!
-//        var maxLong: Double = platformS[0].coords[1]!!
-//
-//        val mapCoordinate = emptyMap<Double?, Double?>().toMutableMap()
-//
-//        for(platform in platformS) {
-//            LOGWork("lat(long)=${platform.coords[0]}(${platform.coords[1]})")
-//            vs.baseDat.updateFailureComment(platform.platformId!!, "")
-//            if (minLat > platform.coords[0]!!) {
-//                minLat = platform.coords[0]!!
-//            }
-//            if (minLong > platform.coords[1]!!) {
-//                minLong = platform.coords[1]!!
-//            }
-//            if (maxLat < platform.coords[0]!!) {
-//                maxLat = platform.coords[0]!!
-//            }
-//            if (maxLong < platform.coords[1]!!) {
-//                maxLong = platform.coords[1]!!
-//            }
-//            mapCoordinate[platform.coords[0]] = platform.coords[1]
-//        }
-//        LOGWork("tit.minLat=${minLat}")
-//        LOGWork("tit.maxLat=${maxLat}")
-//        LOGWork("tit.minLong=${minLong}")
-//        LOGWork("tit.maxLong=${maxLong}")
-//
-//        val regionCnt = 10
-//        val stepLat = (maxLat - minLat) / regionCnt
-//        val stepLong = (maxLong - minLong) / regionCnt
-//
-//        var regionId = 0
-//        var regionStartLat = minLat
-//        var regionEndLat = minLat
-//        var regionStartLong = minLong
-//        var regionEndLong = minLong
-//
-//        for (idx in 1..regionCnt){
-//            if (idx < regionCnt) {
-//                regionEndLat = regionStartLat + stepLat
-//            } else {
-//                regionEndLat = maxLat
-//            }
-//
-//
-//            regionStartLong = minLong
-//            for(jdx in 1..regionCnt) {
-//                regionId++
-//                LOGWork("tit.regionIdregionId=${regionId}")
-//                LOGWork("tit.regionStartLat=${regionStartLat})")
-//                LOGWork("tit.regionEndLat=${regionEndLat})")
-//                if (jdx < regionCnt) {
-//                    regionEndLong = regionStartLong + stepLong
-//                } else {
-//                    regionEndLong = maxLong
-//                }
-//                LOGWork("tit.regionStartLong=${regionStartLong})")
-//                LOGWork("tit.regionEndLong=${regionEndLong})")
-//                for(platform in platformS) {
-//                    if (platform.address == "Ульяновская область, Мелекесский район, Лесной, Дорожная,9") {
-//                        LOGWork("tit.=)")
-//                    }
-//                    val coordLat = platform.coords[0]!!
-//                    val coordLong = platform.coords[1]!!
-//                    val lll = (regionEndLat - regionStartLat) * 0.2
-//                    val sss = (regionEndLong - regionStartLong) * 0.2
-//                    if ((coordLat in regionStartLat-lll..regionEndLat+lll) && (coordLong in regionStartLong-sss..regionEndLong+sss)) {
-//                        vs.baseDat.addFailureComment(platform.platformId!!, regionId.toString())
-//                        LOGWork("tit.regionId=${regionId} for ${coordLat}(${coordLong})")
-//                    }
-//                }
-//                regionStartLong = regionEndLong
-//            }
-//            regionStartLat = regionEndLat
-//        }
-//
-//        LOGWork("tit.stepLat=${stepLat}")
-//        LOGWork("tit.stepLong=${stepLong}")
-//
-//        val sortList = mapCoordinate.toList().sortedBy { (_, value) -> value }
-//        LOGWork("sortList=${sortList[0].first}")
-//    }

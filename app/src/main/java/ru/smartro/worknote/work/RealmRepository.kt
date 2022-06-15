@@ -850,17 +850,30 @@ class RealmRepository(private val p_realm: Realm) {
         return workOrder
     }
 
-    fun setWorkOrderIsShowForUser(workOrderId: Int, isShowForUser: Boolean) {
+
+
+                private fun todo_know1(workOrderId: Int, isShowForUser: Boolean): WorkOrderEntity {
+                    var result: WorkOrderEntity = WorkOrderEntity()
+            //        p_realm.executeTransaction { realm ->
+                        val workOrderS: RealmResults<WorkOrderEntity>
+                        workOrderS = getQueryWorkOrder().equalTo("id", workOrderId).findAll()
+                        workOrderS.forEach {
+                            it.isShowForUser = isShowForUser
+                        }
+            //            result = realm.copyFromRealm(workOrderS[0])!!
+            //        }
+                    return result
+                }
+
+    fun setWorkOrderIsShowForUser(workOrderS: List<WorkOrderEntity>) {
+        Log.i(TAG, "setWorkOrderIsShowForUser.before")
         p_realm.executeTransaction { realm ->
-            val workOrderS: RealmResults<WorkOrderEntity>
-            workOrderS = getQueryWorkOrder(true).equalTo("id", workOrderId).findAll()
-            workOrderS.forEach {
-                it.isShowForUser = isShowForUser
+            for (workorder in workOrderS) {
+                todo_know1(workorder.id, workorder.isShowForUser)
             }
-
         }
-    }
-
+        Log.w(TAG, "setWorkOrderIsShowForUser.after")
+}
 
     fun setNextProcessDate(workOrder: WorkOrderEntity) {
         //психи крики всем РОСТ
@@ -935,7 +948,4 @@ class RealmRepository(private val p_realm: Realm) {
             return p_realm.where(WorkOrderEntity::class.java).isNotNull("progress_at")
         }
     }
-
-
-
 }

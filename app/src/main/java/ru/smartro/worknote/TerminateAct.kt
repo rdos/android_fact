@@ -1,14 +1,13 @@
 package ru.smartro.worknote
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.log.SupportFragmentNavigator
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.commands.BackTo
 import ru.terrakok.cicerone.commands.Command
-import ru.terrakok.cicerone.commands.Replace
 
 const val SCREEN_EARLY_COMPLETE: String = "SCREEN_EARLY_COMPLETE"
 const val SCREEN_SUCCESS_COMPLETE: String = "SCREEN_SUCCESS_COMPLETE"
@@ -19,7 +18,7 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
         override fun createFragment(screenKey: String?, data: Any?): Fragment {
             when(screenKey) {
                 SCREEN_EARLY_COMPLETE -> {
-                    val res = CompleteEarlyF.newInstance(data)
+                    val res = CompleteF.newInstance(data)
                     return res
                 }
                 SCREEN_SUCCESS_COMPLETE -> {
@@ -28,7 +27,7 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
                 }
 //                case default_LIST_SCREEN:
 //                return DetailsFragment.getNewInstance(data);
-                else -> return CompleteEarlyF.newInstance(data)
+                else -> return CompleteF.newInstance(data)
 //                throw new default     RuntimeException(“Unknown СИКРЕТ key!”);
             }
         }
@@ -51,22 +50,38 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
         supportActionBar?.hide()
 //        val workOrderId = getPutExtraParam_ID()
 //        val link = getPutExtraParam_NAME()
-        var isLintTrue_successComplet = false
-        val workOrderS = App.getAppliCation().getDB().getWorkOrderEntityS(true)
-        for (workorder in workOrderS) {
-            if (workorder.cnt_platform_status_new <= 0) {
-                isLintTrue_successComplet = true
-            }
-
-        }
         App.getAppliCation().getRouter().navigateTo(SCREEN_EARLY_COMPLETE)
     }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
+    override fun onResume() {
+        super.onResume()
+        App.getAppliCation().getNavigatorHolder().setNavigator(mNavigator)
     }
 
+    override fun onPause() {
+        App.getAppliCation().getNavigatorHolder().removeNavigator()
+        super.onPause()
+    }
+
+                                                override fun onBackPressed() {
+                                                    super.onBackPressed()
+                                                    finish()
+                                                }
+    override fun applyCommand(command: Command?) {
+//        TODO("Not yet implemented")
+        Log.w("TAGS", "applyCommand")
+    }
+
+    override fun setNavigator(navigator: Navigator?) {
+        Log.w("TAGS", "setNavigator")
+//        TODO("Not yet implemented")
+    }
+
+    override fun removeNavigator() {
+        Log.w("TAGS", "removeNavigator")
+
+//        TODO("Not yet implemented")
+    }
+/**
     fun navigateToNewRootWithMessage(
         screenKey: String?,
         data: Any?,
@@ -79,31 +94,6 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
     protected fun executeCommand(vararg commands: Command) {
 //        App.getAppliCation().getRouter().navigateTo(executeCommands(commands)
     }
-
-    override fun onResume() {
-        super.onResume()
-        App.getAppliCation().getNavigatorHolder().setNavigator(mNavigator)
-    }
-
-    override fun onPause() {
-        App.getAppliCation().getNavigatorHolder().removeNavigator()
-        super.onPause()
-    }
-
-
-    override fun applyCommand(command: Command?) {
-//        TODO("Not yet implemented")
-    }
-
-    override fun setNavigator(navigator: Navigator?) {
-//        TODO("Not yet implemented")
-    }
-
-    override fun removeNavigator() {
-//        TODO("Not yet implemented")
-    }
-
-
 //    interface NavigatorHolder {
 //
 //        /**
@@ -118,6 +108,6 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
 //         */
 //        fun removeNavigator()
 //    }
-
+*/
 
 }

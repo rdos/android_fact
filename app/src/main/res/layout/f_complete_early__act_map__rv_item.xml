@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--f_complete_early__map_act.xml-->
+<!--f_complete_early__act_map__rv_item.xml-->
 <androidx.appcompat.widget.LinearLayoutCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/red_cool"
+    android:paddingBottom="@dimen/margin_min"
     >
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="top"
+        android:text="@string/container_fail"
+        android:textStyle="bold"
+        />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/reason_et_out"
@@ -14,11 +23,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_max_max"
         android:layout_marginEnd="@dimen/margin_max_max"
-        android:layout_marginTop="@dimen/margin_min"
         android:background="@color/red_cool"
         android:hint="Укажите причину невывоза"
         android:gravity="start"
-        app:hintTextColor="@color/dark_red"
+        android:textColorHint="@color/dark_red"
         >
 
         <AutoCompleteTextView
@@ -42,7 +50,7 @@
             android:gravity="center"
             android:maxLines="2"
             android:textStyle="bold"
-            android:text="@+id/acb_f_complete_early__final_results_workorder_name"
+            android:text="id/acb_f_complete_early__final_results_workorder_name"
             />
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -99,12 +107,12 @@
             </com.google.android.material.textfield.TextInputLayout>
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/acb_f_complete_early__accept"
-                android:layout_width="wrap_content"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/margin_default"
                 android:paddingEnd="@dimen/margin_default"
                 android:layout_gravity="center"
-                android:background="@drawable/bg_button_green_interactive"
+                android:background="@drawable/bg_button_red_interactive"
                 android:text="Подтвердить"
                 />
 
