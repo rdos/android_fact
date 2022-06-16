@@ -6,51 +6,46 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/red_cool"
-    android:paddingBottom="@dimen/margin_min"
     >
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/acb_f_complete_early__final_results_workorder_name"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="2"
+        android:textColor="@color/black" android:textSize="13sp"
+        android:layout_marginTop="@dimen/margin_min"
+        android:layout_marginBottom="@dimen/margin_min"
+        android:text="id/acb_f_complete_early__final_results_workorder_name"
+        />
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:gravity="center" android:layout_marginBottom="@dimen/margin_min"
-        android:textColor="@color/black"
+        android:textColor="@color/black" android:textSize="12sp"
         android:text="@string/container_fail"
         />
-    <AutoCompleteTextView
+    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
         android:id="@+id/actv_f_complete_early__reason"
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_width="match_parent" android:layout_height="25dp"
+        android:gravity="center" android:editable="false"
         android:layout_marginStart="@dimen/margin_max_max"
         android:layout_marginEnd="@dimen/margin_max_max"
-        android:editable="false"
-
         android:background="@drawable/bg_button_red_interactive"
-        android:textColorHint="@color/black"
-        android:textColor="@color/black"
-        android:hint="Укажите причину невывоза"
+        android:textColorHint="@color/black" android:textColor="@color/black"
+        android:textSize="12sp"
+        android:hint="выберите причину невывоза"
         />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/acb_f_complete_early__final_results_workorder_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:maxLines="2"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:layout_marginTop="@dimen/margin_min"
-            android:layout_marginBottom="@dimen/margin_min"
-            android:text="id/acb_f_complete_early__final_results_workorder_name"
-            />
-
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="28dp"
+            android:layout_height="25dp"
             android:orientation="horizontal"
             android:layout_marginStart="@dimen/margin_max_max"
             android:layout_marginEnd="@dimen/margin_max_max"
+            android:layout_marginTop="@dimen/margin_min"
             >
 
             <androidx.appcompat.widget.AppCompatToggleButton
@@ -60,6 +55,7 @@
                 android:textOn="@string/weight_t"
                 android:textOff="@string/weight_t"
                 android:layout_weight="0.5"
+                android:textSize="11sp"
                 android:background="@drawable/selector_left_finish"
                 />
 
@@ -69,6 +65,7 @@
                 android:layout_height="wrap_content"
                 android:textOn="@string/volume_cub"
                 android:textOff="@string/volume_cub"
+                android:textSize="11sp"
                 android:layout_weight="0.5"
                 android:background="@drawable/selector_right_finish"
                 />
@@ -87,7 +84,7 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/margin_max_max"
                 android:background="@color/red_cool"
-                android:hint="Выберите вид измерения"
+                android:hint="выберите вид измерения"
 
                 >
 
@@ -111,11 +108,14 @@
                 />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimary"
+            android:layout_marginStart="@dimen/margin_min"
+            android:layout_marginEnd="@dimen/margin_min"
 
+            />
     </androidx.appcompat.widget.LinearLayoutCompat >
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorPrimary"
-        />
+
 </androidx.appcompat.widget.LinearLayoutCompat>
