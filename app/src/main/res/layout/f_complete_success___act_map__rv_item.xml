@@ -6,7 +6,6 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/white"
-    android:paddingBottom="@dimen/margin_min"
     >
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -14,14 +13,18 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <androidx.appcompat.widget.AppCompatTextView
+
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:gravity="center" android:text="Итоговые показатели рейса"
-            android:textStyle="bold" android:textSize="13sp"
-            android:textColor="@color/black"
+            android:gravity="center"
+            android:maxLines="2"
+            android:textColor="@color/black" android:textSize="13sp"
+            android:layout_marginTop="@dimen/margin_min"
+            android:layout_marginBottom="@dimen/margin_min"
+            android:text="Итоговые показатели рейса"
             />
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="28dp"
+            android:layout_height="25dp"
             android:orientation="horizontal"
             android:layout_marginStart="@dimen/margin_max_max"
             android:layout_marginEnd="@dimen/margin_max_max"
@@ -34,6 +37,7 @@
                 android:textOn="@string/weight_t"
                 android:textOff="@string/weight_t"
                 android:layout_weight="0.5"
+                android:textSize="11sp"
                 android:background="@drawable/selector_left_finish_white"
                 />
 
@@ -44,6 +48,7 @@
                 android:textOn="@string/volume_cub"
                 android:textOff="@string/volume_cub"
                 android:layout_weight="0.5"
+                android:textSize="11sp"
                 android:background="@drawable/selector_right_finish_white"
                 />
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -51,6 +56,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal" android:layout_marginTop="@dimen/margin_min"
             android:layout_marginStart="@dimen/margin_min"
+            android:layout_marginEnd="@dimen/margin_default"
             >
 
             <com.google.android.material.textfield.TextInputLayout
@@ -81,10 +87,12 @@
                 android:text="Отправить"
                 />
         </androidx.appcompat.widget.LinearLayoutCompat>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimary"
+            android:layout_marginStart="@dimen/margin_min"
+            android:layout_marginEnd="@dimen/margin_min"
+            />
     </androidx.appcompat.widget.LinearLayoutCompat>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/colorPrimary"
-        />
 </androidx.appcompat.widget.LinearLayoutCompat>
