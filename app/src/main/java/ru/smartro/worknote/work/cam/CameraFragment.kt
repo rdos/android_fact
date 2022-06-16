@@ -29,17 +29,14 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.App
-import ru.smartro.worknote.Inull
+import ru.smartro.worknote.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.ac.map.AFragment
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
@@ -87,6 +84,12 @@ open class CameraFragment(
         enableTorch()
     }
 
+    //    @SuppressLint("MissingPermission")
+    override fun onGetLayout(): Int {
+        return R.layout.fragment_camera
+    }
+
+    //    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mRootView = view
@@ -231,10 +234,6 @@ open class CameraFragment(
     override fun onDestroyView() {
         super.onDestroyView()
         //  displayManager.unregisterDisplayListener(displayListener)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_camera, container, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

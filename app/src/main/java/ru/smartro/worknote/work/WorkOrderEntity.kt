@@ -24,6 +24,7 @@ open class WorkOrderEntity(
     @PrimaryKey
     var id: Int = Inull,
     var name: String = Snull,
+
     var platforms: RealmList<PlatformEntity> = RealmList(),
     var waste_type_id: Int? = null,
     var waste_type_name: String? = null,
@@ -45,6 +46,8 @@ open class WorkOrderEntity(
     var update_at: String? = null,
     var progress_at: String? = null,
     var end_at: String? = null,
+    var isShowForUser: Boolean = true,
+
     ) : Serializable, RealmObject() {
 
     fun calcInfoStatistics() {
@@ -102,6 +105,10 @@ open class WorkOrderEntity(
     }
     fun cntContainerProgress(): Int {
         return cnt_container - (cnt_container_status_success + cnt_container_status_error)
+    }
+
+    fun isComplete(): Boolean {
+        return this.cntPlatformProgress() <= 0
     }
 }
 

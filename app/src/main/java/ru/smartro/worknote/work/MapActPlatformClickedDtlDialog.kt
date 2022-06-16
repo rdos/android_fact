@@ -18,14 +18,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.act_map__dialog_platform_clicked_dtl.*
-import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_camera.view.*
-import ru.smartro.worknote.App
-import ru.smartro.worknote.MapAct
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum

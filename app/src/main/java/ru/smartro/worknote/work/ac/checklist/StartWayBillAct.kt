@@ -16,7 +16,7 @@ import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.awORKOLDs.extensions.toast
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.awORKOLDs.service.network.Resource
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody

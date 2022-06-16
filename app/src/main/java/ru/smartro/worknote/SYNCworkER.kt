@@ -15,7 +15,6 @@ import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
-import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.RealmRepository
@@ -131,17 +130,17 @@ class SYNCworkER(
         beforeLOG("synChrONizationDATA")
         val timeBeforeRequest: Long
         logSentry("SYNCworkER STARTED")
-        val lastSynchroTime = App.getAppParaMS().lastSynchroTime
+        val lastSynchroTimeInSec =App.getAppParaMS().lastSynchroTimeInSec
         val platforms: List<PlatformEntity>
 
         //проблема в секундах синхронизаций
         val mMinutesInSec = 30 * 60
-        if (lastSynchroTime - MyUtil.timeStamp() > mMinutesInSec) {
-            timeBeforeRequest = lastSynchroTime + mMinutesInSec
+        if (lastSynchroTimeInSec - MyUtil.timeStampInSec() > mMinutesInSec) {
+            timeBeforeRequest = lastSynchroTimeInSec + mMinutesInSec
             platforms = db.findPlatforms30min()
             Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
         } else {
-            timeBeforeRequest = MyUtil.timeStamp()
+            timeBeforeRequest = MyUtil.timeStampInSec()
             platforms = db.findLastPlatforms()
             LOGWork("SYNCworkER LAST PLATFORMS")
         }
@@ -162,7 +161,7 @@ class SYNCworkER(
         when (synchronizeResponse.status) {
             Status.SUCCESS -> {
                 if (platforms.isNotEmpty()) {
-                   App.getAppParaMS().lastSynchroTime = timeBeforeRequest
+                   App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
                     db.updatePlatformNetworkStatus(platforms)
                     Log.d(TAG, "SYNCworkER SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
                 } else {

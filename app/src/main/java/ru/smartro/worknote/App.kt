@@ -17,10 +17,16 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import android.widget.RemoteViews
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -38,19 +44,30 @@ import org.koin.core.context.startKoin
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.AndRoid
 import ru.smartro.worknote.andPOintD.PoinT
+import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.work.RealmRepository
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-//даже немцы загоняют tsch=8 showTODO))
-private var mAppliCation: App? = null
+import ru.terrakok.cicerone.Router
+import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Cicerone
+
+
+
+//INSTANCE
+private var INSTANCE: App? = null
 
 class App : AApp() {
     companion object {
-        fun getAppliCation(): App = mAppliCation!!
+//        internal lateinit var INSTANCE: App
+//            private set
+        fun getAppliCation(): App = INSTANCE!!
+
         fun getAppParaMS(): AppParaMS = getAppliCation().aPPParamS
         fun getMethodMan(): String? {
             return getAppliCation().mMethodName
@@ -59,6 +76,9 @@ class App : AApp() {
 //        return getLocationService()!!
 //    }
     }
+
+    private var mNetworkDat: NetworkRepository? = null
+    private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
 
@@ -101,12 +121,13 @@ class App : AApp() {
 
     override fun onCreate() {
         super.onCreate()
+        INSTANCE = this
 
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
 
-        mAppliCation = this
+        INSTANCE = this
         Log.i(TAG, "on App created App.onCreate onAppCreate")
         sentryInit()
         initRealm()
@@ -126,6 +147,20 @@ class App : AApp() {
 
     }
 
+    private var mCicerone: Cicerone<Router>? = null
+    private fun getCicerone(): Cicerone<Router> {
+        if (mCicerone == null) {
+            mCicerone = Cicerone.create()
+        }
+        return mCicerone!!
+    }
+    fun getNavigatorHolder(): NavigatorHolder {
+        return getCicerone().navigatorHolder
+    }
+
+    fun getRouter(): Router {
+        return getCicerone().router
+    }
 
     inner class MyLocationListener() : LocationListener {
         override fun onProviderEnabled(provider: String) {
@@ -201,6 +236,22 @@ class App : AApp() {
         super.onTerminate()
         beforeLOG("onTerminate")
     }
+    //Реплику: gjпох
+    public fun getDB(): RealmRepository {
+        if(mDB == null) {
+            initRealm()
+            mDB = RealmRepository(Realm.getDefaultInstance())
+        }
+      return mDB!!
+    }
+    //getNetWork
+    public fun getNetwork(): NetworkRepository {
+        if(mNetworkDat == null) {
+            mNetworkDat = NetworkRepository(this)
+        }
+        return mNetworkDat!!
+    }
+
 
     private fun initRealm() {
         Realm.init(this@App)
@@ -209,6 +260,7 @@ class App : AApp() {
         config.name("FACT.realm")
         config.deleteRealmIfMigrationNeeded()
         Realm.setDefaultConfiguration(config.build())
+        //gjпох
     }
 
 
@@ -484,6 +536,31 @@ fun Any.getDeviceDateTime(): Date {
     return Date()
 }
 
+fun Fragment.toast(text: String? = "") {
+    try {
+        Toast.makeText(this.context, text, Toast.LENGTH_SHORT).show()
+    } catch (e: Exception) {
+
+    }
+
+}
+
+//fun App.toast(text: String? = "") {
+//    try {
+//        Toast.makeText(this.context, text, Toast.LENGTH_SHORT).show()
+//    } catch (e: Exception) {
+//
+//    }
+//
+//}
+
+fun AppCompatActivity.toast(text: String? = "") {
+    try {
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+    } catch (e: Exception) {
+
+    }
+}
 
 /** Milliseconds used for UI animations */
 fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 1050L) {
