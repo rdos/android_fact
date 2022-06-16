@@ -9,35 +9,24 @@
     android:paddingBottom="@dimen/margin_min"
     >
     <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_gravity="top"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center" android:layout_marginBottom="@dimen/margin_min"
+        android:textColor="@color/black"
         android:text="@string/container_fail"
-        android:textStyle="bold"
         />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/reason_et_out"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <AutoCompleteTextView
+        android:id="@+id/actv_f_complete_early__reason"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_marginStart="@dimen/margin_max_max"
         android:layout_marginEnd="@dimen/margin_max_max"
-        android:background="@color/red_cool"
-        android:hint="Укажите причину невывоза"
-        android:gravity="start"
-        android:textColorHint="@color/dark_red"
-        >
+        android:editable="false"
 
-        <AutoCompleteTextView
-            android:id="@+id/actv_f_complete_early__reason"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:background="@color/white"
-            android:editable="false"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:background="@drawable/bg_button_red_interactive"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"
+        android:hint="Укажите причину невывоза"
+        />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -50,6 +39,9 @@
             android:gravity="center"
             android:maxLines="2"
             android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_min"
+            android:layout_marginBottom="@dimen/margin_min"
             android:text="id/acb_f_complete_early__final_results_workorder_name"
             />
 
@@ -85,6 +77,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal" android:layout_marginTop="@dimen/margin_min"
             android:layout_marginStart="@dimen/margin_min"
+            android:layout_marginEnd="@dimen/margin_default"
             >
 
             <com.google.android.material.textfield.TextInputLayout
@@ -92,9 +85,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginEnd="@dimen/margin_max_max"
                 android:background="@color/red_cool"
                 android:hint="Выберите вид измерения"
-                android:layout_marginEnd="@dimen/margin_max_max"
+
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -121,7 +115,7 @@
     </androidx.appcompat.widget.LinearLayoutCompat >
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:background="@color/colorPrimary"
         />
 </androidx.appcompat.widget.LinearLayoutCompat>
