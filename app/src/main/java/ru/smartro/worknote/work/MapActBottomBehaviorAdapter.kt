@@ -21,7 +21,7 @@ class MapActBottomBehaviorAdapter(
     private var mItemS: List<PlatformEntity>,
     private val mFilteredWayTaskIds: MutableList<Int>
 ) : RecyclerView.Adapter<MapActBottomBehaviorAdapter.PlatformViewHolder>() {
-    private var checkedPosition = -1
+    private var lastHolder: PlatformViewHolder? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlatformViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -33,6 +33,7 @@ class MapActBottomBehaviorAdapter(
 //        logSentry(filterText)
         mItemS = newItemS
         notifyDataSetChanged()
+        lastHolder?.collapseOld()
     }
 
     override fun getItemCount(): Int {
@@ -66,14 +67,10 @@ class MapActBottomBehaviorAdapter(
         if (item.workOrderId in mFilteredWayTaskIds) {
             holder.itemView.alpha = 0.1f
         }
-        if (checkedPosition == -1) {
-            holder.itemView.map_behavior_expl.collapse()
+        if (lastHolder?.platformId == item.platformId) {
+            holder.itemView.map_behavior_expl.expand(false)
         } else {
-            if (checkedPosition == holder.adapterPosition) {
-                holder.itemView.map_behavior_expl.expand(true)
-            } else {
-                holder.itemView.map_behavior_expl.collapse()
-            }
+            holder.itemView.map_behavior_expl.collapse(false)
         }
 
         holder.itemView.tv_item_map_behavior__address.text = item.address
@@ -118,18 +115,27 @@ class MapActBottomBehaviorAdapter(
                 holder.itemView.setOnClickListener {
                     if (!holder.itemView.map_behavior_expl.isExpanded) {
 //                        listener.onPlatformClicked(position)
+
                         holder.itemView.map_behavior_expl.expand()
                         if (item.isStartServe()) {
                             holder.itemView.map_behavior_start_service.setText(R.string.start_serve_again)
                         }
                         holder.itemView.map_behavior_start_service.setOnClickListener {
+                            holder.itemView.map_behavior_expl.collapse()
                             listener.startPlatformService(item)
                         }
                         holder.itemView.map_behavior_fire.setOnClickListener {
+                            holder.itemView.map_behavior_expl.collapse()
                             listener.startPlatformProblem(item)
                         }
-                        notifyItemChanged(checkedPosition)
-                        checkedPosition = holder.adapterPosition
+//                        lastHolder?.let {
+//                            notifyItemChanged(it)
+//                        }
+                        if (lastHolder?.platformId != item.platformId) {
+                            lastHolder?.collapseOld()
+                        }
+                        lastHolder = holder
+                        lastHolder?.platformId = item.platformId
                     } else {
                         holder.itemView.map_behavior_expl.collapse(true)
                     }
@@ -160,7 +166,11 @@ class MapActBottomBehaviorAdapter(
     }
 
     class PlatformViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
+        fun collapseOld() {
+            itemView.map_behavior_expl?.collapse()
+            platformId = null
+        }
+        var platformId: Int? = null
     }
 
     interface PlatformClickListener {
