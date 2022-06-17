@@ -4,7 +4,6 @@ import android.app.Application
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
-import ru.smartro.worknote.work.PlatformEntity
 
 class PlatformServeViewModel(application: Application) : BaseViewModel(application) {
 

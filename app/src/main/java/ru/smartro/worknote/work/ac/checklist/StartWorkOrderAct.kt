@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -19,7 +18,6 @@ import kotlinx.android.synthetic.main.item_container_adapter.view.choose_title
 import kotlinx.android.synthetic.main.start_act__rv_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
@@ -72,11 +70,10 @@ class StartWorkOrderAct : ActAbstract() {
                 when (result.status) {
                     Status.SUCCESS -> {
                         workOrders = data!!.dataKnow100.woRKoRDeRknow1s
-                        insertWayTask(workOrders)
-                        rv.adapter = WayTaskAdapter(workOrders)
                         if (workOrders.size == 1) {
                             gotoNextAct(workOrders[0].id)
                         }
+                        rv.adapter = WayTaskAdapter(workOrders)
                         hideProgress()
                     }
                     Status.ERROR -> {
@@ -94,27 +91,25 @@ class StartWorkOrderAct : ActAbstract() {
     }
 
     fun insertWayTask(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
-
         vm.baseDat.clearDataBase()
-        for (workorder in woRKoRDeRknow1List) {
-            try {
-                vm.baseDat.insertWayTask(workorder)
-            } catch (ex: Exception) {
-                Log.e(TAG, "insertWayTask", ex)
-                //ups должен быть один, иначе Инспектор скажт слово
-                oops()
-//                    logSentry("insertWayTask.ex.Exception" + ex.message)
-            }
-        }
+        vm.baseDat.insertWorkorder(woRKoRDeRknow1List)
+    }
+
+    fun insertWayTask(woRKoRDeRknow10: WoRKoRDeR_know1) {
+        insertWayTask(listOf(woRKoRDeRknow10))
     }
 
     fun gotoNextAct(workorderId: Int?) {
-        if (isOopsMode()) {
-            finish()
-            return
+//        try {
+        if (workorderId == null) {
+            insertWayTask(workOrders)
+        } else {
+            insertWayTask(workOrders[workorderId])
         }
+//        } catch (ex: Exception) {
+//
+//        }
         val intent = Intent(this, MapAct::class.java)
-        //or
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         workorderId?.let {
             intent.putExtra(PUT_EXTRA_PARAM_ID, workorderId)

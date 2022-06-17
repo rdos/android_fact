@@ -21,8 +21,6 @@ import java.lang.Exception
 //todo:r_dos::_know1=знаешь точно, что ОСТАВИТЬ И НУЖНО ВСЕМУ коГду(а))
 //       ::_know0=а это не ОСТАВЛЯТЬ
 abstract class AAct : AppCompatActivity() {
-    private var mIsOopsMode: Boolean? = false
-//скольский пол
     protected fun AppliCation() : App {
         return App.getAppliCation()
     }
@@ -112,12 +110,6 @@ abstract class AAct : AppCompatActivity() {
     }
 
 
-    protected fun isOopsMode(): Boolean{
-        // TODO:r_dos не сп роста Вам
-//        mIsOopsMode? wft!!
-        return mIsOopsMode!!
-    }
-
     public fun isDevelMode(): Boolean{
         return AppliCation().isDevelMode()
     }
@@ -128,12 +120,7 @@ abstract class AAct : AppCompatActivity() {
 
     //oops долежн быть один на Act, но на Activity
     protected fun oops(){
-        if (mIsOopsMode == true) {
-            //CiДУ
-            logSentry("oops")
-        }
-        mIsOopsMode = true
-
+        logSentry("oops")
         toast("Простите, Произошёл сбой. Inc:)oops!")
     }
 
