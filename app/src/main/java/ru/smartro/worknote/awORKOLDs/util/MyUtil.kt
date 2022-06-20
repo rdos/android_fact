@@ -40,7 +40,7 @@ object MyUtil {
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun timeStamp(): Long {
+    fun timeStampInSec(): Long {
         return System.currentTimeMillis() / 1000L
     }
 
