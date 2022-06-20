@@ -32,8 +32,8 @@ class MapActBottomBehaviorAdapter(
     fun updateItemS(newItemS: List<PlatformEntity>) {
 //        logSentry(filterText)
         mItemS = newItemS
-        notifyDataSetChanged()
         lastHolder?.collapseOld()
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
@@ -121,11 +121,9 @@ class MapActBottomBehaviorAdapter(
                             holder.itemView.map_behavior_start_service.setText(R.string.start_serve_again)
                         }
                         holder.itemView.map_behavior_start_service.setOnClickListener {
-                            lastHolder?.collapseOld()
                             listener.startPlatformService(item)
                         }
                         holder.itemView.map_behavior_fire.setOnClickListener {
-                            lastHolder?.collapseOld()
                             listener.startPlatformProblem(item)
                         }
 //                        lastHolder?.let {
@@ -167,6 +165,9 @@ class MapActBottomBehaviorAdapter(
 
     class PlatformViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun collapseOld() {
+            if (platformId == null) {
+                return
+            }
             itemView.map_behavior_expl?.collapse()
             platformId = null
         }
