@@ -476,6 +476,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             val wlp: WindowManager.LayoutParams = window!!.attributes
 
             wlp.gravity = Gravity.TOP
+            //todo:хз что это
             wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
             window.attributes = wlp
         } catch (ex: Exception) {
