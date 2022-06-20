@@ -127,7 +127,7 @@ class MapActBottomBehaviorAdapter(
             //nothing
         }
 
-  val currentStatus = item.getPlatformStatus()
+        val currentStatus = item.getPlatformStatus()
         if(currentStatus == StatusEnum.NEW || currentStatus == StatusEnum.UNFINISHED) {
             holder.itemView.setOnClickListener {
                 if (!holder.itemView.map_behavior_expl.isExpanded) {

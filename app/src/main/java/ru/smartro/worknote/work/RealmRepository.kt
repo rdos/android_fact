@@ -460,7 +460,7 @@ class RealmRepository(private val p_realm: Realm) {
             val platform = getQueryPlatform().equalTo("platformId", platformId)
                 .findFirst()!!
 
-            val workOrder = getWorkOrderQuery().equalTo("id", platform.workOrderId)
+            val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
                 .findFirst()
 
             workOrder?.calcInfoStatistics()
