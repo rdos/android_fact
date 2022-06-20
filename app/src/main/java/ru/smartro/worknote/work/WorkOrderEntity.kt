@@ -101,10 +101,10 @@ open class WorkOrderEntity(
     }
 
     fun cntPlatformProgress(): Int {
-        return cnt_platform_status_new
+        return cnt_platform - cnt_platform_status_new
     }
     fun cntContainerProgress(): Int {
-        return cnt_container - (cnt_container_status_success + cnt_container_status_error)
+        return cnt_container - cnt_container_status_new
     }
 
     fun isComplete(): Boolean {

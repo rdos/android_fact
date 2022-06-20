@@ -267,7 +267,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         var platformProgress = 0
         for(workOrder in workOrders) {
             platformCnt += workOrder.cnt_platform
-            platformProgress += workOrder.cnt_platform - workOrder.cntPlatformProgress()
+            platformProgress += workOrder.cnt_platform - workOrder.cnt_platform_status_new
         }
         mAcbInfo.text = "$platformProgress / $platformCnt"
     }
@@ -913,12 +913,13 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             holder.tvPlatformCnt.text = "Площадки - ${workOrder.cnt_platform}"
             holder.tvPlatformSuccess.text = workOrder.cnt_platform_status_success.toString()
             holder.tvPlatformError.text = workOrder.cnt_platform_status_error.toString()
-            holder.tvPlatformProgress.text = workOrder.cntPlatformProgress().toString()
+            holder.tvPlatformProgress.text = (workOrder.cnt_platform - (workOrder.cnt_platform_status_success + workOrder.cnt_platform_status_error)).toString()
 
             holder.tvContainerCnt.text = "Контейнеры - ${workOrder.cnt_container}"
             holder.tvContainerSuccess.text = workOrder.cnt_container_status_success.toString()
             holder.tvContainerError.text = workOrder.cnt_container_status_error.toString()
-            holder.tvContainerProgress.text = workOrder.cntContainerProgress().toString()
+            //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+            holder.tvContainerProgress.text = (workOrder.cnt_container - (workOrder.cnt_container_status_success + workOrder.cnt_container_status_error)).toString()
             val checkBox = holder.accbCheckBox
             checkBox.text = "${workOrder.id} ${workOrder.name}"
 //            checkBox.setOnCheckedChangeListener(null)
@@ -931,6 +932,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 //                }
 
             }
+
         }
 
         fun getItemS(): List<WorkOrderEntity> {
