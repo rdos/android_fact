@@ -37,6 +37,7 @@ open class WorkOrderEntity(
     var cnt_platform_status_new: Int = Inull,
     var cnt_platform_status_success: Int = Inull,
     var cnt_platform_status_error: Int = Inull,
+    var cnt_platform_status_partial_problems: Int = Inull,
     // ErrorS False fail exception
     var cnt_container_status_new: Int = Inull,
     var cnt_container_status_success: Int = Inull,
@@ -55,6 +56,7 @@ open class WorkOrderEntity(
         var platformsStatusNewCnt = 0
         var platformsStatusSuccessCnt = 0
         var platformsStatusErrorCnt = 0
+        var platformsStatusPartialProblemsCnt = 0
 
         var containersCnt = 0
         var containersStatusNewCnt = 0
@@ -63,17 +65,12 @@ open class WorkOrderEntity(
         for (platform in platforms) {
             /** статистика для PlatformEntity*/
             platformsCnt++
-            if(platform.status == StatusEnum.NEW) {
-                platformsStatusNewCnt++
-            }
-            if(platform.status == StatusEnum.SUCCESS) {
-                platformsStatusSuccessCnt++
-            }
-            if(platform.status == StatusEnum.ERROR) {
-                platformsStatusErrorCnt++
-            }
-            if(platform.status == StatusEnum.UNFINISHED) {
-                platformsStatusErrorCnt++
+            when(platform.getPlatformStatus()) {
+                StatusEnum.NEW -> platformsStatusNewCnt++
+                StatusEnum.SUCCESS -> platformsStatusSuccessCnt++
+                StatusEnum.ERROR -> platformsStatusErrorCnt++
+                StatusEnum.UNFINISHED -> platformsStatusErrorCnt++
+                StatusEnum.PARTIAL_PROBLEMS -> platformsStatusPartialProblemsCnt++
             }
             /** статистика для ContainerEntity*/
             platform.containers.forEach {
@@ -94,6 +91,7 @@ open class WorkOrderEntity(
         this.cnt_platform_status_new = platformsStatusNewCnt
         this.cnt_platform_status_success = platformsStatusSuccessCnt
         this.cnt_platform_status_error = platformsStatusErrorCnt
+        this.cnt_platform_status_partial_problems = platformsStatusPartialProblemsCnt
         this.cnt_container = containersCnt
         this.cnt_container_status_new = containersStatusNewCnt
         this.cnt_container_status_success = containersStatusSuccessCnt
@@ -154,6 +152,8 @@ open class PlatformEntity(
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,
+    var afterMediaSize: Int = 0,
+    var beforeMediaSize: Int = 0,
     @SerializedName("address")
     var address: String? = null,
     @SerializedName("after_media")
@@ -212,64 +212,71 @@ open class PlatformEntity(
     var orderTimeAlert: String? = null,
 ) : Serializable, RealmObject() {
 
-    fun getIconDrawableResId(): Int {
-        if (this.isStartServe()) {
-            return R.drawable.ic_serving
-        }
-//        if (this.beginnedAt.isNullOrEmpty() && this.status == StatusEnum.NEW) {
-//            // время прошло = красный
-//            if (isOrderTimeAlert()) {
-//                return getIconFromStatus(StatusEnum.ERROR)
-//            }
-//            //осталось меньше часа оранжевый
-//            if (isOrderTimeWarning()) {
-//                return getIconFromStatus(StatusEnum.UNFINISHED)
-//            }
-//        }
-        return getIconFromStatus(this.status)
-    }
-
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
-    private fun getIconFromStatus(p_status: String?): Int {
+    fun getPlatformStatus(): String {
+        val filteredContainers = this.containers.filter { el -> el.isActiveToday }
+        val hasUnservedContainers = filteredContainers.any { el -> el.isActiveToday && el.status == StatusEnum.NEW  }
+        val isAllSuccess = filteredContainers.all { el -> el.isActiveToday && el.status == StatusEnum.SUCCESS }
+        val isAllError = filteredContainers.all { el -> el.isActiveToday && el.status == StatusEnum.ERROR }
+
+        val _beforeMediaSize = if(this.beforeMedia.size == 0) this.beforeMediaSize else this.beforeMedia.size
+        val _afterMediaSize = if(this.afterMedia.size == 0) this.afterMediaSize else this.afterMedia.size
+
+        Log.d("TEST:::", "! ${this.address}  ${_beforeMediaSize} ${_afterMediaSize}")
+
+        return when {
+            _beforeMediaSize == 0 && _afterMediaSize == 0 -> StatusEnum.NEW
+            _beforeMediaSize != 0 && hasUnservedContainers -> StatusEnum.UNFINISHED
+            isAllSuccess -> StatusEnum.SUCCESS
+            isAllError -> StatusEnum.ERROR
+            filteredContainers.all { el -> el.status != StatusEnum.NEW } -> StatusEnum.PARTIAL_PROBLEMS
+            else -> StatusEnum.UNFINISHED
+
+        }
+    }
+
+    fun getIconFromStatus(): Int {
+        val currentStatus = this.getPlatformStatus()
+        if(currentStatus == StatusEnum.UNFINISHED) return R.drawable.ic_serving
         return when (this.icon) {
             "bunker" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_bunker_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_bunker_green
                     StatusEnum.ERROR -> R.drawable.ic_bunker_red
                     else -> R.drawable.ic_bunker_orange
                 }
             "bag" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_bag_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_bag_green
                     StatusEnum.ERROR -> R.drawable.ic_bag_red
                     else -> R.drawable.ic_bag_orange
                 }
             "bulk" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_bulk_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_bulk_green
                     StatusEnum.ERROR -> R.drawable.ic_bulk_red
                     else -> R.drawable.ic_bulk_orange
                 }
             "euro" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_euro_blue
                     StatusEnum.SUCCESS ->  R.drawable.ic_euro_green
                     StatusEnum.ERROR -> R.drawable.ic_euro_red
                     else -> R.drawable.ic_euro_orange
                 }
             "metal" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_metal_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_metal_green
                     StatusEnum.ERROR -> R.drawable.ic_metal_red
                     else -> R.drawable.ic_metal_orange
                 }
             "Bath" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_two_sync_b
                     StatusEnum.SUCCESS -> R.drawable.ic_two_sync_g
                     StatusEnum.ERROR -> R.drawable.ic_two_sync_red
@@ -277,7 +284,7 @@ open class PlatformEntity(
                 }
             else ->
                 //many
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_many_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_many_green
                     StatusEnum.ERROR -> R.drawable.ic_many_red
@@ -324,7 +331,7 @@ open class PlatformEntity(
 
     fun getOrderTimeForMaps(): String {
         var result = Snull
-        if (this.beginnedAt.isNullOrEmpty() && this.status == StatusEnum.NEW) {
+        if (this.beginnedAt.isNullOrEmpty() && this.getPlatformStatus() == StatusEnum.NEW) {
             this.orderTimeStart?.let {
                 result = "до ${this.orderTimeEnd}"
             }
@@ -376,25 +383,6 @@ open class PlatformEntity(
         }
         return result
     }
-
-    fun isStartServe(): Boolean {
-        return this.beginnedAt.isNotNull() && this.status == StatusEnum.NEW
-    }
-
-    fun isStartServeVolume(): Boolean {
-        var result = false
-        if (!this.isStartServe()) {
-            return result
-        }
-        this.containers.forEach { container ->
-            if (container.volume != null) {
-                result = true
-                return@forEach
-            }
-        }
-        return result
-    }
-
 
     private fun initServedKGOEntity() {
         if (this.kgoServed == null ) {

@@ -388,7 +388,6 @@ open class CameraFragment(
                 }
                 else -> 0
             }
-            Log.d("MEDIASIZE :::: ", "$mediaSize")
             if (mediaSize == 0) {
                 toast("Сделайте фото")
                 return@setOnClickListener
