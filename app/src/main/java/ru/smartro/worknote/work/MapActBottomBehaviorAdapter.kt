@@ -121,11 +121,11 @@ class MapActBottomBehaviorAdapter(
                             holder.itemView.map_behavior_start_service.setText(R.string.start_serve_again)
                         }
                         holder.itemView.map_behavior_start_service.setOnClickListener {
-                            holder.itemView.map_behavior_expl.collapse()
+                            lastHolder?.collapseOld()
                             listener.startPlatformService(item)
                         }
                         holder.itemView.map_behavior_fire.setOnClickListener {
-                            holder.itemView.map_behavior_expl.collapse()
+                            lastHolder?.collapseOld()
                             listener.startPlatformProblem(item)
                         }
 //                        lastHolder?.let {
