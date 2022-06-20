@@ -33,7 +33,7 @@ class DebugAct : ActNOAbst() {
     }
 
     private fun initViews() {
-        val workOrders = vs.baseDat.findWorkOrders()
+        val workOrders = vs.baseDat.findWorkOrders(false)
 //        val containerProgress = workOrders.
 //        val platformProgress = vs.findPlatformProgress()
         var platformCnt = 0

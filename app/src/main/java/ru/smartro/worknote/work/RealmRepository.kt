@@ -162,7 +162,7 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     //todo: кака код
-    fun findWorkOrders(isFilterMode: Boolean): List<WorkOrderEntity> {
+    fun findWorkOrders(isFilterMode: Boolean=false): List<WorkOrderEntity> {
         var res = emptyList<WorkOrderEntity>()
         p_realm.executeTransaction { realm ->
             val workOrderS: RealmResults<WorkOrderEntity>
