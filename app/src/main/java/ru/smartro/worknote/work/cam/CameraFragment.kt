@@ -19,7 +19,6 @@ import androidx.camera.core.ImageCapture.*
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
@@ -60,11 +59,11 @@ open class CameraFragment(
     private val containerId: Int
 ) : AFragment(), ImageCounter, OnImageSavedCallback {
 
+    private var mFrameLayout: FrameLayout? = null
     private var mIsNoLimitPhoto: Boolean = false
-    private var mCameraUIContainer: ConstraintLayout? = null
     private var mCaptureButton: ImageButton? = null
     private lateinit var mCameraController: LifecycleCameraController
-    private var mAcivImage: AppCompatImageView? = null
+    private var mAcivPreviewPhoto: AppCompatImageView? = null
     private var mThumbNail: ImageButton? = null
     private var mImageCounter: TextView? = null
     private val maxPhotoCount = 3
@@ -94,8 +93,8 @@ open class CameraFragment(
         super.onViewCreated(view, savedInstanceState)
         mRootView = view
         mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.GONE
-        mCameraUIContainer = mRootView.findViewById<ConstraintLayout>(R.id.camera_ui_container)
         mPreviewView = mRootView.findViewById(R.id.view_finder)
+        mFrameLayout = view.findViewById(R.id.fl_fragment_camera)
         //todo: mCameraController в App???
         mCameraController = LifecycleCameraController(requireContext())
         val outputSize = CameraController.OutputSize(AspectRatio.RATIO_4_3)
@@ -144,27 +143,10 @@ open class CameraFragment(
         Log.d("TAGS", "Current thread: ${Thread.currentThread()}")
         setImageCounter(true)
         setGalleryThumbnail(imageUri)
-        mAcivImage?.post {
-            mAcivImage!!.visibility = View.VISIBLE
-            mPreviewView.visibility = View.GONE
-            mCameraUIContainer?.visibility = View.GONE
-
-//  val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.my_anim_ttest)
-            Glide.with(App.getAppliCation())
-                .load(imageUri)
-                .into(mAcivImage!!)
-//  acivImage.startAnimation(animation)
-        }
-
-        mAcivImage?.postDelayed({
-            mAcivImage?.visibility = View.GONE
-            mPreviewView.visibility = View.VISIBLE
-            mCameraUIContainer?.visibility = View.VISIBLE
-        }, 1000)
-
 
         Log.d("TAGS", Thread.currentThread().name)
         //todo: хз!!!,,,???
+
         Glide.with(App.getAppliCation())
             .asBitmap()
             .load(imageUri)
@@ -174,6 +156,15 @@ open class CameraFragment(
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                     try {
                         Log.d("TAGS", Thread.currentThread().name)
+                        mAcivPreviewPhoto?.visibility = View.VISIBLE
+                        mFrameLayout?.visibility = View.GONE
+                        mAcivPreviewPhoto?.setImageBitmap(resource)
+
+                        mAcivPreviewPhoto?.postDelayed({
+                            mAcivPreviewPhoto?.visibility = View.GONE
+                            mFrameLayout?.visibility = View.VISIBLE
+                        }, 1000)
+
                         val baos = ByteArrayOutputStream()
                         resource.compress(Bitmap.CompressFormat.JPEG, 100, baos)
                         val b: ByteArray = baos.toByteArray()
@@ -411,7 +402,8 @@ open class CameraFragment(
 
 
         mCaptureButton = mRootView.findViewById<ImageButton>(R.id.camera_capture_button)
-        mAcivImage = mRootView.findViewById<AppCompatImageView>(R.id.aciv_fragment_camera)
+        mAcivPreviewPhoto = mRootView.findViewById(R.id.aciv_fragment_camera_preview_photo)
+        mAcivPreviewPhoto?.visibility = View.GONE
         mActbPhotoFlash = mRootView.findViewById<AppCompatToggleButton>(R.id.photo_flash)
         mCameraController.initializationFuture.addListener({
             Log.d("TAGS", "initializationFuture")
