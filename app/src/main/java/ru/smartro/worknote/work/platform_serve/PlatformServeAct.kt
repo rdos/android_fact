@@ -385,7 +385,9 @@ class PlatformServeAct :
 
     private fun initContainer() {
         val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
-        mConrainerAdapter = ContainerAdapter(this, this, containers as ArrayList<ContainerEntity>)
+            .sortedBy { el -> !el.isActiveToday }
+            .toList()
+        mConrainerAdapter = ContainerAdapter(this, this, (containers) as ArrayList<ContainerEntity>)
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).recycledViewPool.setMaxRecycledViews(0, 0);
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).adapter = mConrainerAdapter
         findViewById<TextView>(R.id.tv_activity_platform_serve__point_info).text = "№${mPlatformEntity.srpId} / ${mPlatformEntity.containers!!.size} конт."
