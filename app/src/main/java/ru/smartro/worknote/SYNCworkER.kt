@@ -16,12 +16,14 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBod
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.RealmRepository
+import ru.smartro.worknote.utils.getActivityProperly
+//import ru.smartro.worknote.utils.DispatcherInfoMessageTypes
+import ru.smartro.worknote.utils.getActivityProperly
+import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.StartAct
+import ru.smartro.worknote.work.ui.JournalChatAct
 import java.io.File
 import java.io.FileOutputStream
-
 
 //private var App.LocationLAT: Double
 //    get() {
@@ -42,7 +44,7 @@ class SYNCworkER(
 
         val intent = Intent(applicationContext, StartAct::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val pendingIntent =  PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = getActivityProperly(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         if (isForceMode) {
             App.getAppliCation().showNotificationForce(pendingIntent, contentText, titleText)
         } else {

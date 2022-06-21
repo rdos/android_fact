@@ -47,8 +47,10 @@ class StartWayBillAct : ActAbstract() {
 
         mTvNotFoundData = findViewById(R.id.tv_act_start_waybill__not_found_data)
         mTvNotFoundData?.text = getString(R.string.tv_no_fount_data)
+
         mRvWaybill = findViewById(R.id.rv_act_start_waybill)
         mRvWaybill?.layoutManager = LinearLayoutManager(this)
+        hideNotFoundData()
         showingProgress(putExtraParamName)
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val body = WayListBody(

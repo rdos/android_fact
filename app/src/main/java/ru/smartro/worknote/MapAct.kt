@@ -45,6 +45,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
@@ -227,7 +228,10 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             }
 
         }
-
+        Log.w(TAG, "r_dos/onStart.before")
+        mMapMyYandex.onStart()
+        MapKitFactory.getInstance().onStart()
+        Log.w(TAG, "r_dos/onStart.after")
         //todo:  R_dos!!! modeSyNChrON_off(false)
         paramS.isModeSYNChrONize = true
         AppliCation().startWorkER()
@@ -638,23 +642,19 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     val mNotifyMap = mutableMapOf<Int, Long>()
     private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, string: String?) {
-        val intent = Intent(this, PlatformServeAct::class.java)
-
-        // TODO: !!?R_dos
-        intent.putExtra("srpId", srpId)
-        intent.putExtra("platform_id", platformId)
-        intent.putExtra("mIsServeAgain", false)
-
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0, intent,
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
-//        (;:)
         if (mNotifyMap.containsKey(srpId)) {
             return
         }
         mNotifyMap[srpId] = Lnull
+
+        val intent = Intent(this, PlatformServeAct::class.java)
+
+        // TODO: !!?R_dos(;:)
+        intent.putExtra("srpId", srpId)
+        intent.putExtra("platform_id", platformId)
+        intent.putExtra("mIsServeAgain", false)
+
+        val pendingIntent = getActivityProperly(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
         AppliCation().showNotificationForce(pendingIntent,
             "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",
@@ -663,9 +663,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             NOTIFICATION_CHANNEL_ID__MAP_ACT
         )
     }
-
-
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -862,10 +859,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     override fun onStart() {
         super.onStart()
-        Log.w(TAG, "r_dos/onStart.before")
-        mMapMyYandex.onStart()
-        MapKitFactory.getInstance().onStart()
-        Log.w(TAG, "r_dos/onStart.after")
     }
 
     override fun onResume() {

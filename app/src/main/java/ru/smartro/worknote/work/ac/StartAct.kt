@@ -36,7 +36,8 @@ public val PERMISSIONS = arrayOf(
     Manifest.permission.READ_EXTERNAL_STORAGE,
     Manifest.permission.READ_PHONE_STATE,
     Manifest.permission.LOCATION_HARDWARE,
-    Manifest.permission.ACCESS_NETWORK_STATE
+    Manifest.permission.ACCESS_NETWORK_STATE,
+    Manifest.permission.CAMERA
 
 )
 class StartAct : ActAbstract() {
