@@ -164,8 +164,6 @@ open class PlatformEntity(
     var beginnedAt: String? = null,
     @SerializedName("updateAt")
     var updateAt: Long = 0,
-    @SerializedName("status")
-    var status: String? = null,
     @SerializedName("network_status")
     var networkStatus: Boolean? = false,
     @SerializedName("failure_comment")

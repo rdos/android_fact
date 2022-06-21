@@ -127,7 +127,6 @@ class App : AApp() {
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
 
-        INSTANCE = this
         Log.i(TAG, "on App created App.onCreate onAppCreate")
         sentryInit()
         initRealm()
@@ -406,9 +405,9 @@ class App : AApp() {
 //
 //        }
         AndRoid.getService().requestLocationUpdates(
-            LocationManager.NETWORK_PROVIDER,
+            AndRoid.getProviderName(),
             300,
-            100F,
+            30F,
             // override fun onLocationChanged(location: Location) {
             MyLocationListener()
         ) // здесь можно указать другие более подходящие вам параметры
