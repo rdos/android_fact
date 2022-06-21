@@ -591,11 +591,11 @@ class RealmRepository(private val p_realm: Realm) {
         )
     }
 
-    fun findAllContainerInPlatform(platformId: Int): List<ContainerEntity> {
+    fun findContainersSortedByIsActiveToday(platformId: Int): List<ContainerEntity> {
         val platform = p_realm.where(PlatformEntity::class.java)
             .equalTo("platformId", platformId)
             .findFirst()!!
-        return p_realm.copyFromRealm(platform.containers)
+        return p_realm.copyFromRealm(platform.containers.sort("isActiveToday", Sort.DESCENDING))
     }
 
     fun findContainersVolume(workOrderId: Int): Double {
