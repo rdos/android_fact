@@ -1,11 +1,14 @@
 package ru.smartro.worknote
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
+import ru.smartro.worknote.work.ac.StartAct
 
 class FinishCompleteF : AFragment() {
     companion object {
-        fun newInstance(workOrderId: Any): FinishCompleteF {
+        fun newInstance(workOrderId: Any? = null): FinishCompleteF {
             workOrderId as Int
             val fragment = FinishCompleteF()
             fragment.addArgument(workOrderId)
@@ -14,14 +17,21 @@ class FinishCompleteF : AFragment() {
     }
 
     override fun onGetLayout(): Int {
-        return R.layout.start_act__rv_item
+        return R.layout.fragment_successful_complete
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         hideProgress()
 //        App.getAppliCation().getRouter().navigateTo(LIST_SCREEN)
-        val workOrderId = getArgumentID()
+//        val workOrderId = getArgumentID()
 
+        view.findViewById<Button>(R.id.finish_accept_btn).setOnClickListener {
+            getAct().startActivity(Intent(getAct(), StartAct::class.java))
+            getAct().finish()
         }
+        view.findViewById<Button>(R.id.exit_btn).setOnClickListener {
+            getAct().logout()
+        }
+    }
 }

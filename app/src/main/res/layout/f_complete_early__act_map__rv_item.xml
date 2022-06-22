@@ -5,7 +5,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/red_cool"
+    android:background="@drawable/bg_button_red__default"
+    android:padding="12dp"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginTop="8dp"
     >
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/acb_f_complete_early__final_results_workorder_name"
@@ -13,7 +16,6 @@
         android:gravity="center"
         android:maxLines="2"
         android:textColor="@color/black" android:textSize="13sp"
-        android:layout_marginTop="@dimen/margin_min"
         android:layout_marginBottom="@dimen/margin_min"
         android:text="id/acb_f_complete_early__final_results_workorder_name"
         />
@@ -25,14 +27,13 @@
         />
     <androidx.appcompat.widget.AppCompatAutoCompleteTextView
         android:id="@+id/actv_f_complete_early__reason"
-        android:layout_width="match_parent" android:layout_height="25dp"
+        android:layout_width="match_parent" android:layout_height="38dp"
         android:gravity="center" android:editable="false"
-        android:layout_marginStart="@dimen/margin_max_max"
-        android:layout_marginEnd="@dimen/margin_max_max"
         android:background="@drawable/bg_button_red_interactive"
-        android:textColorHint="@color/black" android:textColor="@color/black"
-        android:textSize="12sp"
+        android:textColorHint="@color/gray" android:textColor="@color/black"
+        android:textSize="14sp"
         android:hint="выберите причину невывоза"
+
         />
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -41,10 +42,8 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="32dp"
             android:orientation="horizontal"
-            android:layout_marginStart="@dimen/margin_max_max"
-            android:layout_marginEnd="@dimen/margin_max_max"
             android:layout_marginTop="@dimen/margin_min"
             >
 
@@ -56,7 +55,7 @@
                 android:textOff="@string/weight_t"
                 android:layout_weight="0.5"
                 android:textSize="11sp"
-                android:background="@drawable/selector_left_finish"
+                android:background="@drawable/selector_left_finish_white"
                 />
 
             <androidx.appcompat.widget.AppCompatToggleButton
@@ -67,38 +66,33 @@
                 android:textOff="@string/volume_cub"
                 android:textSize="11sp"
                 android:layout_weight="0.5"
-                android:background="@drawable/selector_right_finish"
+                android:background="@drawable/selector_right_finish_white"
                 />
         </androidx.appcompat.widget.LinearLayoutCompat>
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal" android:layout_marginTop="@dimen/margin_min"
-            android:layout_marginStart="@dimen/margin_min"
-            android:layout_marginEnd="@dimen/margin_default"
             >
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_f_complete_early__total_volume"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="@dimen/margin_max_max"
-                android:background="@color/red_cool"
                 android:hint="выберите вид измерения"
-
                 >
-
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tiet_f_complete_early__total_volume"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="numberDecimal"
                     android:gravity="top" />
-
             </com.google.android.material.textfield.TextInputLayout>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/acb_f_complete_early__accept"
-                android:layout_width="130dp"
+                android:layout_width="0dp"
+                android:layout_weight="0.7"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/margin_default"
                 android:paddingEnd="@dimen/margin_default"
@@ -108,14 +102,7 @@
                 />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/gray"
-            android:layout_marginStart="@dimen/margin_min"
-            android:layout_marginEnd="@dimen/margin_min"
 
-            />
     </androidx.appcompat.widget.LinearLayoutCompat >
 
 </androidx.appcompat.widget.LinearLayoutCompat>

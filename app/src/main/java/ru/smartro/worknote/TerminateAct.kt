@@ -22,7 +22,7 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
                     return res
                 }
                 SCREEN_SUCCESS_COMPLETE -> {
-                    val res = FinishCompleteF.newInstance(data!!)
+                    val res = FinishCompleteF.newInstance(data)
                     return res
                 }
 //                case default_LIST_SCREEN:
@@ -47,7 +47,7 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
         super.onCreate(savedInstanceState)
 //        FRAG
         setContentView(R.layout.a_main)
-        supportActionBar?.hide()
+        supportActionBar?.title = "Завершение заданий"
 //        val workOrderId = getPutExtraParam_ID()
 //        val link = getPutExtraParam_NAME()
         App.getAppliCation().getRouter().navigateTo(SCREEN_EARLY_COMPLETE)
