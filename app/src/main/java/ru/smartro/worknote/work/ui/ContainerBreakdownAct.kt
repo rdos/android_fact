@@ -40,7 +40,8 @@ class ContainerBreakdownAct : ActNOAbst() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         intent.let {
-            platform = vs.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            val platformId = it.getIntExtra("platform_id", 0)
+            platform = vs.baseDat.getPlatformEntity(platformId)
             supportActionBar!!.title = "Поломка контейнера"
             mContainer = vs.baseDat.getContainerEntity(it.getIntExtra("container_id", 0))
         }
@@ -118,14 +119,6 @@ class ContainerBreakdownAct : ActNOAbst() {
 
     class ContainerBreakdownViewModel(application: Application) : BaseViewModel(application) {
 
-
-        fun findPlatformEntity(platformId: Int): PlatformEntity {
-            return baseDat.getPlatformEntity(platformId)
-        }
-
-        fun findContainerEntity(containerId: Int): ContainerEntity {
-            return baseDat.getContainerEntity(containerId)
-        }
 
 
         fun findBreakDown(): List<String> {

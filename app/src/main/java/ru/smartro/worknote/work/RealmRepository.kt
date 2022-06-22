@@ -576,7 +576,7 @@ class RealmRepository(private val p_realm: Realm) {
     fun updatePlatformNetworkStatus(list: List<PlatformEntity>) {
         p_realm.executeTransaction {
             list.forEach {
-                val platform = getPlatformEntity(it.platformId!!)
+                val platform = _getPlatformEntity_know0(it.platformId!!)
                 if (platform.getPlatformStatus() != StatusEnum.NEW && !platform.networkStatus!!) {
                     platform.networkStatus = true
                 }
@@ -655,13 +655,29 @@ class RealmRepository(private val p_realm: Realm) {
         return p_realm.copyFromRealm(p_realm.createObjectFromJson(clazz, json)!!)
     }
 
+    //todo: private fun _getPlatformEntity
+    fun _getPlatformEntity_know0(platformId: Int): PlatformEntity {
+        val res = getQueryPlatform()
+            .equalTo("platformId", platformId)
+            .findFirst()!!
+        return res
+    }
+
     fun getPlatformEntity(platformId: Int): PlatformEntity {
         val result: PlatformEntity
         if(platformId == Inull) {
             return PlatformEntity(name="findPlatformEntity.platformId==Inull")
         }
-        val res = getQueryPlatform()
-            .equalTo("platformId", platformId)
+        val res = _getPlatformEntity_know0(platformId)
+        result = p_realm.copyFromRealm(res)
+        return result
+    }
+
+    //todo: private fun _getContainerEntity
+    fun _getContainerEntity_know0(containerId: Int): ContainerEntity {
+        val result: ContainerEntity
+        val res = getQueryContainer()
+            .equalTo("containerId", containerId)
             .findFirst()!!
         result = p_realm.copyFromRealm(res)
         return result
@@ -669,9 +685,7 @@ class RealmRepository(private val p_realm: Realm) {
 
     fun getContainerEntity(containerId: Int): ContainerEntity {
         val result: ContainerEntity
-        val res = getQueryContainer()
-            .equalTo("containerId", containerId)
-            .findFirst()!!
+        val res = _getContainerEntity_know0(containerId)
         result = p_realm.copyFromRealm(res)
         return result
     }
