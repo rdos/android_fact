@@ -164,6 +164,8 @@ open class PlatformEntity(
     var beginnedAt: String? = null,
     @SerializedName("updateAt")
     var updateAt: Long = 0,
+    @SerializedName("status")
+    var status: String? = null,
     @SerializedName("network_status")
     var networkStatus: Boolean? = false,
     @SerializedName("failure_comment")
@@ -213,25 +215,35 @@ open class PlatformEntity(
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
     fun getPlatformStatus(): String {
+        Log.d("TEST :::",
+        "WorkOrderEntity/getPlatformStatus() containers: " +
+            this.containers.joinToString { el -> "status: ${el.status} isActive: ${el.isActiveToday}" })
         val filteredContainers = this.containers.filter { el -> el.isActiveToday }
-        val hasUnservedContainers = filteredContainers.any { el -> el.isActiveToday && el.status == StatusEnum.NEW  }
-        val isAllSuccess = filteredContainers.all { el -> el.isActiveToday && el.status == StatusEnum.SUCCESS }
-        val isAllError = filteredContainers.all { el -> el.isActiveToday && el.status == StatusEnum.ERROR }
+        Log.d("TEST :::",
+        "WorkOrderEntity/getPlatformStatus() filteredContainers: " +
+            filteredContainers.joinToString { el -> "status: ${el.status} isActive: ${el.isActiveToday}" })
+        val hasUnservedContainers = filteredContainers.any { el -> el.status == StatusEnum.NEW  }
+        val isAllSuccess = filteredContainers.all { el -> el.status == StatusEnum.SUCCESS }
+        val isAllError = filteredContainers.all { el -> el.status == StatusEnum.ERROR }
 
         val _beforeMediaSize = if(this.beforeMedia.size == 0) this.beforeMediaSize else this.beforeMedia.size
         val _afterMediaSize = if(this.afterMedia.size == 0) this.afterMediaSize else this.afterMedia.size
 
-        Log.d("TEST:::", "! ${this.address}  ${_beforeMediaSize} ${_afterMediaSize}")
+        Log.d("TEST:::", "! ${this.address} ${_beforeMediaSize} ${_afterMediaSize}")
 
-        return when {
+        val result = when {
             _beforeMediaSize == 0 && _afterMediaSize == 0 -> StatusEnum.NEW
             _beforeMediaSize != 0 && hasUnservedContainers -> StatusEnum.UNFINISHED
             isAllSuccess -> StatusEnum.SUCCESS
             isAllError -> StatusEnum.ERROR
             filteredContainers.all { el -> el.status != StatusEnum.NEW } -> StatusEnum.PARTIAL_PROBLEMS
-            else -> StatusEnum.UNFINISHED
-
+            else -> {
+                Log.d("TEST:::", "ELSE FIRED: ${_beforeMediaSize}")
+                return StatusEnum.UNFINISHED
+            }
         }
+        Log.d("TEST :::", "WorkOrderEntity/getPlatformStatus() result: ${result}")
+        return result
     }
 
     fun getIconFromStatus(): Int {

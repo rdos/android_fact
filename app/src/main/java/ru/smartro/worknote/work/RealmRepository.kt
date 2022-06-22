@@ -44,6 +44,7 @@ class RealmRepository(private val p_realm: Realm) {
                     containerId = it.id,
                     isActiveToday = it.isActiveToday,/* breakdownReasonId = it.breakdownReasonId,*/
                     number = it.number,
+                    status = it.status,
                     typeId = it.typeId,
                     constructiveVolume = it.constructiveVolume,
                     typeName = it.typeName,
@@ -71,6 +72,7 @@ class RealmRepository(private val p_realm: Realm) {
                     name = it.name,
                     updateAt = 0,
                     srpId = it.srpId,
+                    status = it.status,
                     /** volumeKGO = null,*/ icon = it.icon,
                     orderTimeEnd = it.orderEndTime,
                     orderTimeStart = it.orderStartTime,

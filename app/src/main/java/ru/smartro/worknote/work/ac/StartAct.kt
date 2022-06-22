@@ -8,10 +8,16 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.act_start.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.*
@@ -30,7 +36,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 
 
-public val PERMISSIONS = arrayOf(
+val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
     Manifest.permission.WRITE_EXTERNAL_STORAGE,
     Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -38,11 +44,21 @@ public val PERMISSIONS = arrayOf(
     Manifest.permission.LOCATION_HARDWARE,
     Manifest.permission.ACCESS_NETWORK_STATE,
     Manifest.permission.CAMERA
-
 )
+
 class StartAct : ActAbstract() {
     private var mInfoDialog: AlertDialog? = null
     private val vm: AuthViewModel by viewModel()
+
+    private var authLoginEditText: TextInputEditText? = null
+    private var authPasswordEditText: TextInputEditText? = null
+    private var authAppVersion: TextView? = null
+    private var authRootView: ConstraintLayout? = null
+    private var authEnter: AppCompatButton? = null
+    private var authLoginOut: TextInputLayout? = null
+    private var authPasswordOut: TextInputLayout? = null
+    private var authDebugInfo: AppCompatTextView? = null
+
     // TODO: 27.05.2022 !! !
     private fun gotoNextAct(isHasToken: Boolean = false) {
 //            val isHasTask = true
@@ -149,37 +165,48 @@ class StartAct : ActAbstract() {
         setContentView(R.layout.act_start)
         actionBar?.title = "Вход в Систему"
 
-        auth_appversion.text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-        cl_act_start.setOnClickListener {
+        authLoginEditText = findViewById(R.id.auth_login)
+        authPasswordEditText = findViewById(R.id.auth_password)
+        authLoginEditText = findViewById(R.id.auth_login)
+        authPasswordEditText = findViewById(R.id.auth_password)
+        authAppVersion = findViewById(R.id.auth_appversion)
+        authRootView = findViewById(R.id.cl_act_start)
+        authEnter = findViewById(R.id.auth_enter)
+        authLoginOut = findViewById(R.id.login_login_out)
+        authPasswordOut = findViewById(R.id.auth_password_out)
+        authDebugInfo = findViewById(R.id.actv_activity_auth__it_test_version)
+
+        authAppVersion?.text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+        authRootView?.setOnClickListener {
             MyUtil.hideKeyboard(this)
         }
         viewInit()
     }
 
     private fun viewInit() {
-        auth_enter.setOnClickListener {
+        authEnter?.setOnClickListener {
            clickAuthEnter()
         }
 
-        actv_activity_auth__it_test_version.isVisible = false
+        authDebugInfo?.isVisible = false
         if (BuildConfig.BUILD_TYPE != "debugProd" && BuildConfig.BUILD_TYPE != "release") {
             val versionName = BuildConfig.VERSION_NAME
             //oopsTestqA
             val textIsTestEnv = getString(R.string.act_st_art_it_test_version).format(versionName)
 
-            actv_activity_auth__it_test_version.isVisible = true
-            actv_activity_auth__it_test_version.text = textIsTestEnv // + actv_activity_auth__it_test_version.text
+            authDebugInfo?.isVisible = true
+            authDebugInfo?.text = textIsTestEnv // + actv_activity_auth__it_test_version.text
 
-            auth_enter.setOnLongClickListener {
-                auth_login.setText("admin@smartro.ru")
-                auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
+            authEnter?.setOnLongClickListener {
+                authLoginEditText?.setText("admin@smartro.ru")
+                authPasswordEditText?.setText("xot1ieG5ro~hoa,ng4Sh")
                 return@setOnLongClickListener true
             }
         }
 //
         if (isDevelMode()) {
-            auth_login.setText("admin@smartro.ru")
-            auth_password.setText("xot1ieG5ro~hoa,ng4Sh")
+            authLoginEditText?.setText("admin@smartro.ru")
+            authPasswordEditText?.setText("xot1ieG5ro~hoa,ng4Sh")
             clickAuthEnter()
         }
 
@@ -192,9 +219,9 @@ class StartAct : ActAbstract() {
     }
 
     private fun clickAuthEnter() {
-        if (!auth_login.text.isNullOrBlank() && !auth_password.text.isNullOrBlank()) {
+        if (!authLoginEditText?.text.isNullOrBlank() && !authPasswordEditText?.text.isNullOrBlank()) {
             showingProgress()
-            vm.auth(AuthBody(auth_login.text.toString(), auth_password.text.toString()))
+            vm.auth(AuthBody(authLoginEditText?.text.toString(), authPasswordEditText?.text.toString()))
                 .observe(this, Observer { result ->
                     val data = result.data
                     when (result.status) {
@@ -203,6 +230,7 @@ class StartAct : ActAbstract() {
                             toast("Вы авторизованы")
 //                            AppPreferences.BoTlogin = auth_login.text.toString()
                             paramS().token = data!!.data.token
+                            paramS().userName = authLoginEditText?.text.toString()
                             gotoNextAct()
                         }
                         Status.ERROR -> {
@@ -216,8 +244,8 @@ class StartAct : ActAbstract() {
                     }
                 })
         } else {
-            auth_password_out.error = "Проверьте пароль"
-            login_login_out.error = "Проверьте логин"
+            authLoginOut?.error = "Проверьте логин"
+            authPasswordOut?.error = "Проверьте пароль"
         }
     }
 
