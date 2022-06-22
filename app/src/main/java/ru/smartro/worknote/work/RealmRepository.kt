@@ -574,7 +574,7 @@ class RealmRepository(private val p_realm: Realm) {
     fun updatePlatformNetworkStatus(list: List<PlatformEntity>) {
         p_realm.executeTransaction {
             list.forEach {
-                val platform = findPlatformEntity(it.platformId!!)
+                val platform = getPlatformEntity(it.platformId!!)
                 if (platform.getPlatformStatus() != StatusEnum.NEW && !platform.networkStatus!!) {
                     platform.networkStatus = true
                 }
@@ -653,19 +653,26 @@ class RealmRepository(private val p_realm: Realm) {
         return p_realm.copyFromRealm(p_realm.createObjectFromJson(clazz, json)!!)
     }
 
-    fun findPlatformEntity(platformId: Int): PlatformEntity {
+    fun getPlatformEntity(platformId: Int): PlatformEntity {
+        val result: PlatformEntity
         if(platformId == Inull) {
             return PlatformEntity(name="findPlatformEntity.platformId==Inull")
         }
-        return getQueryPlatform()
+        val res = getQueryPlatform()
             .equalTo("platformId", platformId)
             .findFirst()!!
+        result = p_realm.copyFromRealm(res)
+        return result
     }
 
-    fun findContainerEntity(containerId: Int) =
-        getQueryContainer()
+    fun getContainerEntity(containerId: Int): ContainerEntity {
+        val result: ContainerEntity
+        val res = getQueryContainer()
             .equalTo("containerId", containerId)
             .findFirst()!!
+        result = p_realm.copyFromRealm(res)
+        return result
+    }
 
 //    fun findCountContainerIsServed(): List<Int> {
 //        val result = p_realm.copyFromRealm(p_realm.where(ContainerEntity::class.java).findAll())

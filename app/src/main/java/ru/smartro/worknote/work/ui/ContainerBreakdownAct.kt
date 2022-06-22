@@ -42,7 +42,7 @@ class ContainerBreakdownAct : ActNOAbst() {
         intent.let {
             platform = vs.findPlatformEntity(it.getIntExtra("platform_id", 0))
             supportActionBar!!.title = "Поломка контейнера"
-            mContainer = vs.findContainerEntity(it.getIntExtra("container_id", 0))
+            mContainer = vs.baseDat.getContainerEntity(it.getIntExtra("container_id", 0))
         }
 
           mAcactvBreakDownIn = findViewById(R.id.acactv_act_non_pickup__breakdown_in)
@@ -120,11 +120,11 @@ class ContainerBreakdownAct : ActNOAbst() {
 
 
         fun findPlatformEntity(platformId: Int): PlatformEntity {
-            return baseDat.findPlatformEntity(platformId)
+            return baseDat.getPlatformEntity(platformId)
         }
 
         fun findContainerEntity(containerId: Int): ContainerEntity {
-            return baseDat.findContainerEntity(containerId)
+            return baseDat.getContainerEntity(containerId)
         }
 
 

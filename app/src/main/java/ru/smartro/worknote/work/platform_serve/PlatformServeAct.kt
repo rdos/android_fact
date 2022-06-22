@@ -30,7 +30,6 @@ import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
-import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 
@@ -64,7 +63,7 @@ class PlatformServeAct :
         setContentView(R.layout.act_platformserve)
         supportActionBar?.hide()
 
-        mPlatformEntity = vm.baseDat.findPlatformEntity(intent.getIntExtra("platform_id", Inull))
+        mPlatformEntity = vm.baseDat.getPlatformEntity(intent.getIntExtra("platform_id", Inull))
         mIsServeAgain = intent.getBooleanExtra("mIsServeAgain", false)
 
 //        supportActionBar?.title =

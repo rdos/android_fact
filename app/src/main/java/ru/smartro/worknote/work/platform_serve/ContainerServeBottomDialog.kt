@@ -67,7 +67,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentAct = requireActivity() as PlatformServeAct
-        val containerEntity = viewModel.findContainerEntity(p_container_id)
+        val containerEntity = viewModel.baseDat.getContainerEntity(p_container_id)
         containerEntity.let {
             comment_et.setText(it.comment)
             volume = it.volume
