@@ -194,7 +194,7 @@ class AppParaMS {
         }
 
 
-    var lastSynchroTime: Long
+    var lastSynchroTimeInSec: Long
         get() = sharedPref__env.getLong("lastSynchronizeTime", 0)
         set(value) = sharedPref__env.edit {
             it.putLong("lastSynchronizeTime", value)

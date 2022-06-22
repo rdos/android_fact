@@ -395,7 +395,7 @@ class MapAct : ActAbstract(),
     private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(woRKoRDeRknow1: WorkOrderEntity) {
         Log.d(TAG, "acceptProgress.before")
-        vs.networkDat.progress(woRKoRDeRknow1.id, ProgressBody(MyUtil.timeStamp())).observe(this) { result ->
+        vs.networkDat.progress(woRKoRDeRknow1.id, ProgressBody(MyUtil.timeStampInSec())).observe(this) { result ->
             resultStatusList.add(result.status)
             modeSyNChrON_off(false)
             when (result.status) {
@@ -432,7 +432,7 @@ class MapAct : ActAbstract(),
                     val unloadType = if (this.volume_tg.isChecked) 1 else 2
                     val unloadValue = round(this.comment_et.text.toString().toDouble() * 100) / 100
                     val body = CompleteWayBody(
-                        finishedAt = MyUtil.timeStamp(),
+                        finishedAt = MyUtil.timeStampInSec(),
                         unloadType = unloadType, unloadValue = unloadValue.toString()
                     )
                     showingProgress()
@@ -481,7 +481,7 @@ class MapAct : ActAbstract(),
                         view.unload_value_et.text.toString().toDouble() * 100
                     ) / 100
                     val unloadType = if (view.early_volume_tg.isChecked) 1 else 2
-                    val body = EarlyCompleteBody(failureId, MyUtil.timeStamp(), unloadType, unloadValue)
+                    val body = EarlyCompleteBody(failureId, MyUtil.timeStampInSec(), unloadType, unloadValue)
                     showingProgress()
 
                     vs.networkDat.earlyComplete(workOrder.id, body)
