@@ -83,9 +83,12 @@ class ContainerFailureAct : ActNOAbst() {
 
 
     private fun initImageView() {
-        Glide.with(this).load(MyUtil.base64ToImage(mContainer.failureMedia.last()?.image))
-            .into(problem_img)
-
+        mContainer.failureMedia.let {
+            if(it.size > 0) {
+                Glide.with(this).load(MyUtil.base64ToImage(it.last()!!.image))
+                    .into(problem_img)
+            }
+        }
     }
 
     private fun initExtremeProblemPhoto() {

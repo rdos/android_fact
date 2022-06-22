@@ -106,7 +106,7 @@ open class WorkOrderEntity(
     }
 
     fun isComplete(): Boolean {
-        return this.cntPlatformProgress() <= 0
+        return this.cntPlatformProgress() == this.cnt_platform
     }
 }
 

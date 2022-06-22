@@ -9,9 +9,8 @@ import ru.smartro.worknote.work.ac.StartAct
 class FinishCompleteF : AFragment() {
     companion object {
         fun newInstance(workOrderId: Any? = null): FinishCompleteF {
-            workOrderId as Int
             val fragment = FinishCompleteF()
-            fragment.addArgument(workOrderId)
+//            fragment.addArgument(workOrderId)
             return fragment
         }
     }

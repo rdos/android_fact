@@ -62,7 +62,7 @@ class DebugAct : ActNOAbst() {
         debug_platform_progress.max = platformCnt
         debug_platform_progress.progress = platformProgress
         debug_container_count.text = "Кол-во обслуженных контейнеров: ${containerProgress}/${containerCnt}"
-        debug_container_progress.max = containerProgress
+        debug_container_progress.max = containerCnt
         debug_container_progress.progress = containerProgress
 
         debug_ram_progress.max = 100
