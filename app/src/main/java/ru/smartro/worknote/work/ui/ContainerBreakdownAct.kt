@@ -85,9 +85,11 @@ class ContainerBreakdownAct : ActNOAbst() {
 
 
     private fun initImageView() {
+        if(mContainer.breakdownMedia.size <= 0) {
+           return
+        }
         Glide.with(this).load(MyUtil.base64ToImage(mContainer.breakdownMedia.last()?.image))
             .into(problem_img)
-
     }
 
     private fun initExtremeProblemPhoto() {

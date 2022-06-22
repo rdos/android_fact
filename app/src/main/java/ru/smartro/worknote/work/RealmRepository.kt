@@ -675,12 +675,10 @@ class RealmRepository(private val p_realm: Realm) {
 
     //todo: private fun _getContainerEntity
     fun _getContainerEntity_know0(containerId: Int): ContainerEntity {
-        val result: ContainerEntity
         val res = getQueryContainer()
             .equalTo("containerId", containerId)
             .findFirst()!!
-        result = p_realm.copyFromRealm(res)
-        return result
+        return res
     }
 
     fun getContainerEntity(containerId: Int): ContainerEntity {

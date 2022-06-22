@@ -13,9 +13,10 @@ const val SCREEN_EARLY_COMPLETE: String = "SCREEN_EARLY_COMPLETE"
 const val SCREEN_SUCCESS_COMPLETE: String = "SCREEN_SUCCESS_COMPLETE"
 //todo: INDEterminate))
 class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
-
+    private var mTEMPscreenKeyVAL: String? = null
     private  val mNavigator = object : SupportFragmentNavigator(supportFragmentManager, R.id.fragment_container) {
         override fun createFragment(screenKey: String?, data: Any?): Fragment {
+            mTEMPscreenKeyVAL = screenKey
             when(screenKey) {
                 SCREEN_EARLY_COMPLETE -> {
                     val res = CompleteF.newInstance(data)
@@ -62,10 +63,13 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
         super.onPause()
     }
 
-                                                override fun onBackPressed() {
-                                                    super.onBackPressed()
-                                                    finish()
-                                                }
+    override fun onBackPressed() {
+        if (mTEMPscreenKeyVAL == SCREEN_SUCCESS_COMPLETE) {
+            return
+        }
+        super.onBackPressed()
+        finish()
+    }
     override fun applyCommand(command: Command?) {
 //        TODO("Not yet implemented")
         Log.w("TAGS", "applyCommand")

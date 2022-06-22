@@ -132,7 +132,7 @@ class CompleteF : AFragment() {
             getAct().modeSyNChrON_off()
             mDatabase.clearDataBase()
 
-            App.getAppliCation().getRouter().navigateTo(SCREEN_SUCCESS_COMPLETE)
+            App.getAppliCation().getRouter().replaceScreen(SCREEN_SUCCESS_COMPLETE)
         }
 
         inner class EarlyAdapterViewHolder(itemView: View) : BaseCompleteViewHolder(itemView) {
