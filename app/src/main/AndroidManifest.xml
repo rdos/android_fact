@@ -99,7 +99,7 @@
             </intent-filter>
         </activity>
         <activity  android:exported="true"
-            android:name="ru.smartro.worknote.TerminateAct"
+            android:name="ru.smartro.worknote.ui.terminate.TerminateAct"
             android:screenOrientation="portrait"
             >
 

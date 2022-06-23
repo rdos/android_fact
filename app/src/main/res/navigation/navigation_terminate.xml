@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_terminate"
+    app:startDestination="@id/completeF">
+
+    <fragment
+        android:id="@+id/completeF"
+        android:name="ru.smartro.worknote.ui.terminate.CompleteF"
+        tools:layout="@layout/f_complete___map_act"
+        android:label="CompleteF" >
+        <action
+            android:id="@+id/action_completeF_to_finishCompleteF"
+            app:destination="@id/finishCompleteF" />
+    </fragment>
+    <fragment
+        android:id="@+id/finishCompleteF"
+        tools:layout="@layout/fragment_successful_complete"
+        android:name="ru.smartro.worknote.ui.terminate.FinishCompleteF"
+        android:label="FinishCompleteF" />
+</navigation>

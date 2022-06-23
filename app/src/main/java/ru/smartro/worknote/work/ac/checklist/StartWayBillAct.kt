@@ -3,13 +3,20 @@ package ru.smartro.worknote.work.ac.checklist
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActAbstract
@@ -27,10 +34,12 @@ import ru.smartro.worknote.work.ac.PERMISSIONS
 import java.text.SimpleDateFormat
 import java.util.*
 
-class StartWayBillAct : ActAbstract() {
+class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
     private var mRvWaybill: RecyclerView? = null
     private var mTvNotFoundData: TextView? = null
     private val viewModel: WayListViewModel by viewModel()
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+
     override fun onNewGPS() {
         // TODO: r_dos!!!
     }
@@ -45,6 +54,9 @@ class StartWayBillAct : ActAbstract() {
         supportActionBar?.title = "Путевой Лист"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh)
+        swipeRefreshLayout?.setOnRefreshListener(this)
+
         mTvNotFoundData = findViewById(R.id.tv_act_start_waybill__not_found_data)
         mTvNotFoundData?.text = getString(R.string.tv_no_fount_data)
 
@@ -52,39 +64,46 @@ class StartWayBillAct : ActAbstract() {
         mRvWaybill?.layoutManager = LinearLayoutManager(this)
         hideNotFoundData()
         showingProgress(putExtraParamName)
+
+        viewModel.wayListResponse.observe(this) { result ->
+            if(result != null) {
+                Log.d("TEST :::", "RESULT IS NOT NULL!!!")
+                swipeRefreshLayout?.isRefreshing = false
+                val data = result.data
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        val wayBills = data?.data!!
+                        if (wayBills.isNotEmpty()) {
+                            hideNotFoundData()
+                            if (wayBills.size == 1) {
+                                gotoNextAct(wayBills[0].id, wayBills[0].number)
+                            } else {
+                                mRvWaybill?.adapter = WaybillAdapter(wayBills)
+                            }
+                        } else {
+                            showNotFoundData()
+                        }
+                        hideProgress()
+                    }
+                    Status.ERROR -> {
+                        toast(result.msg)
+                        hideProgress()
+                    }
+                    Status.NETWORK -> {
+                        toast("Проблемы с интернетом")
+                        hideProgress()
+                    }
+                }
+            }
+        }
+
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val body = WayListBody(
             date = currentDate,
             organisationId = paramS().getOwnerId(),
             vehicleId = paramS().getVehicleId()
         )
-        viewModel.getWayList(body).observe(this, Observer { result ->
-            val data = result.data
-            when (result.status) {
-                Status.SUCCESS -> {
-                    val wayBills = data?.data!!
-                    if (wayBills.isNotEmpty()) {
-                        hideNotFoundData()
-                        if (wayBills.size == 1) {
-                            gotoNextAct(wayBills[0].id, wayBills[0].number)
-                        } else {
-                            mRvWaybill?.adapter = WaybillAdapter(wayBills)
-                        }
-                    } else {
-                        showNotFoundData()
-                    }
-                    hideProgress()
-                }
-                Status.ERROR -> {
-                    toast(result.msg)
-                    hideProgress()
-                }
-                Status.NETWORK -> {
-                    toast("Проблемы с интернетом")
-                    hideProgress()
-                }
-            }
-        })
+        viewModel.getWayList(body)
     }
 
     private fun hideNotFoundData() {
@@ -126,8 +145,13 @@ class StartWayBillAct : ActAbstract() {
 
     open class WayListViewModel(application: Application) : BaseViewModel(application) {
 
-        fun getWayList(body : WayListBody): LiveData<Resource<WayListResponse>> {
-            return networkDat.getWayList(body)
+        private val _wayListResponse: MutableLiveData<Resource<WayListResponse>> = MutableLiveData(null)
+        val wayListResponse = _wayListResponse as LiveData<Resource<WayListResponse>>
+
+        fun getWayList(body : WayListBody) {
+            viewModelScope.launch {
+                _wayListResponse.postValue(networkDat.getWayList(body))
+            }
         }
 
     }
@@ -163,5 +187,26 @@ class StartWayBillAct : ActAbstract() {
 //                itemView.findViewById(R.id.act_start_waybill__rv_item__route_name)
 //            }
         }
+    }
+
+    override fun onRefresh() {
+        Log.d("TEST :::", "ON REFRESH!~!!!")
+        val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
+        val body = WayListBody(
+            date = currentDate,
+            organisationId = paramS().getOwnerId(),
+            vehicleId = paramS().getVehicleId()
+        )
+        viewModel.getWayList(body)
+    }
+
+    private fun stopRefreshing() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            if(swipeRefreshLayout == null) {
+                stopRefreshing()
+            } else if(swipeRefreshLayout!!.isRefreshing) {
+
+            }
+        }, 10000)
     }
 }

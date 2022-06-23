@@ -53,9 +53,6 @@ import ru.smartro.worknote.work.RealmRepository
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import ru.terrakok.cicerone.Router
-import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.Cicerone
 
 
 
@@ -144,21 +141,6 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
-    }
-
-    private var mCicerone: Cicerone<Router>? = null
-    private fun getCicerone(): Cicerone<Router> {
-        if (mCicerone == null) {
-            mCicerone = Cicerone.create()
-        }
-        return mCicerone!!
-    }
-    fun getNavigatorHolder(): NavigatorHolder {
-        return getCicerone().navigatorHolder
-    }
-
-    fun getRouter(): Router {
-        return getCicerone().router
     }
 
     inner class MyLocationListener() : LocationListener {

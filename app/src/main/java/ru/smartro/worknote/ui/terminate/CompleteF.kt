@@ -1,6 +1,5 @@
-package ru.smartro.worknote
+package ru.smartro.worknote.ui.terminate
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,19 +11,22 @@ import android.widget.ToggleButton
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.alert_successful_complete.view.*
-import ru.smartro.worknote.awORKOLDs.extensions.showSuccessComplete
+import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.App
+import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.toast
 
 import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.WorkOrderEntity
-import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.work.net.EarlyCompleteBody
 import kotlin.math.round
@@ -132,7 +134,7 @@ class CompleteF : AFragment() {
             getAct().modeSyNChrON_off()
             mDatabase.clearDataBase()
 
-            App.getAppliCation().getRouter().replaceScreen(SCREEN_SUCCESS_COMPLETE)
+            getAct().findNavController(R.id.fragment_container).navigate(CompleteFDirections.actionCompleteFToFinishCompleteF())
         }
 
         inner class EarlyAdapterViewHolder(itemView: View) : BaseCompleteViewHolder(itemView) {

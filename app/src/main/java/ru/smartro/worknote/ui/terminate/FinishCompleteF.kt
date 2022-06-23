@@ -1,9 +1,11 @@
-package ru.smartro.worknote
+package ru.smartro.worknote.ui.terminate
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ac.StartAct
 
 class FinishCompleteF : AFragment() {

@@ -45,6 +45,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.ui.terminate.TerminateAct
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.PERMISSIONS
