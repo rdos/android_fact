@@ -49,7 +49,7 @@ import ru.smartro.worknote.ui.terminate.TerminateAct
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.PERMISSIONS
-import ru.smartro.worknote.work.platform_serve.PlatformServeAct
+import ru.smartro.worknote.ui.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct

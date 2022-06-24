@@ -15,7 +15,7 @@ class TerminateAct : ActNOAbst() {
     }
 
     override fun onBackPressed() {
-        val currentDest = findNavController(R.id.navigation_terminate).currentDestination
+        val currentDest = findNavController(R.id.fragment_container_end_tasks).currentDestination
         if (currentDest == null || currentDest.id == R.id.finishCompleteF) {
             return
         }

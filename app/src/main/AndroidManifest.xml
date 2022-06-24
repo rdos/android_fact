@@ -69,7 +69,7 @@
                 android:value="true" />
         </activity>
         <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.platform_serve.PlatformServeAct"
+            android:name="ru.smartro.worknote.ui.platform_serve.PlatformServeAct"
             android:screenOrientation="portrait" />
 
         <activity  android:exported="false"

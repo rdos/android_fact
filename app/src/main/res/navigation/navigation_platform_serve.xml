@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_platform_serve"
+    app:startDestination="@id/extendedServeFragment">
+
+    <fragment
+        android:id="@+id/extendedServeFragment"
+        tools:layout="@layout/fragment_platform_serve_extended"
+        android:name="ru.smartro.worknote.ui.platform_serve.ExtendedServeFragment"
+        android:label="ExtendedServeFragment" >
+        <action
+            android:id="@+id/action_extendedServeFragment_to_containerServeBottomDialog"
+            app:destination="@id/containerServeBottomDialog" />
+    </fragment>
+    <fragment
+        android:id="@+id/simplifiedServeFragment"
+        tools:layout="@layout/fragment_platform_serve_simplified"
+        android:name="ru.smartro.worknote.ui.platform_serve.SimplifiedServeFragment"
+        android:label="SimplifiedServeFragment" />
+    <dialog
+        android:id="@+id/containerServeBottomDialog"
+        tools:layout="@layout/fragment_container_serve"
+        android:name="ru.smartro.worknote.ui.platform_serve.ContainerServeBottomDialog"
+        android:label="ContainerServeBottomDialog" />
+</navigation>

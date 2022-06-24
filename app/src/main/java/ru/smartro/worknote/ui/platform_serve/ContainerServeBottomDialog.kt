@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.platform_serve
+package ru.smartro.worknote.ui.platform_serve
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -11,6 +11,8 @@ import android.widget.RadioButton
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import kotlinx.android.synthetic.main.fragment_container_serve.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.Inull
@@ -25,7 +27,7 @@ import ru.smartro.worknote.work.ui.ContainerFailureAct
 private const val ARGUMENT_NAME__PLATFORM_ID = "ARGUMENT_NAME__PLATFORM_ID"
 private const val ARGUMENT_NAME__CONTAINER_ID = "ARGUMENT_NAME__CONTAINER_ID"
 class ContainerServeBottomDialog : AbstractBottomDialog() {
-    private val viewModel: PlatformServeViewModel by viewModel()
+    private val viewModel: PlatformServeSharedViewModel by activityViewModels()
     private var volume: Double? = null
     private lateinit var parentAct: PlatformServeAct
 
@@ -136,13 +138,10 @@ hideDialog()
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_red__usebutton))
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-//        if (isNotDefault(volume, comment)) {
-//
-//        }
-        parentAct.updateRecyclerview()
-    }
+//    override fun onDismiss(dialog: DialogInterface) {
+//        super.onDismiss(dialog)
+//        parentAct.findNavController(R.id.navigation_terminate).updateRecyclerView()
+//    }
 
     private fun setVolume(view: View, volume: Double?) {
         var prevRadioButton = view.findViewById<RadioButton>(R.id.percent_0)

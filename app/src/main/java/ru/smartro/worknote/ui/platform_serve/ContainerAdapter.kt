@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.platform_serve
+package ru.smartro.worknote.ui.platform_serve
 
 import android.app.Activity
 import android.content.Context

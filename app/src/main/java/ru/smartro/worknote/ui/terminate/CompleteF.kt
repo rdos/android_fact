@@ -34,17 +34,8 @@ import kotlin.math.round
 
 class CompleteF : AFragment() {
     private lateinit var mReasonAdapter: ReasonAdapter
-
     private lateinit var mDatabase: RealmRepository
 
-    companion object {
-        fun newInstance(data: Any?): CompleteF {
-//            data as Int
-            val fragment = CompleteF()
-//            fragment.addArgument(data)
-            return fragment
-        }
-    }
 
     override fun onGetLayout(): Int {
         return R.layout.f_complete___map_act
@@ -134,7 +125,7 @@ class CompleteF : AFragment() {
             getAct().modeSyNChrON_off()
             mDatabase.clearDataBase()
 
-            getAct().findNavController(R.id.fragment_container).navigate(CompleteFDirections.actionCompleteFToFinishCompleteF())
+            getAct().findNavController(R.id.fragment_container_end_tasks).navigate(CompleteFDirections.actionCompleteFToFinishCompleteF())
         }
 
         inner class EarlyAdapterViewHolder(itemView: View) : BaseCompleteViewHolder(itemView) {
