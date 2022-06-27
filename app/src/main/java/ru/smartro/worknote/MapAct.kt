@@ -878,6 +878,10 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         super.onDestroy()
         mMapMyYandex.onStop()
         MapKitFactory.getInstance().onStop()
+        val configEntity = vs.baseDat.loadConfig(ConfigName.MAPACTDESTROY_CNT)
+        configEntity.cntPlusOne()
+        vs.baseDat.saveConfig(configEntity)
+        vs.baseDat.close()
     }
 
     inner class InfoAdapter(private var p_workOrderS: List<WorkOrderEntity>) :

@@ -11,7 +11,6 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.*
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.isNotNull
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import java.io.Serializable
@@ -524,6 +523,46 @@ open class UnloadEntity(
     var name: String? = null,
     var id: Int? = null
 ) : Serializable, RealmObject()
+
+enum class ConfigName(val displayName: String) {
+    BOOT_CNT("BOOT_CNT"),
+    Snull(ru.smartro.worknote.Snull),
+    RUNAPP_CNT("RUNAPP_CNT"),
+    AIRPLANEMODE_CNT("AIRPLANEMODE_CNT"),
+    NOINTERNET_CNT("NOINTERNET_CNT"),
+    MAPACTDESTROY_CNT("MAPACTDESTROY_CNT"),
+}
+
+open class ConfigEntity(
+    @PrimaryKey private var name: String = Snull,
+    var value: String = Snull
+) : RealmObject() {
+
+    fun toLong(): Long {
+        return this.value.toLong()
+    }
+
+    fun cntPlusOne() {
+        if (this.value == Snull) {
+            this.value = "0"
+        }
+        this.value = (this.toLong() + 1).toString()
+    }
+
+//    @Required
+//    var status: String = TaskStatus.Open.name
+    var configName: ConfigName
+        get() {
+            return try {
+                ConfigName.valueOf(name)
+            } catch (e: IllegalArgumentException) {
+                ConfigName.Snull
+            }
+        }
+        set(value) {
+            this.name = value.displayName.uppercase()
+        }
+}
 
 open class ContainerEntity(
     var workOrderId: Int = Inull,

@@ -18,10 +18,8 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.utils.getActivityProperly
 //import ru.smartro.worknote.utils.DispatcherInfoMessageTypes
-import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ui.JournalChatAct
 import java.io.File
 import java.io.FileOutputStream
 
@@ -176,7 +174,12 @@ class SYNCworkER(
                 }
             }
             Status.ERROR -> Log.e(TAG, "SYNCworkER ERROR")
-            Status.NETWORK -> Log.w(TAG, "SYNCworkER NO INTERNET")
+            Status.NETWORK -> {
+                Log.w(TAG, "SYNCworkER NO INTERNET")
+                val configEntity = db.loadConfig(ConfigName.NOINTERNET_CNT)
+                configEntity.cntPlusOne()
+                db.saveConfig(configEntity)
+            }
         }
         LOGafterLOG()
 

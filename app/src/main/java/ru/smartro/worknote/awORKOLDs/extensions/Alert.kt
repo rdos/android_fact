@@ -15,16 +15,16 @@ import ru.smartro.worknote.Snull
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
 import ru.smartro.worknote.log.AAct
 
-private lateinit var loadingDialog: AlertDialog
-private lateinit var mCustomDialog: AlertDialog
+private var loadingDialog: AlertDialog? = null
+private var mCustomDialog: AlertDialog? = null
 private val TAG = "Alert.kt"
 
 fun showCustomDialog(builder: AlertDialog.Builder) {
     Log.i(TAG, "showCustomDialog.before")
     try {
         mCustomDialog = builder.create()
-        mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        mCustomDialog.show()
+        mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        mCustomDialog?.show()
     }  catch (e: Exception) {
         // TODO: 02.11.2021
         Log.e(TAG, "showCustomDialog", e)
@@ -47,8 +47,8 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
     Log.i(TAG, "showLoadingDialog.before")
     try {
         loadingDialog = builder.create()
-        loadingDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        loadingDialog.show()
+        loadingDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        loadingDialog?.show()
     }  catch (e: Exception) {
         // TODO: 02.11.2021
         Log.e(TAG, "showLoadingDialog", e)
@@ -179,10 +179,10 @@ fun AppCompatActivity.warningClearNavigator(title: String): View {
     mCustomDialog = builder.create()
     view.title_tv.text = title
     view.dismiss_btn.setOnClickListener {
-        mCustomDialog.dismiss()
+        mCustomDialog?.dismiss()
     }
-    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    mCustomDialog.show()
+    mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog?.show()
     return view
 }
 
@@ -207,7 +207,7 @@ fun AppCompatActivity.hideDialog() {
 
     private fun hideCustomDialog() {
         try {
-            mCustomDialog.dismiss()
+            mCustomDialog?.dismiss()
         } catch (e: Exception) {
             // TODO: 02.11.2021
             Log.e(TAG, "AppCompatActivity.hideDialog", e)
@@ -217,9 +217,12 @@ fun AppCompatActivity.hideDialog() {
 fun AppCompatActivity.hideProgress() {
     try {
         Log.w(TAG, "hideProgress")
-        if (loadingDialog.isShowing) {
-            loadingDialog.dismiss()
+        loadingDialog?.let {
+            if (it.isShowing) {
+                it.dismiss()
+            }
         }
+
     } catch (e: Exception) {
         // TODO: 02.11.2021
         Log.e(TAG, "AppCompatActivity.loadingHide", e)

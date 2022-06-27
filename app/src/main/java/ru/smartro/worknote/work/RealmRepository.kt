@@ -954,4 +954,26 @@ class RealmRepository(private val p_realm: Realm) {
             return p_realm.where(WorkOrderEntity::class.java).isNotNull("progress_at")
         }
     }
+
+    fun loadConfig(name: ConfigName): ConfigEntity {
+        val result: ConfigEntity
+        val configEntity = p_realm.where(ConfigEntity::class.java).equalTo("name", name.displayName.uppercase()).findFirst()
+        if (configEntity == null) {
+           result = ConfigEntity()
+           result.configName = name
+        } else {
+            result = p_realm.copyFromRealm(configEntity)
+        }
+        return result
+    }
+
+    fun saveConfig(configEntity: ConfigEntity) {
+        p_realm.executeTransaction { realm ->
+            realm.insertOrUpdate(configEntity)
+        }
+    }
+
+    fun close() {
+        p_realm.close()
+    }
 }

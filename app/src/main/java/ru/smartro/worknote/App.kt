@@ -5,6 +5,10 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.location.Location
@@ -24,9 +28,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -36,8 +37,6 @@ import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
-import io.sentry.protocol.User
-import kotlinx.android.synthetic.main.act_start.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -50,6 +49,8 @@ import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.work.RealmRepository
+import ru.smartro.worknote.work.ConfigName
+import ru.smartro.worknote.work.ac.AirplanemodeIntentService
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -144,6 +145,12 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
+
+        val configEntity = getDB().loadConfig(ConfigName.RUNAPP_CNT)
+        configEntity.cntPlusOne()
+        getDB().saveConfig(configEntity)
+
+        registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
     }
 
     private var mCicerone: Cicerone<Router>? = null
@@ -238,7 +245,7 @@ class App : AApp() {
     //Реплику: gjпох
     public fun getDB(): RealmRepository {
         if(mDB == null) {
-            initRealm()
+//            initRealm()
             mDB = RealmRepository(Realm.getDefaultInstance())
         }
       return mDB!!
@@ -497,8 +504,23 @@ class App : AApp() {
         }
         return App.getAppParaMS().isModeDEVEL
     }
+    private val receiver by lazy { getAirplaneModeBroadcastReceiver() }
 
-
+    private fun getAirplaneModeBroadcastReceiver(): BroadcastReceiver {
+        return object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent?) {
+                if (intent?.action == Intent.ACTION_AIRPLANE_MODE_CHANGED) {
+                    val isAirplaneModeEnabled = intent.getBooleanExtra("state", false)
+//                    textView.text = isAirplaneModeEnabled.toString()
+                    Log.w(TAG, "isAirplaneModeEnabled=${isAirplaneModeEnabled}")
+                    if (isAirplaneModeEnabled) {
+                        val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
+                        context.startService(serviceIntent)
+                    }
+                }
+            }
+        }
+    }
 }
 
 const val TIME_OUT = 240000L
