@@ -29,7 +29,6 @@ import kotlin.math.min
 
 class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : AbstractDialog(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
-    private var mFirstTime = true
     private var mIsServeAgain = false
     private val mOnClickListener = this as View.OnClickListener
 
@@ -128,13 +127,6 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         params?.horizontalMargin = 56f
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.attributes = params
-
-        // TODO: 22.10.2021 mFirstTime ??!
-        if (mFirstTime) {
-            mFirstTime = false
-        } else {
-            dismiss()
-        }
     }
 
     private fun initButtonsViews() {
