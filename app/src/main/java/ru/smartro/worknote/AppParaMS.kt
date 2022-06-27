@@ -206,12 +206,6 @@ class AppParaMS {
             it.putLong("lastSynchronizeTime", value)
         }
 
-    var serviceStartedAt: Long
-        get() = sharedPref__env.getLong("serviceStartedAt", 0L)
-        set(value) = sharedPref__env.edit {
-            it.putLong("serviceStartedAt", value)
-        }
-
     fun getVehicleId(): Int {
         return vehicleId?: Inull
     }

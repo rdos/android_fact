@@ -12,16 +12,37 @@
         android:label="ExtendedServeFragment" >
         <action
             android:id="@+id/action_extendedServeFragment_to_containerServeBottomDialog"
-            app:destination="@id/containerServeBottomDialog" />
+            app:destination="@id/containerServeBottomDialog">
+            <argument
+                android:name="containerId"
+                app:argType="integer"
+                />
+        </action>
+        <action
+            android:id="@+id/action_extendedServeFragment_to_simplifiedServeFragment"
+            app:destination="@id/simplifiedServeFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/simplifiedServeFragment"
         tools:layout="@layout/fragment_platform_serve_simplified"
         android:name="ru.smartro.worknote.ui.platform_serve.SimplifiedServeFragment"
-        android:label="SimplifiedServeFragment" />
+        android:label="SimplifiedServeFragment" >
+        <action
+            android:id="@+id/action_simplifiedServeFragment_to_extendedServeFragment"
+            app:destination="@id/extendedServeFragment" />
+    </fragment>
+
     <dialog
         android:id="@+id/containerServeBottomDialog"
         tools:layout="@layout/fragment_container_serve"
         android:name="ru.smartro.worknote.ui.platform_serve.ContainerServeBottomDialog"
-        android:label="ContainerServeBottomDialog" />
+        android:label="ContainerServeBottomDialog">
+        <argument
+            android:name="containerId"
+            app:argType="integer"
+            android:defaultValue="-1"
+            />
+    </dialog>
+
 </navigation>

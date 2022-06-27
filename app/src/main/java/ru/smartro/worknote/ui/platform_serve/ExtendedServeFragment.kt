@@ -10,11 +10,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.*
@@ -68,7 +70,6 @@ class ExtendedServeFragment :
 //        }
 //        return acbPickup!!
     private fun initBeforeMedia() {
-        paramS().serviceStartedAt = System.currentTimeMillis() / 1000L
         val intent = Intent(getAct(), CameraAct::class.java)
         intent.putExtra("platform_id", mPlatformEntity.platformId)
         intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
@@ -80,8 +81,39 @@ class ExtendedServeFragment :
         return R.layout.fragment_platform_serve_extended
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.d("TEST :::", "LC:::ExtendedServeFrag/onPause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("TEST :::", "LC:::ExtendedServeFrag/onResume")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("TEST :::", "LC:::ExtendedServeFrag/onDestroy")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("TEST :::", "LC:::ExtendedServeFrag/onDestroyView")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d("TEST :::", "LC:::ExtendedServeFrag/onCreate")
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.d("TEST :::", "LC:::ExtendedServeFrag/onCreateView")
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("TEST :::", "LC:::ExtendedServeFrag/onViewCreated")
         val plId = getAct().intent.getIntExtra("platform_id", Inull)
         Log.d("TEST :::", "ExtendedServeFrag/onViewCreated: platformId= ${plId}")
         mPlatformEntity = vm.getPlatformEntity(plId)
@@ -172,7 +204,7 @@ class ExtendedServeFragment :
          * */
 
         acsbVolumePickup = view.findViewById<SeekBar?>(R.id.acsb_activity_platform_serve__seekbar).apply {
-            thumb = getThumb()
+            thumb = getThumb(null)
             if (mPlatformEntity.isPickupNotEmpty()) {
                 progress = max
                 tvVolumePickuptext(mPlatformEntity.volumePickup)
@@ -186,7 +218,7 @@ class ExtendedServeFragment :
                         thumb = getThumb(R.drawable.bg_button_green__usebutton)
                         tag = THUMB_ACTIVE
                     } else if(progress <= 0 && tag != THUMB_INACTIVE) {
-                        thumb = getThumb()
+                        thumb = getThumb(null)
                         tag = THUMB_INACTIVE
                     }
 //                неРазРаб acsbVolumePickup.max - 13
@@ -367,9 +399,12 @@ class ExtendedServeFragment :
     }
 
     override fun startContainerService(item: ContainerEntity) {
-        val fragment = ContainerServeBottomDialog()
-        fragment.addArgument(mPlatformEntity.platformId!!, item.containerId!!)
-        fragment.show(getAct().supportFragmentManager, "ContainerServiceFragment")
+        findNavController().navigate(
+            ExtendedServeFragmentDirections
+                .actionExtendedServeFragmentToContainerServeBottomDialog(
+                    item.containerId!!
+                )
+        )
     }
 
 }

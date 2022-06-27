@@ -180,6 +180,14 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         setInfoData()
 
 
+        findViewById<AppCompatImageButton>(R.id.btn_to_nearest).setOnClickListener {
+            mIsAUTOMoveCamera = false
+            mPlatformS?.apply {
+                val rand = random()
+                moveCameraTo(PoinT(rand.coords[0]!!, rand.coords[1]!!))
+            }
+        }
+
         val acbLogout = findViewById<AppCompatButton>(R.id.acb_act_map__logout)
         acbLogout.setOnClickListener {
             logout()

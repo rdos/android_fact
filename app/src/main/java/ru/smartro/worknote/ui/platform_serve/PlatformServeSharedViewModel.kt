@@ -1,6 +1,7 @@
 package ru.smartro.worknote.ui.platform_serve
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.smartro.worknote.Inull
@@ -14,6 +15,10 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     val platformEntity: LiveData<PlatformEntity>
         get() = _platformEntity
 
+    private val _sortedContainers: MutableLiveData<PlatformEntity> = MutableLiveData(null)
+    val sortedContainers: LiveData<PlatformEntity>
+        get() = _sortedContainers
+
     private val _screenMode: MutableLiveData<Boolean> = MutableLiveData(false)
     val screenMode: LiveData<Boolean>
         get() = _screenMode
@@ -25,6 +30,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     fun getPlatformEntity(platformId: Int): PlatformEntity {
         val response = baseDat.getPlatformEntity(platformId)
         _platformEntity.postValue(response)
+        _sortedContainers.postValue(response.containers.map {  })
         return response
     }
 

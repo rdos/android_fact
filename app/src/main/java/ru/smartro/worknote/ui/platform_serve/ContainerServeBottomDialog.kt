@@ -1,6 +1,5 @@
 package ru.smartro.worknote.ui.platform_serve
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,10 +11,8 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_container_serve.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.base.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
@@ -24,19 +21,15 @@ import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.ContainerBreakdownAct
 import ru.smartro.worknote.work.ui.ContainerFailureAct
 
-private const val ARGUMENT_NAME__PLATFORM_ID = "ARGUMENT_NAME__PLATFORM_ID"
-private const val ARGUMENT_NAME__CONTAINER_ID = "ARGUMENT_NAME__CONTAINER_ID"
 class ContainerServeBottomDialog : AbstractBottomDialog() {
     private val viewModel: PlatformServeSharedViewModel by activityViewModels()
     private var volume: Double? = null
     private lateinit var parentAct: PlatformServeAct
 
-    private val p_platform_id: Int by lazy {
-        getArgumentPlatformID()
-    }
-    private val p_container_id: Int by lazy {
-        getArgumentContainerID()
-    }
+    val args: ContainerServeBottomDialogArgs by navArgs()
+
+    private var p_container_id: Int = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
@@ -49,26 +42,11 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         return inflater.inflate(R.layout.fragment_container_serve, container, false)
     }
 
-    fun addArgument(platformId: Int, containerId: Int) {
-        val bundle = Bundle(2)
-        bundle.putInt(ARGUMENT_NAME__PLATFORM_ID, platformId)
-        bundle.putInt(ARGUMENT_NAME__CONTAINER_ID, containerId)
-        this.arguments = bundle
-    }
-
-    private fun getArgumentPlatformID(): Int {
-        val result = requireArguments().getInt(ARGUMENT_NAME__PLATFORM_ID, Inull)
-        return result
-    }
-
-    private fun getArgumentContainerID(): Int {
-        val result = requireArguments().getInt(ARGUMENT_NAME__CONTAINER_ID, Inull)
-        return result
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentAct = requireActivity() as PlatformServeAct
+        p_container_id = args.containerId
+
         val containerEntity = viewModel.baseDat.getContainerEntity(p_container_id)
         containerEntity.let {
             comment_et.setText(it.comment)
@@ -78,7 +56,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         }
         comment_et.addTextChangedListener{
             // TODO:
-            viewModel.updateContainerComment(p_platform_id, p_container_id, it.toString())
+            viewModel.updateContainerComment(viewModel.platformEntity.value!!.platformId!!, p_container_id, it.toString())
         }
 
         val apbFailure = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_failure)
@@ -89,7 +67,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
             val intent = Intent(requireContext(), ContainerFailureAct::class.java)
             intent.putExtra("is_container", true)
             intent.putExtra("container_id", p_container_id)
-            intent.putExtra("platform_id", p_platform_id)
+            intent.putExtra("platform_id", viewModel.platformEntity.value!!.platformId!!)
             startActivityForResult(intent, 99)
         }
         val apbBreakdown = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_breakdown)
@@ -100,7 +78,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
             val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
             intent.putExtra("is_container", true)
             intent.putExtra("container_id", p_container_id)
-            intent.putExtra("platform_id", p_platform_id)
+            intent.putExtra("platform_id", viewModel.platformEntity.value!!.platformId!!)
             startActivityForResult(intent, 99)
         }
 
@@ -111,11 +89,11 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         apbBeforeMedia.setOnClickListener {
             //todo: жопа))))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
             val intent = Intent(requireActivity(), CameraAct::class.java)
-            intent.putExtra("platform_id", p_platform_id)
+            intent.putExtra("platform_id", viewModel.platformEntity.value!!.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
             intent.putExtra("isNoLimitPhoto", true)
             startActivityForResult(intent, 1001)
-hideDialog()
+            hideDialog()
         }
 
         val apbAfterMedia = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve__after_media)
@@ -125,11 +103,11 @@ hideDialog()
         apbAfterMedia.setOnClickListener {
             //todo: жоpa)№2)))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
             val intent = Intent(requireActivity(), CameraAct::class.java)
-            intent.putExtra("platform_id", p_platform_id)
+            intent.putExtra("platform_id", viewModel.platformEntity.value!!.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
             intent.putExtra("isNoLimitPhoto", true)
             startActivityForResult(intent, 1001)
-                                        hideDialog()
+            hideDialog()
         }
 
     }
@@ -149,7 +127,7 @@ hideDialog()
             prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             val radioButton = view.findViewById<RadioButton>(checkedId)
             this.volume = toPercent(radioButton.text.toString())
-            viewModel.updateContainerVolume(p_platform_id, p_container_id, this.volume)
+            viewModel.updateContainerVolume(viewModel.platformEntity.value!!.platformId!!, p_container_id, this.volume)
             when (radioButton.isChecked) {
                 true -> {
                     radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
@@ -176,11 +154,6 @@ hideDialog()
                 percent_125.isChecked = false
             }
         }
-    }
-
-    private fun isNotDefault(volume: Double?, comment: String?): Boolean {
-        Log.d("ContainerExpandAdapter", "volumeIsNotO:${volume != null} commentIsNotNullOrEmpty:${!comment.isNullOrEmpty()} ")
-        return volume != null || !comment.isNullOrEmpty()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
