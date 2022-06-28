@@ -1,31 +1,19 @@
-package ru.smartro.worknote.ui.platform_serve
+package ru.smartro.worknote.presentation.platform_serve
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.cam.CameraAct
-
-fun NavController.isFragmentRemovedFromBackStack(destinationId: Int) =
-    try {
-        getBackStackEntry(destinationId)
-
-        false
-    } catch (e: Exception) {
-        true
-    }
 
 class PlatformServeAct :
     ActNOAbst() {
@@ -52,8 +40,6 @@ class PlatformServeAct :
 
         vm.screenMode.observe(this) { screenMode ->
             if(screenMode != null) {
-                Log.d("TEST :::", "SCREEN MODE OBSERVE:: IDS: ${R.id.extendedServeFragment} + ${R.id.simplifiedServeFragment}")
-                Log.d("TEST :::", "SCREEN MODE OBSERVE:: BACKSTACK: ${navController.currentBackStackEntry?.id}")
                 navController.currentDestination?.apply {
                     when(screenMode) {
                         false -> {
@@ -79,6 +65,12 @@ class PlatformServeAct :
 
         vm.platformEntity.observe(this) { platform ->
             if(platform != null) {
+
+                if(vm.wasAskedForPhoto.value == false) {
+                    initBeforeMedia(platform.platformId!!)
+                    vm.wasAskedForPhoto.postValue(true)
+                }
+
                 tvContainersProgress?.text =
                     "№${platform.srpId} / ${platform.containers.size} конт."
 
@@ -106,6 +98,14 @@ class PlatformServeAct :
                 }
             }
         }
+    }
+
+    private fun initBeforeMedia(platformId: Int) {
+        val intent = Intent(this, CameraAct::class.java)
+        intent.putExtra("platform_id", platformId)
+        intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
+        hideDialog()
+        startActivityForResult(intent, 1001)
     }
 
     override fun onBackPressed() {

@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.platform_serve
+package ru.smartro.worknote.presentation.platform_serve
 
 import android.app.Activity
 import android.content.Intent
@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -32,13 +31,13 @@ import ru.smartro.worknote.work.ui.PlatformFailureAct
 
 class ExtendedServeFragment :
     AFragment(),
-    ContainerAdapter.ContainerPointClickListener {
+    ContainerExtendedAdapter.ContainerPointClickListener {
 
     private val THUMB_INACTIVE = "Inactive"
     private val THUMB_ACTIVE = "Active"
     private val REQUEST_EXIT = 33
     private lateinit var mPlatformEntity: PlatformEntity
-    private lateinit var mConrainerAdapter: ContainerAdapter
+    private lateinit var mConrainerAdapter: ContainerExtendedAdapter
     private val vm: PlatformServeSharedViewModel by activityViewModels()
 
     // TODO: 14.01.2022 r_dos))
@@ -48,7 +47,6 @@ class ExtendedServeFragment :
     private var prevVolumeValue: Double? = null
     private var newVolumeValue: Double? = null
     private var mVolumePickup: Double? = null
-    private var acbPickup: AppCompatButton? = null
     private var tvVolumePickup: TextView? = null
     private var mAcbKGORemaining: AppCompatButton? = null
     private var mAcbKGOServed: AppCompatButton? = null
@@ -56,7 +54,9 @@ class ExtendedServeFragment :
     private var recyclerView: RecyclerView? = null
     private var acsbVolumePickup: SeekBar? = null
 
-    //todo: ответсвенность)
+//    todo: ответсвенность)
+//    private var acbPickup: AppCompatButton? = null
+
 //    private fun acbPickup(): AppCompatButton {
 //            //        etVolumePickup.let {
 //            //                // mEtVolumePickup = findViewById(R.id.et_act_platformserve__volumepickup)
@@ -69,13 +69,6 @@ class ExtendedServeFragment :
 //            }
 //        }
 //        return acbPickup!!
-    private fun initBeforeMedia() {
-        val intent = Intent(getAct(), CameraAct::class.java)
-        intent.putExtra("platform_id", mPlatformEntity.platformId)
-        intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
-        hideDialog()
-        startActivityForResult(intent, 1001)
-    }
 
     override fun onGetLayout(): Int {
         return R.layout.fragment_platform_serve_extended
@@ -115,14 +108,11 @@ class ExtendedServeFragment :
         super.onViewCreated(view, savedInstanceState)
         Log.d("TEST :::", "LC:::ExtendedServeFrag/onViewCreated")
         val plId = getAct().intent.getIntExtra("platform_id", Inull)
-        Log.d("TEST :::", "ExtendedServeFrag/onViewCreated: platformId= ${plId}")
         mPlatformEntity = vm.getPlatformEntity(plId)
         tvVolumePickup = view.findViewById(R.id.et_act_platformserve__volumepickup)
         recyclerView = view.findViewById(R.id.rv_activity_platform_serve)
 
         initContainer()
-//        todo/vlad: initBeforeMedia logic
-        initBeforeMedia()
 
         acbProblem = view.findViewById<AppCompatButton?>(R.id.acb_activity_platform_serve__problem).apply {
             if (mPlatformEntity.failureMedia.size > 0) {
@@ -384,7 +374,7 @@ class ExtendedServeFragment :
 
     private fun initContainer() {
         val containers = vm.baseDat.findContainersSortedByIsActiveToday(mPlatformEntity.platformId!!)
-        mConrainerAdapter = ContainerAdapter(getAct(), this, (containers) as ArrayList<ContainerEntity>)
+        mConrainerAdapter = ContainerExtendedAdapter(getAct(), this, (containers) as ArrayList<ContainerEntity>)
         recyclerView?.apply {
             recycledViewPool.setMaxRecycledViews(0, 0)
             adapter = mConrainerAdapter

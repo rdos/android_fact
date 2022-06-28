@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/completeF"
-        android:name="ru.smartro.worknote.ui.terminate.CompleteF"
+        android:name="ru.smartro.worknote.presentation.terminate.CompleteF"
         tools:layout="@layout/f_complete___map_act"
         android:label="CompleteF" >
         <action
@@ -17,6 +17,6 @@
     <fragment
         android:id="@+id/finishCompleteF"
         tools:layout="@layout/fragment_successful_complete"
-        android:name="ru.smartro.worknote.ui.terminate.FinishCompleteF"
+        android:name="ru.smartro.worknote.presentation.terminate.FinishCompleteF"
         android:label="FinishCompleteF" />
 </navigation>

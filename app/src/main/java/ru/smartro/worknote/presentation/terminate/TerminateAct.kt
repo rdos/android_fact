@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.terminate
+package ru.smartro.worknote.presentation.terminate
 
 import android.os.Bundle
 import androidx.navigation.findNavController

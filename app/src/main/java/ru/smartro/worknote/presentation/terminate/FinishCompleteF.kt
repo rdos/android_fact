@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.terminate
+package ru.smartro.worknote.presentation.terminate
 
 import android.content.Intent
 import android.os.Bundle

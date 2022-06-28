@@ -45,11 +45,11 @@ import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.ui.terminate.TerminateAct
+import ru.smartro.worknote.presentation.terminate.TerminateAct
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.PERMISSIONS
-import ru.smartro.worknote.ui.platform_serve.PlatformServeAct
+import ru.smartro.worknote.presentation.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct

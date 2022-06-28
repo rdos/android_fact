@@ -1,4 +1,4 @@
-package ru.smartro.worknote.ui.terminate
+package ru.smartro.worknote.presentation.terminate
 
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.alert_successful_complete.view.*
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R

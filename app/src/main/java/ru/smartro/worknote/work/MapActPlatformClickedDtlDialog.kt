@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.alert_warning_camera.view.*
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.ui.platform_serve.PlatformServeAct
+import ru.smartro.worknote.presentation.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import kotlin.math.min

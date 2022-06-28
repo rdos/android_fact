@@ -3,7 +3,7 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import ru.smartro.worknote.MapAct
-import ru.smartro.worknote.ui.platform_serve.PlatformServeSharedViewModel
+import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import ru.smartro.worknote.work.ac.checklist.StartWorkOrderAct

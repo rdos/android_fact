@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/extendedServeFragment"
         tools:layout="@layout/fragment_platform_serve_extended"
-        android:name="ru.smartro.worknote.ui.platform_serve.ExtendedServeFragment"
+        android:name="ru.smartro.worknote.presentation.platform_serve.ExtendedServeFragment"
         android:label="ExtendedServeFragment" >
         <action
             android:id="@+id/action_extendedServeFragment_to_containerServeBottomDialog"
@@ -26,7 +26,7 @@
     <fragment
         android:id="@+id/simplifiedServeFragment"
         tools:layout="@layout/fragment_platform_serve_simplified"
-        android:name="ru.smartro.worknote.ui.platform_serve.SimplifiedServeFragment"
+        android:name="ru.smartro.worknote.presentation.platform_serve.SimplifiedServeFragment"
         android:label="SimplifiedServeFragment" >
         <action
             android:id="@+id/action_simplifiedServeFragment_to_extendedServeFragment"
@@ -36,7 +36,7 @@
     <dialog
         android:id="@+id/containerServeBottomDialog"
         tools:layout="@layout/fragment_container_serve"
-        android:name="ru.smartro.worknote.ui.platform_serve.ContainerServeBottomDialog"
+        android:name="ru.smartro.worknote.presentation.platform_serve.ContainerServeBottomDialog"
         android:label="ContainerServeBottomDialog">
         <argument
             android:name="containerId"
