@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation.platform_serve
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
@@ -19,6 +20,7 @@ data class ClientGroupedContainers(
 )
 
 data class TypeGroupedContainers(
+    var id: Int = 0,
     var typeName: String = "",
     var containers: MutableList<ContainerEntity> = mutableListOf()
 )
@@ -46,6 +48,8 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     fun getPlatformEntity(platformId: Int): PlatformEntity {
         val response = baseDat.getPlatformEntity(platformId)
         _platformEntity.postValue(response)
+        Log.d("TEST:::", "\\\\\\" + response.containers.joinToString { el -> el.volume.toString() })
+        // vlad: CLUSTERING by isActive -> client -> type
         val temp = mutableListOf<ActiveGroupedContainers>()
         response.containers.forEach { container ->
             val isActiveTemp = temp.find { it.isActiveToday == container.isActiveToday }
@@ -56,6 +60,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
                         ClientGroupedContainers(
                             container.client ?: "",
                             mutableListOf(TypeGroupedContainers(
+                                0,
                                 container.typeName ?: "",
                                 mutableListOf(container)
                             ))
@@ -67,37 +72,37 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
                     isActiveTemp.clientGroupedContainers
                         .find { it.client == (container.client?: "") }
                 val activeIndex = temp.indexOf(isActiveTemp)
-                if(clientTemp == null) {
-                    temp[activeIndex]
-                        .clientGroupedContainers.add(ClientGroupedContainers(
+
+                // Список контейнеров, сгруппированных по клиентам
+                temp[activeIndex].clientGroupedContainers.apply {
+                    if(clientTemp == null) {
+                        add(ClientGroupedContainers(
                             container.client?: "",
                             mutableListOf(
                                 TypeGroupedContainers(
-                                container.typeName?: "",
+                                    0,
+                                    container.typeName?: "",
                                     mutableListOf(container)
-                            ))
+                                ))
                         ))
-                } else {
-                    val clientIndex = temp[activeIndex].clientGroupedContainers.indexOf(clientTemp)
-                    val typeTemp = clientTemp.groupedContainers
-                        .find { it.typeName == (container.typeName?: "") }
-                    if(typeTemp == null) {
-                        temp[activeIndex]
-                            .clientGroupedContainers[clientIndex]
-                            .groupedContainers.add(TypeGroupedContainers(
-                                container.typeName?: "",
-                                mutableListOf(container)
-                            ))
                     } else {
-                        val typeIndex = temp[activeIndex]
-                            .clientGroupedContainers[clientIndex]
-                            .groupedContainers.indexOf(typeTemp)
-                        temp[activeIndex]
-                            .clientGroupedContainers[clientIndex]
-                            .groupedContainers[typeIndex].containers.add(container)
+                        val clientIndex = indexOf(clientTemp)
+                        val typeTemp = clientTemp.groupedContainers
+                            .find { it.typeName == (container.typeName?: "") }
+                        if(typeTemp == null) {
+                            get(clientIndex).groupedContainers.add(TypeGroupedContainers(
+                                    get(clientIndex).groupedContainers.size,
+                                    container.typeName?: "",
+                                    mutableListOf(container)
+                                ))
+                        } else {
+                            val typeIndex = get(clientIndex).groupedContainers.indexOf(typeTemp)
+                            get(clientIndex).groupedContainers[typeIndex].apply {
+                                containers.add(container)
+                            }
+                        }
                     }
                 }
-
             }
         }
         _sortedContainers.postValue(temp)

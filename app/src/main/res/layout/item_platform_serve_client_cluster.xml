@@ -17,6 +17,6 @@
         android:layout_marginTop="5dp"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         tools:itemCount="3"
-        tools:listitem="@layout/item_platform_serve_container_cluster"/>
+        tools:listitem="@layout/item_simplified_serve_typed_containers"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

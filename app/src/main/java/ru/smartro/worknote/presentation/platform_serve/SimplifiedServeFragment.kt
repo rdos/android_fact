@@ -3,15 +3,17 @@ package ru.smartro.worknote.presentation.platform_serve
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.yandex.mapkit.search.Line
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
+import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContainerAdapter
+import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAdapter
 
 
-class SimplifiedServeFragment : AFragment() {
+class SimplifiedServeFragment : AFragment(), TypedContainerAdapter.TypedContainerListener {
 
     private val vm: PlatformServeSharedViewModel by activityViewModels()
 
@@ -22,30 +24,46 @@ class SimplifiedServeFragment : AFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter1 = ContainerSimplifiedAdapter(requireContext())
-        val adapter2 = ContainerSimplifiedAdapter(requireContext())
+        val adapterCurrentTask = SimplifiedContainerAdapter(requireContext(), this)
+        val adapterOffTask = SimplifiedContainerAdapter(requireContext(), this)
 
-        val rv1 = view.findViewById<RecyclerView>(R.id.rv_main).apply {
+        val rvCurrentTask = view.findViewById<RecyclerView>(R.id.rv_main).apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = adapter1
+            adapter = adapterCurrentTask
         }
-        val rv2 = view.findViewById<RecyclerView>(R.id.rv_off_task).apply {
+        val rvOffTask = view.findViewById<RecyclerView>(R.id.rv_off_task).apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = adapter2
+            adapter = adapterOffTask
         }
 
         vm.sortedContainers.observe(viewLifecycleOwner) { list ->
             if(list != null) {
-                Log.d("TEST :::", "CONTS::: ${list}")
-                adapter1.containers = list.find { it.isActiveToday }!!.clientGroupedContainers
+                val contsCurrentTask = list.find { it.isActiveToday }
+                if(contsCurrentTask != null) {
+                    adapterCurrentTask.containers = contsCurrentTask.clientGroupedContainers
+                }
 
-
-//                if(list.find { !it.isActiveToday } != null) {
-//
-//                }
+                val contsOffTask = list.find { !it.isActiveToday }
+                if(contsOffTask != null) {
+                    view.findViewById<LinearLayoutCompat>(R.id.containers_off_task).visibility = View.VISIBLE
+                    adapterOffTask.containers = contsOffTask.clientGroupedContainers
+                } else {
+                    view.findViewById<LinearLayoutCompat>(R.id.containers_off_task).visibility = View.GONE
+                }
             }
         }
 
     }
 
+    override fun onDecrease(containersIds: List<Int>) {
+
+    }
+
+    override fun onIncrease(containersIds: List<Int>) {
+
+    }
+
+    override fun onAddPhoto(containersIds: List<Int>) {
+
+    }
 }

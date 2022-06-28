@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation.platform_serve
+package ru.smartro.worknote.presentation.platform_serve.adapters
 
 import android.app.Activity
 import android.content.Context
@@ -19,8 +19,11 @@ import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 
 // TODO: 22.10.2021 !!!когда?
-class ContainerExtendedAdapter(private val activity: Context, private val listener: ContainerPointClickListener, private val containers: ArrayList<ContainerEntity>) :
-    RecyclerView.Adapter<ContainerExtendedAdapter.OwnerViewHolder>() {
+class ExtendedContainerAdapter(
+    private val activity: Context,
+    private val listener: ContainerPointClickListener,
+    private val containers: List<ContainerEntity>
+) : RecyclerView.Adapter<ExtendedContainerAdapter.OwnerViewHolder>() {
     // TODO: 22.10.2021  item_container_adapter !!!
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_adapter, parent, false)
@@ -37,8 +40,7 @@ class ContainerExtendedAdapter(private val activity: Context, private val listen
         holder.itemView.choose_title.text = container.number
         holder.itemView.tv_item_container_adapter__type_name.text = container.typeName
         // TODO: 25.10.2021 add getString() + format
-        holder.itemView.tv_item_container_adapter__constructiveVolume.text = "${container.constructiveVolume.toStr("м³")}"
-
+        holder.itemView.tv_item_container_adapter__constructiveVolume.text = container.constructiveVolume.toStr("м³")
         holder.itemView.setOnClickListener {
             if(!container.isActiveToday && container.volume == null) {
                 showTakeInactiveContainerAlert(holder.activity) {
@@ -61,8 +63,12 @@ class ContainerExtendedAdapter(private val activity: Context, private val listen
             holder.itemView.tv_item_container_adapter__volume.setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
         }
 
-        if (container.isFailureNotEmpty() || container.isBreakdownNotEmpty()) {
+        if (container.isFailureNotEmpty()) {
             holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red_cool))
+        }
+
+        if(container.volume != null && !container.isFailureNotEmpty()) {
+            holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.green_cool))
         }
     }
 
@@ -92,11 +98,5 @@ class ContainerExtendedAdapter(private val activity: Context, private val listen
 
     interface ContainerPointClickListener {
         fun startContainerService(item: ContainerEntity)
-    }
-
-    fun updateData(newData: ArrayList<ContainerEntity>) {
-        containers.clear()
-        containers.addAll(newData)
-        notifyDataSetChanged()
     }
 }

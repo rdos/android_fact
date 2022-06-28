@@ -296,8 +296,8 @@ class App : AApp() {
 
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channelId)
 
-        builder.setSmallIcon(R.drawable.ic_app)
-            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_app))
+        builder.setSmallIcon(R.drawable.ic_container)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_container))
             .setContentTitle(textTitle)
             .setContentText(textContent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

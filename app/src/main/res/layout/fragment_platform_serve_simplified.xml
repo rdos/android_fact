@@ -13,7 +13,7 @@
         tools:itemCount="1"
         tools:listitem="@layout/item_platform_serve_client_cluster"/>
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/containers_off_task"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -32,6 +32,6 @@
             tools:itemCount="1"
             tools:listitem="@layout/item_platform_serve_client_cluster"/>
 
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

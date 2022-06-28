@@ -8,6 +8,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.navigation.fragment.NavHostFragment
+import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
@@ -29,6 +30,9 @@ class PlatformServeAct :
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_platformserve)
         supportActionBar?.hide()
+
+        val plId = intent.getIntExtra("platform_id", Inull)
+        vm.getPlatformEntity(plId)
 
         tvContainersProgress = findViewById(R.id.tv_platform_serve__cont_progress)
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
