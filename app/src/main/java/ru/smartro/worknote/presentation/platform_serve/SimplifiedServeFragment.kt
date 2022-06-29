@@ -11,9 +11,10 @@ import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContainerAdapter
 import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAdapter
+import kotlin.reflect.typeOf
 
 
-class SimplifiedServeFragment : AFragment(), TypedContainerAdapter.TypedContainerListener {
+class SimplifiedServeFragment : AFragment(), SimplifiedContainerAdapter.ClientContainerListener {
 
     private val vm: PlatformServeSharedViewModel by activityViewModels()
 
@@ -52,18 +53,17 @@ class SimplifiedServeFragment : AFragment(), TypedContainerAdapter.TypedContaine
                 }
             }
         }
-
     }
 
-    override fun onDecrease(containersIds: List<Int>) {
-
+    override fun onDecrease(clientGroupId: Int, typeGroupId: Int) {
+        vm.onDecrease(clientGroupId, typeGroupId)
     }
 
-    override fun onIncrease(containersIds: List<Int>) {
-
+    override fun onIncrease(clientGroupId: Int, typeGroupId: Int) {
+        vm.onIncrease(clientGroupId, typeGroupId)
     }
 
-    override fun onAddPhoto(containersIds: List<Int>) {
-
+    override fun onAddPhoto(clientGroupId: Int, typeGroupId: Int) {
+        vm.onAddPhoto(clientGroupId, typeGroupId)
     }
 }

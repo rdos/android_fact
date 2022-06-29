@@ -24,9 +24,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -36,15 +33,13 @@ import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
-import io.sentry.protocol.User
-import kotlinx.android.synthetic.main.act_start.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.AndRoid
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
+import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.log.AAct

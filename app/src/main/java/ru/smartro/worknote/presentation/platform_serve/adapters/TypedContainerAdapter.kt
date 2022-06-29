@@ -51,20 +51,20 @@ class TypedContainerAdapter(
             tvTypeName.text = typeGroup.typeName.ifEmpty { "Тип не указан" }
 
             bDecrease.setOnClickListener {
-                listener.onDecrease(containersIds)
+                listener.onDecrease(typeGroup.id)
             }
 
             tvCount.text =
                 typeGroup.containers.count {
-                    it.volume != null && !it.isFailureNotEmpty()
+                    it.failureReasonId == null
                 }.toString()
 
             bIncrease.setOnClickListener {
-                listener.onIncrease(containersIds)
+                listener.onIncrease(typeGroup.id)
             }
 
             bAddPhoto.setOnClickListener {
-                listener.onAddPhoto(containersIds)
+                listener.onAddPhoto(typeGroup.id)
             }
 
             tvContSize.text = typeGroup.containers.size.toString()
@@ -72,8 +72,8 @@ class TypedContainerAdapter(
     }
 
     interface TypedContainerListener {
-        fun onDecrease(containersIds: List<Int>)
-        fun onIncrease(containersIds: List<Int>)
-        fun onAddPhoto(containersIds: List<Int>)
+        fun onDecrease(typeGroupId: Int)
+        fun onIncrease(typeGroupId: Int)
+        fun onAddPhoto(typeGroupId: Int)
     }
 }

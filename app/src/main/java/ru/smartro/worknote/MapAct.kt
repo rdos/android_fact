@@ -41,7 +41,7 @@ import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
-import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil

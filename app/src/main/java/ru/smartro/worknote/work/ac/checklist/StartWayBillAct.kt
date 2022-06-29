@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,8 +23,8 @@ import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.awORKOLDs.service.network.Resource
-import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.work.Resource
+import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.Data
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse

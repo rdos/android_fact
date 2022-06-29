@@ -6,15 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavArgument
 import io.sentry.Sentry
-import ru.smartro.worknote.App
-import ru.smartro.worknote.Inull
-import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
 import ru.smartro.worknote.log.AAct
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME__PUT_EXTRA_PARAM_ID"

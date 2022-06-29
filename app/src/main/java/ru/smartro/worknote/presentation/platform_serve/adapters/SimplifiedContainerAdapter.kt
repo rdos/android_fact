@@ -12,7 +12,7 @@ import ru.smartro.worknote.presentation.platform_serve.ClientGroupedContainers
 
 class SimplifiedContainerAdapter(
     private val context: Context,
-    private val listener: TypedContainerAdapter.TypedContainerListener
+    private val listener: ClientContainerListener
 ) : RecyclerView.Adapter<SimplifiedContainerAdapter.ClientGroupViewHolder>() {
 
     var containers: List<ClientGroupedContainers> = listOf()
@@ -37,7 +37,7 @@ class SimplifiedContainerAdapter(
     class ClientGroupViewHolder(
         val view: View,
         val context: Context,
-        val listener: TypedContainerAdapter.TypedContainerListener
+        val listener: ClientContainerListener
     ) : RecyclerView.ViewHolder(view) {
         fun bind(clientGroup: ClientGroupedContainers) {
             val tvClient = view.findViewById<TextView>(R.id.client_label)
@@ -47,10 +47,29 @@ class SimplifiedContainerAdapter(
             rvGroupedContainers.layoutManager = LinearLayoutManager(context)
             rvGroupedContainers.adapter = TypedContainerAdapter(
                 context,
-                listener
+                object : TypedContainerAdapter.TypedContainerListener {
+                    override fun onDecrease(typeGroupId: Int) {
+                        listener.onDecrease(clientGroup.id, typeGroupId)
+                    }
+
+                    override fun onIncrease(typeGroupId: Int) {
+                        listener.onIncrease(clientGroup.id, typeGroupId)
+                    }
+
+                    override fun onAddPhoto(typeGroupId: Int) {
+                        listener.onAddPhoto(clientGroup.id, typeGroupId)
+                    }
+
+                }
             ).apply {
                 containers = clientGroup.groupedContainers
             }
         }
+    }
+
+    interface ClientContainerListener {
+        fun onDecrease(clientGroupId: Int, typeGroupId: Int)
+        fun onIncrease(clientGroupId: Int, typeGroupId: Int)
+        fun onAddPhoto(clientGroupId: Int, typeGroupId: Int)
     }
 }

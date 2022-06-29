@@ -19,7 +19,7 @@ import com.google.android.material.textfield.TextInputLayout
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.toast

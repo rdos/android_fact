@@ -1,4 +1,4 @@
-package ru.smartro.worknote.awORKOLDs.service.network
+package ru.smartro.worknote.work
 
 import android.content.Context
 import android.util.Log
@@ -13,6 +13,7 @@ import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
+import ru.smartro.worknote.awORKOLDs.service.network.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
@@ -25,8 +26,6 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
-import ru.smartro.worknote.toast
-import ru.smartro.worknote.work.RealmRepository
 
 
 class NetworkRepository(private val context: Context) {

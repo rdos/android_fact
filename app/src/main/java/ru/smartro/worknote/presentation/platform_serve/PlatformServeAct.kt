@@ -47,16 +47,16 @@ class PlatformServeAct :
                 navController.currentDestination?.apply {
                     when(screenMode) {
                         false -> {
-                            if (id != R.id.extendedServeFragment) {
-                                navController.popBackStack()
-                            }
-                            findViewById<TextView>(R.id.screen_mode_label).text = "Расширенный режим"
-                        }
-                        true -> {
                             if (id != R.id.simplifiedServeFragment) {
                                 navController.navigate(R.id.simplifiedServeFragment)
                             }
                             findViewById<TextView>(R.id.screen_mode_label).text = "Упрощенный режим"
+                        }
+                        true -> {
+                            if (id != R.id.extendedServeFragment) {
+                                navController.popBackStack()
+                            }
+                            findViewById<TextView>(R.id.screen_mode_label).text = "Расширенный режим"
                         }
                     }
                 }
