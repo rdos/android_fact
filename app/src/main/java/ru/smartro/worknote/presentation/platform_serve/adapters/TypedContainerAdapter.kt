@@ -31,7 +31,7 @@ class TypedContainerAdapter(
     }
 
     override fun onBindViewHolder(holder: TypeGroupedViewHolder, position: Int) {
-        holder.bind(containers[position])
+        holder.bind(position, containers[position])
     }
 
     class TypeGroupedViewHolder(
@@ -39,35 +39,31 @@ class TypedContainerAdapter(
         val context: Context,
         val listener: TypedContainerListener
     ) : RecyclerView.ViewHolder(view) {
-        fun bind(typeGroup: TypeGroupedContainers) {
+        fun bind(index: Int, typeGroup: TypeGroupedContainers) {
             val tvTypeName = view.findViewById<TextView>(R.id.container_type)
             val bDecrease = view.findViewById<AppCompatButton>(R.id.button_decrease_cont)
             val tvCount = view.findViewById<TextView>(R.id.containers_count)
             val bIncrease = view.findViewById<AppCompatButton>(R.id.button_increase_cont)
             val bAddPhoto = view.findViewById<AppCompatButton>(R.id.button_add_photo)
             val tvContSize = view.findViewById<TextView>(R.id.containers_size)
-            val containersIds = typeGroup.containers.map { it.containerId ?: -1 }
 
             tvTypeName.text = typeGroup.typeName.ifEmpty { "Тип не указан" }
 
             bDecrease.setOnClickListener {
-                listener.onDecrease(typeGroup.id)
+                listener.onDecrease(index)
             }
 
-            tvCount.text =
-                typeGroup.containers.count {
-                    it.failureReasonId == null
-                }.toString()
 
             bIncrease.setOnClickListener {
-                listener.onIncrease(typeGroup.id)
+                listener.onIncrease(index)
             }
 
             bAddPhoto.setOnClickListener {
-                listener.onAddPhoto(typeGroup.id)
+                listener.onAddPhoto(index)
             }
 
-            tvContSize.text = typeGroup.containers.size.toString()
+            tvCount.text = typeGroup.containersIds.size.toString()
+            tvContSize.text = typeGroup.containersIds.size.toString()
         }
     }
 

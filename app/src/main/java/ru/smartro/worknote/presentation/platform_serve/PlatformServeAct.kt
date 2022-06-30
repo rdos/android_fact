@@ -48,13 +48,13 @@ class PlatformServeAct :
                     when(screenMode) {
                         false -> {
                             if (id != R.id.simplifiedServeFragment) {
-                                navController.navigate(R.id.simplifiedServeFragment)
+                                navController.popBackStack()
                             }
                             findViewById<TextView>(R.id.screen_mode_label).text = "Упрощенный режим"
                         }
                         true -> {
                             if (id != R.id.extendedServeFragment) {
-                                navController.popBackStack()
+                                navController.navigate(R.id.extendedServeFragment)
                             }
                             findViewById<TextView>(R.id.screen_mode_label).text = "Расширенный режим"
                         }

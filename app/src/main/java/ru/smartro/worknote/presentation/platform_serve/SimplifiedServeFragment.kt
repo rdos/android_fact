@@ -14,7 +14,7 @@ import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAd
 import kotlin.reflect.typeOf
 
 
-class SimplifiedServeFragment : AFragment(), SimplifiedContainerAdapter.ClientContainerListener {
+class SimplifiedServeFragment : AFragment() {
 
     private val vm: PlatformServeSharedViewModel by activityViewModels()
 
@@ -25,8 +25,32 @@ class SimplifiedServeFragment : AFragment(), SimplifiedContainerAdapter.ClientCo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapterCurrentTask = SimplifiedContainerAdapter(requireContext(), this)
-        val adapterOffTask = SimplifiedContainerAdapter(requireContext(), this)
+        val adapterCurrentTask = SimplifiedContainerAdapter(requireContext(), object : SimplifiedContainerAdapter.ClientContainerListener {
+            override fun onDecrease(clientGroupId: Int, typeGroupId: Int) {
+                vm.onDecrease(true, clientGroupId, typeGroupId)
+            }
+
+            override fun onIncrease(clientGroupId: Int, typeGroupId: Int) {
+                vm.onIncrease(true, clientGroupId, typeGroupId)
+            }
+
+            override fun onAddPhoto(clientGroupId: Int, typeGroupId: Int) {
+                vm.onAddPhoto(true, clientGroupId, typeGroupId)
+            }
+        })
+        val adapterOffTask = SimplifiedContainerAdapter(requireContext(), object : SimplifiedContainerAdapter.ClientContainerListener {
+            override fun onDecrease(clientGroupId: Int, typeGroupId: Int) {
+                vm.onDecrease(true, clientGroupId, typeGroupId)
+            }
+
+            override fun onIncrease(clientGroupId: Int, typeGroupId: Int) {
+                vm.onIncrease(true, clientGroupId, typeGroupId)
+            }
+
+            override fun onAddPhoto(clientGroupId: Int, typeGroupId: Int) {
+                vm.onAddPhoto(true, clientGroupId, typeGroupId)
+            }
+        })
 
         val rvCurrentTask = view.findViewById<RecyclerView>(R.id.rv_main).apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -53,17 +77,5 @@ class SimplifiedServeFragment : AFragment(), SimplifiedContainerAdapter.ClientCo
                 }
             }
         }
-    }
-
-    override fun onDecrease(clientGroupId: Int, typeGroupId: Int) {
-        vm.onDecrease(clientGroupId, typeGroupId)
-    }
-
-    override fun onIncrease(clientGroupId: Int, typeGroupId: Int) {
-        vm.onIncrease(clientGroupId, typeGroupId)
-    }
-
-    override fun onAddPhoto(clientGroupId: Int, typeGroupId: Int) {
-        vm.onAddPhoto(clientGroupId, typeGroupId)
     }
 }

@@ -15,18 +15,20 @@ data class ActiveGroupedContainers(
 )
 
 data class ClientGroupedContainers(
-    val id: Int = 0,
     var client: String = "",
-    var groupedContainers: MutableList<TypeGroupedContainers> = mutableListOf()
+    var typeGroupedContainers: MutableList<TypeGroupedContainers> = mutableListOf()
 )
 
 data class TypeGroupedContainers(
-    var id: Int = 0,
     var typeName: String = "",
-    var containers: MutableList<ContainerEntity> = mutableListOf()
+    var containersIds: MutableList<Int> = mutableListOf()
 )
 
 class PlatformServeSharedViewModel(application: Application) : BaseViewModel(application) {
+
+    init {
+        Log.d("VM ::: TEST :::", "vm CREATED")
+    }
 
     val wasAskedForPhoto: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -37,6 +39,9 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     private val _sortedContainers: MutableLiveData<List<ActiveGroupedContainers>> = MutableLiveData(null)
     val sortedContainers: LiveData<List<ActiveGroupedContainers>>
         get() = _sortedContainers
+
+    val wasServedExtended: MutableLiveData<Boolean> = MutableLiveData(false)
+    val wasServedSimplified: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val _screenMode: MutableLiveData<Boolean> = MutableLiveData(false)
     val screenMode: LiveData<Boolean>
@@ -49,11 +54,23 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     fun getPlatformEntity(platformId: Int): PlatformEntity {
         val response = baseDat.getPlatformEntity(platformId)
         _platformEntity.postValue(response)
-        val temp = clusterContainers()
+        val temp = clusterContainers(response.containers.toMutableList())
+        Log.d("TEST:::", "TEMP RESULT ::: ${temp}")
         _sortedContainers.postValue(temp)
         return response
     }
 
+    //SIMPLIFY
+    fun onDecrease(isActiveToday: Boolean, clientGroupId: Int, typeGroupId: Int) {
+        Log.d("TEST ::: VM", "VM onDecrease")
+    }
+    fun onIncrease(isActiveToday: Boolean, clientGroupId: Int, typeGroupId: Int) {
+        Log.d("TEST ::: VM", "VM onIncrease")
+    }
+    fun onAddPhoto(isActiveToday: Boolean, clientGroupId: Int, typeGroupId: Int) {
+        Log.d("TEST ::: VM", "VM onAddPhoto")
+    }
+    //EXTENDED
     fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?) {
         baseDat.updateContainerVolume(platformId, containerId, volume)
     }
@@ -96,7 +113,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
         baseDat.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
     }
 
-    private fun clusterContainers(containers: List<ContainerEntity>) {
+    private fun clusterContainers(containers: List<ContainerEntity>): List<ActiveGroupedContainers> {
         // vlad: CLUSTERING by isActive -> client -> type
         val temp = mutableListOf<ActiveGroupedContainers>()
         containers.forEach { container ->
@@ -106,16 +123,15 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
                     container.isActiveToday,
                     mutableListOf(
                         ClientGroupedContainers(
-                            0,
                             container.client ?: "",
                             mutableListOf(TypeGroupedContainers(
-                                0,
                                 container.typeName ?: "",
-                                mutableListOf(container)
+                                mutableListOf(container.containerId?:0)
                             ))
                         )
                     )
-                ))
+                )
+                )
             } else {
                 val clientTemp =
                     isActiveTemp.clientGroupedContainers
@@ -126,34 +142,37 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
                 temp[activeIndex].clientGroupedContainers.apply {
                     if(clientTemp == null) {
                         add(ClientGroupedContainers(
-                            0,
                             container.client?: "",
                             mutableListOf(
                                 TypeGroupedContainers(
-                                    0,
                                     container.typeName?: "",
-                                    mutableListOf(container)
+                                    mutableListOf(container.containerId?:0)
                                 ))
                         ))
                     } else {
                         val clientIndex = indexOf(clientTemp)
-                        val typeTemp = clientTemp.groupedContainers
+                        val typeTemp = clientTemp.typeGroupedContainers
                             .find { it.typeName == (container.typeName?: "") }
                         if(typeTemp == null) {
-                            get(clientIndex).groupedContainers.add(TypeGroupedContainers(
-                                get(clientIndex).groupedContainers.size,
+                            get(clientIndex).typeGroupedContainers.add(TypeGroupedContainers(
                                 container.typeName?: "",
-                                mutableListOf(container)
+                                mutableListOf(container.containerId?:0)
                             ))
                         } else {
-                            val typeIndex = get(clientIndex).groupedContainers.indexOf(typeTemp)
-                            get(clientIndex).groupedContainers[typeIndex].apply {
-                                containers.add(container)
+                            val typeIndex = get(clientIndex).typeGroupedContainers.indexOf(typeTemp)
+                            get(clientIndex).typeGroupedContainers[typeIndex].apply {
+                                containersIds.add(container.containerId?:0)
                             }
                         }
                     }
                 }
             }
         }
+        return temp
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("VM ::TEST :::", "VM IS CLEARED")
     }
 }

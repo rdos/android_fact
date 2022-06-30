@@ -31,7 +31,7 @@ class SimplifiedContainerAdapter(
     }
 
     override fun onBindViewHolder(holder: ClientGroupViewHolder, position: Int) {
-        holder.bind(containers[position])
+        holder.bind(position, containers[position])
     }
 
     class ClientGroupViewHolder(
@@ -39,7 +39,7 @@ class SimplifiedContainerAdapter(
         val context: Context,
         val listener: ClientContainerListener
     ) : RecyclerView.ViewHolder(view) {
-        fun bind(clientGroup: ClientGroupedContainers) {
+        fun bind(clientGroupIndex: Int, clientGroup: ClientGroupedContainers) {
             val tvClient = view.findViewById<TextView>(R.id.client_label)
             val rvGroupedContainers = view.findViewById<RecyclerView>(R.id.typed_containers)
 
@@ -49,20 +49,20 @@ class SimplifiedContainerAdapter(
                 context,
                 object : TypedContainerAdapter.TypedContainerListener {
                     override fun onDecrease(typeGroupId: Int) {
-                        listener.onDecrease(clientGroup.id, typeGroupId)
+                        listener.onDecrease(clientGroupIndex, typeGroupId)
                     }
 
                     override fun onIncrease(typeGroupId: Int) {
-                        listener.onIncrease(clientGroup.id, typeGroupId)
+                        listener.onIncrease(clientGroupIndex, typeGroupId)
                     }
 
                     override fun onAddPhoto(typeGroupId: Int) {
-                        listener.onAddPhoto(clientGroup.id, typeGroupId)
+                        listener.onAddPhoto(clientGroupIndex, typeGroupId)
                     }
 
                 }
             ).apply {
-                containers = clientGroup.groupedContainers
+                containers = clientGroup.typeGroupedContainers
             }
         }
     }
