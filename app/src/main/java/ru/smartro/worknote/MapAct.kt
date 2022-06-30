@@ -62,7 +62,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
 
     private var mAcbGotoComplete: AppCompatButton? = null
-    private var mAcbComplete: AppCompatButton? = null
 
     private var mAdapterBottomBehavior: MapActBottomBehaviorAdapter? = null
     private var mMapObjectCollection: MapObjectCollection? = null
@@ -418,18 +417,16 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             lastPlatforms)
 
         vs.networkDat.sendLastPlatforms(synchronizeBody).observe(this) { result ->
+            hideProgress()
             when (result.status) {
                 Status.SUCCESS -> {
-                    hideProgress()
                     completeWorkOrders()
                 }
                 Status.ERROR -> {
                     toast(result.msg)
-                    hideProgress()
                 }
                 Status.NETWORK -> {
                     toast("Проблемы с интернетом")
-                    hideProgress()
                 }
             }
         }
@@ -456,8 +453,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         val workOrderS = getActualWorkOrderS(true, isFilterMode = false)
 //            var infoText = "**Статистика**\n"
         val rvInfo = view.findViewById<RecyclerView>(R.id.rv_act_map__workorder_info)
-        mAcbComplete = view.findViewById(R.id.acb_act_map__workorder_info__complete)
-        mAcbComplete?.setOnClickListener {
+        mAcbGotoComplete = view.findViewById(R.id.acb_act_map__workorder_info__gotocomplete)
+        mAcbGotoComplete?.setOnClickListener {
             vs.baseDat.setWorkOrderIsShowForUser(workOrderS)
             gotoComplete()
         }
@@ -502,11 +499,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private fun onRefreshBottomBehavior() {
         val platforms = getActualPlatformS()
         mAdapterBottomBehavior?.updateItemS(platforms)
-        if (getActualWorkOrderS().size <= 1) {
-            mAcbGotoComplete?.text = "Завершить маршрут"
-        } else {
-            mAcbGotoComplete?.text ="К завершению маршрута"
-        }
     }
     private fun initBottomBehavior() {
         val platforms = getActualPlatformS()
@@ -524,14 +516,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
-        mAcbGotoComplete = findViewById<AppCompatButton>(R.id.acb_act_map__bottom_behavior__gotocomplete)
-        mAcbGotoComplete?.setOnClickListener{
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            createInfoDialog(){}
-            if (getActualWorkOrderS().size <= 1) {
-                gotoComplete()
-            }
-        }
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
@@ -965,17 +949,21 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     private fun setAcbCompleteText(workOrderS: List<WorkOrderEntity>) {
-        for (workorder in workOrderS) {
-            if (workorder.isShowForUser) {
-                mAcbComplete?.text = "Завершить маршрут"
-                mAcbComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button)
-                mAcbComplete?.isEnabled = true
-                return
-            }
+        val cntWorkOrderShowForUser = workOrderS.filter { it.isShowForUser }.size
+
+        if (cntWorkOrderShowForUser <= 0) {
+            mAcbGotoComplete?.isEnabled = false
+            mAcbGotoComplete?.text = "Выберите задание"
+            mAcbGotoComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button_gray)
+            return
         }
-        mAcbComplete?.isEnabled = false
-        mAcbComplete?.text = "Выберите задание"
-        mAcbComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button_gray)
+        if (getActualWorkOrderS().size == 1) {
+            mAcbGotoComplete?.text = "Завершить задание"
+        } else {
+            mAcbGotoComplete?.text = "Завершить задания"
+        }
+        mAcbGotoComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button)
+        mAcbGotoComplete?.isEnabled = true
     }
 
     override fun onStart(p0: Map, p1: CameraPosition) {
