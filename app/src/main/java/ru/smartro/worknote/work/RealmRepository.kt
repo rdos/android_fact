@@ -55,7 +55,7 @@ class RealmRepository(private val p_realm: Realm) {
 
         fun mapPlatforms(data: List<Platform_know1>, workorderId: Int): RealmList<PlatformEntity> {
              val result = data.mapTo(RealmList()) {
-                PlatformEntity(
+                val platform = PlatformEntity(
                     workOrderId = workorderId,
                     address = it.address,
                     afterMedia = mapMedia(it.afterMedia),
@@ -72,7 +72,7 @@ class RealmRepository(private val p_realm: Realm) {
                     name = it.name,
                     updateAt = 0,
                     srpId = it.srpId,
-                    status = it.status,
+                     status = it.status, //!r_dos
                     /** volumeKGO = null,*/ icon = it.icon,
                     orderTimeEnd = it.orderEndTime,
                     orderTimeStart = it.orderStartTime,
@@ -81,6 +81,8 @@ class RealmRepository(private val p_realm: Realm) {
                     kgoServed = KGOEntity().copyKGOEntity(it.kgo_served),
                     kgoRemaining = KGOEntity().copyKGOEntity(it.kgo_remaining)
                 )
+                 platform.networkStatus = platform.isNotNewPlatform()
+                 platform
             }
             return result
         }

@@ -1,29 +1,33 @@
-package ru.smartro.worknote.awORKOLDs.base
+package ru.smartro.worknote.andPOintD
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-abstract class GenericRecyclerAdapter<T>(private var items: ArrayList<T>) :
+abstract class BaseAdapter<T>(private var items: List<T>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
+    val mItemsBefore = items
+    //var mItemsAfter
+    fun getItems(): List<T> {
+        return mItemsBefore
+    }
     abstract fun bind(item: T, holder: ViewHolder)
 
-    fun set(items: ArrayList<T>) {
+    fun set(items: List<T>) {
         this.items = items
         notifyDataSetChanged()
     }
 
-    fun add(items: ArrayList<T>) {
-        this.items.addAll(items)
-        notifyDataSetChanged()
-    }
+//    fun add(items: ArrayList<T>) {
+//        this.items.addAll(items)
+//        notifyDataSetChanged()
+//    }
 
-    fun clear() {
-        this.items.clear()
-        notifyDataSetChanged()
-    }
+//    fun clear() {
+//        this.items.clear()
+//        notifyDataSetChanged()
+//    }
 
     override fun getItemCount(): Int = items.count()
 
@@ -42,8 +46,10 @@ abstract class GenericRecyclerAdapter<T>(private var items: ArrayList<T>) :
         bind(items[position], holder as ViewHolder)
     }
 
-}
+    class BASEViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
+    }
+}
 class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
 }

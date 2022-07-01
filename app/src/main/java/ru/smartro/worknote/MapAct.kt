@@ -919,10 +919,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             checkBox.setOnCheckedChangeListener { buttonView, b ->
                 workOrder.isShowForUser = buttonView.isChecked
                 setAcbCompleteText(p_workOrderS)
-//                mviewWorkorderInfo?.post {
-//                    notifyItemChanged(position)
-//                }
-
             }
 
         }

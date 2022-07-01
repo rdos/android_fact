@@ -167,7 +167,7 @@ open class PlatformEntity(
     @SerializedName("status")
     var status: String? = null,
     @SerializedName("network_status")
-    var networkStatus: Boolean? = false,
+    var networkStatus: Boolean = false,
     @SerializedName("failure_comment")
     var failureComment: String? = null,
     @SerializedName("containers")
@@ -243,6 +243,17 @@ open class PlatformEntity(
             }
         }
         Log.d("TEST :::", "WorkOrderEntity/getPlatformStatus() result: ${result}")
+        return result
+    }
+
+    private fun isNewPlatform(): Boolean {
+        val res = this.getPlatformStatus() == StatusEnum.NEW
+        Log.d("TEST :::", "isNewPlatform().res=${res}")
+        return res
+    }
+    fun isNotNewPlatform(): Boolean {
+        val result = !this.isNewPlatform()
+        Log.i("TEST :::", "isNotNewPlatform().result=${result}")
         return result
     }
 

@@ -10,14 +10,14 @@ import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_image.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.adapter.listener.ImageClickListener
-import ru.smartro.worknote.awORKOLDs.base.GenericRecyclerAdapter
-import ru.smartro.worknote.awORKOLDs.base.ViewHolder
+import ru.smartro.worknote.andPOintD.BaseAdapter
+import ru.smartro.worknote.andPOintD.ViewHolder
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
 
 class GalleryPhotoAdapter(private val listener: ImageClickListener,
-                          val context: Context, items: ArrayList<ImageEntity>) : GenericRecyclerAdapter<ImageEntity>(items) {
+                          val context: Context, items: ArrayList<ImageEntity>) : BaseAdapter<ImageEntity>(items) {
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val outMetrics = DisplayMetrics()
 
