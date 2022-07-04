@@ -29,9 +29,10 @@
             android:text="Журнал" android:textSize="18sp" android:textColor="@android:color/white" android:textStyle="bold"
             />
         <androidx.appcompat.widget.SearchView
-            android:id="@+id/sv__act_journalchat__filter"
+            android:id="@+id/sv__act_journalchat__filteraddress"
             android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1"
+            app:defaultQueryHint="@string/hint__search_by_address"
             />
     </androidx.appcompat.widget.LinearLayoutCompat>
 

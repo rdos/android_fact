@@ -1,11 +1,14 @@
 package ru.smartro.worknote
 
-import android.app.*
+import android.app.AlertDialog
+import android.app.Application
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.util.TypedValue
 import android.view.*
 import android.widget.Button
 import android.widget.ImageView
@@ -13,13 +16,18 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.yandex.mapkit.*
+import com.yandex.mapkit.Animation
+import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.RequestPoint
+import com.yandex.mapkit.RequestPointType
 import com.yandex.mapkit.directions.DirectionsFactory
 import com.yandex.mapkit.directions.driving.*
 import com.yandex.mapkit.geometry.Point
@@ -40,25 +48,28 @@ import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.utils.getActivityProperly
-import ru.smartro.worknote.work.*
+import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
+import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
+import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.WorkOrderEntity
 import ru.smartro.worknote.work.ac.PERMISSIONS
+import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
-import java.util.*
 
 
 //todo: тодо:!r_dos
 //Двигается карта deselectGeoObject()
 class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
-    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
+    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener,
+    SearchView.OnQueryTextListener {
 
 
     private var mAcbGotoComplete: AppCompatButton? = null
@@ -255,7 +266,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         Log.w(TAG, "onRefreshData.init")
         mWorkOrderS = getActualWorkOrderS(true)
         mPlatformS = getActualPlatformS(true)
-        onRefreshMap()
+        onRefreshMap(mPlatformS!!)
         onRefreshBottomBehavior()
         setInfoData()
         Log.w(TAG, "onRefreshData.end")
@@ -500,23 +511,38 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         val platforms = getActualPlatformS()
         mAdapterBottomBehavior?.updateItemS(platforms)
     }
+
     private fun initBottomBehavior() {
         val platforms = getActualPlatformS()
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
 
         bottomSheetBehavior.expandedOffset = 100
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
         mAdapterBottomBehavior = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
         rvBehavior.adapter = mAdapterBottomBehavior
 //        rvBehavior.adapter.notifyDataSetChanged()
-        act_map__bottom_behavior__header.setOnClickListener {
+        val clBottomHavior = findViewById<ConstraintLayout>(R.id.act_map__bottom_behavior__header)
+        clBottomHavior.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             else
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
+        val svFilterAddress = findViewById<SearchView>(R.id.sv__act_map__bottom_behavior__filter)
+        svFilterAddress.setOnQueryTextListener(this)
+        svFilterAddress.setOnSearchClickListener{
+            val diP200 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200F, resources.displayMetrics)
+                .toInt()
+            svFilterAddress.layoutParams.width = diP200
 
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            log("svFilterAddress:::setOnSearchClickListener. ")
+        }
+        svFilterAddress.setOnCloseListener{
+            log("svFilterAddress:::setOnCloseListener. before")
+            svFilterAddress.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+            false
+        }
     }
 
     override fun startPlatformService(item: PlatformEntity) {
@@ -684,8 +710,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 ////        Log.d("LogDistance", "Location updated")
 //    }
 
-    private fun onRefreshMap() {
-        val platforms = getActualPlatformS()
+    private fun onRefreshMap(platformS: List<PlatformEntity>) {
         mMapObjectCollection?.clear()
         try {
             mMapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
@@ -696,17 +721,15 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
 
         mMapObjectCollection?.removeTapListener(this)
-        addPlaceMarks(this, mMapObjectCollection, platforms)
+        for(platform in platformS) {
+            val iconProvider = getIconViewProvider(this, platform)
+            val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
+            mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
+        }
         mMapObjectCollection?.addTapListener(this)
     }
 
-    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection?, platforms: List<PlatformEntity>) {
-        for(platform in platforms) {
-            val iconProvider = getIconViewProvider(context, platform)
-            val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
-            mapObjectCollection?.addPlacemark(pointYandex, iconProvider)
-        }
-    }
+
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
         val placeMark = mapObject as PlacemarkMapObject
@@ -962,6 +985,9 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         mAcbGotoComplete?.isEnabled = true
     }
 
+    /** ********************************************************************************************
+     * ЗДЕСЬ интерфейсы interface*/
+
     override fun onStart(p0: Map, p1: CameraPosition) {
         mIsAUTOMoveCamera = false
     }
@@ -975,5 +1001,18 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         Log.d("AAAA", "onFinish")
 //        this as InertiaMoveListener
     }
-
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        val result = false
+        log("svFilterAddress:::onQueryTextSubmit. result=${result} query=${query}")
+        return result
+    }
+    override fun onQueryTextChange(newText: String?): Boolean {
+        val res = true
+        mAdapterBottomBehavior?.let {
+            it.filteredList(newText)
+            onRefreshMap(it.getItems())
+        }
+        log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
+        return res
+    }
 }

@@ -4,23 +4,61 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import ru.smartro.worknote.Inull
+import ru.smartro.worknote.Snull
 
-abstract class BaseAdapter<T>(private var items: List<T>) :
+abstract class BaseAdapter<T,D : RecyclerView.ViewHolder>(private var mItems: List<T>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    val mItemsBefore = items
+    private val mItemsBefore = mItems
     //var mItemsAfter
-    fun getItems(): List<T> {
+    abstract fun onGetLayout(): Int
+    abstract fun onGetViewHolder(view: View): D
+
+    private var lenQueryText = Inull
+    private var mQueryText: String? = Snull
+    private var lenQueryTextOld = Inull
+    private var mQueryTextOld: String? = Snull
+
+    fun getQueryTextOld(): String? {
+        return mQueryText
+    }
+    fun setQueryText(text: String?) {
+        mQueryTextOld = mQueryText
+        getQueryTextOld()?.let {
+            lenQueryTextOld = it.length
+        }
+        mQueryText = text
+        mQueryText?.let {
+            lenQueryText = it.length
+        }
+    }
+
+    fun getItemsForFilter(): List<T> {
+        if (lenQueryText < lenQueryTextOld) {
+            return mItemsBefore
+        }
+        return mItems
+    }
+
+    private fun getItemsBefore(): List<T> {
         return mItemsBefore
     }
-    abstract fun bind(item: T, holder: ViewHolder)
+    fun getItems(): List<T> {
+        return mItems
+    }
+    abstract fun bind(item: T, holder: D)
 
     fun reset() {
-        this.items = mItemsBefore
+        this.mItems = mItemsBefore
         notifyDataSetChanged()
     }
 
+    fun setItems(newItemS: List<T>) {
+        this.mItems = newItemS
+    }
+
     fun set(items: List<T>) {
-        this.items = items
+        setItems(items)
         notifyDataSetChanged()
     }
 
@@ -34,27 +72,22 @@ abstract class BaseAdapter<T>(private var items: List<T>) :
 //        notifyDataSetChanged()
 //    }
 
-    override fun getItemCount(): Int = items.count()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view = LayoutInflater
-            .from(parent.context)
-            .inflate(viewType, parent, false)
-        return ViewHolder(view)
-    }
+    final override fun getItemCount(): Int = mItems.count()
 
     fun position(position: Int): T {
-        return items[position]
+        return mItems[position]
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        bind(items[position], holder as ViewHolder)
+    final override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        bind(mItems[position], holder as D)
+    }
+    final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val view = LayoutInflater
+            .from(parent.context)
+            .inflate(onGetLayout(), parent, false)
+        return onGetViewHolder(view)
     }
 
-    class BASEViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    }
 }
-class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-}

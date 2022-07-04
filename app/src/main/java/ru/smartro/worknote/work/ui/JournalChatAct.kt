@@ -2,9 +2,7 @@ package ru.smartro.worknote.work.ui
 
 import android.app.Application
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.SearchView
@@ -16,7 +14,6 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.andPOintD.BaseAdapter
-import ru.smartro.worknote.andPOintD.ViewHolder
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -24,7 +21,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener{
+class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener {
     private var mAdapter: JournalChatAdapter? = null
     private val viewModel: JournalViewModel by viewModel()
 
@@ -38,47 +35,24 @@ class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener{
         acibGotoBack.setOnClickListener{
             onBackPressed()
         }
-        val svFilter = findViewById<SearchView>(R.id.sv__act_journalchat__filter)
+        val svFilterAddress = findViewById<SearchView>(R.id.sv__act_journalchat__filteraddress)
 
         mAdapter = JournalChatAdapter(platformSIsServed)
-        svFilter.setOnQueryTextListener(this)
+        svFilterAddress.setOnQueryTextListener(this)
         val rvJournalAct = findViewById<RecyclerView>(R.id.rv_act_journal)
         rvJournalAct.adapter = mAdapter
     }
 
-    inner class JournalChatAdapter(items: List<PlatformEntity>) : BaseAdapter<PlatformEntity>(items) {
-
-        fun filter(platformList: List<PlatformEntity>, filterText: String): List<PlatformEntity> {
-            val query = filterText.lowercase()
-            val filteredModeList = platformList.filter {
-                try {
-//                    it.javaClass.getField("address")
-                    val text = it.address?.lowercase()
-                    var res = true
-                    text?.let {
-                        res = (text.startsWith(query) || (text.contains(query)))
-                    }
-                    res
-                } catch (ex: Exception) {
-                    true
-                }
-            }
-            //            val sYsTEM = mutableListOf<Vehicle>()
-            return filteredModeList
+    inner class JournalChatAdapter(items: List<PlatformEntity>) : BaseAdapter<PlatformEntity, JournalChatAdapter.JournalChatHolder>(items) {
+        override fun onGetLayout(): Int {
+            return R.layout.act_messager__rv_item
         }
 
-        fun filteredList(queryText: String) {
-            logSentry(queryText)
-            // TODO: !R_dos
-            if(queryText == Snull) {
-                super.reset()
-                return
-            }
-            val mItemsAfter = filter(super.getItems(), queryText)
-            super.set(mItemsAfter)
+        override fun onGetViewHolder(view: View): JournalChatHolder {
+            return JournalChatHolder(view)
         }
 
-        override fun bind(item: PlatformEntity, holder: ViewHolder) {
+        override fun bind(item: PlatformEntity, holder: JournalChatHolder) {
             val date = Date(item.updateAt * 1000L)
             val dateFormat = SimpleDateFormat("HH:mm")
             val resultDate: String = dateFormat.format(date)
@@ -152,10 +126,42 @@ class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener{
             }
             return result
         }
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return super.onCreateViewHolder(parent, R.layout.act_messager__rv_item)
+
+        fun filter(platformList: List<PlatformEntity>, filterText: String): List<PlatformEntity> {
+            val query = filterText.lowercase()
+            val filteredModeList = platformList.filter {
+                try {
+//                    it.javaClass.getField("address")
+                    val text = it.address?.lowercase()
+                    var res = true
+                    text?.let {
+                        res = (text.startsWith(query) || (text.contains(query)))
+                    }
+                    res
+                } catch (ex: Exception) {
+                    true
+                }
+            }
+            //            val sYsTEM = mutableListOf<Vehicle>()
+            return filteredModeList
+        }
+
+        fun filteredList(queryText: String) {
+            logSentry(queryText)
+            // TODO: !r_dos
+            if(queryText == Snull) {
+                super.reset()
+                return
+            }
+            setQueryText(queryText)
+            val mItemsAfter = filter(super.getItemsForFilter(), queryText)
+            super.set(mItemsAfter)
+        }
+        inner class JournalChatHolder(view: View) : RecyclerView.ViewHolder(view) {
+//        TODO("Not yet implemented")
         }
     }
+
 //
 //    interface JournalClickListener {
 //        fun logDetailClicked(item: PlatformEntity)
@@ -172,7 +178,7 @@ class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener{
      * ЗДЕСЬ интерфейсы interface*/
     override fun onQueryTextSubmit(query: String?): Boolean {
         val result = false
-        log("svFilter:::onQueryTextSubmit. result=${result} query=${query}")
+        log("svFilterAddress:::onQueryTextSubmit. result=${result} query=${query}")
         return result
     }
 
@@ -180,13 +186,13 @@ class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener{
         val res = true
         if (newText.isNullOrEmpty()) {
             mAdapter!!.filteredList(Snull)
-            log("svFilter:::onQueryTextChange.result=${res} newText=${newText}")
+            log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
             return res
         }
         mAdapter?.let {
             mAdapter!!.filteredList(newText.toString())
         }
-        log("svFilter:::onQueryTextChange.result=${res} newText=${newText}")
+        log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
         return res
     }
 }
