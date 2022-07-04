@@ -63,8 +63,12 @@ class MapActBottomBehaviorAdapter(
     fun updateItemS(newItemS: List<PlatformEntity>) {
 //        logSentry(filterText)
         super.setItems(newItemS)
-        filteredList(mOldQueryText)
         lastHolder?.collapseOld()
+        if (mOldQueryText == null) {
+            notifyDataSetChanged()
+            return
+        }
+        filteredList(mOldQueryText)
     }
 
     private fun setUseButtonStyleBackgroundGreen(view: View) {
