@@ -1,27 +1,32 @@
 package ru.smartro.worknote.presentation.platform_serve
 
 import android.app.Application
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
-
-data class ActiveGroupedContainers(
-    var isActiveToday: Boolean = true,
-    var clientGroupedContainers: MutableList<ClientGroupedContainers> = mutableListOf()
-)
+import java.lang.reflect.Type
 
 data class ClientGroupedContainers(
     var client: String = "",
-    var typeGroupedContainers: MutableList<TypeGroupedContainers> = mutableListOf()
+    var typeGroupedContainers: MutableList<TypeGroupedContainers>
 )
 
 data class TypeGroupedContainers(
     var typeName: String = "",
-    var containersIds: MutableList<Int> = mutableListOf()
+    var containersIds: MutableList<Int>
+)
+
+data class ServedContainers(
+    var clientGroupIndex: Int,
+    var typeGroupIndex: Int,
+    var count: Int = 0,
 )
 
 class PlatformServeSharedViewModel(application: Application) : BaseViewModel(application) {
@@ -30,21 +35,23 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
         Log.d("VM ::: TEST :::", "vm CREATED")
     }
 
-    val wasAskedForPhoto: MutableLiveData<Boolean> = MutableLiveData(false)
+    val mBeforeMediaWasInited: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val _platformEntity: MutableLiveData<PlatformEntity> = MutableLiveData(null)
-    val platformEntity: LiveData<PlatformEntity>
+    val mPlatformEntity: LiveData<PlatformEntity>
         get() = _platformEntity
 
-    private val _sortedContainers: MutableLiveData<List<ActiveGroupedContainers>> = MutableLiveData(null)
-    val sortedContainers: LiveData<List<ActiveGroupedContainers>>
+    private val _sortedContainers: MutableLiveData<List<ClientGroupedContainers>> = MutableLiveData(null)
+    val mSortedContainers: LiveData<List<ClientGroupedContainers>>
         get() = _sortedContainers
 
-    val wasServedExtended: MutableLiveData<Boolean> = MutableLiveData(false)
-    val wasServedSimplified: MutableLiveData<Boolean> = MutableLiveData(false)
+    val mServedContainers: MutableLiveData<List<ServedContainers>> = MutableLiveData(listOf())
+
+    val mWasServedExtended: MutableLiveData<Boolean> = MutableLiveData(false)
+    val mWasServedSimplified: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val _screenMode: MutableLiveData<Boolean> = MutableLiveData(false)
-    val screenMode: LiveData<Boolean>
+    val mScreenMode: LiveData<Boolean>
         get() = _screenMode
 
     fun changeScreenMode() {
@@ -54,120 +61,175 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     fun getPlatformEntity(platformId: Int): PlatformEntity {
         val response = baseDat.getPlatformEntity(platformId)
         _platformEntity.postValue(response)
-        val temp = clusterContainers(response.containers.toMutableList())
-        Log.d("TEST:::", "TEMP RESULT ::: ${temp}")
-        _sortedContainers.postValue(temp)
+        if(response.getPlatformStatus() == StatusEnum.NEW) {
+            val temp = clusterContainers(response.containers.toList())
+            Log.d("TEST:::", "TEMP RESULT ::: ${temp}")
+            _sortedContainers.postValue(temp)
+        }
         return response
     }
 
-    //SIMPLIFY
-    fun onDecrease(isActiveToday: Boolean, clientGroupId: Int, typeGroupId: Int) {
-        Log.d("TEST ::: VM", "VM onDecrease")
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // SIMPLIFY SERVING
+    fun onDecrease(clientGroupIndex: Int, typeGroupIndex: Int) {
+        mWasServedSimplified.postValue(true)
+        val containersToServe = mSortedContainers.value?.
+            get(clientGroupIndex)?.typeGroupedContainers?.
+            get(typeGroupIndex)?.containersIds
+
+        val servedContainers = mServedContainers.value?.find { it.clientGroupIndex == clientGroupIndex && it.typeGroupIndex == typeGroupIndex }
+
+        Log.d("TEST :::", "OnDecrease ${containersToServe} ")
+        Log.d("TEST :::", "OnDecrease ${servedContainers}")
+
+        if(containersToServe != null && servedContainers != null) {
+            val decreasedCount = servedContainers.count - 1
+            val indOfServedContainers = mServedContainers.value!!.indexOf(servedContainers)
+            if(decreasedCount >= 0) {
+                val temp = mServedContainers.value!!.toMutableList()
+                temp[indOfServedContainers].count = decreasedCount
+                mServedContainers.postValue(temp)
+            }
+        }
     }
-    fun onIncrease(isActiveToday: Boolean, clientGroupId: Int, typeGroupId: Int) {
-        Log.d("TEST ::: VM", "VM onIncrease")
+
+    fun onIncrease(clientGroupIndex: Int, typeGroupIndex: Int) {
+        mWasServedSimplified.postValue(true)
+        val containersToServe = mSortedContainers.value?.
+        get(clientGroupIndex)?.typeGroupedContainers?.
+        get(typeGroupIndex)?.containersIds
+
+        val servedContainers = mServedContainers.value?.find { it.clientGroupIndex == clientGroupIndex && it.typeGroupIndex == typeGroupIndex }
+
+        Log.d("TEST :::", "OnDecrease ${containersToServe} ")
+        Log.d("TEST :::", "OnDecrease ${servedContainers}")
+
+        if(containersToServe != null && servedContainers != null) {
+            val indOfServedContainers = mServedContainers.value!!.indexOf(servedContainers)
+            val temp = mServedContainers.value!!.toMutableList()
+            temp[indOfServedContainers].count = servedContainers.count + 1
+            mServedContainers.postValue(temp)
+        }
     }
-    fun onAddPhoto(isActiveToday: Boolean, clientGroupId: Int, typeGroupId: Int) {
-        Log.d("TEST ::: VM", "VM onAddPhoto")
+    fun onAddPhoto(clientGroupIndex: Int, typeGroupIndex: Int) {
+        // TODO REDIRECT TO CAMERA!!!
     }
-    //EXTENDED
+
+
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // EXTENDED SERVING
     fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?) {
+        mWasServedExtended.postValue(true)
         baseDat.updateContainerVolume(platformId, containerId, volume)
     }
 
     fun updateContainerComment(platformId: Int, containerId: Int, comment: String?) {
+        mWasServedExtended.postValue(true)
         baseDat.updateContainerComment(platformId, containerId, comment)
     }
 
     fun updateSelectionVolume(platformId: Int, volume: Double?) {
+        mWasServedExtended.postValue(true)
         baseDat.updateSelectionVolume(platformId, volume)
     }
 
     fun clearContainerVolume(platformId: Int, containerId: Int) {
+        mWasServedExtended.postValue(true)
         baseDat.clearContainerVolume(platformId, containerId)
     }
 
-    fun updatePlatformStatusSuccess(platformId: Int) {
-        baseDat.updatePlatformStatusSuccess(platformId)
-    }
-
     fun updatePlatformStatusUnfinished() {
-        if(platformEntity.value != null && platformEntity.value!!.platformId != null) {
-            baseDat.updatePlatformStatusUnfinished(platformEntity.value!!.platformId!!)
+        mWasServedExtended.postValue(true)
+        if(mPlatformEntity.value != null && mPlatformEntity.value!!.platformId != null) {
+            baseDat.updatePlatformStatusUnfinished(mPlatformEntity.value!!.platformId!!)
         }
     }
 
     fun updatePlatformStatusUnfinished(platformId: Int) {
+        mWasServedExtended.postValue(true)
         baseDat.updatePlatformStatusUnfinished(platformId)
     }
 
     fun removePlatformMedia(photoFor: Int, image: ImageEntity, platformId: Int) {
+        mWasServedExtended.postValue(true)
         baseDat.removePlatformMedia(photoFor, image, platformId)
     }
 
     fun removeContainerMedia(photoFor: Int,platformId: Int, containerId: Int, imageBase64: ImageEntity) {
+        mWasServedExtended.postValue(true)
         baseDat.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
     }
 
     fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
+        mWasServedExtended.postValue(true)
         baseDat.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
     }
 
-    private fun clusterContainers(containers: List<ContainerEntity>): List<ActiveGroupedContainers> {
-        // vlad: CLUSTERING by isActive -> client -> type
-        val temp = mutableListOf<ActiveGroupedContainers>()
-        containers.forEach { container ->
-            val isActiveTemp = temp.find { it.isActiveToday == container.isActiveToday }
-            if(isActiveTemp == null) {
-                temp.add(ActiveGroupedContainers(
-                    container.isActiveToday,
-                    mutableListOf(
-                        ClientGroupedContainers(
-                            container.client ?: "",
-                            mutableListOf(TypeGroupedContainers(
-                                container.typeName ?: "",
-                                mutableListOf(container.containerId?:0)
-                            ))
-                        )
-                    )
-                )
-                )
-            } else {
-                val clientTemp =
-                    isActiveTemp.clientGroupedContainers
-                        .find { it.client == (container.client?: "") }
-                val activeIndex = temp.indexOf(isActiveTemp)
-
-                // Список контейнеров, сгруппированных по клиентам
-                temp[activeIndex].clientGroupedContainers.apply {
-                    if(clientTemp == null) {
-                        add(ClientGroupedContainers(
-                            container.client?: "",
-                            mutableListOf(
-                                TypeGroupedContainers(
-                                    container.typeName?: "",
-                                    mutableListOf(container.containerId?:0)
-                                ))
-                        ))
-                    } else {
-                        val clientIndex = indexOf(clientTemp)
-                        val typeTemp = clientTemp.typeGroupedContainers
-                            .find { it.typeName == (container.typeName?: "") }
-                        if(typeTemp == null) {
-                            get(clientIndex).typeGroupedContainers.add(TypeGroupedContainers(
-                                container.typeName?: "",
-                                mutableListOf(container.containerId?:0)
-                            ))
-                        } else {
-                            val typeIndex = get(clientIndex).typeGroupedContainers.indexOf(typeTemp)
-                            get(clientIndex).typeGroupedContainers[typeIndex].apply {
-                                containersIds.add(container.containerId?:0)
-                            }
-                        }
-                    }
+    // !!!!!!!!!!!!!!!!!!!
+    // FINISH
+    fun updatePlatformStatusSuccess(platformId: Int) {
+        if(mWasServedSimplified.value == true) {
+            mServedContainers.value!!.forEach { el ->
+                val containers = _sortedContainers.value!![el.clientGroupIndex].typeGroupedContainers[el.typeGroupIndex].containersIds
+                val newVolume = el.count.toDouble() / containers.size
+                containers.forEach { cont ->
+                    updateContainerVolume(platformId, cont, newVolume)
                 }
             }
         }
+        baseDat.updatePlatformStatusSuccess(platformId)
+    }
+
+    private fun clusterContainers(containers: List<ContainerEntity>): List<ClientGroupedContainers> {
+        // vlad: CLUSTERING by isActive -> client -> type
+        val temp = mutableListOf<ClientGroupedContainers>()
+        val tempServed = mutableListOf<ServedContainers>()
+        
+        containers.filter { it.isActiveToday }.forEach { el ->
+            val clientName = el.client ?: ""
+            val typeName = el.typeName ?: ""
+
+            val clientGroup = temp.find { it.client == el.client }
+            if(clientGroup != null) {
+                val typeGroup = clientGroup.typeGroupedContainers.find { it.typeName == el.typeName }
+                val indOfClientGroup = temp.indexOf(clientGroup)
+                if(typeGroup != null) {
+                    // TODO VLAD CONTAINER ID -1
+                    typeGroup.containersIds.add(el.containerId ?: -1)
+                    val indOfTypeGroup = temp[indOfClientGroup].typeGroupedContainers.indexOf(typeGroup)
+                    tempServed.find {
+                        it.clientGroupIndex == indOfClientGroup && it.typeGroupIndex == indOfTypeGroup
+                    }?.apply {
+                        count += 1
+                    }
+                } else {
+                    val newTypeGroup = TypeGroupedContainers(
+                        typeName,
+                        mutableListOf(el.containerId ?: -1)
+                    )
+
+                    clientGroup.typeGroupedContainers.add(newTypeGroup)
+                    val indOfTypeGroup = temp[indOfClientGroup].typeGroupedContainers.indexOf(newTypeGroup)
+                    tempServed.add(ServedContainers(indOfClientGroup, indOfTypeGroup, 1))
+                }
+            } else {
+                val newTypeGroup = TypeGroupedContainers(
+                    typeName,
+                    mutableListOf(el.containerId ?: -1)
+                )
+                val newClientGroup = ClientGroupedContainers(
+                    clientName,
+                    mutableListOf(newTypeGroup)
+                )
+
+                temp.add(newClientGroup)
+
+                val indOfClientGroup = temp.indexOf(newClientGroup)
+
+                tempServed.add(ServedContainers(indOfClientGroup, 0, 1))
+            }
+        }
+        mServedContainers.postValue(tempServed)
         return temp
     }
 

@@ -2,6 +2,7 @@ package ru.smartro.worknote.presentation.platform_serve
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +24,7 @@ import ru.smartro.worknote.work.ui.ContainerFailureAct
 class ContainerServeBottomDialog : AbstractBottomDialog() {
     private val viewModel: PlatformServeSharedViewModel by activityViewModels()
     private var volume: Double? = null
-    private lateinit var parentAct: PlatformServeAct
+    private lateinit var parentAct: PServeMain
 
     val args: ContainerServeBottomDialogArgs by navArgs()
 
@@ -43,19 +44,20 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parentAct = requireActivity() as PlatformServeAct
+        parentAct = requireActivity() as PServeMain
         p_container_id = args.containerId
 
         val containerEntity = viewModel.baseDat.getContainerEntity(p_container_id)
         containerEntity.let {
             comment_et.setText(it.comment)
             volume = it.volume
+            Log.d("TEST::::", "VOLUIME::: ${it.volume}")
             setVolume(view, it.volume)
             enter_info_tittle.text = "Заполненность конт №${it.number}"
         }
         comment_et.addTextChangedListener{
             // TODO:
-            viewModel.updateContainerComment(viewModel.platformEntity.value!!.platformId!!, p_container_id, it.toString())
+            viewModel.updateContainerComment(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, it.toString())
         }
 
         val apbFailure = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_failure)
@@ -66,7 +68,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
             val intent = Intent(requireContext(), ContainerFailureAct::class.java)
             intent.putExtra("is_container", true)
             intent.putExtra("container_id", p_container_id)
-            intent.putExtra("platform_id", viewModel.platformEntity.value!!.platformId!!)
+            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
             startActivityForResult(intent, 99)
         }
         val apbBreakdown = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_breakdown)
@@ -77,7 +79,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
             val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
             intent.putExtra("is_container", true)
             intent.putExtra("container_id", p_container_id)
-            intent.putExtra("platform_id", viewModel.platformEntity.value!!.platformId!!)
+            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
             startActivityForResult(intent, 99)
         }
 
@@ -88,7 +90,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         apbBeforeMedia.setOnClickListener {
             //todo: жопа))))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
             val intent = Intent(requireActivity(), CameraAct::class.java)
-            intent.putExtra("platform_id", viewModel.platformEntity.value!!.platformId!!)
+            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
             intent.putExtra("isNoLimitPhoto", true)
             startActivityForResult(intent, 1001)
@@ -102,7 +104,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         apbAfterMedia.setOnClickListener {
             //todo: жоpa)№2)))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
             val intent = Intent(requireActivity(), CameraAct::class.java)
-            intent.putExtra("platform_id", viewModel.platformEntity.value!!.platformId!!)
+            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
             intent.putExtra("isNoLimitPhoto", true)
             startActivityForResult(intent, 1001)
@@ -126,7 +128,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
             prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             val radioButton = view.findViewById<RadioButton>(checkedId)
             this.volume = toPercent(radioButton.text.toString())
-            viewModel.updateContainerVolume(viewModel.platformEntity.value!!.platformId!!, p_container_id, this.volume)
+            viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, this.volume)
             when (radioButton.isChecked) {
                 true -> {
                     radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))

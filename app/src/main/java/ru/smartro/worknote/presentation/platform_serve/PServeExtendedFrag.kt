@@ -32,7 +32,7 @@ import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 
 
-class ExtendedServeFragment :
+class PServeExtendedFrag :
     AFragment(),
     ExtendedContainerAdapter.ContainerPointClickListener {
 
@@ -73,7 +73,7 @@ class ExtendedServeFragment :
             thumb = getThumb(null)
         }
 
-        vm.platformEntity.observe(viewLifecycleOwner) { platform ->
+        vm.mPlatformEntity.observe(viewLifecycleOwner) { platform ->
             if(platform != null) {
                 mConrainerAdapter = ExtendedContainerAdapter(
                     getAct(),
@@ -199,19 +199,20 @@ class ExtendedServeFragment :
                 }
             }
         } else {
-            if(vm.platformEntity.value != null) {
+            val platform = vm.mPlatformEntity.value
+            if(platform != null) {
                 if (resultCode == 101 && requestCode == 101) {
-                    vm.updatePlatformKGO(vm.platformEntity.value!!.platformId!!, mServedKGOVolumeText!!, isServedKGO = true)
+                    vm.updatePlatformKGO(platform.platformId!!, mServedKGOVolumeText!!, isServedKGO = true)
                     mAcbKGOServed?.let { setUseButtonStyleBackgroundGreen(it) }
                 } else if (resultCode == 102 && requestCode == 102) {
-                    vm.updatePlatformKGO(vm.platformEntity.value!!.platformId!!, mRemainingKGOVolumeText!!, isServedKGO = false)
+                    vm.updatePlatformKGO(platform.platformId!!, mRemainingKGOVolumeText!!, isServedKGO = false)
                     mAcbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
                 } else if (requestCode == 14 && resultCode == 404) {
                     acsbVolumePickup?.progress = prevVolumeValue?.toInt() ?: 0
-                    vm.updateSelectionVolume(vm.platformEntity.value!!.platformId!!, prevVolumeValue)
+                    vm.updateSelectionVolume(platform.platformId!!, prevVolumeValue)
                     tvVolumePickuptext(prevVolumeValue)
                 } else if (requestCode == 14 && resultCode == 14) {
-                    vm.updateSelectionVolume(vm.platformEntity.value!!.platformId!!, newVolumeValue)
+                    vm.updateSelectionVolume(platform.platformId!!, newVolumeValue)
                     acsbVolumePickup?.progress = newVolumeValue?.toInt() ?: (prevVolumeValue?.toInt() ?: 0)
                     prevVolumeValue = newVolumeValue
                     tvVolumePickuptext(prevVolumeValue)
@@ -223,17 +224,17 @@ class ExtendedServeFragment :
     private fun onClickPickup(acsbVolumePickup: SeekBar) {
         acsbVolumePickup.isEnabled = false
         try {
-            if(vm.platformEntity.value != null) {
+            if(vm.mPlatformEntity.value != null) {
                 showDlgPickup().let{ dialogView ->
                     val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
-                    vm.platformEntity.value!!.volumePickup?.let{
-                        tietAdditionalVolumeInM3.setText(vm.platformEntity.value!!.volumePickup.toString())
+                    vm.mPlatformEntity.value!!.volumePickup?.let{
+                        tietAdditionalVolumeInM3.setText(vm.mPlatformEntity.value!!.volumePickup.toString())
                     }
 
                     val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
                     btnOk.setOnClickListener {
                         val volume = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-                        vm.updateSelectionVolume(vm.platformEntity.value!!.platformId!!, volume)
+                        vm.updateSelectionVolume(vm.mPlatformEntity.value!!.platformId!!, volume)
                         if (volume == null) {
                             acsbVolumePickup.progress = 0
                         } else {
@@ -249,9 +250,9 @@ class ExtendedServeFragment :
     }
 
     private fun gotoMakePhotoForPickup() {
-        if(vm.platformEntity.value != null) {
+        if(vm.mPlatformEntity.value != null) {
             val intent = Intent(getAct(), CameraAct::class.java)
-            intent.putExtra("platform_id", vm.platformEntity.value!!.platformId!!)
+            intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forPlatformPickupVolume)
             startActivityForResult(intent, 14)
         }
@@ -300,10 +301,9 @@ class ExtendedServeFragment :
 
     override fun startContainerService(item: ContainerEntity) {
         findNavController().navigate(
-            ExtendedServeFragmentDirections
-                .actionExtendedServeFragmentToContainerServeBottomDialog(
-                    item.containerId!!
-                )
+            PServeExtendedFragDirections.actionExtendedServeFragmentToContainerServeBottomDialog
+                (item.containerId!!
+            )
         )
     }
 }

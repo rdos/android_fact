@@ -14,9 +14,11 @@
             android:id="@+id/action_completeF_to_finishCompleteF"
             app:destination="@id/finishCompleteF" />
     </fragment>
+
     <fragment
         android:id="@+id/finishCompleteF"
         tools:layout="@layout/fragment_successful_complete"
         android:name="ru.smartro.worknote.presentation.terminate.FinishCompleteF"
         android:label="FinishCompleteF" />
+
 </navigation>

@@ -2,21 +2,23 @@ package ru.smartro.worknote.presentation.platform_serve
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.navigation.fragment.NavHostFragment
-import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
+import ru.smartro.worknote.Inull
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
+import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.cam.CameraAct
 
-class PlatformServeAct :
+class PServeMain :
     ActNOAbst() {
 
     private val vm: PlatformServeSharedViewModel by viewModels()
@@ -25,6 +27,8 @@ class PlatformServeAct :
     private var btnCompleteTask: AppCompatButton? = null
     private var tvContainersProgress: TextView? = null
     private var actvAddress: AppCompatTextView? = null
+    private var switch: SwitchCompat? = null
+    private var screenModeLabel: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,42 +41,56 @@ class PlatformServeAct :
         tvContainersProgress = findViewById(R.id.tv_platform_serve__cont_progress)
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = findViewById(R.id.tv_platform_serve__address)
+        switch = findViewById(R.id.switch_mode)
+        screenModeLabel = findViewById(R.id.screen_mode_label)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        vm.screenMode.observe(this) { screenMode ->
-            if(screenMode != null) {
-                navController.currentDestination?.apply {
-                    when(screenMode) {
-                        false -> {
-                            if (id != R.id.simplifiedServeFragment) {
-                                navController.popBackStack()
-                            }
-                            findViewById<TextView>(R.id.screen_mode_label).text = "Упрощенный режим"
-                        }
-                        true -> {
-                            if (id != R.id.extendedServeFragment) {
-                                navController.navigate(R.id.extendedServeFragment)
-                            }
-                            findViewById<TextView>(R.id.screen_mode_label).text = "Расширенный режим"
-                        }
-                    }
-                }
-            }
-        }
-
-        findViewById<SwitchCompat>(R.id.switch_mode).setOnCheckedChangeListener { buttonView, isChecked ->
+        switch?.setOnCheckedChangeListener { _, _ ->
             vm.changeScreenMode()
         }
 
-        vm.platformEntity.observe(this) { platform ->
-            if(platform != null) {
+        vm.mWasServedExtended.observe(this) {
+            if(it) {
+                switch?.visibility = View.GONE
+                screenModeLabel?.visibility = View.GONE
+            }
+        }
 
-                if(vm.wasAskedForPhoto.value == false) {
+        vm.mPlatformEntity.observe(this) { platform ->
+            if(platform != null) {
+                if(platform.getPlatformStatus() == StatusEnum.NEW) {
+                    vm.mScreenMode.observe(this) { screenMode ->
+                        if(screenMode != null) {
+                            navController.currentDestination?.apply {
+                                when(screenMode) {
+                                    false -> {
+                                        if (id != R.id.simplifiedServeFragment) {
+                                            navController.popBackStack()
+                                        }
+                                        screenModeLabel?.text = "Упрощенный режим"
+                                    }
+                                    true -> {
+                                        if (id != R.id.extendedServeFragment) {
+                                            navController.navigate(R.id.extendedServeFragment)
+                                        }
+                                        screenModeLabel?.text = "Расширенный режим"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    switch?.visibility = View.GONE
+                    screenModeLabel?.visibility = View.GONE
+                    navController.navigate(R.id.extendedServeFragment)
+                }
+
+                if(vm.mBeforeMediaWasInited.value == false) {
                     initBeforeMedia(platform.platformId!!)
-                    vm.wasAskedForPhoto.postValue(true)
+                    vm.mBeforeMediaWasInited.postValue(true)
                 }
 
                 tvContainersProgress?.text =

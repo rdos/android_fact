@@ -9,11 +9,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.platform_serve.ClientGroupedContainers
+import ru.smartro.worknote.presentation.platform_serve.ServedContainers
 
 class SimplifiedContainerAdapter(
     private val context: Context,
-    private val listener: ClientContainerListener
+    private val listener: TypedContainerAdapter.TypedContainerListener
 ) : RecyclerView.Adapter<SimplifiedContainerAdapter.ClientGroupViewHolder>() {
+
+    var served: List<ServedContainers> = listOf()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     var containers: List<ClientGroupedContainers> = listOf()
         set(value) {
@@ -31,15 +38,15 @@ class SimplifiedContainerAdapter(
     }
 
     override fun onBindViewHolder(holder: ClientGroupViewHolder, position: Int) {
-        holder.bind(position, containers[position])
+        holder.bind(position, containers[position], served)
     }
 
     class ClientGroupViewHolder(
         val view: View,
         val context: Context,
-        val listener: ClientContainerListener
+        val listener: TypedContainerAdapter.TypedContainerListener
     ) : RecyclerView.ViewHolder(view) {
-        fun bind(clientGroupIndex: Int, clientGroup: ClientGroupedContainers) {
+        fun bind(clientGroupIndex: Int, clientGroup: ClientGroupedContainers, servedConts: List<ServedContainers>) {
             val tvClient = view.findViewById<TextView>(R.id.client_label)
             val rvGroupedContainers = view.findViewById<RecyclerView>(R.id.typed_containers)
 
@@ -47,29 +54,10 @@ class SimplifiedContainerAdapter(
             rvGroupedContainers.layoutManager = LinearLayoutManager(context)
             rvGroupedContainers.adapter = TypedContainerAdapter(
                 context,
-                object : TypedContainerAdapter.TypedContainerListener {
-                    override fun onDecrease(typeGroupId: Int) {
-                        listener.onDecrease(clientGroupIndex, typeGroupId)
-                    }
-
-                    override fun onIncrease(typeGroupId: Int) {
-                        listener.onIncrease(clientGroupIndex, typeGroupId)
-                    }
-
-                    override fun onAddPhoto(typeGroupId: Int) {
-                        listener.onAddPhoto(clientGroupIndex, typeGroupId)
-                    }
-
-                }
+                listener
             ).apply {
-                containers = clientGroup.typeGroupedContainers
+                data = TCAdata(servedConts, clientGroup.typeGroupedContainers, clientGroupIndex)
             }
         }
-    }
-
-    interface ClientContainerListener {
-        fun onDecrease(clientGroupId: Int, typeGroupId: Int)
-        fun onIncrease(clientGroupId: Int, typeGroupId: Int)
-        fun onAddPhoto(clientGroupId: Int, typeGroupId: Int)
     }
 }

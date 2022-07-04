@@ -1,0 +1,56 @@
+package ru.smartro.worknote.presentation.platform_serve
+
+import android.os.Bundle
+import android.view.View
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.R
+import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContainerAdapter
+import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAdapter
+
+
+class PServeSimplifyFrag : AFragment() {
+
+    private val vm: PlatformServeSharedViewModel by activityViewModels()
+
+    override fun onGetLayout(): Int {
+        return R.layout.fragment_platform_serve_simplified
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val adapterCurrentTask = SimplifiedContainerAdapter(requireContext(), object : TypedContainerAdapter.TypedContainerListener {
+            override fun onDecrease(clientGroupInd: Int, typeGroupInd: Int) {
+                vm.onDecrease(clientGroupInd, typeGroupInd)
+            }
+
+            override fun onIncrease(clientGroupInd: Int, typeGroupInd: Int) {
+                vm.onIncrease(clientGroupInd, typeGroupInd)
+            }
+
+            override fun onAddPhoto(clientGroupInd: Int, typeGroupInd: Int) {
+                vm.onAddPhoto(clientGroupInd, typeGroupInd)
+            }
+        })
+
+        val rvCurrentTask = view.findViewById<RecyclerView>(R.id.rv_main).apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = adapterCurrentTask
+        }
+
+        vm.mSortedContainers.observe(viewLifecycleOwner) { list ->
+            if(list != null) {
+                adapterCurrentTask.containers = list
+            }
+        }
+
+        vm.mServedContainers.observe(viewLifecycleOwner) { list ->
+            if(list != null) {
+                adapterCurrentTask.served = list
+            }
+        }
+    }
+}

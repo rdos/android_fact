@@ -8,8 +8,11 @@
     <fragment
         android:id="@+id/extendedServeFragment"
         tools:layout="@layout/fragment_platform_serve_extended"
-        android:name="ru.smartro.worknote.presentation.platform_serve.ExtendedServeFragment"
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeExtendedFrag"
         android:label="ExtendedServeFragment" >
+        <action
+            android:id="@+id/action_extendedServeFragment_to_simplifiedServeFragment"
+            app:destination="@id/simplifiedServeFragment" />
         <action
             android:id="@+id/action_extendedServeFragment_to_containerServeBottomDialog"
             app:destination="@id/containerServeBottomDialog">
@@ -18,15 +21,12 @@
                 app:argType="integer"
                 />
         </action>
-        <action
-            android:id="@+id/action_extendedServeFragment_to_simplifiedServeFragment"
-            app:destination="@id/simplifiedServeFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/simplifiedServeFragment"
         tools:layout="@layout/fragment_platform_serve_simplified"
-        android:name="ru.smartro.worknote.presentation.platform_serve.SimplifiedServeFragment"
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeSimplifyFrag"
         android:label="SimplifiedServeFragment" >
         <action
             android:id="@+id/action_simplifiedServeFragment_to_extendedServeFragment"
