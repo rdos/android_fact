@@ -14,7 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
-            android:padding="12dp">
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="16dp">
 
             <TextView
                 android:id="@+id/nav_title"
@@ -27,7 +28,7 @@
                 android:ellipsize="end"
                 android:textStyle="bold"
                 android:textColor="@color/white"
-                android:textSize="18sp"/>
+                android:textSize="20sp"/>
 
             <TextView
                 android:id="@+id/screen_mode_label"
@@ -40,7 +41,7 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textColor="@color/white"
-                android:textSize="14sp"/>
+                android:textSize="16sp"/>
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_mode"

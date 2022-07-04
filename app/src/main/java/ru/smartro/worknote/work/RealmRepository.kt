@@ -706,9 +706,7 @@ class RealmRepository(private val p_realm: Realm) {
         val result = p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
-        Log.d("TEST:::", "PLTFRMS LIST : ${result.size}")
         val filteredList = result.filter { it.getPlatformStatus() != StatusEnum.NEW && it.beginnedAt != null }
-        Log.d("TEST:::", "FILTERED LIST : ${filteredList.size}")
         return filteredList
     }
 

@@ -2,6 +2,7 @@ package ru.smartro.worknote.presentation.platform_serve
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -128,6 +129,14 @@ class PServeMain :
         intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
         hideDialog()
         startActivityForResult(intent, 1001)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d("TEST:::", "ACTIVITY RESULT : ${requestCode} ${resultCode}")
+        if(requestCode == 13 && resultCode == -1) {
+            finish()
+        }
     }
 
     override fun onBackPressed() {

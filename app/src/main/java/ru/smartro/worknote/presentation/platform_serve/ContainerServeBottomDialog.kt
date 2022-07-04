@@ -26,6 +26,8 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
     private var volume: Double? = null
     private lateinit var parentAct: PServeMain
 
+    private var firstTime = true
+
     val args: ContainerServeBottomDialogArgs by navArgs()
 
     private var p_container_id: Int = -1
@@ -51,7 +53,6 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         containerEntity.let {
             comment_et.setText(it.comment)
             volume = it.volume
-            Log.d("TEST::::", "VOLUIME::: ${it.volume}")
             setVolume(view, it.volume)
             enter_info_tittle.text = "Заполненность конт №${it.number}"
         }
@@ -125,19 +126,23 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
     private fun setVolume(view: View, volume: Double?) {
         var prevRadioButton = view.findViewById<RadioButton>(R.id.percent_0)
         enter_info_percent_rg.setOnCheckedChangeListener { group, checkedId ->
-            prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            val radioButton = view.findViewById<RadioButton>(checkedId)
-            this.volume = toPercent(radioButton.text.toString())
-            viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, this.volume)
-            when (radioButton.isChecked) {
-                true -> {
-                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            if(firstTime) {
+                firstTime = false
+            } else {
+                prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                val radioButton = view.findViewById<RadioButton>(checkedId)
+                this.volume = toPercent(radioButton.text.toString())
+                viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, this.volume)
+                when (radioButton.isChecked) {
+                    true -> {
+                        radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    }
+                    false -> {
+                        radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                    }
                 }
-                false -> {
-                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                }
+                prevRadioButton = radioButton
             }
-            prevRadioButton = radioButton
         }
         when (volume) {
             0.00 -> percent_0.isChecked = true
@@ -161,6 +166,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 99 && resultCode == 99) {
 //            clearContainerVolume()
+            viewModel.getPlatformEntity(viewModel.mPlatformEntity.value!!.platformId!!)
             dismiss()
         }
     }

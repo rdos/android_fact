@@ -300,10 +300,7 @@ class PServeExtendedFrag :
     }
 
     override fun startContainerService(item: ContainerEntity) {
-        findNavController().navigate(
-            PServeExtendedFragDirections.actionExtendedServeFragmentToContainerServeBottomDialog
-                (item.containerId!!
-            )
-        )
+        findNavController().navigate(PServeExtendedFragDirections
+            .actionExtendedServeFragmentToContainerServeBottomDialog(item.containerId!!))
     }
 }

@@ -66,7 +66,6 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
 
         viewModel.wayListResponse.observe(this) { result ->
             if(result != null) {
-                Log.d("TEST :::", "RESULT IS NOT NULL!!!")
                 swipeRefreshLayout?.isRefreshing = false
                 val data = result.data
                 when (result.status) {
@@ -189,7 +188,6 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
-        Log.d("TEST :::", "ON REFRESH!~!!!")
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val body = WayListBody(
             date = currentDate,

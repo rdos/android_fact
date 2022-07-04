@@ -52,7 +52,7 @@ class ExtendedContainerAdapter(
             Log.d("ContainerPointAdapter", "onBindViewHolder: true")
         }
         val tvVolume = holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__volume)
-        tvVolume.text =  "${container.getVolumeInPercent().toString().dropLast(2)}%"
+        tvVolume.text =  "${container.getVolumeInPercent()}%"
         //2&
         tvVolume.setTextColor(container.getVolumePercentColor(holder.itemView.context))
 
@@ -74,7 +74,6 @@ class ExtendedContainerAdapter(
 
     private fun showTakeInactiveContainerAlert(context: Context, next: () -> Any) {
         try {
-            Log.d("TEST :::: ", "showTakeInactiveContainerAlert")
             lateinit var alertDialog: AlertDialog
             val builder = AlertDialog.Builder(context)
             val view = (context as Activity).layoutInflater.inflate(R.layout.alert_take_inactive_container, null)

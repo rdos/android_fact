@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
@@ -63,7 +64,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
         _platformEntity.postValue(response)
         if(response.getPlatformStatus() == StatusEnum.NEW) {
             val temp = clusterContainers(response.containers.toList())
-            Log.d("TEST:::", "TEMP RESULT ::: ${temp}")
             _sortedContainers.postValue(temp)
         }
         return response
@@ -78,9 +78,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
             get(typeGroupIndex)?.containersIds
 
         val servedContainers = mServedContainers.value?.find { it.clientGroupIndex == clientGroupIndex && it.typeGroupIndex == typeGroupIndex }
-
-        Log.d("TEST :::", "OnDecrease ${containersToServe} ")
-        Log.d("TEST :::", "OnDecrease ${servedContainers}")
 
         if(containersToServe != null && servedContainers != null) {
             val decreasedCount = servedContainers.count - 1
@@ -101,9 +98,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 
         val servedContainers = mServedContainers.value?.find { it.clientGroupIndex == clientGroupIndex && it.typeGroupIndex == typeGroupIndex }
 
-        Log.d("TEST :::", "OnDecrease ${containersToServe} ")
-        Log.d("TEST :::", "OnDecrease ${servedContainers}")
-
         if(containersToServe != null && servedContainers != null) {
             val indOfServedContainers = mServedContainers.value!!.indexOf(servedContainers)
             val temp = mServedContainers.value!!.toMutableList()
@@ -111,16 +105,13 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
             mServedContainers.postValue(temp)
         }
     }
-    fun onAddPhoto(clientGroupIndex: Int, typeGroupIndex: Int) {
-        // TODO REDIRECT TO CAMERA!!!
-    }
-
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // EXTENDED SERVING
     fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?) {
         mWasServedExtended.postValue(true)
         baseDat.updateContainerVolume(platformId, containerId, volume)
+        getPlatformEntity(platformId)
     }
 
     fun updateContainerComment(platformId: Int, containerId: Int, comment: String?) {
@@ -131,11 +122,13 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     fun updateSelectionVolume(platformId: Int, volume: Double?) {
         mWasServedExtended.postValue(true)
         baseDat.updateSelectionVolume(platformId, volume)
+        getPlatformEntity(platformId)
     }
 
     fun clearContainerVolume(platformId: Int, containerId: Int) {
         mWasServedExtended.postValue(true)
         baseDat.clearContainerVolume(platformId, containerId)
+        getPlatformEntity(platformId)
     }
 
     fun updatePlatformStatusUnfinished() {
@@ -148,21 +141,25 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     fun updatePlatformStatusUnfinished(platformId: Int) {
         mWasServedExtended.postValue(true)
         baseDat.updatePlatformStatusUnfinished(platformId)
+        getPlatformEntity(platformId)
     }
 
     fun removePlatformMedia(photoFor: Int, image: ImageEntity, platformId: Int) {
         mWasServedExtended.postValue(true)
         baseDat.removePlatformMedia(photoFor, image, platformId)
+        getPlatformEntity(platformId)
     }
 
     fun removeContainerMedia(photoFor: Int,platformId: Int, containerId: Int, imageBase64: ImageEntity) {
         mWasServedExtended.postValue(true)
         baseDat.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
+        getPlatformEntity(platformId)
     }
 
     fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
         mWasServedExtended.postValue(true)
         baseDat.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
+        getPlatformEntity(platformId)
     }
 
     // !!!!!!!!!!!!!!!!!!!

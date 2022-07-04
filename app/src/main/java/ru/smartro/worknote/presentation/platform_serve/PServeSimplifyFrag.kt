@@ -1,5 +1,6 @@
 package ru.smartro.worknote.presentation.platform_serve
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
@@ -7,8 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContainerAdapter
 import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAdapter
+import ru.smartro.worknote.work.cam.CameraAct
 
 
 class PServeSimplifyFrag : AFragment() {
@@ -32,7 +36,11 @@ class PServeSimplifyFrag : AFragment() {
             }
 
             override fun onAddPhoto(clientGroupInd: Int, typeGroupInd: Int) {
-                vm.onAddPhoto(clientGroupInd, typeGroupInd)
+                val intent = Intent(requireActivity(), CameraAct::class.java)
+                intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
+                intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
+                hideDialog()
+                startActivityForResult(intent, 1001)
             }
         })
 
