@@ -14,6 +14,11 @@ abstract class BaseAdapter<T>(private var items: List<T>) :
     }
     abstract fun bind(item: T, holder: ViewHolder)
 
+    fun reset() {
+        this.items = mItemsBefore
+        notifyDataSetChanged()
+    }
+
     fun set(items: List<T>) {
         this.items = items
         notifyDataSetChanged()

@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.act_messager__rv_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.ViewHolder
@@ -23,7 +24,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener {
+class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener{
     private var mAdapter: JournalChatAdapter? = null
     private val viewModel: JournalViewModel by viewModel()
 
@@ -31,32 +32,18 @@ class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_journalchat)
         supportActionBar!!.hide()
+        val platformSIsServed = viewModel.findPlatformsIsServed()
+
         val acibGotoBack = findViewById<AppCompatImageButton>(R.id.acib__act_journalchat__gotoback)
         acibGotoBack.setOnClickListener{
             onBackPressed()
         }
         val svFilter = findViewById<SearchView>(R.id.sv__act_journalchat__filter)
+
+        mAdapter = JournalChatAdapter(platformSIsServed)
         svFilter.setOnQueryTextListener(this)
-        supportActionBar!!.title = "Журнал"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         val rvJournalAct = findViewById<RecyclerView>(R.id.rv_act_journal)
-
-        viewModel.findPlatformsIsServed().let {
-//            val platformSIsServed = viewModel.findPlatformsIsServed()
-            val platformSIsServed = it
-            mAdapter = JournalChatAdapter(platformSIsServed)
-            rvJournalAct.adapter = mAdapter
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-            }
-        }
-        return super.onOptionsItemSelected(item)
+        rvJournalAct.adapter = mAdapter
     }
 
     inner class JournalChatAdapter(items: List<PlatformEntity>) : BaseAdapter<PlatformEntity>(items) {
@@ -82,6 +69,11 @@ class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener {
 
         fun filteredList(queryText: String) {
             logSentry(queryText)
+            // TODO: !R_dos
+            if(queryText == Snull) {
+                super.reset()
+                return
+            }
             val mItemsAfter = filter(super.getItems(), queryText)
             super.set(mItemsAfter)
         }
@@ -180,19 +172,21 @@ class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener {
      * ЗДЕСЬ интерфейсы interface*/
     override fun onQueryTextSubmit(query: String?): Boolean {
         val result = false
-        log("onQueryTextSubmit. result=${result} query=${query}")
+        log("svFilter:::onQueryTextSubmit. result=${result} query=${query}")
         return result
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
         val res = true
         if (newText.isNullOrEmpty()) {
+            mAdapter!!.filteredList(Snull)
+            log("svFilter:::onQueryTextChange.result=${res} newText=${newText}")
             return res
         }
         mAdapter?.let {
             mAdapter!!.filteredList(newText.toString())
         }
-        log("onQueryTextChange.result=${res} newText=${newText}")
+        log("svFilter:::onQueryTextChange.result=${res} newText=${newText}")
         return res
     }
 }
