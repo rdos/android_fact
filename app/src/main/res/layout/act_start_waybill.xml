@@ -8,6 +8,18 @@
     android:layout_gravity="center"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/tv_act_start_waybill__not_found_data"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="28sp"
+        android:text="@+id/tv_act_start_waybill__not_found_data"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_act_start_waybill"
         android:layout_width="match_parent"

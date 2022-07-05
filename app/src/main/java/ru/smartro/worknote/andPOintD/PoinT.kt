@@ -45,9 +45,10 @@ class PoinT(latitude: Double, longitude: Double,
         return res
     }
 
-    fun inImageEntity(imageBase64: String): ImageEntity {
+    fun inImageEntity(imageBase64: String, isNoLimitPhoto: Boolean): ImageEntity {
         val imageEntity = ImageEntity(imageBase64, MyUtil.timeStampInSec(),
             PointTOBaseData(), PoinAccuracyTO_SRV(), PointTimeToLastKnowTime_SRV())
+        imageEntity.isNoLimitPhoto = isNoLimitPhoto
         return imageEntity
     }
 

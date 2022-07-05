@@ -4,28 +4,22 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.alert_clear_navigator.view.dismiss_btn
-import kotlinx.android.synthetic.main.alert_finish_way.view.*
 import kotlinx.android.synthetic.main.alert_warning_camera.view.title_tv
-import kotlinx.android.synthetic.main.dialog_early_complete.view.*
-import kotlinx.coroutines.*
-import ru.smartro.worknote.A_SLEEP_TIME_1_83__MS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
-import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.log.AAct
 
 private lateinit var loadingDialog: AlertDialog
 private lateinit var mCustomDialog: AlertDialog
-private val TAG = "Alert--AAA"
+private val TAG = "Alert.kt"
 
-private fun showCustomDialog(builder: AlertDialog.Builder) {
+fun showCustomDialog(builder: AlertDialog.Builder) {
     Log.i(TAG, "showCustomDialog.before")
     try {
         mCustomDialog = builder.create()
@@ -37,7 +31,6 @@ private fun showCustomDialog(builder: AlertDialog.Builder) {
     }
     Log.d(TAG, "showCustomDialog.after")
 }
-
 
 //showDlgPickup!r_dos
 fun AAct.showDlgPickup(): View {
@@ -80,9 +73,6 @@ fun AppCompatActivity.showingProgress(text: String? = null) {
         builder.setView(view)
         builder.setCancelable(false)
         showLoadingDialog(builder)
-        view.postDelayed({
-            hideProgress()
-        }, A_SLEEP_TIME_1_83__MS)
     } catch (e: Exception) {
         println()
     }
@@ -134,34 +124,6 @@ fun AppCompatActivity.showSuccessComplete(): View {
     val view = inflater.inflate(R.layout.alert_successful_complete, null)
     builder.setView(view)
     builder.setCancelable(false)
-    showCustomDialog(builder)
-    return view
-}
-
-fun AppCompatActivity.showCompleteWaybill(): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_finish_way, null)
-    view.weight_tg.setOnCheckedChangeListener { compoundButton, b ->
-        if (b) {
-            view.volume_tg.isChecked = !b
-            view.weight_tg.setTextColor(Color.WHITE)
-            view.comment_et_out.hint = (getString(R.string.enter_weight_hint))
-        } else {
-            view.weight_tg.setTextColor(Color.BLACK)
-        }
-    }
-    view.volume_tg.setOnCheckedChangeListener { compoundButton, b ->
-        if (b) {
-            view.weight_tg.isChecked = !b
-            view.volume_tg.setTextColor(Color.WHITE)
-            view.comment_et_out.hint = getString(R.string.enter_volume_hint)
-        } else {
-            view.volume_tg.setTextColor(Color.BLACK)
-        }
-    }
-    view.volume_tg.isChecked = true
-    builder.setView(view)
     showCustomDialog(builder)
     return view
 }
@@ -224,46 +186,6 @@ fun AppCompatActivity.warningClearNavigator(title: String): View {
     return view
 }
 
-fun AppCompatActivity.showDialogEarlyComplete(reasons: List<CancelWayReasonEntity>,
-                                              workOrderId: Int, workOrderName: String): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.dialog_early_complete, null)
-    val reasonsString = reasons.map { it.problem }
-    view.reason_et.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, android.R.id.text1, reasonsString))
-    view.reason_et.setOnClickListener {
-        view.reason_et.showDropDown()
-    }
-    view.workorder_name.text = "Итоговые показатели рейса \n${workOrderId}($workOrderName)"
-    view.early_weight_tg.setOnCheckedChangeListener { _, b ->
-        if (b) {
-            view.early_volume_tg.isChecked = !b
-            view.early_weight_tg.setTextColor(Color.WHITE)
-            view.unload_value_et_out.hint = (getString(R.string.enter_weight_hint))
-        } else {
-            view.early_weight_tg.setTextColor(Color.BLACK)
-        }
-    }
-    view.early_volume_tg.setOnCheckedChangeListener { _, b ->
-        if (b) {
-            view.early_weight_tg.isChecked = !b
-            view.early_volume_tg.setTextColor(Color.WHITE)
-            view.unload_value_et_out.hint = (getString(R.string.enter_volume_hint))
-        } else {
-            view.early_volume_tg.setTextColor(Color.BLACK)
-        }
-    }
-    view.reason_et.setOnFocusChangeListener { _, _ ->
-        view.reason_et.showDropDown()
-    }
-    builder.setView(view)
-
-    //https://jira.smartro.ru/browse/SR-2625
-    view.early_volume_tg.isChecked = true
-
-    showCustomDialog(builder)
-    return view
-}
 
 fun Fragment.warningDelete(title: String): View {
     val builder = AlertDialog.Builder(activity!!)
@@ -283,6 +205,10 @@ fun AppCompatActivity.hideDialog() {
     hideCustomDialog()
 }
 
+fun AbstractDialog.hideDialog() {
+    hideCustomDialog()
+}
+
     private fun hideCustomDialog() {
         try {
             mCustomDialog.dismiss()
@@ -294,6 +220,7 @@ fun AppCompatActivity.hideDialog() {
 
 fun AppCompatActivity.hideProgress() {
     try {
+        Log.w(TAG, "hideProgress")
         if (loadingDialog.isShowing) {
             loadingDialog.dismiss()
         }
@@ -302,29 +229,3 @@ fun AppCompatActivity.hideProgress() {
         Log.e(TAG, "AppCompatActivity.loadingHide", e)
     }
 }
-
-fun Fragment.hideProgress() {
-    try {
-        loadingDialog.dismiss()
-    } catch (e: Exception) {
-        // TODO: 02.11.2021
-        Log.e(TAG, "Fragment.loadingHide", e)
-    }
-}
-
-fun Fragment.showingProgress() {
-    try {
-        val builder = AlertDialog.Builder(activity!!)
-        val inflater = this.layoutInflater
-        val view = inflater.inflate(R.layout.alert_loading, null)
-        builder.setView(view)
-        builder.setCancelable(false)
-        showLoadingDialog(builder)
-    } catch (e: Exception) {
-        // TODO: 02.11.2021
-        Log.e(TAG, "Fragment.loadingShow", e)
-    }
-}
-
-
-
