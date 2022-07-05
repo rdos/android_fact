@@ -152,7 +152,7 @@ class AppParaMS {
         }
 
     private var gpsTIME: Long
-        get() = sharedPref__env.getLong("gpsTIME", Lnull)
+        get() = sharedPref__env.getLong("gpsTIME", LTIMEnull)
         set(value) = sharedPref__env.edit {
             it.putLong("gpsTIME", value)
         }

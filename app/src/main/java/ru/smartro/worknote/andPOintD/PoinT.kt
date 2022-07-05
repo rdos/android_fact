@@ -12,7 +12,7 @@ class PoinT(latitude: Double, longitude: Double,
             private val pointTime: Long?, private val pointAccuracy: Float?
 ): Point(latitude, longitude) {
 
-    constructor() : this(Dnull, Dnull, Lnull, Fnull) {
+    constructor() : this(Dnull, Dnull, LTIMEnull, Fnull) {
         isFakeGPS = true
     }
 
