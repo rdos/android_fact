@@ -13,16 +13,17 @@ const val SCREEN_EARLY_COMPLETE: String = "SCREEN_EARLY_COMPLETE"
 const val SCREEN_SUCCESS_COMPLETE: String = "SCREEN_SUCCESS_COMPLETE"
 //todo: INDEterminate))
 class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
-
+    private var mTEMPscreenKeyVAL: String? = null
     private  val mNavigator = object : SupportFragmentNavigator(supportFragmentManager, R.id.fragment_container) {
         override fun createFragment(screenKey: String?, data: Any?): Fragment {
+            mTEMPscreenKeyVAL = screenKey
             when(screenKey) {
                 SCREEN_EARLY_COMPLETE -> {
                     val res = CompleteF.newInstance(data)
                     return res
                 }
                 SCREEN_SUCCESS_COMPLETE -> {
-                    val res = FinishCompleteF.newInstance(data!!)
+                    val res = FinishCompleteF.newInstance(data)
                     return res
                 }
 //                case default_LIST_SCREEN:
@@ -47,7 +48,7 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
         super.onCreate(savedInstanceState)
 //        FRAG
         setContentView(R.layout.a_main)
-        supportActionBar?.hide()
+        supportActionBar?.title = "Завершение заданий"
 //        val workOrderId = getPutExtraParam_ID()
 //        val link = getPutExtraParam_NAME()
         App.getAppliCation().getRouter().navigateTo(SCREEN_EARLY_COMPLETE)
@@ -62,10 +63,13 @@ class TerminateAct : ActNOAbst(), Navigator, NavigatorHolder {
         super.onPause()
     }
 
-                                                override fun onBackPressed() {
-                                                    super.onBackPressed()
-                                                    finish()
-                                                }
+    override fun onBackPressed() {
+        if (mTEMPscreenKeyVAL == SCREEN_SUCCESS_COMPLETE) {
+            return
+        }
+        super.onBackPressed()
+        finish()
+    }
     override fun applyCommand(command: Command?) {
 //        TODO("Not yet implemented")
         Log.w("TAGS", "applyCommand")

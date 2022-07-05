@@ -2,6 +2,7 @@ package ru.smartro.worknote.work.cam
 
 import android.Manifest
 import android.app.Activity
+import android.app.Application
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -31,6 +32,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -168,7 +170,7 @@ open class CameraFragment(
                         val baos = ByteArrayOutputStream()
                         resource.compress(Bitmap.CompressFormat.JPEG, 100, baos)
                         val b: ByteArray = baos.toByteArray()
-                        Log.w("TAGS", b.size.toString())
+                        Log.w("TAGS", "b.size.toString()=${b.size.toString()}")
                         val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
                         val gps = App.getAppliCation().gps()
                         val imageEntity = gps.inImageEntity(imageBase64, mIsNoLimitPhoto)
@@ -260,42 +262,42 @@ open class CameraFragment(
         mImageCounter?.post{
             when (photoFor) {
                 PhotoTypeEnum.forContainerFailure -> {
-                    val container = viewModel.findContainerEntity(containerId)
+                    val container = viewModel.baseDat.getContainerEntity(containerId)
                     mediaSize = container.failureMedia.size + count
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forContainerBreakdown -> {
-                    val container = viewModel.findContainerEntity(containerId)
+                    val container = viewModel.baseDat.getContainerEntity(containerId)
                     mediaSize = container.breakdownMedia.size + count
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     mediaSize = platform.failureMedia.size + count
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forAfterMedia -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     mediaSize = count + getCountAfterMedia(platform)
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     mediaSize = count + getCountBeforeMedia(platform)
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forServedKGO -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     mediaSize = platform.getServedKGOMediaSize() + count
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forRemainingKGO -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     mediaSize = platform.getRemainingKGOMediaSize() + count
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forPlatformPickupVolume -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     mediaSize = platform.pickupMedia.size + count
                     mImageCounter?.text = "$mediaSize"
                     val btnCancel = mRootView.findViewById<TextView>(R.id.btn_cancel)
@@ -352,38 +354,38 @@ open class CameraFragment(
         mBtnAcceptPhoto?.setOnClickListener {
             val mediaSize = when (photoFor) {
                 PhotoTypeEnum.forBeforeMedia -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     getCountBeforeMedia(platform)
                 }
                 PhotoTypeEnum.forAfterMedia -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     getCountAfterMedia(platform)
                 }
                 PhotoTypeEnum.forPlatformProblem -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     platform.failureMedia.size
                 }
                 PhotoTypeEnum.forContainerFailure -> {
-                    val container = viewModel.findContainerEntity(containerId)
+                    val container = viewModel.baseDat.getContainerEntity(containerId)
                     container.failureMedia.size
                 }
                 PhotoTypeEnum.forContainerBreakdown -> {
-                    val container = viewModel.findContainerEntity(containerId)
+                    val container = viewModel.baseDat.getContainerEntity(containerId)
                     container.breakdownMedia.size
                 }
 
                 PhotoTypeEnum.forServedKGO -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     platform.getServedKGOMediaSize()
                 }
 
                 PhotoTypeEnum.forRemainingKGO -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     platform.getRemainingKGOMediaSize()
                 }
 
                 PhotoTypeEnum.forPlatformPickupVolume -> {
-                    val platform = viewModel.findPlatformEntity(platformId)
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     platform.getPickupMediaSize()
                 }
                 else -> 0
@@ -455,37 +457,37 @@ open class CameraFragment(
     private fun isCurrentMediaIsFull(): Boolean {
         val res = when (photoFor) {
             PhotoTypeEnum.forAfterMedia -> {
-                val platform = viewModel.findPlatformEntity(platformId)
+                val platform = viewModel.baseDat.getPlatformEntity(platformId)
                 //todo: фильтер конечно же...!!!
                 getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
             }
             PhotoTypeEnum.forBeforeMedia -> {
-                val platform = viewModel.findPlatformEntity(platformId)
+                val platform = viewModel.baseDat.getPlatformEntity(platformId)
                 //todo: фильтер конечно же лучше переписать)))) !!!
                 getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
             }
             PhotoTypeEnum.forPlatformProblem -> {
-                val platform = viewModel.findPlatformEntity(platformId)
+                val platform = viewModel.baseDat.getPlatformEntity(platformId)
                 platform.failureMedia.size >= maxPhotoCount
             }
             PhotoTypeEnum.forContainerFailure -> {
-                val container = viewModel.findContainerEntity(containerId)
+                val container = viewModel.baseDat.getContainerEntity(containerId)
                 container.failureMedia.size >= maxPhotoCount
             }
             PhotoTypeEnum.forContainerBreakdown -> {
-                val container = viewModel.findContainerEntity(containerId)
+                val container = viewModel.baseDat.getContainerEntity(containerId)
                 container.breakdownMedia.size >= maxPhotoCount
             }
             PhotoTypeEnum.forServedKGO -> {
-                val platform = viewModel.findPlatformEntity(platformId)
+                val platform = viewModel.baseDat.getPlatformEntity(platformId)
                 platform.getServedKGOMediaSize() >= maxPhotoCount
             }
             PhotoTypeEnum.forRemainingKGO -> {
-                val platform = viewModel.findPlatformEntity(platformId)
+                val platform = viewModel.baseDat.getPlatformEntity(platformId)
                 platform.getRemainingKGOMediaSize() >= maxPhotoCount
             }
             PhotoTypeEnum.forPlatformPickupVolume -> {
-                val platform = viewModel.findPlatformEntity(platformId)
+                val platform = viewModel.baseDat.getPlatformEntity(platformId)
                 platform.pickupMedia.size >= maxPhotoCount
             }
             else -> {
@@ -604,7 +606,10 @@ imageAnalyzer?.targetRotation = mRotation
 
 orientationEventListener.enable()
  */
+class CameraViewModel(application: Application) : BaseViewModel(application) {
 
+
+}
 //    private class LuminosityAnalyzer:ImageAnalysis.Analyzer{
 //        private var lastAnalyzedTimestamp = 0L
 //        /**

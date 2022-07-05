@@ -40,9 +40,10 @@ class ContainerBreakdownAct : ActNOAbst() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         intent.let {
-            platform = vs.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            val platformId = it.getIntExtra("platform_id", 0)
+            platform = vs.baseDat.getPlatformEntity(platformId)
             supportActionBar!!.title = "Поломка контейнера"
-            mContainer = vs.findContainerEntity(it.getIntExtra("container_id", 0))
+            mContainer = vs.baseDat.getContainerEntity(it.getIntExtra("container_id", 0))
         }
 
           mAcactvBreakDownIn = findViewById(R.id.acactv_act_non_pickup__breakdown_in)
@@ -84,9 +85,11 @@ class ContainerBreakdownAct : ActNOAbst() {
 
 
     private fun initImageView() {
+        if(mContainer.breakdownMedia.size <= 0) {
+           return
+        }
         Glide.with(this).load(MyUtil.base64ToImage(mContainer.breakdownMedia.last()?.image))
             .into(problem_img)
-
     }
 
     private fun initExtremeProblemPhoto() {
@@ -118,14 +121,6 @@ class ContainerBreakdownAct : ActNOAbst() {
 
     class ContainerBreakdownViewModel(application: Application) : BaseViewModel(application) {
 
-
-        fun findPlatformEntity(platformId: Int): PlatformEntity {
-            return baseDat.findPlatformEntity(platformId)
-        }
-
-        fun findContainerEntity(containerId: Int): ContainerEntity {
-            return baseDat.findContainerEntity(containerId)
-        }
 
 
         fun findBreakDown(): List<String> {

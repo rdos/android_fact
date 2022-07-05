@@ -30,7 +30,6 @@ import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
-import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 
@@ -64,7 +63,7 @@ class PlatformServeAct :
         setContentView(R.layout.act_platformserve)
         supportActionBar?.hide()
 
-        mPlatformEntity = vm.baseDat.findPlatformEntity(intent.getIntExtra("platform_id", Inull))
+        mPlatformEntity = vm.baseDat.getPlatformEntity(intent.getIntExtra("platform_id", Inull))
         mIsServeAgain = intent.getBooleanExtra("mIsServeAgain", false)
 
 //        supportActionBar?.title =
@@ -378,17 +377,16 @@ class PlatformServeAct :
 //    }
 
     private fun initContainer() {
-        val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
-        Log.d("TEST :::", "INIT containers: ${containers.joinToString(separator = "\n") { el -> "{ ${el.containerId} : ${el.typeName} : ${el.status} }" }}")
-        mConrainerAdapter = ContainerAdapter(this, this, containers as ArrayList<ContainerEntity>)
+        val containers = vm.baseDat.findContainersSortedByIsActiveToday(mPlatformEntity.platformId!!)
+        mConrainerAdapter = ContainerAdapter(this, this, (containers) as ArrayList<ContainerEntity>)
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).recycledViewPool.setMaxRecycledViews(0, 0);
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).adapter = mConrainerAdapter
         findViewById<TextView>(R.id.tv_activity_platform_serve__point_info).text = "№${mPlatformEntity.srpId} / ${mPlatformEntity.containers!!.size} конт."
     }
 
     fun updateRecyclerview() {
-        val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
-        Log.d("TEST :::", "UPDATE containers: ${containers.joinToString(separator = "\n") { el -> "{ ${el.containerId} : ${el.typeName} : ${el.status} }" }}")
+        val containers = vm.baseDat.findContainersSortedByIsActiveToday(mPlatformEntity.platformId!!)
+        Log.d("TEST :::: ", "Containers: ${containers.joinToString { el -> "VOLUME: ${el.volume} ::: IS ACTIVTE TODAY: ${el.isActiveToday}" }}")
         mConrainerAdapter.updateData(containers as ArrayList<ContainerEntity>)
 //        initAfterMedia()
     }

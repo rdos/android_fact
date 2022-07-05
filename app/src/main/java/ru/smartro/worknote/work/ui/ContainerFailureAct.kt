@@ -40,9 +40,9 @@ class ContainerFailureAct : ActNOAbst() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         intent.let {
-            platform = vs.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            platform = vs.baseDat.getPlatformEntity(it.getIntExtra("platform_id", 0))
             supportActionBar!!.title = "Невывоз контейнера"
-            mContainer = vs.findContainerEntity(it.getIntExtra("container_id", 0))
+            mContainer = vs.baseDat.getContainerEntity(it.getIntExtra("container_id", 0))
         }
 
         mAcactvFailureIn = findViewById(R.id.acactv_act_container_failure__in)
@@ -83,9 +83,12 @@ class ContainerFailureAct : ActNOAbst() {
 
 
     private fun initImageView() {
-        Glide.with(this).load(MyUtil.base64ToImage(mContainer.failureMedia.last()?.image))
-            .into(problem_img)
-
+        mContainer.failureMedia.let {
+            if(it.size > 0) {
+                Glide.with(this).load(MyUtil.base64ToImage(it.last()!!.image))
+                    .into(problem_img)
+            }
+        }
     }
 
     private fun initExtremeProblemPhoto() {
@@ -116,20 +119,6 @@ class ContainerFailureAct : ActNOAbst() {
     }
 
     class ContainerFailureViewModel(application: Application) : BaseViewModel(application) {
-
-
-        fun findPlatformEntity(platformId: Int): PlatformEntity {
-            return baseDat.findPlatformEntity(platformId)
-        }
-
-        fun findContainerEntity(containerId: Int): ContainerEntity {
-            return baseDat.findContainerEntity(containerId)
-        }
-
-
-        fun findBreakDown(): List<String> {
-            return baseDat.findAllBreakDown()
-        }
 
         fun findFailReason(): List<String> {
             return baseDat.findAllFailReason()

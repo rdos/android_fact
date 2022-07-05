@@ -152,6 +152,8 @@ data class CoNTaiNeR_know1(
     var constructiveVolume: Double? = null,
     @SerializedName("type_name")
     var typeName: String? = null,
+    @SerializedName("status")
+    val status: String,
     @SerializedName("type_id")
     val typeId: Int,
     @SerializedName("volume")

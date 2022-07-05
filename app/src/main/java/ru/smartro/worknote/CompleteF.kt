@@ -132,15 +132,7 @@ class CompleteF : AFragment() {
             getAct().modeSyNChrON_off()
             mDatabase.clearDataBase()
 
-            getAct().showSuccessComplete().let {
-                it.finish_accept_btn.setOnClickListener {
-                    getAct().startActivity(Intent(getAct(), StartAct::class.java))
-                    getAct().finish()
-                }
-                it.exit_btn.setOnClickListener {
-                    getAct().logout()
-                }
-            }
+            App.getAppliCation().getRouter().replaceScreen(SCREEN_SUCCESS_COMPLETE)
         }
 
         inner class EarlyAdapterViewHolder(itemView: View) : BaseCompleteViewHolder(itemView) {
