@@ -2,6 +2,7 @@ package ru.smartro.worknote.presentation.platform_serve
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,10 +38,11 @@ class PServeSimplifyFrag : AFragment() {
 
             override fun onAddPhoto(clientGroupInd: Int, typeGroupInd: Int) {
                 val intent = Intent(requireActivity(), CameraAct::class.java)
+                intent.putExtra("isNoLimitPhoto", true)
                 intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
                 intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
                 hideDialog()
-                startActivityForResult(intent, 1001)
+                startActivityForResult(intent, 1685)
             }
         })
 
@@ -60,5 +62,10 @@ class PServeSimplifyFrag : AFragment() {
                 adapterCurrentTask.served = list
             }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d("TEST:::", "SIMPLIFY RESULT : ${requestCode} ${resultCode}")
     }
 }

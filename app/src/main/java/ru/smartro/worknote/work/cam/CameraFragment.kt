@@ -261,6 +261,16 @@ open class CameraFragment(
         var mediaSize = 0
         mImageCounter?.post{
             when (photoFor) {
+                PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
+                    mediaSize = count + getCountAfterMedia(platform)
+                    mImageCounter?.text = "$mediaSize"
+                }
+                PhotoTypeEnum.forBeforeMedia, PhotoTypeEnum.forSimplifyServeBefore -> {
+                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
+                    mediaSize = count + getCountBeforeMedia(platform)
+                    mImageCounter?.text = "$mediaSize"
+                }
                 PhotoTypeEnum.forContainerFailure -> {
                     val container = viewModel.baseDat.getContainerEntity(containerId)
                     mediaSize = container.failureMedia.size + count
@@ -274,16 +284,6 @@ open class CameraFragment(
                 PhotoTypeEnum.forPlatformProblem -> {
                     val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     mediaSize = platform.failureMedia.size + count
-                    mImageCounter?.text = "$mediaSize"
-                }
-                PhotoTypeEnum.forAfterMedia -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    mediaSize = count + getCountAfterMedia(platform)
-                    mImageCounter?.text = "$mediaSize"
-                }
-                PhotoTypeEnum.forBeforeMedia -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    mediaSize = count + getCountBeforeMedia(platform)
                     mImageCounter?.text = "$mediaSize"
                 }
                 PhotoTypeEnum.forServedKGO -> {
@@ -353,11 +353,11 @@ open class CameraFragment(
         mBtnAcceptPhoto = mRootView.findViewById(R.id.photo_accept_button)
         mBtnAcceptPhoto?.setOnClickListener {
             val mediaSize = when (photoFor) {
-                PhotoTypeEnum.forBeforeMedia -> {
+                PhotoTypeEnum.forBeforeMedia, PhotoTypeEnum.forSimplifyServeBefore -> {
                     val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     getCountBeforeMedia(platform)
                 }
-                PhotoTypeEnum.forAfterMedia -> {
+                PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
                     val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     getCountAfterMedia(platform)
                 }
@@ -456,12 +456,12 @@ open class CameraFragment(
 
     private fun isCurrentMediaIsFull(): Boolean {
         val res = when (photoFor) {
-            PhotoTypeEnum.forAfterMedia -> {
+            PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
                 val platform = viewModel.baseDat.getPlatformEntity(platformId)
                 //todo: фильтер конечно же...!!!
                 getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
             }
-            PhotoTypeEnum.forBeforeMedia -> {
+            PhotoTypeEnum.forBeforeMedia, PhotoTypeEnum.forSimplifyServeBefore -> {
                 val platform = viewModel.baseDat.getPlatformEntity(platformId)
                 //todo: фильтер конечно же лучше переписать)))) !!!
                 getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
@@ -519,6 +519,7 @@ open class CameraFragment(
     }
 
     private fun activityFinish(photoType: Int, resultCode: Int = -1) {
+        Log.d("TEST ::: ACTIVITY FINISH CAMERA FRAG", "pType: ${photoType}")
         when {
             photoType == PhotoTypeEnum.forServedKGO -> {
                 requireActivity().setResult(101)
@@ -533,6 +534,14 @@ open class CameraFragment(
                     requireActivity().setResult(resultCode)
                 else
                     requireActivity().setResult(14)
+            }
+
+            photoType == PhotoTypeEnum.forSimplifyServeBefore -> {
+                requireActivity().setResult(2)
+            }
+
+            photoType == PhotoTypeEnum.forSimplifyServeAfter -> {
+                requireActivity().setResult(3)
             }
 
             photoType != PhotoTypeEnum.forBeforeMedia -> {

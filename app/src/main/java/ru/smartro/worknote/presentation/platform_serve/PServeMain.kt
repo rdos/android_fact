@@ -137,6 +137,12 @@ class PServeMain :
         if(requestCode == 13 && resultCode == -1) {
             finish()
         }
+        if(requestCode == 1685 && resultCode == 5861) {
+
+        }
+        if(requestCode == 2685 && resultCode == 5862) {
+
+        }
     }
 
     override fun onBackPressed() {
