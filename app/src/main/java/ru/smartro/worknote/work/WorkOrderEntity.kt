@@ -11,6 +11,7 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.*
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.isNotNull
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -108,6 +109,112 @@ open class WorkOrderEntity(
     fun isComplete(): Boolean {
         return this.cntPlatformProgress() == this.cnt_platform
     }
+
+    companion object {
+        private fun mapMedia(data: List<String>): RealmList<ImageEntity> {
+            return data.mapTo(RealmList()) {
+                ImageEntity(
+                    image = it, date = 0,
+                    coords = RealmList()
+                )
+            }
+        }
+
+        // TODO: 29.10.2021 ! it.volume = 0.0 ??Error возраст.
+        private fun mapContainers(list: List<CoNTaiNeR_know1>, workorderId: Int): RealmList<ContainerEntity> {
+            return list.mapTo(RealmList()) {
+//                var volumeReal : Double? = null
+//                if (it.volume >  0) {
+//                    Log.e(TAG ,"mapContainers.it.volume >  0")
+//                    volumeReal = it.volume
+//                    Log.e(TAG ,"mapContainers.volumeReal = ${volumeReal}")
+//                }
+                ContainerEntity(
+                    workOrderId = workorderId,
+                    client = it.client,
+                    contacts = it.contacts,
+                    failureMedia = mapMedia(it.failureMedia),
+                    failureReasonId = it.failureReasonId,
+                    containerId = it.id,
+                    isActiveToday = it.isActiveToday,/* breakdownReasonId = it.breakdownReasonId,*/
+                    number = it.number,
+                    status = it.status,
+                    typeId = it.typeId,
+                    constructiveVolume = it.constructiveVolume,
+                    typeName = it.typeName,
+                    volume = it.volume
+                )
+            }
+        }
+
+        private fun mapPlatforms(data: List<Platform_know1>, workorderId: Int): RealmList<PlatformEntity> {
+            val result = data.mapTo(RealmList()) {
+                PlatformEntity(
+                    workOrderId = workorderId,
+                    address = it.address,
+                    afterMedia = mapMedia(it.afterMedia),
+                    beforeMedia = mapMedia(it.beforeMedia),
+                    beginnedAt = it.beginnedAt,
+                    containers = mapContainers(it.coNTaiNeRKnow1s, workorderId),
+                    coordSOriginal = RealmList(it.coords[0], it.coords[1]),
+                    coordLat = it.coords[0],
+                    coordLong = it.coords[1],
+                    failureMedia = mapMedia(it.failureMedia),
+                    failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
+                    finishedAt = it.finishedAt,
+                    platformId = it.id,
+                    name = it.name,
+                    updateAt = 0,
+                    srpId = it.srpId,
+                    status = it.status,
+                    /** volumeKGO = null,*/
+                    icon = it.icon,
+                    orderTimeEnd = it.orderEndTime,
+                    orderTimeStart = it.orderStartTime,
+                    orderTimeAlert = it.orderAlertTime,
+                    orderTimeWarning = it.orderWarningTime,
+                    kgoServed = KGOEntity().copyKGOEntity(it.kgo_served),
+                    kgoRemaining = KGOEntity().copyKGOEntity(it.kgo_remaining)
+                )
+            }
+            return result
+        }
+
+        private fun mapStart(data: STaRT_know1?): StartEntity? {
+            var result: StartEntity? = null
+            if (data != null) {
+                result = StartEntity(
+                    coords = RealmList(data.coords[0], data.coords[1]),
+                    name = data.name,
+                    id = data.id
+                )
+            }
+            return result
+        }
+
+        /**public inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.mapTo(destination: C, transform: (T) -> R): C {        */
+        fun map(woRKoRDeRknow1List: List<WoRKoRDeR_know1>): RealmList<WorkOrderEntity> {
+            val res = RealmList<WorkOrderEntity>()
+            try {
+                for (woRKoRDeRknow1 in woRKoRDeRknow1List) {
+                    val workOrder = WorkOrderEntity(
+                        id = woRKoRDeRknow1.id,
+                        start_at = MyUtil.currentTime(),
+                        name = woRKoRDeRknow1.name,
+                        waste_type_id = woRKoRDeRknow1.waste_type?.id,
+                        waste_type_name = woRKoRDeRknow1.waste_type?.name,
+                        waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
+                        platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id),
+                        start = mapStart(woRKoRDeRknow1.STaRTknow1)
+                    )
+                    res.add(workOrder)
+                }
+            } catch (eXthr: Exception) {
+                Log.e("TAGS", "map", eXthr)
+            }
+            return res
+        }
+    }
 }
 
 open class StartEntity(
@@ -173,7 +280,7 @@ open class PlatformEntity(
     @SerializedName("containers")
     var containers: RealmList<ContainerEntity> = RealmList(),
     @SerializedName("coords")
-    var coords: RealmList<Double> = RealmList(),
+    var coordSOriginal: RealmList<Double> = RealmList(),
     var coordLat: Double = Dnull,
     var coordLong: Double = Dnull,
     @SerializedName("failure_media")

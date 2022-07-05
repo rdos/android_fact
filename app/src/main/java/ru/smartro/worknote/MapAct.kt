@@ -712,29 +712,27 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
 
         mMapObjectCollection?.removeTapListener(this)
-        addPlaceMarks(this, mMapObjectCollection, platforms)
-        mMapObjectCollection?.addTapListener(this)
-    }
-
-    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection?, platforms: List<PlatformEntity>) {
         for(platform in platforms) {
-            val iconProvider = getIconViewProvider(context, platform)
-            val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
-            mapObjectCollection?.addPlacemark(pointYandex, iconProvider)
+            val pointYandex = Point(platform.coordLat, platform.coordLong)
+            val iconProvider = getIconViewProvider(this, platform)
+            mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
         }
+        mMapObjectCollection?.addTapListener(this)
     }
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
         val placeMark = mapObject as PlacemarkMapObject
-        val coordinate = placeMark.geometry
-
-        val clickedPlatform = vs.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
+        val coord = placeMark.geometry
+        val plaformS = getActualPlatformS()
+        val clickedPlatform = plaformS.find {
+            it.coordLat == coord.latitude && it.coordLong == coord.longitude
+        }
         if(clickedPlatform == null) {
             toast("Платформа не найдена")
             return false
         }
         Log.w("RRRR", "onMapObjectTap")
-        val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coordinate)
+        val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coord)
         platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
         return true
     }
@@ -818,10 +816,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
         fun findLastPlatforms() =
             baseDat.findLastPlatforms()
-
-        fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity? {
-            return baseDat.findPlatformByCoordinate(lat, lon)
-        }
+        
 
         fun findCancelWayReason(): List<CancelWayReasonEntity> {
             return baseDat.findCancelWayReasonEntity()

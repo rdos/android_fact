@@ -112,10 +112,10 @@ class MapActBottomBehaviorAdapter(
         holder.itemView.map_behavior_container_count.text = "${item.containers.size} $containerString"
 
         holder.itemView.map_behavior_coordinate.setOnClickListener {
-            listener.moveCameraPlatform(PoinT(item.coords[0]!!, item.coords[1]!!))
+            listener.moveCameraPlatform(PoinT(item.coordLat, item.coordLong))
         }
         holder.itemView.map_behavior_location.setOnClickListener {
-            listener.navigatePlatform(Point(item.coords[0]!!, item.coords[1]!!))
+            listener.navigatePlatform(Point(item.coordLat, item.coordLong))
         }
 
         val tvPlatformContact = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__platform_contact)

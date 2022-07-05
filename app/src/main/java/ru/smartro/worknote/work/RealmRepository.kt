@@ -18,98 +18,9 @@ import kotlin.math.round
 class RealmRepository(private val p_realm: Realm) {
     private val TAG: String = "RealmRepository"
 
-    fun insertWayTask(woRKoRDeRknow1: WoRKoRDeR_know1) {
-
-        fun mapMedia(data: List<String>): RealmList<ImageEntity> {
-            return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0,
-                coords = RealmList()) }
-        }
-
-
-        // TODO: 29.10.2021 ! it.volume = 0.0 ??Error
-        fun mapContainers(list: List<CoNTaiNeR_know1>, workorderId: Int): RealmList<ContainerEntity> {
-            return list.mapTo(RealmList()) {
-//                var volumeReal : Double? = null
-//                if (it.volume >  0) {
-//                    Log.e(TAG ,"mapContainers.it.volume >  0")
-//                    volumeReal = it.volume
-//                    Log.e(TAG ,"mapContainers.volumeReal = ${volumeReal}")
-//                }
-                ContainerEntity(
-                    workOrderId = workorderId,
-                    client = it.client,
-                    contacts = it.contacts,
-                    failureMedia = mapMedia(it.failureMedia),
-                    failureReasonId = it.failureReasonId,
-                    containerId = it.id,
-                    isActiveToday = it.isActiveToday,/* breakdownReasonId = it.breakdownReasonId,*/
-                    number = it.number,
-                    status = it.status,
-                    typeId = it.typeId,
-                    constructiveVolume = it.constructiveVolume,
-                    typeName = it.typeName,
-                    volume = it.volume
-                )
-            }
-        }
-
-        fun mapPlatforms(data: List<Platform_know1>, workorderId: Int): RealmList<PlatformEntity> {
-             val result = data.mapTo(RealmList()) {
-                PlatformEntity(
-                    workOrderId = workorderId,
-                    address = it.address,
-                    afterMedia = mapMedia(it.afterMedia),
-                    beforeMedia = mapMedia(it.beforeMedia),
-                    beginnedAt = it.beginnedAt,
-                    containers = mapContainers(it.coNTaiNeRKnow1s, workorderId),
-                    coords = RealmList(it.coords[0], it.coords[1]),
-                    coordLat = it.coords[0],
-                    coordLong = it.coords[1],
-                    failureMedia = mapMedia(it.failureMedia),
-                    failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
-                    finishedAt = it.finishedAt,
-                    platformId = it.id,
-                    name = it.name,
-                    updateAt = 0,
-                    srpId = it.srpId,
-                    status = it.status,
-                    /** volumeKGO = null,*/ icon = it.icon,
-                    orderTimeEnd = it.orderEndTime,
-                    orderTimeStart = it.orderStartTime,
-                    orderTimeAlert = it.orderAlertTime,
-                    orderTimeWarning = it.orderWarningTime,
-                    kgoServed = KGOEntity().copyKGOEntity(it.kgo_served),
-                    kgoRemaining = KGOEntity().copyKGOEntity(it.kgo_remaining)
-                )
-            }
-            return result
-        }
-
-        fun mapStart(data: STaRT_know1?): StartEntity? {
-            var result: StartEntity? = null
-            if (data != null) {
-                result= StartEntity(
-                    coords = RealmList(data.coords[0], data.coords[1]),
-                    name = data.name,
-                    id = data.id
-                )
-            }
-            return result
-        }
-
-
-        val wayTask = WorkOrderEntity(
-            id = woRKoRDeRknow1.id,
-            start_at = MyUtil.currentTime(),
-            name = woRKoRDeRknow1.name,
-            waste_type_id = woRKoRDeRknow1.waste_type?.id,
-            waste_type_name = woRKoRDeRknow1.waste_type?.name,
-            waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
-            platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id),
-            start = mapStart(woRKoRDeRknow1.STaRTknow1)
-        )
-
-        insUpdWorkOrders(wayTask, true)
+    fun insertWorkorder(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
+        val workOrderS = WorkOrderEntity.map(woRKoRDeRknow1List)
+        insUpdWorkOrders(workOrderS, true)
     }
 
     fun <T:RealmObject> RealmResults<T>.asLiveData() = LiveRealmData<T>(this)
@@ -645,12 +556,6 @@ class RealmRepository(private val p_realm: Realm) {
         return resultRound
     }
 
-    fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity? {
-        return p_realm.copyFromRealm(
-            getQueryPlatform().findAll()
-        ).find { it.coords[0] == lat && it.coords[1] == lon }
-    }
-
     fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
         return p_realm.copyFromRealm(p_realm.createObjectFromJson(clazz, json)!!)
     }
@@ -845,17 +750,60 @@ class RealmRepository(private val p_realm: Realm) {
         entity?.updateAt = MyUtil.timeStampInSec()
     }
 
-
-    fun insUpdWorkOrders(workOrder: WorkOrderEntity, isInfoChange: Boolean = true): WorkOrderEntity  {
-        p_realm.executeTransaction { realm ->
-            if (isInfoChange) {
-                workOrder.calcInfoStatistics()
-            }
-            realm.insertOrUpdate(workOrder)
+    private fun _changePlatformSCoordinate(platformS: List<PlatformEntity>) {
+//        TODO("Not yet implemented")
+        //          lat=0,000133755 это 15 метров
+        val LAT1M = 0.000008917
+        val LONG1M = 0.00001488
+        //val alpha: Double = idx * Math.PI /180
+        //          long=0,0002232 это 15 метров
+        //var koef = 15f + platforms.size
+        val koef = 1f
+        var stepLat = LAT1M * koef
+        var stepLong = LONG1M * koef
+        for( idx in 1..platformS.size-1) {
+            val platform = platformS[idx]
+            val xLat: Double = platform.coordLat + stepLat
+            val yLong: Double = platform.coordLong + stepLong
+            Log.w(TAG, "changePlatformSCoordinate.platform.coordLat= ${platform.coordLat}.old")
+            Log.w(TAG, "changePlatformSCoordinate.platform.coordLong= ${platform.coordLong}.old")
+            platform.coordLat = xLat
+            platform.coordLong = yLong
+            Log.w(TAG, "changePlatformSCoordinate.platform.coordLat= ${platform.coordLat}.new")
+            Log.w(TAG, "changePlatformSCoordinate.platform.coordLong= ${platform.coordLong}.new")
+            stepLat += LAT1M * koef
+            stepLong += LONG1M * koef
         }
-        return workOrder
     }
 
+    private fun insUpdWorkOrders(workOrderS: RealmList<WorkOrderEntity>, isInfoChange: Boolean = true) {
+        p_realm.executeTransaction { realm ->
+            for (workOrder in workOrderS) {
+                if (isInfoChange) {
+                    workOrder.calcInfoStatistics()
+                }
+                realm.insertOrUpdate(workOrder)
+            }
+            val platformS = getQueryPlatform(true).findAll()
+            for (platform in platformS) {
+                var platformSForChange = _getPlatformSForChange(platform, platformS)
+                //todo: count(-ом) ограничить? не зациклиться ли?)
+                while (platformSForChange.size > 1) {
+                    _changePlatformSCoordinate(platformSForChange)
+                    platformSForChange = _getPlatformSForChange(platform, platformS)
+                }
+            }
+            realm.insertOrUpdate(platformS)
+        }
+//        return workOrder
+    }
+
+    private fun _getPlatformSForChange(platform: PlatformEntity, platformS: RealmResults<PlatformEntity>): List<PlatformEntity> {
+        val platformSForChange = platformS.filter {
+            it.coordLat == platform.coordLat && it.coordLong == platform.coordLong
+        }
+        return platformSForChange
+    }
 
 
                 private fun todo_know1(workOrderId: Int, isShowForUser: Boolean): WorkOrderEntity {
@@ -936,7 +884,10 @@ class RealmRepository(private val p_realm: Realm) {
         return res
     }
 
-    private fun getQueryPlatform(): RealmQuery<PlatformEntity> {
+    private fun getQueryPlatform(isForceMode: Boolean = false): RealmQuery<PlatformEntity> {
+        if (isForceMode) {
+            return p_realm.where(PlatformEntity::class.java)
+        }
         return p_realm.where(PlatformEntity::class.java)
             .equalTo("isWorkOrderProgress", true)
             .equalTo("isWorkOrderComplete", false)
