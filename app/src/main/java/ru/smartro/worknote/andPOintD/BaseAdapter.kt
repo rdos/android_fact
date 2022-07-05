@@ -5,25 +5,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.Snull
 
 abstract class BaseAdapter<T,D : RecyclerView.ViewHolder>(private var mItems: List<T>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val mItemsBefore = mItems
+    private var mItemsBefore = mItems
     //var mItemsAfter
     abstract fun onGetLayout(): Int
     abstract fun onGetViewHolder(view: View): D
 
     private var lenQueryText = Inull
-    private var mQueryText: String? = Snull
+    private var mQueryText: String? = null
     private var lenQueryTextOld = Inull
-    private var mQueryTextOld: String? = Snull
+    private var mQueryTextOld: String? = null
 
     fun getQueryTextOld(): String? {
         return mQueryText
     }
     fun setQueryText(text: String?) {
         mQueryTextOld = mQueryText
+        lenQueryTextOld = Inull
+        lenQueryText = Inull
         getQueryTextOld()?.let {
             lenQueryTextOld = it.length
         }
@@ -40,9 +41,12 @@ abstract class BaseAdapter<T,D : RecyclerView.ViewHolder>(private var mItems: Li
         return mItems
     }
 
-    private fun getItemsBefore(): List<T> {
+    private fun getItemsBefore(): List<T>? {
         return mItemsBefore
     }
+
+
+
     fun getItems(): List<T> {
         return mItems
     }
@@ -53,6 +57,9 @@ abstract class BaseAdapter<T,D : RecyclerView.ViewHolder>(private var mItems: Li
         notifyDataSetChanged()
     }
 
+    fun setItemsBefore(newItemS: List<T>){
+        this.mItemsBefore = newItemS
+    }
     fun setItems(newItemS: List<T>) {
         this.mItems = newItemS
     }
@@ -81,6 +88,7 @@ abstract class BaseAdapter<T,D : RecyclerView.ViewHolder>(private var mItems: Li
     final override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         bind(mItems[position], holder as D)
     }
+
     final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater
             .from(parent.context)

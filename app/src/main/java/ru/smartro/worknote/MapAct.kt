@@ -266,8 +266,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         Log.w(TAG, "onRefreshData.init")
         mWorkOrderS = getActualWorkOrderS(true)
         mPlatformS = getActualPlatformS(true)
-        onRefreshMap(mPlatformS!!)
-        onRefreshBottomBehavior()
+        val platformSWithQueryText = onRefreshBottomBehavior(mPlatformS!!)
+        onRefreshMap(platformSWithQueryText)
         setInfoData()
         Log.w(TAG, "onRefreshData.end")
     }
@@ -507,9 +507,13 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
 
-    private fun onRefreshBottomBehavior() {
-        val platforms = getActualPlatformS()
-        mAdapterBottomBehavior?.updateItemS(platforms)
+    private fun onRefreshBottomBehavior(platforms: List<PlatformEntity>): List<PlatformEntity> {
+        // TODO: platforms = getActualPlatformS() :ТОДО
+        if (mAdapterBottomBehavior == null) {
+            return platforms
+        }
+        mAdapterBottomBehavior!!.updateItemS(platforms)
+        return mAdapterBottomBehavior!!.getItems()
     }
 
     private fun initBottomBehavior() {
