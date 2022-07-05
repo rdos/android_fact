@@ -726,11 +726,14 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()
             when (imageFor) {
-                PhotoTypeEnum.forAfterMedia -> {
+                PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
                     platformEntity?.afterMedia?.add(imageEntity)
                 }
                 PhotoTypeEnum.forBeforeMedia -> {
                     platformEntity?.beginnedAt = MyUtil.currentTime()
+                    platformEntity?.beforeMedia?.add(imageEntity)
+                }
+                PhotoTypeEnum.forSimplifyServeBefore -> {
                     platformEntity?.beforeMedia?.add(imageEntity)
                 }
                 PhotoTypeEnum.forPlatformProblem -> {

@@ -62,7 +62,7 @@ class PServeMain :
 
         vm.mPlatformEntity.observe(this) { platform ->
             if(platform != null) {
-                if(platform.getPlatformStatus() == StatusEnum.NEW) {
+                if(platform.containers.all { el -> el.status == StatusEnum.NEW }) {
                     vm.mScreenMode.observe(this) { screenMode ->
                         if(screenMode != null) {
                             navController.currentDestination?.apply {
@@ -133,15 +133,8 @@ class PServeMain :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("TEST:::", "ACTIVITY RESULT : ${requestCode} ${resultCode}")
         if(requestCode == 13 && resultCode == -1) {
             finish()
-        }
-        if(requestCode == 1685 && resultCode == 5861) {
-
-        }
-        if(requestCode == 2685 && resultCode == 5862) {
-
         }
     }
 

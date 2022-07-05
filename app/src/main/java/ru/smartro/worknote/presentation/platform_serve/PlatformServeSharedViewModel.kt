@@ -32,10 +32,6 @@ data class ServedContainers(
 
 class PlatformServeSharedViewModel(application: Application) : BaseViewModel(application) {
 
-    init {
-        Log.d("VM ::: TEST :::", "vm CREATED")
-    }
-
     val mBeforeMediaWasInited: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val _platformEntity: MutableLiveData<PlatformEntity> = MutableLiveData(null)
@@ -62,7 +58,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     fun getPlatformEntity(platformId: Int): PlatformEntity {
         val response = baseDat.getPlatformEntity(platformId)
         _platformEntity.postValue(response)
-        if(response.getPlatformStatus() == StatusEnum.NEW) {
+        if(response.containers.all { el -> el.status == StatusEnum.NEW }) {
             val temp = clusterContainers(response.containers.toList())
             _sortedContainers.postValue(temp)
         }
