@@ -725,12 +725,14 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
 
         mMapObjectCollection?.removeTapListener(this)
-        for(platform in platformS) {
+        for (platform in platformS) {
             val iconProvider = getIconViewProvider(this, platform)
-            val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
+            val pointYandex = Point(platform.coordLat, platform.coordLong)
             mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
-        }
 
+        }
+        mMapObjectCollection?.addTapListener(this)
+    }
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
         val placeMark = mapObject as PlacemarkMapObject
