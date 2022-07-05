@@ -1,7 +1,6 @@
 package ru.smartro.worknote.work.platform_serve
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -27,11 +26,10 @@ import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
-import ru.smartro.worknote.awORKOLDs.extensions.toast
-import ru.smartro.worknote.work.ui.CameraAct
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
-import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 
@@ -65,16 +63,15 @@ class PlatformServeAct :
         setContentView(R.layout.act_platformserve)
         supportActionBar?.hide()
 
-        mPlatformEntity = vm.baseDat.findPlatformEntity(intent.getIntExtra("platform_id", Inull))
+        mPlatformEntity = vm.baseDat.getPlatformEntity(intent.getIntExtra("platform_id", Inull))
         mIsServeAgain = intent.getBooleanExtra("mIsServeAgain", false)
 
 //        supportActionBar?.title =
         val actvAddress = findViewById<AppCompatTextView>(R.id.actv_act_platform_serve__address)
         actvAddress.text = "${mPlatformEntity.address}"
         initContainer()
-        if (!mPlatformEntity.isStartServeVolume()) {
-            initBeforeMedia()
-        }
+//        todo/vlad: initBeforeMedia logic
+        initBeforeMedia()
 //        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         val acbProblem = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__problem)
         if (mPlatformEntity.failureMedia.size > 0) {
@@ -149,8 +146,7 @@ class PlatformServeAct :
 
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
         btnCompleteTask.setOnClickListener {
-            vm.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
-            vm.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
+            vm.updatePlatformStatusSuccess(mPlatformEntity.platformId!!)
             val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
@@ -275,7 +271,6 @@ class PlatformServeAct :
                         newVolumeValue = volume
                         gotoMakePhotoForPickup()
                     }
-                    hideDialog()
                 }
             }
         } finally {
@@ -310,7 +305,6 @@ class PlatformServeAct :
     }
 
     private fun getThumb(background: Int? = null): Drawable? {
-        Log.d("TEST:::", "THUMB ${background == null}")
         val thumbView: View = LayoutInflater.from(this)
             .inflate(R.layout.act_platformserve__pickup_seekbarthumb, null, false)
         if(background != null)
@@ -366,13 +360,12 @@ class PlatformServeAct :
     }
 
     private fun initBeforeMedia() {
-        Log.d("TEST:::", "InitBeforeMedia")
         paramS().serviceStartedAt = System.currentTimeMillis() / 1000L
         val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
         intent.putExtra("platform_id", mPlatformEntity.platformId)
         intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
-        startActivityForResult(intent, 1001)
         hideDialog()
+        startActivityForResult(intent, 1001)
     }
 
 //    // TODO: 28.10.2021 isActiveToday что это за поле?
@@ -399,7 +392,7 @@ class PlatformServeAct :
     }
 
     override fun startContainerService(item: ContainerEntity) {
-        val fragment = ContainerServiceFragment()
+        val fragment = ContainerServeBottomDialog()
         fragment.addArgument(mPlatformEntity.platformId!!, item.containerId!!)
         fragment.show(supportFragmentManager, "ContainerServiceFragment")
     }
@@ -408,6 +401,7 @@ class PlatformServeAct :
         mBackPressedCnt--
         if (mBackPressedCnt <= 0) {
             super.onBackPressed()
+            vm.updatePlatformStatusUnfinished(mPlatformEntity.platformId!!)
             toast("Вы не завершили обслуживание КП.")
             return
         }

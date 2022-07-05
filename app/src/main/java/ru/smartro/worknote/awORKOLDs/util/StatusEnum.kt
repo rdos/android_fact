@@ -5,4 +5,5 @@ object StatusEnum {
     const val SUCCESS = "success"
     const val ERROR = "error"
     const val UNFINISHED = "unfinished"
+    const val PARTIAL_PROBLEMS = "partial_problems"
 }

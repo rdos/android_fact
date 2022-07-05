@@ -13,11 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActAbstract
-import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.awORKOLDs.extensions.toast
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.awORKOLDs.service.network.Resource
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
@@ -29,6 +28,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class StartWayBillAct : ActAbstract() {
+    private var mRvWaybill: RecyclerView? = null
+    private var mTvNotFoundData: TextView? = null
     private val viewModel: WayListViewModel by viewModel()
     override fun onNewGPS() {
         // TODO: r_dos!!!
@@ -39,42 +40,38 @@ class StartWayBillAct : ActAbstract() {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
         setContentView(R.layout.act_start_waybill)
-                                                            //!r_dos//!r_dos//!r_dos//!r_dos
-        val nameNotFounT = getPutExtraParam_NAME()
+
+        val putExtraParamName = getPutExtraParam_NAME()
         supportActionBar?.title = "Путевой Лист"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val rv = findViewById<RecyclerView>(R.id.rv_act_start_waybill)
-        rv.layoutManager = LinearLayoutManager(this)
+
+        mTvNotFoundData = findViewById(R.id.tv_act_start_waybill__not_found_data)
+        mTvNotFoundData?.text = getString(R.string.tv_no_fount_data)
+
+        mRvWaybill = findViewById(R.id.rv_act_start_waybill)
+        mRvWaybill?.layoutManager = LinearLayoutManager(this)
+        hideNotFoundData()
+        showingProgress(putExtraParamName)
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val body = WayListBody(
             date = currentDate,
             organisationId = paramS().getOwnerId(),
             vehicleId = paramS().getVehicleId()
         )
-
-        showingProgress(nameNotFounT)
         viewModel.getWayList(body).observe(this, Observer { result ->
             val data = result.data
             when (result.status) {
                 Status.SUCCESS -> {
                     val wayBills = data?.data!!
-                    if (wayBills.isNullOrEmpty()) {
-                        logSentry("todo")
-//                        empty_title.isVisible = true
-//                        // TODO: 27.10.2021 SR-3259!!!
-//                        empty_title.text = getString(R.string.empty_way_task)
-//                        logout_btn.isVisible = true
-//                        logout_btn.setOnClickListener {
-//                            MyUtil.logout(this)
-//                        }
-//                        choose_vehicle.isVisible = true
-//                        choose_vehicle.setOnClickListener {
-//                            startActivity(Intent(this, StartVehicleAct::class.java))
-//                            finish()
+                    if (wayBills.isNotEmpty()) {
+                        hideNotFoundData()
+                        if (wayBills.size == 1) {
+                            gotoNextAct(wayBills[0].id, wayBills[0].number)
+                        } else {
+                            mRvWaybill?.adapter = WaybillAdapter(wayBills)
                         }
-                    rv.adapter = WaybillAdapter(wayBills)
-                    if (wayBills.size == 1) {
-                        gotoNextAct(wayBills[0].id, wayBills[0].number)
+                    } else {
+                        showNotFoundData()
                     }
                     hideProgress()
                 }
@@ -88,12 +85,19 @@ class StartWayBillAct : ActAbstract() {
                 }
             }
         })
-
     }
 
-    override fun onBackPressed() {
-//        sendMessage(StartVehicleAct::class.java)
-        super.onBackPressed()
+    private fun hideNotFoundData() {
+        mTvNotFoundData?.visibility = View.GONE
+        mRvWaybill?.visibility = View.VISIBLE
+    }
+
+    private fun showNotFoundData(text: String? = null) {
+        mTvNotFoundData?.visibility = View.VISIBLE
+        mRvWaybill?.visibility = View.GONE
+        if (text != null) {
+            mTvNotFoundData?.text = text
+        }
     }
 
     private fun gotoNextAct(wayBillId: Int, wayBillNumber: String) {
@@ -148,17 +152,16 @@ class StartWayBillAct : ActAbstract() {
                 gotoNextAct(wayBill.id, wayBill.number)
             }
         }
-        // WayBill и уТВерждение
         inner class WaybillViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val tvNumber: TextView by lazy {
                 itemView.findViewById(R.id.act_start_waybill__rv_item__number)
             }
-            val tvDriverName: TextView by lazy {
-                itemView.findViewById(R.id.act_start_waybill__rv_item__driver)
-            }
-            val tvRouteName: TextView by lazy {
-                itemView.findViewById(R.id.act_start_waybill__rv_item__route_name)
-            }
+//            val tvDriverName: TextView by lazy {
+//                itemView.findViewById(R.id.act_start_waybill__rv_item__driver)
+//            }
+//            val tvRouteName: TextView by lazy {
+//                itemView.findViewById(R.id.act_start_waybill__rv_item__route_name)
+//            }
         }
     }
 }
