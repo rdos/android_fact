@@ -17,12 +17,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
-import ru.smartro.worknote.awORKOLDs.extensions.toast
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.NonPickupEnum
+import ru.smartro.worknote.work.cam.CameraAct
 
 class ContainerBreakdownAct : ActNOAbst() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView
@@ -39,9 +40,10 @@ class ContainerBreakdownAct : ActNOAbst() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         intent.let {
-            platform = vs.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            val platformId = it.getIntExtra("platform_id", 0)
+            platform = vs.baseDat.getPlatformEntity(platformId)
             supportActionBar!!.title = "Поломка контейнера"
-            mContainer = vs.findContainerEntity(it.getIntExtra("container_id", 0))
+            mContainer = vs.baseDat.getContainerEntity(it.getIntExtra("container_id", 0))
         }
 
           mAcactvBreakDownIn = findViewById(R.id.acactv_act_non_pickup__breakdown_in)
@@ -83,9 +85,11 @@ class ContainerBreakdownAct : ActNOAbst() {
 
 
     private fun initImageView() {
+        if(mContainer.breakdownMedia.size <= 0) {
+           return
+        }
         Glide.with(this).load(MyUtil.base64ToImage(mContainer.breakdownMedia.last()?.image))
             .into(problem_img)
-
     }
 
     private fun initExtremeProblemPhoto() {
@@ -117,14 +121,6 @@ class ContainerBreakdownAct : ActNOAbst() {
 
     class ContainerBreakdownViewModel(application: Application) : BaseViewModel(application) {
 
-
-        fun findPlatformEntity(platformId: Int): PlatformEntity {
-            return baseDat.findPlatformEntity(platformId)
-        }
-
-        fun findContainerEntity(containerId: Int): ContainerEntity {
-            return baseDat.findContainerEntity(containerId)
-        }
 
 
         fun findBreakDown(): List<String> {

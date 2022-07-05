@@ -6,5 +6,5 @@ import ru.smartro.worknote.log.AAct
 
 abstract class ActAbstract : AAct() {
 
-    protected fun paramS() = paramS
+
 }

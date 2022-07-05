@@ -11,18 +11,20 @@ import retrofit2.Response
 import ru.smartro.worknote.App
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
-import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
+import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
+import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.early_complete.EarlyCompleteBody
+import ru.smartro.worknote.work.net.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.service.network.exception.BadRequestException
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.RealmRepository
 
 
@@ -272,6 +274,7 @@ class NetworkRepository(private val context: Context) {
                 }
                 else -> {
                     badRequest(response)
+//                    App.getAppliCation().toast(result.msg)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -338,6 +341,25 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
+    suspend fun ping(pingBody: PingBody): Resource<PingBody> {
+        Log.i(TAG, "test_ping.before")
+        return try {
+            val response = RetrofitClient(context).testApiService().ping(pingBody)
+            when {
+                response.isSuccessful -> {
+                    Resource.success(response.body())
+                }
+                else -> {
+                    badRequest(response)
+                    Resource.error("Ошибка ${response.code()}", null)
+                }
+            }
+        } catch (ex: Exception) {
+            Log.e(TAG, "test_ping", ex)
+            Resource.network("Проблемы с подключением интернета", null)
+        }
+    }
+
 
 }
 
@@ -364,11 +386,15 @@ enum class Status {
 
 private fun <T> badRequest(response: Response<T>) {
     if (response.code() in 400..599) {
-        Sentry.setTag("url", response.raw().request.url.encodedPath)
+        val urlName = response.raw().request.url.encodedPath
+        Sentry.setTag("url_name", urlName)
         Sentry.setTag("http_code", response.code().toString())
-        Sentry.setTag("host", response.raw().request.url.host)
+        Sentry.setTag("url_host_name", response.raw().request.url.host)
+
 //        Sentry.setTag("user", AppPreferences.BoTlogin)
-        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
+        // TODO: replace  BadRequestException for post  @POST("synchro")
+//        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
+        Sentry.captureException(BadRequestException(urlName))
     }
 }
 

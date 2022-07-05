@@ -9,6 +9,7 @@ import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 import ru.smartro.worknote.work.ac.checklist.StartWorkOrderAct
 import ru.smartro.worknote.work.ac.checklist.StartVehicleAct
 import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
+import ru.smartro.worknote.work.cam.CameraViewModel
 import ru.smartro.worknote.work.ui.*
 
 val viewModelModule = module {

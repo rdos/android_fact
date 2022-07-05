@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_default"
+    app:cardCornerRadius="18dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="18sp"
+            android:text="Контейнер не включен в график.\nВы уверены, что хотите его обслужить?"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb_alert_inactive_container___accept"
+            android:layout_width="110dp"
+            android:layout_height="39dp"
+            android:background="@drawable/bg_button_green__default"
+            android:text="Да"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="5dp"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/acb_alert_inactive_container___decline"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb_alert_inactive_container___decline"
+            android:layout_width="110dp"
+            android:layout_height="39dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/bg_button_red__default"
+            android:text="Нет"
+            app:layout_constraintTop_toBottomOf="@id/text"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/acb_alert_inactive_container___accept"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

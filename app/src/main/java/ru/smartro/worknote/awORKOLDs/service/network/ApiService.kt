@@ -3,11 +3,12 @@ package ru.smartro.worknote.awORKOLDs.service.network
 import retrofit2.Response
 import retrofit2.http.*
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
+import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.breakdown.BreakdownBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.early_complete.EarlyCompleteBody
+import ru.smartro.worknote.work.net.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.failure.FailureBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
@@ -66,6 +67,9 @@ interface ApiService {
 
     @POST("synchro")
     suspend fun postSynchro(@Body time: SynchronizeBody): Response<SynchronizeResponse>
+
+    @POST("rpc")
+    suspend fun ping(@Body pingBody: PingBody): Response<PingBody>
 
     @POST("synchro/{o_id}/{w_id}")
     suspend fun getWorkOrder(@Path("o_id") organisationId: Int, @Path("w_id") waybillId: Int): Response<WorkOrderResponse_know1>

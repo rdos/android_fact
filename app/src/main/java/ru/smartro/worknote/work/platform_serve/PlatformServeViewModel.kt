@@ -15,11 +15,6 @@ class PlatformServeViewModel(application: Application) : BaseViewModel(applicati
         baseDat.updateContainerComment(platformId, containerId, comment)
     }
 
-    fun updateContainersVolumeIfnNull(platformId: Int, volume: Double) {
-        // TODO: 23.12.2021 когда.
-        baseDat.updateContainersVolumeIfnNull(platformId, volume)
-    }
-
     fun updateSelectionVolume(platformId: Int, volume: Double?) {
         baseDat.updateSelectionVolume(platformId, volume)
     }
@@ -28,17 +23,12 @@ class PlatformServeViewModel(application: Application) : BaseViewModel(applicati
         baseDat.clearContainerVolume(platformId, containerId)
     }
 
-    fun updatePlatformStatus(platformId: Int, status: String) {
-        baseDat.updatePlatformStatus(platformId, status)
+    fun updatePlatformStatusSuccess(platformId: Int) {
+        baseDat.updatePlatformStatusSuccess(platformId)
     }
 
-
-    fun findContainerEntity(containerId: Int): ContainerEntity {
-        return baseDat.findContainerEntity(containerId)
-    }
-
-    fun findAllContainerInPlatform(platformId: Int): List<ContainerEntity> {
-        return baseDat.findAllContainerInPlatform(platformId)
+    fun updatePlatformStatusUnfinished(platformId: Int) {
+        baseDat.updatePlatformStatusUnfinished(platformId)
     }
 
     fun removePlatformMedia(photoFor: Int, image: ImageEntity, platformId: Int) {

@@ -3,6 +3,7 @@ package ru.smartro.worknote.work.ui
 import android.app.Application
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
@@ -59,25 +60,30 @@ class JournalChatAct : ActNOAbst() {
                 Glide.with(imgBefore)
                     .load(MyUtil.base64ToImage(item.beforeMedia[0]?.image))
                     .into(imgBefore)
-                holder.itemView.tv_act_messager__media_before.text = "Фото(1 из ${item.beforeMedia.size}) до обслуживания"
+                holder.itemView.tv_act_messager__media_before.text = "Фото до:"
             } else {
-                holder.itemView.tv_act_messager__media_before.text = "beforeMedia пусто"
+                imgBefore.visibility = View.INVISIBLE
+                holder.itemView.tv_act_messager__media_before.visibility = View.INVISIBLE
             }
             if (item.afterMedia.size > 0) {
                 val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
                 Glide.with(imgAfter)
                     .load(MyUtil.base64ToImage(item.afterMedia[0]?.image))
                     .into(imgAfter)
-                holder.itemView.tv_act_messager__media_after.text = "Фото(1 из ${item.afterMedia.size}) после обслуживания"
+                holder.itemView.tv_act_messager__media_after.text = "Фото после:"
             } else {
-                holder.itemView.tv_act_messager__media_before.text = "afterMedia пусто"
+                holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after).visibility = View.INVISIBLE
+                holder.itemView.tv_act_messager__media_after.visibility = View.INVISIBLE
             }
+
             if (item.failureMedia.size > 0) {
-                val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
-                Glide.with(imgAfter)
+                val textBefore = holder.itemView.tv_act_messager__media_before
+                Glide.with(imgBefore)
                     .load(MyUtil.base64ToImage(item.failureMedia[0]?.image))
-                    .into(imgAfter)
-                holder.itemView.tv_act_messager__media_after.text = "Фото из failureMedia ${item.failureMedia.size})"
+                    .into(imgBefore)
+                textBefore.text = "Фото невывоза:"
+                textBefore.visibility = View.VISIBLE
+                imgBefore.visibility = View.VISIBLE
             }
 
 //            val llBehavior = holder.itemView.findViewById<ConstraintLayout>(R.id.ll_behavior)
@@ -94,12 +100,15 @@ class JournalChatAct : ActNOAbst() {
                 item.failureComment
             }
 
-            holder.itemView.log_item_content.text =
-                "кол-во контейнеров: ${item.containers.size} \n" +
-                        "Обслужено: ${item.containers.filter { it.status != StatusEnum.NEW }.size}/${item.containers.size} \n" +
-                        "Проблема: $failureComment \n"
-            "Объем Подбора: ${item.volumePickup.toStr()}\n" +
-                    "Статус сети: ${status(item.networkStatus!!)}"
+
+            // search for:
+            // failureComment
+
+            val serveStatus = "Обслужено: ${item.containers.filter { it.status != StatusEnum.NEW }.size}/${item.containers.size}\n"
+            val pickupVolume = if(item.volumePickup != null) "Объем Подбора: ${item.volumePickup}\n" else ""
+            val networkStatus = if(item.networkStatus != null) "Статус сети: ${status(item.networkStatus!!)}" else ""
+
+            holder.itemView.log_item_content.text = serveStatus + pickupVolume + networkStatus
 
             if (item.networkStatus!!)
                 holder.itemView.log_item_status.setImageResource(R.drawable.ic_done)

@@ -26,18 +26,17 @@ import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
-import ru.smartro.worknote.awORKOLDs.extensions.toast
-import ru.smartro.worknote.work.ui.CameraAct
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
-import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 
-class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListener
-//    , SeekBar.OnSeekBarChangeListener
-{
+class PlatformServeAct :
+    ActNOAbst(),
+    ContainerAdapter.ContainerPointClickListener {
     private val THUMB_INACTIVE = "Inactive"
     private val THUMB_ACTIVE = "Active"
     private var prevVolumeValue: Double? = null
@@ -64,16 +63,15 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         setContentView(R.layout.act_platformserve)
         supportActionBar?.hide()
 
-        mPlatformEntity = vm.baseDat.findPlatformEntity(intent.getIntExtra("platform_id", Inull))
+        mPlatformEntity = vm.baseDat.getPlatformEntity(intent.getIntExtra("platform_id", Inull))
         mIsServeAgain = intent.getBooleanExtra("mIsServeAgain", false)
 
 //        supportActionBar?.title =
         val actvAddress = findViewById<AppCompatTextView>(R.id.actv_act_platform_serve__address)
         actvAddress.text = "${mPlatformEntity.address}"
         initContainer()
-        if (!mPlatformEntity.isStartServeVolume()) {
-            initBeforeMedia()
-        }
+//        todo/vlad: initBeforeMedia logic
+        initBeforeMedia()
 //        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         val acbProblem = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__problem)
         if (mPlatformEntity.failureMedia.size > 0) {
@@ -148,8 +146,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
         btnCompleteTask.setOnClickListener {
-            vm.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
-            vm.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
+            vm.updatePlatformStatusSuccess(mPlatformEntity.platformId!!)
             val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
@@ -274,7 +271,6 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
                         newVolumeValue = volume
                         gotoMakePhotoForPickup()
                     }
-                    hideDialog()
                 }
             }
         } finally {
@@ -309,7 +305,6 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
     }
 
     private fun getThumb(background: Int? = null): Drawable? {
-        Log.d("TEST:::", "THUMB ${background == null}")
         val thumbView: View = LayoutInflater.from(this)
             .inflate(R.layout.act_platformserve__pickup_seekbarthumb, null, false)
         if(background != null)
@@ -352,12 +347,10 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 
 
     private fun setUseButtonStyleBackgroundGreen(appCompatButton: AppCompatButton) {
-//        appCompatButton.alpha = 1f
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green__usebutton))
     }
 
     private fun setStyleBackgroundGreen(appCompatButton: AppCompatButton) {
-//        appCompatButton.alpha = 1f
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_green__default))
     }
 
@@ -366,22 +359,13 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.bg_button_red__usebutton))
     }
 
-//    private fun setButtonKGODrawableEnd(isTakeawayKGO: Boolean) {
-//        if (isTakeawayKGO) {
-//            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check) , null)
-//        } else {
-//            btnKGO.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this, R.drawable.ic_check_gray) , null)
-//        }
-//    }
-
     private fun initBeforeMedia() {
-        Log.d("TEST:::", "InitBeforeMedia")
         paramS().serviceStartedAt = System.currentTimeMillis() / 1000L
         val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
         intent.putExtra("platform_id", mPlatformEntity.platformId)
         intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
-        startActivityForResult(intent, 1001)
         hideDialog()
+        startActivityForResult(intent, 1001)
     }
 
 //    // TODO: 28.10.2021 isActiveToday что это за поле?
@@ -393,42 +377,22 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
 //    }
 
     private fun initContainer() {
-        val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
-//        val arrays = containers as ArrayList<ContainerEntity>
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-//        arrays.add(arrays.get(0))
-        mConrainerAdapter = ContainerAdapter(this, containers as ArrayList<ContainerEntity>)
+        val containers = vm.baseDat.findContainersSortedByIsActiveToday(mPlatformEntity.platformId!!)
+        mConrainerAdapter = ContainerAdapter(this, this, (containers) as ArrayList<ContainerEntity>)
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).recycledViewPool.setMaxRecycledViews(0, 0);
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).adapter = mConrainerAdapter
         findViewById<TextView>(R.id.tv_activity_platform_serve__point_info).text = "№${mPlatformEntity.srpId} / ${mPlatformEntity.containers!!.size} конт."
     }
 
     fun updateRecyclerview() {
-        val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
+        val containers = vm.baseDat.findContainersSortedByIsActiveToday(mPlatformEntity.platformId!!)
+        Log.d("TEST :::: ", "Containers: ${containers.joinToString { el -> "VOLUME: ${el.volume} ::: IS ACTIVTE TODAY: ${el.isActiveToday}" }}")
         mConrainerAdapter.updateData(containers as ArrayList<ContainerEntity>)
 //        initAfterMedia()
     }
 
     override fun startContainerService(item: ContainerEntity) {
-        val fragment = ContainerServiceFragment()
+        val fragment = ContainerServeBottomDialog()
         fragment.addArgument(mPlatformEntity.platformId!!, item.containerId!!)
         fragment.show(supportFragmentManager, "ContainerServiceFragment")
     }
@@ -437,6 +401,7 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         mBackPressedCnt--
         if (mBackPressedCnt <= 0) {
             super.onBackPressed()
+            vm.updatePlatformStatusUnfinished(mPlatformEntity.platformId!!)
             toast("Вы не завершили обслуживание КП.")
             return
         }
@@ -452,21 +417,5 @@ class PlatformServeAct : ActNOAbst(), ContainerAdapter.ContainerPointClickListen
         }
         return super.onOptionsItemSelected(item)
     }
-
-//    override fun onClick(buttonView: View) {
-//        Log.d(TAG, "onClick.before id=${buttonView.id}")
-//
-//        when(buttonView.id) {
-//            R.id.btn_alert_kgo__takeaway -> {
-//                onAlertButtonKgoClick(buttonView.rootView, true)
-//                setButtonKGODrawableEnd(true)
-//            }
-//            R.id.btn_alert_kgo__no_takeaway -> {
-//                onAlertButtonKgoClick(buttonView.rootView,false)
-//                setButtonKGODrawableEnd(false)
-//            }
-//        }
-//
-//    }
 
 }

@@ -20,11 +20,10 @@ import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActAbstract
-import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.awORKOLDs.extensions.toast
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.awORKOLDs.service.network.Resource
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
