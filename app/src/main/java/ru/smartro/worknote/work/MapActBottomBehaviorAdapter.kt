@@ -1,8 +1,6 @@
 package ru.smartro.worknote.work
 
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -10,34 +8,64 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.act_map__bottom_behavior__rv_item.view.*
 import ru.smartro.worknote.R
+import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 
 
-
 class MapActBottomBehaviorAdapter(
     private val listener: PlatformClickListener,
-    private var mItemS: List<PlatformEntity>,
+    mItemS: List<PlatformEntity>,
     private val mFilteredWayTaskIds: MutableList<Int>
-) : RecyclerView.Adapter<MapActBottomBehaviorAdapter.PlatformViewHolder>() {
+) : BaseAdapter<PlatformEntity, MapActBottomBehaviorAdapter.PlatformViewHolder>(mItemS) {
+    private var mOldQueryText: String? = null
     private var lastHolder: PlatformViewHolder? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlatformViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.act_map__bottom_behavior__rv_item, parent, false)
+    override fun onGetViewHolder(view: View): PlatformViewHolder {
         return PlatformViewHolder(view)
+    }
+
+    override fun onGetLayout(): Int {
+        return R.layout.act_map__bottom_behavior__rv_item
+    }
+
+    fun filter(platformList: List<PlatformEntity>, filterText: String): List<PlatformEntity> {
+        val query = filterText.lowercase()
+        val filteredModeList = platformList.filter {
+            try {
+//                    it.javaClass.getField("address")
+                val text = it.address?.lowercase()
+                var res = true
+                text?.let {
+                    res = (text.startsWith(query) || (text.contains(query)))
+                }
+                res
+            } catch (ex: Exception) {
+                true
+            }
+        }
+        //            val sYsTEM = mutableListOf<Vehicle>()
+        return filteredModeList
+    }
+
+    fun filteredList(queryText: String?) {
+        // TODO: !R_dos queryText == Snull??
+        super.setQueryText(queryText)
+        if(queryText.isNullOrEmpty()) {
+            super.reset()
+            return
+        }
+        val mItemsAfter = filter(super.getItemsForFilter(), queryText)
+        super.set(mItemsAfter)
     }
 
     fun updateItemS(newItemS: List<PlatformEntity>) {
 //        logSentry(filterText)
-        mItemS = newItemS
+        super.setItems(newItemS)
+        super.setItemsBefore(newItemS)
         lastHolder?.collapseOld()
-        notifyDataSetChanged()
-    }
-
-    override fun getItemCount(): Int {
-        return mItemS.size
+        filteredList(super.getQueryTextOld())
     }
 
     private fun setUseButtonStyleBackgroundGreen(view: View) {
@@ -64,8 +92,7 @@ class MapActBottomBehaviorAdapter(
         v.setBackgroundDrawable(ContextCompat.getDrawable(v.context, R.drawable.bg_button_orange__usebutton))
     }
 
-    override fun onBindViewHolder(holder: PlatformViewHolder, position: Int) {
-        val item = mItemS[position]
+    override fun bind(item: PlatformEntity, holder: PlatformViewHolder) {
         holder.itemView.alpha = 1f
         //фильрация
         if (item.workOrderId in mFilteredWayTaskIds) {
