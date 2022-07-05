@@ -29,7 +29,6 @@ import kotlin.math.min
 
 class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : AbstractDialog(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
-    private var mFirstTime = true
     private var mIsServeAgain = false
     private val mOnClickListener = this as View.OnClickListener
 
@@ -52,7 +51,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containers.size)
 
 
-        mIsServeAgain = _platform.status != StatusEnum.NEW
+        mIsServeAgain = _platform.getPlatformStatus() != StatusEnum.NEW
 
         val cvStartServe = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
         cvStartServe.isVisible = !mIsServeAgain
@@ -76,7 +75,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
         val btnStartServe = view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
         btnStartServe.setOnClickListener(mOnClickListener)
-        if (_platform.isStartServe()) {
+        if (_platform.getPlatformStatus() == StatusEnum.UNFINISHED) {
             btnStartServe.setText(R.string.start_serve_again)
         }
         val tvName = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__name)
@@ -128,13 +127,6 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         params?.horizontalMargin = 56f
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.attributes = params
-
-        // TODO: 22.10.2021 mFirstTime ??!
-        if (mFirstTime) {
-            mFirstTime = false
-        } else {
-            dismiss()
-        }
     }
 
     private fun initButtonsViews() {
@@ -190,8 +182,8 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
             val container = _platform.containers[position]
 //            holder.tv_title.text = container!!.number
             if(container?.isActiveToday == true)
-                holder.platformImageView.setImageResource(_platform.getIconDrawableResId())
-            else if(container?.isActiveToday == false)
+                holder.platformImageView.setImageResource(_platform.getIconFromStatus())
+            else
                 holder.platformImageView.setImageResource(_platform.getInactiveIcon())
 
             holder.clParent.setOnClickListener{

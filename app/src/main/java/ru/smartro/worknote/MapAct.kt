@@ -45,10 +45,8 @@ import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
-import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.WorkOrderEntity
+import ru.smartro.worknote.utils.getActivityProperly
+import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
@@ -230,7 +228,10 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             }
 
         }
-
+        Log.w(TAG, "r_dos/onStart.before")
+        mMapMyYandex.onStart()
+        MapKitFactory.getInstance().onStart()
+        Log.w(TAG, "r_dos/onStart.after")
         //todo:  R_dos!!! modeSyNChrON_off(false)
         paramS.isModeSYNChrONize = true
         AppliCation().startWorkER()
@@ -267,7 +268,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         var platformProgress = 0
         for(workOrder in workOrders) {
             platformCnt += workOrder.cnt_platform
-            platformProgress += workOrder.cnt_platform - workOrder.cntPlatformProgress()
+            platformProgress += workOrder.cnt_platform - workOrder.cnt_platform_status_new
         }
         mAcbInfo.text = "$platformProgress / $platformCnt"
     }
@@ -294,7 +295,9 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         /**@kotlin.internal.InlineOnly
         public inline fun <T> compareByDescending(crossinline selector: (T) -> Comparable<*>?): Comparator<T> =
             Comparator { a, b -> compareValuesBy(b, a, selector) }*/
-            newPlatformS.sortWith(compareBy { it.updateAt  })
+            newPlatformS.sortWith(compareBy { (it.updateAt) })
+            newPlatformS.sortWith(compareBy { (it.finishedAt) })
+
             mPlatformS = newPlatformS
 //            mPlatformS = vs.baseDat.findPlatforms(getWorkOrderSFilter())
         }
@@ -550,7 +553,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
     //тодо)) код фанатика m4 из cs)))
     private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
-        Log.d("GOTONEXTACT platform ::: ", "${plaform.platformId} : progress ${plaform.isWorkOrderProgress} : success ${plaform.isWorkOrderComplete}")
         val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PlatformServeAct::class.java else PlatformFailureAct::class.java)
         intent.putExtra("platform_id", plaform.platformId)
 
@@ -642,23 +644,19 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     val mNotifyMap = mutableMapOf<Int, Long>()
     private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, string: String?) {
-        val intent = Intent(this, PlatformServeAct::class.java)
-
-        // TODO: !!?R_dos
-        intent.putExtra("srpId", srpId)
-        intent.putExtra("platform_id", platformId)
-        intent.putExtra("mIsServeAgain", false)
-
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0, intent,
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
-//        (;:)
         if (mNotifyMap.containsKey(srpId)) {
             return
         }
         mNotifyMap[srpId] = Lnull
+
+        val intent = Intent(this, PlatformServeAct::class.java)
+
+        // TODO: !!?R_dos(;:)
+        intent.putExtra("srpId", srpId)
+        intent.putExtra("platform_id", platformId)
+        intent.putExtra("mIsServeAgain", false)
+
+        val pendingIntent = getActivityProperly(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
         AppliCation().showNotificationForce(pendingIntent,
             "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",
@@ -667,9 +665,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             NOTIFICATION_CHANNEL_ID__MAP_ACT
         )
     }
-
-
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -748,7 +743,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private fun getIconViewProvider (_context: Context, _platform: PlatformEntity): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
-        iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconDrawableResId()))
+        iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconFromStatus()))
         val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
         tv.isVisible = false
         if (_platform.isOrderTimeWarning()) {
@@ -866,10 +861,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     override fun onStart() {
         super.onStart()
-        Log.w(TAG, "r_dos/onStart.before")
-        mMapMyYandex.onStart()
-        MapKitFactory.getInstance().onStart()
-        Log.w(TAG, "r_dos/onStart.after")
     }
 
     override fun onResume() {
@@ -914,12 +905,13 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             holder.tvPlatformCnt.text = "Площадки - ${workOrder.cnt_platform}"
             holder.tvPlatformSuccess.text = workOrder.cnt_platform_status_success.toString()
             holder.tvPlatformError.text = workOrder.cnt_platform_status_error.toString()
-            holder.tvPlatformProgress.text = workOrder.cntPlatformProgress().toString()
+            holder.tvPlatformProgress.text = (workOrder.cnt_platform - (workOrder.cnt_platform_status_success + workOrder.cnt_platform_status_error)).toString()
 
             holder.tvContainerCnt.text = "Контейнеры - ${workOrder.cnt_container}"
             holder.tvContainerSuccess.text = workOrder.cnt_container_status_success.toString()
             holder.tvContainerError.text = workOrder.cnt_container_status_error.toString()
-            holder.tvContainerProgress.text = workOrder.cntContainerProgress().toString()
+            //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+            holder.tvContainerProgress.text = (workOrder.cnt_container - (workOrder.cnt_container_status_success + workOrder.cnt_container_status_error)).toString()
             val checkBox = holder.accbCheckBox
             checkBox.text = "${workOrder.id} ${workOrder.name}"
 //            checkBox.setOnCheckedChangeListener(null)
@@ -932,6 +924,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 //                }
 
             }
+
         }
 
         fun getItemS(): List<WorkOrderEntity> {

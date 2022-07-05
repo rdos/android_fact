@@ -162,7 +162,7 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     //todo: кака код
-    fun findWorkOrders(isFilterMode: Boolean): List<WorkOrderEntity> {
+    fun findWorkOrders(isFilterMode: Boolean=false): List<WorkOrderEntity> {
         var res = emptyList<WorkOrderEntity>()
         p_realm.executeTransaction { realm ->
             val workOrderS: RealmResults<WorkOrderEntity>
@@ -357,29 +357,6 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun updateContainersVolumeIfnNull(platformId: Int, volume: Double) {
-        p_realm.executeTransaction { realm ->
-            val platformEntity = getQueryPlatform()
-                .equalTo("platformId", platformId)
-                .findFirst()
-            platformEntity?.containers?.forEach {
-                if (it.volume == null) {
-                    if (it.isActiveToday) {
-                        it.volume = volume
-                        if (it.status == StatusEnum.NEW) {
-                            it.status = StatusEnum.SUCCESS
-                        }
-                    }
-
-                }
-            }
-
-            platformEntity?.beginnedAt = MyUtil.currentTime()
-            setEntityUpdateAt(platformEntity)
-        }
-    }
-
-
     fun clearContainerVolume(platformId: Int, containerId: Int) {
         p_realm.executeTransaction {
             val container = getQueryContainer()
@@ -436,20 +413,12 @@ class RealmRepository(private val p_realm: Realm) {
 
             val problemId = findFailReasonByValue(realm, problem).id
             platform.failureReasonId = problemId
-            platform.containers.forEach {
-                if (it.status != StatusEnum.SUCCESS) {
-                    it.status = StatusEnum.ERROR
+
+            platform.containers.forEach { container ->
+                if (container.isActiveToday && container.status != StatusEnum.SUCCESS) {
+                    container.status = StatusEnum.ERROR
                 }
             }
-
-            val isAllSuccess = platform.containers.all { el -> el.status == StatusEnum.SUCCESS  }
-            val isAllError = platform.containers.all { el -> el.status == StatusEnum.ERROR  }
-
-            val platformStatus =
-                if(isAllSuccess) StatusEnum.SUCCESS
-                else if(isAllError) StatusEnum.ERROR
-                else StatusEnum.UNFINISHED
-            platform.status = platformStatus
 
             platform.failureComment = failureComment
             val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
@@ -459,36 +428,53 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun updatePlatformStatus(platformId: Int, status: String) {
+    fun updatePlatformStatusSuccess(platformId: Int) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform().equalTo("platformId", platformId)
                 .findFirst()!!
 
-            val containersToCheck = platform.containers.filter { el -> el.isActiveToday }
+            platform.containers.forEach { container ->
+                if (container.volume == null) {
+                    if (container.isActiveToday) {
+                        container.volume = 1.0
+                        if (container.status == StatusEnum.NEW) {
+                            container.status = StatusEnum.SUCCESS
+                        }
+                    }
 
-            val isAllSuccess = containersToCheck.all { el -> el.status == StatusEnum.SUCCESS  }
-            val isAllError = containersToCheck.all { el -> el.status == StatusEnum.ERROR  }
-
-            val platformStatus =
-                if(isAllSuccess) StatusEnum.SUCCESS
-                else if(isAllError) StatusEnum.ERROR
-                else StatusEnum.UNFINISHED
-            platform.status = platformStatus
+                }
+            }
 
             val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
                 .findFirst()
 
             workOrder?.calcInfoStatistics()
 
+            platform.beginnedAt = MyUtil.currentTime()
             setEntityUpdateAt(platform)
         }
     }
 
+    fun updatePlatformStatusUnfinished(platformId: Int) {
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform().equalTo("platformId", platformId)
+                .findFirst()!!
 
+            val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
+                .findFirst()
+
+            workOrder?.calcInfoStatistics()
+
+            platform.beginnedAt = MyUtil.currentTime()
+            setEntityUpdateAt(platform)
+        }
+    }
 
     fun setEmptyImageEntity(platforms: List<PlatformEntity>) {
         val emptyImageEntityList = RealmList<ImageEntity>()
         platforms.forEach { platform ->
+            platform.afterMediaSize = platform.afterMedia.size
+            platform.beforeMediaSize = platform.beforeMedia.size
             platform.afterMedia = emptyImageEntityList
             platform.beforeMedia = emptyImageEntityList
             platform.failureMedia = emptyImageEntityList
@@ -521,12 +507,12 @@ class RealmRepository(private val p_realm: Realm) {
         val minLong = coordLong - LONG15M*koef
         val maxLong = coordLong + LONG15M*koef
         val platformByCoord = getQueryPlatform()
-            .equalTo("status", "new")
             .greaterThanOrEqualTo("coordLat", minLat)
             .lessThanOrEqualTo("coordLat", maxLat)
             .greaterThanOrEqualTo("coordLong", minLong)
             .lessThanOrEqualTo("coordLong", maxLong)
             .findAll()
+            .filter { it.getPlatformStatus() == StatusEnum.NEW  }
         if (platformByCoord.isNullOrEmpty()) {
             return res
         }
@@ -590,8 +576,8 @@ class RealmRepository(private val p_realm: Realm) {
     fun updatePlatformNetworkStatus(list: List<PlatformEntity>) {
         p_realm.executeTransaction {
             list.forEach {
-                val platform = findPlatformEntity(it.platformId!!)
-                if (platform.status != StatusEnum.NEW && !platform.networkStatus!!) {
+                val platform = _getPlatformEntity_know0(it.platformId!!)
+                if (platform.getPlatformStatus() != StatusEnum.NEW && !platform.networkStatus!!) {
                     platform.networkStatus = true
                 }
             }
@@ -605,11 +591,11 @@ class RealmRepository(private val p_realm: Realm) {
         )
     }
 
-    fun findAllContainerInPlatform(platformId: Int): List<ContainerEntity> {
+    fun findContainersSortedByIsActiveToday(platformId: Int): List<ContainerEntity> {
         val platform = p_realm.where(PlatformEntity::class.java)
             .equalTo("platformId", platformId)
             .findFirst()!!
-        return p_realm.copyFromRealm(platform.containers)
+        return p_realm.copyFromRealm(platform.containers.sort("isActiveToday", Sort.DESCENDING))
     }
 
     fun findContainersVolume(workOrderId: Int): Double {
@@ -669,20 +655,38 @@ class RealmRepository(private val p_realm: Realm) {
         return p_realm.copyFromRealm(p_realm.createObjectFromJson(clazz, json)!!)
     }
 
-    fun findPlatformEntity(platformId: Int): PlatformEntity {
-        Log.d("PLATFORM ID :::", "$platformId")
+    //todo: private fun _getPlatformEntity
+    fun _getPlatformEntity_know0(platformId: Int): PlatformEntity {
+        val res = getQueryPlatform()
+            .equalTo("platformId", platformId)
+            .findFirst()!!
+        return res
+    }
+
+    fun getPlatformEntity(platformId: Int): PlatformEntity {
+        val result: PlatformEntity
         if(platformId == Inull) {
             return PlatformEntity(name="findPlatformEntity.platformId==Inull")
         }
-        return getQueryPlatform()
-            .equalTo("platformId", platformId)
-            .findFirst()!!
+        val res = _getPlatformEntity_know0(platformId)
+        result = p_realm.copyFromRealm(res)
+        return result
     }
 
-    fun findContainerEntity(containerId: Int) =
-        getQueryContainer()
+    //todo: private fun _getContainerEntity
+    fun _getContainerEntity_know0(containerId: Int): ContainerEntity {
+        val res = getQueryContainer()
             .equalTo("containerId", containerId)
             .findFirst()!!
+        return res
+    }
+
+    fun getContainerEntity(containerId: Int): ContainerEntity {
+        val result: ContainerEntity
+        val res = _getContainerEntity_know0(containerId)
+        result = p_realm.copyFromRealm(res)
+        return result
+    }
 
 //    fun findCountContainerIsServed(): List<Int> {
 //        val result = p_realm.copyFromRealm(p_realm.where(ContainerEntity::class.java).findAll())
@@ -702,7 +706,9 @@ class RealmRepository(private val p_realm: Realm) {
         val result = p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
-        val filteredList = result.filter { it.status != StatusEnum.NEW }
+        Log.d("TEST:::", "PLTFRMS LIST : ${result.size}")
+        val filteredList = result.filter { it.getPlatformStatus() != StatusEnum.NEW && it.beginnedAt != null }
+        Log.d("TEST:::", "FILTERED LIST : ${filteredList.size}")
         return filteredList
     }
 
@@ -710,7 +716,7 @@ class RealmRepository(private val p_realm: Realm) {
         val result = p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
-        val filteredList = result.filter { it.status == StatusEnum.NEW }
+        val filteredList = result.filter { it.getPlatformStatus() == StatusEnum.NEW }
         return filteredList
     }
 

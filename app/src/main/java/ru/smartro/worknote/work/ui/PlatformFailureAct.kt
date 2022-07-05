@@ -36,7 +36,7 @@ class PlatformFailureAct : ActNOAbst() {
         baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.let {
-            platform = viewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            platform = viewModel.baseDat.getPlatformEntity(it.getIntExtra("platform_id", 0))
             supportActionBar!!.title = "Невывоз на площадке"
         }
 
@@ -69,7 +69,7 @@ class PlatformFailureAct : ActNOAbst() {
     }
     
     private fun initImageView() {
-        val platform = viewModel.findPlatformEntity(platform.platformId!!)
+        val platform = viewModel.baseDat.getPlatformEntity(platform.platformId!!)
         Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last()?.image))
             .into(problem_img)
     }
@@ -101,10 +101,6 @@ class PlatformFailureAct : ActNOAbst() {
     }
 
     class NonPickupPlatformViewModel(application: Application) : BaseViewModel(application) {
-
-        fun findPlatformEntity(platformId: Int): PlatformEntity {
-            return baseDat.findPlatformEntity(platformId)
-        }
 
         fun updatePlatformProblem(platformId: Int, problemComment: String,
                                   problem: String) {

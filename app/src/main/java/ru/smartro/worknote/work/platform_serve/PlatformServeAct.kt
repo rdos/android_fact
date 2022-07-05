@@ -30,7 +30,6 @@ import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
-import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 
@@ -64,16 +63,15 @@ class PlatformServeAct :
         setContentView(R.layout.act_platformserve)
         supportActionBar?.hide()
 
-        mPlatformEntity = vm.baseDat.findPlatformEntity(intent.getIntExtra("platform_id", Inull))
+        mPlatformEntity = vm.baseDat.getPlatformEntity(intent.getIntExtra("platform_id", Inull))
         mIsServeAgain = intent.getBooleanExtra("mIsServeAgain", false)
 
 //        supportActionBar?.title =
         val actvAddress = findViewById<AppCompatTextView>(R.id.actv_act_platform_serve__address)
         actvAddress.text = "${mPlatformEntity.address}"
         initContainer()
-        if (!mPlatformEntity.isStartServeVolume()) {
-            initBeforeMedia()
-        }
+//        todo/vlad: initBeforeMedia logic
+        initBeforeMedia()
 //        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         val acbProblem = findViewById<AppCompatButton>(R.id.acb_activity_platform_serve__problem)
         if (mPlatformEntity.failureMedia.size > 0) {
@@ -148,8 +146,7 @@ class PlatformServeAct :
 
         btnCompleteTask = findViewById(R.id.acb_activity_platform_serve__complete)
         btnCompleteTask.setOnClickListener {
-            vm.updateContainersVolumeIfnNull(mPlatformEntity.platformId!!, 1.0)
-            vm.updatePlatformStatus(mPlatformEntity.platformId!!, StatusEnum.SUCCESS)
+            vm.updatePlatformStatusSuccess(mPlatformEntity.platformId!!)
             val intent = Intent(this@PlatformServeAct, CameraAct::class.java)
             intent.putExtra("platform_id", mPlatformEntity.platformId!!)
             intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
@@ -380,15 +377,15 @@ class PlatformServeAct :
 //    }
 
     private fun initContainer() {
-        val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
-        mConrainerAdapter = ContainerAdapter(this, this, containers as ArrayList<ContainerEntity>)
+        val containers = vm.baseDat.findContainersSortedByIsActiveToday(mPlatformEntity.platformId!!)
+        mConrainerAdapter = ContainerAdapter(this, this, (containers) as ArrayList<ContainerEntity>)
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).recycledViewPool.setMaxRecycledViews(0, 0);
         findViewById<RecyclerView>(R.id.rv_activity_platform_serve).adapter = mConrainerAdapter
         findViewById<TextView>(R.id.tv_activity_platform_serve__point_info).text = "№${mPlatformEntity.srpId} / ${mPlatformEntity.containers!!.size} конт."
     }
 
     fun updateRecyclerview() {
-        val containers = vm.findAllContainerInPlatform(mPlatformEntity.platformId!!)
+        val containers = vm.baseDat.findContainersSortedByIsActiveToday(mPlatformEntity.platformId!!)
         Log.d("TEST :::: ", "Containers: ${containers.joinToString { el -> "VOLUME: ${el.volume} ::: IS ACTIVTE TODAY: ${el.isActiveToday}" }}")
         mConrainerAdapter.updateData(containers as ArrayList<ContainerEntity>)
 //        initAfterMedia()
@@ -404,6 +401,7 @@ class PlatformServeAct :
         mBackPressedCnt--
         if (mBackPressedCnt <= 0) {
             super.onBackPressed()
+            vm.updatePlatformStatusUnfinished(mPlatformEntity.platformId!!)
             toast("Вы не завершили обслуживание КП.")
             return
         }
