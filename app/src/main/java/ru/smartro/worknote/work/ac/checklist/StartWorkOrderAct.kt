@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -71,7 +72,7 @@ class StartWorkOrderAct : ActAbstract() {
                     Status.SUCCESS -> {
                         workOrders = data!!.dataKnow100.woRKoRDeRknow1s
                         if (workOrders.size == 1) {
-                            gotoNextAct(workOrders[0].id)
+                            gotoNextAct(0)
                         }
                         rv.adapter = WayTaskAdapter(workOrders)
                         hideProgress()
@@ -99,20 +100,18 @@ class StartWorkOrderAct : ActAbstract() {
         insertWayTask(listOf(woRKoRDeRknow10))
     }
 
-    fun gotoNextAct(workorderId: Int?) {
-//        try {
-        if (workorderId == null) {
+    fun gotoNextAct(workOrderIndex: Int?) {
+        var workOrderId: Int? = null
+        if (workOrderIndex == null) {
             insertWayTask(workOrders)
         } else {
-            insertWayTask(workOrders[workorderId])
+            workOrderId = workOrders[workOrderIndex].id
+            insertWayTask(workOrders[workOrderIndex])
         }
-//        } catch (ex: Exception) {
-//
-//        }
         val intent = Intent(this, MapAct::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-        workorderId?.let {
-            intent.putExtra(PUT_EXTRA_PARAM_ID, workorderId)
+        workOrderIndex?.let {
+            intent.putExtra(PUT_EXTRA_PARAM_ID, workOrderId)
         }
         startActivity(intent)
         finish()
@@ -150,7 +149,7 @@ class StartWorkOrderAct : ActAbstract() {
             }
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
-                gotoNextAct(workOrder.id)
+                gotoNextAct(position)
             }
         }
         inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
