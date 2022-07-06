@@ -51,7 +51,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containers.size)
 
 
-        mIsServeAgain = _platform.getPlatformStatus() != StatusEnum.NEW
+        mIsServeAgain = _platform.getStatusPlatform() != StatusEnum.NEW
 
         val cvStartServe = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
         cvStartServe.isVisible = !mIsServeAgain
@@ -75,7 +75,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
         val btnStartServe = view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
         btnStartServe.setOnClickListener(mOnClickListener)
-        if (_platform.getPlatformStatus() == StatusEnum.UNFINISHED) {
+        if (_platform.getStatusPlatform() == StatusEnum.UNFINISHED) {
             btnStartServe.setText(R.string.start_serve_again)
         }
         val tvName = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__name)
@@ -131,7 +131,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
 
     private fun initButtonsViews() {
         platform_detail_fire.setOnClickListener {
-            warningCameraShow("Сделайте фото навывоза").let {
+            warningCameraShow("Сделайте фото невывоза").let {
                 it.accept_btn.setOnClickListener {
                     hideDialog()
                     val intent = Intent(requireActivity(), PlatformFailureAct::class.java)
