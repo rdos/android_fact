@@ -122,7 +122,7 @@ class MapActBottomBehaviorAdapter(
         }
 
         val tvCurrentStatus = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__status)
-        val status = when(item.getPlatformStatus()) {
+        val status = when(item.getStatusPlatform()) {
             StatusEnum.NEW -> "Новое"
             StatusEnum.UNFINISHED -> "Не завершено"
             StatusEnum.SUCCESS -> "Завершено: успешно"
@@ -154,7 +154,7 @@ class MapActBottomBehaviorAdapter(
             //nothing
         }
 
-        val currentStatus = item.getPlatformStatus()
+        val currentStatus = item.getStatusPlatform()
         if(currentStatus == StatusEnum.NEW || currentStatus == StatusEnum.UNFINISHED) {
             holder.itemView.setOnClickListener {
                 if (!holder.itemView.map_behavior_expl.isExpanded) {
