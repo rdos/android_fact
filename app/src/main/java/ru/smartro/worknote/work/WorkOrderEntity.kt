@@ -12,7 +12,6 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.isNotNull
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import java.io.Serializable
@@ -66,7 +65,7 @@ open class WorkOrderEntity(
         for (platform in platforms) {
             /** статистика для PlatformEntity*/
             platformsCnt++
-            when(platform.getPlatformStatus()) {
+            when(platform.getStatusPlatform()) {
                 StatusEnum.NEW -> platformsStatusNewCnt++
                 StatusEnum.SUCCESS -> platformsStatusSuccessCnt++
                 StatusEnum.ERROR -> platformsStatusErrorCnt++
@@ -322,14 +321,8 @@ open class PlatformEntity(
 
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
-    fun getPlatformStatus(): String {
-        Log.d("TEST :::",
-        "WorkOrderEntity/getPlatformStatus() containers: " +
-            this.containers.joinToString { el -> "status: ${el.status} isActive: ${el.isActiveToday}" })
+    fun getStatusPlatform(): String {
         val filteredContainers = this.containers.filter { el -> el.isActiveToday }
-        Log.d("TEST :::",
-        "WorkOrderEntity/getPlatformStatus() filteredContainers: " +
-            filteredContainers.joinToString { el -> "status: ${el.status} isActive: ${el.isActiveToday}" })
         val hasUnservedContainers = filteredContainers.any { el -> el.status == StatusEnum.NEW  }
         val isAllSuccess = filteredContainers.all { el -> el.status == StatusEnum.SUCCESS }
         val isAllError = filteredContainers.all { el -> el.status == StatusEnum.ERROR }
@@ -340,10 +333,10 @@ open class PlatformEntity(
         Log.d("TEST:::", "! ${this.address} ${_beforeMediaSize} ${_afterMediaSize}")
 
         val result = when {
+            isAllError -> StatusEnum.ERROR
             _beforeMediaSize == 0 && _afterMediaSize == 0 -> StatusEnum.NEW
             _beforeMediaSize != 0 && hasUnservedContainers -> StatusEnum.UNFINISHED
             isAllSuccess -> StatusEnum.SUCCESS
-            isAllError -> StatusEnum.ERROR
             filteredContainers.all { el -> el.status != StatusEnum.NEW } -> StatusEnum.PARTIAL_PROBLEMS
             else -> {
                 Log.d("TEST:::", "ELSE FIRED: ${_beforeMediaSize}")
@@ -355,7 +348,7 @@ open class PlatformEntity(
     }
 
     private fun isNewPlatform(): Boolean {
-        val res = this.getPlatformStatus() == StatusEnum.NEW
+        val res = this.getStatusPlatform() == StatusEnum.NEW
         Log.d("TEST :::", "isNewPlatform().res=${res}")
         return res
     }
@@ -366,7 +359,7 @@ open class PlatformEntity(
     }
 
     fun getIconFromStatus(): Int {
-        val currentStatus = this.getPlatformStatus()
+        val currentStatus = this.getStatusPlatform()
         if(currentStatus == StatusEnum.UNFINISHED) return R.drawable.ic_serving
         return when (this.icon) {
             "bunker" ->
@@ -460,7 +453,7 @@ open class PlatformEntity(
 
     fun getOrderTimeForMaps(): String {
         var result = Snull
-        if (this.beginnedAt.isNullOrEmpty() && this.getPlatformStatus() == StatusEnum.NEW) {
+        if (this.beginnedAt.isNullOrEmpty() && this.getStatusPlatform() == StatusEnum.NEW) {
             this.orderTimeStart?.let {
                 result = "до ${this.orderTimeEnd}"
             }

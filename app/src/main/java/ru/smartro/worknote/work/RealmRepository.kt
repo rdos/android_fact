@@ -423,7 +423,7 @@ class RealmRepository(private val p_realm: Realm) {
             .greaterThanOrEqualTo("coordLong", minLong)
             .lessThanOrEqualTo("coordLong", maxLong)
             .findAll()
-            .filter { it.getPlatformStatus() == StatusEnum.NEW  }
+            .filter { it.getStatusPlatform() == StatusEnum.NEW  }
         if (platformByCoord.isNullOrEmpty()) {
             return res
         }
@@ -488,7 +488,7 @@ class RealmRepository(private val p_realm: Realm) {
         p_realm.executeTransaction {
             list.forEach {
                 val platform = _getPlatformEntity_know0(it.platformId!!)
-                if (platform.getPlatformStatus() != StatusEnum.NEW && !platform.networkStatus!!) {
+                if (platform.getStatusPlatform() != StatusEnum.NEW && !platform.networkStatus!!) {
                     platform.networkStatus = true
                 }
             }
@@ -612,7 +612,7 @@ class RealmRepository(private val p_realm: Realm) {
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
         Log.d("TEST:::", "PLTFRMS LIST : ${result.size}")
-        val filteredList = result.filter { it.getPlatformStatus() != StatusEnum.NEW && it.beginnedAt != null }
+        val filteredList = result.filter { it.getStatusPlatform() != StatusEnum.NEW && it.beginnedAt != null }
         Log.d("TEST:::", "FILTERED LIST : ${filteredList.size}")
         return filteredList
     }
@@ -621,7 +621,7 @@ class RealmRepository(private val p_realm: Realm) {
         val result = p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
-        val filteredList = result.filter { it.getPlatformStatus() == StatusEnum.NEW }
+        val filteredList = result.filter { it.getStatusPlatform() == StatusEnum.NEW }
         return filteredList
     }
 
