@@ -715,6 +715,54 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun getImageList(platformId: Int, containerId: Int, photoFor: Int): List<ImageEntity> {
+        val platformEntity = p_realm.where(PlatformEntity::class.java).equalTo("platformId", platformId).findFirst()
+        var result = emptyList<ImageEntity>()
+        var md5List: RealmList<ImageEntity>? = null
+        when (photoFor) {
+            PhotoTypeEnum.forBeforeMedia -> {
+                md5List = platformEntity!!.beforeMedia
+            }
+            PhotoTypeEnum.forAfterMedia -> {
+                md5List = platformEntity!!.afterMedia
+            }
+            PhotoTypeEnum.forPlatformProblem -> {
+                md5List = platformEntity!!.failureMedia
+            }
+            PhotoTypeEnum.forPlatformPickupVolume -> {
+                md5List = platformEntity!!.pickupMedia
+            }
+            PhotoTypeEnum.forServedKGO -> {
+                md5List = platformEntity!!.kgoServed!!.media
+            }
+            PhotoTypeEnum.forRemainingKGO -> {
+                md5List = platformEntity!!.kgoRemaining!!.media
+            }
+            PhotoTypeEnum.forContainerFailure -> {
+                val containerEntity = p_realm.where(ContainerEntity::class.java)
+                    .equalTo("containerId", containerId)
+                    .findFirst()!!
+                md5List = containerEntity.failureMedia
+            }
+            PhotoTypeEnum.forContainerBreakdown -> {
+                val containerEntity = p_realm.where(ContainerEntity::class.java)
+                    .equalTo("containerId", containerId)
+                    .findFirst()!!
+                md5List = containerEntity.breakdownMedia
+            }
+//            else -> {
+//                md5List = emptyList()
+//            }
+        }
+//        val result = realm.copyFromRealm(realm.where(ImageEntity::class.java).findAll().filter { it.md5 in (md5List) }
+//        )
+        if(md5List == null) {
+            return result
+        }
+        result = p_realm.copyFromRealm(md5List)
+        return result
+    }
+
     /** удалить фото с платформы **/
     fun removePlatformMedia(imageFor: Int, imageBase64: ImageEntity, platformId: Int) {
         p_realm.executeTransaction { realm ->

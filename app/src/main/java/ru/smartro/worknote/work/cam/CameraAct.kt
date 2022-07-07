@@ -6,7 +6,6 @@ import android.widget.FrameLayout
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
-import ru.smartro.worknote.awORKOLDs.extensions.FLAGS_FULLSCREEN
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import java.io.File
 
@@ -67,9 +66,9 @@ class CameraAct : ActNOAbst() {
                 supportActionBar?.title = getString(R.string.service_pickup_volume)
             }
         }
-        val cameraFragment = CameraFragment(photoFor, platformId, containerId)
+        val APhotoFragment = APhotoFragment(photoFor, platformId, containerId)
         supportFragmentManager.beginTransaction().run {
-            this.replace(R.id.fragment_container, cameraFragment)
+            this.replace(R.id.fragment_container, APhotoFragment)
             this.addToBackStack(null)
             this.commit()
         }

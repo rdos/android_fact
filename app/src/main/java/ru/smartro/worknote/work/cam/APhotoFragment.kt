@@ -1,7 +1,6 @@
 package ru.smartro.worknote.work.cam
 
 import android.Manifest
-import android.app.Activity
 import android.app.Application
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -22,7 +21,6 @@ import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -35,10 +33,8 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
-import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
-import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.ImageEntity
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
@@ -56,14 +52,12 @@ destination(photoFile)
 }
  */
 
-open class CameraFragment(
-    private val photoFor: Int,
-    private val platformId: Int,
-    private val containerId: Int
+abstract class APhotoFragment(
 ) : AFragment(), ImageCounter, OnImageSavedCallback {
 
+
     private var mFrameLayout: FrameLayout? = null
-    private var mIsNoLimitPhoto: Boolean = false
+
     private var mCaptureButton: ImageButton? = null
     private lateinit var mCameraController: LifecycleCameraController
     private var mAcivPreviewPhoto: AppCompatImageView? = null
@@ -80,6 +74,8 @@ open class CameraFragment(
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
     private val viewModel: CameraViewModel by viewModel()
+
+    protected abstract fun onSaveFoto()
 
     override fun onResume() {
         super.onResume()
@@ -116,9 +112,7 @@ open class CameraFragment(
 //            setUpCamera()
 //            updateCameraUi()
 //        }
-        //todo:!!!r_dos
-        mIsNoLimitPhoto = requireActivity().intent.getBooleanExtra("isNoLimitPhoto", false)
-        Log.w(TAG, "mIsNoLimitPhoto=${mIsNoLimitPhoto}")
+
     }
 
     private fun takePicture() {
@@ -177,13 +171,7 @@ open class CameraFragment(
                         val gps = App.getAppliCation().gps()
                         val imageEntity = gps.inImageEntity(imageBase64, mIsNoLimitPhoto)
                         if (imageEntity.isCheckedData()) {
-                            if (photoFor == PhotoTypeEnum.forContainerBreakdown
-                                || photoFor == PhotoTypeEnum.forContainerFailure
-                            ) {
-                                viewModel.baseDat.updateContainerMedia(photoFor, platformId, containerId, imageEntity)
-                            } else {
-                                viewModel.baseDat.updatePlatformMedia(photoFor, platformId, imageEntity)
-                            }
+                            onSaveFoto()
                         } else {
                             toast(TOAST_TEXT)
                         }
@@ -258,58 +246,14 @@ open class CameraFragment(
         }
     }
 
+    protected abstract fun onGetImageCounter(): Int
+    protected abstract fun onBeforeUSE(): Int
+    protected abstract fun onAfterUSE(): Int
     private fun setImageCounter(plus: Boolean) {
         val count = if (plus) 1 else 0
-        var mediaSize = 0
+        var mediaSize = onGetImageCounter()
         mImageCounter?.post{
-            when (photoFor) {
-                PhotoTypeEnum.forContainerFailure -> {
-                    val container = viewModel.baseDat.getContainerEntity(containerId)
-                    mediaSize = container.failureMedia.size + count
-                    mImageCounter?.text = "$mediaSize"
-                }
-                PhotoTypeEnum.forContainerBreakdown -> {
-                    val container = viewModel.baseDat.getContainerEntity(containerId)
-                    mediaSize = container.breakdownMedia.size + count
-                    mImageCounter?.text = "$mediaSize"
-                }
-                PhotoTypeEnum.forPlatformProblem -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    mediaSize = platform.failureMedia.size + count
-                    mImageCounter?.text = "$mediaSize"
-                }
-                PhotoTypeEnum.forAfterMedia -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    mediaSize = count + getCountAfterMedia(platform)
-                    mImageCounter?.text = "$mediaSize"
-                }
-                PhotoTypeEnum.forBeforeMedia -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    mediaSize = count + getCountBeforeMedia(platform)
-                    mImageCounter?.text = "$mediaSize"
-                }
-                PhotoTypeEnum.forServedKGO -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    mediaSize = platform.getServedKGOMediaSize() + count
-                    mImageCounter?.text = "$mediaSize"
-                }
-                PhotoTypeEnum.forRemainingKGO -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    mediaSize = platform.getRemainingKGOMediaSize() + count
-                    mImageCounter?.text = "$mediaSize"
-                }
-                PhotoTypeEnum.forPlatformPickupVolume -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    mediaSize = platform.pickupMedia.size + count
-                    mImageCounter?.text = "$mediaSize"
-                    val btnCancel = mRootView.findViewById<TextView>(R.id.btn_cancel)
-                    btnCancel.isVisible = mediaSize <= 0
-                    mBtnAcceptPhoto?.visibility = if(mediaSize <= 0) View.GONE else View.VISIBLE
-                    btnCancel.setOnClickListener {
-                        activityFinish(photoFor, 404)
-                    }
-                }
-            }
+            mImageCounter?.text = "$mediaSize"
             try {
                 mBtnAcceptPhoto?.apply {
                     if(mediaSize <= 0) {
@@ -344,63 +288,23 @@ open class CameraFragment(
         }
     }
 
+    //onViewCreated
+    protected abstract fun onInitViewS()
     private fun initViews() {
         Log.d("TAGS", "initViews")
 
         mImageCounter = mRootView.findViewById(R.id.image_counter)
 
-        if(photoFor == PhotoTypeEnum.forPlatformPickupVolume){
-            mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.VISIBLE
-        }
+        onInitViewS()
         mBtnAcceptPhoto = mRootView.findViewById(R.id.photo_accept_button)
         mBtnAcceptPhoto?.setOnClickListener {
-            val mediaSize = when (photoFor) {
-                PhotoTypeEnum.forBeforeMedia -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    getCountBeforeMedia(platform)
-                }
-                PhotoTypeEnum.forAfterMedia -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    getCountAfterMedia(platform)
-                }
-                PhotoTypeEnum.forPlatformProblem -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    platform.failureMedia.size
-                }
-                PhotoTypeEnum.forContainerFailure -> {
-                    val container = viewModel.baseDat.getContainerEntity(containerId)
-                    container.failureMedia.size
-                }
-                PhotoTypeEnum.forContainerBreakdown -> {
-                    val container = viewModel.baseDat.getContainerEntity(containerId)
-                    container.breakdownMedia.size
-                }
-
-                PhotoTypeEnum.forServedKGO -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    platform.getServedKGOMediaSize()
-                }
-
-                PhotoTypeEnum.forRemainingKGO -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    platform.getRemainingKGOMediaSize()
-                }
-
-                PhotoTypeEnum.forPlatformPickupVolume -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    platform.getPickupMediaSize()
-                }
-                else -> 0
-            }
+            val mediaSize = onGetImageCounter()
             if (mediaSize == 0) {
                 toast("Сделайте фото")
                 return@setOnClickListener
             }
 
-            if (photoFor == PhotoTypeEnum.forAfterMedia) {
-                (requireActivity() as ActNOAbst).showingProgress()
-            }
-            activityFinish(photoFor)
+                onBtnAcceptPhoto_know1()
         }
 
 
@@ -445,105 +349,18 @@ open class CameraFragment(
         //todo: !!!
         mThumbNail?.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
         mThumbNail?.setOnClickListener {
-            val fragment = GalleryFragment(
-                platformId = platformId, photoFor = photoFor,
-                containerId = containerId, imageCountListener = this
-            )
-            fragment.show(childFragmentManager, "GalleryFragment")
+            onmThumbNailClick()
+
         }
 
         setImageCounter(false)
     }
 
+    abstract fun onmThumbNailClick()
 
-    private fun isCurrentMediaIsFull(): Boolean {
-        val res = when (photoFor) {
-            PhotoTypeEnum.forAfterMedia -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                //todo: фильтер конечно же...!!!
-                getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
-            }
-            PhotoTypeEnum.forBeforeMedia -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                //todo: фильтер конечно же лучше переписать)))) !!!
-                getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
-            }
-            PhotoTypeEnum.forPlatformProblem -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                platform.failureMedia.size >= maxPhotoCount
-            }
-            PhotoTypeEnum.forContainerFailure -> {
-                val container = viewModel.baseDat.getContainerEntity(containerId)
-                container.failureMedia.size >= maxPhotoCount
-            }
-            PhotoTypeEnum.forContainerBreakdown -> {
-                val container = viewModel.baseDat.getContainerEntity(containerId)
-                container.breakdownMedia.size >= maxPhotoCount
-            }
-            PhotoTypeEnum.forServedKGO -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                platform.getServedKGOMediaSize() >= maxPhotoCount
-            }
-            PhotoTypeEnum.forRemainingKGO -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                platform.getRemainingKGOMediaSize() >= maxPhotoCount
-            }
-            PhotoTypeEnum.forPlatformPickupVolume -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                platform.pickupMedia.size >= maxPhotoCount
-            }
-            else -> {
-                false
-            }
-        }
+    abstract fun onBtnAcceptPhoto_know1()
+    abstract fun isCurrentMediaIsFull(): Boolean
 
-        return res
-    }
-
-    private fun getCountAfterMedia(platform: PlatformEntity): Int {
-        var res = Inull
-        if (mIsNoLimitPhoto) {
-            res = platform.afterMedia.size
-        } else {
-            res = platform.afterMedia.filter {!it.isNoLimitPhoto }.size
-        }
-        return res
-    }
-
-    private fun getCountBeforeMedia(platform: PlatformEntity): Int {
-        var res = Inull
-        if (mIsNoLimitPhoto) {
-            res = platform.beforeMedia.size
-        } else {
-            res = platform.beforeMedia.filter {!it.isNoLimitPhoto }.size
-        }
-        return res
-    }
-
-    private fun activityFinish(photoType: Int, resultCode: Int = -1) {
-        when {
-            photoType == PhotoTypeEnum.forServedKGO -> {
-                requireActivity().setResult(101)
-            }
-
-            photoType == PhotoTypeEnum.forRemainingKGO -> {
-                requireActivity().setResult(102)
-            }
-
-            photoType == PhotoTypeEnum.forPlatformPickupVolume -> {
-                if(resultCode != -1)
-                    requireActivity().setResult(resultCode)
-                else
-                    requireActivity().setResult(14)
-            }
-
-            photoType != PhotoTypeEnum.forBeforeMedia -> {
-                requireActivity().setResult(Activity.RESULT_OK)
-            }
-        }
-
-        requireActivity().finish()
-    }
 
     //    private fun hasFrontCamera(): Boolean {
 //        return cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
@@ -609,8 +426,9 @@ imageAnalyzer?.targetRotation = mRotation
 orientationEventListener.enable()
  */
 class CameraViewModel(application: Application) : BaseViewModel(application) {
-
-
+    fun getImageList(platformId: Int, containerId: Int, photoFor: Int): MutableList<ImageEntity> {
+        return baseDat.getImageList(platformId, containerId, photoFor) as MutableList<ImageEntity>
+    }
 }
 //    private class LuminosityAnalyzer:ImageAnalysis.Analyzer{
 //        private var lastAnalyzedTimestamp = 0L

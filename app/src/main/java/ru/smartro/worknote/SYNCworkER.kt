@@ -18,13 +18,10 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.utils.getActivityProperly
 //import ru.smartro.worknote.utils.DispatcherInfoMessageTypes
-import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ui.JournalChatAct
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.math.log
 
 //private var App.LocationLAT: Double
 //    get() {
@@ -147,9 +144,9 @@ class SYNCworkER(
         val platforms: List<PlatformEntity>
         LOGWork("SYNCworkER::synChrONizationDATA:Thread.currentThread().id()=${Thread.currentThread().id}")
         //проблема в секундах синхронизаций
-        val mMinutesInSec = 30 * 60
-        if (lastSynchroTimeInSec - MyUtil.timeStampInSec() > mMinutesInSec) {
-            timeBeforeRequest = lastSynchroTimeInSec + mMinutesInSec
+        val m30MinutesInSec = 30 * 60
+        if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
+            timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
             platforms = db().findPlatforms30min()
             Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
         } else {

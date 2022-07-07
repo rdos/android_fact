@@ -95,7 +95,7 @@ class StartAct : ActAbstract() {
                     val platforms: List<PlatformEntity>
 
                     val mMinutesInSec = 30 * 60
-                    if (lastSynchroTime - MyUtil.timeStampInSec() > mMinutesInSec) {
+                    if (MyUtil.timeStampInSec() - lastSynchroTime > mMinutesInSec) {
                         platforms = vm.baseDat.findPlatforms30min()
                         timeBeforeRequest = lastSynchroTime + mMinutesInSec
                         Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
