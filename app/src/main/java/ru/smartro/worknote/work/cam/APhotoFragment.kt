@@ -92,6 +92,7 @@ abstract class APhotoFragment(
         super.onViewCreated(view, savedInstanceState)
         mRootView = view
         mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.GONE
+        mRootView.findViewById<TextView>(R.id.label_for).visibility = View.GONE
         mPreviewView = mRootView.findViewById(R.id.view_finder)
         mFrameLayout = view.findViewById(R.id.fl_fragment_camera)
         //todo: mCameraController в App???
@@ -295,7 +296,28 @@ abstract class APhotoFragment(
 
         mImageCounter = mRootView.findViewById(R.id.image_counter)
 
+        if(photoFor == PhotoTypeEnum.forPlatformPickupVolume){
+            mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.VISIBLE
+        }
         onInitViewS()
+        if(photoFor == PhotoTypeEnum.forPlatformPickupVolume){
+            mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.VISIBLE
+        }
+
+        if(photoFor == PhotoTypeEnum.forSimplifyServeBefore) {
+            mRootView.findViewById<TextView>(R.id.label_for).apply {
+                visibility = View.VISIBLE
+                text = "Контейнер: Фото до"
+            }
+        }
+
+        if(photoFor == PhotoTypeEnum.forSimplifyServeAfter) {
+            mRootView.findViewById<TextView>(R.id.label_for).apply {
+                visibility = View.VISIBLE
+                text = "Контейнер: Фото после"
+            }
+        }
+
         mBtnAcceptPhoto = mRootView.findViewById(R.id.photo_accept_button)
         mBtnAcceptPhoto?.setOnClickListener {
             val mediaSize = onGetImageCounter()

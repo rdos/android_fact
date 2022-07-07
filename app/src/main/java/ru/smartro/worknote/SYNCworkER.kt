@@ -10,8 +10,8 @@ import com.google.gson.Gson
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.delay
-import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
-import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.work.NetworkRepository
+import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr

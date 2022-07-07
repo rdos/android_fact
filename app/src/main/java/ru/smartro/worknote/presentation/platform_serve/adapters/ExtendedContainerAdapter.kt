@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.platform_serve
+package ru.smartro.worknote.presentation.platform_serve.adapters
 
 import android.app.Activity
 import android.content.Context
@@ -19,8 +19,11 @@ import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 
 // TODO: 22.10.2021 !!!когда?
-class ContainerAdapter(private val activity: Context, private val listener: ContainerPointClickListener, private val containers: ArrayList<ContainerEntity>) :
-    RecyclerView.Adapter<ContainerAdapter.OwnerViewHolder>() {
+class ExtendedContainerAdapter(
+    private val activity: Context,
+    private val listener: ContainerPointClickListener,
+    private val containers: List<ContainerEntity>
+) : RecyclerView.Adapter<ExtendedContainerAdapter.OwnerViewHolder>() {
     // TODO: 22.10.2021  item_container_adapter !!!
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_adapter, parent, false)
@@ -37,8 +40,7 @@ class ContainerAdapter(private val activity: Context, private val listener: Cont
         holder.itemView.choose_title.text = container.number
         holder.itemView.tv_item_container_adapter__type_name.text = container.typeName
         // TODO: 25.10.2021 add getString() + format
-        holder.itemView.tv_item_container_adapter__constructiveVolume.text = "${container.constructiveVolume.toStr("м³")}"
-
+        holder.itemView.tv_item_container_adapter__constructiveVolume.text = container.constructiveVolume.toStr("м³")
         holder.itemView.setOnClickListener {
             if(!container.isActiveToday && container.volume == null) {
                 showTakeInactiveContainerAlert(holder.activity) {
@@ -50,7 +52,7 @@ class ContainerAdapter(private val activity: Context, private val listener: Cont
             Log.d("ContainerPointAdapter", "onBindViewHolder: true")
         }
         val tvVolume = holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__volume)
-        tvVolume.text =  "${container.getVolumeInPercent().toString().dropLast(2)}%"
+        tvVolume.text =  "${container.getVolumeInPercent()}%"
         //2&
         tvVolume.setTextColor(container.getVolumePercentColor(holder.itemView.context))
 
@@ -61,14 +63,17 @@ class ContainerAdapter(private val activity: Context, private val listener: Cont
             holder.itemView.tv_item_container_adapter__volume.setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
         }
 
-        if (container.isFailureNotEmpty() || container.isBreakdownNotEmpty()) {
+        if (container.isFailureNotEmpty()) {
             holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red_cool))
+        }
+
+        if(container.volume != null && !container.isFailureNotEmpty()) {
+            holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.green_cool))
         }
     }
 
     private fun showTakeInactiveContainerAlert(context: Context, next: () -> Any) {
         try {
-            Log.d("TEST :::: ", "showTakeInactiveContainerAlert")
             lateinit var alertDialog: AlertDialog
             val builder = AlertDialog.Builder(context)
             val view = (context as Activity).layoutInflater.inflate(R.layout.alert_take_inactive_container, null)
@@ -92,11 +97,5 @@ class ContainerAdapter(private val activity: Context, private val listener: Cont
 
     interface ContainerPointClickListener {
         fun startContainerService(item: ContainerEntity)
-    }
-
-    fun updateData(newData: ArrayList<ContainerEntity>) {
-        containers.clear()
-        containers.addAll(newData)
-        notifyDataSetChanged()
     }
 }

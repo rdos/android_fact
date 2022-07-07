@@ -27,6 +27,13 @@ class CameraAct : ActNOAbst() {
 
         hostLayout = findViewById(R.id.fragment_container)
         when (photoFor) {
+            PhotoTypeEnum.forSimplifyServeBefore,
+            PhotoTypeEnum.forSimplifyServeAfter,
+            PhotoTypeEnum.forServedKGO,
+            PhotoTypeEnum.forRemainingKGO -> {
+                platformId = intent.getIntExtra("platform_id", 0)
+                supportActionBar?.hide()
+            }
             PhotoTypeEnum.forBeforeMedia -> {
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = getString(R.string.service_before)
@@ -48,18 +55,6 @@ class CameraAct : ActNOAbst() {
                 containerId = intent.getIntExtra("container_id", 0)
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = "Поломка контейнера"
-            }
-            PhotoTypeEnum.forServedKGO -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-//                supportActionBar?.title = getString(R.string.kgo)
-                // TODO: 14.01.2022 r_dos!!!
-                supportActionBar?.hide()
-            }
-            PhotoTypeEnum.forRemainingKGO -> {
-                // TODO: 14.01.2022 r_dos!!!
-                platformId = intent.getIntExtra("platform_id", 0)
-//                supportActionBar?.title = getString(R.string.kgo)
-                supportActionBar?.hide()
             }
             PhotoTypeEnum.forPlatformPickupVolume -> {
                 platformId = intent.getIntExtra("platform_id", 0)

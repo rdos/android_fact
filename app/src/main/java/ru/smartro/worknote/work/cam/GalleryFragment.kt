@@ -16,7 +16,7 @@ import ru.smartro.worknote.awORKOLDs.base.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.warningDelete
 import ru.smartro.worknote.work.ImageEntity
-import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
+import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.work.ui.ImageDetailDeleteListener
 import ru.smartro.worknote.work.ui.ImageDetailFragment
@@ -26,7 +26,7 @@ class GalleryFragment(private val platformId: Int, private val photoFor: Int,
                       private val containerId : Int, private val imageCountListener : ImageCounter
 )
     : AbstractBottomDialog(), ImageClickListener, ImageDetailDeleteListener {
-    private val vs: PlatformServeViewModel by viewModel()
+    private val vs: PlatformServeSharedViewModel by viewModel()
     private val listener: ImageClickListener = this
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_gallery_before, container, false)
