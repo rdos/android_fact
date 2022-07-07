@@ -36,7 +36,7 @@
             android:layout_margin="@dimen/margin_default"
             android:background="@drawable/bg_button"
             android:textColor="@color/white"
-            android:text="Выход из системы"
+            android:text="Выйти"
             />
 
         <!--<include layout="@layout/act_map__workorder_info"/>-->
