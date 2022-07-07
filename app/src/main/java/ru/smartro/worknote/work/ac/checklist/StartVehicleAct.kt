@@ -155,10 +155,10 @@ class StartVehicleAct : ActAbstract() {
         }
 
         fun filter(vehicleList: List<Vehicle>, filterText: String): List<Vehicle> {
-            val query = filterText.toLowerCase()
+            val query = filterText.lowercase()
             val filteredModeList = vehicleList.filter {
                 try {
-                    val text = it.name.toLowerCase()
+                    val text = it.name.lowercase()
                     (text.startsWith(query) || (text.contains(query)))
                 } catch (ex: Exception) {
                     true

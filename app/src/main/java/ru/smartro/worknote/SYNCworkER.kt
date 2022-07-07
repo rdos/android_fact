@@ -22,6 +22,7 @@ import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.StartAct
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.math.log
 
 //private var App.LocationLAT: Double
 //    get() {
@@ -49,9 +50,19 @@ class SYNCworkER(
             App.getAppliCation().showNotification(pendingIntent, contentText, titleText)
         }
     }
+    private var oldThreadId = Lnull
+    private var mDb: RealmRepository? = null
 
-    private val db: RealmRepository by lazy {
-        RealmRepository(Realm.getDefaultInstance())
+    fun db(): RealmRepository {
+        val currentThreadId = Thread.currentThread().id
+        if (oldThreadId != currentThreadId) {
+            LOGWork("SYNCworkER::db:.currentThreadId=${currentThreadId} ")
+            LOGWork("SYNCworkER::db:.oldThreadId=${oldThreadId} ")
+            oldThreadId = currentThreadId
+            mDb = RealmRepository(Realm.getDefaultInstance())
+            return mDb!!
+        }
+        return mDb!!
     }
 
     private fun showWorkERROR(contentText: String="ОШИБКА служба ОТПРАВКИ данных НЕ работает",
@@ -132,16 +143,16 @@ class SYNCworkER(
         logSentry("SYNCworkER STARTED")
         val lastSynchroTimeInSec =App.getAppParaMS().lastSynchroTimeInSec
         val platforms: List<PlatformEntity>
-
+        LOGWork("SYNCworkER::synChrONizationDATA:Thread.currentThread().id()=${Thread.currentThread().id}")
         //проблема в секундах синхронизаций
         val mMinutesInSec = 30 * 60
         if (lastSynchroTimeInSec - MyUtil.timeStampInSec() > mMinutesInSec) {
             timeBeforeRequest = lastSynchroTimeInSec + mMinutesInSec
-            platforms = db.findPlatforms30min()
+            platforms = db().findPlatforms30min()
             Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
         } else {
             timeBeforeRequest = MyUtil.timeStampInSec()
-            platforms = db.findLastPlatforms()
+            platforms = db().findLastPlatforms()
             LOGWork("SYNCworkER LAST PLATFORMS")
         }
 
@@ -162,7 +173,8 @@ class SYNCworkER(
             Status.SUCCESS -> {
                 if (platforms.isNotEmpty()) {
                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
-                    db.updatePlatformNetworkStatus(platforms)
+                    Log.d("TAGS:::SYNCworkER", Thread.currentThread().getId().toString())
+                    db().updatePlatformNetworkStatus(platforms)
                     Log.d(TAG, "SYNCworkER SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
                 } else {
                     Log.d(TAG, "SYNCworkER SUCCESS: GPS SENT")

@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work
+package ru.smartro.worknote.awORKOLDs.service.network
 
 import android.content.Context
 import android.util.Log
@@ -13,7 +13,6 @@ import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
-import ru.smartro.worknote.awORKOLDs.service.network.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
@@ -21,11 +20,20 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.work.net.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.awORKOLDs.service.network.exception.BadRequestException
+//import ru.smartro.worknote.awORKOLDs.service.network.exception.THR
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
+import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
+import ru.smartro.worknote.work.RealmRepository
+import ru.smartro.worknote.work.WorkOrderResponse_know1
 
 
 class NetworkRepository(private val context: Context) {
@@ -42,8 +50,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    response.raw().request.url
-                    badRequest(response)
+                    THR.BadRequestLogin(response)
                     emit(Resource.error("Неверный логин или пароль", null))
                 }
             }
@@ -63,7 +70,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestVehicle(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                     Log.d(TAG, "getVehicle.after errorResponse=${errorResponse}")
                     emit(Resource.error("Ошибка ${response.code()}", null))
@@ -96,7 +103,7 @@ class NetworkRepository(private val context: Context) {
 //                    emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestBreakdown_type(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                     Log.d(TAG, "getBreakDownTypes.after errorResponse=${errorResponse}")
                     emit(Resource.error("Ошибка ${response.code()}", null))
@@ -129,10 +136,9 @@ class NetworkRepository(private val context: Context) {
 //                    emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestFailure_reason(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                     Log.d(TAG, "getFailReason.after errorResponse=${errorResponse}")
-                    badRequest(response)
-
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -162,7 +168,7 @@ class NetworkRepository(private val context: Context) {
 //                    emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestWork_order_cancelation_reason(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -172,24 +178,28 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    suspend fun getWayList(body: WayListBody): Resource<WayListResponse> {
+    fun getWayList(body: WayListBody) = liveData(Dispatchers.IO, TIME_OUT) {
+        Log.i(TAG, "getWayList.before")
+
         try {
             val response = RetrofitClient(context)
                 .apiService(true).getWayList(body)
-            return when {
+            Log.i(TAG, "getWayList.before. response.message=${response.code()}")
+
+            when {
                 response.isSuccessful -> {
                     Log.d(TAG, "getWayList.after ${response.body().toString()}")
-                    Resource.success(response.body())
+                    emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestWaybill(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                     Log.d(TAG, "getWayList.after errorResponse=${errorResponse}")
-                    badRequest(response)
-                    Resource.error("Ошибка ${response.code()}", null)
+                    emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
         } catch (e: Exception) {
-            return Resource.network("Проблемы с подключением интернета", null)
+            emit(Resource.network("Проблемы с подключением интернета", null))
         }
     }
 
@@ -206,7 +216,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestSynchro__o_id__w_id(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -225,9 +235,10 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestProgress(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                     Log.d(TAG, "progress.after errorResponse=${errorResponse}")
-                    badRequest(response)
+
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -247,9 +258,10 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestWorkorder__id__complete(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                     Log.d(TAG, "completeWay.after errorResponse=${errorResponse}")
-                    badRequest(response)
+
                     emit(Resource.error(errorResponse.message, null))
                 }
             }
@@ -271,7 +283,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestWorkorder__id__early_complete(response)
 //                    App.getAppliCation().toast(result.msg)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
@@ -290,7 +302,7 @@ class NetworkRepository(private val context: Context) {
                     Resource.success(response.body())
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestPOSTsynchro(response)
                     Resource.error("Ошибка ${response.code()}", null)
                 }
             }
@@ -311,8 +323,9 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestPOSTsynchro(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
-                    badRequest(response)
+
                 }
             }
         } catch (e: Exception) {
@@ -330,8 +343,9 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestOwner(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
-                    badRequest(response)
+
                 }
             }
         } catch (e: Exception) {
@@ -348,7 +362,7 @@ class NetworkRepository(private val context: Context) {
                     Resource.success(response.body())
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestRPC(response)
                     Resource.error("Ошибка ${response.code()}", null)
                 }
             }
@@ -379,22 +393,136 @@ enum class Status {
     SUCCESS,
     ERROR,
     NETWORK,
-    IDLE
 }
 
+sealed class THR(code: Int) : Throwable(code.toString()) {
+    //    abstract val message: String
+    fun <T> sentToSentry(response: Response<T>){
+        if (response.code() in 400..599) {
+            val urlName = response.raw().request.url.encodedPath
+            Sentry.setTag("url_name", urlName)
+            Sentry.setTag("http_code", response.code().toString())
+            Sentry.setTag("url_host_name", response.raw().request.url.host)
 
-private fun <T> badRequest(response: Response<T>) {
-    if (response.code() in 400..599) {
-        val urlName = response.raw().request.url.encodedPath
-        Sentry.setTag("url_name", urlName)
-        Sentry.setTag("http_code", response.code().toString())
-        Sentry.setTag("url_host_name", response.raw().request.url.host)
-
-//        Sentry.setTag("user", AppPreferences.BoTlogin)
-        // TODO: replace  BadRequestException for post  @POST("synchro")
+            Sentry.setTag("user", App.getAppParaMS().userName)
+            // TODO: replace  BadRequestException for post  @POST("synchro")
 //        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
-        Sentry.captureException(BadRequestException(urlName))
+            Sentry.captureException(this)
+        }
     }
+
+
+    class BadRequestLogin(response: Response<AuthResponse>) : THR(response.code()) {
+        //        override val message = 70.0
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
+    class BadRequestOwner(response: Response<OrganisationResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
+    class BadRequestVehicle(response: Response<VehicleResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestBreakdown_type(response: Response<BreakDownResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestFailure_reason(response: Response<FailureReasonResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
+    class BadRequestWaybill(response: Response<WayListResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+//    class breakdown(response: String) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
+//    class failure(response: String) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
+    class BadRequestProgress(response: Response<ServedResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestWorkorder__id__complete(response: Response<EmptyResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
+    class BadRequestWork_order_cancelation_reason(response: Response<CancelationReasonResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestWorkorder__id__early_complete(response: Response<EmptyResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestPOSTsynchro(response: Response<SynchronizeResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestRPC(response: Response<PingBody>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+//    BadRequestSynchro__o_id__w_id
+    class BadRequestSynchro__o_id__w_id(response: Response<WorkOrderResponse_know1>) : THR(response.code()) {
+
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
 }
 
 

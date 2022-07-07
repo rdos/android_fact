@@ -229,6 +229,10 @@ fun AppCompatActivity.hideDialog() {
     hideCustomDialog()
 }
 
+fun AbstractDialog.hideDialog() {
+    hideCustomDialog()
+}
+
     private fun hideCustomDialog() {
         try {
             mCustomDialog.dismiss()

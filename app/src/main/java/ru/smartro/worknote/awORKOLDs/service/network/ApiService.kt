@@ -45,11 +45,11 @@ interface ApiService {
     @POST("waybill")
     suspend fun getWayList(@Body body: WayListBody): Response<WayListResponse>
 
-    @POST("breakdown")
-    suspend fun sendBreakDown(@Body body: BreakdownBody): Response<BreakDownResultResponse>
-
-    @POST("failure")
-    suspend fun sendFailure(@Body body: FailureBody): Response<FailureResultResponse>
+//    @POST("breakdown")
+//    suspend fun sendBreakDown(@Body body: BreakdownBody): Response<BreakDownResultResponse>
+//
+//    @POST("failure")
+//    suspend fun sendFailure(@Body body: FailureBody): Response<FailureResultResponse>
 
     @POST("workorder/{id}/progress")
     suspend fun progress(@Path("id") id: Int, @Body time: ProgressBody): Response<ServedResponse>

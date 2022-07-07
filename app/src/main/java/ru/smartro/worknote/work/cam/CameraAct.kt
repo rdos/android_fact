@@ -21,8 +21,7 @@ class CameraAct : ActNOAbst() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
-        supportActionBar?.isHideOnContentScrollEnabled = false
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
         intent.let {
             photoFor = it.getIntExtra("photoFor", 0)
         }
@@ -73,7 +72,6 @@ class CameraAct : ActNOAbst() {
 
     override fun onResume() {
         super.onResume()
-        hostLayout.postDelayed({ hostLayout.systemUiVisibility = FLAGS_FULLSCREEN }, IMMERSIVE_FLAG_TIMEOUT)
     }
 
     companion object {

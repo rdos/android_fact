@@ -171,8 +171,9 @@ open class CameraFragment(
                         val baos = ByteArrayOutputStream()
                         resource.compress(Bitmap.CompressFormat.JPEG, 100, baos)
                         val b: ByteArray = baos.toByteArray()
-                        Log.w("TAGS", "b.size.toString()=${b.size.toString()}")
+                        Log.w("TAGS", "b.size=${b.size}")
                         val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
+                        Log.w("TAGS", "imageBase64=${imageBase64.length}")
                         val gps = App.getAppliCation().gps()
                         val imageEntity = gps.inImageEntity(imageBase64, mIsNoLimitPhoto)
                         if (imageEntity.isCheckedData()) {
