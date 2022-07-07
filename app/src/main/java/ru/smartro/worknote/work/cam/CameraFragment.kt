@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.util.Size
 import android.view.*
 import android.widget.*
 import androidx.appcompat.widget.AppCompatImageView
@@ -99,7 +100,7 @@ open class CameraFragment(
         mFrameLayout = view.findViewById(R.id.fl_fragment_camera)
         //todo: mCameraController в App???
         mCameraController = LifecycleCameraController(requireContext())
-        val outputSize = CameraController.OutputSize(AspectRatio.RATIO_4_3)
+        val outputSize = CameraController.OutputSize(Size(768, 1021))
         mCameraController.previewTargetSize = outputSize
         mCameraController.imageCaptureTargetSize = outputSize
         mCameraController.bindToLifecycle(viewLifecycleOwner)
@@ -168,7 +169,7 @@ open class CameraFragment(
                         }, 1000)
 
                         val baos = ByteArrayOutputStream()
-                        resource.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                        resource.compress(Bitmap.CompressFormat.WEBP, 80, baos)
                         val b: ByteArray = baos.toByteArray()
                         Log.w("TAGS", "b.size=${b.size}")
                         val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
