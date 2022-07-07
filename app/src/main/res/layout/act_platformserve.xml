@@ -1,94 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/actv_act_platform_serve__address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/margin_default"
-        android:paddingEnd="@dimen/margin_default"
-        android:paddingTop="@dimen/margin_default"
-        android:padding="@dimen/margin_default"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:background="@color/colorPrimary"
-        android:text="+id\aptv_act_platform_serve__address"
-        />
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_activity_platform_serve__point_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:textSize="18sp"
-        android:layout_marginTop="@dimen/margin_default"
-        android:paddingHorizontal="@dimen/margin_default"
-        tools:text="Hello world"
-        android:textColor="@color/black"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="16dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_activity_platform_serve"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+            <TextView
+                android:id="@+id/nav_title"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Обслуживание площадки"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/screen_mode_label"
+                android:layout_marginTop="5dp"
+                app:layout_constraintTop_toBottomOf="@id/nav_title"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/platform_serve_mode_simplified"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="@color/white"
+                android:textSize="16sp"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_mode"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tv_platform_serve__address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxWidth="200dp"
+                android:text="Адрес площадки"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_platform_serve__cont_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" tools:text="Пл.№5, 100 конт." />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:navGraph="@navigation/navigation_platform_serve"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_marginTop="8dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_container_adapter" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/acb_activity_platform_serve__problem"
-            android:layout_width="110dp"
-            android:layout_height="39dp"
-            android:background="@drawable/bg_button_red__default"
-            android:layout_margin="5dp"
-            android:text="@string/problem_on_point"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/acb_activity_platform_serve__kgo_served"
-            android:layout_width="110dp"
-            android:layout_height="39dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/bg_button_green__default"
-            android:text="КГО"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/apb_activity_platform_serve__kgo_remaining"
-            app:layout_constraintStart_toEndOf="@id/acb_activity_platform_serve__problem"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/apb_activity_platform_serve__kgo_remaining"
-            android:layout_width="110dp"
-            android:layout_height="39dp"
-            android:layout_margin="5dp"
-            android:textSize="13sp"
-            android:background="@drawable/bg_button_green__default"
-            android:text="Заказать борт"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <include layout="@layout/act_platformserve__pickup"/>
+        android:layout_width="match_parent" android:layout_height="0dp"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/acb_activity_platform_serve__complete"

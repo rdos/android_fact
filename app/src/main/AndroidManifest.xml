@@ -69,7 +69,7 @@
                 android:value="true" />
         </activity>
         <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.platform_serve.PlatformServeAct"
+            android:name="ru.smartro.worknote.presentation.platform_serve.PServeMain"
             android:screenOrientation="portrait" />
 
         <activity  android:exported="false"
@@ -99,7 +99,7 @@
             </intent-filter>
         </activity>
         <activity  android:exported="true"
-            android:name="ru.smartro.worknote.TerminateAct"
+            android:name="ru.smartro.worknote.presentation.terminate.TerminateAct"
             android:screenOrientation="portrait"
             >
 

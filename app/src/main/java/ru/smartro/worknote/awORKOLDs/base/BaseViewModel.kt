@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
+import ru.smartro.worknote.work.NetworkRepository
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {

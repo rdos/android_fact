@@ -48,10 +48,11 @@ import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.presentation.terminate.TerminateAct
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
 import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
@@ -59,7 +60,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.WorkOrderEntity
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
-import ru.smartro.worknote.work.platform_serve.PlatformServeAct
+import ru.smartro.worknote.presentation.platform_serve.PServeMain
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
@@ -567,7 +568,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
     //тодо)) код фанатика m4 из cs)))
     private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
-        val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PlatformServeAct::class.java else PlatformFailureAct::class.java)
+        val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PServeMain::class.java else PlatformFailureAct::class.java)
         intent.putExtra("platform_id", plaform.platformId)
 
         if (todoParamREQUEST_EXIT == Inull) {
@@ -663,7 +664,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
         mNotifyMap[srpId] = Lnull
 
-        val intent = Intent(this, PlatformServeAct::class.java)
+        val intent = Intent(this, PServeMain::class.java)
 
         // TODO: !!?R_dos(;:)
         intent.putExtra("srpId", srpId)

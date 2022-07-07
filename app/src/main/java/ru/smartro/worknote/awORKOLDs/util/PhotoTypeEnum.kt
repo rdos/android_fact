@@ -24,4 +24,8 @@ object PhotoTypeEnum {
 
     //Вызвать
     const val forRemainingKGO = 6
+
+    //Для упрощенного экрана
+    const val forSimplifyServeBefore = 8
+    const val forSimplifyServeAfter = 9
 }

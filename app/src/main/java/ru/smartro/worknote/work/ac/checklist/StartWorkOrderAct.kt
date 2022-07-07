@@ -22,7 +22,8 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.PERMISSIONS
@@ -147,6 +148,21 @@ class StartWorkOrderAct : ActAbstract() {
                 holder.itemView.choose_st.text = workOrder.waste_type.name
                 holder.itemView.choose_st.setTextColor(Color.parseColor("#${workOrder.waste_type.color.hex}"))
             }
+
+            when {
+                workOrder.beginnedAt != null && workOrder.finishedAt == null -> holder.itemView.wo_status.apply {
+                    text = "В работе"
+                    setTextColor(getColor(R.color.yellow))
+                }
+                workOrder.finishedAt != null -> holder.itemView.wo_status.apply {
+                    text = "Завершено"
+                    setTextColor(getColor(R.color.green))
+                }
+                else -> holder.itemView.wo_status.apply {
+                    text = "Новое"
+                }
+            }
+            
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
                 gotoNextAct(position)
