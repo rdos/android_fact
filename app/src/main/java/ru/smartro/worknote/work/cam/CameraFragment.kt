@@ -162,7 +162,7 @@ open class CameraFragment(
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                     try {
                         var bitmap = resource
-
+                        var origOrient = 0
                         Log.d("TETST :::", "Image Size: w=${resource.width} h=${resource.height}")
                         Log.d("TAGS", Thread.currentThread().name)
                         mAcivPreviewPhoto?.visibility = View.VISIBLE
@@ -174,6 +174,7 @@ open class CameraFragment(
                         }, 1000)
 
                        if(bitmap.width > bitmap.height) {
+                           origOrient = 1
                            val matrix = Matrix()
                            matrix.postRotate(90f)
                            val scaledBitmap = Bitmap.createScaledBitmap(resource, bitmap.width, bitmap.height, true)
@@ -189,6 +190,7 @@ open class CameraFragment(
                         Log.w("TAGS", "imageBase64=${imageBase64.length}")
                         val gps = App.getAppliCation().gps()
                         val imageEntity = gps.inImageEntity(imageBase64, mIsNoLimitPhoto)
+                        if(origOrient == 1) imageEntity.origOrient = origOrient
                         if (imageEntity.isCheckedData()) {
                             if (photoFor == PhotoTypeEnum.forContainerBreakdown
                                 || photoFor == PhotoTypeEnum.forContainerFailure

@@ -51,18 +51,17 @@ class GalleryPhotoAdapter(private val listener: ImageClickListener,
         holder.itemView.item_imageview.setOnClickListener {
             listener.imageDetailClicked(item)
         }
-        val myOptions = RequestOptions().override(100, 100)
 
         var image = MyUtil.base64ToImage(item.image)
 
-        if(image.width > image.height) {
+        if(item.origOrient == 1) {
             val matrix = Matrix()
-            matrix.postRotate(90f)
+            matrix.postRotate(-90f)
             val scaledBitmap = Bitmap.createScaledBitmap(image, image.width, image.height, true)
             image = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
         }
 
-        Glide.with(holder.itemView).asBitmap().apply(myOptions).load(image)
+        Glide.with(holder.itemView).asBitmap().load(image)
             .into(holder.itemView.item_imageview)
     }
 
