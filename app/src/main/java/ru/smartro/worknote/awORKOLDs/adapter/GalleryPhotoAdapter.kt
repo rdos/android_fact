@@ -1,6 +1,8 @@
 package ru.smartro.worknote.awORKOLDs.adapter
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +53,16 @@ class GalleryPhotoAdapter(private val listener: ImageClickListener,
         }
         val myOptions = RequestOptions().override(100, 100)
 
-        Glide.with(holder.itemView).asBitmap().apply(myOptions).load(MyUtil.base64ToImage(item.image))
+        var image = MyUtil.base64ToImage(item.image)
+
+        if(image.width > image.height) {
+            val matrix = Matrix()
+            matrix.postRotate(90f)
+            val scaledBitmap = Bitmap.createScaledBitmap(image, image.width, image.height, true)
+            image = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
+        }
+
+        Glide.with(holder.itemView).asBitmap().apply(myOptions).load(image)
             .into(holder.itemView.item_imageview)
     }
 
