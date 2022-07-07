@@ -171,7 +171,7 @@ open class CameraFragment(
                         mAcivPreviewPhoto?.postDelayed({
                             mAcivPreviewPhoto?.visibility = View.GONE
                             mFrameLayout?.visibility = View.VISIBLE
-                        }, 1000)
+                        }, 1500)
 
                        if(bitmap.width > bitmap.height) {
                            origOrient = 1
