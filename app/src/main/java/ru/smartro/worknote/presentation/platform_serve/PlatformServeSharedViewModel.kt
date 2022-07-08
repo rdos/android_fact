@@ -147,15 +147,18 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     }
 
     fun removeContainerMedia(photoFor: Int,platformId: Int, containerId: Int, imageBase64: ImageEntity) {
-        mWasServedExtended.postValue(true)
+//        mWasServedExtended.postValue(true)
         baseDat.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
-        getPlatformEntity(platformId)
+//        getPlatformEntity(platformId)
     }
 
-    fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
-        mWasServedExtended.postValue(true)
+    fun updatePlatformKGO(platformId: Int?, kgoVolume: String, isServedKGO: Boolean) {
+        if (platformId == null) {
+            return
+        }
+//        mWasServedExtended.postValue(true)
         baseDat.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
-        getPlatformEntity(platformId)
+//        getPlatformEntity(platformId)
     }
 
     // !!!!!!!!!!!!!!!!!!!

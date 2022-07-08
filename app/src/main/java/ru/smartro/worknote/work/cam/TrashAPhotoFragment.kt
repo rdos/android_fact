@@ -103,20 +103,20 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
     }
     private fun activityFinish(photoType: Int, resultCode: Int = -1) {
         when {
-            photoType == PhotoTypeEnum.forServedKGO -> {
-                requireActivity().setResult(101)
-            }
+//            photoType == PhotoTypeEnum.forServedKGO -> {
+//                requireActivity().setResult(101)
+//            }
 
-            photoType == PhotoTypeEnum.forRemainingKGO -> {
-                requireActivity().setResult(102)
-            }
-
-            photoType == PhotoTypeEnum.forPlatformPickupVolume -> {
-                if(resultCode != -1)
-                    requireActivity().setResult(resultCode)
-                else
-                    requireActivity().setResult(14)
-            }
+//            photoType == PhotoTypeEnum.forRemainingKGO -> {
+//                requireActivity().setResult(102)
+//            }
+//
+//            photoType == PhotoTypeEnum.forPlatformPickupVolume -> {
+//                if(resultCode != -1)
+//                    requireActivity().setResult(resultCode)
+//                else
+//                    requireActivity().setResult(14)
+//            }
 
             photoType == PhotoTypeEnum.forSimplifyServeBefore -> {
                 requireActivity().setResult(5861)
@@ -130,6 +130,10 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
         requireActivity().finish()
     }
 
+    override fun onClickBtnCancel() {
+        TODO("Not yet implemented")
+    }
+
     override fun onSaveFoto() {
         TODO("Not yet implemented")
     }
@@ -138,7 +142,7 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
         TODO("Not yet implemented")
     }
 
-    override fun onGetImageCounter(): Int {
+    fun onGetImageCounter(): Int {
         val mediaSize = when (photoFor) {
             PhotoTypeEnum.forSimplifyServeBefore -> {
                 val platform = viewModel.baseDat.getPlatformEntity(platformId)
@@ -162,20 +166,6 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
                 container.breakdownMedia.size
             }
 
-            PhotoTypeEnum.forServedKGO -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                platform.getServedKGOMediaSize()
-            }
-
-            PhotoTypeEnum.forRemainingKGO -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                platform.getRemainingKGOMediaSize()
-            }
-
-            PhotoTypeEnum.forPlatformPickupVolume -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                platform.getPickupMediaSize()
-            }
             else -> 0
         }
         return mediaSize
@@ -189,7 +179,7 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
         TODO("Not yet implemented")
     }
 
-    override fun onInitViewS(mRootView: View) {
+    fun onInitViewS(mRootView: View) {
         //todo:!!!r_dos
 
         if(photoFor == PhotoTypeEnum.forSimplifyServeAfter) {
@@ -202,11 +192,11 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
         Log.w(TAG, "mIsNoLimitPhoto=${mIsNoLimitPhoto}")
     }
 
-    override fun onGetLabelForText(): String {
+    override fun onGetTextLabelFor(): String {
         TODO("Not yet implemented")
     }
 
-    override fun onBtnCancelIsVisible(): Boolean {
+    override fun onGetIsVisibleBtnCancel(): Boolean {
         TODO("Not yet implemented")
     }
 
@@ -227,7 +217,7 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
     }
 
     val maxPhotoCount = 3
-    override fun isCurrentMediaIsFull(): Boolean {
+    fun getMaxPhotoCNT(): Boolean {
             val res = when (photoFor) {
                 PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
                     val platform = viewModel.baseDat.getPlatformEntity(platformId)
@@ -250,18 +240,6 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
                 PhotoTypeEnum.forContainerBreakdown -> {
                     val container = viewModel.baseDat.getContainerEntity(containerId)
                     container.breakdownMedia.size >= maxPhotoCount
-                }
-                PhotoTypeEnum.forServedKGO -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    platform.getServedKGOMediaSize() >= maxPhotoCount
-                }
-                PhotoTypeEnum.forRemainingKGO -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    platform.getRemainingKGOMediaSize() >= maxPhotoCount
-                }
-                PhotoTypeEnum.forPlatformPickupVolume -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    platform.pickupMedia.size >= maxPhotoCount
                 }
                 else -> {
                     false

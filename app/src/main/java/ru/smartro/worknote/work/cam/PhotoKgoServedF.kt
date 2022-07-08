@@ -1,55 +1,43 @@
 package ru.smartro.worknote.work.cam
 
-import android.os.Bundle
 import android.view.View
-import androidx.navigation.fragment.findNavController
-import ru.smartro.worknote.App
 import ru.smartro.worknote.R
-import ru.smartro.worknote.presentation.platform_serve.SCREEN_PServeF
-import ru.smartro.worknote.presentation.platform_serve.SCREEN_PhotoBeforeMediaF
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoBeforeMediaF : APhotoFragment() {
-    companion object {
-//        fun newInstance(workOrderId: Any? = null): PhotoBeforeMediaF {
-//            workOrderId as Int
-//            val fragment = PhotoBeforeMediaF()
-//            fragment.addArgument(workOrderId)
-//            return fragment
-//        }
-    }
+class PhotoKgoServedF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
 
     override fun onSaveFoto() {
 //        TODO("Not yet implemented")
     }
 
+
+
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "beforeMedia"
+        return getArgumentID().toString() + File.separator + "kgoServed"
     }
 
     override fun onBeforeUSE() {
-//        TODO("Not yet implemented")
         val platformId = getArgumentID()
         mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
-
+        mPlatformEntity?.getServedKGOMediaSize()
     }
 
     override fun onAfterUSE() {
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
-    override fun onGetTextLabelFor() = getString(R.string.service_before)
     override fun onClickBtnCancel() {
         TODO("Not yet implemented")
     }
 
+    override fun onGetTextLabelFor() = "Крупногабаритные отходы.забрал"
+
     override fun onGetIsVisibleBtnCancel() = false
 
     override fun onmThumbNailClick() {
-
+//        TODO("Not yet implemented")
     }
 
     override fun onBtnAcceptPhoto_know1() {

@@ -1,47 +1,33 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
-import ru.smartro.worknote.work.cam.CameraAct
-import ru.smartro.worknote.work.cam.PhotoBeforeMediaF
 
 class PServeF : AFragment() {
     override fun onGetLayout(): Int {
-        return R.layout.f_platformserve
+        return R.layout.f_pserve
     }
-
-    companion object {
-        fun newInstance(workOrderId: Any? = null): PServeF {
-            workOrderId as Int
-            val fragment = PServeF()
-            fragment.addArgument(workOrderId)
-            return fragment
-        }
-    }
-
 
     private var btnCompleteTask: AppCompatButton? = null
     private var tvContainersProgress: TextView? = null
     private var actvAddress: AppCompatTextView? = null
     private var switch: SwitchCompat? = null
     private var screenModeLabel: TextView? = null
+    private val vm: PlatformServeSharedViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val plId = getArgumentID()
-        val vm = (getAct() as PServeMain).vm
+
         vm.getPlatformEntity(plId)
 
         tvContainersProgress = view.findViewById(R.id.tv_platform_serve__cont_progress)
@@ -51,7 +37,7 @@ class PServeF : AFragment() {
         screenModeLabel = view.findViewById(R.id.screen_mode_label)
 
         val navHostFragment =
-            getAct().supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            childFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
         switch?.setOnCheckedChangeListener { _, _ ->

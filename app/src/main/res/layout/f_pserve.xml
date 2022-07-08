@@ -87,7 +87,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        app:navGraph="@navigation/navigation_platform_serve"
+        app:navGraph="@navigation/platform_serve__navigation"
         android:layout_weight="1"
         android:layout_width="match_parent" android:layout_height="0dp"/>
 

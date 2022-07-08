@@ -2,7 +2,6 @@ package ru.smartro.worknote.presentation.platform_serve
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,9 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_container_serve.*
+import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.ARGUMENT_NAME___PARAM_ID
+import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.base.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
@@ -24,7 +26,7 @@ import ru.smartro.worknote.work.ui.ContainerFailureAct
 class ContainerServeBottomDialog : AbstractBottomDialog() {
     private val viewModel: PlatformServeSharedViewModel by activityViewModels()
     private var volume: Double? = null
-    private lateinit var parentAct: PServeMain
+    private lateinit var parentAct: PServeAct
 
     private var firstTime = true
 
@@ -46,8 +48,9 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parentAct = requireActivity() as PServeMain
-        p_container_id = args.containerId
+        parentAct = requireActivity() as PServeAct
+
+        p_container_id = arguments?.getInt(ARGUMENT_NAME___PARAM_ID)!!
 
         val containerEntity = viewModel.baseDat.getContainerEntity(p_container_id)
         containerEntity.let {

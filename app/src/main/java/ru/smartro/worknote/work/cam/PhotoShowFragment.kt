@@ -34,7 +34,7 @@ val EXTENSION_WHITELIST = arrayOf("JPG")
 //class GalleryFragment(p_id: Int) internal constructor()
 class PhotoShowFragment(val p_platformId: Int, val p_containerId: Int, val photoFor: Int): AFragment() {
 
-    private val viewModel: CameraViewModel by viewModel()
+    private val viewModel: PhotoViewModel by viewModel()
     private val mediaList by lazy {
         viewModel.getImageList(p_platformId, p_containerId, photoFor)
     }

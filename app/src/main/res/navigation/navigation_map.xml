@@ -2,30 +2,78 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_terminate"
+    android:id="@+id/navigation_map"
     app:startDestination="@id/BeforeMediaPhotoF">
 
     <fragment
         android:id="@+id/BeforeMediaPhotoF"
         android:name="ru.smartro.worknote.work.cam.PhotoBeforeMediaF"
-        tools:layout="@layout/f_complete___map_act"
-        android:label="CompleteF" >
-
-        <action
-            android:id="@+id/action_BeforeMediaPhotoF_to_PServeMain"
-            app:destination="@id/finishCompleteF" >
-            <argument
-                android:name="ARGUMENT_NAME___PARAM_ID"
-                app:argType="integer"
-                />
-        </action>
-
+        tools:layout="@layout/fragment_camera"
+        android:label="BeforeMediaPhotoF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
     </fragment>
-
     <fragment
-        android:id="@+id/finishCompleteF"
-        tools:layout="@layout/fragment_successful_complete"
-        android:name="ru.smartro.worknote.presentation.terminate.FinishCompleteF"
-        android:label="FinishCompleteF" />
+        android:id="@+id/PhotoKgoServedF"
+        android:name="ru.smartro.worknote.work.cam.PhotoKgoServedF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoKgoServedF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoKgoRemainingF"
+        android:name="ru.smartro.worknote.work.cam.PhotoKgoRemainingF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoKgoRemainingF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoPickupMediaF"
+        android:name="ru.smartro.worknote.work.cam.PhotoPickupMediaF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoPickupMediaF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PServeF"
+        tools:layout="@layout/f_pserve"
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeF"
+        android:label="PServeF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
 
 </navigation>

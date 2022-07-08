@@ -26,11 +26,7 @@ class CameraAct : ActNOAbst() {
         when (photoFor) {
             PhotoTypeEnum.forSimplifyServeBefore,
             PhotoTypeEnum.forSimplifyServeAfter,
-            PhotoTypeEnum.forServedKGO,
-            PhotoTypeEnum.forRemainingKGO -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.hide()
-            }
+
             PhotoTypeEnum.forAfterMedia -> {
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = getString(R.string.service_after)
@@ -48,10 +44,6 @@ class CameraAct : ActNOAbst() {
                 containerId = intent.getIntExtra("container_id", 0)
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.title = "Поломка контейнера"
-            }
-            PhotoTypeEnum.forPlatformPickupVolume -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.service_pickup_volume)
             }
         }
 //        val beforeMediaPhotoF = BeforeMediaPhotoF()
