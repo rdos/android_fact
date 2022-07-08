@@ -11,7 +11,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.log.AAct
 
-const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME__PUT_EXTRA_PARAM_ID"
+const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME__PUT_EXTRA_PARAM_NAME"
 abstract class AFragment : Fragment(){
     protected var TAG : String = "--Aaa${this::class.simpleName}"
@@ -48,13 +48,13 @@ abstract class AFragment : Fragment(){
         bundle.putInt(ARGUMENT_NAME___PARAM_ID, argumentId)
         // TODO: 10.12.2021 let на всякий П???
         containerUuid?.let {
-            bundle.putString(ARGUMENT_NAME___PARAM_ID, containerUuid)
+            bundle.putString(ARGUMENT_NAME___PARAM_NAME, containerUuid)
         }
         this.arguments = bundle
     }
 
     protected fun getArgumentID(): Int {
-        val result = requireArguments().getInt(ARGUMENT_NAME___PARAM_NAME, Inull)
+        val result = requireArguments().getInt(ARGUMENT_NAME___PARAM_ID, Inull)
         return result
     }
 

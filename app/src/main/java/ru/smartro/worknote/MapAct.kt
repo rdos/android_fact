@@ -61,6 +61,7 @@ import ru.smartro.worknote.work.WorkOrderEntity
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.presentation.platform_serve.PServeMain
+import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct

@@ -2,6 +2,9 @@ package ru.smartro.worknote.work.cam
 
 import android.app.Activity
 import android.util.Log
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
@@ -76,24 +79,7 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
 
 //    protected abstract fun onInitViewS()
     /**
-    if(photoFor == PhotoTypeEnum.forPlatformPickupVolume){
-    mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.VISIBLE
-    }
 
-    if(photoFor == PhotoTypeEnum.forSimplifyServeBefore) {
-    mRootView.findViewById<TextView>(R.id.label_for).apply {
-    visibility = View.VISIBLE
-    text = "Контейнер: Фото до"
-    }
-    }
-
-    if(photoFor == PhotoTypeEnum.forSimplifyServeAfter) {
-    mRootView.findViewById<TextView>(R.id.label_for).apply {
-    visibility = View.VISIBLE
-    text = "Контейнер: Фото после"
-    }
-    }
-    }
      */
 
     private fun getCountAfterMedia(platform: PlatformEntity): Int {
@@ -139,18 +125,22 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
             photoType == PhotoTypeEnum.forSimplifyServeAfter -> {
                 requireActivity().setResult(5862)
             }
-
-            photoType != PhotoTypeEnum.forBeforeMedia -> {
-                requireActivity().setResult(Activity.RESULT_OK)
-            }
         }
 
         requireActivity().finish()
     }
 
+    override fun onSaveFoto() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetDirName(): String {
+        TODO("Not yet implemented")
+    }
+
     override fun onGetImageCounter(): Int {
         val mediaSize = when (photoFor) {
-            PhotoTypeEnum.forBeforeMedia, PhotoTypeEnum.forSimplifyServeBefore -> {
+            PhotoTypeEnum.forSimplifyServeBefore -> {
                 val platform = viewModel.baseDat.getPlatformEntity(platformId)
                 getCountBeforeMedia(platform)
             }
@@ -191,12 +181,52 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
         return mediaSize
     }
 
-    override fun onInitViewS() {
+    override fun onBeforeUSE() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onAfterUSE(){
+        TODO("Not yet implemented")
+    }
+
+    override fun onInitViewS(mRootView: View) {
         //todo:!!!r_dos
+
+        if(photoFor == PhotoTypeEnum.forSimplifyServeAfter) {
+            mRootView.findViewById<TextView>(R.id.label_for).apply {
+                visibility = View.VISIBLE
+                text = "Контейнер: Фото после"
+            }
+        }
         mIsNoLimitPhoto = requireActivity().intent.getBooleanExtra("isNoLimitPhoto", false)
         Log.w(TAG, "mIsNoLimitPhoto=${mIsNoLimitPhoto}")
     }
 
+    override fun onGetLabelForText(): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBtnCancelIsVisible(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onmThumbNailClick() {
+        val fragment = PhotoShowFragment(platformId, containerId, photoFor)
+//        requireActivity().supportFragmentManager.beginTransaction().run {
+//            this.replace(R.id.fragment_container, fragment)
+//            this.addToBackStack(null)
+//            this.commit()
+//        }
+    }
+
+    override fun onBtnAcceptPhoto_know1() {
+        if (photoFor == PhotoTypeEnum.forAfterMedia) {
+            (requireActivity() as ActNOAbst).showingProgress()
+        }
+        activityFinish(photoFor)
+    }
+
+    val maxPhotoCount = 3
     override fun isCurrentMediaIsFull(): Boolean {
             val res = when (photoFor) {
                 PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
@@ -204,7 +234,7 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
                     //todo: фильтер конечно же...!!!
                     getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
                 }
-                PhotoTypeEnum.forBeforeMedia, PhotoTypeEnum.forSimplifyServeBefore -> {
+                PhotoTypeEnum.forSimplifyServeBefore -> {
                     val platform = viewModel.baseDat.getPlatformEntity(platformId)
                     //todo: фильтер конечно же лучше переписать)))) !!!
                     getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
@@ -237,24 +267,6 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
                     false
                 }
             }
-
             return res
         }
-    }
-
-    override fun onmThumbNailClick() {
-        val fragment = PhotoShowFragment(platformId, containerId, photoFor)
-        requireActivity().supportFragmentManager.beginTransaction().run {
-            this.replace(R.id.fragment_container, fragment)
-            this.addToBackStack(null)
-            this.commit()
-        }
-    }
-
-    override fun onBtnAcceptPhoto_know1() {
-        if (photoFor == PhotoTypeEnum.forAfterMedia) {
-            (requireActivity() as ActNOAbst).showingProgress()
-        }
-        activityFinish(photoFor)
-    }
 }

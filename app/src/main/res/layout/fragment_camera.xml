@@ -1,140 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray">
+    android:background="@color/black">
 
-    <FrameLayout
-        android:id="@+id/fl_fragment_camera"
+    <androidx.camera.view.PreviewView
+        android:id="@+id/view_finder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black">
+        android:layout_height="match_parent"/>
 
-        <androidx.camera.view.PreviewView
-            android:id="@+id/view_finder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+    <TextView
+        android:id="@+id/label_for"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="6dp"
+        tools:text="Контейнер: фото до"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/camera_ui_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:paddingBottom="52dp"
+        android:layoutDirection="ltr">
+
+        <ImageButton
+            android:id="@+id/photo_view_button"
+            android:layout_width="@dimen/round_button_medium"
+            android:layout_height="@dimen/round_button_medium"
+            android:background="@drawable/ic_outer_circle"
+            android:contentDescription="@string/gallery_button_alt"
+            android:padding="@dimen/spacing_large"
+            android:scaleType="fitCenter"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintTop_toTopOf="@+id/camera_capture_button"
+            app:layout_constraintEnd_toStartOf="@+id/camera_capture_button"
+            app:layout_constraintBottom_toBottomOf="@+id/camera_capture_button"
+            app:layout_constraintStart_toStartOf="parent"
+            />
 
         <TextView
-            android:id="@+id/label_for"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:padding="6dp"
-            tools:text="Контейнер: фото до"/>
+            android:id="@+id/image_counter"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@id/photo_view_button"
+            app:layout_constraintEnd_toEndOf="@id/photo_view_button"
+            app:layout_constraintStart_toStartOf="@id/photo_view_button"
+            app:layout_constraintTop_toTopOf="@id/photo_view_button"
+            tools:text="0" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/camera_ui_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:paddingBottom="52dp"
-            android:layoutDirection="ltr">
+        <ImageButton
+            android:id="@+id/camera_capture_button"
+            android:layout_width="@dimen/round_button_large"
+            android:layout_height="@dimen/round_button_large"
+            android:background="@drawable/ic_shutter"
+            android:contentDescription="@string/capture_button_alt"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
 
-            <ImageButton
-                android:id="@+id/photo_view_button"
-                android:layout_width="@dimen/round_button_medium"
-                android:layout_height="@dimen/round_button_medium"
-                android:background="@drawable/ic_outer_circle"
-                android:contentDescription="@string/gallery_button_alt"
-                android:padding="@dimen/spacing_large"
-                android:scaleType="fitCenter"
-                app:layout_constraintHorizontal_chainStyle="spread"
-                app:layout_constraintTop_toTopOf="@+id/camera_capture_button"
-                app:layout_constraintEnd_toStartOf="@+id/camera_capture_button"
-                app:layout_constraintBottom_toBottomOf="@+id/camera_capture_button"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/photo_flash"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_photo_flash"
+            android:checked="false"
+            android:textOff="@null"
+            android:textOn="@null"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/image_counter"
+            app:layout_constraintEnd_toEndOf="@+id/image_counter"
+            app:layout_constraintStart_toStartOf="@+id/photo_view_button" />
 
-            <TextView
-                android:id="@+id/image_counter"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="22sp"
-                app:layout_constraintBottom_toBottomOf="@id/photo_view_button"
-                app:layout_constraintEnd_toEndOf="@id/photo_view_button"
-                app:layout_constraintStart_toStartOf="@id/photo_view_button"
-                app:layout_constraintTop_toTopOf="@id/photo_view_button"
-                tools:text="0" />
+        <Button
+            android:id="@+id/photo_accept_button"
+            android:layout_width="110dp"
+            android:layout_height="39dp"
+            android:contentDescription="@string/gallery_button_alt"
+            android:text="Далее"
+            android:background="@drawable/bg_button_green_interactive"
+            android:textColor="@color/black"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toBottomOf="@+id/camera_capture_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/camera_capture_button"
+            app:layout_constraintTop_toTopOf="@+id/camera_capture_button"
+            app:srcCompat="@drawable/ic_send"
+            />
 
-            <ImageButton
-                android:id="@+id/camera_capture_button"
-                android:layout_width="@dimen/round_button_large"
-                android:layout_height="@dimen/round_button_large"
-                android:background="@drawable/ic_shutter"
-                android:contentDescription="@string/capture_button_alt"
-                android:scaleType="fitCenter"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="110dp"
+            android:layout_height="39dp"
+            android:text="Отмена"
+            android:textColor="@color/dark_gray"
+            android:background="@drawable/bg_button_red_interactive"
+            app:layout_constraintBottom_toBottomOf="@+id/camera_capture_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/camera_capture_button"
+            app:layout_constraintTop_toTopOf="@+id/camera_capture_button"
+            />
 
-            <androidx.appcompat.widget.AppCompatToggleButton
-                android:id="@+id/photo_flash"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/ic_photo_flash"
-                android:checked="false"
-                android:textOff="@null"
-                android:textOn="@null"
-                android:layout_marginBottom="32dp"
-                app:layout_constraintBottom_toTopOf="@+id/image_counter"
-                app:layout_constraintEnd_toEndOf="@+id/image_counter"
-                app:layout_constraintStart_toStartOf="@+id/photo_view_button" />
+        <!--ic_baseline_volume_up_24-->
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/actb_fragment_camera__sound"
+            android:layout_width="40dp"
+            android:layout_height="40dp" android:background="@drawable/ic_fragment_camera__sound"
+            android:checked="false"
+            android:textOff="@null"
+            android:textOn="@null"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@id/photo_flash"
+            app:layout_constraintStart_toStartOf="@id/photo_flash"
+            app:layout_constraintEnd_toEndOf="@+id/photo_flash" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
 
-            <Button
-                android:id="@+id/photo_accept_button"
-                android:layout_width="110dp"
-                android:layout_height="39dp"
-                android:contentDescription="@string/gallery_button_alt"
-                android:text="Далее"
-                android:background="@drawable/bg_button_green_interactive"
-                android:textColor="@color/black"
-                android:textAllCaps="false"
-                app:layout_constraintBottom_toBottomOf="@+id/camera_capture_button"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/camera_capture_button"
-                app:layout_constraintTop_toTopOf="@+id/camera_capture_button"
-                app:srcCompat="@drawable/ic_send"
-                />
-
-            <Button
-                android:id="@+id/btn_cancel"
-                android:layout_width="110dp"
-                android:layout_height="39dp"
-                android:text="Отмена"
-                android:textColor="@color/dark_gray"
-                android:background="@drawable/bg_button_red_interactive"
-                app:layout_constraintBottom_toBottomOf="@+id/camera_capture_button"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/camera_capture_button"
-                app:layout_constraintTop_toTopOf="@+id/camera_capture_button"
-                />
-
-            <!--ic_baseline_volume_up_24-->
-            <androidx.appcompat.widget.AppCompatToggleButton
-                android:id="@+id/actb_fragment_camera__sound"
-                android:layout_width="40dp"
-                android:layout_height="40dp" android:background="@drawable/ic_fragment_camera__sound"
-                android:checked="false"
-                android:textOff="@null"
-                android:textOn="@null"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toTopOf="@id/photo_flash"
-                app:layout_constraintStart_toStartOf="@id/photo_flash"
-                app:layout_constraintEnd_toEndOf="@+id/photo_flash" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/aciv_fragment_camera_preview_photo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/margin_max"
-        android:scaleType="centerCrop"
-        android:src="@color/gray"
-        />
-</androidx.appcompat.widget.LinearLayoutCompat>

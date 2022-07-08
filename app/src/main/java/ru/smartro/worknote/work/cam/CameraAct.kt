@@ -21,11 +21,8 @@ class CameraAct : ActNOAbst() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
         supportActionBar?.hide()
-        intent.let {
-            photoFor = it.getIntExtra("photoFor", 0)
-        }
-
-        hostLayout = findViewById(R.id.fragment_container)
+        platformId = intent.getIntExtra("platform_id", 0)
+//        hostLayout = findViewById(R.id.fragment_container)
         when (photoFor) {
             PhotoTypeEnum.forSimplifyServeBefore,
             PhotoTypeEnum.forSimplifyServeAfter,
@@ -33,10 +30,6 @@ class CameraAct : ActNOAbst() {
             PhotoTypeEnum.forRemainingKGO -> {
                 platformId = intent.getIntExtra("platform_id", 0)
                 supportActionBar?.hide()
-            }
-            PhotoTypeEnum.forBeforeMedia -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.service_before)
             }
             PhotoTypeEnum.forAfterMedia -> {
                 platformId = intent.getIntExtra("platform_id", 0)
@@ -61,26 +54,19 @@ class CameraAct : ActNOAbst() {
                 supportActionBar?.title = getString(R.string.service_pickup_volume)
             }
         }
-        val APhotoFragment = APhotoFragment(photoFor, platformId, containerId)
-        supportFragmentManager.beginTransaction().run {
-            this.replace(R.id.fragment_container, APhotoFragment)
-            this.addToBackStack(null)
-            this.commit()
-        }
+//        val beforeMediaPhotoF = BeforeMediaPhotoF()
+//        beforeMediaPhotoF.addArgument(platformId)
+//        supportFragmentManager.beginTransaction().run {
+//            this.replace(R.id.fragment_container, beforeMediaPhotoF)
+//            this.addToBackStack(null)
+//            this.commitAllowingStateLoss()
+//        }
     }
 
     override fun onResume() {
         super.onResume()
     }
 
-    companion object {
-        fun getOutputFL(): File {
-            val dirPath = App.getAppliCation().filesDir.absolutePath
-            val file = File(dirPath)
-            if (!file.exists()) file.mkdirs()
-            return file
-        }
-    }
 
     override fun onBackPressed() {
         setResult(404)

@@ -17,12 +17,9 @@
 package ru.smartro.worknote.work.cam
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import java.io.File
 import android.os.Build
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageButton
@@ -31,7 +28,6 @@ import androidx.viewpager.widget.ViewPager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
-import ru.smartro.worknote.ui.camera.MediaAdapterFragment
 
 
 val EXTENSION_WHITELIST = arrayOf("JPG")

@@ -1,9 +1,6 @@
 package ru.smartro.worknote.awORKOLDs.util
 
 object PhotoTypeEnum {
-    //До обслуживания платформы
-    const val forBeforeMedia = 0
-
     //После обслуживания платформы
     const val forAfterMedia = 1
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ru.smartro.worknote.ui.camera
+package ru.smartro.worknote.work.cam
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ImageEntity
+import java.io.File
 
 
 /** Fragment used for each individual page showing a photo inside of [PhotoShowFragment] */
@@ -46,8 +47,8 @@ class MediaAdapterFragment(val image: ImageEntity, val numOfCount: String) : Fra
         val imageView = view.findViewById<AppCompatImageView>(R.id.apiv_photo_show_fragment)
 //        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
 //        val bmp = image.image?.let { BitmapFactory.decodeByteArray(image.image, 0, it.size) }
-
-        Glide.with(view).load(image.imageData).into(imageView)
+//        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
+//        Glide.with(view).load(resource).into(imageView)
     }
 
     companion object {

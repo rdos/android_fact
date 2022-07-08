@@ -92,7 +92,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
             //todo: жопа))))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
             val intent = Intent(requireActivity(), CameraAct::class.java)
             intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
-            intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
+//            intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
             intent.putExtra("isNoLimitPhoto", true)
             startActivityForResult(intent, 1001)
             hideDialog()
