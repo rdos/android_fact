@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.alert_clear_navigator.view.dismiss_btn
 import kotlinx.android.synthetic.main.alert_warning_camera.view.title_tv
+import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
@@ -35,6 +36,18 @@ fun showCustomDialog(builder: AlertDialog.Builder) {
 //showDlgPickup!r_dos
 fun AAct.showDlgPickup(): View {
     val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.act_platformserve__pickup__alert_dialog, null)
+    builder.setView(view)
+    showCustomDialog(builder)
+    return view
+}
+
+
+//showDlgPickup!r_dos
+fun AFragment.showDlgPickup(): View {
+    val context = requireActivity() as AAct
+    val builder = AlertDialog.Builder(context)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.act_platformserve__pickup__alert_dialog, null)
     builder.setView(view)
@@ -132,6 +145,17 @@ fun AppCompatActivity.showSuccessComplete(): View {
 fun AppCompatActivity.showDialogFillKgoVolume(): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.dialog_fill_kgo, null)
+    builder.setView(view)
+    showCustomDialog(builder)
+    return view
+}
+
+
+fun AFragment.showDialogFillKgoVolume(): View {
+    val context = requireActivity() as AAct
+    val builder = AlertDialog.Builder(context)
+    val inflater = context.layoutInflater
     val view = inflater.inflate(R.layout.dialog_fill_kgo, null)
     builder.setView(view)
     showCustomDialog(builder)

@@ -86,4 +86,6 @@
     <string name="problem_container">Невывоз контейнера</string>
     <string name="channel_description">CHANNEL_DESCRIPTION_FACT_WORKNOTE</string>
     <string name="channel_name">CHANNEL_NAME_FACT_WORKNOTE</string>
+    <string name="platform_serve_mode_simplified">Упрощенный режим</string>
+    <string name="platform_serve_mode_extended">Расширенный режим</string>
 </resources>

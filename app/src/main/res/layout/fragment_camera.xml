@@ -18,6 +18,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+        <TextView
+            android:id="@+id/label_for"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="6dp"
+            tools:text="Контейнер: фото до"/>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/camera_ui_container"
             android:layout_width="match_parent"

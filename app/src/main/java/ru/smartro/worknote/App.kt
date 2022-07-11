@@ -24,9 +24,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -36,26 +33,21 @@ import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
-import io.sentry.protocol.User
-import kotlinx.android.synthetic.main.act_start.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.AndRoid
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
+import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.di.viewModelModule
+import ru.smartro.worknote.awORKOLDs.adapter.viewModelModule
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.work.RealmRepository
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import ru.terrakok.cicerone.Router
-import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.Cicerone
 
 
 
@@ -144,21 +136,6 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
-    }
-
-    private var mCicerone: Cicerone<Router>? = null
-    private fun getCicerone(): Cicerone<Router> {
-        if (mCicerone == null) {
-            mCicerone = Cicerone.create()
-        }
-        return mCicerone!!
-    }
-    fun getNavigatorHolder(): NavigatorHolder {
-        return getCicerone().navigatorHolder
-    }
-
-    fun getRouter(): Router {
-        return getCicerone().router
     }
 
     inner class MyLocationListener() : LocationListener {
@@ -314,8 +291,8 @@ class App : AApp() {
 
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channelId)
 
-        builder.setSmallIcon(R.drawable.ic_app)
-            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_app))
+        builder.setSmallIcon(R.drawable.ic_container)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_container))
             .setContentTitle(textTitle)
             .setContentText(textContent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

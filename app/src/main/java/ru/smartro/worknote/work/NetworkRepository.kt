@@ -1,4 +1,4 @@
-package ru.smartro.worknote.awORKOLDs.service.network
+package ru.smartro.worknote.work
 
 import android.content.Context
 import android.util.Log
@@ -13,6 +13,7 @@ import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
+import ru.smartro.worknote.awORKOLDs.service.network.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
@@ -178,30 +179,27 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    fun getWayList(body: WayListBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "getWayList.before")
-
+    suspend fun getWayList(body: WayListBody): Resource<WayListResponse> {
         try {
             val response = RetrofitClient(context)
                 .apiService(true).getWayList(body)
-            Log.i(TAG, "getWayList.before. response.message=${response.code()}")
-
-            when {
+            return when {
                 response.isSuccessful -> {
                     Log.d(TAG, "getWayList.after ${response.body().toString()}")
-                    emit(Resource.success(response.body()))
+                    Resource.success(response.body())
                 }
                 else -> {
                     THR.BadRequestWaybill(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                     Log.d(TAG, "getWayList.after errorResponse=${errorResponse}")
-                    emit(Resource.error("Ошибка ${response.code()}", null))
+                    Resource.error("Ошибка ${response.code()}", null)
                 }
             }
         } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
+            return Resource.network("Проблемы с подключением интернета", null)
         }
     }
+
 
 
     fun getWorkOrder(organisationId: Int, wayId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
