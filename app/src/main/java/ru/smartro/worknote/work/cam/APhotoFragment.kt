@@ -20,18 +20,19 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
+import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
 import ru.smartro.worknote.work.ImageEntity
 import java.io.File
 import java.text.SimpleDateFormat
@@ -51,6 +52,8 @@ destination(photoFile)
 
 abstract class APhotoFragment(
 ) : AFragment(), OnImageSavedCallback {
+    private var mMediaPlayer: MediaPlayer? = null
+    override var TAG : String = "--Aa${this::class.simpleName}"
 
     protected var mMaxPhotoCount = 3
     private var mBtnCancel: Button? = null
@@ -67,7 +70,8 @@ abstract class APhotoFragment(
     private val PERMISSIONS_REQUEST_CODE = 10
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
-    protected val viewModel: PhotoViewModel by viewModel()
+//  todo:!R_dos??  protected val viewModel: PlatformServeSharedViewModel by viewModel()
+    protected val viewModel: PlatformServeSharedViewModel by activityViewModels()
 
     protected abstract fun onSaveFoto()
 
@@ -85,6 +89,7 @@ abstract class APhotoFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         log("onViewCreated")
+        mMediaPlayer = MediaPlayer.create(requireContext(), R.raw.camera_sound)
         mRootView = view
         mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.GONE
         mRootView.findViewById<TextView>(R.id.label_for).visibility = View.GONE
@@ -123,10 +128,27 @@ abstract class APhotoFragment(
             mCameraController.takePicture(outputOptions, mCameraExecutor, this)
 
             if (paramS().isCameraSoundEnabled) {
-                val mp = MediaPlayer.create(requireContext(), R.raw.camera_sound)
-                mp.start()
+                mMediaPlayer?.start()
             }
         }
+    }
+
+    protected fun dropOutputD() {
+        val basePhotoD = App.getAppliCation().filesDir.absolutePath + File.separator + "photo"
+        val file = File(basePhotoD)
+        file.delete()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        dropOutputD()
+        Log.w(TAG, "onDetach")
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "onDestroy")
     }
 
     fun getOutputD(): File {
@@ -171,14 +193,7 @@ abstract class APhotoFragment(
                     try {
                         Log.d("TAGS", Thread.currentThread().name)
 
-//                        val baos = ByteArrayOutputStream()
-//                        resource.compress(Bitmap.CompressFormat.WEBP, 80, baos)
-//                        val b: ByteArray = baos.toByteArray()
-//                        Log.w("TAGS", "b.size=${b.size}")
-//                        val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
-//                        Log.w("TAGS", "imageBase64=${imageBase64.length}")
-//                        val gps = App.getAppliCation().gps()
-//                        val imageEntity = gps.inImageEntity(imageBase64, mIsNoLimitPhoto)
+
 //                        if (imageEntity.isCheckedData()) {
                             onSaveFoto()
 //                        } else {
@@ -339,7 +354,13 @@ abstract class APhotoFragment(
                 toast("Сделайте фото")
                 return@setOnClickListener
             }
-            onAfterUSE()
+            try {
+                showingProgress("Сохраняем фото")
+                onAfterUSE()
+                dropOutputD()
+            } finally {
+                hideProgress()
+            }
         }
 
 
@@ -386,7 +407,9 @@ abstract class APhotoFragment(
         mThumbNail?.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
         mThumbNail?.setOnClickListener {
             onmThumbNailClick()
-
+            navigateMain(R.id.GalleryPhotoF, getArgumentID(), onGetDirName())
+//            val fragment = PhotoGalleryF( getOutputD())
+//            fragment.show(childFragmentManager, "GalleryFragment")
         }
 
         setImageCounter()

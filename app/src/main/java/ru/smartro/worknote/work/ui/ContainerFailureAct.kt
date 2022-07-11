@@ -92,14 +92,14 @@ class ContainerFailureAct : ActNOAbst() {
     }
 
     private fun initExtremeProblemPhoto() {
-        val intent = Intent(this, CameraAct::class.java)
-        intent.putExtra("platform_id", platform.platformId)
-        intent.putExtra("photoFor", PhotoTypeEnum.forContainerFailure)
-        intent.putExtra("container_id", mContainer.containerId)
-        startActivityForResult(intent, 13)
-        acb_activity_platform_serve__problem.setOnClickListener {
-            startActivityForResult(intent, 13)
-        }
+//        val intent = Intent(this, CameraAct::class.java)
+//        intent.putExtra("platform_id", platform.platformId)
+//        intent.putExtra("photoFor", PhotoTypeEnum.forContainerFailure)
+//        intent.putExtra("container_id", mContainer.containerId)
+//        startActivityForResult(intent, 13)
+//        acb_activity_platform_serve__problem.setOnClickListener {
+//            startActivityForResult(intent, 13)
+//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

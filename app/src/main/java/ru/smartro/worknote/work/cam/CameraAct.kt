@@ -23,29 +23,7 @@ class CameraAct : ActNOAbst() {
         supportActionBar?.hide()
         platformId = intent.getIntExtra("platform_id", 0)
 //        hostLayout = findViewById(R.id.fragment_container)
-        when (photoFor) {
-            PhotoTypeEnum.forSimplifyServeBefore,
-            PhotoTypeEnum.forSimplifyServeAfter,
 
-            PhotoTypeEnum.forAfterMedia -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.service_after)
-            }
-            PhotoTypeEnum.forPlatformProblem -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.problem_on_point)
-            }
-            PhotoTypeEnum.forContainerFailure -> {
-                containerId = intent.getIntExtra("container_id", 0)
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.problem_container)
-            }
-            PhotoTypeEnum.forContainerBreakdown -> {
-                containerId = intent.getIntExtra("container_id", 0)
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = "Поломка контейнера"
-            }
-        }
 //        val beforeMediaPhotoF = BeforeMediaPhotoF()
 //        beforeMediaPhotoF.addArgument(platformId)
 //        supportFragmentManager.beginTransaction().run {

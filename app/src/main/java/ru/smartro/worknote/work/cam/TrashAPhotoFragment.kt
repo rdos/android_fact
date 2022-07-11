@@ -1,17 +1,9 @@
 package ru.smartro.worknote.work.cam
 
-import android.app.Activity
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ActNOAbst
-import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.cam.APhotoFragment
 
 class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerId: Int) : APhotoFragment() {
     private var mIsNoLimitPhoto: Boolean = false
@@ -82,6 +74,7 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
 
      */
 
+
     private fun getCountAfterMedia(platform: PlatformEntity): Int {
         var res = Inull
         if (mIsNoLimitPhoto) {
@@ -118,13 +111,6 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
 //                    requireActivity().setResult(14)
 //            }
 
-            photoType == PhotoTypeEnum.forSimplifyServeBefore -> {
-                requireActivity().setResult(5861)
-            }
-
-            photoType == PhotoTypeEnum.forSimplifyServeAfter -> {
-                requireActivity().setResult(5862)
-            }
         }
 
         requireActivity().finish()
@@ -144,27 +130,24 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
 
     fun onGetImageCounter(): Int {
         val mediaSize = when (photoFor) {
-            PhotoTypeEnum.forSimplifyServeBefore -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                getCountBeforeMedia(platform)
-            }
-            PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                val test = getCountAfterMedia(platform)
-                test
-            }
-            PhotoTypeEnum.forPlatformProblem -> {
-                val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                platform.failureMedia.size
-            }
-            PhotoTypeEnum.forContainerFailure -> {
-                val container = viewModel.baseDat.getContainerEntity(containerId)
-                container.failureMedia.size
-            }
-            PhotoTypeEnum.forContainerBreakdown -> {
-                val container = viewModel.baseDat.getContainerEntity(containerId)
-                container.breakdownMedia.size
-            }
+//            PhotoTypeEnum.forSimplifyServeBefore -> {
+//                val platform = viewModel.baseDat.getPlatformEntity(platformId)
+//                getCountBeforeMedia(platform)
+//            }
+//            PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
+//                val platform = viewModel.baseDat.getPlatformEntity(platformId)
+//                val test = getCountAfterMedia(platform)
+//
+//                test
+//            }
+//            PhotoTypeEnum.forPlatformProblem -> {
+//                val platform = viewModel.baseDat.getPlatformEntity(platformId)
+//                platform.failureMedia.size
+//            }
+//            PhotoTypeEnum.forContainerFailure -> {
+//                val container = viewModel.baseDat.getContainerEntity(containerId)
+//
+//            }
 
             else -> 0
         }
@@ -172,22 +155,21 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
     }
 
     override fun onBeforeUSE() {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 
     override fun onAfterUSE(){
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 
     fun onInitViewS(mRootView: View) {
         //todo:!!!r_dos
 
-        if(photoFor == PhotoTypeEnum.forSimplifyServeAfter) {
-            mRootView.findViewById<TextView>(R.id.label_for).apply {
-                visibility = View.VISIBLE
-                text = "Контейнер: Фото после"
-            }
-        }
+//        if(photoFor == PhotoTypeEnum.forSimplifyServeAfter) {
+//            mRootView.findViewById<TextView>(R.id.label_for).apply {
+//                visibility = View.VISIBLE
+//            }
+//        }
         mIsNoLimitPhoto = requireActivity().intent.getBooleanExtra("isNoLimitPhoto", false)
         Log.w(TAG, "mIsNoLimitPhoto=${mIsNoLimitPhoto}")
     }
@@ -201,7 +183,7 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
     }
 
     override fun onmThumbNailClick() {
-        val fragment = PhotoShowFragment(platformId, containerId, photoFor)
+//        val fragment = PhotoGalleryF(platformId, containerId, photoFor)
 //        requireActivity().supportFragmentManager.beginTransaction().run {
 //            this.replace(R.id.fragment_container, fragment)
 //            this.addToBackStack(null)
@@ -210,37 +192,27 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
     }
 
     override fun onBtnAcceptPhoto_know1() {
-        if (photoFor == PhotoTypeEnum.forAfterMedia) {
-            (requireActivity() as ActNOAbst).showingProgress()
-        }
-        activityFinish(photoFor)
+//        if (photoFor == PhotoTypeEnum.forAfterMedia) {
+//            (requireActivity() as ActNOAbst).showingProgress()
+//        }
+//        activityFinish(photoFor)
     }
 
     val maxPhotoCount = 3
     fun getMaxPhotoCNT(): Boolean {
             val res = when (photoFor) {
-                PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    //todo: фильтер конечно же...!!!
-                    getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
-                }
-                PhotoTypeEnum.forSimplifyServeBefore -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    //todo: фильтер конечно же лучше переписать)))) !!!
-                    getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
-                }
-                PhotoTypeEnum.forPlatformProblem -> {
-                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-                    platform.failureMedia.size >= maxPhotoCount
-                }
-                PhotoTypeEnum.forContainerFailure -> {
-                    val container = viewModel.baseDat.getContainerEntity(containerId)
-                    container.failureMedia.size >= maxPhotoCount
-                }
-                PhotoTypeEnum.forContainerBreakdown -> {
-                    val container = viewModel.baseDat.getContainerEntity(containerId)
-                    container.breakdownMedia.size >= maxPhotoCount
-                }
+///**                PhotoTypeEnum.forAfterMedia,*/ PhotoTypeEnum.forSimplifyServeAfter -> {
+//                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
+//                    //todo: фильтер конечно же...!!!
+//                    getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
+//                }
+//                PhotoTypeEnum.forSimplifyServeBefore -> {
+//                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
+//                    //todo: фильтер конечно же лучше переписать)))) !!!
+//                    getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
+//                }
+
+
                 else -> {
                     false
                 }

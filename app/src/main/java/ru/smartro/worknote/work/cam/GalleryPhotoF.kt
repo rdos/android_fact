@@ -16,28 +16,37 @@
 
 package ru.smartro.worknote.work.cam
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import android.os.Build
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
+import ru.smartro.worknote.work.ImageEntity
+import java.io.File
+import java.util.*
 
 
 val EXTENSION_WHITELIST = arrayOf("JPG")
 //class GalleryFragment(p_id: Int) internal constructor()
-class PhotoShowFragment(val p_platformId: Int, val p_containerId: Int, val photoFor: Int): AFragment() {
+class GalleryPhotoF : AFragment() {
 
+    private lateinit var mediaList: MutableList<File>
     private val viewModel: PhotoViewModel by viewModel()
-    private val mediaList by lazy {
-        viewModel.getImageList(p_platformId, p_containerId, photoFor)
-    }
+
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
     inner class MediaAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
@@ -49,6 +58,15 @@ class PhotoShowFragment(val p_platformId: Int, val p_containerId: Int, val photo
         override fun getItemPosition(obj: Any): Int = POSITION_NONE
     }
 
+    fun getOutputD(): File {
+        //todo:!!r_dos
+        val basePhotoD = App.getAppliCation().filesDir.absolutePath + File.separator + "photo"
+        val dirPath = basePhotoD + File.separator  + getArgumentName()
+        val file = File(dirPath)
+        if (!file.exists()) file.mkdirs()
+        return file
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -56,14 +74,13 @@ class PhotoShowFragment(val p_platformId: Int, val p_containerId: Int, val photo
         retainInstance = true
 
         // Get root directory of media from navigation arguments
-//        val outputDirectory = CameraActivity.getOutputDirectory(requireContext())
-//        val rootDirectory = File(outputDirectory.absolutePath)
+        val rootDirectory = File(getOutputD().absolutePath)
 
         // Walk through all files in the root directory
         // We reverse the order of the list to present the last photos first
-//        mediaList = rootDirectory.listFiles { file ->
-//            EXTENSION_WHITELIST.contains(file.extension.toUpperCase(Locale.ROOT))
-//        }?.sortedDescending()?.toMutableList() ?: mutableListOf()
+        mediaList = rootDirectory.listFiles { file ->
+            EXTENSION_WHITELIST.contains(file.extension.toUpperCase(Locale.ROOT))
+        }?.sortedDescending()?.toMutableList() ?: mutableListOf()
     }
 
     override fun onGetLayout(): Int {
@@ -78,7 +95,7 @@ class PhotoShowFragment(val p_platformId: Int, val p_containerId: Int, val photo
 
         val apibBack = view.findViewById<AppCompatImageButton>(R.id.apib_photo_show_fragment__back)
         apibBack.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            navigateBack()
         }
 
         //Checking media files list
@@ -138,14 +155,50 @@ class PhotoShowFragment(val p_platformId: Int, val p_containerId: Int, val photo
                     .setPositiveButton(android.R.string.yes) { _, _ ->
 //                        viewModel.removeImageEntity(p_platformId, p_containerId, photoFor , imageEntity.md5)
                         mediaList.remove(imageEntity)
+                        imageEntity.delete()
                         viewPager.adapter?.notifyDataSetChanged()
                         if (mediaList.size <= 0) {
-                            requireActivity().supportFragmentManager.popBackStack()
+                            navigateBack()
                         }
                     }
                     .setNegativeButton(android.R.string.no, null)
                     .create().show()
             }
+        }
+    }
+
+
+
+    class MediaAdapterFragment(val image: File, val numOfCount: String) : Fragment() {
+
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                                  savedInstanceState: Bundle?): View {
+            val view = inflater.inflate(R.layout.media_fragment, container, false)
+            return view
+        }
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+//        val args = arguments ?: return
+            val aptvNumOfCount = view.findViewById<AppCompatTextView>(R.id.aptv_photo_show_fragment__num_of_count)
+            aptvNumOfCount.text = numOfCount
+            val imageView = view.findViewById<AppCompatImageView>(R.id.apiv_photo_show_fragment)
+//        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
+//        val bmp = image?.let { BitmapFactory.decodeByteArray(image, 0, it.size) }
+//        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
+            Glide.with(view).load(image).into(imageView)
+        }
+
+        companion object {
+            private const val FILE_NAME_KEY = "file_name"
+            private const val NUM_OF_COUNT = "num_of_count"
+
+//        fun create(image: ImageEntity, numOfCount: String) = MediaAdapterFragment().apply {
+//            arguments = Bundle().apply {
+//                putString(FILE_NAME_KEY, image.absolutePath)
+//                putString(NUM_OF_COUNT, numOfCount)
+//            }
+//        }
         }
     }
 }

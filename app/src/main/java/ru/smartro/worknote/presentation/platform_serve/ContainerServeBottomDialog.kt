@@ -69,22 +69,24 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
             setUseButtonStyleBackgroundRed(apbFailure)
         }
         apbFailure.setOnClickListener {
-            val intent = Intent(requireContext(), ContainerFailureAct::class.java)
-            intent.putExtra("is_container", true)
-            intent.putExtra("container_id", p_container_id)
-            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
-            startActivityForResult(intent, 99)
+//            val intent = Intent(requireContext(), ContainerFailureAct::class.java)
+//            intent.putExtra("is_container", true)
+//            intent.putExtra("container_id", p_container_id)
+            navigateMain(R.id.PhotoFailureMediaContainerF, p_container_id, viewModel.mPlatformEntity.value!!.platformId!!.toString())
+//            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
+//            startActivityForResult(intent, 99)
         }
         val apbBreakdown = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_breakdown)
         if (containerEntity.isBreakdownNotEmpty()) {
             setUseButtonStyleBackgroundRed(apbBreakdown)
         }
         apbBreakdown.setOnClickListener {
-            val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
-            intent.putExtra("is_container", true)
-            intent.putExtra("container_id", p_container_id)
-            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
-            startActivityForResult(intent, 99)
+//            val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
+//            intent.putExtra("is_container", true)
+            navigateMain(R.id.PhotoBreakdownMediaContainerF, p_container_id, viewModel.mPlatformEntity.value!!.platformId!!.toString())
+//            intent.putExtra("container_id", p_container_id)
+//            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
+//            startActivityForResult(intent, 99)
         }
 
         val apbBeforeMedia = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve__before_media)
@@ -93,11 +95,12 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 //        }
         apbBeforeMedia.setOnClickListener {
             //todo: жопа))))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
-            val intent = Intent(requireActivity(), CameraAct::class.java)
-            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
-//            intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
-            intent.putExtra("isNoLimitPhoto", true)
-            startActivityForResult(intent, 1001)
+//            val intent = Intent(requireActivity(), CameraAct::class.java)
+//            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
+////            intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
+//            intent.putExtra("isNoLimitPhoto", true)
+//            startActivityForResult(intent, 1001)
+            navigateMain(R.id.PhotoBeforeMediaContainerF, viewModel.mPlatformEntity.value!!.platformId!!)
             hideDialog()
         }
 
@@ -107,11 +110,12 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 //        }
         apbAfterMedia.setOnClickListener {
             //todo: жоpa)№2)))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
-            val intent = Intent(requireActivity(), CameraAct::class.java)
-            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
-            intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
-            intent.putExtra("isNoLimitPhoto", true)
-            startActivityForResult(intent, 1001)
+//            val intent = Intent(requireActivity(), CameraAct::class.java)
+//            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
+//            intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
+//            intent.putExtra("isNoLimitPhoto", true)
+//            startActivityForResult(intent, 1001)
+            navigateMain(R.id.PhotoAfterMediaContainerF, viewModel.mPlatformEntity.value!!.platformId!!)
             hideDialog()
         }
 

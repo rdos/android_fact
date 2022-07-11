@@ -13,23 +13,19 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import ru.smartro.worknote.App
-import ru.smartro.worknote.R
-import ru.smartro.worknote.Inull
+import androidx.navigation.ui.setupActionBarWithNavController
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.log.FragmentNavigator
-import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.cam.PhotoBeforeMediaF
 import ru.smartro.worknote.work.cam.CameraAct
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.commands.Command
 
-const val SCREEN_PhotoBeforeMediaF: String = "PhotoBeforeMediaF"
-const val SCREEN_PServeF: String = "SCREEN_SUCCESS_COMPLETE"
 //todo: INDEterminate)
 class PServeAct :
     ActNOAbst() , Navigator, NavigatorHolder {
@@ -74,7 +70,8 @@ class PServeAct :
             val bundle = Bundle()
             bundle.putInt("ARGUMENT_NAME___PARAM_ID", platformId)
             val navController = (supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment).navController
-            navController.navigate(R.id.BeforeMediaPhotoF, bundle)
+            navController.navigate(R.id.PhotoBeforeMediaF, bundle)
+//            setupActionBarWithNavController(navController)
 //            App.getAppliCation().getRouter().navigateTo(SCREEN_PhotoBeforeMediaF, platformId)
             vm.mBeforeMediaWasInited.postValue(true)
         }
@@ -83,7 +80,7 @@ class PServeAct :
     }
 
     val vm: PlatformServeSharedViewModel by viewModels()
-    private var mBackPressedCnt: Int = 3
+    private var mBackPressedCnt: Int = 2
 
     override fun onResume() {
         super.onResume()
@@ -95,20 +92,23 @@ class PServeAct :
         super.onPause()
     }
 
+    // TODO: !~!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     override fun onBackPressed() {
-//        if (mTEMPscreenKeyVAL == SCREEN_SUCCESS_COMPLETE) {
-//            return
-//        }
-//        super.onBackPressed()
-//        finish()
-        mBackPressedCnt--
-        if (mBackPressedCnt <= 0) {
-            super.onBackPressed()
-            vm.updatePlatformStatusUnfinished()
-            toast("Вы не завершили обслуживание КП.")
+        val navHostFragment = (supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
+        val navController = navHostFragment.navController
+        if (navController.currentDestination?.id == R.id.PServeF) {
+            mBackPressedCnt--
+            if (mBackPressedCnt <= 0) {
+                (navHostFragment.getChildFragmentManager().getFragments().get(0) as AFragment).onBackPressed()
+                super.onBackPressed()
+                return
+            }
+            toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
             return
         }
-        toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
+
+        (navHostFragment.getChildFragmentManager().getFragments().get(0) as AFragment).onBackPressed()
+//        super.onBackPressed()
     }
 
     override fun applyCommand(command: Command?) {

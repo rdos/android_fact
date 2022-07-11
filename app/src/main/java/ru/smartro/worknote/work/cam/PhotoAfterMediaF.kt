@@ -1,47 +1,50 @@
 package ru.smartro.worknote.work.cam
 
-import android.view.View
 import ru.smartro.worknote.R
+
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoKgoServedF : APhotoFragment() {
+open class PhotoAfterMediaF : APhotoFragment() {
+    companion object {
+//        fun newInstance(workOrderId: Any? = null): PhotoBeforeMediaF {
+//            workOrderId as Int
+//            val fragment = PhotoBeforeMediaF()
+//            fragment.addArgument(workOrderId)
+//            return fragment
+//        }
+    }
     private var mPlatformEntity: PlatformEntity? = null
 
     override fun onSaveFoto() {
 //        TODO("Not yet implemented")
     }
 
-
-
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "kgoServed"
+       return getArgumentID().toString() + File.separator + "afterMedia"
     }
 
     override fun onBeforeUSE() {
+//        TODO("Not yet implemented")
         val platformId = getArgumentID()
         mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
-        mPlatformEntity?.getServedKGOMediaSize()
+
     }
 
     override fun onAfterUSE() {
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
+    override fun onGetTextLabelFor() = getString(R.string.service_after)
     override fun onClickBtnCancel() {
         TODO("Not yet implemented")
     }
 
-    override fun onBackPressed() {
-        navigateBack()
-    }
-
-    override fun onGetTextLabelFor() = "Крупногабаритные отходы.забрал"
-
     override fun onGetIsVisibleBtnCancel() = false
 
     override fun onmThumbNailClick() {
-//        TODO("Not yet implemented")
+
     }
 
     override fun onBtnAcceptPhoto_know1() {

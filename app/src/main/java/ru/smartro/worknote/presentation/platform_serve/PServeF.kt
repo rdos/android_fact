@@ -11,10 +11,17 @@ import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.toast
 
 class PServeF : AFragment() {
     override fun onGetLayout(): Int {
         return R.layout.f_pserve
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        vm.updatePlatformStatusUnfinished()
+        toast("Вы не завершили обслуживание КП.")
     }
 
     private var btnCompleteTask: AppCompatButton? = null
@@ -91,6 +98,7 @@ class PServeF : AFragment() {
 //                    intent.putExtra("platform_id", platform.platformId)
 //                    intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
 //                    startActivityForResult(intent, 13)
+                    navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
                 }
 
                 actvAddress?.text = "${platform.address}"

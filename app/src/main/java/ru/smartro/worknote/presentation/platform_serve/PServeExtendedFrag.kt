@@ -34,7 +34,6 @@ class PServeExtendedFrag :
 
     private val THUMB_INACTIVE = "Inactive"
     private val THUMB_ACTIVE = "Active"
-    private val REQUEST_EXIT = 33
     private lateinit var mConrainerAdapter: ExtendedContainerAdapter
     private val vm: PlatformServeSharedViewModel by activityViewModels()
     private var prevVolumeValue: Double? = null
@@ -78,10 +77,11 @@ class PServeExtendedFrag :
                     acbProblem?.let { setUseButtonStyleBackgroundRed(it) }
                 }
                 acbProblem?.setOnClickListener {
-                    val intent = Intent(getAct(), PlatformFailureAct::class.java)
-                    intent.putExtra("platform_id", platform.platformId)
-                    intent.putExtra("isContainerProblem", false)
-                    startActivityForResult(intent, REQUEST_EXIT)
+//                    val intent = Intent(getAct(), PlatformFailureAct::class.java)
+//                    intent.putExtra("platform_id", platform.platformId)
+//                    intent.putExtra("isContainerProblem", false)
+//                    startActivityForResult(intent, REQUEST_EXIT)
+                    navigateMain(R.id.PhotoFailureMediaF, platform.platformId)
                 }
                 if (platform.isServedKGONotEmpty()) {
                     mAcbKGOServed?.let { setUseButtonStyleBackgroundGreen(it) }
@@ -187,13 +187,13 @@ class PServeExtendedFrag :
                 setResult(Activity.RESULT_OK)
                 finish()
             }
-        } else if (requestCode == REQUEST_EXIT) {
-            if (resultCode == 99) {
-                getAct().apply {
-                    setResult(Activity.RESULT_OK)
-                    finish()
-                }
-            }
+//        } else if (requestCode == REQUEST_EXIT) {
+//            if (resultCode == 99) {
+//                getAct().apply {
+//                    setResult(Activity.RESULT_OK)
+//                    finish()
+//                }
+//            }
         } else {
             val platform = vm.mPlatformEntity.value
             if(platform != null) {
@@ -204,14 +204,10 @@ class PServeExtendedFrag :
 
 
                 } else if (requestCode == 14 && resultCode == 404) {
-                    acsbVolumePickup?.progress = prevVolumeValue?.toInt() ?: 0
-                    vm.updateSelectionVolume(platform.platformId!!, prevVolumeValue)
-                    tvVolumePickuptext(prevVolumeValue)
+
+
                 } else if (requestCode == 14 && resultCode == 14) {
-                    vm.updateSelectionVolume(platform.platformId!!, newVolumeValue)
-                    acsbVolumePickup?.progress = newVolumeValue?.toInt() ?: (prevVolumeValue?.toInt() ?: 0)
-                    prevVolumeValue = newVolumeValue
-                    tvVolumePickuptext(prevVolumeValue)
+
                 }
             }
         }

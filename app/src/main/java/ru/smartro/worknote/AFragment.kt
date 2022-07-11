@@ -16,13 +16,13 @@ import ru.smartro.worknote.log.AAct
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
 abstract class AFragment : Fragment(){
-    protected var TAG : String = "--Aaa${this::class.simpleName}"
+    protected open var TAG : String = "--Aaa${this::class.simpleName}"
 
     protected fun paramS() = App.getAppParaMS()
     protected fun getAct() = requireActivity() as AAct
-    protected fun showingProgress(){
+    protected fun showingProgress(text: String? = null){
         //todo:ActAbstract
-        (requireActivity() as AAct).showingProgress()
+        (requireActivity() as AAct).showingProgress(text)
     }
 
     protected fun hideProgress(){
@@ -43,12 +43,23 @@ abstract class AFragment : Fragment(){
         return view
     }
 
+    protected fun navigateBack() {
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
+        val navController = navHost.navController
+        navController.navigateUp()
+    }
+
+    protected fun navigateClose() {
+        getAct().finish()
+    }
+
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
         val navController = navHost.navController
 
         if (argumentId == null) {
             // TODO: !~r_dos
+//            navController.popBackStack(navFragmentId, true)
             navController.navigate(navFragmentId)
             return
         }
@@ -89,6 +100,10 @@ abstract class AFragment : Fragment(){
 
     protected fun log(valueNameAndValue: String) {
         Log.i(TAG, "${valueNameAndValue}")
+    }
+
+    open fun onBackPressed() {
+        log("onBackPressed")
     }
     //    companion object {
                                     //        private const val TAG = "CameraXBasic"

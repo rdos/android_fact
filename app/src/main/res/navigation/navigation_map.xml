@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_map"
-    app:startDestination="@id/BeforeMediaPhotoF">
+    app:startDestination="@id/PhotoBeforeMediaF">
 
     <fragment
-        android:id="@+id/BeforeMediaPhotoF"
+        android:id="@+id/PhotoBeforeMediaF"
         android:name="ru.smartro.worknote.work.cam.PhotoBeforeMediaF"
         tools:layout="@layout/fragment_camera"
-        android:label="BeforeMediaPhotoF" >
+        android:label="PhotoBeforeMediaF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -52,6 +52,132 @@
         android:name="ru.smartro.worknote.work.cam.PhotoPickupMediaF"
         tools:layout="@layout/fragment_camera"
         android:label="PhotoPickupMediaF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoFailureMediaF"
+        android:name="ru.smartro.worknote.work.cam.PhotoFailureMediaF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoFailureMediaF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoBreakdownMediaContainerF"
+        android:name="ru.smartro.worknote.work.cam.PhotoBreakdownMediaContainerF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoBreakdownMediaContainerF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoFailureMediaContainerF"
+        android:name="ru.smartro.worknote.work.cam.PhotoFailureMediaContainerF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoFailureMediaContainerF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoAfterMediaF"
+        android:name="ru.smartro.worknote.work.cam.PhotoAfterMediaF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoAfterMediaF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoBeforeMediaContainerF"
+        android:name="ru.smartro.worknote.work.cam.PhotoBeforeMediaContainerF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoBeforeMediaContainerF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoAfterMediaContainerF"
+        android:name="ru.smartro.worknote.work.cam.PhotoAfterMediaContainerF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoAfterMediaContainerF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoBeforeMediaContainerSimplifyF"
+        android:name="ru.smartro.worknote.work.cam.PhotoBeforeMediaContainerSimplifyF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoBeforeMediaContainerSimplifyF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/PhotoAfterMediaContainerSimplifyF"
+        android:name="ru.smartro.worknote.work.cam.PhotoAfterMediaContainerSimplifyF"
+        tools:layout="@layout/fragment_camera"
+        android:label="PhotoAfterMediaContainerSimplifyF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/GalleryPhotoF"
+        android:name="ru.smartro.worknote.work.cam.GalleryPhotoF"
+        tools:layout="@layout/media_fragment"
+        android:label="GalleryPhotoF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"

@@ -10,7 +10,6 @@ import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.NonPickupEnum
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import kotlin.math.round
 
@@ -623,7 +622,7 @@ class RealmRepository(private val p_realm: Realm) {
         return filteredList
     }
 
-    fun addPlatformBeforeMedia(platformId: Int, imageEntity: ImageEntity) {
+    fun addBeforeMediaPlatform(platformId: Int, imageEntity: ImageEntity) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
@@ -675,8 +674,22 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun addBeforeMediaSimplifyServe(platformId: Int, imageEntity: ImageEntity) {
+        addBeforeMediaPlatform(platformId, imageEntity)
+    }
+
     fun addAfterMediaSimplifyServe(platformId: Int, imageEntity: ImageEntity) {
         addPlatformAfterMedia(platformId, imageEntity)
+    }
+
+    fun addFailureMediaPlatform(platformId: Int, imageEntity: ImageEntity) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.failureMedia?.add(imageEntity)
+            setEntityUpdateAt(platformEntity)
+        }
     }
 
     /** добавление фото в платформу **/
@@ -685,18 +698,14 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
-            when (imageFor) {
-                PhotoTypeEnum.forAfterMedia, PhotoTypeEnum.forSimplifyServeAfter -> {
-
-                }
-                PhotoTypeEnum.forSimplifyServeBefore -> {
-                    platformEntity?.beforeMedia?.add(imageEntity)
-                }
-                PhotoTypeEnum.forPlatformProblem -> {
-                    platformEntity?.failureMedia?.add(imageEntity)
-                }
-
-            }
+//            when (imageFor) {
+//              PhotoTypeEnum.forSimplifyServeAfter -> {
+//
+//                }
+//                PhotoTypeEnum.forSimplifyServeBefore -> {
+//                    platformEntity?.beforeMedia?.add(imageEntity)
+//                }
+//            }
 
         }
     }
@@ -715,6 +724,35 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun addFailureMediaContainer(platformId: Int, containerId: Int, imageEntity: ImageEntity) {
+        p_realm.executeTransaction { realm ->
+            val containerEntity = getQueryContainer()
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            containerEntity.failureMedia.add(imageEntity)
+
+
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun addBreakdownMediaContainer(platformId: Int, containerId: Int, imageEntity: ImageEntity) {
+        p_realm.executeTransaction { realm ->
+            val containerEntity = getQueryContainer()
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            containerEntity.breakdownMedia.add(imageEntity)
+
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
     fun updateContainerMedia(imageFor: Int,
         platformId: Int, containerId: Int, imageEntity: ImageEntity
     ) {
@@ -726,38 +764,36 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             when (imageFor) {
-                PhotoTypeEnum.forContainerFailure -> {
-                    containerEntity.failureMedia.add(imageEntity)
-                }
-                PhotoTypeEnum.forContainerBreakdown -> {
-                    containerEntity.breakdownMedia.add(imageEntity)
-                }
+
+//                PhotoTypeEnum.forContainerBreakdown -> {
+//
+//                }
             }
 
             setEntityUpdateAt(platformEntity)
         }
     }
     /** удалить фото с контейнера **/
-    fun removeContainerMedia(photoFor: Int,platformId: Int, containerId: Int, imageBase64: ImageEntity) {
-        p_realm.executeTransaction { realm ->
-            val containerEntity = realm.where(ContainerEntity::class.java)
-                .equalTo("containerId", containerId)
-                .findFirst()!!
-            val platformEntity = getQueryPlatform()
-                .equalTo("platformId", platformId)
-                .findFirst()!!
-
-            when (photoFor) {
-                PhotoTypeEnum.forContainerFailure -> {
-                    containerEntity.failureMedia.remove(imageBase64)
-                }
-                PhotoTypeEnum.forContainerBreakdown -> {
-                    containerEntity.breakdownMedia.remove(imageBase64)
-                }
-            }
-            setEntityUpdateAt(platformEntity)
-        }
-    }
+//    fun removeContainerMedia(photoFor: Int,platformId: Int, containerId: Int, imageBase64: ImageEntity) {
+//        p_realm.executeTransaction { realm ->
+//            val containerEntity = realm.where(ContainerEntity::class.java)
+//                .equalTo("containerId", containerId)
+//                .findFirst()!!
+//            val platformEntity = getQueryPlatform()
+//                .equalTo("platformId", platformId)
+//                .findFirst()!!
+//
+//            when (photoFor) {
+//                PhotoTypeEnum.forContainerFailure -> {
+//                    containerEntity.failureMedia.remove(imageBase64)
+//                }
+//                PhotoTypeEnum.forContainerBreakdown -> {
+//                    containerEntity.breakdownMedia.remove(imageBase64)
+//                }
+//            }
+//            setEntityUpdateAt(platformEntity)
+//        }
+//    }
 
     fun getImageList(platformId: Int, containerId: Int, photoFor: Int): List<ImageEntity> {
         val platformEntity = p_realm.where(PlatformEntity::class.java).equalTo("platformId", platformId).findFirst()

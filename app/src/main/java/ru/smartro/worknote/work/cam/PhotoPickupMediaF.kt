@@ -15,6 +15,9 @@ class PhotoPickupMediaF : APhotoFragment() {
 
     override fun onClickBtnCancel() {
         //тут нужно очистить    mPlatformEntity.volumePickup
+//        acsbVolumePickup?.progress = prevVolumeValue?.toInt() ?: 0
+//        vm.updateSelectionVolume(platform.platformId!!, prevVolumeValue)
+//        tvVolumePickuptext(prevVolumeValue)
     }
 
     override fun onGetDirName(): String {
@@ -29,6 +32,11 @@ class PhotoPickupMediaF : APhotoFragment() {
 
     override fun onAfterUSE() {
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+
+//        vm.updateSelectionVolume(platform.platformId!!, newVolumeValue)
+//        acsbVolumePickup?.progress = newVolumeValue?.toInt() ?: (prevVolumeValue?.toInt() ?: 0)
+//        prevVolumeValue = newVolumeValue
+//        tvVolumePickuptext(prevVolumeValue)
     }
 
     override fun onGetTextLabelFor() = getString(R.string.service_pickup_volume)

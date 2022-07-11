@@ -37,12 +37,12 @@ class ImageDetailFragment(private val platformId: Int, private val containerId :
         image_detail_delete.setOnClickListener {
             warningDelete(getString(R.string.warning_detele)).run {
                 this.accept_btn.setOnClickListener {
-                    if (photoFor == PhotoTypeEnum.forContainerFailure
-                        || photoFor == PhotoTypeEnum.forContainerBreakdown) {
-                        viewModel.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
-                    } else {
-                        viewModel.removePlatformMedia(photoFor, imageBase64, platformId)
-                    }
+//                    if (photoFor == PhotoTypeEnum.forContainerFailure
+//                        || photoFor == PhotoTypeEnum.forContainerBreakdown) {
+//                        viewModel.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
+//                    } else {
+//                        viewModel.removePlatformMedia(photoFor, imageBase64, platformId)
+//                    }
                     listener.imageDeleted()
                     hideDialog()
                     dismiss()
