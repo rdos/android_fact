@@ -35,7 +35,7 @@ class StartOwnerAct : ActAbstract() {
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
-        setContentView(R.layout.act_start_owner)
+        setContentView(R.layout.f_start_owner)
         supportActionBar?.title = "Организация"
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_owner)
         rv.layoutManager = LinearLayoutManager(this)

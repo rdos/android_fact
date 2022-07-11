@@ -46,7 +46,7 @@ class StartVehicleAct : ActAbstract() {
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
-        setContentView(R.layout.act_start_vehicle)
+        setContentView(R.layout.f_start_vehicle)
 
         supportActionBar?.title = "Автомобиль"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

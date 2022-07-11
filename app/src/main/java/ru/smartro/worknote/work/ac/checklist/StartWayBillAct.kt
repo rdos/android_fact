@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
@@ -47,7 +46,7 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
-        setContentView(R.layout.act_start_waybill)
+        setContentView(R.layout.f_start_waybill)
 
         val putExtraParamName = getPutExtraParam_NAME()
         supportActionBar?.title = "Путевой Лист"

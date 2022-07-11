@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -29,7 +28,6 @@ import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.MapAct
 import ru.smartro.worknote.abs.ActAbstract
-import ru.smartro.worknote.toast
 
 class StartWorkOrderAct : ActAbstract() {
 
@@ -43,7 +41,7 @@ class StartWorkOrderAct : ActAbstract() {
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
-        setContentView(R.layout.act_start_workorder)
+        setContentView(R.layout.f_start_workorder)
         supportActionBar?.title = "Сменное Задание"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val rv = findViewById<RecyclerView>(R.id.rv_act_start_workorder)
