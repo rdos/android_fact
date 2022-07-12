@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/checklist_nav_graph.xml" app:startDestination="@id/startOwnerF">
 
-
     <fragment
         android:id="@+id/startOwnerF"
         android:name="ru.smartro.worknote.presentation.checklist.StartOwnerF"
@@ -12,6 +11,7 @@
             android:id="@+id/action_startOwnerF_to_startVehicleF"
             app:destination="@id/startVehicleF" />
     </fragment>
+
     <fragment
         android:id="@+id/startVehicleF"
         android:name="ru.smartro.worknote.presentation.checklist.StartVehicleF"
@@ -20,6 +20,7 @@
             android:id="@+id/action_startVehicleF_to_startWaybillF"
             app:destination="@id/startWaybillF" />
     </fragment>
+
     <fragment
         android:id="@+id/startWaybillF"
         android:name="ru.smartro.worknote.presentation.checklist.StartWaybillF"
@@ -28,6 +29,7 @@
             android:id="@+id/action_startWaybillF_to_startWorkOrderF"
             app:destination="@id/startWorkOrderF" />
     </fragment>
+
     <fragment
         android:id="@+id/startWorkOrderF"
         android:name="ru.smartro.worknote.presentation.checklist.StartWorkOrderF"

@@ -102,7 +102,11 @@
             android:name="ru.smartro.worknote.presentation.terminate.TerminateAct"
             android:screenOrientation="portrait"
             >
-
+        </activity>
+        <activity  android:exported="true"
+            android:name="ru.smartro.worknote.presentation.checklist.XChecklistAct"
+            android:screenOrientation="portrait"
+            >
         </activity>
 
         <!--<provider-->

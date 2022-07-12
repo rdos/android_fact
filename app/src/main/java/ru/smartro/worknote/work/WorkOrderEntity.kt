@@ -259,7 +259,9 @@ open class PlatformEntity(
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,
+    // TODO:::Vlad: will be removed
     var afterMediaSize: Int = 0,
+    // TODO:::Vlad: will be removed
     var beforeMediaSize: Int = 0,
     @SerializedName("address")
     var address: String? = null,

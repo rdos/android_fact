@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation.checklist.adapters
+package ru.smartro.worknote.presentation.checklist
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import kotlinx.android.synthetic.main.start_act__rv_item_know1.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.Organisation
 
-class OwnerAdapter(val listener: (Int) -> Unit): RecyclerView.Adapter<OwnerAdapter.OwnerViewHolder>() {
+class StartOwnerAdapter(private val listener: (Organisation, Int) -> Unit): RecyclerView.Adapter<StartOwnerAdapter.OwnerViewHolder>() {
 
     private val mItems: MutableList<Organisation> = mutableListOf()
     fun setItems(ownersList: List<Organisation>) {
@@ -22,16 +22,16 @@ class OwnerAdapter(val listener: (Int) -> Unit): RecyclerView.Adapter<OwnerAdapt
     }
 
     override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
-        holder.bind(mItems[position])
+        holder.bind(mItems[position], position)
     }
 
     override fun getItemCount(): Int = mItems.size
 
-    class OwnerViewHolder(val itemView: View, val listener: (Int) -> Unit): RecyclerView.ViewHolder(itemView) {
-        fun bind(owner: Organisation) {
+    class OwnerViewHolder(val itemView: View, val listener: (Organisation, Int) -> Unit): RecyclerView.ViewHolder(itemView) {
+        fun bind(owner: Organisation, position: Int) {
             itemView.choose_title.text = owner.name
             itemView.setOnClickListener {
-                listener(owner.id)
+                listener(owner, position)
             }
         }
     }

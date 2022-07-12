@@ -76,16 +76,16 @@ class StartVehicleAct : ActAbstract() {
             /**====================================================================================== */
             /**====================================================================================== */
 
-            showingProgress(getPutExtraParam_NAME())
-            vs.getVehicle(paramS().getOwnerId()).observe(this, Observer { result ->
-                val data = result.data
-                when (result.status) {
-                            Status.SUCCESS -> {
-                                myAdapter = VehicleAdapter(data?.data!!)
-                                rv.adapter = myAdapter
-                                if (isDevelMode()) {
-                            etVehicleFilter.setText("Тигуан")
-                            val vehicle = myAdapter!!.findVehicleByName("Тигуан")
+        showingProgress(getPutExtraParam_NAME())
+        vs.getVehicle(paramS().getOwnerId()).observe(this, Observer { result ->
+            val data = result.data
+            when (result.status) {
+                Status.SUCCESS -> {
+                    myAdapter = VehicleAdapter(data?.data!!)
+                    rv.adapter = myAdapter
+                    if (isDevelMode()) {
+                        etVehicleFilter.setText("Тигуан")
+                        val vehicle = myAdapter!!.findVehicleByName("Тигуан")
                         vehicle?.let {
                             gotoNextAct(vehicle.id, vehicle.name)
                         }

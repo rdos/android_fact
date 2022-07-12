@@ -31,9 +31,8 @@ import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.checklist.ChecklistAct
+import ru.smartro.worknote.presentation.checklist.XChecklistAct
 import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
 
 val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -127,7 +126,7 @@ class StartAct : ActAbstract() {
                             hideInfoDialog()
                             App.getAppParaMS().setAppRestartParams()
                             vm.baseDat.clearDataBase()
-                            startActivity(Intent(this,  ChecklistAct::class.java))
+                            startActivity(Intent(this,  XChecklistAct::class.java))
                             finish()
                         }
                         val btnCancel2 = dialogView2.findViewById<Button>(R.id.dialog___act_start_point__ok)
@@ -145,7 +144,7 @@ class StartAct : ActAbstract() {
         } else {
             hideDialog()
             hideInfoDialog()
-            startActivity(Intent(this,  ChecklistAct::class.java))
+            startActivity(Intent(this,  XChecklistAct::class.java))
             finish()
         }
 
