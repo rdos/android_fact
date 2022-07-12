@@ -14,9 +14,7 @@ class SingleViewModel(application: Application) : BaseViewModel(application) {
 
     val mOwnerList: LiveData<Resource<OrganisationResponse>> = networkDat.getOwners()
 
-    private val _vehicleList: MutableLiveData<Resource<VehicleResponse>> = MutableLiveData()
-    val mVehicleList: LiveData<Resource<VehicleResponse>>
-        get() = _vehicleList
+    fun getVehicleList(organisationId: Int) = networkDat.getVehicle(organisationId)
 
     val mWayBillList: LiveData<Int> = MutableLiveData()
     val mWorkOrderList: LiveData<Int> = MutableLiveData()

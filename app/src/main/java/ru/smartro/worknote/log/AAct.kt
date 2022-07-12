@@ -90,7 +90,7 @@ abstract class AAct : AppCompatActivity() {
         log("${valueName}=$value\"")
     }
 
-    protected fun logSentry(text: String) {
+    fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
         Log.i(TAG + "Sent", text)
     }

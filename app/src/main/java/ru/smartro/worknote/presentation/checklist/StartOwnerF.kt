@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.AFragment
@@ -38,8 +39,8 @@ class StartOwnerF: AFragment() {
 
         showingProgress()
 
-        val adapter = StartOwnerAdapter { owner, index ->
-            goToNextStep(owner.id, owner.name, index)
+        val adapter = StartOwnerAdapter { owner ->
+            goToNextStep(owner.id, owner.name)
         }
         val rv = view.findViewById<RecyclerView>(R.id.rv_act_start_owner).apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -54,7 +55,7 @@ class StartOwnerF: AFragment() {
                 Status.SUCCESS -> {
                     val owners = data!!.data.organisations
                     if (owners.size == 1)
-                        goToNextStep(owners[0].id, owners[0].name, 0)
+                        goToNextStep(owners[0].id, owners[0].name)
                     else
                         adapter.setItems(owners)
                     hideProgress()
@@ -82,9 +83,13 @@ class StartOwnerF: AFragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun goToNextStep(ownerId: Int, ownerName: String, index: Int) {
+    private fun goToNextStep(ownerId: Int, ownerName: String) {
         paramS().ownerId = ownerId
         paramS().ownerName = ownerName
-        navigateMain(R.id.startVehicleF, index)
+        // TODO!! will be changed to navigateMain
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.checklist_nav_host) as NavHostFragment)
+        val navController = navHost.navController
+        val argSBundle = getArgSBundle(ownerId, null)
+        navController.navigate(R.id.startVehicleF, argSBundle)
     }
 }

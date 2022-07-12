@@ -69,7 +69,6 @@ abstract class AFragment : Fragment(){
     }
 
 
-
     abstract fun onGetLayout(): Int
 
     fun getArgSBundle(argumentId: Int, argumentName: String?=null): Bundle {
