@@ -3,25 +3,22 @@ package ru.smartro.worknote.work.cam
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
+import io.realm.RealmList
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoBeforeMediaContainerF : APhotoFragment() {
-    companion object {
-//        fun newInstance(workOrderId: Any? = null): PhotoBeforeMediaF {
-//            workOrderId as Int
-//            val fragment = PhotoBeforeMediaF()
-//            fragment.addArgument(workOrderId)
-//            return fragment
-//        }
-    }
+
     private var mPlatformEntity: PlatformEntity? = null
 
-    override fun onSaveFoto() {
+    override fun onSavePhoto() {
 //        TODO("Not yet implemented")
     }
+
 
     override fun onGetDirName(): String {
        return getArgumentID().toString() + File.separator + "beforeMedia"
@@ -34,24 +31,26 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
 
     }
 
-    override fun onAfterUSE() {
+    override fun onGotoNext(): Boolean {
+        return true
+    }
+
+    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
     override fun onGetTextLabelFor() = "Фотографии до обслуживания контейнера"
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        TODO("Not yet implemented")
+    }
+
     override fun onClickBtnCancel() {
         TODO("Not yet implemented")
     }
 
     override fun onGetIsVisibleBtnCancel() = false
 
-    override fun onmThumbNailClick() {
-
+    companion object {
     }
-
-    override fun onBtnAcceptPhoto_know1() {
-//        TODO("Not yet implemented")
-    }
-
 }

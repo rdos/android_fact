@@ -2,7 +2,9 @@ package ru.smartro.worknote.work.cam
 
 import android.util.Log
 import android.view.View
+import io.realm.RealmList
 import ru.smartro.worknote.Inull
+import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerId: Int) : APhotoFragment() {
@@ -16,7 +18,9 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
     viewModel.baseDat.updatePlatformMedia(photoFor, platformId, imageEntity)
     }
      */
-
+    override fun onGotoNext(): Boolean {
+        return true
+    }
 //    protected abstract fun onGetImageCounter()
     /**
     when (photoFor) {
@@ -120,7 +124,7 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
         TODO("Not yet implemented")
     }
 
-    override fun onSaveFoto() {
+    override fun onSavePhoto() {
         TODO("Not yet implemented")
     }
 
@@ -158,8 +162,12 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
 //        TODO("Not yet implemented")
     }
 
-    override fun onAfterUSE(){
+    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean){
 //        TODO("Not yet implemented")
+    }
+
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        TODO("Not yet implemented")
     }
 
     fun onInitViewS(mRootView: View) {
@@ -182,41 +190,5 @@ class TrashAPhotoFragment(val photoFor: Int, val platformId: Int, val containerI
         TODO("Not yet implemented")
     }
 
-    override fun onmThumbNailClick() {
-//        val fragment = PhotoGalleryF(platformId, containerId, photoFor)
-//        requireActivity().supportFragmentManager.beginTransaction().run {
-//            this.replace(R.id.fragment_container, fragment)
-//            this.addToBackStack(null)
-//            this.commit()
-//        }
-    }
 
-    override fun onBtnAcceptPhoto_know1() {
-//        if (photoFor == PhotoTypeEnum.forAfterMedia) {
-//            (requireActivity() as ActNOAbst).showingProgress()
-//        }
-//        activityFinish(photoFor)
-    }
-
-    val maxPhotoCount = 3
-    fun getMaxPhotoCNT(): Boolean {
-            val res = when (photoFor) {
-///**                PhotoTypeEnum.forAfterMedia,*/ PhotoTypeEnum.forSimplifyServeAfter -> {
-//                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-//                    //todo: фильтер конечно же...!!!
-//                    getCountAfterMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
-//                }
-//                PhotoTypeEnum.forSimplifyServeBefore -> {
-//                    val platform = viewModel.baseDat.getPlatformEntity(platformId)
-//                    //todo: фильтер конечно же лучше переписать)))) !!!
-//                    getCountBeforeMedia(platform) >= if(mIsNoLimitPhoto) Int.MAX_VALUE else maxPhotoCount
-//                }
-
-
-                else -> {
-                    false
-                }
-            }
-            return res
-        }
 }

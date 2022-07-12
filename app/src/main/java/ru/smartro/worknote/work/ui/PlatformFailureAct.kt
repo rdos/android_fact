@@ -17,12 +17,9 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
- 
-import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.work.cam.CameraAct
+import ru.smartro.worknote.work.PlatformEntity
 
 class PlatformFailureAct : ActNOAbst() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView

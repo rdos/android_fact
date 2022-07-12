@@ -10,22 +10,22 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import ru.smartro.worknote.*
+import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.presentation.platform_serve.adapters.ExtendedContainerAdapter
 import ru.smartro.worknote.work.ContainerEntity
-import ru.smartro.worknote.work.cam.CameraAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
 
 
 class PServeExtendedFrag :

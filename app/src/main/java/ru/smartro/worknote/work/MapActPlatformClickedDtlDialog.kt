@@ -131,19 +131,11 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
 
     private fun initButtonsViews() {
         platform_detail_fire.setOnClickListener {
-            warningCameraShow("Сделайте фото невывоза").let {
-                it.accept_btn.setOnClickListener {
-                    hideDialog()
-                    val intent = Intent(requireActivity(), PlatformFailureAct::class.java)
-                    intent.putExtra("platform_id", _platform.platformId)
-                    dismiss()
-                    startActivityForResult(intent, 88)
-                }
 
-                it.dismiss_btn.setOnClickListener {
-                    hideDialog()
-                }
-            }
+            val intent = Intent(requireActivity(), PServeAct::class.java)
+            intent.putExtra("platform_id", _platform.platformId)
+            intent.putExtra("mode", "itFireMode")
+            startActivity(intent)
         }
 
         //коммент инициализации

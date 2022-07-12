@@ -3,12 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_map"
-    app:startDestination="@id/PhotoBeforeMediaF">
+    app:startDestination="@id/MAPF">
+
+                                        <fragment
+                                            android:id="@+id/MAPF"
+                                            android:name="ru.smartro.worknote.work.MapF"
+                                            tools:layout="@layout/f_aphoto"
+                                            android:label="MAPF" >
+                                            <argument
+                                                android:name="ARGUMENT_NAME___PARAM_ID"
+                                                app:argType="integer"
+                                                />
+                                            <argument
+                                                android:name="ARGUMENT_NAME___PARAM_NAME"
+                                                app:argType="string"
+                                                />
+                                        </fragment>
 
     <fragment
         android:id="@+id/PhotoBeforeMediaF"
         android:name="ru.smartro.worknote.work.cam.PhotoBeforeMediaF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -22,7 +37,7 @@
     <fragment
         android:id="@+id/PhotoKgoServedF"
         android:name="ru.smartro.worknote.work.cam.PhotoKgoServedF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoKgoServedF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -36,7 +51,7 @@
     <fragment
         android:id="@+id/PhotoKgoRemainingF"
         android:name="ru.smartro.worknote.work.cam.PhotoKgoRemainingF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoKgoRemainingF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -50,7 +65,7 @@
     <fragment
         android:id="@+id/PhotoPickupMediaF"
         android:name="ru.smartro.worknote.work.cam.PhotoPickupMediaF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoPickupMediaF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -64,7 +79,7 @@
     <fragment
         android:id="@+id/PhotoFailureMediaF"
         android:name="ru.smartro.worknote.work.cam.PhotoFailureMediaF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoFailureMediaF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -78,7 +93,7 @@
     <fragment
         android:id="@+id/PhotoBreakdownMediaContainerF"
         android:name="ru.smartro.worknote.work.cam.PhotoBreakdownMediaContainerF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoBreakdownMediaContainerF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -92,7 +107,7 @@
     <fragment
         android:id="@+id/PhotoFailureMediaContainerF"
         android:name="ru.smartro.worknote.work.cam.PhotoFailureMediaContainerF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoFailureMediaContainerF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -106,7 +121,7 @@
     <fragment
         android:id="@+id/PhotoAfterMediaF"
         android:name="ru.smartro.worknote.work.cam.PhotoAfterMediaF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoAfterMediaF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -120,7 +135,7 @@
     <fragment
         android:id="@+id/PhotoBeforeMediaContainerF"
         android:name="ru.smartro.worknote.work.cam.PhotoBeforeMediaContainerF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -134,7 +149,7 @@
     <fragment
         android:id="@+id/PhotoAfterMediaContainerF"
         android:name="ru.smartro.worknote.work.cam.PhotoAfterMediaContainerF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoAfterMediaContainerF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -148,7 +163,7 @@
     <fragment
         android:id="@+id/PhotoBeforeMediaContainerSimplifyF"
         android:name="ru.smartro.worknote.work.cam.PhotoBeforeMediaContainerSimplifyF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerSimplifyF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -162,7 +177,7 @@
     <fragment
         android:id="@+id/PhotoAfterMediaContainerSimplifyF"
         android:name="ru.smartro.worknote.work.cam.PhotoAfterMediaContainerSimplifyF"
-        tools:layout="@layout/fragment_camera"
+        tools:layout="@layout/f_aphoto"
         android:label="PhotoAfterMediaContainerSimplifyF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"

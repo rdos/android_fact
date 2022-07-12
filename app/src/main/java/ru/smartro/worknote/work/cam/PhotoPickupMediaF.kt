@@ -1,14 +1,16 @@
 package ru.smartro.worknote.work.cam
 
 import android.view.View
+import io.realm.RealmList
 import ru.smartro.worknote.R
+import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoPickupMediaF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
 
-    override fun onSaveFoto() {
+    override fun onSavePhoto() {
 //        TODO("Not yet implemented")
     }
 
@@ -30,7 +32,11 @@ class PhotoPickupMediaF : APhotoFragment() {
         mPlatformEntity?.getPickupMediaSize()
     }
 
-    override fun onAfterUSE() {
+    override fun onGotoNext(): Boolean {
+        return true
+    }
+
+    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 
 //        vm.updateSelectionVolume(platform.platformId!!, newVolumeValue)
@@ -39,16 +45,12 @@ class PhotoPickupMediaF : APhotoFragment() {
 //        tvVolumePickuptext(prevVolumeValue)
     }
 
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        TODO("Not yet implemented")
+    }
+
     override fun onGetTextLabelFor() = getString(R.string.service_pickup_volume)
 
     override fun onGetIsVisibleBtnCancel() = true
-
-    override fun onmThumbNailClick() {
-//        TODO("Not yet implemented")
-    }
-
-    override fun onBtnAcceptPhoto_know1() {
-//        TODO("Not yet implemented")
-    }
 
 }

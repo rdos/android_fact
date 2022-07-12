@@ -19,6 +19,18 @@
         android:padding="6dp"
         tools:text="Контейнер: фото до"/>
 
+    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+        android:id="@+id/acactv_f_aphoto__fail_reason"
+        android:layout_width="wrap_content" android:layout_height="38dp"
+        android:gravity="center" android:editable="false"
+        android:background="@drawable/bg_button_red_interactive"
+        android:textColorHint="@color/gray" android:textColor="@color/black"
+        android:textSize="14sp"
+        android:paddingStart="@dimen/margin_min"
+        android:paddingEnd="@dimen/margin_min"
+        tools:hint="выберите причину невывоза"
+        />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/camera_ui_container"
         android:layout_width="match_parent"

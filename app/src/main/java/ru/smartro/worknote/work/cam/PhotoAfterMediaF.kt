@@ -1,23 +1,22 @@
 package ru.smartro.worknote.work.cam
 
+import io.realm.RealmList
 import ru.smartro.worknote.R
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.ImageEntity
 
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 open class PhotoAfterMediaF : APhotoFragment() {
-    companion object {
-//        fun newInstance(workOrderId: Any? = null): PhotoBeforeMediaF {
-//            workOrderId as Int
-//            val fragment = PhotoBeforeMediaF()
-//            fragment.addArgument(workOrderId)
-//            return fragment
-//        }
-    }
     private var mPlatformEntity: PlatformEntity? = null
-
-    override fun onSaveFoto() {
-//        TODO("Not yet implemented")
+    override fun onGetTextLabelFor() = getString(R.string.service_after)
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        if (mPlatformEntity == null) {
+            toast("Ошибка.todo:::")
+            return RealmList<ImageEntity>()
+        }
+        return mPlatformEntity!!.beforeMedia
     }
 
     override fun onGetDirName(): String {
@@ -25,30 +24,32 @@ open class PhotoAfterMediaF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-//        TODO("Not yet implemented")
         val platformId = getArgumentID()
-        mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
-
+        mPlatformEntity = viewModel.getPlatformEntity(platformId)
+        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
+            mPlatformEntity = it
+        }
     }
 
-    override fun onAfterUSE() {
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
+    override fun onGotoNext(): Boolean {
+        return true
     }
 
-    override fun onGetTextLabelFor() = getString(R.string.service_after)
-    override fun onClickBtnCancel() {
-        TODO("Not yet implemented")
+
+    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
+        viewModel.baseDat.addAfterMedia(mPlatformEntity?.platformId!!, imageS, isRequireClean)
+        navigateClose()
     }
+
+    override fun onSavePhoto() {
+//        TODO("Not yet implemented")
+    }
+
 
     override fun onGetIsVisibleBtnCancel() = false
 
-    override fun onmThumbNailClick() {
+    override fun onClickBtnCancel() {
 
-    }
-
-    override fun onBtnAcceptPhoto_know1() {
-//        TODO("Not yet implemented")
     }
 
 }

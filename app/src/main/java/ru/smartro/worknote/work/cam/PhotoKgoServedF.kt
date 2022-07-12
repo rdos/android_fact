@@ -1,14 +1,18 @@
 package ru.smartro.worknote.work.cam
 
-import android.view.View
+import io.realm.RealmList
 import ru.smartro.worknote.R
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoKgoServedF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-
-    override fun onSaveFoto() {
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        TODO("Not yet implemented")
+    }
+    override fun onSavePhoto() {
 //        TODO("Not yet implemented")
     }
 
@@ -24,7 +28,21 @@ class PhotoKgoServedF : APhotoFragment() {
         mPlatformEntity?.getServedKGOMediaSize()
     }
 
-    override fun onAfterUSE() {
+    override fun onGotoNext(): Boolean {
+        return true
+    }
+
+
+    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
+        if (mPlatformEntity == null) {
+            toast("Ошибка.todo:::")
+            return
+        }
+        val photoFileScanner = PhotoFileScanner(getOutputD())
+        while (photoFileScanner.scan()) {
+            val imageEntity = photoFileScanner.getImageEntity()
+//            viewModel.baseDat.addKgoServed(mPlatformEntity?.platformId!!, imageEntity, isRequireClean)
+        }
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
     }
 
@@ -39,13 +57,5 @@ class PhotoKgoServedF : APhotoFragment() {
     override fun onGetTextLabelFor() = "Крупногабаритные отходы.забрал"
 
     override fun onGetIsVisibleBtnCancel() = false
-
-    override fun onmThumbNailClick() {
-//        TODO("Not yet implemented")
-    }
-
-    override fun onBtnAcceptPhoto_know1() {
-//        TODO("Not yet implemented")
-    }
 
 }

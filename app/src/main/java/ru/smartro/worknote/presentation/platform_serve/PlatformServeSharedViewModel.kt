@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
@@ -38,6 +39,11 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     val mPlatformEntity: LiveData<PlatformEntity>
         get() = _platformEntity
 
+    private val _failReasonS: MutableLiveData<List<String>> = MutableLiveData(emptyList())
+    val mFailReasonS: LiveData<List<String>>
+        get() = _failReasonS
+
+
     private val _sortedContainers: MutableLiveData<List<ClientGroupedContainers>> = MutableLiveData(null)
     val mSortedContainers: LiveData<List<ClientGroupedContainers>>
         get() = _sortedContainers
@@ -66,6 +72,15 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
             _sortedContainers.postValue(temp)
         }
         return response
+    }
+
+    fun getFailReasonS(): List<String> {
+        var result = _failReasonS.value!!
+        if (result.isEmpty()) {
+            result = baseDat.findAllFailReason()
+        }
+        _failReasonS.postValue(result)
+        return result
     }
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

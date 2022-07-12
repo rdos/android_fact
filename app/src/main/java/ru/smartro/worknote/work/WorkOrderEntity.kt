@@ -733,6 +733,7 @@ open class ImageEntity(
     var isNoLimitPhoto: Boolean = false
 ) : Serializable, RealmObject() {
 
+
     fun isCheckedData(): Boolean {
         val res = false
         if (date == null) {
