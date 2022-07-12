@@ -31,18 +31,18 @@
         <activity android:name="ru.smartro.worknote.work.ui.JournalChatAct" />
 
         <activity android:name="ru.smartro.worknote.work.ui.DebugAct" />
-        <activity
-            android:name="ru.smartro.worknote.work.ui.ContainerFailureAct"
-            android:screenOrientation="portrait"
-            android:theme="@style/Problem" />
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.ui.ContainerBreakdownAct"
-            android:screenOrientation="portrait"
-            android:theme="@style/Problem"/>
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.ui.PlatformFailureAct"
-            android:screenOrientation="portrait"
-            android:theme="@style/Problem" />
+        <!--<activity-->
+        <!--    android:name="ru.smartro.worknote.work.ui.ContainerFailureAct"-->
+        <!--    android:screenOrientation="portrait"-->
+        <!--    android:theme="@style/Problem" />-->
+        <!--<activity  android:exported="false"-->
+        <!--    android:name="ru.smartro.worknote.work.ui.ContainerBreakdownAct"-->
+        <!--    android:screenOrientation="portrait"-->
+        <!--    android:theme="@style/Problem"/>-->
+        <!--<activity  android:exported="false"-->
+        <!--    android:name="ru.smartro.worknote.work.ui.PlatformFailureAct"-->
+        <!--    android:screenOrientation="portrait"-->
+        <!--    android:theme="@style/Problem" />-->
         <activity  android:exported="false"
             android:name="ru.smartro.worknote.work.cam.CameraAct"
             android:screenOrientation="portrait">
@@ -69,7 +69,7 @@
                 android:value="true" />
         </activity>
         <activity  android:exported="false"
-            android:name="ru.smartro.worknote.presentation.platform_serve.PServeMain"
+            android:name="ru.smartro.worknote.presentation.platform_serve.PServeAct"
             android:screenOrientation="portrait" />
 
         <activity  android:exported="false"

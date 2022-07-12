@@ -43,7 +43,7 @@
     <string name="delete_title">Confirm</string>
     <string name="service_after">Фотографии после обслуживания КП</string>
     <string name="end_task">Досрочное завершение</string>
-    <string name="problem_on_point">Невывоз</string>
+    <string name="problem_on_point">Невывоз площадки</string>
     <string name="container_fail">Все оставшиеся контейнеры на площадке будут помечены как невывезенные.</string>
     <string name="finish_way">Завершить маршрут</string>
     <string name="finish_way_now">Досрочно завершить маршрут</string>

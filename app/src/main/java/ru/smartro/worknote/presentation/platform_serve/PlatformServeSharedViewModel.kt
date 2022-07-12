@@ -55,6 +55,9 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
         _screenMode.postValue(!_screenMode.value!!)
     }
 
+//    fun getPlatformEntity(platformId: Int, viewLifecycleOwner = null, next: () -> Any = null): PlatformEntity {
+    // viewLifecycleOwner где взять?:R_dos))
+
     fun getPlatformEntity(platformId: Int): PlatformEntity {
         val response = baseDat.getPlatformEntity(platformId)
         _platformEntity.postValue(response)
@@ -147,15 +150,18 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     }
 
     fun removeContainerMedia(photoFor: Int,platformId: Int, containerId: Int, imageBase64: ImageEntity) {
-        mWasServedExtended.postValue(true)
-        baseDat.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
-        getPlatformEntity(platformId)
+//        mWasServedExtended.postValue(true)
+//        baseDat.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
+//        getPlatformEntity(platformId)
     }
 
-    fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
-        mWasServedExtended.postValue(true)
+    fun updatePlatformKGO(platformId: Int?, kgoVolume: String, isServedKGO: Boolean) {
+        if (platformId == null) {
+            return
+        }
+//        mWasServedExtended.postValue(true)
         baseDat.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
-        getPlatformEntity(platformId)
+//        getPlatformEntity(platformId)
     }
 
     // !!!!!!!!!!!!!!!!!!!

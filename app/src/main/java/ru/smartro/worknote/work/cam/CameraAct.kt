@@ -6,7 +6,6 @@ import android.widget.FrameLayout
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
-import ru.smartro.worknote.awORKOLDs.extensions.FLAGS_FULLSCREEN
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import java.io.File
 
@@ -22,66 +21,22 @@ class CameraAct : ActNOAbst() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
         supportActionBar?.hide()
-        intent.let {
-            photoFor = it.getIntExtra("photoFor", 0)
-        }
+        platformId = intent.getIntExtra("platform_id", 0)
+//        hostLayout = findViewById(R.id.fragment_container)
 
-        hostLayout = findViewById(R.id.fragment_container)
-        when (photoFor) {
-            PhotoTypeEnum.forSimplifyServeBefore,
-            PhotoTypeEnum.forSimplifyServeAfter,
-            PhotoTypeEnum.forServedKGO,
-            PhotoTypeEnum.forRemainingKGO -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.hide()
-            }
-            PhotoTypeEnum.forBeforeMedia -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.service_before)
-            }
-            PhotoTypeEnum.forAfterMedia -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.service_after)
-            }
-            PhotoTypeEnum.forPlatformProblem -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.problem_on_point)
-            }
-            PhotoTypeEnum.forContainerFailure -> {
-                containerId = intent.getIntExtra("container_id", 0)
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.problem_container)
-            }
-            PhotoTypeEnum.forContainerBreakdown -> {
-                containerId = intent.getIntExtra("container_id", 0)
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = "Поломка контейнера"
-            }
-            PhotoTypeEnum.forPlatformPickupVolume -> {
-                platformId = intent.getIntExtra("platform_id", 0)
-                supportActionBar?.title = getString(R.string.service_pickup_volume)
-            }
-        }
-        val cameraFragment = CameraFragment(photoFor, platformId, containerId)
-        supportFragmentManager.beginTransaction().run {
-            this.replace(R.id.fragment_container, cameraFragment)
-            this.addToBackStack(null)
-            this.commit()
-        }
+//        val beforeMediaPhotoF = BeforeMediaPhotoF()
+//        beforeMediaPhotoF.addArgument(platformId)
+//        supportFragmentManager.beginTransaction().run {
+//            this.replace(R.id.fragment_container, beforeMediaPhotoF)
+//            this.addToBackStack(null)
+//            this.commitAllowingStateLoss()
+//        }
     }
 
     override fun onResume() {
         super.onResume()
     }
 
-    companion object {
-        fun getOutputFL(): File {
-            val dirPath = App.getAppliCation().filesDir.absolutePath
-            val file = File(dirPath)
-            if (!file.exists()) file.mkdirs()
-            return file
-        }
-    }
 
     override fun onBackPressed() {
         setResult(404)

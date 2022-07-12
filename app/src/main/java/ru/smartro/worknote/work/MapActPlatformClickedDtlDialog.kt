@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.alert_warning_camera.view.*
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.presentation.platform_serve.PServeMain
+import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import kotlin.math.min
@@ -112,7 +112,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
     }
 
     private fun gotoNextAct() {
-        val intent = Intent(requireActivity(), PServeMain::class.java)
+        val intent = Intent(requireActivity(), PServeAct::class.java)
         intent.putExtra("platform_id", _platform.platformId)
         intent.putExtra("mIsServeAgain", mIsServeAgain)
         dismiss()
