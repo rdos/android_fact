@@ -27,20 +27,20 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center"
-            android:padding="@dimen/margin_default"
             >
     <!--android:text="id/acb_act_map__workorder_info__complete"-->
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/dialog___act_start_point__ie"
                 android:layout_width="133dp"
                 android:layout_height="44dp"
+                android:layout_marginVertical="16dp"
                 android:text="Стереть и начать заново"
                 android:contentDescription="@string/gallery_button_alt"
                 android:background="@drawable/bg_button_red_interactive"
                 android:layout_marginEnd="@dimen/margin_max_max"
                 />
     <!--android:text="id/acb_act_map__workorder_info__complete"-->
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/dialog___act_start_point__ok"
                 android:layout_width="133dp"
                 android:layout_height="44dp"

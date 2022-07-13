@@ -202,26 +202,9 @@ class NetworkRepository(private val context: Context) {
 
 
 
-    fun getWorkOrder(organisationId: Int, wayId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "getWorkOder.before")
+    suspend fun getWorkOrder(organisationId: Int, wayId: Int) =
+        RetrofitClient(context).apiService(true).getWorkOrder(organisationId, wayId)
 
-        try {
-            val response = RetrofitClient(context)
-                .apiService(true).getWorkOrder(organisationId, wayId)
-            Log.d(TAG, "getWorkOder.after ${response.body().toString()}")
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestSynchro__o_id__w_id(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
 
     fun progress(id: Int, body: ProgressBody) = liveData(Dispatchers.IO, TIME_OUT) {
         Log.i(TAG, "progress.before id=${id} body=${body}")

@@ -14,9 +14,14 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 
-class StartWorkOrderAdapter(private val listener: (WoRKoRDeR_know1, Int) -> Unit): RecyclerView.Adapter<StartWorkOrderAdapter.WorkOrderViewHolder>() {
+class StartWorkOrderAdapter(): RecyclerView.Adapter<StartWorkOrderAdapter.WorkOrderViewHolder>() {
 
     private val mItems: MutableList<WoRKoRDeR_know1> = mutableListOf()
+    private var listener: ((Int) -> Unit)? = null
+
+    fun setListener(_listener: (Int) -> Unit) {
+        listener = _listener
+    }
 
     fun setItems(workOrders: List<WoRKoRDeR_know1>) {
         mItems.clear()
@@ -24,8 +29,9 @@ class StartWorkOrderAdapter(private val listener: (WoRKoRDeR_know1, Int) -> Unit
         notifyDataSetChanged()
     }
 
-    fun updateItem(woId: Int, isSelected: Boolean) {
-        notifyItemChanged(mItems.indexOf(mItems.find { el -> el.id == woId }), isSelected)
+    fun updateItem(woInd: Int, isSelected: Boolean) {
+        Log.d("TEST:::", "update itm woId")
+        notifyItemChanged(woInd, isSelected)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkOrderViewHolder {
@@ -38,24 +44,18 @@ class StartWorkOrderAdapter(private val listener: (WoRKoRDeR_know1, Int) -> Unit
     }
 
     override fun onBindViewHolder(holder: WorkOrderViewHolder, position: Int, payloads: List<Any>) {
-        Log.d("TEST::::", "ON BIND VIEWHOLDER PAYLOADS")
         if(payloads.isNotEmpty()) {
-            Log.d("TEST::::", "ON BIND VIEWHOLDER PAYLOADS is NOT EMPTY")
             if (payloads[0] is Boolean) {
-                holder.updateItem(payloads[0] is Boolean)
-                Log.d("TEST::::", "ON BIND VIEWHOLDER FIRST PAYLOAD IN LIST IS BOOLEAN")
-            } else {
-                Log.d("TEST::::", "ON BIND VIEWHOLDER FIRST PAYLOAD IN LIST is NOT BOOLEAN")
+                holder.updateItem(payloads[0] as Boolean)
             }
         } else {
-            Log.d("TEST::::", "ON BIND VIEWHOLDER PAYLOADS is EMPTY")
             super.onBindViewHolder(holder, position, payloads);
         }
     }
 
     override fun getItemCount(): Int = mItems.size
 
-    class WorkOrderViewHolder(val itemView: View, val listener: (WoRKoRDeR_know1, Int) -> Unit): RecyclerView.ViewHolder(itemView) {
+    class WorkOrderViewHolder(val itemView: View, val listener: ((Int) -> Unit)?): RecyclerView.ViewHolder(itemView) {
         fun bind(workOrder: WoRKoRDeR_know1, position: Int){
             itemView.findViewById<TextView>(R.id.wo_name).text = workOrder.name
 
@@ -78,17 +78,17 @@ class StartWorkOrderAdapter(private val listener: (WoRKoRDeR_know1, Int) -> Unit
                 }
             }
 
-            itemView.setOnClickListener { listener(workOrder, position) }
+            itemView.setOnClickListener { if(listener != null) listener!!(position) }
         }
 
         fun updateItem(isSelected: Boolean = false) {
-            if (isSelected) {
-                itemView.setBackgroundDrawable(ContextCompat.getDrawable(
-                    itemView.context, R.drawable.bg_button_green__usebutton
-                ))
-            } else {
-                itemView.setBackgroundResource(0)
-            }
+            itemView.setBackgroundDrawable(ContextCompat.getDrawable(
+                itemView.context,
+                if (isSelected)
+                    R.drawable.bg_button_green__usebutton
+                else
+                    R.drawable.bg_button_green__default
+            ))
         }
     }
 }

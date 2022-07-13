@@ -44,7 +44,7 @@ class StartWorkOrderAct : ActAbstract() {
         setContentView(R.layout.f_start_workorder)
         supportActionBar?.title = "Сменное Задание"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val rv = findViewById<RecyclerView>(R.id.rv_act_start_workorder)
+        val rv = findViewById<RecyclerView>(R.id.rv_workorders)
         rv.layoutManager = LinearLayoutManager(this)
         val acbSelectAll = findViewById<AppCompatButton>(R.id.acb_act_start_workorder__select_all)
         acbSelectAll.setOnClickListener {
@@ -64,28 +64,28 @@ class StartWorkOrderAct : ActAbstract() {
             gotoNextAct(null)
         }
         showingProgress(getPutExtraParam_NAME())
-        vm.networkDat.getWorkOrder(paramS().getOwnerId(), paramS().wayBillId)
-            .observe(this, Observer { result ->
-                val data = result.data
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        workOrders = data!!.dataKnow100.woRKoRDeRknow1s
-                        if (workOrders.size == 1) {
-                            gotoNextAct(0)
-                        }
-                        rv.adapter = WayTaskAdapter(workOrders)
-                        hideProgress()
-                    }
-                    Status.ERROR -> {
-                        toast(result.msg)
-                        hideProgress()
-                    }
-                    Status.NETWORK -> {
-                        toast("Проблемы с интернетом")
-                        hideProgress()
-                    }
-                }
-            })
+//        vm.networkDat.getWorkOrder(paramS().getOwnerId(), paramS().wayBillId)
+//            .observe(this, Observer { result ->
+//                val data = result.data
+//                when (result.status) {
+//                    Status.SUCCESS -> {
+//                        workOrders = data!!.dataKnow100.woRKoRDeRknow1s
+//                        if (workOrders.size == 1) {
+//                            gotoNextAct(0)
+//                        }
+//                        rv.adapter = WayTaskAdapter(workOrders)
+//                        hideProgress()
+//                    }
+//                    Status.ERROR -> {
+//                        toast(result.msg)
+//                        hideProgress()
+//                    }
+//                    Status.NETWORK -> {
+//                        toast("Проблемы с интернетом")
+//                        hideProgress()
+//                    }
+//                }
+//            })
 
 
     }

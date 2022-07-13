@@ -15,7 +15,7 @@
         android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_act_start_workorder"
+            android:id="@+id/rv_workorders"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -34,7 +34,7 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/select_all"
+            android:id="@+id/take_all"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:textStyle="bold"
