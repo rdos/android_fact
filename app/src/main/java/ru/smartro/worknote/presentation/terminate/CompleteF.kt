@@ -77,6 +77,8 @@ class CompleteF : AFragment() {
                               private val cancelWayReasonS: List<CancelWayReasonEntity>) :
         RecyclerView.Adapter<ReasonAdapter.BaseCompleteViewHolder>() {
 
+        private var isFinishedCounter = 0
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCompleteViewHolder {
 
             lateinit var viewHolder: RecyclerView.ViewHolder
@@ -221,6 +223,8 @@ class CompleteF : AFragment() {
                                         hideProgress()
                                         if (mDatabase.hasWorkOrderInNotProgress()) {
                                             finishTask_know()
+                                        } else if (isFinishedCounter == workOrderS.size) {
+                                            getAct().finish()
                                         }
                                     }
                                     Status.ERROR -> {
@@ -301,8 +305,12 @@ class CompleteF : AFragment() {
                                         setUseButtonStyleBackgroundGreen(it as AppCompatButton)
                                         hold.itemView.isEnabled = false
                                         hideProgress()
+
+                                        isFinishedCounter++
                                         if (mDatabase.hasWorkOrderInNotProgress()) {
                                             finishTask_know()
+                                        } else if (isFinishedCounter == workOrderS.size) {
+                                            getAct().finish()
                                         }
                                     }
                                     Status.ERROR -> {
