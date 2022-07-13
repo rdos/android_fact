@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/act_map__bottom_behavior__header"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/bg_behavior"
         android:gravity="center"
         android:textColor="@android:color/white"
@@ -21,29 +21,34 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/bottom_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_min"
             android:layout_marginBottom="@dimen/margin_min"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="@dimen/margin_min"
             android:drawableTop="@drawable/ic_arrow_top"
             android:gravity="center"
             android:text="Площадки в задании"
             android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/sv__act_map__bottom_behavior__filter"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.SearchView
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/sv__act_map__bottom_behavior__filter"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            app:defaultQueryHint="@string/hint__search_by_address"
-            android:layout_marginEnd="@dimen/margin_default"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="170dp"
+            tools:layout_width="170dp"
+            android:drawableStart="@drawable/ic_baseline_search_24"
+            android:hint=" По адресу"
+            android:textColorHint="@color/gray"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/bottom_label"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
