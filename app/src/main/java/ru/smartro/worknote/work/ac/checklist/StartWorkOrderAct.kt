@@ -129,7 +129,7 @@ class StartWorkOrderAct : ActAbstract() {
         RecyclerView.Adapter<WayTaskAdapter.OwnerViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.f_start_workorder__rv_item, parent, false)
             return OwnerViewHolder(view)
         }
 

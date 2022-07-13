@@ -41,7 +41,6 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("TEST :::", "ARGARAARGATRAGAGGAARRAAAGTRATGAARAGTAGT ${getArgumentID()}")
         if (!MyUtil.hasPermissions(requireContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
