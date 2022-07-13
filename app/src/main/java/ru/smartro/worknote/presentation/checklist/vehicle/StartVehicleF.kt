@@ -1,8 +1,11 @@
-package ru.smartro.worknote.presentation.checklist
+package ru.smartro.worknote.presentation.checklist.vehicle
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -14,26 +17,29 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.NavHostFragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
-import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.ac.PERMISSIONS
 
 class StartVehicleF: AFragment() {
 
-    override fun onGetLayout(): Int = R.layout.f_start_vehicle
+    private val viewModel: StartVehicleViewModel by viewModels()
+    private var etVehicleFilter: EditText? = null
+    private var rvAdapter: StartVehicleAdapter? = null
 
-    private val viewModel: SingleViewModel by activityViewModels()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onGetLayout(): Int = R.layout.f_start_vehicle
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,21 +52,21 @@ class StartVehicleF: AFragment() {
             setDisplayHomeAsUpEnabled(true)
         }
 
-        val adapter = StartVehicleAdapter { vehicle ->
+        rvAdapter = StartVehicleAdapter { vehicle ->
             goToNextStep(vehicle)
         }
 
-        val etVehicleFilter = view.findViewById<EditText>(R.id.et_act_start_vehicle__filter)
+        etVehicleFilter = view.findViewById<EditText>(R.id.et_act_start_vehicle__filter)
 //        val textWatcher = TextWatcher()
-        etVehicleFilter.addTextChangedListener { text: Editable? ->
+        etVehicleFilter?.addTextChangedListener { text: Editable? ->
             val filterText = text.toString()
             getAct().logSentry(filterText)
-            adapter.updateList(filterText)
+            rvAdapter?.updateList(filterText)
         }
-        etVehicleFilter.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
+        etVehicleFilter?.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-                imm?.hideSoftInputFromWindow(etVehicleFilter.windowToken, 0)
+                imm?.hideSoftInputFromWindow(etVehicleFilter?.windowToken, 0)
                 return@OnEditorActionListener true
             }
             false
@@ -70,7 +76,7 @@ class StartVehicleF: AFragment() {
 
         val rv = view.findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
         rv.layoutManager = LinearLayoutManager(requireContext())
-        rv.adapter = adapter
+        rv.adapter = rvAdapter
 
         viewModel.getVehicleList(getArgumentID()).observe(viewLifecycleOwner) { result ->
             val data = result.data
@@ -78,9 +84,8 @@ class StartVehicleF: AFragment() {
                 Status.SUCCESS -> {
                     val vehicles = data?.data
                     vehicles?.let {
-                        adapter.setItems(it)
+                        rvAdapter?.setItems(it)
                         if (getAct().isDevelMode()) {
-                            etVehicleFilter.setText("Тигуан")
                             val vehicle = it.find { el -> el.name == "Тигуан" }
                             if(vehicle != null) {
                                 goToNextStep(vehicle)
@@ -107,17 +112,22 @@ class StartVehicleF: AFragment() {
         paramS().vehicleId = vehicle.id
         paramS().vehicleName = vehicle.name
         // TODO!! will be changed to navigateMain
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.checklist_nav_host) as NavHostFragment)
-        val navController = navHost.navController
-        val argSBundle = getArgSBundle(vehicle.id, null)
-        navController.navigate(R.id.startWaybillF, argSBundle)
+        navigateMainChecklist(R.id.startWaybillF, vehicle.id)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+    override fun onResume() {
+        super.onResume()
+        Log.d("TESTllll::::", "ONRESUME:: ${etVehicleFilter} ${etVehicleFilter?.text}")
+        if(etVehicleFilter != null && etVehicleFilter?.text.toString().isNotEmpty()) {
+            Log.d("TESTllll::::", "ONRESUME:: heree!!!")
+            val filterText = if(etVehicleFilter!!.text != null) etVehicleFilter!!.text.toString() else return
+            getAct().logSentry(filterText)
+            Log.d("TESTllll::::", "ONRESUME:: ${rvAdapter != null}")
+            Handler(Looper.getMainLooper()).postDelayed({
+                rvAdapter?.updateList(filterText)
+            }, 1000)
+        }
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         requireActivity().menuInflater.inflate(R.menu.menu_logout_organisation, menu)
@@ -129,7 +139,7 @@ class StartVehicleF: AFragment() {
         MyUtil.onMenuOptionClicked(requireContext(), item.itemId)
         when (item.itemId) {
             android.R.id.home -> {
-                requireActivity().finish()
+                navigateBackChecklist()
             }
         }
         return super.onOptionsItemSelected(item)

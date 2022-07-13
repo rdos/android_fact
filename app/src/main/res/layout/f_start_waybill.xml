@@ -21,7 +21,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textSize="28sp"
+            android:textSize="26sp"
             android:text="@+id/tv_act_start_waybill__not_found_data"
             />
 
@@ -44,6 +44,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:visibility="gone">
+
             <TextView
                 android:id="@+id/empty_title"
                 android:layout_width="match_parent"
@@ -87,6 +88,9 @@
                 tools:visibility="visible"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent" />
+
         </androidx.appcompat.widget.LinearLayoutCompat>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

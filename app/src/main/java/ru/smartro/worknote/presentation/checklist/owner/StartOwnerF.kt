@@ -1,13 +1,14 @@
-package ru.smartro.worknote.presentation.checklist
+package ru.smartro.worknote.presentation.checklist.owner
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +23,7 @@ class StartOwnerF: AFragment() {
 
     override fun onGetLayout(): Int = R.layout.f_start_owner
 
-    private val viewModel: SingleViewModel by activityViewModels()
+    private val viewModel: StartOwnerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,11 +50,12 @@ class StartOwnerF: AFragment() {
 
         showingProgress()
 
-        viewModel.mOwnerList.observe(viewLifecycleOwner) { result ->
+        viewModel.getOwnersList().observe(viewLifecycleOwner) { result ->
             val data = result.data
             when (result.status) {
                 Status.SUCCESS -> {
                     val owners = data!!.data.organisations
+                    Log.d("TEST :::", "owners size: ${owners.size}")
                     if (owners.size == 1)
                         goToNextStep(owners[0].id, owners[0].name)
                     else
@@ -87,9 +89,6 @@ class StartOwnerF: AFragment() {
         paramS().ownerId = ownerId
         paramS().ownerName = ownerName
         // TODO!! will be changed to navigateMain
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.checklist_nav_host) as NavHostFragment)
-        val navController = navHost.navController
-        val argSBundle = getArgSBundle(ownerId, null)
-        navController.navigate(R.id.startVehicleF, argSBundle)
+        navigateMainChecklist(R.id.startVehicleF, ownerId)
     }
 }

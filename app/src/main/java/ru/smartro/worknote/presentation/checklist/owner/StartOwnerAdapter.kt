@@ -1,11 +1,10 @@
-package ru.smartro.worknote.presentation.checklist
+package ru.smartro.worknote.presentation.checklist.owner
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.start_act__rv_item_know1.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.Organisation
 

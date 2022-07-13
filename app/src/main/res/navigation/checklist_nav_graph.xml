@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/startOwnerF"
-        android:name="ru.smartro.worknote.presentation.checklist.StartOwnerF"
+        android:name="ru.smartro.worknote.presentation.checklist.owner.StartOwnerF"
         android:label="StartOwnerF" >
         <action
             android:id="@+id/action_startOwnerF_to_startVehicleF"
@@ -14,7 +14,7 @@
 
     <fragment
         android:id="@+id/startVehicleF"
-        android:name="ru.smartro.worknote.presentation.checklist.StartVehicleF"
+        android:name="ru.smartro.worknote.presentation.checklist.vehicle.StartVehicleF"
         android:label="StartVehicleF" >
         <action
             android:id="@+id/action_startVehicleF_to_startWaybillF"
@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/startWaybillF"
-        android:name="ru.smartro.worknote.presentation.checklist.StartWaybillF"
+        android:name="ru.smartro.worknote.presentation.checklist.waybill.StartWaybillF"
         android:label="StartWaybillF" >
         <action
             android:id="@+id/action_startWaybillF_to_startWorkOrderF"
@@ -32,6 +32,6 @@
 
     <fragment
         android:id="@+id/startWorkOrderF"
-        android:name="ru.smartro.worknote.presentation.checklist.StartWorkOrderF"
+        android:name="ru.smartro.worknote.presentation.checklist.workorder.StartWorkOrderF"
         android:label="StartWorkOrderF" />
 </navigation>

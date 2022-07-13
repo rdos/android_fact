@@ -1,17 +1,12 @@
-package ru.smartro.worknote.presentation.checklist
+package ru.smartro.worknote.presentation.checklist.vehicle
 
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.f_start_vehicle__rv_item.view.*
-import kotlinx.android.synthetic.main.item_container_adapter.view.*
-import kotlinx.android.synthetic.main.start_act__rv_item_know1.view.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.Organisation
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
 
 class StartVehicleAdapter(private val listener: (Vehicle) -> Unit): RecyclerView.Adapter<StartVehicleAdapter.VehicleViewHolder>() {
@@ -29,7 +24,6 @@ class StartVehicleAdapter(private val listener: (Vehicle) -> Unit): RecyclerView
     fun updateList(filterText: String) {
         mFilteredItems.clear()
         mFilteredItems.addAll(mItems.filter { el ->
-            Log.d("TEST:::", "ELELELLE ${el}")
             if(el.name != null) {
                 val name = el.name.lowercase()
                 name.startsWith(filterText) || name.contains(filterText)
@@ -46,10 +40,13 @@ class StartVehicleAdapter(private val listener: (Vehicle) -> Unit): RecyclerView
     }
 
     override fun onBindViewHolder(holder: VehicleViewHolder, position: Int) {
-        holder.bind(mFilteredItems[position])
+        // TODO TEST I THINK THAT IF GETITEMCOUNT RETURNS FILTEREDITEMS SIZE THEN WE CAN GET RID OF IF HERE
+//        if(mFilteredItems.isNotEmpty() && position < mFilteredItems.size) {
+            holder.bind(mFilteredItems[position])
+//        }
     }
 
-    override fun getItemCount(): Int = mItems.size
+    override fun getItemCount(): Int = mFilteredItems.size
 
     class VehicleViewHolder(val itemView: View, val listener: (Vehicle) -> Unit): RecyclerView.ViewHolder(itemView) {
         fun bind(vehicle: Vehicle) {

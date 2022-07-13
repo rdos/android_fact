@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation.checklist
+package ru.smartro.worknote.presentation.checklist.owner
 
 import android.app.Application
 import androidx.lifecycle.LiveData
@@ -9,14 +9,5 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.Organ
 import ru.smartro.worknote.work.Resource
 
 class StartOwnerViewModel(application: Application) : BaseViewModel(application) {
-
-    private val _ownersList: MutableLiveData<Resource<OrganisationResponse>> = MutableLiveData()
-
-
-    fun getOwnerList(): LiveData<Resource<OrganisationResponse>> {
-
-        return _ownersList
-    }
-
-
+    fun getOwnersList(): LiveData<Resource<OrganisationResponse>> = networkDat.getOwners()
 }

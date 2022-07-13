@@ -3,8 +3,6 @@ package ru.smartro.worknote.work.ac.checklist
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.*
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
@@ -14,7 +12,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
@@ -26,7 +23,7 @@ import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
-import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.Data
+import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.ac.PERMISSIONS
@@ -154,7 +151,7 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
 
     }
 
-    inner class WaybillAdapter(private val items: List<Data>) :
+    inner class WaybillAdapter(private val items: List<WayBillDto>) :
         RecyclerView.Adapter<WaybillAdapter.WaybillViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WaybillViewHolder {
@@ -195,15 +192,5 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
             vehicleId = paramS().getVehicleId()
         )
         viewModel.getWayList(body)
-    }
-
-    private fun stopRefreshing() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            if(swipeRefreshLayout == null) {
-                stopRefreshing()
-            } else if(swipeRefreshLayout!!.isRefreshing) {
-
-            }
-        }, 10000)
     }
 }
