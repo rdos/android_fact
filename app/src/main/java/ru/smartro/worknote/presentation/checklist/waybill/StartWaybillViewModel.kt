@@ -18,7 +18,7 @@ class StartWaybillViewModel(application: Application) : BaseViewModel(applicatio
 
     fun getWayBillsList(body : WayListBody) {
         viewModelScope.launch {
-            _wayBillListResponse.postValue(networkDat.getWayList(body))
+//            _wayBillListResponse.postValue(networkDat.getWayList(body))
         }
     }
 

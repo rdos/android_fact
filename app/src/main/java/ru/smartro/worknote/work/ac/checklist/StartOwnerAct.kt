@@ -6,10 +6,13 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.start_act__rv_item_know1.view.*
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActAbstract
@@ -21,12 +24,14 @@ import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.Organisation
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.ac.PERMISSIONS
 
 //todo:r_dos choose in checklist(как у QA)
 class StartOwnerAct : ActAbstract() {
     private val vs: OrganisationViewModel by viewModel()
+
     override fun onNewGPS() {
         // TODO: r_dos!!!
     }
@@ -110,7 +115,7 @@ class StartOwnerAct : ActAbstract() {
 
     open class OrganisationViewModel(application: Application) : BaseViewModel(application) {
         fun getOwners(): LiveData<Resource<OrganisationResponse>> {
-            return networkDat.getOwners()
+            return networkDat.getOwnersOld()
         }
     }
 

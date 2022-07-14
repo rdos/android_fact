@@ -13,26 +13,34 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.ac.PERMISSIONS
 
-class StartVehicleF: AFragment() {
+class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
-    private val viewModel: StartVehicleViewModel by viewModels()
+    private val viewModel: ChecklistViewModel by activityViewModels()
+
     private var etVehicleFilter: EditText? = null
     private var rvAdapter: StartVehicleAdapter? = null
+
+    private var progressBar: ProgressBar? = null
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,12 +60,16 @@ class StartVehicleF: AFragment() {
             setDisplayHomeAsUpEnabled(true)
         }
 
+        progressBar = view.findViewById(R.id.progress_bar)
+
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh)
+        swipeRefreshLayout?.setOnRefreshListener(this)
+
         rvAdapter = StartVehicleAdapter { vehicle ->
             goToNextStep(vehicle)
         }
 
-        etVehicleFilter = view.findViewById<EditText>(R.id.et_act_start_vehicle__filter)
-//        val textWatcher = TextWatcher()
+        etVehicleFilter = view.findViewById(R.id.et_act_start_vehicle__filter)
         etVehicleFilter?.addTextChangedListener { text: Editable? ->
             val filterText = text.toString()
             getAct().logSentry(filterText)
@@ -72,39 +84,48 @@ class StartVehicleF: AFragment() {
             false
         })
 
-        showingProgress(paramS().ownerName)
-
         val rv = view.findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
         rv.layoutManager = LinearLayoutManager(requireContext())
         rv.adapter = rvAdapter
 
-        viewModel.getVehicleList(getArgumentID()).observe(viewLifecycleOwner) { result ->
-            val data = result.data
-            when (result.status) {
-                Status.SUCCESS -> {
-                    val vehicles = data?.data
-                    vehicles?.let {
-                        rvAdapter?.setItems(it)
-                        if (getAct().isDevelMode()) {
-                            val vehicle = it.find { el -> el.name == "Тигуан" }
-                            if(vehicle != null) {
-                                goToNextStep(vehicle)
-                            } else {
-                                toast("Не удаётся найти машину с именем \"Тигуан\"")
+        viewModel.mVehicleList.observe(viewLifecycleOwner) { result ->
+            if((swipeRefreshLayout?.isRefreshing == true || rvAdapter?.isItemsEmpty() == true) && result != null) {
+                val data = result.data
+                swipeRefreshLayout?.isRefreshing = false
+                hideProgressBar()
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        val vehicles = data?.data
+                        vehicles?.let {
+                            rvAdapter?.setItems(it)
+                            if (getAct().isDevelMode()) {
+                                val vehicle = it.find { el -> el.name == "Тигуан" }
+                                if(vehicle != null) {
+                                    goToNextStep(vehicle)
+                                } else {
+                                    toast("Не удаётся найти машину с именем \"Тигуан\"")
+                                }
                             }
                         }
                     }
-                    hideProgress()
-                }
-                Status.ERROR -> {
-                    toast(result.msg)
-                    hideProgress()
-                }
-                Status.NETWORK -> {
-                    toast("Проблемы с интернетом")
-                    hideProgress()
+                    Status.ERROR -> {
+                        toast(result.msg)
+                    }
+                    Status.NETWORK -> {
+                        toast("Проблемы с интернетом")
+                    }
                 }
             }
+        }
+
+        Log.d("TEST ::: FUCK",
+                "vm.mLastOwnerId=${viewModel.mLastOwnerId}, " +
+                "getArgumentID(mLastOwnerId)=${getArgumentID()}")
+        if(viewModel.mVehicleList.value == null || viewModel.mLastOwnerId != getArgumentID()) {
+            showProgressBar()
+            viewModel.getVehicleList(getArgumentID())
+        } else {
+            hideProgressBar()
         }
     }
 
@@ -117,21 +138,13 @@ class StartVehicleF: AFragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d("TESTllll::::", "ONRESUME:: ${etVehicleFilter} ${etVehicleFilter?.text}")
         if(etVehicleFilter != null && etVehicleFilter?.text.toString().isNotEmpty()) {
-            Log.d("TESTllll::::", "ONRESUME:: heree!!!")
             val filterText = if(etVehicleFilter!!.text != null) etVehicleFilter!!.text.toString() else return
             getAct().logSentry(filterText)
-            Log.d("TESTllll::::", "ONRESUME:: ${rvAdapter != null}")
             Handler(Looper.getMainLooper()).postDelayed({
                 rvAdapter?.updateList(filterText)
-            }, 1000)
+            }, 800)
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        requireActivity().menuInflater.inflate(R.menu.menu_logout_organisation, menu)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
     // TODO:
@@ -143,5 +156,17 @@ class StartVehicleF: AFragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRefresh() {
+        viewModel.getVehicleList(getArgumentID())
+    }
+
+    fun showProgressBar() {
+        progressBar?.visibility = View.VISIBLE
+    }
+
+    fun hideProgressBar() {
+        progressBar?.visibility = View.GONE
     }
 }

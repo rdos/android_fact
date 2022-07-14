@@ -20,8 +20,10 @@ class StartVehicleAdapter(private val listener: (Vehicle) -> Unit): RecyclerView
         mFilteredItems.addAll(vehicleList)
         notifyDataSetChanged()
     }
+    fun isItemsEmpty() = mItems.isEmpty()
 
-    fun updateList(filterText: String) {
+    fun updateList(_filterText: String) {
+        val filterText = _filterText.lowercase()
         mFilteredItems.clear()
         mFilteredItems.addAll(mItems.filter { el ->
             if(el.name != null) {

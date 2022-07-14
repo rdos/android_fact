@@ -6,9 +6,11 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +20,7 @@ import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.ac.PERMISSIONS
@@ -28,9 +31,9 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private var mRvWaybill: RecyclerView? = null
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
-    private var mTvNotFoundData: TextView? = null
+    private var progressBar: ProgressBar? = null
 
-    private val viewModel: StartWaybillViewModel by viewModels()
+    private val viewModel: ChecklistViewModel by activityViewModels()
 
     override fun onGetLayout(): Int = R.layout.f_start_waybill
 
@@ -50,56 +53,58 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             setDisplayHomeAsUpEnabled(true)
         }
 
+        progressBar = view.findViewById(R.id.progress_bar)
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh)
         swipeRefreshLayout?.setOnRefreshListener(this)
-
-        mTvNotFoundData = view.findViewById(R.id.tv_act_start_waybill__not_found_data)
-        mTvNotFoundData?.text = getString(R.string.tv_no_fount_data)
 
         val rvAdapter = StartWayBillAdapter() {
             goToNextStep(it.id, it.number)
         }
-
-        mRvWaybill = view.findViewById<RecyclerView?>(R.id.rv_act_start_waybill).apply {
+        mRvWaybill = view.findViewById<RecyclerView>(R.id.rv_act_start_waybill).apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = rvAdapter
         }
-        hideNotFoundData()
-        showingProgress(paramS().vehicleName)
 
         viewModel.mWayBillListResponse.observe(viewLifecycleOwner) { result ->
             if(result != null) {
                 swipeRefreshLayout?.isRefreshing = false
                 val data = result.data
+                hideProgressBar()
                 when (result.status) {
                     Status.SUCCESS -> {
                         val wayBills = data?.data!!
                         if (wayBills.isNotEmpty()) {
-                            hideNotFoundData()
-                            Log.d("TEST::::", "SIZE::: ${wayBills}")
                             if (wayBills.size == 1) {
                                 goToNextStep(wayBills[0].id, wayBills[0].number)
                             } else {
                                 rvAdapter.setItems(wayBills)
                             }
-                        } else {
-                            showNotFoundData()
                         }
-                        hideProgress()
                     }
                     Status.ERROR -> {
                         toast(result.msg)
-                        hideProgress()
                     }
                     Status.NETWORK -> {
                         toast("Проблемы с интернетом")
-                        hideProgress()
                     }
                 }
             }
         }
 
-        getWayBillList()
+        Log.d("TEST ::: FUCK",
+            "vm.lastOwnerId=${viewModel.mLastOwnerId}, " +
+                    "params.ownerId=${paramS().getOwnerId()}, " +
+                    "vm.mLastVehicleId=${viewModel.mLastVehicleId}, " +
+                    "getArgumentID(VehicleId)=${getArgumentID()}")
+        if(viewModel.mWayBillListResponse.value == null ||
+            viewModel.mLastVehicleId != getArgumentID() ||
+            viewModel.mLastOwnerId != paramS().getOwnerId()
+        ) {
+            showProgressBar()
+            getWayBillList()
+        } else {
+            hideProgressBar()
+        }
     }
 
     private fun getWayBillList() {
@@ -107,7 +112,7 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         val body = WayListBody(
             date = currentDate,
             organisationId = paramS().getOwnerId(),
-            vehicleId = paramS().getVehicleId()
+            vehicleId = getArgumentID()
         )
         viewModel.getWayBillsList(body)
     }
@@ -138,16 +143,11 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         navigateMainChecklist(R.id.startWorkOrderF, wayBillId)
     }
 
-    private fun hideNotFoundData() {
-        mTvNotFoundData?.visibility = View.GONE
-        mRvWaybill?.visibility = View.VISIBLE
+    fun showProgressBar() {
+        progressBar?.visibility = View.VISIBLE
     }
 
-    private fun showNotFoundData(text: String? = null) {
-        mTvNotFoundData?.visibility = View.VISIBLE
-        mRvWaybill?.visibility = View.GONE
-        if (text != null) {
-            mTvNotFoundData?.text = text
-        }
+    fun hideProgressBar() {
+        progressBar?.visibility = View.GONE
     }
 }

@@ -11,12 +11,12 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDt
 class StartWayBillAdapter(private val listener: (WayBillDto) -> Unit): RecyclerView.Adapter<StartWayBillAdapter.WayBillViewHolder>() {
 
     private val mItems: MutableList<WayBillDto> = mutableListOf()
-
     fun setItems(wayBillsList: List<WayBillDto>) {
         mItems.clear()
         mItems.addAll(wayBillsList)
         notifyDataSetChanged()
     }
+    fun isItemsEmpty() = mItems.isEmpty()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WayBillViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.f_start_waybill__rv_item, parent, false)

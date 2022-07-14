@@ -16,6 +16,7 @@ class StartOwnerAdapter(private val listener: (Organisation) -> Unit): RecyclerV
         mItems.addAll(ownersList)
         notifyDataSetChanged()
     }
+    fun isItemsEmpty() = mItems.isEmpty()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.f_start_owner__rv_item, parent, false)

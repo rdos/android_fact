@@ -347,12 +347,10 @@ open class PlatformEntity(
 
     private fun isNewPlatform(): Boolean {
         val res = this.getStatusPlatform() == StatusEnum.NEW
-        Log.d("TEST :::", "isNewPlatform().res=${res}")
         return res
     }
     fun isNotNewPlatform(): Boolean {
         val result = !this.isNewPlatform()
-        Log.i("TEST :::", "isNotNewPlatform().result=${result}")
         return result
     }
 

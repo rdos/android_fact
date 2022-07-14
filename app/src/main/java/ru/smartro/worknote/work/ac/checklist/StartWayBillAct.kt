@@ -53,7 +53,7 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
         swipeRefreshLayout = findViewById(R.id.swipe_refresh)
         swipeRefreshLayout?.setOnRefreshListener(this)
 
-        mTvNotFoundData = findViewById(R.id.tv_act_start_waybill__not_found_data)
+        mTvNotFoundData = findViewById(R.id.rv_act_start_waybill)
         mTvNotFoundData?.text = getString(R.string.tv_no_fount_data)
 
         mRvWaybill = findViewById(R.id.rv_act_start_waybill)
@@ -145,7 +145,7 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
 
         fun getWayList(body : WayListBody) {
             viewModelScope.launch {
-                _wayListResponse.postValue(networkDat.getWayList(body))
+//                _wayListResponse.postValue(networkDat.getWayList(body))
             }
         }
 

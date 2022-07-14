@@ -131,7 +131,7 @@ class StartVehicleAct : ActAbstract() {
     open class VehicleViewModel(application: Application) : BaseViewModel(application) {
 
         fun getVehicle(organisationId: Int): LiveData<Resource<VehicleResponse>> {
-            return networkDat.getVehicle(organisationId)
+            return networkDat.getVehicleOld(organisationId)
         }
 /*
     fun getCars(authModel: AuthBody): LiveData<Resource<CarsResponse>> {

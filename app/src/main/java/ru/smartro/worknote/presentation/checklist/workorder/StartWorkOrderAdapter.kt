@@ -18,20 +18,15 @@ class StartWorkOrderAdapter(): RecyclerView.Adapter<StartWorkOrderAdapter.WorkOr
 
     private val mItems: MutableList<WoRKoRDeR_know1> = mutableListOf()
     private var listener: ((Int) -> Unit)? = null
-
-    fun setListener(_listener: (Int) -> Unit) {
-        listener = _listener
-    }
-
     fun setItems(workOrders: List<WoRKoRDeR_know1>) {
         mItems.clear()
         mItems.addAll(workOrders)
         notifyDataSetChanged()
     }
+    fun isItemsEmpty() = mItems.isEmpty()
 
-    fun updateItem(woInd: Int, isSelected: Boolean) {
-        Log.d("TEST:::", "update itm woId")
-        notifyItemChanged(woInd, isSelected)
+    fun setListener(_listener: (Int) -> Unit) {
+        listener = _listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkOrderViewHolder {

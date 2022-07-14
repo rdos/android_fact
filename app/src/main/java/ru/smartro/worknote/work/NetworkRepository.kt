@@ -60,7 +60,9 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-      fun getVehicle(organisationId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
+    suspend fun getVehicle(organisationId: Int) =
+        RetrofitClient(context).apiService(true).getVehicle(organisationId)
+    fun getVehicleOld(organisationId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
         Log.i(TAG, "getVehicle.before")
         try {
             val response = RetrofitClient(context)
@@ -81,6 +83,7 @@ class NetworkRepository(private val context: Context) {
             emit(Resource.network("Проблемы с подключением интернета", null))
         }
     }
+
 
     private fun insertBreakDown(data: List<ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.Data>?) {
         val db = RealmRepository(Realm.getDefaultInstance())
@@ -179,27 +182,7 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    suspend fun getWayList(body: WayListBody): Resource<WayListResponse> {
-        try {
-            val response = RetrofitClient(context)
-                .apiService(true).getWayList(body)
-            return when {
-                response.isSuccessful -> {
-                    Log.d(TAG, "getWayList.after ${response.body().toString()}")
-                    Resource.success(response.body())
-                }
-                else -> {
-                    THR.BadRequestWaybill(response)
-                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    Log.d(TAG, "getWayList.after errorResponse=${errorResponse}")
-                    Resource.error("Ошибка ${response.code()}", null)
-                }
-            }
-        } catch (e: Exception) {
-            return Resource.network("Проблемы с подключением интернета", null)
-        }
-    }
-
+    suspend fun getWayList(body: WayListBody) = RetrofitClient(context).apiService(true).getWayList(body)
 
 
     suspend fun getWorkOrder(organisationId: Int, wayId: Int) =
@@ -314,7 +297,8 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    fun getOwners() = liveData(Dispatchers.IO, TIME_OUT) {
+    suspend fun getOwners() = RetrofitClient(context).apiService(false).getOwners()
+    fun getOwnersOld() = liveData(Dispatchers.IO, TIME_OUT) {
         Log.i(TAG, "getOwners")
 
         try {
