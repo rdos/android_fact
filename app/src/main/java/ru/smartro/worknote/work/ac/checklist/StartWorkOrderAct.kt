@@ -44,9 +44,9 @@ class StartWorkOrderAct : ActAbstract() {
         setContentView(R.layout.f_start_workorder)
         supportActionBar?.title = "Сменное Задание"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val rv = findViewById<RecyclerView>(R.id.rv_workorders)
+        val rv = findViewById<RecyclerView>(R.id.rv__f_start_workorder__workorders)
         rv.layoutManager = LinearLayoutManager(this)
-        val acbSelectAll = findViewById<AppCompatButton>(R.id.acb_act_start_workorder__select_all)
+        val acbSelectAll = findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_all)
         acbSelectAll.setOnClickListener {
             // TODO: добавить логирование
             if (workOrders.size <= 0) {

@@ -3,11 +3,9 @@ package ru.smartro.worknote.presentation.checklist.owner
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -15,14 +13,14 @@ import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
+import ru.smartro.worknote.presentation.checklist.XChecklistAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.ac.PERMISSIONS
 
 class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
-    private var progressBar: ProgressBar? = null
-    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var srlRefresh: SwipeRefreshLayout? = null
 
     override fun onGetLayout(): Int = R.layout.f_start_owner
 
@@ -30,20 +28,23 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = "Организация"
 
         if (!MyUtil.hasPermissions(requireContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
 
-        progressBar = view.findViewById(R.id.progress_bar)
-        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh)
-        swipeRefreshLayout?.setOnRefreshListener(this)
+        (requireActivity() as XChecklistAct).apply {
+            acibGoToBack?.visibility = View.GONE
+            setBarTitle("Организация")
+        }
+
+        srlRefresh = view.findViewById(R.id.srl__f_start_owner__refresh)
+        srlRefresh?.setOnRefreshListener(this)
 
         val rvAdapter = StartOwnerAdapter { owner ->
             goToNextStep(owner.id, owner.name)
         }
-        val rv = view.findViewById<RecyclerView>(R.id.rv_act_start_owner).apply {
+        val rv = view.findViewById<RecyclerView>(R.id.rv__f_start_owner__owners).apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = rvAdapter
         }
@@ -51,8 +52,8 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         viewModel.mOwnersList.observe(viewLifecycleOwner) { result ->
             if(result != null) {
                 val data = result.data
-                swipeRefreshLayout?.isRefreshing = false
-                hideProgressBar()
+                srlRefresh?.isRefreshing = false
+                (requireActivity() as XChecklistAct).hideProgressBar()
                 when (result.status) {
                     Status.SUCCESS -> {
                         val owners = data!!.data.organisations
@@ -72,10 +73,10 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
         if(viewModel.mOwnersList.value == null) {
-            showProgressBar()
+            (requireActivity() as XChecklistAct).showProgressBar()
             viewModel.getOwnersList()
         } else {
-            hideProgressBar()
+            (requireActivity() as XChecklistAct).hideProgressBar()
         }
     }
 
@@ -88,13 +89,5 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onRefresh() {
         viewModel.getOwnersList()
-    }
-
-    fun showProgressBar() {
-        progressBar?.visibility = View.VISIBLE
-    }
-
-    fun hideProgressBar() {
-        progressBar?.visibility = View.GONE
     }
 }

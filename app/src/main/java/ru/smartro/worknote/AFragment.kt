@@ -50,7 +50,7 @@ abstract class AFragment : Fragment(){
     }
 
     protected fun navigateBackChecklist() {
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.checklist_nav_host) as NavHostFragment)
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv__act_checklist__f_container) as NavHostFragment)
         val navController = navHost.navController
         navController.navigateUp()
     }
@@ -75,7 +75,7 @@ abstract class AFragment : Fragment(){
     }
 
     protected fun navigateMainChecklist(navFragmentId: Int, argumentId: Int?, argumentName: String? = null) {
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.checklist_nav_host) as NavHostFragment)
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv__act_checklist__f_container) as NavHostFragment)
         val navController = navHost.navController
 
         if (argumentId == null) {

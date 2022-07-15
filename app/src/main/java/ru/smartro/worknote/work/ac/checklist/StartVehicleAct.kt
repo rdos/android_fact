@@ -53,7 +53,7 @@ class StartVehicleAct : ActAbstract() {
 
 //        supportActionBar?.hide()
         /**====================================================================================== */
-        val etVehicleFilter = findViewById<EditText>(R.id.et_act_start_vehicle__filter)
+        val etVehicleFilter = findViewById<EditText>(R.id.et__f_start_vehicle__filter)
 //        val textWatcher = TextWatcher()
         etVehicleFilter.addTextChangedListener { text: Editable? ->
             myAdapter?.let {
@@ -71,7 +71,7 @@ class StartVehicleAct : ActAbstract() {
         })
 
 
-        val rv = findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
+        val rv = findViewById<RecyclerView>(R.id.rv__f_start_vehicle__vehicles)
         rv.layoutManager = LinearLayoutManager(this)
             /**====================================================================================== */
             /**====================================================================================== */

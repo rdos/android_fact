@@ -50,13 +50,13 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
         supportActionBar?.title = "Путевой Лист"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        swipeRefreshLayout = findViewById(R.id.swipe_refresh)
+        swipeRefreshLayout = findViewById(R.id.srl__f_start_waybill__refresh)
         swipeRefreshLayout?.setOnRefreshListener(this)
 
-        mTvNotFoundData = findViewById(R.id.rv_act_start_waybill)
+        mTvNotFoundData = findViewById(R.id.rv__f_start_waybill__waybills)
         mTvNotFoundData?.text = getString(R.string.tv_no_fount_data)
 
-        mRvWaybill = findViewById(R.id.rv_act_start_waybill)
+        mRvWaybill = findViewById(R.id.rv__f_start_waybill__waybills)
         mRvWaybill?.layoutManager = LinearLayoutManager(this)
         hideNotFoundData()
         showingProgress(putExtraParamName)

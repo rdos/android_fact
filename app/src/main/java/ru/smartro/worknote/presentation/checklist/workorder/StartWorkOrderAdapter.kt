@@ -40,8 +40,9 @@ class StartWorkOrderAdapter(): RecyclerView.Adapter<StartWorkOrderAdapter.WorkOr
 
     override fun onBindViewHolder(holder: WorkOrderViewHolder, position: Int, payloads: List<Any>) {
         if(payloads.isNotEmpty()) {
-            if (payloads[0] is Boolean) {
-                holder.updateItem(payloads[0] as Boolean)
+            when {
+                // Обнови один элемент
+                payloads[0] is Boolean -> holder.updateItem(payloads[0] as Boolean)
             }
         } else {
             super.onBindViewHolder(holder, position, payloads);
@@ -49,6 +50,18 @@ class StartWorkOrderAdapter(): RecyclerView.Adapter<StartWorkOrderAdapter.WorkOr
     }
 
     override fun getItemCount(): Int = mItems.size
+
+    fun updateItemSelection(indexes: List<Int>, isSelected: Boolean) {
+        for(ind in indexes) {
+            notifyItemChanged(ind, isSelected)
+        }
+    }
+
+    fun clearSelections() {
+        if(mItems.isNotEmpty()) {
+            notifyItemRangeChanged(0, mItems.size, false)
+        }
+    }
 
     class WorkOrderViewHolder(val itemView: View, val listener: ((Int) -> Unit)?): RecyclerView.ViewHolder(itemView) {
         fun bind(workOrder: WoRKoRDeR_know1, position: Int){

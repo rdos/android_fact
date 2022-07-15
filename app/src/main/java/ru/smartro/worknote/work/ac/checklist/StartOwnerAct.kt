@@ -42,7 +42,7 @@ class StartOwnerAct : ActAbstract() {
         }
         setContentView(R.layout.f_start_owner)
         supportActionBar?.title = "Организация"
-        val rv = findViewById<RecyclerView>(R.id.rv_act_start_owner)
+        val rv = findViewById<RecyclerView>(R.id.rv__f_start_owner__owners)
         rv.layoutManager = LinearLayoutManager(this)
         showingProgress()
         vs.getOwners().observe(this, Observer { result ->

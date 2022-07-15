@@ -4,40 +4,54 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
-import ru.smartro.worknote.awORKOLDs.service.network.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.Organisation
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.THR
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.WorkOrderResponse_know1
 
+sealed class ViewState(val msg: String? = null) {
+    class IDLE(): ViewState()
+    class LOADING(): ViewState()
+    class DATA(): ViewState()
+    class ERROR(_msg: String? = null): ViewState(_msg)
+    class MESSAGE(_msg: String? = null): ViewState(_msg)
+    class REFRESH(): ViewState()
+}
+
 class ChecklistViewModel(application: Application) : BaseViewModel(application) {
 
+    // OWNERS
     private val _ownersList: MutableLiveData<Resource<OrganisationResponse>> = MutableLiveData(null)
     val mOwnersList: LiveData<Resource<OrganisationResponse>>
         get() = _ownersList
     var mLastOwnerId = -1
 
+    // VEHICLES
     private val _vehicleList: MutableLiveData<Resource<VehicleResponse>> = MutableLiveData(null)
     val mVehicleList: LiveData<Resource<VehicleResponse>>
         get() = _vehicleList
     var mLastVehicleId = -1
 
-    private val _wayBillListResponse: MutableLiveData<Resource<WayListResponse>> = MutableLiveData(null)
-    val mWayBillListResponse: LiveData<Resource<WayListResponse>>
-        get() = _wayBillListResponse
+    // WAYBILLS
+    private val _wayBillList: MutableLiveData<List<WayBillDto>> = MutableLiveData(null)
+    val mWayBillList: LiveData<List<WayBillDto>>
+        get() = _wayBillList
+
+    val mWayBillsViewState: MutableLiveData<ViewState> = MutableLiveData(ViewState.IDLE())
+
     var mLastWayBillId = -1
 
+    // WORKORDERS
     private val _workOrderList: MutableLiveData<Resource<WorkOrderResponse_know1>> = MutableLiveData(null)
     val mWorkOrderList: LiveData<Resource<WorkOrderResponse_know1>>
         get() = _workOrderList
@@ -89,7 +103,14 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
         }
     }
 
-    fun getWayBillsList(body : WayListBody) {
+    fun getWayBillsList(body : WayListBody, isRefresh: Boolean = false) {
+        //
+        if(isRefresh) {
+            mWayBillsViewState.postValue(ViewState.REFRESH())
+        } else {
+            mWayBillsViewState.postValue(ViewState.LOADING())
+        }
+        //
         viewModelScope.launch {
             try {
                 val response = networkDat.getWayList(body)
@@ -98,17 +119,19 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
                         mLastOwnerId = body.organisationId
                         mLastVehicleId = body.vehicleId
                         Log.d(TAG, "getWayList.after ${response.body().toString()}")
-                        _wayBillListResponse.postValue(Resource.success(response.body()))
+                        mWayBillsViewState.postValue(ViewState.DATA())
+                        Log.d("TEST :::", "waybills:::: ${response.body()?.data}")
+                        _wayBillList.postValue(response.body()?.data)
                     }
                     else -> {
                         THR.BadRequestWaybill(response)
                         val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
                         Log.d(TAG, "getWayList.after errorResponse=${errorResponse}")
-                        _wayBillListResponse.postValue(Resource.error("Ошибка ${response.code()}", null))
+                        mWayBillsViewState.postValue(ViewState.ERROR("Ошибка ${response.code()}"))
                     }
                 }
             } catch (e: Exception) {
-                _wayBillListResponse.postValue(Resource.network("Проблемы с подключением интернета", null))
+                mWayBillsViewState.postValue(ViewState.ERROR("Проблемы с подключением интернета"))
             }
         }
     }
@@ -118,6 +141,7 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
             Log.i(TAG, "getWorkOder.before")
             try {
                 val response = networkDat.getWorkOrder(orgId, wayBillId)
+                mSelectedWorkOrders.postValue(mutableListOf())
                 Log.d(TAG, "getWorkOder.after ${response.body().toString()}")
                 when {
                     response.isSuccessful -> {
@@ -139,9 +163,5 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
     fun insertWorkOrders(workOrders: List<WoRKoRDeR_know1>) {
         baseDat.clearDataBase()
         baseDat.insertWorkorder(workOrders)
-    }
-
-    fun insertWorkOrders(workOrder: WoRKoRDeR_know1) {
-        insertWorkOrders(listOf(workOrder))
     }
 }

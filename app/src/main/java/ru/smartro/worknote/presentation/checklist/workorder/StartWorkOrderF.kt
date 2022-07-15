@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
@@ -19,8 +20,11 @@ import ru.smartro.worknote.MapAct
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
+import ru.smartro.worknote.presentation.checklist.XChecklistAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
+import ru.smartro.worknote.work.WoRKoRDeR_know1
+import ru.smartro.worknote.work.WorkOrderResponse_know1
 import ru.smartro.worknote.work.ac.PERMISSIONS
 
 class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -29,14 +33,8 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
     private var rvAdapter: StartWorkOrderAdapter? = null
     private var rv: RecyclerView? = null
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
-    private var progressBar: ProgressBar? = null
 
     override fun onGetLayout(): Int = R.layout.f_start_workorder
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,22 +43,37 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
 
-        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
-            title = "Сменное Задание"
-            setDisplayHomeAsUpEnabled(true)
-        }
-        progressBar = view.findViewById(R.id.progress_bar)
+        (requireActivity() as XChecklistAct).setBarTitle("Сменное Задание")
 
-        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh)
+        swipeRefreshLayout = view.findViewById(R.id.srl__f_start_workorder__refresh)
         swipeRefreshLayout?.setOnRefreshListener(this)
 
-        val takeAll = view.findViewById<AppCompatButton>(R.id.take_all)
-        takeAll.setOnClickListener { gotoNextAct() }
-        takeAll.isEnabled = false
+        val takeAll = view.findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_all).apply {
+            visibility = View.GONE
+            isEnabled = false
+            setOnClickListener {
+                val workOrders = viewModel.mWorkOrderList.value?.data?.dataKnow100?.woRKoRDeRknow1s
+                if(workOrders != null) {
+                    goToNextStep(workOrders)
+                }
+            }
+        }
 
-        val takeSelected = view.findViewById<AppCompatButton>(R.id.take_selected)
-        takeSelected.visibility = View.GONE
-        takeSelected.setOnClickListener { gotoNextAct() }
+        val takeSelected = view.findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_selected).apply {
+            visibility = View.GONE
+            isEnabled = false
+            setOnClickListener {
+                val selectedIndexes = viewModel.mSelectedWorkOrders.value
+                if(selectedIndexes != null) {
+                    val workOrders = viewModel.mWorkOrderList.value?.data?.dataKnow100?.woRKoRDeRknow1s
+                    if(workOrders != null) {
+                        val selectedWorkOrders =
+                            workOrders.filterIndexed { i, _  -> selectedIndexes.contains(i) }
+                        goToNextStep(selectedWorkOrders)
+                    }
+                }
+            }
+        }
 
         rvAdapter = StartWorkOrderAdapter()
         rvAdapter?.setListener { woInd ->
@@ -70,17 +83,17 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                     viewModel.mSelectedWorkOrders.value.let {
                         viewModel.mSelectedWorkOrders.postValue(it?.apply { remove(woInd) } ?: it)
                     }
-                    rvAdapter?.notifyItemChanged(woInd, false)
+                    rvAdapter?.updateItemSelection(listOf(woInd), false)
                 } else {
                     viewModel.mSelectedWorkOrders.value.let {
                         viewModel.mSelectedWorkOrders.postValue(it?.apply { add(woInd) } ?: it)
                     }
-                    rvAdapter?.notifyItemChanged(woInd, true)
+                    rvAdapter?.updateItemSelection(listOf(woInd), true)
                 }
             }
         }
 
-        rv = view.findViewById<RecyclerView>(R.id.rv_workorders).apply {
+        rv = view.findViewById<RecyclerView>(R.id.rv__f_start_workorder__workorders).apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = rvAdapter
         }
@@ -94,11 +107,15 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                     Status.SUCCESS -> {
                         val workOrders = data!!.dataKnow100.woRKoRDeRknow1s
                         if (workOrders.size == 1) {
-                            gotoNextAct()
-                        } else {
+                            goToNextStep(workOrders)
+                        } else if(workOrders.size > 1) {
+                            takeAll?.visibility = View.VISIBLE
                             rvAdapter?.setItems(workOrders)
+                        } else {
+                            // TODO::Vlad
+                            toast("Нет данных. Перезагрузите страницу")
                         }
-                        hideProgressBar()
+                        (requireActivity() as XChecklistAct).hideProgressBar()
                     }
                     Status.ERROR -> {
                         toast(result.msg)
@@ -113,8 +130,10 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         viewModel.mSelectedWorkOrders.observe(viewLifecycleOwner) {
             if(it != null) {
                 if(it.isEmpty()) {
+                    rvAdapter?.clearSelections()
                     takeSelected.visibility = View.GONE
                 } else {
+                    rvAdapter?.updateItemSelection(it, true)
                     takeSelected.visibility = View.VISIBLE
                 }
             }
@@ -122,73 +141,30 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
         Log.d("TEST ::: FUCK",
             "vm.lastOwnerId=${viewModel.mLastOwnerId}, " +
-                "params.ownerId=${paramS().getOwnerId()}, " +
-                "vm.lastWayBillId=${viewModel.mLastWayBillId}, " +
-                "getArgumentID(waybillId)=${getArgumentID()}")
+                    "params.ownerId=${paramS().getOwnerId()}, " +
+                    "vm.lastWayBillId=${viewModel.mLastWayBillId}, " +
+                    "getArgumentID(waybillId)=${getArgumentID()}")
         if(viewModel.mWorkOrderList.value == null ||
             viewModel.mLastOwnerId != paramS().getOwnerId() ||
             viewModel.mLastWayBillId != getArgumentID()
         ) {
-            showProgressBar()
             viewModel.getWorkOrderList(paramS().getOwnerId(), getArgumentID())
-        } else {
-            hideProgressBar()
         }
     }
 
-    fun showProgressBar() {
-        Log.d("TEST ::::", "SHOW PROGRESS BAR! is progress null = ${progressBar == null}")
-        progressBar?.visibility = View.VISIBLE
-    }
-
-    fun hideProgressBar() {
-        progressBar?.visibility = View.GONE
-    }
-
-    // TODO::vlad очень плохо(
-    fun gotoNextAct() {
+    fun goToNextStep(workOrders: List<WoRKoRDeR_know1>) {
         val intent = Intent(requireActivity(), MapAct::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-        val workOrders = viewModel.mWorkOrderList.value?.data?.dataKnow100?.woRKoRDeRknow1s
-        // Если выбран только один воркордер
-        if(viewModel.mSelectedWorkOrders.value?.size == 1) {
-            val selectedWorkOrderIndex = viewModel.mSelectedWorkOrders.value?.get(0)
-            if (selectedWorkOrderIndex != null) {
-                val workOrder = workOrders?.get(selectedWorkOrderIndex)
-                workOrder?.let {
-                    intent.putExtra(getAct().PUT_EXTRA_PARAM_ID, it.id)
-                    viewModel.insertWorkOrders(it)
-                }
-            }
-        // Если выбрано больше воркордеров
-        } else if((viewModel.mSelectedWorkOrders.value?.size ?: 0) > 0) {
-            workOrders?.filterIndexed { index, _ ->
-                viewModel.mSelectedWorkOrders.value?.contains(index) ?: false
-            }?.let {
-                viewModel.insertWorkOrders(it)
-            }
-        // Если получен только один воркордер
-        } else if(workOrders?.size == 1){
-            viewModel.insertWorkOrders(workOrders)
-            intent.putExtra(getAct().PUT_EXTRA_PARAM_ID, workOrders[0].id)
-            viewModel.insertWorkOrders(workOrders)
-        // Если сюда пришёл - значит нажали "Взять все"
+
+        if(workOrders.size == 1) {
+            val workOrder = workOrders[0]
+            intent.putExtra(getAct().PUT_EXTRA_PARAM_ID, workOrder.id)
+            viewModel.insertWorkOrders(listOf(workOrder))
         } else {
-            workOrders?.let {
-                viewModel.insertWorkOrders(it)
-            }
+            viewModel.insertWorkOrders(workOrders)
         }
         startActivity(intent)
         getAct().finish()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                navigateBackChecklist()
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onRefresh() {

@@ -8,8 +8,20 @@
     android:layout_gravity="center"
     android:orientation="vertical">
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actv__f_start_waybill__no_data"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Нет данных.\nПотяните вниз, чтобы перезагрузить страницу или перезагрузите приложение"
+        android:gravity="center"
+        android:maxWidth="280dp"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
+        android:id="@+id/srl__f_start_waybill__refresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -24,23 +36,15 @@
             android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_act_start_waybill"
+                android:id="@+id/rv__f_start_waybill__waybills"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="6dp"
+                tools:itemCount="100"
                 android:orientation="vertical" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

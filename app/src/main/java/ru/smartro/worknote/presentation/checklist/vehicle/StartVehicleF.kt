@@ -6,20 +6,16 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -28,6 +24,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
+import ru.smartro.worknote.presentation.checklist.XChecklistAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.ac.PERMISSIONS
@@ -39,13 +36,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
     private var etVehicleFilter: EditText? = null
     private var rvAdapter: StartVehicleAdapter? = null
 
-    private var progressBar: ProgressBar? = null
-    private var swipeRefreshLayout: SwipeRefreshLayout? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+    private var srlRefresh: SwipeRefreshLayout? = null
 
     override fun onGetLayout(): Int = R.layout.f_start_vehicle
 
@@ -55,21 +46,23 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
 
-        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
-            title = "Автомобиль"
-            setDisplayHomeAsUpEnabled(true)
+        (requireActivity() as XChecklistAct).apply {
+            // TODO::Vlad -- Можно поставить один раз тут и не трогать в последующих фрагах
+            acibGoToBack?.visibility = View.VISIBLE
+            acibGoToBack?.setOnClickListener {
+                navigateBackChecklist()
+            }
+            setBarTitle("Автомобиль")
         }
 
-        progressBar = view.findViewById(R.id.progress_bar)
-
-        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh)
-        swipeRefreshLayout?.setOnRefreshListener(this)
+        srlRefresh = view.findViewById(R.id.srl__f_start_vehicle__refresh)
+        srlRefresh?.setOnRefreshListener(this)
 
         rvAdapter = StartVehicleAdapter { vehicle ->
             goToNextStep(vehicle)
         }
 
-        etVehicleFilter = view.findViewById(R.id.et_act_start_vehicle__filter)
+        etVehicleFilter = view.findViewById(R.id.et__f_start_vehicle__filter)
         etVehicleFilter?.addTextChangedListener { text: Editable? ->
             val filterText = text.toString()
             getAct().logSentry(filterText)
@@ -84,15 +77,15 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             false
         })
 
-        val rv = view.findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
+        val rv = view.findViewById<RecyclerView>(R.id.rv__f_start_vehicle__vehicles)
         rv.layoutManager = LinearLayoutManager(requireContext())
         rv.adapter = rvAdapter
 
         viewModel.mVehicleList.observe(viewLifecycleOwner) { result ->
-            if((swipeRefreshLayout?.isRefreshing == true || rvAdapter?.isItemsEmpty() == true) && result != null) {
+            if(result != null) {
                 val data = result.data
-                swipeRefreshLayout?.isRefreshing = false
-                hideProgressBar()
+                srlRefresh?.isRefreshing = false
+                (requireActivity() as XChecklistAct).hideProgressBar()
                 when (result.status) {
                     Status.SUCCESS -> {
                         val vehicles = data?.data
@@ -122,10 +115,10 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                 "vm.mLastOwnerId=${viewModel.mLastOwnerId}, " +
                 "getArgumentID(mLastOwnerId)=${getArgumentID()}")
         if(viewModel.mVehicleList.value == null || viewModel.mLastOwnerId != getArgumentID()) {
-            showProgressBar()
+            (requireActivity() as XChecklistAct).showProgressBar()
             viewModel.getVehicleList(getArgumentID())
         } else {
-            hideProgressBar()
+            (requireActivity() as XChecklistAct).hideProgressBar()
         }
     }
 
@@ -143,30 +136,11 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             getAct().logSentry(filterText)
             Handler(Looper.getMainLooper()).postDelayed({
                 rvAdapter?.updateList(filterText)
-            }, 800)
+            }, 500)
         }
-    }
-
-    // TODO:
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        MyUtil.onMenuOptionClicked(requireContext(), item.itemId)
-        when (item.itemId) {
-            android.R.id.home -> {
-                navigateBackChecklist()
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onRefresh() {
         viewModel.getVehicleList(getArgumentID())
-    }
-
-    fun showProgressBar() {
-        progressBar?.visibility = View.VISIBLE
-    }
-
-    fun hideProgressBar() {
-        progressBar?.visibility = View.GONE
     }
 }
