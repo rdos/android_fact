@@ -576,17 +576,17 @@ open class PlatformEntity(
         return getRemainingKGOMediaSize() > 0
     }
 
-    fun addServerKGOMedia(imageEntity: ImageEntity) {
+    fun addServerKGOMedia(imageS: List<ImageEntity>) {
         initServedKGOEntity()
         this.kgoServed?.let{
-            it.media.add(imageEntity)
+            it.media.addAll(imageS)
         }
     }
 
-    fun addRemainingKGOMedia(imageEntity: ImageEntity) {
+    fun addRemainingKGOMedia(imageS: List<ImageEntity>) {
         initRemainingKGOEntity()
         this.kgoRemaining?.let{
-            it.media.add(imageEntity)
+            it.media.addAll(imageS)
         }
     }
 

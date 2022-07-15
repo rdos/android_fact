@@ -7,7 +7,6 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoBeforeMediaF : APhotoFragment() {
-
     private var mPlatformEntity: PlatformEntity? = null
     override fun onGetTextLabelFor() = getString(R.string.service_before)
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
@@ -24,17 +23,18 @@ class PhotoBeforeMediaF : APhotoFragment() {
 
     override fun onBeforeUSE() {
         val platformId = getArgumentID()
-        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-            mPlatformEntity = it
-        }
+        mPlatformEntity = viewModel.getPlatformEntity(platformId)
+//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
+//            mPlatformEntity = it
+//        }
     }
 
     override fun onGotoNext(): Boolean {
         return true
     }
 
-    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
-        viewModel.baseDat.addBeforeMedia(mPlatformEntity?.platformId!!, imageS, isRequireClean)
+    override fun onAfterUSE(imageS: List<ImageEntity>) {
+        viewModel.baseDat.addBeforeMedia(mPlatformEntity?.platformId!!, imageS)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }

@@ -7,6 +7,7 @@ import ru.smartro.worknote.R;
 import ru.smartro.worknote.work.cam.APhotoFragment;
 
 public class MapF extends AFragment {
+
     @Override
     public int onGetLayout() {
         return R.layout.aa_main;

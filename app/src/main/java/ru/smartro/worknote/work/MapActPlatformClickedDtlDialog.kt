@@ -23,7 +23,6 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.presentation.platform_serve.PServeAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import kotlin.math.min
 

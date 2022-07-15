@@ -318,7 +318,7 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun updateNonPickupPlatform(platformId: Int, problem: String, failureComment: String?=null) {
+    fun setStateFailureForPlatform(platformId: Int, problem: String, failureComment: String?=null) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform()
                 .equalTo("platformId", platformId)
@@ -624,36 +624,36 @@ class RealmRepository(private val p_realm: Realm) {
         return filteredList
     }
 
-    fun addBeforeMedia(platformId: Int, imageS: List<ImageEntity>, isRequireClean: Boolean) {
+    fun addBeforeMedia(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
             platformEntity?.beginnedAt = MyUtil.currentTime()
-            if (isRequireClean) {
-                platformEntity?.beforeMedia = mEmptyImageEntityList
-            }
+            platformEntity?.beforeMedia = mEmptyImageEntityList
             platformEntity?.beforeMedia?.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
 
-    fun addKgoServed(platformId: Int, imageEntity: ImageEntity) {
+    fun addKgoServed(platformId: Int, imageS: List<ImageEntity>) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
-            platformEntity!!.addServerKGOMedia(imageEntity)
+            platformEntity?.kgoServed?.media = mEmptyImageEntityList
+            platformEntity!!.addServerKGOMedia(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
 
-    fun addPlatformKgoRemaining(platformId: Int, imageEntity: ImageEntity) {
+    fun addPlatformKgoRemaining(platformId: Int, imageS: List<ImageEntity>) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
-            platformEntity!!.addRemainingKGOMedia(imageEntity)
+            platformEntity?.kgoRemaining?.media = mEmptyImageEntityList
+            platformEntity!!.addRemainingKGOMedia(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -668,37 +668,34 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun addAfterMedia(platformId: Int, imageS: List<ImageEntity>, isRequireClean: Boolean) {
+    fun addAfterMedia(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
-            if (isRequireClean) {
-                platformEntity?.afterMedia = mEmptyImageEntityList
-            }
+            platformEntity?.afterMedia = mEmptyImageEntityList
             platformEntity?.afterMedia?.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
 
-    fun addBeforeMediaSimplifyServe(platformId: Int, imageS: List<ImageEntity>,
-                                    isRequireClean: Boolean) {
-        addBeforeMedia(platformId, imageS, isRequireClean)
+    fun addBeforeMediaSimplifyServe(platformId: Int, imageS: List<ImageEntity>) {
+        addBeforeMedia(platformId, imageS)
     }
 
-    fun addAfterMediaSimplifyServe(platformId: Int, imageS: List<ImageEntity>,
-                                   isRequireClean: Boolean) {
-        addAfterMedia(platformId, imageS, isRequireClean)
+    fun addAfterMediaSimplifyServe(platformId: Int, imageS: List<ImageEntity>) {
+        addAfterMedia(platformId, imageS)
     }
 
-    fun addFailureMediaPlatform(platformId: Int, imageS: List<ImageEntity>, isRequireClean: Boolean) {
+    fun addFailureMediaPlatform(platformId: Int, imageS: List<ImageEntity>) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
-            if (isRequireClean) {
-                platformEntity?.failureMedia = mEmptyImageEntityList
-            }
+//            platformEntity?.beginnedAt = MyUtil.currentTime()
+//            if (isRequireClean) {
+            platformEntity?.failureMedia = mEmptyImageEntityList
+//            }
             platformEntity?.failureMedia?.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }

@@ -9,53 +9,58 @@ import java.io.File
 
 class PhotoKgoServedF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
+    override fun onGetTextLabelFor() = "Крупногабаритные отходы.забрал"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        TODO("Not yet implemented")
+        if (mPlatformEntity == null) {
+            toast("Ошибка.todo:::")
+            return RealmList<ImageEntity>()
+        }
+        return mPlatformEntity!!.kgoServed!!.media
     }
-    override fun onSavePhoto() {
-//        TODO("Not yet implemented")
-    }
-
-
 
     override fun onGetDirName(): String {
         return getArgumentID().toString() + File.separator + "kgoServed"
     }
 
+
     override fun onBeforeUSE() {
         val platformId = getArgumentID()
-        mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
-        mPlatformEntity?.getServedKGOMediaSize()
+        mPlatformEntity = viewModel.getPlatformEntity(platformId)
+//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
+//            mPlatformEntity = it
+//        }
     }
 
     override fun onGotoNext(): Boolean {
         return true
     }
 
-
-    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
-        if (mPlatformEntity == null) {
-            toast("Ошибка.todo:::")
-            return
-        }
-        val photoFileScanner = PhotoFileScanner(getOutputD())
-        while (photoFileScanner.scan()) {
-            val imageEntity = photoFileScanner.getImageEntity()
-//            viewModel.baseDat.addKgoServed(mPlatformEntity?.platformId!!, imageEntity, isRequireClean)
-        }
+    override fun onAfterUSE(imageS: List<ImageEntity>) {
+        viewModel.baseDat.addKgoServed(mPlatformEntity?.platformId!!, imageS)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
-    override fun onClickBtnCancel() {
-        TODO("Not yet implemented")
+    override fun onSavePhoto() {
+//        TODO("Not yet implemented")
+//        id: String = UUID.randomUUID().toString(),
     }
-
-    override fun onBackPressed() {
-        navigateBack()
-    }
-
-    override fun onGetTextLabelFor() = "Крупногабаритные отходы.забрал"
 
     override fun onGetIsVisibleBtnCancel() = false
 
+    override fun onClickBtnCancel() {
+
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (getMediaCount() <= 0) {
+            navigateClose()
+        } else {
+            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        }
+    }
+
+    companion object {
+    }
 }

@@ -16,7 +16,7 @@ open class PhotoAfterMediaF : APhotoFragment() {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mPlatformEntity!!.beforeMedia
+        return mPlatformEntity!!.afterMedia
     }
 
     override fun onGetDirName(): String {
@@ -36,8 +36,8 @@ open class PhotoAfterMediaF : APhotoFragment() {
     }
 
 
-    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
-        viewModel.baseDat.addAfterMedia(mPlatformEntity?.platformId!!, imageS, isRequireClean)
+    override fun onAfterUSE(imageS: List<ImageEntity>) {
+        viewModel.baseDat.addAfterMedia(mPlatformEntity?.platformId!!, imageS)
         navigateClose()
     }
 

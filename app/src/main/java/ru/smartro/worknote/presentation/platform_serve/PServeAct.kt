@@ -52,7 +52,6 @@ class PServeAct :
         supportActionBar?.hide()
         val platformId = intent.getIntExtra("platform_id", Inull)
         val modeTMP_know1 = intent.getStringExtra("mode")?: Snull
-        vm.getPlatformEntity(platformId)
 
         val bundle = Bundle()
         bundle.putInt("ARGUMENT_NAME___PARAM_ID", platformId)

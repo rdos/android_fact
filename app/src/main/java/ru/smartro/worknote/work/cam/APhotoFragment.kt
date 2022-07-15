@@ -39,8 +39,6 @@ import ru.smartro.worknote.work.ImageEntity
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.Executors
 
 //todo:
@@ -57,19 +55,18 @@ destination(photoFile)
 abstract class APhotoFragment(
 ) : AFragment(), OnImageSavedCallback {
     protected var mAcactvFail: AppCompatAutoCompleteTextView? = null
-    private var mIsModeEditPhoto: Boolean = false
     private var mMediaPlayer: MediaPlayer? = null
     override var TAG : String = "--Aa${this::class.simpleName}"
 
     protected var mMaxPhotoCount = 3
-    private var mBtnCancel: Button? = null
-    private var mCaptureButton: ImageButton? = null
+    private var acbCancel: Button? = null
+    private var ibTakePhoto: ImageButton? = null
     private lateinit var mCameraController: LifecycleCameraController
     private var mThumbNail: ImageButton? = null
     private var mImageCounter: TextView? = null
     private val mCameraExecutor = Executors.newSingleThreadExecutor()
     private var mActbPhotoFlash: AppCompatToggleButton? = null
-    private var mBtnAcceptPhoto: Button? = null
+    private var acbGotoNext: Button? = null
     private lateinit var mPreviewView: PreviewView
 
     private val PERMISSIONS_REQUEST_CODE = 10
@@ -80,16 +77,22 @@ abstract class APhotoFragment(
 
 
     protected abstract fun onGetTextLabelFor(): String?
+    open protected fun onGetTextForFailHint(): String?{
+        // TODO: name  onGetTextForFailHint = onGetTextForBlablabla)))!R_dos
+        return null
+    }
     protected abstract fun onGetMediaRealmList(): RealmList<ImageEntity>
 
     protected abstract fun onGetDirName(): String
     protected abstract fun onBeforeUSE()
     abstract fun onGotoNext(): Boolean
-    protected abstract fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean)
+    protected abstract fun onAfterUSE(imageS: List<ImageEntity>)
     protected abstract fun onSavePhoto()
     protected abstract fun onGetIsVisibleBtnCancel(): Boolean
     protected abstract fun onClickBtnCancel()
+    protected open fun onTakePhoto() {
 
+    }
     open fun onGetStringList(): List<String>? {
         return null
     }
@@ -109,7 +112,7 @@ abstract class APhotoFragment(
         super.onViewCreated(view, savedInstanceState)
         log("onViewCreated")
         mMediaPlayer = MediaPlayer.create(requireContext(), R.raw.camera_sound)
-        view.findViewById<Button>(R.id.btn_cancel).visibility = View.GONE
+        view.findViewById<Button>(R.id.acb_f_aphoto__cancel).visibility = View.GONE
         view.findViewById<TextView>(R.id.label_for).visibility = View.GONE
         mPreviewView = view.findViewById(R.id.view_finder)
         //todo: mCameraController в App???
@@ -126,22 +129,31 @@ abstract class APhotoFragment(
 //        mCameraController.setZoomRatio(.5000F)
 
         mPreviewView.controller = mCameraController
-       
+        showingProgress()
         onBeforeUSE()
+
+        if (GalleryPhotoF.isCostFileNotExist(getOutputD())) {
+            //        getArgSBundle() !!! no_restorePhotoFileS
+            restorePhotoFileS(onGetMediaRealmList())
+        }
+        hideProgress()
+        MyUtil.hideKeyboard(getAct())
     }
 
     protected fun getMediaCount(): Int {
-        val imageS = onGetMediaRealmList()
-        val result = imageS.size + getOutputFileCount()
+//        val imageS = onGetMediaRealmList()
+//        val result = imageS.size + getOutputFileCount()
+        val result = getOutputFileCount()
         return result
     }
 
-    private fun takePicture() {
+    private fun takePhoto() {
         val mediaSize = getMediaCount()
         if (mediaSize >= mMaxPhotoCount) {
             toast("Разрешенное количество фотографий: ${mMaxPhotoCount}")
         } else {
-            val photoFL = createFile(getOutputD(), MyUtil.timeStampInSec().toString(), PHOTO_EXTENSION)
+            onTakePhoto()
+            val photoFL = createFile(getOutputD(), MyUtil.timeStampInSec().toString())
             val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFL).build()
 
             mCameraController.takePicture(outputOptions, mCameraExecutor, this)
@@ -177,12 +189,14 @@ abstract class APhotoFragment(
     }
 
     fun getOutputFileCount(): Int {
-        val file = getOutputD()
-        val files = file.listFiles()
-        var result = files.size
-        for(f in  files) {
-            if (f.isDirectory) {
-                result = result - 1
+        val files = GalleryPhotoF.getFileList(getOutputD())
+        var result = 0
+        files?.let { itS ->
+            result = itS.size
+            for(f in  itS) {
+                if (f.isDirectory) {
+                    result -= 1
+                }
             }
         }
         return result
@@ -275,7 +289,7 @@ abstract class APhotoFragment(
             mImageCounter?.text = "$mediaSize"
             try {
 
-                mBtnAcceptPhoto?.apply {
+                acbGotoNext?.apply {
                     if(mediaSize <= 0) {
                         setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                         setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_light_gray))
@@ -287,20 +301,20 @@ abstract class APhotoFragment(
                 if (mediaSize <= 0) {
                     if(onGetIsVisibleBtnCancel()) {
 //            photoFor == PhotoTypeEnum.forPlatformPickupVolume
-                        mBtnCancel?.visibility = View.VISIBLE
-                        mBtnAcceptPhoto?.visibility = View.GONE
+                        acbCancel?.visibility = View.VISIBLE
+                        acbGotoNext?.visibility = View.GONE
                     } else {
-                        mBtnAcceptPhoto?.visibility = View.VISIBLE
+                        acbGotoNext?.visibility = View.VISIBLE
                     }
                 } else {
-                    mBtnAcceptPhoto?.visibility = View.VISIBLE
-                    mBtnCancel?.visibility = View.GONE
+                    acbGotoNext?.visibility = View.VISIBLE
+                    acbCancel?.visibility = View.GONE
                 }
 //                 = if(mediaSize <= 0) else View.VISIBLE
-                mBtnCancel?.setOnClickListener {
+                acbCancel?.setOnClickListener {
                     onClickBtnCancel()
                 }
-                mCaptureButton?.isEnabled = true
+                ibTakePhoto?.isEnabled = true
 
             } catch (ex: Exception) {
                 logSentry("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
@@ -330,13 +344,13 @@ abstract class APhotoFragment(
     //onViewCreated
 //    protected abstract fun onInitViewS(mRootView: View)
 
-    private fun tvLabelFor(view: View){
+    protected fun tvLabelFor(view: View){
         val tvLabelFor = view.findViewById<TextView>(R.id.label_for)
         val labelForText = onGetTextLabelFor()
         if(labelForText.isNullOrEmpty()) {
-            tvLabelFor.visibility = View.GONE
+            tvLabelFor?.visibility = View.GONE
         } else {
-            tvLabelFor.apply {
+            tvLabelFor?.apply {
                 visibility = View.VISIBLE
                 text = labelForText
             }
@@ -348,7 +362,7 @@ abstract class APhotoFragment(
         Log.d("TAGS", "initViews")
 
         mImageCounter = view.findViewById(R.id.image_counter)
-        mBtnCancel = view.findViewById<Button>(R.id.btn_cancel)
+        acbCancel = view.findViewById<Button>(R.id.acb_f_aphoto__cancel)
 
 
         mAcactvFail = view.findViewById(R.id.acactv_f_aphoto__fail_reason)
@@ -359,7 +373,7 @@ abstract class APhotoFragment(
             mAcactvFail?.visibility = View.GONE
         } else {
             mAcactvFail?.visibility = View.VISIBLE
-            mAcactvFail?.hint = onGetTextLabelFor()
+            mAcactvFail?.hint = onGetTextForFailHint()
             mAcactvFail?.setAdapter(ArrayAdapter(getAct(), android.R.layout.simple_dropdown_item_1line, android.R.id.text1, reasonsString))
             mAcactvFail?.setOnClickListener {
                 mAcactvFail?.showDropDown()
@@ -372,8 +386,8 @@ abstract class APhotoFragment(
         
 //        onInitViewS(mRootView)
 
-        mBtnAcceptPhoto = view.findViewById(R.id.photo_accept_button)
-        mBtnAcceptPhoto?.setOnClickListener {
+        acbGotoNext = view.findViewById(R.id.acb_f_aphoto__goto_next)
+        acbGotoNext?.setOnClickListener {
             val mediaSize = getMediaCount()
             if (mediaSize == 0) {
                 toast("Сделайте фото")
@@ -390,7 +404,7 @@ abstract class APhotoFragment(
                     val imageEntity = photoFileScanner.getImageEntity()
                     imageS.add(imageEntity)
                 }
-                onAfterUSE(imageS, mIsModeEditPhoto)
+                onAfterUSE(imageS)
                 dropOutputD()
             } finally {
                 hideProgress()
@@ -398,7 +412,7 @@ abstract class APhotoFragment(
         }
 
 
-        mCaptureButton = view.findViewById<ImageButton>(R.id.camera_capture_button)
+        ibTakePhoto = view.findViewById(R.id.ib_f_aphoto__takephoto)
         mActbPhotoFlash = view.findViewById<AppCompatToggleButton>(R.id.photo_flash)
         mCameraController.initializationFuture.addListener({
             Log.d("TAGS", "initializationFuture")
@@ -406,14 +420,14 @@ abstract class APhotoFragment(
 //            captureButton.isClickable = false
 
 //            captureButton.isPressed = true
-                mCaptureButton?.setOnClickListener {
-                    mCaptureButton?.isEnabled = false
+                ibTakePhoto?.setOnClickListener {
+                    ibTakePhoto?.isEnabled = false
                     try {
-                        takePicture()
+                        takePhoto()
                     } catch (ex: Exception) {
                         toast("Извините, произошла ошибка \n повторите, пожалуйста, попытку")
                         Log.e(TAG, "eXthr.message", ex)
-                        mCaptureButton?.isEnabled = true
+                        ibTakePhoto?.isEnabled = true
                     }
 
                 }
@@ -445,12 +459,9 @@ abstract class APhotoFragment(
             if (mediaSize <= 0) {
                 return@setOnClickListener
             }
-            mIsModeEditPhoto = true
-            saveImageEntity(onGetMediaRealmList())
             navigateMain(R.id.GalleryPhotoF, getArgumentID(), onGetDirName())
         }
     }
-
 
 
 
@@ -467,21 +478,24 @@ abstract class APhotoFragment(
         private const val PHOTO_EXTENSION = ".jpg"
         private const val MANUAL_FOCUS_DURATION__MS = 8000L
         private const val ANIMATION_MANUAL_FOCUS_DURATION__MS = MANUAL_FOCUS_DURATION__MS / 2
-        private fun createFile(baseFolder: File, format: String, extension: String) =
-            File(baseFolder, SimpleDateFormat(format, Locale.US).format(System.currentTimeMillis()) + extension)
+        private fun createFile(baseFolder: File, fileName: String) =
+            File(baseFolder, fileName + PHOTO_EXTENSION)
 
     }
-    private fun saveImageEntity(imageS: RealmList<ImageEntity>) {
+    private fun restorePhotoFileS(imageS: RealmList<ImageEntity>) {
+        log("restorePhotoFileS(imageS.size=${imageS.size}) before")
         for (imageEntity in imageS) {
+            log("restorePhotoFileS(/):for(imageEntity in imageS).imageEntityID=${imageEntity.date}")
             val imageInBase64 = imageEntity.image!!.replace("data:image/png;base64,", "")
             val byteArray: ByteArray =
                 Base64.decode(imageInBase64, Base64.DEFAULT)
-            val photoFL = createFile(getOutputD(), imageEntity.date.toString(), PHOTO_EXTENSION)
+            val photoFL = createFile(getOutputD(), imageEntity.date.toString())
             val outputStream = photoFL.outputStream()
             outputStream.use { it ->
                 it.write(byteArray)
             }
         }
+        log("restorePhotoFileS()after")
     }
 
     inner class PhotoFileScanner(val p_outputD: File) : AbsObject(TAG, "ImageEntityScanner") {
@@ -489,19 +503,27 @@ abstract class APhotoFragment(
         private var mFileS: Array<File>? = null
 
         fun scan(): Boolean {
-
+            Log.w(TAG, "scan().before")
             if (mFileS == null) {
+                Log.e(TAG, "scan(false).after mFileS == null")
+                return false
+            }
+            if (mIdx > mFileS!!.size - 1) {
+                Log.d(TAG, "scan(false).after mIdx > mFileS!!.size")
                 return false
             }
             while (mFileS!![mIdx].isDirectory) {
                 mIdx++
+                if (mIdx > mFileS!!.size - 1) {
+                    Log.d(TAG, "scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
+                    return false
+                }
                 Log.w(TAG, "onAfterUSE")
                 Log.e(TAG, "onAfterUSE")
                 Log.d(TAG, "onAfterUSE")
             }
-            if (mFileS!!.size >= mIdx) {
-                return false
-            }
+
+            Log.d(TAG, "scan(true).after ")
             return true
         }
 
@@ -526,11 +548,13 @@ abstract class APhotoFragment(
         fun getImageEntity(): ImageEntity {
             val imageFile = mFileS!![mIdx]
             val imageEntity = imageToBase64(imageFile)
+            mIdx++
             return imageEntity
         }
 
         private fun init(){
-            mFileS = p_outputD.listFiles()
+//            val filter = FilenameFilter { dir, name ->!!!
+            mFileS = GalleryPhotoF.getFileList(p_outputD)
             mIdx = 0
         }
 

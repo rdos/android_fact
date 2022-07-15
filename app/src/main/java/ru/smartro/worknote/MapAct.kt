@@ -63,7 +63,6 @@ import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
 
 
 //todo: тодо:!r_dos

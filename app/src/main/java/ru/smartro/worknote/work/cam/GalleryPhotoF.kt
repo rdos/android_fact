@@ -37,6 +37,7 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ImageEntity
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -73,15 +74,14 @@ class GalleryPhotoF : AFragment() {
         // Mark this as a retain fragment, so the lifecycle does not get restarted on config change
         retainInstance = true
 
-        // Get root directory of media from navigation arguments
-        val rootDirectory = File(getOutputD().absolutePath)
+
 
         // Walk through all files in the root directory
         // We reverse the order of the list to present the last photos first
-        mediaList = rootDirectory.listFiles { file ->
-            EXTENSION_WHITELIST.contains(file.extension.toUpperCase(Locale.ROOT))
-        }?.sortedDescending()?.toMutableList() ?: mutableListOf()
+        mediaList = getFileList(getOutputD())?.sortedDescending()?.toMutableList() ?: mutableListOf()
     }
+
+
 
     override fun onGetLayout(): Int {
         return R.layout.photo_show_fragment
@@ -156,6 +156,7 @@ class GalleryPhotoF : AFragment() {
 //                        viewModel.removeImageEntity(p_platformId, p_containerId, photoFor , imageEntity.md5)
                         mediaList.remove(imageEntity)
                         imageEntity.delete()
+                        createCOSTFile(getOutputD())
                         viewPager.adapter?.notifyDataSetChanged()
                         if (mediaList.size <= 0) {
                             navigateBack()
@@ -167,8 +168,52 @@ class GalleryPhotoF : AFragment() {
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateBack()
+    }
 
+    companion object {
+        private const val COST___EXTENSION = "cost."
+        private const val FILE_NAME_KEY = "no_restorePhotoFileS"
+        private const val NUM_OF_COUNT = "num_of_count"
 
+        private fun createCOSTFile(outD: File) {
+            createFile(outD, getCOSTFileName())
+        }
+        private fun createFile(baseFolder: File, fileName: String) {
+            val costFL = File(baseFolder, fileName)
+            val outputStream = costFL.outputStream()
+            outputStream.use { it ->
+                it.write(Int.MAX_VALUE)
+            }
+        }
+        fun getCOSTFileName(): String {
+            return COST___EXTENSION + FILE_NAME_KEY
+        }
+
+        //r_dos что такое Array<out File>? !!
+        fun getFileList(outD: File): Array<File>? {
+            // Get root directory of media from
+            val rootDirectory = File(outD.absolutePath)
+            val result = rootDirectory.listFiles { file ->
+                EXTENSION_WHITELIST.contains(file.extension.toUpperCase(Locale.ROOT))
+            }
+
+            return result
+        }
+
+        fun isCostFileNotExist(outD: File): Boolean {
+            val costFL = File(outD, getCOSTFileName())
+            return !costFL.exists()
+        }
+//        fun create(image: ImageEntity, numOfCount: String) = MediaAdapterFragment().apply {
+//            arguments = Bundle().apply {
+//                putString(FILE_NAME_KEY, image.absolutePath)
+//                putString(NUM_OF_COUNT, numOfCount)
+//            }
+//        }
+    }
     class MediaAdapterFragment(val image: File, val numOfCount: String) : Fragment() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -189,16 +234,6 @@ class GalleryPhotoF : AFragment() {
             Glide.with(view).load(image).into(imageView)
         }
 
-        companion object {
-            private const val FILE_NAME_KEY = "file_name"
-            private const val NUM_OF_COUNT = "num_of_count"
 
-//        fun create(image: ImageEntity, numOfCount: String) = MediaAdapterFragment().apply {
-//            arguments = Bundle().apply {
-//                putString(FILE_NAME_KEY, image.absolutePath)
-//                putString(NUM_OF_COUNT, numOfCount)
-//            }
-//        }
-        }
     }
 }

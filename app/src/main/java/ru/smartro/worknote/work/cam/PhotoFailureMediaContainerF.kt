@@ -4,7 +4,6 @@ import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
-import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoFailureMediaContainerF : APhotoFragment() {
@@ -33,7 +32,7 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
         return true
     }
 
-    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
+    override fun onAfterUSE(imageS: List<ImageEntity>) {
 //        navigateMain(R.id.PServeF, mContainerEntity?.platformId)
         navigateMain(R.id.PServeF, mPlatformId)
     }

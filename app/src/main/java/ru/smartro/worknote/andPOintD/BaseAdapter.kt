@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.Inull
 
+// TODO: add filtered field for table    clone(address= filter_field
 abstract class BaseAdapter<T,D : RecyclerView.ViewHolder>(private var mItems: List<T>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var mItemsBefore = mItems

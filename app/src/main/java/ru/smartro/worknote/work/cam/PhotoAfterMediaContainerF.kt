@@ -37,7 +37,7 @@ class PhotoAfterMediaContainerF : PhotoAfterMediaF() {
         return true
     }
 
-    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
+    override fun onAfterUSE(imageS: List<ImageEntity>) {
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }

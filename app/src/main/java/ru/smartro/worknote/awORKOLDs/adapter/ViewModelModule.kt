@@ -30,16 +30,6 @@ val viewModelModule = module {
     viewModel {
         MapAct.MapViewModel(androidApplication())
     }
-    viewModel {
-        ContainerFailureAct.ContainerFailureViewModel(androidApplication())
-    }
-    viewModel {
-        ContainerBreakdownAct.ContainerBreakdownViewModel(androidApplication())
-    }
-
-    viewModel {
-        PlatformFailureAct.NonPickupPlatformViewModel(androidApplication())
-    }
 
     viewModel { PlatformServeSharedViewModel(androidApplication()) }
     viewModel { PhotoViewModel(androidApplication()) }

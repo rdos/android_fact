@@ -33,7 +33,7 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
         return true
     }
 
-    override fun onAfterUSE(imageS: List<ImageEntity>, isRequireClean: Boolean) {
+    override fun onAfterUSE(imageS: List<ImageEntity>) {
 //        navigateMain(R.id.PServeF, mContainerEntity?.platformId)
         navigateMain(R.id.PServeF, mPlatformId)
     }

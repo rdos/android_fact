@@ -40,7 +40,7 @@ class PServeExtendedFrag :
     private var newVolumeValue: Double? = null
     private var mVolumePickup: Double? = null
     private var tvVolumePickup: TextView? = null
-    private var mAcbKGORemaining: AppCompatButton? = null
+    private var acbKGORemaining: AppCompatButton? = null
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
     private var recyclerView: RecyclerView? = null
@@ -59,7 +59,7 @@ class PServeExtendedFrag :
         }
         acbProblem = view.findViewById(R.id.acb_activity_platform_serve__problem)
         mAcbKGOServed = view.findViewById(R.id.acb_activity_platform_serve__kgo_served)
-        mAcbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
+        acbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
         acsbVolumePickup = view.findViewById<SeekBar?>(R.id.acsb_activity_platform_serve__seekbar).apply {
             thumb = getThumb(null)
         }
@@ -108,9 +108,10 @@ class PServeExtendedFrag :
                     }
                 }
                 if (platform.isRemainingKGONotEmpty()) {
-                    mAcbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
+                    acbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
                 }
-                mAcbKGORemaining?.setOnClickListener {
+
+                acbKGORemaining?.setOnClickListener {
                     showDialogFillKgoVolume().let { view ->
                         val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
                         tietKGOVolumeIn.setText(platform.getRemainingKGOVolume())
