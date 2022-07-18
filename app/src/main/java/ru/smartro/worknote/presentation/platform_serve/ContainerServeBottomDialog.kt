@@ -12,16 +12,11 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_container_serve.*
-import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.ARGUMENT_NAME___PARAM_ID
-import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.base.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
-import ru.smartro.worknote.work.cam.CameraAct
-import ru.smartro.worknote.work.ui.ContainerBreakdownAct
-import ru.smartro.worknote.work.ui.ContainerFailureAct
+
 
 class ContainerServeBottomDialog : AbstractBottomDialog() {
     private val viewModel: PlatformServeSharedViewModel by activityViewModels()

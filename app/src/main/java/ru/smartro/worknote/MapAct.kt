@@ -63,7 +63,6 @@ import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
 
 
 //todo: тодо:!r_dos
@@ -567,15 +566,13 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
     //тодо)) код фанатика m4 из cs)))
-    private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
-        val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PServeAct::class.java else PlatformFailureAct::class.java)
+        private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
+        val intent = Intent(this, PServeAct::class.java)
         intent.putExtra("platform_id", plaform.platformId)
-
-        if (todoParamREQUEST_EXIT == Inull) {
-            startActivity(intent)
-        } else {
-            startActivityForResult(intent, todoParamREQUEST_EXIT)
+        if (todoParamREQUEST_EXIT != Inull) {
+            intent.putExtra("mode", "itFireMode")
         }
+        startActivity(intent)
     }
 
     override fun startPlatformProblem(plaform: PlatformEntity) {

@@ -1,18 +1,43 @@
 package ru.smartro.worknote.work.cam
 
-import ru.smartro.worknote.R
+import io.realm.RealmList
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoFailureMediaF : APhotoFragment() {
+    private var mFailReasonS: List<String>? = null
     private var mPlatformEntity: PlatformEntity? = null
-
-    override fun onSaveFoto() {
+    override fun onGetTextLabelFor() = "невывоза площадки"
+    override fun onGetTextForFailHint() = "Причина невывоза площадки"
+    override fun onGetStringList(): List<String>? {
+        mFailReasonS = viewModel.getFailReasonS()
+        if (mFailReasonS == null) {
+            toast("Ошибка.todo:::")
+            return emptyList()
+        }
+        return mFailReasonS
+    }
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        if (mPlatformEntity == null) {
+            toast("Ошибка.todo:::")
+            return RealmList<ImageEntity>()
+        }
+        return mPlatformEntity!!.failureMedia
+    }
+    override fun onSavePhoto() {
 //        TODO("Not yet implemented")
+        log(":P:onSavePhoto")
     }
 
     override fun onClickBtnCancel() {
         //тут нужно очистить    mPlatformEntity.volumePickup
+    }
+
+    override fun onTakePhoto() {
+        super.onTakePhoto()
+
     }
 
     override fun onGetDirName(): String {
@@ -21,25 +46,44 @@ class PhotoFailureMediaF : APhotoFragment() {
 
     override fun onBeforeUSE() {
         val platformId = getArgumentID()
-        mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
-        mPlatformEntity?.failureMedia?.size
+        mPlatformEntity = viewModel.getPlatformEntity(platformId)
+        tvLabelFor(view!!)
+//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
+//            mPlatformEntity = it
+//        }
+    }
+    var failText: String? = null
+    override fun onGotoNext(): Boolean {
+        val result = true
+        if (mAcactvFail?.text.isNullOrEmpty()) {
+            toast("Выберите причину невывоза")
+            return false
+        }
+        failText = mAcactvFail?.text.toString()
+        return result
     }
 
-    override fun onAfterUSE() {
+
+    override fun onAfterUSE(imageS: List<ImageEntity>) {
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
+        viewModel.baseDat.addFailureMediaPlatform(mPlatformEntity?.platformId!!, imageS)
+//        val problemComment = problem_comment.text.toString()
+
+        viewModel.baseDat.setStateFailureForPlatform(mPlatformEntity?.platformId!!, failText!!)
         navigateClose()
     }
 
-    override fun onGetTextLabelFor() = getString(R.string.problem_on_point)
 
     override fun onGetIsVisibleBtnCancel() = false
 
-    override fun onmThumbNailClick() {
-//        TODO("Not yet implemented")
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateClose()
+        super.dropOutputD()
+       /* if (getMediaCount() <= 0) {
+            navigateClose()
+        } else {
+            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        }*/
     }
-
-    override fun onBtnAcceptPhoto_know1() {
-//        TODO("Not yet implemented")
-    }
-
 }

@@ -3,25 +3,10 @@ package ru.smartro.worknote.presentation.platform_serve
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.SwitchCompat
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupActionBarWithNavController
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.ActNOAbst
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
-import ru.smartro.worknote.awORKOLDs.util.StatusEnum
-import ru.smartro.worknote.log.FragmentNavigator
-import ru.smartro.worknote.work.cam.PhotoBeforeMediaF
-import ru.smartro.worknote.work.cam.CameraAct
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.commands.Command
@@ -29,7 +14,7 @@ import ru.terrakok.cicerone.commands.Command
 //todo: INDEterminate)
 class PServeAct :
     ActNOAbst() , Navigator, NavigatorHolder {
-
+    val vm: PlatformServeSharedViewModel by viewModels()
 //    private var mTEMPscreenKeyVAL: String? = null
 //    private  val mNavigator = object : FragmentNavigator(supportFragmentManager, R.id.f_container) {
 //        override fun createFragment(screenKey: String?, data: Any?): Fragment {
@@ -66,20 +51,27 @@ class PServeAct :
         setContentView(R.layout.act_platformserve)
         supportActionBar?.hide()
         val platformId = intent.getIntExtra("platform_id", Inull)
+        val modeTMP_know1 = intent.getStringExtra("mode")?: Snull
+
+        val bundle = Bundle()
+        bundle.putInt("ARGUMENT_NAME___PARAM_ID", platformId)
+        val navController = (supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment).navController
+
+        if(modeTMP_know1 == "itFireMode") {
+            navController.navigate(R.id.PhotoFailureMediaF, bundle)
+            return
+        }
         if(vm.mBeforeMediaWasInited.value == false) {
-            val bundle = Bundle()
-            bundle.putInt("ARGUMENT_NAME___PARAM_ID", platformId)
-            val navController = (supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment).navController
+
             navController.navigate(R.id.PhotoBeforeMediaF, bundle)
 //            setupActionBarWithNavController(navController)
-//            App.getAppliCation().getRouter().navigateTo(SCREEN_PhotoBeforeMediaF, platformId)
             vm.mBeforeMediaWasInited.postValue(true)
         }
 
 
     }
 
-    val vm: PlatformServeSharedViewModel by viewModels()
+
     private var mBackPressedCnt: Int = 2
 
     override fun onResume() {

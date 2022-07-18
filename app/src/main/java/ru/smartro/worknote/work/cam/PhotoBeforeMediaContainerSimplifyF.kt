@@ -1,56 +1,68 @@
 package ru.smartro.worknote.work.cam
 
 
+import io.realm.RealmList
+import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
-    companion object {
-//        fun newInstance(workOrderId: Any? = null): PhotoBeforeMediaF {
-//            workOrderId as Int
-//            val fragment = PhotoBeforeMediaF()
-//            fragment.addArgument(workOrderId)
-//            return fragment
-//        }
-    }
-    private var mPlatformEntity: PlatformEntity? = null
 
-    override fun onSaveFoto() {
-//        TODO("Not yet implemented")
+    private var mPlatformEntity: PlatformEntity? = null
+    override fun onGetTextLabelFor() = "Контейнер: Фото до"
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        if (mPlatformEntity == null) {
+            toast("Ошибка.todo:::")
+            return RealmList<ImageEntity>()
+        }
+        return mPlatformEntity!!.beforeMedia
     }
 
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "beforeMedia"
+        return getArgumentID().toString() + File.separator + "beforeMediaContainerSimplify"
     }
 
     override fun onBeforeUSE() {
-//        TODO("Not yet implemented")
         val platformId = getArgumentID()
         mPlatformEntity = viewModel.getPlatformEntity(platformId)
-        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-            mPlatformEntity = it
+//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
+//            mPlatformEntity = it
+//        }
+        mMaxPhotoCount = Int.MAX_VALUE
+    }
+
+    override fun onGotoNext(): Boolean {
+        return true
+    }
+
+    override fun onAfterUSE(imageS: List<ImageEntity>) {
+        viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
+        navigateMain(R.id.PhotoAfterMediaContainerSimplifyF, mPlatformEntity?.platformId)
+    }
+
+    override fun onSavePhoto() {
+
+    }
+
+    override fun onGetIsVisibleBtnCancel(): Boolean = false
+
+    override fun onClickBtnCancel() {
+
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (getMediaCount() <= 0) {
+            navigateClose()
+        } else {
+            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
         }
     }
 
-    override fun onAfterUSE() {
-        navigateMain(R.id.PhotoAfterMediaContainerSimplifyF, mPlatformEntity?.platformId)
-//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
-    }
-
-    override fun onGetTextLabelFor() = "Контейнер: Фото до"
-    override fun onClickBtnCancel() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onGetIsVisibleBtnCancel() = false
-
-    override fun onmThumbNailClick() {
+    companion object {
 
     }
-
-    override fun onBtnAcceptPhoto_know1() {
-//        TODO("Not yet implemented")
-    }
-
 }

@@ -10,7 +10,6 @@ import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.mapview.MapView
-import com.yandex.runtime.image.ImageProvider
 import kotlinx.android.synthetic.main.activity_debug.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.BuildConfig

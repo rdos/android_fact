@@ -4,14 +4,16 @@ import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
+import android.graphics.BitmapFactory
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.util.Size
 import android.view.*
 import android.widget.*
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
@@ -24,19 +26,19 @@ import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import io.realm.RealmList
 import ru.smartro.worknote.*
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
 import ru.smartro.worknote.work.ImageEntity
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
+import java.io.InputStream
 import java.util.concurrent.Executors
 
 //todo:
@@ -52,19 +54,19 @@ destination(photoFile)
 
 abstract class APhotoFragment(
 ) : AFragment(), OnImageSavedCallback {
+    protected var mAcactvFail: AppCompatAutoCompleteTextView? = null
     private var mMediaPlayer: MediaPlayer? = null
     override var TAG : String = "--Aa${this::class.simpleName}"
 
     protected var mMaxPhotoCount = 3
-    private var mBtnCancel: Button? = null
-    private var mCaptureButton: ImageButton? = null
+    private var acbCancel: Button? = null
+    private var ibTakePhoto: ImageButton? = null
     private lateinit var mCameraController: LifecycleCameraController
     private var mThumbNail: ImageButton? = null
     private var mImageCounter: TextView? = null
     private val mCameraExecutor = Executors.newSingleThreadExecutor()
     private var mActbPhotoFlash: AppCompatToggleButton? = null
-    private lateinit var mRootView: View
-    private var mBtnAcceptPhoto: Button? = null
+    private var acbGotoNext: Button? = null
     private lateinit var mPreviewView: PreviewView
 
     private val PERMISSIONS_REQUEST_CODE = 10
@@ -73,7 +75,27 @@ abstract class APhotoFragment(
 //  todo:!R_dos??  protected val viewModel: PlatformServeSharedViewModel by viewModel()
     protected val viewModel: PlatformServeSharedViewModel by activityViewModels()
 
-    protected abstract fun onSaveFoto()
+
+    protected abstract fun onGetTextLabelFor(): String?
+    open protected fun onGetTextForFailHint(): String?{
+        // TODO: name  onGetTextForFailHint = onGetTextForBlablabla)))!R_dos
+        return null
+    }
+    protected abstract fun onGetMediaRealmList(): RealmList<ImageEntity>
+
+    protected abstract fun onGetDirName(): String
+    protected abstract fun onBeforeUSE()
+    abstract fun onGotoNext(): Boolean
+    protected abstract fun onAfterUSE(imageS: List<ImageEntity>)
+    protected abstract fun onSavePhoto()
+    protected abstract fun onGetIsVisibleBtnCancel(): Boolean
+    protected abstract fun onClickBtnCancel()
+    protected open fun onTakePhoto() {
+
+    }
+    open fun onGetStringList(): List<String>? {
+        return null
+    }
 
     override fun onResume() {
         super.onResume()
@@ -82,7 +104,7 @@ abstract class APhotoFragment(
 
     //    @SuppressLint("MissingPermission")
     override fun onGetLayout(): Int {
-        return R.layout.fragment_camera
+        return R.layout.f_aphoto
     }
 
     //    @SuppressLint("MissingPermission")
@@ -90,10 +112,9 @@ abstract class APhotoFragment(
         super.onViewCreated(view, savedInstanceState)
         log("onViewCreated")
         mMediaPlayer = MediaPlayer.create(requireContext(), R.raw.camera_sound)
-        mRootView = view
-        mRootView.findViewById<Button>(R.id.btn_cancel).visibility = View.GONE
-        mRootView.findViewById<TextView>(R.id.label_for).visibility = View.GONE
-        mPreviewView = mRootView.findViewById(R.id.view_finder)
+        view.findViewById<Button>(R.id.acb_f_aphoto__cancel).visibility = View.GONE
+        view.findViewById<TextView>(R.id.label_for).visibility = View.GONE
+        mPreviewView = view.findViewById(R.id.view_finder)
         //todo: mCameraController в App???
         mCameraController = LifecycleCameraController(requireContext())
         val outputSize = CameraController.OutputSize(Size(768, 1021))
@@ -104,25 +125,35 @@ abstract class APhotoFragment(
 //        CameraXConfig()
 //        val ins = ProcessCameraProvider.getInstance(App.getAppliCation())
 //        ProcessCameraProvider.configureInstance()
-        initViews()
+        initViews(view)
 //        mCameraController.setZoomRatio(.5000F)
 
         mPreviewView.controller = mCameraController
+        showingProgress()
         onBeforeUSE()
-//        mPreviewView.post{
-//            setUpCamera()
-//            updateCameraUi()
-//        }
 
+        if (GalleryPhotoF.isCostFileNotExist(getOutputD())) {
+            //        getArgSBundle() !!! no_restorePhotoFileS
+            restorePhotoFileS(onGetMediaRealmList())
+        }
+        hideProgress()
+        MyUtil.hideKeyboard(getAct())
     }
 
-//    abstract fun onIsCurrentMediaIsFull(): Boolean
-    private fun takePicture() {
-        val mediaSize = this.getOutputFileCount()
+    protected fun getMediaCount(): Int {
+//        val imageS = onGetMediaRealmList()
+//        val result = imageS.size + getOutputFileCount()
+        val result = getOutputFileCount()
+        return result
+    }
+
+    private fun takePhoto() {
+        val mediaSize = getMediaCount()
         if (mediaSize >= mMaxPhotoCount) {
             toast("Разрешенное количество фотографий: ${mMaxPhotoCount}")
         } else {
-            val photoFL = createFile(getOutputD(), FILENAME, PHOTO_EXTENSION)
+            onTakePhoto()
+            val photoFL = createFile(getOutputD(), MyUtil.timeStampInSec().toString())
             val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFL).build()
 
             mCameraController.takePicture(outputOptions, mCameraExecutor, this)
@@ -136,14 +167,12 @@ abstract class APhotoFragment(
     protected fun dropOutputD() {
         val basePhotoD = App.getAppliCation().filesDir.absolutePath + File.separator + "photo"
         val file = File(basePhotoD)
-        file.delete()
+        file.deleteRecursively()
     }
 
     override fun onDetach() {
         super.onDetach()
-        dropOutputD()
         Log.w(TAG, "onDetach")
-
     }
 
     override fun onDestroy() {
@@ -160,56 +189,41 @@ abstract class APhotoFragment(
     }
 
     fun getOutputFileCount(): Int {
-        val file = getOutputD()
-        val files = file.listFiles()
-        var result = files.size
-        for(f in  files) {
-            if (f.isDirectory) {
-                result = result - 1
+        val files = GalleryPhotoF.getFileList(getOutputD())
+        var result = 0
+        files?.let { itS ->
+            result = itS.size
+            for(f in  itS) {
+                if (f.isDirectory) {
+                    result -= 1
+                }
             }
         }
         return result
     }
 
-    abstract fun onGetDirName(): String
 
+    private val TOAST_TEXT: String = "Извините, произошла ошибка во время сохранения фото. \n повторите, пожалуйста, попытку"
     override fun onImageSaved(outputFileResults: OutputFileResults) {
         val imageUri = outputFileResults.savedUri!!
         Log.d("TAGS", "Photo capture succeeded: $imageUri path: ${imageUri.path}")
-        Log.d("TAGS", "Current thread: ${Thread.currentThread()}")
+        Log.e("TAGS", "Current thread: ${Thread.currentThread().id}")
         setImageCounter()
         setGalleryThumbnail(imageUri)
 
-        Log.d("TAGS", Thread.currentThread().name)
-        //todo: хз!!!,,,???
-
-        Glide.with(App.getAppliCation())
-            .asBitmap()
-            .load(imageUri)
-            .into(object : CustomTarget<Bitmap?>() {
-                private val TOAST_TEXT: String = "Извините, произошла ошибка во время сохранения фото. \n повторите, пожалуйста, попытку"
-
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                    try {
-                        Log.d("TAGS", Thread.currentThread().name)
-
-
+        try {
+            Log.w("TAGS", Thread.currentThread().name)
 //                        if (imageEntity.isCheckedData()) {
-                            onSaveFoto()
+            onSavePhoto()
 //                        } else {
 //                            toast(TOAST_TEXT)
 //                        }
-                    } catch (ex: Exception) {
-                        Log.e(TAG, "eXthr.message", ex)
-                        toast(TOAST_TEXT)
-                    } finally {
-                        mCaptureButton?.isEnabled = true
-                    }
+        } catch (ex: Exception) {
+            Log.e(TAG, "eXthr.message", ex)
+            toast(TOAST_TEXT)
+        }
 
-                }
 
-                override fun onLoadCleared(placeholder: Drawable?) {}
-            })
 
 //            MyUtil.imageToBase64(imageUri, requireContext())
 //                                File(imageUri.path!!).delete()
@@ -219,7 +233,7 @@ abstract class APhotoFragment(
     }
 
     override fun onError(exception: ImageCaptureException) {
-        toast("Извините, произошла ошибка \n повторите, пожалуйста, попытку")
+        toast(TOAST_TEXT)
         Log.e("TAGS", "Photo capture failed: ${exception.message}", exception)
     }
 
@@ -269,15 +283,13 @@ abstract class APhotoFragment(
         }
     }
 
-//    protected abstract fun onGetImageCounter(): Int
-    protected abstract fun onBeforeUSE()
-    protected abstract fun onAfterUSE()
     private fun setImageCounter() {
-        val mediaSize = this.getOutputFileCount()
+        val mediaSize = getMediaCount()
         mImageCounter?.post{
             mImageCounter?.text = "$mediaSize"
             try {
-                mBtnAcceptPhoto?.apply {
+
+                acbGotoNext?.apply {
                     if(mediaSize <= 0) {
                         setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                         setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_light_gray))
@@ -289,19 +301,20 @@ abstract class APhotoFragment(
                 if (mediaSize <= 0) {
                     if(onGetIsVisibleBtnCancel()) {
 //            photoFor == PhotoTypeEnum.forPlatformPickupVolume
-                        mBtnCancel?.visibility = View.VISIBLE
-                        mBtnAcceptPhoto?.visibility = View.GONE
+                        acbCancel?.visibility = View.VISIBLE
+                        acbGotoNext?.visibility = View.GONE
                     } else {
-                        mBtnAcceptPhoto?.visibility = View.VISIBLE
+                        acbGotoNext?.visibility = View.VISIBLE
                     }
                 } else {
-                    mBtnAcceptPhoto?.visibility = View.VISIBLE
-                    mBtnCancel?.visibility = View.GONE
+                    acbGotoNext?.visibility = View.VISIBLE
+                    acbCancel?.visibility = View.GONE
                 }
 //                 = if(mediaSize <= 0) else View.VISIBLE
-                mBtnCancel?.setOnClickListener {
+                acbCancel?.setOnClickListener {
                     onClickBtnCancel()
                 }
+                ibTakePhoto?.isEnabled = true
 
             } catch (ex: Exception) {
                 logSentry("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
@@ -313,7 +326,6 @@ abstract class APhotoFragment(
 
     }
 
-    abstract fun onClickBtnCancel()
 
 //    override fun onConfigurationChanged(newConfig: Configuration) {
 //        super.onConfigurationChanged(newConfig)
@@ -331,32 +343,68 @@ abstract class APhotoFragment(
 
     //onViewCreated
 //    protected abstract fun onInitViewS(mRootView: View)
-    private fun initViews() {
-        Log.d("TAGS", "initViews")
 
-        mImageCounter = mRootView.findViewById(R.id.image_counter)
-        mBtnCancel = mRootView.findViewById<Button>(R.id.btn_cancel)
-
+    protected fun tvLabelFor(view: View){
+        val tvLabelFor = view.findViewById<TextView>(R.id.label_for)
         val labelForText = onGetTextLabelFor()
-        if(labelForText.isNotEmpty()) {
-//            photoFor == PhotoTypeEnum.forSimplifyServeBefore
-            mRootView.findViewById<TextView>(R.id.label_for).apply {
+        if(labelForText.isNullOrEmpty()) {
+            tvLabelFor?.visibility = View.GONE
+        } else {
+            tvLabelFor?.apply {
                 visibility = View.VISIBLE
                 text = labelForText
             }
         }
+    }
+
+
+    private fun initViews(view: View) {
+        Log.d("TAGS", "initViews")
+
+        mImageCounter = view.findViewById(R.id.image_counter)
+        acbCancel = view.findViewById<Button>(R.id.acb_f_aphoto__cancel)
+
+
+        mAcactvFail = view.findViewById(R.id.acactv_f_aphoto__fail_reason)
+        val reasonsString = onGetStringList()
+
+        if (reasonsString.isNullOrEmpty()) {
+            tvLabelFor(view)
+            mAcactvFail?.visibility = View.GONE
+        } else {
+            mAcactvFail?.visibility = View.VISIBLE
+            mAcactvFail?.hint = onGetTextForFailHint()
+            mAcactvFail?.setAdapter(ArrayAdapter(getAct(), android.R.layout.simple_dropdown_item_1line, android.R.id.text1, reasonsString))
+            mAcactvFail?.setOnClickListener {
+                mAcactvFail?.showDropDown()
+            }
+//            acactv.setOnFocusChangeListener { _, _ ->
+//                acactv.showDropDown()
+//            }
+        }
+
+        
 //        onInitViewS(mRootView)
 
-        mBtnAcceptPhoto = mRootView.findViewById(R.id.photo_accept_button)
-        mBtnAcceptPhoto?.setOnClickListener {
-            val mediaSize = this.getOutputFileCount()
+        acbGotoNext = view.findViewById(R.id.acb_f_aphoto__goto_next)
+        acbGotoNext?.setOnClickListener {
+            val mediaSize = getMediaCount()
             if (mediaSize == 0) {
                 toast("Сделайте фото")
                 return@setOnClickListener
             }
+            if (!onGotoNext()) {
+                return@setOnClickListener
+            }
             try {
                 showingProgress("Сохраняем фото")
-                onAfterUSE()
+                val photoFileScanner = PhotoFileScanner(getOutputD())
+                val imageS = mutableListOf<ImageEntity>()
+                while (photoFileScanner.scan()) {
+                    val imageEntity = photoFileScanner.getImageEntity()
+                    imageS.add(imageEntity)
+                }
+                onAfterUSE(imageS)
                 dropOutputD()
             } finally {
                 hideProgress()
@@ -364,22 +412,22 @@ abstract class APhotoFragment(
         }
 
 
-        mCaptureButton = mRootView.findViewById<ImageButton>(R.id.camera_capture_button)
-        mActbPhotoFlash = mRootView.findViewById<AppCompatToggleButton>(R.id.photo_flash)
+        ibTakePhoto = view.findViewById(R.id.ib_f_aphoto__takephoto)
+        mActbPhotoFlash = view.findViewById<AppCompatToggleButton>(R.id.photo_flash)
         mCameraController.initializationFuture.addListener({
             Log.d("TAGS", "initializationFuture")
             if (hasBackCamera()) {
 //            captureButton.isClickable = false
 
 //            captureButton.isPressed = true
-                mCaptureButton?.setOnClickListener {
-                    mCaptureButton?.isEnabled = false
+                ibTakePhoto?.setOnClickListener {
+                    ibTakePhoto?.isEnabled = false
                     try {
-                        takePicture()
+                        takePhoto()
                     } catch (ex: Exception) {
                         toast("Извините, произошла ошибка \n повторите, пожалуйста, попытку")
                         Log.e(TAG, "eXthr.message", ex)
-                        mCaptureButton?.isEnabled = true
+                        ibTakePhoto?.isEnabled = true
                     }
 
                 }
@@ -387,6 +435,7 @@ abstract class APhotoFragment(
                     paramS().isTorchEnabled = mActbPhotoFlash!!.isChecked
                     enableTorch()
                 }
+                setImageCounter()
             } else {
                 toast("Извините, но на вашем устройстве \n отсутсвует камера")
             }
@@ -395,40 +444,31 @@ abstract class APhotoFragment(
         }, ContextCompat.getMainExecutor(requireContext()))
 
 
-        val actbSound = mRootView.findViewById<AppCompatToggleButton>(R.id.actb_fragment_camera__sound)
+        val actbSound = view.findViewById<AppCompatToggleButton>(R.id.actb_fragment_camera__sound)
         actbSound.isChecked = paramS().isCameraSoundEnabled
         actbSound?.setOnClickListener {
             paramS().isCameraSoundEnabled = actbSound.isChecked
         }
 
         // Listener for button used to view the most recent photo
-        mThumbNail = mRootView.findViewById(R.id.photo_view_button)
+        mThumbNail = view.findViewById(R.id.photo_view_button)
         //todo: !!!
         mThumbNail?.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
         mThumbNail?.setOnClickListener {
-            onmThumbNailClick()
+            val mediaSize = getMediaCount()
+            if (mediaSize <= 0) {
+                return@setOnClickListener
+            }
             navigateMain(R.id.GalleryPhotoF, getArgumentID(), onGetDirName())
-//            val fragment = PhotoGalleryF( getOutputD())
-//            fragment.show(childFragmentManager, "GalleryFragment")
         }
-
-        setImageCounter()
     }
 
-    abstract fun onGetTextLabelFor(): String
-
-    abstract fun onGetIsVisibleBtnCancel(): Boolean
-
-    abstract fun onmThumbNailClick()
-
-    abstract fun onBtnAcceptPhoto_know1()
 
 
-
+    //todo:???
     //    private fun hasFrontCamera(): Boolean {
 //        return cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
 //    }
-    //todo:???
     private fun hasBackCamera(): Boolean {
         return mCameraController.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
     }
@@ -438,19 +478,97 @@ abstract class APhotoFragment(
         private const val PHOTO_EXTENSION = ".jpg"
         private const val MANUAL_FOCUS_DURATION__MS = 8000L
         private const val ANIMATION_MANUAL_FOCUS_DURATION__MS = MANUAL_FOCUS_DURATION__MS / 2
-        //        private fun createFile(baseFolder: File): File {
-//            val res = File(baseFolder, FILENAME)
-//            res.deleteOnExit()
-//            return res
-//        }
-        private fun createFile(baseFolder: File, format: String, extension: String) =
-            File(baseFolder, SimpleDateFormat(format, Locale.US).format(System.currentTimeMillis()) + extension)
+        private fun createFile(baseFolder: File, fileName: String) =
+            File(baseFolder, fileName + PHOTO_EXTENSION)
 
     }
+    private fun restorePhotoFileS(imageS: RealmList<ImageEntity>) {
+        log("restorePhotoFileS(imageS.size=${imageS.size}) before")
+        for (imageEntity in imageS) {
+            log("restorePhotoFileS(/):for(imageEntity in imageS).imageEntityID=${imageEntity.date}")
+            val imageInBase64 = imageEntity.image!!.replace("data:image/png;base64,", "")
+            val byteArray: ByteArray =
+                Base64.decode(imageInBase64, Base64.DEFAULT)
+            val photoFL = createFile(getOutputD(), imageEntity.date.toString())
+            val outputStream = photoFL.outputStream()
+            outputStream.use { it ->
+                it.write(byteArray)
+            }
+        }
+        log("restorePhotoFileS()after")
+    }
 
+    inner class PhotoFileScanner(val p_outputD: File) : AbsObject(TAG, "ImageEntityScanner") {
+        private var mIdx: Int = Inull
+        private var mFileS: Array<File>? = null
+
+        fun scan(): Boolean {
+            Log.w(TAG, "scan().before")
+            if (mFileS == null) {
+                Log.e(TAG, "scan(false).after mFileS == null")
+                return false
+            }
+            if (mIdx > mFileS!!.size - 1) {
+                Log.d(TAG, "scan(false).after mIdx > mFileS!!.size")
+                return false
+            }
+            while (mFileS!![mIdx].isDirectory) {
+                mIdx++
+                if (mIdx > mFileS!!.size - 1) {
+                    Log.d(TAG, "scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
+                    return false
+                }
+                Log.w(TAG, "onAfterUSE")
+                Log.e(TAG, "onAfterUSE")
+                Log.d(TAG, "onAfterUSE")
+            }
+
+            Log.d(TAG, "scan(true).after ")
+            return true
+        }
+
+        private fun imageToBase64(imageFile: File, rotationDegrees: Float = Fnull): ImageEntity {
+            val imageStream: InputStream = imageFile.inputStream()
+            val baos = ByteArrayOutputStream()
+            imageStream.use {
+                val resource = BitmapFactory.decodeStream(imageStream)
+                resource.compress(Bitmap.CompressFormat.WEBP, 80, baos)
+            }
+            val b: ByteArray = baos.toByteArray()
+            Log.w("TAGS", "b.size=${b.size}")
+            val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
+            Log.w("TAGS", "imageBase64=${imageBase64.length}")
+            val gps = App.getAppliCation().gps()
+            val imageEntity = gps.inImageEntity(imageBase64)
+//        imageEntity.isNoLimitPhoto = true
+//        onGetImage
+            return imageEntity
+        }
+
+        fun getImageEntity(): ImageEntity {
+            val imageFile = mFileS!![mIdx]
+            val imageEntity = imageToBase64(imageFile)
+            mIdx++
+            return imageEntity
+        }
+
+        private fun init(){
+//            val filter = FilenameFilter { dir, name ->!!!
+            mFileS = GalleryPhotoF.getFileList(p_outputD)
+            mIdx = 0
+        }
+
+        init {
+            init()
+        }
+    }
 }
 
-
+class PhotoViewModel(application: Application) : BaseViewModel(application) {
+    fun getImageList(platformId: Int, containerId: Int, photoFor: Int): MutableList<ImageEntity> {
+        return baseDat.getImageList(platformId, containerId, photoFor) as MutableList<ImageEntity>
+    }
+}
 /**
  *    val orientationEventListener = object : OrientationEventListener(context) {
 override fun onOrientationChanged(orientation: Int) {
@@ -482,11 +600,7 @@ imageAnalyzer?.targetRotation = mRotation
 
 orientationEventListener.enable()
  */
-class PhotoViewModel(application: Application) : BaseViewModel(application) {
-    fun getImageList(platformId: Int, containerId: Int, photoFor: Int): MutableList<ImageEntity> {
-        return baseDat.getImageList(platformId, containerId, photoFor) as MutableList<ImageEntity>
-    }
-}
+
 //    private class LuminosityAnalyzer:ImageAnalysis.Analyzer{
 //        private var lastAnalyzedTimestamp = 0L
 //        /**

@@ -49,6 +49,9 @@ object MyUtil {
         return System.currentTimeMillis() / 1000L
     }
 
+    fun timeStampInMSec(): Long {
+        return System.currentTimeMillis()
+    }
 
     fun currentTime(): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", Locale.getDefault())
@@ -126,6 +129,7 @@ object MyUtil {
     fun base64ToImage(encodedImage: String?): Bitmap {
         val decodedString: ByteArray =
             Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
+
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     }
 

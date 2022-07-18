@@ -10,22 +10,22 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import ru.smartro.worknote.*
+import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.presentation.platform_serve.adapters.ExtendedContainerAdapter
 import ru.smartro.worknote.work.ContainerEntity
-import ru.smartro.worknote.work.cam.CameraAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
 
 
 class PServeExtendedFrag :
@@ -40,7 +40,7 @@ class PServeExtendedFrag :
     private var newVolumeValue: Double? = null
     private var mVolumePickup: Double? = null
     private var tvVolumePickup: TextView? = null
-    private var mAcbKGORemaining: AppCompatButton? = null
+    private var acbKGORemaining: AppCompatButton? = null
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
     private var recyclerView: RecyclerView? = null
@@ -59,7 +59,7 @@ class PServeExtendedFrag :
         }
         acbProblem = view.findViewById(R.id.acb_activity_platform_serve__problem)
         mAcbKGOServed = view.findViewById(R.id.acb_activity_platform_serve__kgo_served)
-        mAcbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
+        acbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
         acsbVolumePickup = view.findViewById<SeekBar?>(R.id.acsb_activity_platform_serve__seekbar).apply {
             thumb = getThumb(null)
         }
@@ -108,9 +108,10 @@ class PServeExtendedFrag :
                     }
                 }
                 if (platform.isRemainingKGONotEmpty()) {
-                    mAcbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
+                    acbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
                 }
-                mAcbKGORemaining?.setOnClickListener {
+
+                acbKGORemaining?.setOnClickListener {
                     showDialogFillKgoVolume().let { view ->
                         val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
                         tietKGOVolumeIn.setText(platform.getRemainingKGOVolume())

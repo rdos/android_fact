@@ -1,7 +1,9 @@
 package ru.smartro.worknote.work.cam
 
 
+import io.realm.RealmList
 import ru.smartro.worknote.R
+import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
@@ -16,7 +18,7 @@ class PhotoAfterMediaContainerF : PhotoAfterMediaF() {
     }
     private var mPlatformEntity: PlatformEntity? = null
 
-    override fun onSaveFoto() {
+    override fun onSavePhoto() {
 //        TODO("Not yet implemented")
     }
 
@@ -31,7 +33,11 @@ class PhotoAfterMediaContainerF : PhotoAfterMediaF() {
 
     }
 
-    override fun onAfterUSE() {
+    override fun onGotoNext(): Boolean {
+        return true
+    }
+
+    override fun onAfterUSE(imageS: List<ImageEntity>) {
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
@@ -43,12 +49,7 @@ class PhotoAfterMediaContainerF : PhotoAfterMediaF() {
 
     override fun onGetIsVisibleBtnCancel() = false
 
-    override fun onmThumbNailClick() {
-
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        return super.onGetMediaRealmList()
     }
-
-    override fun onBtnAcceptPhoto_know1() {
-//        TODO("Not yet implemented")
-    }
-
 }
