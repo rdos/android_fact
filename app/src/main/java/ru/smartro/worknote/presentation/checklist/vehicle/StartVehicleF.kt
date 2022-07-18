@@ -108,17 +108,21 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                         toast("Проблемы с интернетом")
                     }
                 }
+            } else {
+                rvAdapter?.clearItems()
+                (requireActivity() as XChecklistAct).showProgressBar()
             }
         }
 
-        Log.d("TEST ::: FUCK",
+        Log.d("TEST ::: ${this::class.java.simpleName}",
                 "vm.mLastOwnerId=${viewModel.mLastOwnerId}, " +
                 "getArgumentID(mLastOwnerId)=${getArgumentID()}")
-        if(viewModel.mVehicleList.value == null || viewModel.mLastOwnerId != getArgumentID()) {
+        if(viewModel.mVehicleList.value == null) {
             (requireActivity() as XChecklistAct).showProgressBar()
             viewModel.getVehicleList(getArgumentID())
-        } else {
-            (requireActivity() as XChecklistAct).hideProgressBar()
+        } else if(viewModel.mLastOwnerId != getArgumentID()) {
+            viewModel.clearVehicleList()
+            viewModel.getVehicleList(getArgumentID())
         }
     }
 
@@ -138,6 +142,12 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                 rvAdapter?.updateList(filterText)
             }, 500)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        viewModel.mVehicleList.removeObservers(viewLifecycleOwner)
     }
 
     override fun onRefresh() {

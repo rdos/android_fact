@@ -46,9 +46,7 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
     private val _wayBillList: MutableLiveData<List<WayBillDto>> = MutableLiveData(null)
     val mWayBillList: LiveData<List<WayBillDto>>
         get() = _wayBillList
-
     val mWayBillsViewState: MutableLiveData<ViewState> = MutableLiveData(ViewState.IDLE())
-
     var mLastWayBillId = -1
 
     // WORKORDERS
@@ -102,14 +100,20 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
             }
         }
     }
+    fun clearVehicleList() {
+        _vehicleList.postValue(null)
+    }
 
     fun getWayBillsList(body : WayListBody, isRefresh: Boolean = false) {
+        _wayBillList.postValue(null)
         //
         if(isRefresh) {
             mWayBillsViewState.postValue(ViewState.REFRESH())
         } else {
             mWayBillsViewState.postValue(ViewState.LOADING())
         }
+        //
+        mLastWayBillId = -1
         //
         viewModelScope.launch {
             try {
@@ -163,5 +167,9 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
     fun insertWorkOrders(workOrders: List<WoRKoRDeR_know1>) {
         baseDat.clearDataBase()
         baseDat.insertWorkorder(workOrders)
+    }
+
+    fun clearWorkOrderList() {
+        _workOrderList.postValue(null)
     }
 }

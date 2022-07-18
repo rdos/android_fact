@@ -61,7 +61,6 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
         val takeSelected = view.findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_selected).apply {
             visibility = View.GONE
-            isEnabled = false
             setOnClickListener {
                 val selectedIndexes = viewModel.mSelectedWorkOrders.value
                 if(selectedIndexes != null) {
@@ -100,7 +99,6 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
         viewModel.mWorkOrderList.observe(viewLifecycleOwner) { result ->
             if(result != null) {
-                takeAll.isEnabled = true
                 swipeRefreshLayout?.isRefreshing = false
                 val data = result.data
                 when (result.status) {
@@ -109,6 +107,7 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                         if (workOrders.size == 1) {
                             goToNextStep(workOrders)
                         } else if(workOrders.size > 1) {
+                            takeAll.isEnabled = true
                             takeAll?.visibility = View.VISIBLE
                             rvAdapter?.setItems(workOrders)
                         } else {
@@ -124,6 +123,9 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                         toast("Проблемы с интернетом")
                     }
                 }
+            } else {
+                (requireActivity() as XChecklistAct).showProgressBar()
+                rvAdapter?.clearItems()
             }
         }
 
@@ -139,7 +141,7 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
 
-        Log.d("TEST ::: FUCK",
+        Log.d("TEST ::: ${this::class.java.simpleName}",
             "vm.lastOwnerId=${viewModel.mLastOwnerId}, " +
                     "params.ownerId=${paramS().getOwnerId()}, " +
                     "vm.lastWayBillId=${viewModel.mLastWayBillId}, " +
@@ -148,6 +150,9 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             viewModel.mLastOwnerId != paramS().getOwnerId() ||
             viewModel.mLastWayBillId != getArgumentID()
         ) {
+            if(viewModel.mWorkOrderList.value != null) {
+                viewModel.clearWorkOrderList()
+            }
             viewModel.getWorkOrderList(paramS().getOwnerId(), getArgumentID())
         }
     }
@@ -165,6 +170,12 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
         startActivity(intent)
         getAct().finish()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        viewModel.mWorkOrderList.removeObservers(viewLifecycleOwner)
     }
 
     override fun onRefresh() {

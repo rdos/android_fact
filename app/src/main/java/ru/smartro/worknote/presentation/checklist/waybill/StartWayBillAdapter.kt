@@ -16,7 +16,12 @@ class StartWayBillAdapter(private val listener: (WayBillDto) -> Unit): RecyclerV
         mItems.addAll(wayBillsList)
         notifyDataSetChanged()
     }
-    fun isItemsEmpty() = mItems.isEmpty()
+    override fun getItemCount(): Int = mItems.size
+
+    fun clearItems() {
+        mItems.clear()
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WayBillViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.f_start_waybill__rv_item, parent, false)
@@ -26,8 +31,6 @@ class StartWayBillAdapter(private val listener: (WayBillDto) -> Unit): RecyclerV
     override fun onBindViewHolder(holder: WayBillViewHolder, position: Int) {
         holder.bind(mItems[position])
     }
-
-    override fun getItemCount(): Int = mItems.size
 
     class WayBillViewHolder(val itemView: View, val listener: (WayBillDto) -> Unit): RecyclerView.ViewHolder(itemView) {
         fun bind(wayBill: WayBillDto) {

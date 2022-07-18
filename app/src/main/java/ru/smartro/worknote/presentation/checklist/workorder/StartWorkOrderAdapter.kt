@@ -63,6 +63,11 @@ class StartWorkOrderAdapter(): RecyclerView.Adapter<StartWorkOrderAdapter.WorkOr
         }
     }
 
+    fun clearItems() {
+        mItems.clear()
+        notifyDataSetChanged()
+    }
+
     class WorkOrderViewHolder(val itemView: View, val listener: ((Int) -> Unit)?): RecyclerView.ViewHolder(itemView) {
         fun bind(workOrder: WoRKoRDeR_know1, position: Int){
             itemView.findViewById<TextView>(R.id.wo_name).text = workOrder.name

@@ -55,16 +55,21 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         viewModel.mWayBillList.observe(viewLifecycleOwner) { wayBills ->
             if(wayBills != null) {
                 if (wayBills.isNotEmpty()) {
-                    if (wayBills.size == 1) {
+                    if (wayBills.size == 1 && viewModel.mLastWayBillId == -1) {
+                        viewModel.mLastWayBillId = wayBills[0].id
                         goToNextStep(wayBills[0].id, wayBills[0].number)
                     } else {
                         hideNoData()
                         rvAdapter.setItems(wayBills)
                     }
                     return@observe
+                } else {
+                    showNoData()
                 }
+            } else {
+                rvAdapter.clearItems()
             }
-            showNoData()
+
         }
 
         viewModel.mWayBillsViewState.observe(viewLifecycleOwner) { state ->
@@ -75,11 +80,12 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
             when(state) {
                 is ViewState.IDLE -> {
-                    Log.d("TEST ::: FUCK",
+                    Log.d("TEST ::: ${this::class.java.simpleName}",
                         "vm.lastOwnerId=${viewModel.mLastOwnerId}, " +
                                 "params.ownerId=${paramS().getOwnerId()}, " +
                                 "vm.mLastVehicleId=${viewModel.mLastVehicleId}, " +
                                 "getArgumentID(VehicleId)=${getArgumentID()}")
+
                     if(viewModel.mWayBillList.value == null ||
                         viewModel.mLastVehicleId != getArgumentID() ||
                         viewModel.mLastOwnerId != paramS().getOwnerId()
@@ -132,6 +138,13 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onRefresh() {
         getWayBillList(true)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        viewModel.mWayBillList.removeObservers(viewLifecycleOwner)
+        viewModel.mWayBillsViewState.postValue(ViewState.IDLE())
     }
 
     private fun goToNextStep(wayBillId: Int, wayBillNumber: String) {

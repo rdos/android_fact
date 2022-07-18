@@ -28,6 +28,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("TEST :::", "STARTOWNERFRAG :: onViewCreated")
 
         if (!MyUtil.hasPermissions(requireContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
@@ -89,5 +90,12 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onRefresh() {
         viewModel.getOwnersList()
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        viewModel.mOwnersList.removeObservers(viewLifecycleOwner)
     }
 }
