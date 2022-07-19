@@ -11,7 +11,7 @@ import java.io.File
 class PhotoFailureMediaContainerF : APhotoFragment() {
     private var mFailReasonS: List<String>? = null
     private var mContainerEntity: ContainerEntity? = null
-    override fun onGetTextLabelFor() = "невывоза контейнера"
+    override fun onGetTextLabelFor() = "Фото невывоза контейнера"
     override fun onGetTextForFailHint() = "Причина невывоза контейнера"
     override fun onGetStringList(): List<String>? {
         mFailReasonS = viewModel.getFailReasonS()

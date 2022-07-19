@@ -38,8 +38,6 @@ class PServeF : AFragment() {
         super.onViewCreated(view, savedInstanceState)
         val plId = getArgumentID()
 
-        vm.getPlatformEntity(plId)
-
         tvContainersProgress = view.findViewById(R.id.tv_platform_serve__cont_progress)
         btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = view.findViewById(R.id.tv_platform_serve__address)
@@ -127,5 +125,7 @@ class PServeF : AFragment() {
                 }
             }
         }
+
+        vm.getPlatformEntity(plId)
     }
 }

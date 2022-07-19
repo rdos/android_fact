@@ -233,7 +233,6 @@ class RealmRepository(private val p_realm: Realm) {
             if (volumePickup == null) {
                 platformEntity?.pickupMedia = RealmList()
             }
-            platformEntity?.beginnedAt = MyUtil.currentTime()
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -252,17 +251,6 @@ class RealmRepository(private val p_realm: Realm) {
                 container.status = StatusEnum.SUCCESS
             }
 
-            platformEntity?.beginnedAt = MyUtil.currentTime()
-            setEntityUpdateAt(platformEntity)
-        }
-    }
-
-    fun updatePlatformBeginnedAt(platformId: Int) {
-        p_realm.executeTransaction { realm ->
-            val platformEntity = getQueryPlatform()
-                .equalTo("platformId", platformId)
-                .findFirst()
-            platformEntity?.beginnedAt = MyUtil.currentTime()
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -299,35 +287,6 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun updateContainerFailure(platformId: Int, containerId: Int,
-                               problemComment: String, nonPickupType: NonPickupEnum,
-                               problem: String) {
-        Log.d(TAG, "updateContainerProblem.before platformId=${platformId}")
-        Log.d(TAG, "updateContainerProblem.containerId=${containerId}, problemComment=${problemComment}")
-        Log.d(TAG, "updateContainerProblem.problemType=${nonPickupType}, problem=${problem}")
-        p_realm.executeTransaction { realm ->
-            val container = realm.where(ContainerEntity::class.java)
-                .equalTo("containerId", containerId)
-                .findFirst()!!
-            val platform = getQueryPlatform()
-                .equalTo("platformId", platformId)
-                .findFirst()!!
-            when (nonPickupType) {
-                NonPickupEnum.BREAKDOWN -> {
-                    val problemId = findBreakdownByValue(realm, problem).id
-                    container.breakdownReasonId = problemId
-                }
-                NonPickupEnum.FAILURE -> {
-                    val problemId = findFailReasonByValue(realm, problem).id
-                    container.failureReasonId = problemId
-                    container.status = StatusEnum.ERROR
-                }
-            }
-            container.comment = problemComment
-            setEntityUpdateAt(platform)
-        }
-    }
-
     fun setStateFailureForPlatform(platformId: Int, problem: String, failureComment: String?=null) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform()
@@ -356,12 +315,33 @@ class RealmRepository(private val p_realm: Realm) {
             val platform = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
-
+            val containerEntity = getQueryContainer()
+                .equalTo("containerId", containerId)
+                .findFirst()!!
             val problemId = findFailReasonByValue(realm, problem).id
-            val container = getContainerEntity(containerId)
             Log.d("TEST::::", "FIND CONTAINER NUMBER ${containerId}  problem: ${problemId}")
-            container.failureReasonId = problemId
-            container.comment = comment
+            containerEntity.failureReasonId = problemId
+            containerEntity.comment = comment
+            containerEntity.status = StatusEnum.ERROR
+            val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
+                .findFirst()
+            workOrder?.calcInfoStatistics()
+            setEntityUpdateAt(platform)
+        }
+    }
+
+    fun setStateBreakdownForContainer(platformId: Int, containerId: Int, problem: String, comment: String? = null) {
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            val containerEntity = getQueryContainer()
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val problemId = findBreakdownByValue(realm, problem).id
+            Log.d("TEST::::", "FIND CONTAINER NUMBER ${containerId} problem: ${problem} problemid: ${problemId}")
+            containerEntity.breakdownReasonId = problemId
+            containerEntity.comment = comment
             val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
                 .findFirst()
             workOrder?.calcInfoStatistics()
@@ -391,7 +371,6 @@ class RealmRepository(private val p_realm: Realm) {
 
             workOrder?.calcInfoStatistics()
 
-            platform.beginnedAt = MyUtil.currentTime()
             setEntityUpdateAt(platform)
         }
     }
@@ -406,7 +385,6 @@ class RealmRepository(private val p_realm: Realm) {
 
             workOrder?.calcInfoStatistics()
 
-            platform.beginnedAt = MyUtil.currentTime()
             setEntityUpdateAt(platform)
         }
     }
@@ -657,7 +635,9 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
-            platformEntity?.beginnedAt = MyUtil.currentTime()
+            if (platformEntity?.beginnedAt == null) {
+                platformEntity?.beginnedAt = MyUtil.currentTime()
+            }
             platformEntity?.beforeMedia = mEmptyImageEntityList
             platformEntity?.beforeMedia?.addAll(imageS)
             setEntityUpdateAt(platformEntity)
@@ -686,12 +666,13 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun addPlatformPickupMedia(platformId: Int, imageEntity: ImageEntity) {
+    fun addPlatformPickupMedia(platformId: Int, imageS: List<ImageEntity>) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
-            platformEntity!!.pickupMedia.add(imageEntity)
+            platformEntity!!.pickupMedia = mEmptyImageEntityList
+            platformEntity.pickupMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -784,6 +765,7 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
+            containerEntity.breakdownMedia = mEmptyImageEntityList
             containerEntity.breakdownMedia.addAll(imageS)
 
             setEntityUpdateAt(platformEntity)

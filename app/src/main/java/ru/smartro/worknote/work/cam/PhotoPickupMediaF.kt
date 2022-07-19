@@ -15,7 +15,7 @@ class PhotoPickupMediaF : APhotoFragment() {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mPlatformEntity!!.kgoServed!!.media
+        return mPlatformEntity!!.pickupMedia
     }
 
     override fun onGetDirName(): String {
@@ -38,7 +38,7 @@ class PhotoPickupMediaF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val newVolume = getArgumentName()!!.toDouble()
-        viewModel.baseDat.addKgoServed(mPlatformEntity?.platformId!!, imageS)
+        viewModel.baseDat.addPlatformPickupMedia(mPlatformEntity?.platformId!!, imageS)
         viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
     }
