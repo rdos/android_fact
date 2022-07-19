@@ -14,12 +14,6 @@
         <item name="buttonStyle">@style/MyButton</item>
     </style>
 
-    <style name="MyHintStyle" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/gray</item>
-        <item name="android:textSize">11sp</item>
-
-    </style>
-
     <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="colorAccent">#fff</item>
     </style>

@@ -14,7 +14,7 @@
 
     </androidx.camera.view.PreviewView>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/label_for"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:background="@color/white"
@@ -42,7 +42,7 @@
 
 
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/photo_view_button"
             android:layout_width="@dimen/round_button_medium"
             android:layout_height="@dimen/round_button_medium"
@@ -56,7 +56,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/ib_f_aphoto__takephoto" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/image_counter"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -93,34 +93,16 @@
             app:layout_constraintBottom_toTopOf="@+id/image_counter"
             app:layout_constraintEnd_toEndOf="@+id/image_counter" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_f_aphoto__comment"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_6"
-            android:gravity="start"
-            android:paddingStart="@dimen/margin_min"
-            android:paddingEnd="@dimen/margin_min"
-            android:textColorHint="@color/gray"
-            android:alpha="0.6"
-            app:hintTextAppearance="@style/MyHintStyle"
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/acet_f_aphoto__comment"
+            android:layout_width="280dp" android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:hint="добавьте комментарий"
+            android:maxLines="2"
+            android:textColor="@color/gray"
             app:layout_constraintBaseline_toBaselineOf="@id/actb_fragment_camera__sound"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/acactv_f_aphoto__fail_reason"
-            >
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tiet_f_aphoto__comment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="2"
-                android:gravity="top"
-                android:textSize="14sp"
-                android:layout_marginStart="@dimen/margin_default"
-                android:layout_marginBottom="@dimen/margin_6"
-                android:background="@color/white"
-                android:hint="добавьте комментарий..." />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            app:layout_constraintBottom_toTopOf="@id/acactv_f_aphoto__fail_reason"/>
         <androidx.appcompat.widget.AppCompatAutoCompleteTextView
             android:id="@+id/acactv_f_aphoto__fail_reason"
             android:layout_width="264dp" android:layout_height="38dp"
