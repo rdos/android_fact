@@ -4,8 +4,11 @@
     <dimen name="margin_2">2dp</dimen>
     <dimen name="margin_6">6dp</dimen>
     <dimen name="margin_min">8dp</dimen>
+    <!--<dimen name="m_max">16dp</dimen>-->
     <dimen name="margin_max">24dp</dimen>
     <dimen name="margin_max_max">32dp</dimen>
+    <dimen name="m_max">144dp</dimen>
+    <dimen name="padding_max">17dp</dimen>
     <dimen name="app_camera_height">256</dimen>
 
     <dimen name="margin_small">32dp</dimen>

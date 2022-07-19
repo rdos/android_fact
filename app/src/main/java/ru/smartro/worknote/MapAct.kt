@@ -1,29 +1,33 @@
 package ru.smartro.worknote
 
-import android.app.*
+import android.app.AlertDialog
+import android.app.Application
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
 import android.provider.Settings
 import android.util.Log
+import android.util.TypedValue
 import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.yandex.mapkit.*
+import com.yandex.mapkit.Animation
+import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.RequestPoint
+import com.yandex.mapkit.RequestPointType
 import com.yandex.mapkit.directions.DirectionsFactory
 import com.yandex.mapkit.directions.driving.*
 import com.yandex.mapkit.geometry.Point
@@ -38,57 +42,43 @@ import com.yandex.runtime.Error
 import com.yandex.runtime.ui_view.ViewProvider
 import kotlinx.android.synthetic.main.act_map.*
 import kotlinx.android.synthetic.main.act_map__bottom_behavior.*
-import kotlinx.android.synthetic.main.alert_finish_way.view.*
-import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
-import kotlinx.android.synthetic.main.alert_successful_complete.view.*
-import kotlinx.android.synthetic.main.dialog_early_complete.view.*
+import kotlinx.android.synthetic.main.alert_clear_navigator.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.early_complete.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
 import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.WorkOrderEntity
 import ru.smartro.worknote.work.ac.PERMISSIONS
-import ru.smartro.worknote.work.ac.StartAct
+import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
-import java.util.*
-import kotlin.math.round
 
 
-//todo:R_dos)!!
 //todo: тодо:!r_dos
 //Двигается карта deselectGeoObject()
-//todo:FOR-_dos val hasNotServedPlatform = platforms.any { found -> found.status == StatusEnum.NEW }
-// TODO:r_dos! а то checked, Mem РАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тутРАЗ БОР ПО ЛЁТОВ будет тут
-//AppPreferences.isHasTask = false
-//override fun onResume() {  mPlatforms = vs.findPlatfor
+class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
+    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener,
+    SearchView.OnQueryTextListener {
 
-// бот getNetDATEsetBaseDate вот таких бы(ой, касты) нам меньше(или НА код  Г а ВСЕ ) , жена как и супруга в доле, но gam(e)_версия а не тип игры 3)1_2
-//AppPreferences.wayBillId AppPreferences.organisationId
-//AppPreferences.wayBillNumber  AppPreferences.vehicleId
-// TODO: I 12.11.1997 import имя getNetDATEsetBaseDate и там где рядом netDat и SrvDate а где смысл как в python
-/** 29.06.  -2+2001+3   05.11))*/
-class MapAct : ActAbstract(),
-    /*UserLocationObjectListener,*/
-    MapActBottomBehaviorAdapter.PlatformClickListener, MapObjectTapListener, UserLocationObjectListener,  InertiaMoveListener {
+
+    private var mAcbGotoComplete: AppCompatButton? = null
+
+    private var mAdapterBottomBehavior: MapActBottomBehaviorAdapter? = null
     private var mMapObjectCollection: MapObjectCollection? = null
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
-    private lateinit var mAcbComplete: AppCompatButton
     private lateinit var mMapMyYandex: MapView
     private val vs: MapViewModel by viewModel()
     private val mWorkOrderFilteredIds: MutableList<Int> = mutableListOf()
@@ -116,7 +106,7 @@ class MapAct : ActAbstract(),
             moveCameraTo(point)
         }
 
-        val platformNear = vs.baseDat.findPlatformByCoord(point, point.getAccuracy())
+        val platformNear = vs.baseDat.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
 
         if (platformNear == null) {
             log("platformNear.is null")
@@ -183,28 +173,27 @@ class MapAct : ActAbstract(),
         setContentView(R.layout.act_map)
 
         mMapMyYandex = findViewById(R.id.map_view)
-        val isWorkOrdersInProgress = vs.baseDat.hasWorkOrderInProgress_know0()
-        if (!isWorkOrdersInProgress) {
+        val hasWorkOrdersInNotProgress = vs.baseDat.hasWorkOrderInNotProgress()
+        if (hasWorkOrdersInNotProgress) {
             showingProgress()
             val extraPramId = getPutExtraParam_ID()
-            val workOrderS = getWorkOrders(extraPramId)
-            getNetDATEsetBaseDate(workOrderS)
+            val workOrderS = vs.baseDat.findWorkOrders_Old(extraPramId)
+            getNetDataSetDatabase(workOrderS)
         }
-
         mMapMyYandex.map.addInertiaMoveListener(this)
-        mAcbInfo = findViewById(R.id.acb_act_map__info)
 
+        mAcbInfo = findViewById(R.id.acb_act_map__info)
         mAcbInfo.setOnClickListener {
-           gotoInfoDialog()
+            createInfoDialog({})
         }
+        setInfoData()
+
 
         val acbLogout = findViewById<AppCompatButton>(R.id.acb_act_map__logout)
         acbLogout.setOnClickListener {
             logout()
         }
-        setInfoData()
 
-        initMapView()
         initBottomBehavior()
 
         userLocationLayer = MapKitFactory.getInstance().createUserLocationLayer(mMapMyYandex.mapWindow)
@@ -230,7 +219,7 @@ class MapAct : ActAbstract(),
         navigator_toggle_fab.setOnClickListener {
             drivingModeState = false
             navigator_toggle_fab.isVisible = drivingModeState
-            clearMapIbjectsDrive()
+            clearMapObjectsDrive()
             hideDialog()
         }
         val gotoLogActMapAPIB = findViewById<AppCompatImageButton>(R.id.goto_log__act_map__apib)
@@ -249,9 +238,10 @@ class MapAct : ActAbstract(),
             }
 
         }
-
-
-
+        Log.w(TAG, "r_dos/onStart.before")
+        mMapMyYandex.onStart()
+        MapKitFactory.getInstance().onStart()
+        Log.w(TAG, "r_dos/onStart.after")
         //todo:  R_dos!!! modeSyNChrON_off(false)
         paramS.isModeSYNChrONize = true
         AppliCation().startWorkER()
@@ -259,32 +249,12 @@ class MapAct : ActAbstract(),
 //        setDevelMode()
     }
 
-
-    private fun gotoInfoDialog() {
-        showInfoDialog().let {
-            //O!
-            mAcbComplete = it.findViewById(R.id.acb_act_map__workorder_info__complete)
-            mAcbComplete.isEnabled = false
-            //Oo!!
-            initWorkOrderInfo(it)
-            mAcbComplete.setOnClickListener{
-                gotoComplete()
-            }
-//            var infoText = "**Статистика**\n"
-            val rvInfo = it.findViewById<RecyclerView>(R.id.rv_act_map__workorder_info)
-            rvInfo.layoutManager = LinearLayoutManager(this)
-            rvInfo.adapter = InfoAdapter(getWorkOrders())
-        }
-    }
-
     private var mMapObjectsDrive: MapObjectCollection? = null
-
-    private fun clearMapIbjectsDrive() {
+    private fun clearMapObjectsDrive() {
         mMapObjectsDrive?.clear()
         mMapObjectsDrive = null
     }
 
-    //1
     private fun getMapObjectsDrive(): MapObjectCollection? {
         if (mMapObjectsDrive == null) {
             mMapObjectsDrive = mMapMyYandex.map.mapObjects.addCollection()
@@ -292,58 +262,70 @@ class MapAct : ActAbstract(),
         return mMapObjectsDrive
     }
 
-
-
     private fun onRefreshData() {
-        mWorkOrderS = vs.baseDat.findWorkOrders()
-        mPlatformS = vs.baseDat.findPlatforms()
-
-//        procedure1(mPlatformS!!)
-
-        initMapView()
-        initBottomBehavior()
+        Log.w(TAG, "onRefreshData.init")
+        mWorkOrderS = getActualWorkOrderS(true)
+        mPlatformS = getActualPlatformS(true)
+        val platformSWithQueryText = onRefreshBottomBehavior(mPlatformS!!)
+        onRefreshMap(platformSWithQueryText)
         setInfoData()
+        Log.w(TAG, "onRefreshData.end")
     }
 
-
     private fun setInfoData() {
-        val workOrders = getWorkOrders()
+        val workOrders = getActualWorkOrderS()
         var platformCnt = 0
         var platformProgress = 0
         for(workOrder in workOrders) {
             platformCnt += workOrder.cnt_platform
-            platformProgress += workOrder.cnt_platform - workOrder.cntPlatformProgress()
+            platformProgress += workOrder.cnt_platform - workOrder.cnt_platform_status_new
         }
         mAcbInfo.text = "$platformProgress / $platformCnt"
     }
 
-    private fun getWorkOrders(extraPramId: Int? = null): List<WorkOrderEntity> {
-        if (mWorkOrderS == null) {
-            Log.d(TAG, "r_dos/getWorkOrders.before")
-            mWorkOrderS = vs.baseDat.findWorkOrders(extraPramId)
-            Log.i(TAG, "r_dos/getWorkOrders.after")
+    private fun getActualWorkOrderS(isForceMode: Boolean = false, isFilterMode: Boolean = true): List<WorkOrderEntity> {
+        if (mWorkOrderS == null || isForceMode) {
+            mWorkOrderS = vs.baseDat.findWorkOrders(isFilterMode)
+            if (mWorkOrderS?.isEmpty() == true) {
+                mWorkOrderS = vs.baseDat.findWorkOrders(false)
+            }
         }
         return mWorkOrderS!!
     }
 
-    private fun getActualPlatforms(isForceGetBaseData: Boolean = false): List<PlatformEntity> {
-        if (mPlatformS == null || isForceGetBaseData) {
-            mPlatformS = vs.baseDat.findPlatforms()
-        }
 
+    private fun getActualPlatformS(isForceMode: Boolean = false): List<PlatformEntity> {
+        if (mPlatformS == null || isForceMode) {
+            val workOrderS = getActualWorkOrderS(isForceMode)
+            val newPlatformS = mutableListOf<PlatformEntity>()
+            workOrderS.forEach {
+                newPlatformS.addAll(it.platforms)
+            }
+        // TODO: R_dos!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        /**@kotlin.internal.InlineOnly
+        public inline fun <T> compareByDescending(crossinline selector: (T) -> Comparable<*>?): Comparator<T> =
+            Comparator { a, b -> compareValuesBy(b, a, selector) }*/
+            newPlatformS.sortWith(compareBy { (it.updateAt) })
+            newPlatformS.sortWith(compareBy { (it.finishedAt) })
+
+            mPlatformS = newPlatformS
+//            mPlatformS = vs.baseDat.findPlatforms(getWorkOrderSFilter())
+        }
         return mPlatformS!!
     }
 
-
-    //TODO:r_dos ну вот!.. ага... теперь с понтами все в порядке будет... OS
-    private fun getNetDATEsetBaseDate(workOrderS: List<WorkOrderEntity>) {
+    private fun getNetDataSetDatabase(workOrderS: List<WorkOrderEntity>) {
+        if (workOrderS.isEmpty()) {
+            hideProgress()
+            return
+        }
         saveFailReason()
         saveCancelWayReason()
         saveBreakDownTypes()
 //                    val hand = Handler(Looper.getMainLooper())
         for (workOrder in workOrderS) {
             logSentry(workOrder.id.toString())
-            progressNetData(workOrder)
+            progressNetData(workOrder, workOrderS.size)
         }
     }
 
@@ -396,126 +378,30 @@ class MapAct : ActAbstract(),
     }
 
     private val resultStatusList = mutableListOf<Status>()
-    private fun progressNetData(woRKoRDeRknow1: WorkOrderEntity) {
+    private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {
         Log.d(TAG, "acceptProgress.before")
-        vs.networkDat.progress(woRKoRDeRknow1.id, ProgressBody(MyUtil.timeStampInSec())).observe(this) { result ->
+        vs.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec())).observe(this) { result ->
             resultStatusList.add(result.status)
             modeSyNChrON_off(false)
             when (result.status) {
                 Status.SUCCESS -> {
                     logSentry("acceptProgress Status.SUCCESS ")
-//                        AppPreferences.isHasTask = true
-                    vs.baseDat.setProgressData(woRKoRDeRknow1)
+                    vs.baseDat.setProgressData(workOrder)
                     modeSyNChrON_off(false)
-                    onRefreshData()
                     hideProgress()
                 }
                 else -> {
                     logSentry("acceptProgress Status.ERROR")
                     toast(result.msg)
-//                        AppPreferences.isHasTask = false
-                    vs.baseDat.setNextProcessDate(woRKoRDeRknow1)
-//                    break
+                    vs.baseDat.setNextProcessDate(workOrder)
                 }
             }
-            if (getWorkOrders().size <= resultStatusList.size) {
+            if (workOrderSize == resultStatusList.size) {
+                onRefreshData()
                 hideProgress()
             }
         }
 
-    }
-
-
-    private fun successCompleteWayBill(workOrder: WorkOrderEntity) {
-        val totalVolume =  vs.baseDat.findContainersVolume(workOrder.id)
-        showCompleteWaybill().run {
-            this.comment_et.setText("$totalVolume")
-            this.accept_btn.setOnClickListener {
-                if (this.weight_tg.isChecked || this.volume_tg.isChecked) {
-                    val unloadType = if (this.volume_tg.isChecked) 1 else 2
-                    val unloadValue = round(this.comment_et.text.toString().toDouble() * 100) / 100
-                    val body = CompleteWayBody(
-                        finishedAt = MyUtil.timeStampInSec(),
-                        unloadType = unloadType, unloadValue = unloadValue.toString()
-                    )
-                    showingProgress()
-                    vs.networkDat.completeWay(workOrder.id, body)
-                        .observe(this@MapAct) { result ->
-                            when (result.status) {
-                                Status.SUCCESS -> {
-                                    hideProgress()
-                                    hideInfoDialog()
-                                    vs.baseDat.setCompleteData(workOrder)
-                                    if (vs.baseDat.hasNotWorkOrderInProgress()) {
-                                        finishTask(this@MapAct)
-                                    } else {
-                                        onRefreshData()
-                                    }
-                                }
-                                Status.ERROR -> {
-                                    toast(result.msg)
-                                    hideProgress()
-                                }
-                                Status.NETWORK -> {
-                                    toast("Проблемы с интернетом")
-                                    hideProgress()
-                                }
-                            }
-                        }
-                } else {
-                    toast("Выберите тип показателей")
-                }
-            }
-        }
-    }
-
-    private fun earlyCompleteWorkOrder(workOrder: WorkOrderEntity) {
-        val cancelWayReasonS = vs.baseDat.findCancelWayReason()
-        showDialogEarlyComplete(cancelWayReasonS, workOrder.id, workOrder.name).let { view ->
-            val totalVolume = vs.baseDat.findContainersVolume(workOrder.id)
-            view.unload_value_et.setText("$totalVolume")
-            view.accept_btn.setOnClickListener {
-                if (!view.reason_et.text.isNullOrEmpty() &&
-                    (view.early_volume_tg.isChecked || view.early_weight_tg.isChecked)
-                    && !view.unload_value_et.text.isNullOrEmpty()
-                ) {
-                    val failureId = vs.findCancelWayReasonByValue(view.reason_et.text.toString())
-                    val unloadValue = round(
-                        view.unload_value_et.text.toString().toDouble() * 100
-                    ) / 100
-                    val unloadType = if (view.early_volume_tg.isChecked) 1 else 2
-                    val body = EarlyCompleteBody(failureId, MyUtil.timeStampInSec(), unloadType, unloadValue)
-                    showingProgress()
-
-                    vs.networkDat.earlyComplete(workOrder.id, body)
-                        .observe(this@MapAct) { result ->
-                            when (result.status) {
-                                Status.SUCCESS -> {
-                                    hideProgress()
-                                    hideDialog()
-                                    hideInfoDialog()
-                                    vs.baseDat.setCompleteData(workOrder)
-                                    if (vs.baseDat.hasNotWorkOrderInProgress()) {
-                                        finishTask(this)
-                                    } else {
-                                        onRefreshData()
-                                    }
-                                }
-                                Status.ERROR -> {
-                                    toast(result.msg)
-                                    hideProgress()
-                                }
-                                Status.NETWORK -> {
-                                    toast("Проблемы с интернетом")
-                                    hideProgress()
-                                }
-                            }
-                        }
-                } else {
-                    toast("Заполните все поля")
-                }
-            }
-        }
     }
 
     private fun gotoComplete() {
@@ -542,18 +428,16 @@ class MapAct : ActAbstract(),
             lastPlatforms)
 
         vs.networkDat.sendLastPlatforms(synchronizeBody).observe(this) { result ->
+            hideProgress()
             when (result.status) {
                 Status.SUCCESS -> {
-                    hideProgress()
                     completeWorkOrders()
                 }
                 Status.ERROR -> {
                     toast(result.msg)
-                    hideProgress()
                 }
                 Status.NETWORK -> {
                     toast("Проблемы с интернетом")
-                    hideProgress()
                 }
             }
         }
@@ -561,41 +445,56 @@ class MapAct : ActAbstract(),
 
 
     private fun completeWorkOrders() {
-        val checkBoxList = getWorkOrderInfoCheckBoxs()
-        for (checkBox in checkBoxList) {
-            if (checkBox.isChecked) {
-                val workOrders = getWorkOrders()
-                val workOrderId = checkBox.tag as Int
-                val workOrder = workOrders.find { found -> found.id == workOrderId }
-                if (workOrder!!.cnt_platform_status_new <= 0) {
-                    successCompleteWayBill(workOrder)
-                } else {
-                    earlyCompleteWorkOrder(workOrder)
-                }
-            }
-
-        }
+        hideInfoDialog()
+        val intent = Intent(this, TerminateAct::class.java)
+        startActivity(intent)
     }
 
-    private fun showInfoDialog(): View {
-//        val dlg = AlertDialog.Builder(this, R.style.Theme_Inventory_Dialog)
+    private fun showInfoDialog() {
+        mInfoDialog?.show()
+    }
+
+    //todo:::Гавно кодика?*
+    private fun createInfoDialog(next: () -> Any) {
+        lateinit var result: AlertDialog
         val builder = AlertDialog.Builder(this)
         val inflater = LayoutInflater.from(this)
         val view = inflater.inflate(R.layout.act_map__workorder_info, null)
+        // TODO:
+        val workOrderS = getActualWorkOrderS(true, isFilterMode = false)
+//            var infoText = "**Статистика**\n"
+        val rvInfo = view.findViewById<RecyclerView>(R.id.rv_act_map__workorder_info)
+        mAcbGotoComplete = view.findViewById(R.id.acb_act_map__workorder_info__gotocomplete)
+        mAcbGotoComplete?.setOnClickListener {
+            vs.baseDat.setWorkOrderIsShowForUser(workOrderS)
+            gotoComplete()
+        }
+        setAcbCompleteText(workOrderS)
+
+        rvInfo.layoutManager = LinearLayoutManager(this)
+        val infoAdapter = InfoAdapter(workOrderS)
+        rvInfo.adapter = infoAdapter
+
         builder.setView(view)
-        mInfoDialog = builder.create()
+        result = builder.create()
+        result.setOnCancelListener {
+            val workorder: Unit = vs.baseDat.setWorkOrderIsShowForUser(workOrderS)
+            next()
+            onRefreshData()
+        }
         try {
-            val window: Window? = mInfoDialog?.window
+            val window: Window? = result?.window
             val wlp: WindowManager.LayoutParams = window!!.attributes
 
             wlp.gravity = Gravity.TOP
+            //todo:хз что это
             wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
             window.attributes = wlp
-            mInfoDialog?.show()
         } catch (ex: Exception) {
-            Log.e(TAG, "showInfoDialog", ex)
+            Log.e(TAG, "eXthr.message", ex)
         }
-        return view
+        mInfoDialog = result
+        mInfoDialog?.show()
     }
 
     private fun hideInfoDialog() {
@@ -608,89 +507,46 @@ class MapAct : ActAbstract(),
     }
 
 
-    private fun initWorkOrderInfo(view: View) {
-        val llcInfo = view.findViewById<LinearLayoutCompat>(R.id.llc_act_map__workorder_info)
-        val inflater = LayoutInflater.from(this)
-        val workOrders = getWorkOrders()
-        mCheckBoxList.clear()
-        for (workOrder in workOrders) {
-            val apcbComplete = inflater.inflate(R.layout.act_map__workorder_info__checkbox, llcInfo, false) as AppCompatCheckBox
-            apcbComplete.text = "${workOrder.id} ${workOrder.name}"
-            apcbComplete.tag = workOrder.id
-            mCheckBoxList.add(apcbComplete)
-            llcInfo.addView(apcbComplete)
-            apcbComplete.setOnCheckedChangeListener { compoundButton, b ->
-                acbCompleteIsEnable()
-            }
-            apcbComplete.isChecked = true
-//            if (workOrders.size == 1) {
-//                apcbComplete.isChecked = true
-//            }
-//            apcbComplete.setOnCheckedChangeListener { buttonView, isChecked ->
-//                if (isChecked) {
-//                    mFilteredWayTaskIds.add(wayTask.id!!)
-//                } else {
-//                    mFilteredWayTaskIds.remove(wayTask.id!!)
-//                }
-//                initMapView(true)
-//                initBottomBehavior()
-//            }
+    private fun onRefreshBottomBehavior(platforms: List<PlatformEntity>): List<PlatformEntity> {
+        // TODO: platforms = getActualPlatformS() :ТОДО
+        if (mAdapterBottomBehavior == null) {
+            return platforms
         }
+        mAdapterBottomBehavior!!.updateItemS(platforms)
+        return mAdapterBottomBehavior!!.getItems()
     }
-
-
-    private val mCheckBoxList = mutableListOf<AppCompatCheckBox>()
-    private fun getWorkOrderInfoCheckBoxs(): List<AppCompatCheckBox> {
-        return mCheckBoxList
-    }
-
-    private fun acbCompleteIsEnable() {
-        val checkBoxList = getWorkOrderInfoCheckBoxs()
-        mAcbComplete.isEnabled = false
-        mAcbComplete.text = "Выберите задание"
-        mAcbComplete.background = ContextCompat.getDrawable(this, R.drawable.bg_button_gray)
-        for (checkBox in checkBoxList) {
-            if (checkBox.isChecked) {
-                mAcbComplete.text = "Завершить маршрут"
-                mAcbComplete.background = ContextCompat.getDrawable(this, R.drawable.bg_button)
-                mAcbComplete.isEnabled = true
-                return
-            }
-        }
-    }
-
 
     private fun initBottomBehavior() {
-        val platforms = getActualPlatforms()
+        val platforms = getActualPlatformS()
         val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
 
         bottomSheetBehavior.expandedOffset = 100
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
-        val adapterBottomBehavior = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
-        rvBehavior.adapter = adapterBottomBehavior
-
-        act_map__bottom_behavior__header.setOnClickListener {
+        mAdapterBottomBehavior = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
+        rvBehavior.adapter = mAdapterBottomBehavior
+//        rvBehavior.adapter.notifyDataSetChanged()
+        val clBottomHavior = findViewById<ConstraintLayout>(R.id.act_map__bottom_behavior__header)
+        clBottomHavior.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             else
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
+        val svFilterAddress = findViewById<SearchView>(R.id.sv__act_map__bottom_behavior__filter)
+        svFilterAddress.setOnQueryTextListener(this)
+        svFilterAddress.setOnSearchClickListener{
+            val diP200 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200F, resources.displayMetrics)
+                .toInt()
+            svFilterAddress.layoutParams.width = diP200
 
-        val acbGotoComplete = findViewById<AppCompatButton>(R.id.acb_act_map__bottom_behavior__gotocomplete)
-        if (getWorkOrders().size <= 1) {
-            acbGotoComplete.text = "Завершить маршрут"
-        } else {
-            acbGotoComplete.text ="К завершению маршрута"
+            log("svFilterAddress:::setOnSearchClickListener. ")
         }
-        acbGotoComplete.setOnClickListener{
-
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            gotoInfoDialog()
-            if (getWorkOrders().size <= 1) {
-                gotoComplete()
-            }
+        svFilterAddress.setOnCloseListener{
+            log("svFilterAddress:::setOnCloseListener. before")
+            svFilterAddress.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+            false
         }
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     override fun startPlatformService(item: PlatformEntity) {
@@ -711,7 +567,6 @@ class MapAct : ActAbstract(),
     //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
     //тодо)) код фанатика m4 из cs)))
     private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
-        Log.d("GOTONEXTACT platform ::: ", "${plaform.platformId} : progress ${plaform.isWorkOrderProgress} : success ${plaform.isWorkOrderComplete}")
         val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PlatformServeAct::class.java else PlatformFailureAct::class.java)
         intent.putExtra("platform_id", plaform.platformId)
 
@@ -749,7 +604,7 @@ class MapAct : ActAbstract(),
     fun buildNavigator(checkPoint: Point) {
         try {
 //            getMapObjCollection().clear()
-            clearMapIbjectsDrive()
+            clearMapObjectsDrive()
             vs.buildMapNavigator(AppliCation().gps(), checkPoint, mDrivingRouter, mDrivingSession)
             drivingModeState = true
             navigator_toggle_fab.isVisible = drivingModeState
@@ -803,23 +658,19 @@ class MapAct : ActAbstract(),
 
     val mNotifyMap = mutableMapOf<Int, Long>()
     private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, string: String?) {
+        if (mNotifyMap.containsKey(srpId)) {
+            return
+        }
+        mNotifyMap[srpId] = Lnull
+
         val intent = Intent(this, PlatformServeAct::class.java)
 
-        // TODO: !!?R_dos
+        // TODO: !!?R_dos(;:)
         intent.putExtra("srpId", srpId)
         intent.putExtra("platform_id", platformId)
         intent.putExtra("mIsServeAgain", false)
 
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0, intent,
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
-//        (;:)
-        if (mNotifyMap.containsKey(srpId)) {
-            return
-        }
-        mNotifyMap[srpId] = -1
+        val pendingIntent = getActivityProperly(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
         AppliCation().showNotificationForce(pendingIntent,
             "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",
@@ -828,9 +679,6 @@ class MapAct : ActAbstract(),
             NOTIFICATION_CHANNEL_ID__MAP_ACT
         )
     }
-
-
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -866,8 +714,7 @@ class MapAct : ActAbstract(),
 ////        Log.d("LogDistance", "Location updated")
 //    }
 
-    private fun initMapView() {
-        val platforms = getActualPlatforms()
+    private fun onRefreshMap(platformS: List<PlatformEntity>) {
         mMapObjectCollection?.clear()
         try {
             mMapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
@@ -878,53 +725,37 @@ class MapAct : ActAbstract(),
         }
 
         mMapObjectCollection?.removeTapListener(this)
-        addPlaceMarks(this, mMapObjectCollection, platforms)
-        mMapObjectCollection?.addTapListener(this)
-    }
+        for (platform in platformS) {
+            val iconProvider = getIconViewProvider(this, platform)
+            val pointYandex = Point(platform.coordLat, platform.coordLong)
+            mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
 
-    private fun addPlaceMarks(context: Context, mapObjectCollection: MapObjectCollection?, platforms: List<PlatformEntity>) {
-        for(platform in platforms) {
-            val iconProvider = getIconViewProvider(context, platform)
-            val pointYandex = Point(platform.coords[0]!!, platform.coords[1]!!)
-            mapObjectCollection?.addPlacemark(pointYandex, iconProvider)
         }
+        mMapObjectCollection?.addTapListener(this)
     }
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
         val placeMark = mapObject as PlacemarkMapObject
-        val coordinate = placeMark.geometry
-
-        val clickedPlatform = vs.findPlatformByCoordinate(lat = coordinate.latitude, lon = coordinate.longitude)
+        val coord = placeMark.geometry
+        val plaformS = getActualPlatformS()
+        val clickedPlatform = plaformS.find {
+            it.coordLat == coord.latitude && it.coordLong == coord.longitude
+        }
         if(clickedPlatform == null) {
             toast("Платформа не найдена")
             return false
         }
         Log.w("RRRR", "onMapObjectTap")
-        val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coordinate)
+        val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coord)
         platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
         return true
     }
 
-    fun finishTask(context: AppCompatActivity) {
-        Log.i(TAG, "finishTask")
-        modeSyNChrON_off()
-        vs.baseDat.clearDataBase()
-//            AppPreferences.isHasTask = false
-        context.showSuccessComplete().let {
-            it.finish_accept_btn.setOnClickListener {
-                context.startActivity(Intent(context, StartAct::class.java))
-                context.finish()
-            }
-            it.exit_btn.setOnClickListener {
-                logout()
-            }
-        }
-    }
 
     private fun getIconViewProvider (_context: Context, _platform: PlatformEntity): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
-        iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconDrawableResId()))
+        iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconFromStatus()))
         val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
         tv.isVisible = false
         if (_platform.isOrderTimeWarning()) {
@@ -999,17 +830,14 @@ class MapAct : ActAbstract(),
 
         fun findLastPlatforms() =
             baseDat.findLastPlatforms()
-
-        fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity? {
-            return baseDat.findPlatformByCoordinate(lat, lon)
-        }
+        
 
         fun findCancelWayReason(): List<CancelWayReasonEntity> {
-            return baseDat.findCancelWayReason()
+            return baseDat.findCancelWayReasonEntity()
         }
 
         fun findCancelWayReasonByValue(reason: String): Int {
-            return baseDat.findCancelWayReasonByValue(reason)
+            return baseDat.findCancelWayReasonIdByValue(reason)
         }
 
         fun buildMapNavigator(
@@ -1042,10 +870,6 @@ class MapAct : ActAbstract(),
 
     override fun onStart() {
         super.onStart()
-        Log.w(TAG, "r_dos/onStart.before")
-        mMapMyYandex.onStart()
-        MapKitFactory.getInstance().onStart()
-        Log.w(TAG, "r_dos/onStart.after")
     }
 
     override fun onResume() {
@@ -1064,40 +888,55 @@ class MapAct : ActAbstract(),
         mMapMyYandex.onStop()
         MapKitFactory.getInstance().onStop()
     }
-    //                info//          //            for(workOrder in workOrders) {  }Text += "\n${workOrder.id} ${workOrder.name}________"
 
-    inner class InfoAdapter(private val workOrderS: List<WorkOrderEntity>) :
+    inner class InfoAdapter(private var p_workOrderS: List<WorkOrderEntity>) :
         RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InfoViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.act_map__workorder_info__rv_item, parent, false)
-//            logSentry("BB")
             return InfoViewHolder(view)
         }
 
+//        //todo:r_dos!
+//        private fun saveCheckBoxInWorkorderEntity(workOrderId: Int, isChecked: Boolean) {
+//
+//        }
+//        fun setNewData(workOrderS : List<WorkOrderEntity>){
+//
+//        }
+
         override fun getItemCount(): Int {
-            return workOrderS.size
+            return p_workOrderS.size
         }
 
         override fun onBindViewHolder(holder: InfoViewHolder, position: Int) {
-            val workOrder = workOrderS[position]
-
-            holder.tvName.text = workOrder.name
+            val workOrder = p_workOrderS[position]
             holder.tvPlatformCnt.text = "Площадки - ${workOrder.cnt_platform}"
             holder.tvPlatformSuccess.text = workOrder.cnt_platform_status_success.toString()
             holder.tvPlatformError.text = workOrder.cnt_platform_status_error.toString()
-            holder.tvPlatformProgress.text = workOrder.cntPlatformProgress().toString()
+            holder.tvPlatformProgress.text = (workOrder.cnt_platform - (workOrder.cnt_platform_status_success + workOrder.cnt_platform_status_error)).toString()
 
             holder.tvContainerCnt.text = "Контейнеры - ${workOrder.cnt_container}"
             holder.tvContainerSuccess.text = workOrder.cnt_container_status_success.toString()
             holder.tvContainerError.text = workOrder.cnt_container_status_error.toString()
-            holder.tvContainerProgress.text = workOrder.cntContainerProgress().toString()
+            //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+            holder.tvContainerProgress.text = (workOrder.cnt_container - (workOrder.cnt_container_status_success + workOrder.cnt_container_status_error)).toString()
+            val checkBox = holder.accbCheckBox
+            checkBox.text = "${workOrder.id} ${workOrder.name}"
+//            checkBox.setOnCheckedChangeListener(null)
+            checkBox.isChecked = workOrder.isShowForUser
+            checkBox.setOnCheckedChangeListener { buttonView, b ->
+                workOrder.isShowForUser = buttonView.isChecked
+                setAcbCompleteText(p_workOrderS)
+            }
+
+        }
+
+        fun getItemS(): List<WorkOrderEntity> {
+            return p_workOrderS
         }
 
         inner class InfoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val tvName: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__name)
-            }
             val tvPlatformCnt: TextView by lazy {
                 itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_cnt)
             }
@@ -1123,127 +962,59 @@ class MapAct : ActAbstract(),
             val tvContainerProgress: TextView by lazy {
                 itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_progress)
             }
+            val accbCheckBox: AppCompatCheckBox by lazy {
+                val checkBox = itemView.findViewById<AppCompatCheckBox>(R.id.act_map__workorder_info__checkbox)
+                checkBox
+            }
         }
     }
 
+    private fun setAcbCompleteText(workOrderS: List<WorkOrderEntity>) {
+        val cntWorkOrderShowForUser = workOrderS.filter { it.isShowForUser }.size
 
+        if (cntWorkOrderShowForUser <= 0) {
+            mAcbGotoComplete?.isEnabled = false
+            mAcbGotoComplete?.text = "Выберите задание"
+            mAcbGotoComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button_gray)
+            return
+        }
+        if (getActualWorkOrderS().size == 1) {
+            mAcbGotoComplete?.text = "Завершить задание"
+        } else {
+            mAcbGotoComplete?.text = "Завершить задания"
+        }
+        mAcbGotoComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button)
+        mAcbGotoComplete?.isEnabled = true
+    }
 
+    /** ********************************************************************************************
+     * ЗДЕСЬ интерфейсы interface*/
 
     override fun onStart(p0: Map, p1: CameraPosition) {
-//        this as InertiaMoveListener
         mIsAUTOMoveCamera = false
     }
 
     override fun onCancel(p0: Map, p1: CameraPosition) {
         this as InertiaMoveListener
-//        Log.d("AAAA", "onCancel")
+        Log.d(TAG, "onCancel")
     }
 
     override fun onFinish(p0: Map, p1: CameraPosition) {
-//        Log.d("AAAA", "onFinish")
+        Log.d("AAAA", "onFinish")
 //        this as InertiaMoveListener
     }
-
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        val result = false
+        log("svFilterAddress:::onQueryTextSubmit. result=${result} query=${query}")
+        return result
+    }
+    override fun onQueryTextChange(newText: String?): Boolean {
+        val res = true
+        mAdapterBottomBehavior?.let {
+            it.filteredList(newText)
+            onRefreshMap(it.getItems())
+        }
+        log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
+        return res
+    }
 }
-
-
-
-//                infoText += "\nПлощадки:   всего ${workOrder.cnt_platform}"
-//                infoText += "\nобслуженно/осталось/невывоз:\n"
-//                infoText += "${workOrder.cnt_platform_status_success}"
-//                infoText += "/${workOrder.cntPlatformProgress()}"
-//                infoText += "/${workOrder.cnt_platform_status_error}"
-//                infoText += "\nКонтейнеры:   всего ${workOrder.cnt_container}"
-//                infoText += "\nобслуженно/осталось/невывоз:\n"
-//                infoText += "${workOrder.cnt_container_status_success}"
-//                infoText += "/${workOrder.cntContainerProgress()}"
-//                infoText += "/${workOrder.cnt_container_status_error}\n"
-
-
-
-//    private fun procedure1(platformS: List<PlatformEntity>) {
-//        var minLat: Double = platformS[0].coords[0]!!
-//        var maxLat: Double = platformS[0].coords[0]!!
-//
-//        var minLong: Double = platformS[0].coords[1]!!
-//        var maxLong: Double = platformS[0].coords[1]!!
-//
-//        val mapCoordinate = emptyMap<Double?, Double?>().toMutableMap()
-//
-//        for(platform in platformS) {
-//            LOGWork("lat(long)=${platform.coords[0]}(${platform.coords[1]})")
-//            vs.baseDat.updateFailureComment(platform.platformId!!, "")
-//            if (minLat > platform.coords[0]!!) {
-//                minLat = platform.coords[0]!!
-//            }
-//            if (minLong > platform.coords[1]!!) {
-//                minLong = platform.coords[1]!!
-//            }
-//            if (maxLat < platform.coords[0]!!) {
-//                maxLat = platform.coords[0]!!
-//            }
-//            if (maxLong < platform.coords[1]!!) {
-//                maxLong = platform.coords[1]!!
-//            }
-//            mapCoordinate[platform.coords[0]] = platform.coords[1]
-//        }
-//        LOGWork("tit.minLat=${minLat}")
-//        LOGWork("tit.maxLat=${maxLat}")
-//        LOGWork("tit.minLong=${minLong}")
-//        LOGWork("tit.maxLong=${maxLong}")
-//
-//        val regionCnt = 10
-//        val stepLat = (maxLat - minLat) / regionCnt
-//        val stepLong = (maxLong - minLong) / regionCnt
-//
-//        var regionId = 0
-//        var regionStartLat = minLat
-//        var regionEndLat = minLat
-//        var regionStartLong = minLong
-//        var regionEndLong = minLong
-//
-//        for (idx in 1..regionCnt){
-//            if (idx < regionCnt) {
-//                regionEndLat = regionStartLat + stepLat
-//            } else {
-//                regionEndLat = maxLat
-//            }
-//
-//
-//            regionStartLong = minLong
-//            for(jdx in 1..regionCnt) {
-//                regionId++
-//                LOGWork("tit.regionIdregionId=${regionId}")
-//                LOGWork("tit.regionStartLat=${regionStartLat})")
-//                LOGWork("tit.regionEndLat=${regionEndLat})")
-//                if (jdx < regionCnt) {
-//                    regionEndLong = regionStartLong + stepLong
-//                } else {
-//                    regionEndLong = maxLong
-//                }
-//                LOGWork("tit.regionStartLong=${regionStartLong})")
-//                LOGWork("tit.regionEndLong=${regionEndLong})")
-//                for(platform in platformS) {
-//                    if (platform.address == "Ульяновская область, Мелекесский район, Лесной, Дорожная,9") {
-//                        LOGWork("tit.=)")
-//                    }
-//                    val coordLat = platform.coords[0]!!
-//                    val coordLong = platform.coords[1]!!
-//                    val lll = (regionEndLat - regionStartLat) * 0.2
-//                    val sss = (regionEndLong - regionStartLong) * 0.2
-//                    if ((coordLat in regionStartLat-lll..regionEndLat+lll) && (coordLong in regionStartLong-sss..regionEndLong+sss)) {
-//                        vs.baseDat.addFailureComment(platform.platformId!!, regionId.toString())
-//                        LOGWork("tit.regionId=${regionId} for ${coordLat}(${coordLong})")
-//                    }
-//                }
-//                regionStartLong = regionEndLong
-//            }
-//            regionStartLat = regionEndLat
-//        }
-//
-//        LOGWork("tit.stepLat=${stepLat}")
-//        LOGWork("tit.stepLong=${stepLong}")
-//
-//        val sortList = mapCoordinate.toList().sortedBy { (_, value) -> value }
-//        LOGWork("sortList=${sortList[0].first}")
-//    }

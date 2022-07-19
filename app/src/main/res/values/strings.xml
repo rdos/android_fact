@@ -3,6 +3,7 @@
     <string name="yandex_map_key">948e55bc-da44-452d-9629-00898d438ca9</string>
     <string name="sentry_url">https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17</string>
 
+    <string name="hint__search_by_address">по адресу</string>
     <string name="act_st_art_it_test_version">Тестовая версия (%1$s). \n За рабочей версией обратитесь, пожалуйста, в клиентский сервис</string>
     <string name="enter_system">Вход в систему</string>
     <string name="login">Логин</string>
@@ -15,7 +16,7 @@
     <string name="loading">Загрузка</string>
     <string name="choose">Выбрать</string>
     <string name="choose_all_in">Взять все</string>
-    <string name="empty_way_task">Пусто \n \nДля передачи телефона другому водителю выйдите из системы. Для продолжения работы на другом автомобиле перейдите к выбору автомобиля.</string>
+    <string name="tv_no_fount_data">Список Путевых Листов пуст</string>
     <string name="choose_vehicle">Выбрать автомобиль</string>
     <!--   <string name="yandex_map_key">f7873ee7-b6a0-4527-8df1-215f37ba0f97</string>-->
     <string name="accept_task">Взяв в работу сменное задание, вы не сможете его поменять до завершения</string>

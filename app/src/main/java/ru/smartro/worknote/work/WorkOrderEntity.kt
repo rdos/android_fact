@@ -11,7 +11,7 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.*
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.isNotNull
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import java.io.Serializable
@@ -24,6 +24,7 @@ open class WorkOrderEntity(
     @PrimaryKey
     var id: Int = Inull,
     var name: String = Snull,
+
     var platforms: RealmList<PlatformEntity> = RealmList(),
     var waste_type_id: Int? = null,
     var waste_type_name: String? = null,
@@ -36,6 +37,7 @@ open class WorkOrderEntity(
     var cnt_platform_status_new: Int = Inull,
     var cnt_platform_status_success: Int = Inull,
     var cnt_platform_status_error: Int = Inull,
+    var cnt_platform_status_partial_problems: Int = Inull,
     // ErrorS False fail exception
     var cnt_container_status_new: Int = Inull,
     var cnt_container_status_success: Int = Inull,
@@ -45,6 +47,8 @@ open class WorkOrderEntity(
     var update_at: String? = null,
     var progress_at: String? = null,
     var end_at: String? = null,
+    var isShowForUser: Boolean = true,
+
     ) : Serializable, RealmObject() {
 
     fun calcInfoStatistics() {
@@ -52,6 +56,7 @@ open class WorkOrderEntity(
         var platformsStatusNewCnt = 0
         var platformsStatusSuccessCnt = 0
         var platformsStatusErrorCnt = 0
+        var platformsStatusPartialProblemsCnt = 0
 
         var containersCnt = 0
         var containersStatusNewCnt = 0
@@ -60,17 +65,12 @@ open class WorkOrderEntity(
         for (platform in platforms) {
             /** статистика для PlatformEntity*/
             platformsCnt++
-            if(platform.status == StatusEnum.NEW) {
-                platformsStatusNewCnt++
-            }
-            if(platform.status == StatusEnum.SUCCESS) {
-                platformsStatusSuccessCnt++
-            }
-            if(platform.status == StatusEnum.ERROR) {
-                platformsStatusErrorCnt++
-            }
-            if(platform.status == StatusEnum.UNFINISHED) {
-                platformsStatusErrorCnt++
+            when(platform.getStatusPlatform()) {
+                StatusEnum.NEW -> platformsStatusNewCnt++
+                StatusEnum.SUCCESS -> platformsStatusSuccessCnt++
+                StatusEnum.ERROR -> platformsStatusErrorCnt++
+                StatusEnum.UNFINISHED -> platformsStatusErrorCnt++
+                StatusEnum.PARTIAL_PROBLEMS -> platformsStatusPartialProblemsCnt++
             }
             /** статистика для ContainerEntity*/
             platform.containers.forEach {
@@ -91,6 +91,7 @@ open class WorkOrderEntity(
         this.cnt_platform_status_new = platformsStatusNewCnt
         this.cnt_platform_status_success = platformsStatusSuccessCnt
         this.cnt_platform_status_error = platformsStatusErrorCnt
+        this.cnt_platform_status_partial_problems = platformsStatusPartialProblemsCnt
         this.cnt_container = containersCnt
         this.cnt_container_status_new = containersStatusNewCnt
         this.cnt_container_status_success = containersStatusSuccessCnt
@@ -98,10 +99,121 @@ open class WorkOrderEntity(
     }
 
     fun cntPlatformProgress(): Int {
-        return cnt_platform_status_new
+        return cnt_platform - cnt_platform_status_new
     }
     fun cntContainerProgress(): Int {
-        return cnt_container - (cnt_container_status_success + cnt_container_status_error)
+        return cnt_container - cnt_container_status_new
+    }
+
+    fun isComplete(): Boolean {
+        return this.cntPlatformProgress() == this.cnt_platform
+    }
+
+    companion object {
+        private fun mapMedia(data: List<String>): RealmList<ImageEntity> {
+            return data.mapTo(RealmList()) {
+                ImageEntity(
+                    image = it, date = 0,
+                    coords = RealmList()
+                )
+            }
+        }
+
+        // TODO: 29.10.2021 ! it.volume = 0.0 ??Error возраст.
+        private fun mapContainers(list: List<CoNTaiNeR_know1>, workorderId: Int): RealmList<ContainerEntity> {
+            return list.mapTo(RealmList()) {
+//                var volumeReal : Double? = null
+//                if (it.volume >  0) {
+//                    Log.e(TAG ,"mapContainers.it.volume >  0")
+//                    volumeReal = it.volume
+//                    Log.e(TAG ,"mapContainers.volumeReal = ${volumeReal}")
+//                }
+                ContainerEntity(
+                    workOrderId = workorderId,
+                    client = it.client,
+                    contacts = it.contacts,
+                    failureMedia = mapMedia(it.failureMedia),
+                    failureReasonId = it.failureReasonId,
+                    containerId = it.id,
+                    isActiveToday = it.isActiveToday,/* breakdownReasonId = it.breakdownReasonId,*/
+                    number = it.number,
+                    status = it.status,
+                    typeId = it.typeId,
+                    constructiveVolume = it.constructiveVolume,
+                    typeName = it.typeName,
+                    volume = it.volume
+                )
+            }
+        }
+
+        private fun mapPlatforms(data: List<Platform_know1>, workorderId: Int): RealmList<PlatformEntity> {
+            val result = data.mapTo(RealmList()) {
+                val platform = PlatformEntity(
+                    workOrderId = workorderId,
+                    address = it.address,
+                    afterMedia = mapMedia(it.afterMedia),
+                    beforeMedia = mapMedia(it.beforeMedia),
+                    beginnedAt = it.beginnedAt,
+                    containers = mapContainers(it.coNTaiNeRKnow1s, workorderId),
+                    coordSOriginal = RealmList(it.coords[0], it.coords[1]),
+                    coordLat = it.coords[0],
+                    coordLong = it.coords[1],
+                    failureMedia = mapMedia(it.failureMedia),
+                    failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
+                    finishedAt = it.finishedAt,
+                    platformId = it.id,
+                    name = it.name,
+                    updateAt = 0,
+                    srpId = it.srpId,
+                    status = it.status, //!r_dos
+                    /** volumeKGO = null,*/ icon = it.icon,
+                    orderTimeEnd = it.orderEndTime,
+                    orderTimeStart = it.orderStartTime,
+                    orderTimeAlert = it.orderAlertTime,
+                    orderTimeWarning = it.orderWarningTime,
+                    kgoServed = KGOEntity().copyKGOEntity(it.kgo_served),
+                    kgoRemaining = KGOEntity().copyKGOEntity(it.kgo_remaining)
+                )
+                platform.networkStatus = platform.isNotNewPlatform()
+                platform
+            }
+            return result
+        }
+
+        private fun mapStart(data: STaRT_know1?): StartEntity? {
+            var result: StartEntity? = null
+            if (data != null) {
+                result = StartEntity(
+                    coords = RealmList(data.coords[0], data.coords[1]),
+                    name = data.name,
+                    id = data.id
+                )
+            }
+            return result
+        }
+
+        /**public inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.mapTo(destination: C, transform: (T) -> R): C {        */
+        fun map(woRKoRDeRknow1List: List<WoRKoRDeR_know1>): RealmList<WorkOrderEntity> {
+            val res = RealmList<WorkOrderEntity>()
+            try {
+                for (woRKoRDeRknow1 in woRKoRDeRknow1List) {
+                    val workOrder = WorkOrderEntity(
+                        id = woRKoRDeRknow1.id,
+                        start_at = MyUtil.currentTime(),
+                        name = woRKoRDeRknow1.name,
+                        waste_type_id = woRKoRDeRknow1.waste_type?.id,
+                        waste_type_name = woRKoRDeRknow1.waste_type?.name,
+                        waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
+                        platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id),
+                        start = mapStart(woRKoRDeRknow1.STaRTknow1)
+                    )
+                    res.add(workOrder)
+                }
+            } catch (eXthr: Exception) {
+                Log.e("TAGS", "map", eXthr)
+            }
+            return res
+        }
     }
 }
 
@@ -147,6 +259,8 @@ open class PlatformEntity(
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,
+    var afterMediaSize: Int = 0,
+    var beforeMediaSize: Int = 0,
     @SerializedName("address")
     var address: String? = null,
     @SerializedName("after_media")
@@ -160,13 +274,13 @@ open class PlatformEntity(
     @SerializedName("status")
     var status: String? = null,
     @SerializedName("network_status")
-    var networkStatus: Boolean? = false,
+    var networkStatus: Boolean = false,
     @SerializedName("failure_comment")
     var failureComment: String? = null,
     @SerializedName("containers")
     var containers: RealmList<ContainerEntity> = RealmList(),
     @SerializedName("coords")
-    var coords: RealmList<Double> = RealmList(),
+    var coordSOriginal: RealmList<Double> = RealmList(),
     var coordLat: Double = Dnull,
     var coordLong: Double = Dnull,
     @SerializedName("failure_media")
@@ -205,64 +319,86 @@ open class PlatformEntity(
     var orderTimeAlert: String? = null,
 ) : Serializable, RealmObject() {
 
-    fun getIconDrawableResId(): Int {
-        if (this.isStartServe()) {
-            return R.drawable.ic_serving
-        }
-//        if (this.beginnedAt.isNullOrEmpty() && this.status == StatusEnum.NEW) {
-//            // время прошло = красный
-//            if (isOrderTimeAlert()) {
-//                return getIconFromStatus(StatusEnum.ERROR)
-//            }
-//            //осталось меньше часа оранжевый
-//            if (isOrderTimeWarning()) {
-//                return getIconFromStatus(StatusEnum.UNFINISHED)
-//            }
-//        }
-        return getIconFromStatus(this.status)
-    }
-
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
-    private fun getIconFromStatus(p_status: String?): Int {
+    fun getStatusPlatform(): String {
+        val filteredContainers = this.containers.filter { el -> el.isActiveToday }
+        val hasUnservedContainers = filteredContainers.any { el -> el.status == StatusEnum.NEW  }
+        val isAllSuccess = filteredContainers.all { el -> el.status == StatusEnum.SUCCESS }
+        val isAllError = filteredContainers.all { el -> el.status == StatusEnum.ERROR }
+
+        val _beforeMediaSize = if(this.beforeMedia.size == 0) this.beforeMediaSize else this.beforeMedia.size
+        val _afterMediaSize = if(this.afterMedia.size == 0) this.afterMediaSize else this.afterMedia.size
+
+        Log.d("TEST:::", "! ${this.address} ${_beforeMediaSize} ${_afterMediaSize}")
+
+        val result = when {
+            isAllError -> StatusEnum.ERROR
+            _beforeMediaSize == 0 && _afterMediaSize == 0 -> StatusEnum.NEW
+            _beforeMediaSize != 0 && hasUnservedContainers -> StatusEnum.UNFINISHED
+            isAllSuccess -> StatusEnum.SUCCESS
+            filteredContainers.all { el -> el.status != StatusEnum.NEW } -> StatusEnum.PARTIAL_PROBLEMS
+            else -> {
+                Log.d("TEST:::", "ELSE FIRED: ${_beforeMediaSize}")
+                return StatusEnum.UNFINISHED
+            }
+        }
+        Log.d("TEST :::", "WorkOrderEntity/getPlatformStatus() result: ${result}")
+        return result
+    }
+
+    private fun isNewPlatform(): Boolean {
+        val res = this.getStatusPlatform() == StatusEnum.NEW
+        Log.d("TEST :::", "isNewPlatform().res=${res}")
+        return res
+    }
+    fun isNotNewPlatform(): Boolean {
+        val result = !this.isNewPlatform()
+        Log.i("TEST :::", "isNotNewPlatform().result=${result}")
+        return result
+    }
+
+    fun getIconFromStatus(): Int {
+        val currentStatus = this.getStatusPlatform()
+        if(currentStatus == StatusEnum.UNFINISHED) return R.drawable.ic_serving
         return when (this.icon) {
             "bunker" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_bunker_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_bunker_green
                     StatusEnum.ERROR -> R.drawable.ic_bunker_red
                     else -> R.drawable.ic_bunker_orange
                 }
             "bag" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_bag_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_bag_green
                     StatusEnum.ERROR -> R.drawable.ic_bag_red
                     else -> R.drawable.ic_bag_orange
                 }
             "bulk" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_bulk_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_bulk_green
                     StatusEnum.ERROR -> R.drawable.ic_bulk_red
                     else -> R.drawable.ic_bulk_orange
                 }
             "euro" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_euro_blue
                     StatusEnum.SUCCESS ->  R.drawable.ic_euro_green
                     StatusEnum.ERROR -> R.drawable.ic_euro_red
                     else -> R.drawable.ic_euro_orange
                 }
             "metal" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_metal_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_metal_green
                     StatusEnum.ERROR -> R.drawable.ic_metal_red
                     else -> R.drawable.ic_metal_orange
                 }
             "Bath" ->
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_two_sync_b
                     StatusEnum.SUCCESS -> R.drawable.ic_two_sync_g
                     StatusEnum.ERROR -> R.drawable.ic_two_sync_red
@@ -270,12 +406,24 @@ open class PlatformEntity(
                 }
             else ->
                 //many
-                when (p_status) {
+                when (currentStatus) {
                     StatusEnum.NEW -> R.drawable.ic_many_blue
                     StatusEnum.SUCCESS -> R.drawable.ic_many_green
                     StatusEnum.ERROR -> R.drawable.ic_many_red
                     else -> R.drawable.ic_many_orange
                 }
+        }
+    }
+
+    fun getInactiveIcon(): Int {
+        return when (this.icon) {
+            "bunker" -> R.drawable.ic_bunker_gray
+            "bag" -> R.drawable.ic_bag_gray
+            "bulk" -> R.drawable.ic_bulk_gray
+            "euro" -> R.drawable.ic_euro_gray
+            "metal" -> R.drawable.ic_metal_gray
+            "Bath" -> R.drawable.ic_two_sync_gray
+            else -> R.drawable.ic_many_gray
         }
     }
 
@@ -305,7 +453,7 @@ open class PlatformEntity(
 
     fun getOrderTimeForMaps(): String {
         var result = Snull
-        if (this.beginnedAt.isNullOrEmpty() && this.status == StatusEnum.NEW) {
+        if (this.beginnedAt.isNullOrEmpty() && this.getStatusPlatform() == StatusEnum.NEW) {
             this.orderTimeStart?.let {
                 result = "до ${this.orderTimeEnd}"
             }
@@ -357,25 +505,6 @@ open class PlatformEntity(
         }
         return result
     }
-
-    fun isStartServe(): Boolean {
-        return this.beginnedAt.isNotNull() && this.status == StatusEnum.NEW
-    }
-
-    fun isStartServeVolume(): Boolean {
-        var result = false
-        if (!this.isStartServe()) {
-            return result
-        }
-        this.containers.forEach { container ->
-            if (container.volume != null) {
-                result = true
-                return@forEach
-            }
-        }
-        return result
-    }
-
 
     private fun initServedKGOEntity() {
         if (this.kgoServed == null ) {
@@ -572,7 +701,7 @@ open class ContainerEntity(
     }
 
     fun getVolumePercentColor(context: Context): Int {
-        if (!this.isActiveToday) {
+        if (!this.isActiveToday && this.volume == null) {
             return Color.GRAY
         }
         if (this.status == StatusEnum.ERROR) {
@@ -612,6 +741,9 @@ open class ImageEntity(
     var coords: RealmList<Double> = RealmList(),
     var accuracy: String? = null,
     var lastKnownLocationTime: Long? =null,
+    var isNoLimitPhoto: Boolean = false,
+    // 0 = vertical, 1 = horizontal
+    var origOrient: Int = 0
 ) : Serializable, RealmObject() {
 
     fun isCheckedData(): Boolean {

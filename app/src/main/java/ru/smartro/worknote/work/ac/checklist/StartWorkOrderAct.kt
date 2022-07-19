@@ -19,17 +19,16 @@ import kotlinx.android.synthetic.main.item_container_adapter.view.choose_title
 import kotlinx.android.synthetic.main.start_act__rv_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.awORKOLDs.extensions.toast
 import ru.smartro.worknote.awORKOLDs.service.network.Status
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.MapAct
 import ru.smartro.worknote.abs.ActAbstract
+import ru.smartro.worknote.toast
 
 class StartWorkOrderAct : ActAbstract() {
 
@@ -72,11 +71,10 @@ class StartWorkOrderAct : ActAbstract() {
                 when (result.status) {
                     Status.SUCCESS -> {
                         workOrders = data!!.dataKnow100.woRKoRDeRknow1s
-                        insertWayTask(workOrders)
-                        rv.adapter = WayTaskAdapter(workOrders)
                         if (workOrders.size == 1) {
-                            gotoNextAct(workOrders[0].id)
+                            gotoNextAct(0)
                         }
+                        rv.adapter = WayTaskAdapter(workOrders)
                         hideProgress()
                     }
                     Status.ERROR -> {
@@ -94,30 +92,26 @@ class StartWorkOrderAct : ActAbstract() {
     }
 
     fun insertWayTask(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
-
         vm.baseDat.clearDataBase()
-        for (workorder in woRKoRDeRknow1List) {
-            try {
-                vm.baseDat.insertWayTask(workorder)
-            } catch (ex: Exception) {
-                Log.e(TAG, "insertWayTask", ex)
-                //ups должен быть один, иначе Инспектор скажт слово
-                oops()
-//                    logSentry("insertWayTask.ex.Exception" + ex.message)
-            }
-        }
+        vm.baseDat.insertWorkorder(woRKoRDeRknow1List)
     }
 
-    fun gotoNextAct(workorderId: Int?) {
-        if (isOopsMode()) {
-            finish()
-            return
+    fun insertWayTask(woRKoRDeRknow10: WoRKoRDeR_know1) {
+        insertWayTask(listOf(woRKoRDeRknow10))
+    }
+
+    fun gotoNextAct(workOrderIndex: Int?) {
+        var workOrderId: Int? = null
+        if (workOrderIndex == null) {
+            insertWayTask(workOrders)
+        } else {
+            workOrderId = workOrders[workOrderIndex].id
+            insertWayTask(workOrders[workOrderIndex])
         }
         val intent = Intent(this, MapAct::class.java)
-        //or
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-        workorderId?.let {
-            intent.putExtra(PUT_EXTRA_PARAM_ID, workorderId)
+        workOrderIndex?.let {
+            intent.putExtra(PUT_EXTRA_PARAM_ID, workOrderId)
         }
         startActivity(intent)
         finish()
@@ -153,9 +147,24 @@ class StartWorkOrderAct : ActAbstract() {
                 holder.itemView.choose_st.text = workOrder.waste_type.name
                 holder.itemView.choose_st.setTextColor(Color.parseColor("#${workOrder.waste_type.color.hex}"))
             }
+
+            when {
+                workOrder.beginnedAt != null && workOrder.finishedAt == null -> holder.itemView.wo_status.apply {
+                    text = "В работе"
+                    setTextColor(getColor(R.color.yellow))
+                }
+                workOrder.finishedAt != null -> holder.itemView.wo_status.apply {
+                    text = "Завершено"
+                    setTextColor(getColor(R.color.green))
+                }
+                else -> holder.itemView.wo_status.apply {
+                    text = "Новое"
+                }
+            }
+
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
-                gotoNextAct(workOrder.id)
+                gotoNextAct(position)
             }
         }
         inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

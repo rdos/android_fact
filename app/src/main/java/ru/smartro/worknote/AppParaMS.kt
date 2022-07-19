@@ -65,6 +65,12 @@ class AppParaMS {
             it.putString("accessToken", value)
         }
 
+    var userName: String
+        get() = sharedPref__env.getString("userName", Snull)!!
+        set(value) = sharedPref__env.edit {
+            it.putString("userName", value)
+        }
+
     var deviceId: String
         get() {
             var devId = sharedPref__env.getString("deviceId", Snull)!!
@@ -146,7 +152,7 @@ class AppParaMS {
         }
 
     private var gpsTIME: Long
-        get() = sharedPref__env.getLong("gpsTIME", Lnull)
+        get() = sharedPref__env.getLong("gpsTIME", LTIMEnull)
         set(value) = sharedPref__env.edit {
             it.putLong("gpsTIME", value)
         }

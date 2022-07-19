@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--todo: f_complete_success___act_map__rv_item = fragment_complete_success_FROM_act_map_FOR_rv_item-->
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="8dp"
+    android:layout_marginHorizontal="8dp"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_button_green__default"
+    >
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:maxLines="2"
+        android:textColor="@color/black" android:textSize="13sp"
+        android:text="Итоговые показатели рейса"
+        />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/margin_min"
+        >
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/tb_f_complete_success__type_weight"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textOn="@string/weight_t"
+            android:textOff="@string/weight_t"
+            android:layout_weight="0.5"
+            android:textSize="12sp"
+            android:background="@drawable/selector_left_finish_white"
+            />
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/tb_f_complete_success__type_volume"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textOn="@string/volume_cub"
+            android:textOff="@string/volume_cub"
+            android:layout_weight="0.5"
+            android:textSize="12sp"
+            android:background="@drawable/selector_right_finish_white"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:layout_marginTop="@dimen/margin_min"
+        >
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_f_complete_success__total_volume"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Выберите вид измерения"
+            android:layout_marginEnd="@dimen/margin_6"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiet_f_complete_success__total_volume"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="numberDecimal"
+                android:gravity="top" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb_f_complete_success__accept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/margin_default"
+            android:paddingEnd="@dimen/margin_default"
+            android:layout_weight="0.2"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_button_green_interactive"
+            android:text="Отправить"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

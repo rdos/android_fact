@@ -13,6 +13,7 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 class TokenAuthenticator(val context: Context) : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
         Log.w("TokenAuthenticator", "authenticate")
+        //todo: add senrty exception
 //        MyUtil.logout(context)
 //        val realm = Realm.getDefaultInstance()
 //        realm.executeTransaction {

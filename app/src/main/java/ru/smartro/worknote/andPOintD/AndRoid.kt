@@ -37,12 +37,12 @@ class AndRoid {
             criteria.isSpeedRequired = false
             criteria.isAltitudeRequired = false
             criteria.isBearingRequired = false
-            criteria.isCostAllowed = false
+//            criteria.isCostAllowed = false
             return criteria
         }
 
-        fun getProviderName(): String? {
-            return getService().getBestProvider(getCriterial(), true)
+        fun getProviderName(): String {
+            return getService().getBestProvider(getCriterial(), true)?: LocationManager.NETWORK_PROVIDER
         }
 
         fun getProviderNameS(): MutableList<String> {

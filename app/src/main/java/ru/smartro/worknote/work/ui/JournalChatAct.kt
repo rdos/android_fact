@@ -2,55 +2,57 @@ package ru.smartro.worknote.work.ui
 
 import android.app.Application
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.ViewGroup
+import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.act_messager__rv_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
+import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
-import ru.smartro.worknote.awORKOLDs.base.GenericRecyclerAdapter
-import ru.smartro.worknote.awORKOLDs.base.ViewHolder
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.PlatformEntity
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-class JournalChatAct : ActNOAbst() {
+class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener {
+    private var mAdapter: JournalChatAdapter? = null
     private val viewModel: JournalViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_journalchat)
-        supportActionBar!!.title = "Журнал"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.hide()
+        val platformSIsServed = viewModel.findPlatformsIsServed()
 
+        val acibGotoBack = findViewById<AppCompatImageButton>(R.id.acib__act_journalchat__gotoback)
+        acibGotoBack.setOnClickListener{
+            onBackPressed()
+        }
+        val svFilterAddress = findViewById<SearchView>(R.id.sv__act_journalchat__filteraddress)
+
+        mAdapter = JournalChatAdapter(platformSIsServed)
+        svFilterAddress.setOnQueryTextListener(this)
         val rvJournalAct = findViewById<RecyclerView>(R.id.rv_act_journal)
-
-        viewModel.findPlatformsIsServed().let {
-            rvJournalAct.adapter = JournalAdapter(it as ArrayList<PlatformEntity>)
-        }
+        rvJournalAct.adapter = mAdapter
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-            }
+    inner class JournalChatAdapter(items: List<PlatformEntity>) : BaseAdapter<PlatformEntity, JournalChatAdapter.JournalChatHolder>(items) {
+        override fun onGetLayout(): Int {
+            return R.layout.act_messager__rv_item
         }
-        return super.onOptionsItemSelected(item)
-    }
 
-    class JournalAdapter(items: java.util.ArrayList<PlatformEntity>
-    ) : GenericRecyclerAdapter<PlatformEntity>(items) {
+        override fun onGetViewHolder(view: View): JournalChatHolder {
+            return JournalChatHolder(view)
+        }
 
-        override fun bind(item: PlatformEntity, holder: ViewHolder) {
+        override fun bind(item: PlatformEntity, holder: JournalChatHolder) {
             val date = Date(item.updateAt * 1000L)
             val dateFormat = SimpleDateFormat("HH:mm")
             val resultDate: String = dateFormat.format(date)
@@ -59,25 +61,30 @@ class JournalChatAct : ActNOAbst() {
                 Glide.with(imgBefore)
                     .load(MyUtil.base64ToImage(item.beforeMedia[0]?.image))
                     .into(imgBefore)
-                holder.itemView.tv_act_messager__media_before.text = "Фото(1 из ${item.beforeMedia.size}) до обслуживания"
+                holder.itemView.tv_act_messager__media_before.text = "Фото до:"
             } else {
-                holder.itemView.tv_act_messager__media_before.text = "beforeMedia пусто"
+                imgBefore.visibility = View.INVISIBLE
+                holder.itemView.tv_act_messager__media_before.visibility = View.INVISIBLE
             }
             if (item.afterMedia.size > 0) {
                 val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
                 Glide.with(imgAfter)
                     .load(MyUtil.base64ToImage(item.afterMedia[0]?.image))
                     .into(imgAfter)
-                holder.itemView.tv_act_messager__media_after.text = "Фото(1 из ${item.afterMedia.size}) после обслуживания"
+                holder.itemView.tv_act_messager__media_after.text = "Фото после:"
             } else {
-                holder.itemView.tv_act_messager__media_before.text = "afterMedia пусто"
+                holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after).visibility = View.INVISIBLE
+                holder.itemView.tv_act_messager__media_after.visibility = View.INVISIBLE
             }
+
             if (item.failureMedia.size > 0) {
-                val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
-                Glide.with(imgAfter)
+                val textBefore = holder.itemView.tv_act_messager__media_before
+                Glide.with(imgBefore)
                     .load(MyUtil.base64ToImage(item.failureMedia[0]?.image))
-                    .into(imgAfter)
-                holder.itemView.tv_act_messager__media_after.text = "Фото из failureMedia ${item.failureMedia.size})"
+                    .into(imgBefore)
+                textBefore.text = "Фото невывоза:"
+                textBefore.visibility = View.VISIBLE
+                imgBefore.visibility = View.VISIBLE
             }
 
 //            val llBehavior = holder.itemView.findViewById<ConstraintLayout>(R.id.ll_behavior)
@@ -94,12 +101,15 @@ class JournalChatAct : ActNOAbst() {
                 item.failureComment
             }
 
-            holder.itemView.log_item_content.text =
-                "кол-во контейнеров: ${item.containers.size} \n" +
-                        "Обслужено: ${item.containers.filter { it.status != StatusEnum.NEW }.size}/${item.containers.size} \n" +
-                        "Проблема: $failureComment \n"
-            "Объем Подбора: ${item.volumePickup.toStr()}\n" +
-                    "Статус сети: ${status(item.networkStatus!!)}"
+
+            // search for:
+            // failureComment
+
+            val serveStatus = "Обслужено: ${item.containers.filter { it.status != StatusEnum.NEW }.size}/${item.containers.size}\n"
+            val pickupVolume = if(item.volumePickup != null) "Объем Подбора: ${item.volumePickup}\n" else ""
+            val networkStatus = getNetworkStatusText(item)
+
+            holder.itemView.log_item_content.text = serveStatus + pickupVolume + networkStatus
 
             if (item.networkStatus!!)
                 holder.itemView.log_item_status.setImageResource(R.drawable.ic_done)
@@ -107,16 +117,51 @@ class JournalChatAct : ActNOAbst() {
                 holder.itemView.log_item_status.setImageResource(R.drawable.ic_clock)
         }
 
-        private fun status(b: Boolean) =
-            if (b)
+        private fun getNetworkStatusText(platform: PlatformEntity): String {
+            var result = "Статус сети: "
+            result += if (platform.networkStatus!!) {
                 "Отправлено"
-            else
+            } else {
                 "Еще не отправлен"
+            }
+            return result
+        }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return super.onCreateViewHolder(parent, R.layout.act_messager__rv_item)
+        fun filter(platformList: List<PlatformEntity>, filterText: String): List<PlatformEntity> {
+            val query = filterText.lowercase()
+            val filteredModeList = platformList.filter {
+                try {
+//                    it.javaClass.getField("address")
+                    val text = it.address?.lowercase()
+                    var res = true
+                    text?.let {
+                        res = (text.startsWith(query) || (text.contains(query)))
+                    }
+                    res
+                } catch (ex: Exception) {
+                    true
+                }
+            }
+            //            val sYsTEM = mutableListOf<Vehicle>()
+            return filteredModeList
+        }
+
+        fun filteredList(queryText: String) {
+            logSentry(queryText)
+            // TODO: !r_dos
+            if(queryText == Snull) {
+                super.reset()
+                return
+            }
+            setQueryText(queryText)
+            val mItemsAfter = filter(super.getItemsForFilter(), queryText)
+            super.set(mItemsAfter)
+        }
+        inner class JournalChatHolder(view: View) : RecyclerView.ViewHolder(view) {
+//        TODO("Not yet implemented")
         }
     }
+
 //
 //    interface JournalClickListener {
 //        fun logDetailClicked(item: PlatformEntity)
@@ -127,5 +172,27 @@ class JournalChatAct : ActNOAbst() {
         fun findPlatformsIsServed(): List<PlatformEntity> {
             return baseDat.findPlatformsIsServed()
         }
+    }
+
+    /** ********************************************************************************************
+     * ЗДЕСЬ интерфейсы interface*/
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        val result = false
+        log("svFilterAddress:::onQueryTextSubmit. result=${result} query=${query}")
+        return result
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        val res = true
+        if (newText.isNullOrEmpty()) {
+            mAdapter!!.filteredList(Snull)
+            log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
+            return res
+        }
+        mAdapter?.let {
+            mAdapter!!.filteredList(newText.toString())
+        }
+        log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
+        return res
     }
 }

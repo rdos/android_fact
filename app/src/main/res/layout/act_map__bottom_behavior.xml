@@ -21,14 +21,30 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_min"
+            android:layout_marginBottom="@dimen/margin_min"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="@dimen/margin_min"
             android:drawableTop="@drawable/ic_arrow_top"
             android:gravity="center"
             android:text="Площадки в задании"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/sv__act_map__bottom_behavior__filter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/sv__act_map__bottom_behavior__filter"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            app:defaultQueryHint="@string/hint__search_by_address"
+            android:layout_marginEnd="@dimen/margin_default"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,7 +53,6 @@
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/act_map__bottom_behavior__header">
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/map_behavior_rv"
             android:layout_width="match_parent"
@@ -46,22 +61,8 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/act_map__bottom_behavior__rv_item"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/acb_act_map__bottom_behavior__gotocomplete"
+            app:layout_constraintBottom_toBottomOf="parent"
             />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/acb_act_map__bottom_behavior__gotocomplete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_default"
-            android:layout_marginEnd="@dimen/margin_default"
-            android:layout_marginTop="@dimen/margin_min"
-            android:layout_marginBottom="@dimen/margin_default"
-            android:background="@drawable/bg_button"
-            android:text="К завершению маршрута"
-            android:textColor="@color/white"
-            app:layout_constraintTop_toBottomOf="@id/map_behavior_rv"
-            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

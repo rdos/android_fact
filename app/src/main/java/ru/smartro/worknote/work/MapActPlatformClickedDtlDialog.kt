@@ -18,14 +18,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.act_map__dialog_platform_clicked_dtl.*
-import kotlinx.android.synthetic.main.alert_finish_way.view.accept_btn
 import kotlinx.android.synthetic.main.alert_warning_camera.view.*
-import ru.smartro.worknote.App
-import ru.smartro.worknote.MapAct
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.work.platform_serve.PlatformServeAct
 import ru.smartro.worknote.work.ui.PlatformFailureAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -33,7 +29,6 @@ import kotlin.math.min
 
 class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : AbstractDialog(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
-    private var mFirstTime = true
     private var mIsServeAgain = false
     private val mOnClickListener = this as View.OnClickListener
 
@@ -56,7 +51,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containers.size)
 
 
-        mIsServeAgain = _platform.status != StatusEnum.NEW
+        mIsServeAgain = _platform.getStatusPlatform() != StatusEnum.NEW
 
         val cvStartServe = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
         cvStartServe.isVisible = !mIsServeAgain
@@ -80,7 +75,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
         val btnStartServe = view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
         btnStartServe.setOnClickListener(mOnClickListener)
-        if (_platform.isStartServe()) {
+        if (_platform.getStatusPlatform() == StatusEnum.UNFINISHED) {
             btnStartServe.setText(R.string.start_serve_again)
         }
         val tvName = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__name)
@@ -132,18 +127,11 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         params?.horizontalMargin = 56f
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.attributes = params
-
-        // TODO: 22.10.2021 mFirstTime ??!
-        if (mFirstTime) {
-            mFirstTime = false
-        } else {
-            dismiss()
-        }
     }
 
     private fun initButtonsViews() {
         platform_detail_fire.setOnClickListener {
-            warningCameraShow("Сделайте фото навывоза").let {
+            warningCameraShow("Сделайте фото невывоза").let {
                 it.accept_btn.setOnClickListener {
                     hideDialog()
                     val intent = Intent(requireActivity(), PlatformFailureAct::class.java)
@@ -193,7 +181,10 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         override fun onBindViewHolder(holder: PlatformClickedDtlHolder, position: Int) {
             val container = _platform.containers[position]
 //            holder.tv_title.text = container!!.number
-            holder.platformImageView.setImageResource(_platform.getIconDrawableResId())
+            if(container?.isActiveToday == true)
+                holder.platformImageView.setImageResource(_platform.getIconFromStatus())
+            else
+                holder.platformImageView.setImageResource(_platform.getInactiveIcon())
 
             holder.clParent.setOnClickListener{
                 var toastText = ""
@@ -211,17 +202,16 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
                 toast(toastText)
             }
             holder.statusImageView.isVisible = false
-            when (container?.status) {
-                StatusEnum.SUCCESS -> {
-                    holder.statusImageView.isVisible = true
-                    holder.statusImageView.setImageResource(R.drawable.ic_check)
-                }
-                StatusEnum.ERROR -> {
-                    holder.statusImageView.isVisible = true
-                    holder.statusImageView.setImageResource(R.drawable.ic_red_check)
-                }
+
+            if(container?.status == StatusEnum.SUCCESS) {
+                holder.statusImageView.isVisible = true
+                holder.statusImageView.setImageResource(R.drawable.ic_check)
+            } else if(container?.status == StatusEnum.ERROR && container.isActiveToday) {
+                holder.statusImageView.isVisible = true
+                holder.statusImageView.setImageResource(R.drawable.ic_red_check)
             }
         }
+
         inner class PlatformClickedDtlHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 //            val tv_title = itemView.findViewById<TextView>(R.id.tv_item_dialog_platform_clicked_dtl)
             val platformImageView = itemView.findViewById<ImageView>(R.id.ib_item_dialog_platform_clicked_dtl__platform)

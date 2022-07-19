@@ -17,10 +17,12 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.awORKOLDs.extensions.toast
+ 
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.cam.CameraAct
 
 class PlatformFailureAct : ActNOAbst() {
     private lateinit var mAcactvFailureIn: AppCompatAutoCompleteTextView
@@ -34,7 +36,11 @@ class PlatformFailureAct : ActNOAbst() {
         baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.let {
-            platform = viewModel.findPlatformEntity(it.getIntExtra("platform_id", 0))
+            val plId = it.getIntExtra("platform_id", 0)
+            platform = viewModel.baseDat.getPlatformEntity(plId)
+            if(platform.beginnedAt == null) {
+                viewModel.baseDat.updatePlatformBeginnedAt(plId)
+            }
             supportActionBar!!.title = "Невывоз на площадке"
         }
 
@@ -67,7 +73,7 @@ class PlatformFailureAct : ActNOAbst() {
     }
     
     private fun initImageView() {
-        val platform = viewModel.findPlatformEntity(platform.platformId!!)
+        val platform = viewModel.baseDat.getPlatformEntity(platform.platformId!!)
         Glide.with(this).load(MyUtil.base64ToImage(platform.failureMedia.last()?.image))
             .into(problem_img)
     }
@@ -99,10 +105,6 @@ class PlatformFailureAct : ActNOAbst() {
     }
 
     class NonPickupPlatformViewModel(application: Application) : BaseViewModel(application) {
-
-        fun findPlatformEntity(platformId: Int): PlatformEntity {
-            return baseDat.findPlatformEntity(platformId)
-        }
 
         fun updatePlatformProblem(platformId: Int, problemComment: String,
                                   problem: String) {

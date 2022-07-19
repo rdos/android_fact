@@ -11,17 +11,20 @@ import android.widget.RadioButton
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import kotlinx.android.synthetic.main.fragment_container_service.*
+import kotlinx.android.synthetic.main.fragment_container_serve.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.base.AbstractBottomDialog
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
+import ru.smartro.worknote.work.cam.CameraAct
 import ru.smartro.worknote.work.ui.ContainerBreakdownAct
 import ru.smartro.worknote.work.ui.ContainerFailureAct
 
 private const val ARGUMENT_NAME__PLATFORM_ID = "ARGUMENT_NAME__PLATFORM_ID"
 private const val ARGUMENT_NAME__CONTAINER_ID = "ARGUMENT_NAME__CONTAINER_ID"
-class ContainerServiceFragment : AbstractBottomDialog() {
+class ContainerServeBottomDialog : AbstractBottomDialog() {
     private val viewModel: PlatformServeViewModel by viewModel()
     private var volume: Double? = null
     private lateinit var parentAct: PlatformServeAct
@@ -41,7 +44,7 @@ class ContainerServiceFragment : AbstractBottomDialog() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_container_service, container, false)
+        return inflater.inflate(R.layout.fragment_container_serve, container, false)
     }
 
     fun addArgument(platformId: Int, containerId: Int) {
@@ -64,7 +67,7 @@ class ContainerServiceFragment : AbstractBottomDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentAct = requireActivity() as PlatformServeAct
-        val containerEntity = viewModel.findContainerEntity(p_container_id)
+        val containerEntity = viewModel.baseDat.getContainerEntity(p_container_id)
         containerEntity.let {
             comment_et.setText(it.comment)
             volume = it.volume
@@ -97,6 +100,34 @@ class ContainerServiceFragment : AbstractBottomDialog() {
             intent.putExtra("container_id", p_container_id)
             intent.putExtra("platform_id", p_platform_id)
             startActivityForResult(intent, 99)
+        }
+
+        val apbBeforeMedia = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve__before_media)
+//        if (containerEntity.isBreakdownNotEmpty()) {
+//            setUseButtonStyleBackgroundRed(apbBreakdown)
+//        }
+        apbBeforeMedia.setOnClickListener {
+            //todo: жопа))))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
+            val intent = Intent(requireActivity(), CameraAct::class.java)
+            intent.putExtra("platform_id", p_platform_id)
+            intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
+            intent.putExtra("isNoLimitPhoto", true)
+            startActivityForResult(intent, 1001)
+hideDialog()
+        }
+
+        val apbAfterMedia = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve__after_media)
+//        if (containerEntity.isBreakdownNotEmpty()) {
+//            setUseButtonStyleBackgroundRed(apbBreakdown)
+//        }
+        apbAfterMedia.setOnClickListener {
+            //todo: жоpa)№2)))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
+            val intent = Intent(requireActivity(), CameraAct::class.java)
+            intent.putExtra("platform_id", p_platform_id)
+            intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
+            intent.putExtra("isNoLimitPhoto", true)
+            startActivityForResult(intent, 1001)
+                                        hideDialog()
         }
 
     }
