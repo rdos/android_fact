@@ -1,6 +1,5 @@
 package ru.smartro.worknote.work.cam
 
-import androidx.navigation.fragment.findNavController
 import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
@@ -11,7 +10,7 @@ import java.io.File
 
 class PhotoFailureMediaContainerF : APhotoFragment() {
     private var mFailReasonS: List<String>? = null
-    private var mPlatformEntity: PlatformEntity? = null
+    private var mContainerEntity: ContainerEntity? = null
     override fun onGetTextLabelFor() = "невывоза контейнера"
     override fun onGetTextForFailHint() = "Причина невывоза контейнера"
     override fun onGetStringList(): List<String>? {
@@ -23,38 +22,34 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
         return mFailReasonS
     }
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mPlatformEntity == null) {
+        if (mContainerEntity == null) {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mPlatformEntity!!.failureMedia
-    }
-    override fun onSavePhoto() {
-//        TODO("Not yet implemented")
-        log(":P:onSavePhoto")
-    }
-
-    override fun onClickBtnCancel() {
-        //тут нужно очистить    mPlatformEntity.volumePickup
-    }
-
-    override fun onTakePhoto() {
-        super.onTakePhoto()
-
+        return mContainerEntity!!.failureMedia
     }
 
     override fun onGetDirName(): String {
-        return getArgumentName() + File.separator + getArgumentID() + File.separator + "failureMediaContainer"
+        val containerId = getArgumentID().toString()
+        val platformId = getArgumentName()
+        return platformId + File.separator + containerId + File.separator + "failureMediaContainer"
     }
 
     override fun onBeforeUSE() {
-        val platformId = getArgumentName()?.toInt()!!
-        mPlatformEntity = viewModel.getPlatformEntity(platformId)
+
+        val containerId = getArgumentID()
+        mContainerEntity = viewModel.baseDat.getContainerEntity(containerId)
         tvLabelFor(view!!)
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
 //        }
     }
+
+    override fun onSavePhoto() {
+//        TODO("Not yet implemented")
+        log(":P:onSavePhoto")
+    }
+
     var failText: String? = null
     override fun onGotoNext(): Boolean {
         val result = true
@@ -66,20 +61,24 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
         return result
     }
 
-
     override fun onAfterUSE(imageS: List<ImageEntity>) {
+        val platformId = getArgumentName()?.toInt()!!
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
-        viewModel.baseDat.setStateFailureForContainer(mPlatformEntity?.platformId!!, getArgumentID(), failText!!, imageS)
-//        val problemComment = problem_comment.text.toString()
-        findNavController().popBackStack()
+        //        val problemComment = problem_comment.text.toString()
+        viewModel.baseDat.addFailureMediaContainer(platformId, mContainerEntity?.containerId!!, imageS)
+        viewModel.baseDat.setStateFailureForContainer(platformId, mContainerEntity?.containerId!!, failText!!)
+        navigateMain(R.id.PServeF, platformId)
     }
-
 
     override fun onGetIsVisibleBtnCancel() = false
 
+    override fun onClickBtnCancel() {
+
+    }
+
     override fun onBackPressed() {
         super.onBackPressed()
-        findNavController().popBackStack()
+        navigateBack()
         super.dropOutputD()
         /* if (getMediaCount() <= 0) {
              navigateClose()

@@ -15,6 +15,7 @@ import android.util.Size
 import android.view.*
 import android.widget.*
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
@@ -55,6 +56,7 @@ destination(photoFile)
 
 abstract class APhotoFragment(
 ) : AFragment(), OnImageSavedCallback {
+    private var acetComment: AppCompatEditText? = null
     protected var mAcactvFail: AppCompatAutoCompleteTextView? = null
     private var mMediaPlayer: MediaPlayer? = null
     override var TAG : String = "--Aa${this::class.simpleName}"
@@ -377,7 +379,7 @@ abstract class APhotoFragment(
         mImageCounter = view.findViewById(R.id.image_counter)
         acbCancel = view.findViewById<Button>(R.id.acb_f_aphoto__cancel)
 
-
+        acetComment = view.findViewById(R.id.acet_f_aphoto__comment)
         mAcactvFail = view.findViewById(R.id.acactv_f_aphoto__fail_reason)
         val reasonsString = onGetStringList()
 

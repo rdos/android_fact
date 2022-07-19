@@ -351,21 +351,17 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun setStateFailureForContainer(platformId: Int, containerId: Int, problem: String, images: List<ImageEntity>, failureComment: String?=null) {
+    fun setStateFailureForContainer(platformId: Int, containerId: Int, problem: String, comment: String?=null) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
 
             val problemId = findFailReasonByValue(realm, problem).id
-            platform.failureReasonId = problemId
-
             val container = getContainerEntity(containerId)
-            Log.d("TEST::::", "FIND CONTAINER NUMBER ${containerId} images: ${images.size} problem: ${problemId}")
+            Log.d("TEST::::", "FIND CONTAINER NUMBER ${containerId}  problem: ${problemId}")
             container.failureReasonId = problemId
-            container.failureMedia.addAll(images)
-
-            platform.failureComment = failureComment
+            container.comment = comment
             val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
                 .findFirst()
             workOrder?.calcInfoStatistics()
@@ -727,9 +723,7 @@ class RealmRepository(private val p_realm: Realm) {
             if (platformEntity?.beginnedAt == null) {
                 platformEntity?.beginnedAt = MyUtil.currentTime()
             }
-//            if (isRequireClean) {
             platformEntity?.failureMedia = mEmptyImageEntityList
-//            }
             platformEntity?.failureMedia?.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
@@ -775,6 +769,7 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
+            containerEntity.failureMedia = mEmptyImageEntityList
             containerEntity.failureMedia.addAll(imageS)
 
             setEntityUpdateAt(platformEntity)
