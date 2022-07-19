@@ -36,8 +36,6 @@ class PServeExtendedFrag :
     private val THUMB_ACTIVE = "Active"
     private lateinit var mConrainerAdapter: ExtendedContainerAdapter
     private val vm: PlatformServeSharedViewModel by activityViewModels()
-    private var prevVolumeValue: Double? = null
-    private var newVolumeValue: Double? = null
     private var mVolumePickup: Double? = null
     private var tvVolumePickup: TextView? = null
     private var acbKGORemaining: AppCompatButton? = null
@@ -60,10 +58,7 @@ class PServeExtendedFrag :
         acbProblem = view.findViewById(R.id.acb_activity_platform_serve__problem)
         mAcbKGOServed = view.findViewById(R.id.acb_activity_platform_serve__kgo_served)
         acbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
-        acsbVolumePickup = view.findViewById<SeekBar?>(R.id.acsb_activity_platform_serve__seekbar).apply {
-            thumb = getThumb(null)
-        }
-
+        acsbVolumePickup = view.findViewById<SeekBar?>(R.id.acsb_activity_platform_serve__seekbar)
         vm.mPlatformEntity.observe(viewLifecycleOwner) { platform ->
             if(platform != null) {
                 mConrainerAdapter = ExtendedContainerAdapter(
@@ -132,10 +127,11 @@ class PServeExtendedFrag :
                     }
                 }
                 if (platform.isPickupNotEmpty()) {
-                    acsbVolumePickup?.apply {
-                        progress = max
-                    }
+                    acsbVolumePickup?.progress = platform.volumePickup!!.toInt()
                     tvVolumePickuptext(platform.volumePickup)
+                    acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
+                } else {
+                    acsbVolumePickup?.thumb = getThumb(null)
                 }
                 acsbVolumePickup?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
                     private var mProgressAtStartTracking = 0
@@ -165,11 +161,9 @@ class PServeExtendedFrag :
 
                         acsbVolumePickup?.apply {
                             if (progress > 0 ) {
-                                newVolumeValue = progress.toDouble()
-                                gotoMakePhotoForPickup()
+                                gotoMakePhotoForPickup(progress.toDouble())
                             } else {
-                                vm.updateSelectionVolume(platform.platformId!!, null)
-                                prevVolumeValue = null
+                                vm.updateVolumePickup(platform.platformId!!, null)
                             }
                         }
 
@@ -226,13 +220,12 @@ class PServeExtendedFrag :
 
                     val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
                     btnOk.setOnClickListener {
+                        hideDialog()
                         val volume = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-                        vm.updateSelectionVolume(vm.mPlatformEntity.value!!.platformId!!, volume)
                         if (volume == null) {
                             acsbVolumePickup.progress = 0
                         } else {
-                            newVolumeValue = volume
-                            gotoMakePhotoForPickup()
+                            gotoMakePhotoForPickup(volume)
                         }
                     }
                 }
@@ -242,15 +235,11 @@ class PServeExtendedFrag :
         }
     }
 
-    private fun gotoMakePhotoForPickup() {
+    private fun gotoMakePhotoForPickup(newVolume: Double) {
         if(vm.mPlatformEntity.value == null) {
-//            val intent = Intent(getAct(), CameraAct::class.java)
-//            intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
-//            intent.putExtra("photoFor", PhotoTypeEnum.forPlatformPickupVolume)
-//            startActivityForResult(intent, 14)
             return
         }
-        navigateMain(R.id.PhotoPickupMediaF, vm.mPlatformEntity.value!!.platformId)
+        navigateMain(R.id.PhotoPickupMediaF, vm.mPlatformEntity.value!!.platformId, newVolume.toString())
     }
 
     private fun tvVolumePickuptext(progressDouble: Double?) {

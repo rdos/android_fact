@@ -1,6 +1,5 @@
 package ru.smartro.worknote.work.cam
 
-import android.view.View
 import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
@@ -10,7 +9,7 @@ import java.io.File
 
 class PhotoPickupMediaF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "Крупногабаритные отходы.забрал"
+    override fun onGetTextLabelFor() = getString(R.string.service_pickup_volume)
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
@@ -20,7 +19,7 @@ class PhotoPickupMediaF : APhotoFragment() {
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "kgoServed"
+        return getArgumentID().toString() + File.separator + "pickupMedia"
     }
 
 
@@ -30,6 +29,7 @@ class PhotoPickupMediaF : APhotoFragment() {
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
 //        }
+        mPlatformEntity?.getPickupMediaSize()
     }
 
     override fun onGotoNext(): Boolean {
@@ -37,9 +37,10 @@ class PhotoPickupMediaF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
+        val newVolume = getArgumentName()!!.toDouble()
         viewModel.baseDat.addKgoServed(mPlatformEntity?.platformId!!, imageS)
+        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
     override fun onSavePhoto() {
@@ -47,11 +48,12 @@ class PhotoPickupMediaF : APhotoFragment() {
 //        id: String = UUID.randomUUID().toString(),
     }
 
-    override fun onGetIsVisibleBtnCancel() = false
+    override fun onGetIsVisibleBtnCancel() = true
 
     override fun onClickBtnCancel() {
-
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
     }
+
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -64,37 +66,4 @@ class PhotoPickupMediaF : APhotoFragment() {
 
     companion object {
     }
-}
-
-    override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "pickupMedia"
-    }
-
-    override fun onBeforeUSE() {
-        val platformId = getArgumentID()
-        mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
-        mPlatformEntity?.getPickupMediaSize()
-    }
-
-    override fun onGotoNext(): Boolean {
-        return true
-    }
-
-    override fun onAfterUSE(imageS: List<ImageEntity>) {
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-
-//        vm.updateSelectionVolume(platform.platformId!!, newVolumeValue)
-//        acsbVolumePickup?.progress = newVolumeValue?.toInt() ?: (prevVolumeValue?.toInt() ?: 0)
-//        prevVolumeValue = newVolumeValue
-//        tvVolumePickuptext(prevVolumeValue)
-    }
-
-    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        TODO("Not yet implemented")
-    }
-
-    override fun onGetTextLabelFor() = getString(R.string.service_pickup_volume)
-
-    override fun onGetIsVisibleBtnCancel() = true
-
 }

@@ -39,8 +39,6 @@
     <string name="capture_mode_hdr">HDR</string>
     <string name="capture_mode_night">Night</string>
     <string name="delete_button_alt">Delete</string>
-    <string name="delete_dialog">Delete current photo?</string>
-    <string name="delete_title">Confirm</string>
     <string name="service_after">Фотографии после обслуживания КП</string>
     <string name="end_task">Досрочное завершение</string>
     <string name="problem_on_point">Невывоз площадки</string>

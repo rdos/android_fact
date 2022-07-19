@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
@@ -206,30 +207,42 @@ abstract class APhotoFragment(
     private val TOAST_TEXT: String = "Извините, произошла ошибка во время сохранения фото. \n повторите, пожалуйста, попытку"
     override fun onImageSaved(outputFileResults: OutputFileResults) {
         val imageUri = outputFileResults.savedUri!!
+
         Log.d("TAGS", "Photo capture succeeded: $imageUri path: ${imageUri.path}")
         Log.e("TAGS", "Current thread: ${Thread.currentThread().id}")
         setImageCounter()
         setGalleryThumbnail(imageUri)
 
         try {
+            val imageFile = File(imageUri.path!!)
+            val imageStream: InputStream = imageFile.inputStream()
+            val baos = ByteArrayOutputStream()
+            var bitmap: Bitmap? = null
+            imageStream.use {
+                val resource = BitmapFactory.decodeStream(imageStream)
+
+                if(resource.width > resource.height) {
+                    val matrix = Matrix()
+                    matrix.postRotate(90f)
+                    val scaledBitmap = Bitmap.createScaledBitmap(resource, resource.width, resource.height, true)
+                    bitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
+                }
+
+            }
+            bitmap!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
+            val byteArray = baos.toByteArray()
+            val outputStream = imageFile.outputStream()
+            outputStream.use { it ->
+                it.write(byteArray)
+            }
             Log.w("TAGS", Thread.currentThread().name)
-//                        if (imageEntity.isCheckedData()) {
+
+
             onSavePhoto()
-//                        } else {
-//                            toast(TOAST_TEXT)
-//                        }
         } catch (ex: Exception) {
             Log.e(TAG, "eXthr.message", ex)
             toast(TOAST_TEXT)
         }
-
-
-
-//            MyUtil.imageToBase64(imageUri, requireContext())
-//                                File(imageUri.path!!).delete()
-//            captureButton.isClickable = true
-//            captureButton.isEnabled = true
-
     }
 
     override fun onError(exception: ImageCaptureException) {
@@ -532,7 +545,7 @@ abstract class APhotoFragment(
             val baos = ByteArrayOutputStream()
             imageStream.use {
                 val resource = BitmapFactory.decodeStream(imageStream)
-                resource.compress(Bitmap.CompressFormat.WEBP, 80, baos)
+                resource.compress(Bitmap.CompressFormat.WEBP, 90, baos)
             }
             val b: ByteArray = baos.toByteArray()
             Log.w("TAGS", "b.size=${b.size}")

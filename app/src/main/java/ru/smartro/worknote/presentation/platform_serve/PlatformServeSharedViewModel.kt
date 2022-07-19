@@ -1,19 +1,14 @@
 package ru.smartro.worknote.presentation.platform_serve
 
 import android.app.Application
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
-import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
-import java.lang.reflect.Type
 
 data class ClientGroupedContainers(
     var client: String = "",
@@ -133,9 +128,9 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
         baseDat.updateContainerComment(platformId, containerId, comment)
     }
 
-    fun updateSelectionVolume(platformId: Int, volume: Double?) {
+    fun updateVolumePickup(platformId: Int, volume: Double?) {
         mWasServedExtended.postValue(true)
-        baseDat.updateSelectionVolume(platformId, volume)
+        baseDat.updateVolumePickup(platformId, volume)
         getPlatformEntity(platformId)
     }
 

@@ -224,7 +224,7 @@ class RealmRepository(private val p_realm: Realm) {
             .findFirst()?.id!!
     }
 
-    fun updateSelectionVolume(platformId: Int, volumePickup: Double?) {
+    fun updateVolumePickup(platformId: Int, volumePickup: Double?) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)

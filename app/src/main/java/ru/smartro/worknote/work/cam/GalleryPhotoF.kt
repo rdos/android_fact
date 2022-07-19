@@ -16,7 +16,6 @@
 
 package ru.smartro.worknote.work.cam
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -35,9 +34,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.ImageEntity
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -149,7 +146,7 @@ class GalleryPhotoF : AFragment() {
 
             mediaList.getOrNull(viewPager.currentItem)?.let { imageEntity ->
                 AlertDialog.Builder(view.context, android.R.style.Theme_Material_Dialog)
-                    .setTitle(getString(R.string.delete_title))
+                    .setTitle("Подтвердите")
                     .setMessage(getString(R.string.warning_detele))
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes) { _, _ ->
