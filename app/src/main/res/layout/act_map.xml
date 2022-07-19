@@ -37,7 +37,7 @@
             android:paddingHorizontal="8dp"
             android:background="@drawable/bg_button"
             android:textColor="@color/white"
-            android:text="Выход из системы"
+            android:text="Выйти"
             />
 
         <!--<include layout="@layout/act_map__workorder_info"/>-->

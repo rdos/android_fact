@@ -162,7 +162,7 @@ class StartWorkOrderAct : ActAbstract() {
                     text = "Новое"
                 }
             }
-            
+
             holder.itemView.setOnClickListener {
                 setAntiErrorClick(holder.itemView)
                 gotoNextAct(position)

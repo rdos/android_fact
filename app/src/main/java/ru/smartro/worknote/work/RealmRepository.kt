@@ -257,6 +257,16 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun updatePlatformBeginnedAt(platformId: Int) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.beginnedAt = MyUtil.currentTime()
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
     fun updateContainerComment(platformId: Int, containerId: Int, comment: String?) {
         p_realm.executeTransaction { realm ->
             val container = realm.where(ContainerEntity::class.java)
@@ -692,7 +702,9 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
-//            platformEntity?.beginnedAt = MyUtil.currentTime()
+            if (platformEntity?.beginnedAt == null) {
+                platformEntity?.beginnedAt = MyUtil.currentTime()
+            }
 //            if (isRequireClean) {
             platformEntity?.failureMedia = mEmptyImageEntityList
 //            }
