@@ -351,6 +351,28 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun setStateFailureForContainer(platformId: Int, containerId: Int, problem: String, images: List<ImageEntity>, failureComment: String?=null) {
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+
+            val problemId = findFailReasonByValue(realm, problem).id
+            platform.failureReasonId = problemId
+
+            val container = getContainerEntity(containerId)
+            Log.d("TEST::::", "FIND CONTAINER NUMBER ${containerId} images: ${images.size} problem: ${problemId}")
+            container.failureReasonId = problemId
+            container.failureMedia.addAll(images)
+
+            platform.failureComment = failureComment
+            val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
+                .findFirst()
+            workOrder?.calcInfoStatistics()
+            setEntityUpdateAt(platform)
+        }
+    }
+
     fun updatePlatformStatusSuccess(platformId: Int) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform().equalTo("platformId", platformId)
@@ -745,7 +767,7 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun addFailureMediaContainer(platformId: Int, containerId: Int, imageEntity: ImageEntity) {
+    fun addFailureMediaContainer(platformId: Int, containerId: Int, imageS: List<ImageEntity>) {
         p_realm.executeTransaction { realm ->
             val containerEntity = getQueryContainer()
                 .equalTo("containerId", containerId)
@@ -753,14 +775,13 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
-            containerEntity.failureMedia.add(imageEntity)
-
+            containerEntity.failureMedia.addAll(imageS)
 
             setEntityUpdateAt(platformEntity)
         }
     }
 
-    fun addBreakdownMediaContainer(platformId: Int, containerId: Int, imageEntity: ImageEntity) {
+    fun addBreakdownMediaContainer(platformId: Int, containerId: Int, imageS: List<ImageEntity>) {
         p_realm.executeTransaction { realm ->
             val containerEntity = getQueryContainer()
                 .equalTo("containerId", containerId)
@@ -768,7 +789,7 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()!!
-            containerEntity.breakdownMedia.add(imageEntity)
+            containerEntity.breakdownMedia.addAll(imageS)
 
             setEntityUpdateAt(platformEntity)
         }

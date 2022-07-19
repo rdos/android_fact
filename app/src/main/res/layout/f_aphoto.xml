@@ -97,6 +97,7 @@
             android:id="@+id/acet_f_aphoto__comment"
             android:layout_width="280dp" android:layout_height="wrap_content"
             android:background="@color/white"
+            android:padding="5dp"
             android:hint="добавьте комментарий"
             android:maxLines="2"
             android:textColor="@color/gray"

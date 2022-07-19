@@ -2,6 +2,7 @@ package ru.smartro.worknote.presentation.platform_serve
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,6 +61,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         }
 
         val apbFailure = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_failure)
+        Log.d("TEST:::", "fucked up : ${containerEntity.containerId} : ${containerEntity.isFailureNotEmpty()}")
         if (containerEntity.isFailureNotEmpty()) {
             setUseButtonStyleBackgroundRed(apbFailure)
         }
