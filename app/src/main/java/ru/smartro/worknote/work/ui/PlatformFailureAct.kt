@@ -36,7 +36,11 @@ class PlatformFailureAct : ActNOAbst() {
         baseview.setOnClickListener { MyUtil.hideKeyboard(this) }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         intent.let {
-            platform = viewModel.baseDat.getPlatformEntity(it.getIntExtra("platform_id", 0))
+            val plId = it.getIntExtra("platform_id", 0)
+            platform = viewModel.baseDat.getPlatformEntity(plId)
+            if(platform.beginnedAt == null) {
+                viewModel.baseDat.updatePlatformBeginnedAt(plId)
+            }
             supportActionBar!!.title = "Невывоз на площадке"
         }
 
