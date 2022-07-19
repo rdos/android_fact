@@ -60,11 +60,16 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     // viewLifecycleOwner где взять?:R_dos))
 
     fun getPlatformEntity(platformId: Int): PlatformEntity {
-        val response = baseDat.getPlatformEntity(platformId)
-        _platformEntity.postValue(response)
-        if(response.containers.all { el -> el.status == StatusEnum.NEW }) {
-            val temp = clusterContainers(response.containers.toList())
-            _sortedContainers.postValue(temp)
+        val response: PlatformEntity
+        if(_platformEntity.value == null) {
+            response = baseDat.getPlatformEntity(platformId)
+            _platformEntity.postValue(response)
+            if(response.containers.all { el -> el.status == StatusEnum.NEW }) {
+                val temp = clusterContainers(response.containers.toList())
+                _sortedContainers.postValue(temp)
+            }
+        } else {
+            response = _platformEntity.value!!
         }
         return response
     }

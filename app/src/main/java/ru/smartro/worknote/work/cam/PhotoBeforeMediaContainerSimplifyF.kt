@@ -22,7 +22,7 @@ class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "beforeMediaContainerSimplify"
+        return getArgumentID().toString() + File.separator + "beforeMediaContainer"
     }
 
     override fun onBeforeUSE() {

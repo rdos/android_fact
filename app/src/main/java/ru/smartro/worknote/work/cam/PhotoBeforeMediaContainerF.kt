@@ -15,20 +15,24 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
 
     private var mPlatformEntity: PlatformEntity? = null
 
-    override fun onSavePhoto() {
-//        TODO("Not yet implemented")
+    override fun onGetTextLabelFor() = "Контейнер: Фото до"
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        if (mPlatformEntity == null) {
+            toast("Ошибка.todo:::")
+            return RealmList<ImageEntity>()
+        }
+        return mPlatformEntity!!.beforeMedia
     }
 
-
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "beforeMedia"
+       return getArgumentID().toString() + File.separator + "beforeMediaContainer"
     }
 
     override fun onBeforeUSE() {
 //        TODO("Not yet implemented")
         val platformId = getArgumentID()
         mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
-
+        mMaxPhotoCount = Int.MAX_VALUE
     }
 
     override fun onGotoNext(): Boolean {
@@ -36,21 +40,15 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!,"EXTENDED")
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
-    override fun onGetTextLabelFor() = "Фотографии до обслуживания контейнера"
-    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        TODO("Not yet implemented")
-    }
-
-    override fun onClickBtnCancel() {
-        TODO("Not yet implemented")
-    }
-
     override fun onGetIsVisibleBtnCancel() = false
+    override fun onClickBtnCancel() {}
 
-    companion object {
+    override fun onSavePhoto() {
+//        TODO("Not yet implemented")
     }
 }

@@ -1,6 +1,9 @@
 package ru.smartro.worknote.presentation.platform_serve
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
@@ -47,7 +50,8 @@ class PServeF : AFragment() {
             childFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        switch?.setOnCheckedChangeListener { _, _ ->
+        // TODO?::Vlad setonclicklistener > setonchangedlistener
+        switch?.setOnClickListener {
             vm.changeScreenMode()
         }
 
@@ -55,6 +59,9 @@ class PServeF : AFragment() {
             if(it) {
                 switch?.visibility = View.GONE
                 screenModeLabel?.visibility = View.GONE
+                if(navController.currentDestination?.id != R.id.extendedServeFragment) {
+                    navController.navigate(R.id.extendedServeFragment)
+                }
             }
         }
 
@@ -70,24 +77,27 @@ class PServeF : AFragment() {
                                             navController.popBackStack()
                                         }
                                         screenModeLabel?.text = "Упрощенный режим"
+                                        if(switch?.isChecked != false)
+                                            switch?.isChecked = false
                                     }
                                     true -> {
                                         if (id != R.id.extendedServeFragment) {
                                             navController.navigate(R.id.extendedServeFragment)
                                         }
                                         screenModeLabel?.text = "Расширенный режим"
+                                        if(switch?.isChecked != true)
+                                            switch?.isChecked = true
                                     }
                                 }
                             }
                         }
                     }
                 } else {
+                    vm.mScreenMode.removeObservers(getAct())
                     switch?.visibility = View.GONE
                     screenModeLabel?.visibility = View.GONE
                     navController.navigate(R.id.extendedServeFragment)
                 }
-
-
 
                 tvContainersProgress?.text =
                     "№${platform.srpId} / ${platform.containers.size} конт."

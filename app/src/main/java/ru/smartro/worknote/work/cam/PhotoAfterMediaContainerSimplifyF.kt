@@ -8,6 +8,7 @@ import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
+// TODO:: NO DIF FROM PhotoAfterMediaContainerF.kt
 class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
     override fun onGetTextLabelFor() = "Контейнер: Фото после"
@@ -21,7 +22,7 @@ class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "afterMediaContainerSimplify"
+        return getArgumentID().toString() + File.separator + "afterMediaContainer"
     }
 
     override fun onBeforeUSE() {

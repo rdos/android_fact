@@ -3,34 +3,36 @@ package ru.smartro.worknote.work.cam
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
+// TODO:: NO DIF FROM PhotoAfterMediaContainerSimplifyF.kt
 class PhotoAfterMediaContainerF : PhotoAfterMediaF() {
-    companion object {
-//        fun newInstance(workOrderId: Any? = null): PhotoBeforeMediaF {
-//            workOrderId as Int
-//            val fragment = PhotoBeforeMediaF()
-//            fragment.addArgument(workOrderId)
-//            return fragment
-//        }
-    }
-    private var mPlatformEntity: PlatformEntity? = null
 
-    override fun onSavePhoto() {
-//        TODO("Not yet implemented")
+    private var mPlatformEntity: PlatformEntity? = null
+    override fun onGetTextLabelFor() = "Контейнер: Фото после"
+
+    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        if (mPlatformEntity == null) {
+            toast("Ошибка.todo:::")
+            return RealmList<ImageEntity>()
+        }
+        return mPlatformEntity!!.afterMedia
     }
 
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "beforeMedia"
+        return getArgumentID().toString() + File.separator + "afterMediaContainer"
     }
 
     override fun onBeforeUSE() {
-//        TODO("Not yet implemented")
         val platformId = getArgumentID()
-        mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
-
+        mPlatformEntity = viewModel.getPlatformEntity(platformId)
+//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
+//            mPlatformEntity = it
+//        }
+        mMaxPhotoCount = Int.MAX_VALUE
     }
 
     override fun onGotoNext(): Boolean {
@@ -38,18 +40,30 @@ class PhotoAfterMediaContainerF : PhotoAfterMediaF() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
+        viewModel.baseDat.addAfterMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!,"EXTENDED")
     }
 
-    override fun onGetTextLabelFor() = "Фотографии после обслуживания контейнера"
+    override fun onSavePhoto() {
+
+    }
+
+    override fun onGetIsVisibleBtnCancel(): Boolean = false
+
     override fun onClickBtnCancel() {
-        TODO("Not yet implemented")
+
     }
 
-    override fun onGetIsVisibleBtnCancel() = false
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (getMediaCount() <= 0) {
+            navigateClose()
+        } else {
+            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        }
+    }
 
-    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        return super.onGetMediaRealmList()
+    companion object {
+
     }
 }
