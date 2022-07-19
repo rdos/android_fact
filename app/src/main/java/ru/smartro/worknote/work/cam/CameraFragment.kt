@@ -1,10 +1,13 @@
 package ru.smartro.worknote.work.cam
 
 import android.Manifest
+import android.R.attr.height
+import android.R.attr.width
 import android.app.Activity
 import android.app.Application
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.net.Uri
@@ -159,24 +162,36 @@ open class CameraFragment(
 
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                     try {
+                        var bitmap = resource
+                        var origOrient = 0
+                        Log.d("TETST :::", "Image Size: w=${resource.width} h=${resource.height}")
                         Log.d("TAGS", Thread.currentThread().name)
                         mAcivPreviewPhoto?.visibility = View.VISIBLE
                         mFrameLayout?.visibility = View.GONE
-                        mAcivPreviewPhoto?.setImageBitmap(resource)
 
                         mAcivPreviewPhoto?.postDelayed({
                             mAcivPreviewPhoto?.visibility = View.GONE
                             mFrameLayout?.visibility = View.VISIBLE
-                        }, 1000)
+                        }, 1500)
 
+                       if(bitmap.width > bitmap.height) {
+                           origOrient = 1
+                           val matrix = Matrix()
+                           matrix.postRotate(90f)
+                           val scaledBitmap = Bitmap.createScaledBitmap(resource, bitmap.width, bitmap.height, true)
+                           bitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
+                       }
+
+                        mAcivPreviewPhoto?.setImageBitmap(bitmap)
                         val baos = ByteArrayOutputStream()
-                        resource.compress(Bitmap.CompressFormat.WEBP, 80, baos)
+                        bitmap.compress(Bitmap.CompressFormat.WEBP, 90, baos)
                         val b: ByteArray = baos.toByteArray()
                         Log.w("TAGS", "b.size=${b.size}")
                         val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
                         Log.w("TAGS", "imageBase64=${imageBase64.length}")
                         val gps = App.getAppliCation().gps()
                         val imageEntity = gps.inImageEntity(imageBase64, mIsNoLimitPhoto)
+                        if(origOrient == 1) imageEntity.origOrient = origOrient
                         if (imageEntity.isCheckedData()) {
                             if (photoFor == PhotoTypeEnum.forContainerBreakdown
                                 || photoFor == PhotoTypeEnum.forContainerFailure
