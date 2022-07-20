@@ -397,6 +397,7 @@ abstract class APhotoFragment(
             mAcactvFail?.visibility = View.GONE
         } else {
             mAcactvFail?.visibility = View.VISIBLE
+            mAcactvFail?.requestFocus()
             mAcactvFail?.hint = onGetTextForFailHint()
             mAcactvFail?.setAdapter(ArrayAdapter(getAct(), android.R.layout.simple_dropdown_item_1line, android.R.id.text1, reasonsString))
             mAcactvFail?.setOnClickListener {
