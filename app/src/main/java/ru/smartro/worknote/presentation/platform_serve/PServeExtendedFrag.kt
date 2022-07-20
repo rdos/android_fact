@@ -173,40 +173,6 @@ class PServeExtendedFrag :
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "onActivityResult.requestCode=${requestCode}")
-        Log.d(TAG, "onActivityResult.resultCode=${resultCode}")
-        if (requestCode == 13 && resultCode == Activity.RESULT_OK) {
-            getAct().apply {
-                setResult(Activity.RESULT_OK)
-                finish()
-            }
-//        } else if (requestCode == REQUEST_EXIT) {
-//            if (resultCode == 99) {
-//                getAct().apply {
-//                    setResult(Activity.RESULT_OK)
-//                    finish()
-//                }
-//            }
-        } else {
-            val platform = vm.mPlatformEntity.value
-            if(platform != null) {
-                if (resultCode == 101 && requestCode == 101) {
-
-
-                } else if (resultCode == 102 && requestCode == 102) {
-
-
-                } else if (requestCode == 14 && resultCode == 404) {
-
-
-                } else if (requestCode == 14 && resultCode == 14) {
-
-                }
-            }
-        }
-    }
 
     private fun onClickPickup(acsbVolumePickup: SeekBar) {
         acsbVolumePickup.isEnabled = false
