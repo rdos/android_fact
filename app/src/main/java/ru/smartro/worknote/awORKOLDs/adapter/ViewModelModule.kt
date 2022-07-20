@@ -8,9 +8,13 @@ import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
 import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
 import ru.smartro.worknote.presentation.terminate.TerminateViewModel
 import ru.smartro.worknote.presentation.cam.PhotoViewModel
-import ru.smartro.worknote.work.ui.*
+import ru.smartro.worknote.work.ac.StartAct
+import ru.smartro.worknote.work.ui.DebugAct
+import ru.smartro.worknote.work.ui.JournalChatAct
+
 
 val viewModelModule = module {
+    viewModel { StartAct.AuthViewModel(androidApplication()) }
 
     viewModel { ChecklistViewModel(androidApplication()) }
 
