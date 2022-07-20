@@ -28,6 +28,8 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
         return mContainerEntity!!.breakdownMedia
     }
 
+    override fun onGetIsVisibleComment(): Boolean = true
+
     override fun onGetDirName(): String {
         val containerId = getArgumentID().toString()
         val platformId = getArgumentName()
@@ -65,7 +67,7 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
         //        val problemComment = problem_comment.text.toString()
         viewModel.baseDat.addBreakdownMediaContainer(platformId, mContainerEntity?.containerId!!, imageS)
-        viewModel.baseDat.setStateBreakdownForContainer(platformId, mContainerEntity?.containerId!!, breakdownText!!)
+        viewModel.baseDat.setStateBreakdownForContainer(platformId, mContainerEntity?.containerId!!, breakdownText!!, getCommentText())
         navigateMain(R.id.PServeF, platformId)
     }
 

@@ -301,8 +301,9 @@ class RealmRepository(private val p_realm: Realm) {
                     container.status = StatusEnum.ERROR
                 }
             }
-
-            platform.failureComment = failureComment
+            if (!failureComment.isNullOrEmpty()) {
+                platform.failureComment = failureComment
+            }
             val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
                 .findFirst()
             workOrder?.calcInfoStatistics()
@@ -321,7 +322,9 @@ class RealmRepository(private val p_realm: Realm) {
             val problemId = findFailReasonByValue(realm, problem).id
             Log.d("TEST::::", "FIND CONTAINER NUMBER ${containerId}  problem: ${problemId}")
             containerEntity.failureReasonId = problemId
-            containerEntity.comment = comment
+            if (!comment.isNullOrEmpty()) {
+                containerEntity.comment = comment
+            }
             containerEntity.status = StatusEnum.ERROR
             val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
                 .findFirst()
@@ -341,7 +344,9 @@ class RealmRepository(private val p_realm: Realm) {
             val problemId = findBreakdownByValue(realm, problem).id
             Log.d("TEST::::", "FIND CONTAINER NUMBER ${containerId} problem: ${problem} problemid: ${problemId}")
             containerEntity.breakdownReasonId = problemId
-            containerEntity.comment = comment
+            if (!comment.isNullOrEmpty()) {
+                containerEntity.comment = comment
+            }
             val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
                 .findFirst()
             workOrder?.calcInfoStatistics()

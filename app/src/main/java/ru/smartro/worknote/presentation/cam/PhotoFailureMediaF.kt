@@ -19,6 +19,9 @@ class PhotoFailureMediaF : APhotoFragment() {
         }
         return mFailReasonS
     }
+
+    override fun onGetIsVisibleComment(): Boolean = true
+
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
@@ -69,7 +72,7 @@ class PhotoFailureMediaF : APhotoFragment() {
         viewModel.baseDat.addFailureMediaPlatform(mPlatformEntity?.platformId!!, imageS)
 //        val problemComment = problem_comment.text.toString()
 
-        viewModel.baseDat.setStateFailureForPlatform(mPlatformEntity?.platformId!!, failText!!)
+        viewModel.baseDat.setStateFailureForPlatform(mPlatformEntity?.platformId!!, failText!!, getCommentText())
         navigateClose()
     }
 

@@ -14,9 +14,7 @@ import android.util.Log
 import android.util.Size
 import android.view.*
 import android.widget.*
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatToggleButton
+import androidx.appcompat.widget.*
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
 import androidx.camera.view.CameraController
@@ -62,14 +60,14 @@ abstract class APhotoFragment(
     override var TAG : String = "--Aa${this::class.simpleName}"
 
     protected var mMaxPhotoCount = 3
-    private var acbCancel: Button? = null
-    private var ibTakePhoto: ImageButton? = null
+    private var acbCancel: AppCompatButton? = null
+    private var ibTakePhoto: AppCompatImageButton? = null
     private lateinit var mCameraController: LifecycleCameraController
-    private var mThumbNail: ImageButton? = null
-    private var mImageCounter: TextView? = null
+    private var mThumbNail: AppCompatImageButton? = null
+    private var mImageCounter: AppCompatTextView? = null
     private val mCameraExecutor = Executors.newSingleThreadExecutor()
     private var mActbPhotoFlash: AppCompatToggleButton? = null
-    private var acbGotoNext: Button? = null
+    private var acbGotoNext: AppCompatButton? = null
     private lateinit var mPreviewView: PreviewView
 
     private val PERMISSIONS_REQUEST_CODE = 10
@@ -100,6 +98,14 @@ abstract class APhotoFragment(
         return null
     }
 
+    open fun onGetIsVisibleComment(): Boolean {
+        return false
+    }
+
+    protected fun getCommentText(): String {
+        return acetComment?.text.toString()
+    }
+
     override fun onResume() {
         super.onResume()
         enableTorch()
@@ -115,8 +121,7 @@ abstract class APhotoFragment(
         super.onViewCreated(view, savedInstanceState)
         log("onViewCreated")
         mMediaPlayer = MediaPlayer.create(requireContext(), R.raw.camera_sound)
-        view.findViewById<Button>(R.id.acb_f_aphoto__cancel).visibility = View.GONE
-        view.findViewById<TextView>(R.id.label_for).visibility = View.GONE
+        view.findViewById<AppCompatTextView>(R.id.label_for).visibility = View.GONE
         mPreviewView = view.findViewById(R.id.view_finder)
         //todo: mCameraController в App???
         mCameraController = LifecycleCameraController(requireContext())
@@ -376,9 +381,15 @@ abstract class APhotoFragment(
         Log.d("TAGS", "initViews")
 
         mImageCounter = view.findViewById(R.id.image_counter)
-        acbCancel = view.findViewById<Button>(R.id.acb_f_aphoto__cancel)
+        acbCancel = view.findViewById(R.id.acb_f_aphoto__cancel)
+        acbCancel?.visibility = View.GONE
 
         acetComment = view.findViewById(R.id.acet_f_aphoto__comment)
+        acetComment?.visibility = View.GONE
+        if(onGetIsVisibleComment()) {
+            acetComment?.visibility = View.VISIBLE
+        }
+
         mAcactvFail = view.findViewById(R.id.acactv_f_aphoto__fail_reason)
         val reasonsString = onGetStringList()
 
