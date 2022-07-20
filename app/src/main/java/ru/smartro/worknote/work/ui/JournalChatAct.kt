@@ -4,8 +4,10 @@ import android.app.Application
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.SearchView
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.act_messager__rv_item.view.*
@@ -21,7 +23,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener {
+class JournalChatAct : ActNOAbst() {
     private var mAdapter: JournalChatAdapter? = null
     private val viewModel: JournalViewModel by viewModel()
 
@@ -35,10 +37,16 @@ class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener {
         acibGotoBack.setOnClickListener{
             onBackPressed()
         }
-        val svFilterAddress = findViewById<SearchView>(R.id.sv__act_journalchat__filteraddress)
+        val svFilterAddress = findViewById<AppCompatEditText>(R.id.sv__act_journalchat__filteraddress).apply {
+            removeTextChangedListener(null)
+            addTextChangedListener {
+                mAdapter?.filteredList(it.toString())
+            }
+            clearFocus()
+        }
 
         mAdapter = JournalChatAdapter(platformSIsServed)
-        svFilterAddress.setOnQueryTextListener(this)
+//        svFilterAddress.setOnQueryTextListener(this)
         val rvJournalAct = findViewById<RecyclerView>(R.id.rv_act_journal)
         rvJournalAct.adapter = mAdapter
     }
@@ -172,27 +180,5 @@ class JournalChatAct : ActNOAbst() , SearchView.OnQueryTextListener {
         fun findPlatformsIsServed(): List<PlatformEntity> {
             return baseDat.findPlatformsIsServed()
         }
-    }
-
-    /** ********************************************************************************************
-     * ЗДЕСЬ интерфейсы interface*/
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        val result = false
-        log("svFilterAddress:::onQueryTextSubmit. result=${result} query=${query}")
-        return result
-    }
-
-    override fun onQueryTextChange(newText: String?): Boolean {
-        val res = true
-        if (newText.isNullOrEmpty()) {
-            mAdapter!!.filteredList(Snull)
-            log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
-            return res
-        }
-        mAdapter?.let {
-            mAdapter!!.filteredList(newText.toString())
-        }
-        log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
-        return res
     }
 }

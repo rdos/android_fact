@@ -13,14 +13,12 @@ import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -68,8 +66,7 @@ import ru.smartro.worknote.work.ui.JournalChatAct
 //todo: тодо:!r_dos
 //Двигается карта deselectGeoObject()
 class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
-    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener,
-    SearchView.OnQueryTextListener {
+    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
 
 
     private var mAcbGotoComplete: AppCompatButton? = null
@@ -526,27 +523,36 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         mAdapterBottomBehavior = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
         rvBehavior.adapter = mAdapterBottomBehavior
 //        rvBehavior.adapter.notifyDataSetChanged()
-        val clBottomHavior = findViewById<ConstraintLayout>(R.id.act_map__bottom_behavior__header)
+        val clBottomHavior = findViewById<LinearLayoutCompat>(R.id.act_map__bottom_behavior__header)
         clBottomHavior.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             else
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
-        val svFilterAddress = findViewById<SearchView>(R.id.sv__act_map__bottom_behavior__filter)
-        svFilterAddress.setOnQueryTextListener(this)
-        svFilterAddress.setOnSearchClickListener{
-            val diP200 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200F, resources.displayMetrics)
-                .toInt()
-            svFilterAddress.layoutParams.width = diP200
-
-            log("svFilterAddress:::setOnSearchClickListener. ")
+        val svFilterAddress = findViewById<AppCompatEditText>(R.id.sv__act_map__bottom_behavior__filter).apply {
+            removeTextChangedListener(null)
+            addTextChangedListener { newText ->
+                mAdapterBottomBehavior?.let { mapBottom ->
+                    mapBottom.filteredList(newText.toString())
+                    onRefreshMap(mapBottom.getItems())
+                }
+            }
+            clearFocus()
         }
-        svFilterAddress.setOnCloseListener{
-            log("svFilterAddress:::setOnCloseListener. before")
-            svFilterAddress.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-            false
-        }
+//        svFilterAddress.setOnQueryTextListener(this)
+//        svFilterAddress.setOnSearchClickListener{
+//            val diP200 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200F, resources.displayMetrics)
+//                .toInt()
+//            svFilterAddress.layoutParams.width = diP200
+//
+//            log("svFilterAddress:::setOnSearchClickListener. ")
+//        }
+//        svFilterAddress.setOnCloseListener{
+//            log("svFilterAddress:::setOnCloseListener. before")
+//            svFilterAddress.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+//            false
+//        }
     }
 
     override fun startPlatformService(item: PlatformEntity) {
@@ -1000,19 +1006,5 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     override fun onFinish(p0: Map, p1: CameraPosition) {
         Log.d("AAAA", "onFinish")
 //        this as InertiaMoveListener
-    }
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        val result = false
-        log("svFilterAddress:::onQueryTextSubmit. result=${result} query=${query}")
-        return result
-    }
-    override fun onQueryTextChange(newText: String?): Boolean {
-        val res = true
-        mAdapterBottomBehavior?.let {
-            it.filteredList(newText)
-            onRefreshMap(it.getItems())
-        }
-        log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
-        return res
     }
 }
