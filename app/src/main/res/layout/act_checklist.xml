@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent" xmlns:tools="http://schemas.android.com/tools">
 
     <!--<androidx.appcompat.widget.LinearLayoutCompat-->
     <!--    android:layout_width="match_parent" android:layout_height="match_parent"-->
@@ -58,13 +56,25 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/checklist_nav_graph" />
 
-        <ProgressBar
-            android:id="@+id/pb__act_checklist__loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/llc__act_checklist__bar"
-            android:layout_marginTop="10dp" />
+    <ProgressBar
+        android:id="@+id/pb__act_checklist__loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/llc__act_checklist__bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actv__act_checklist__loading_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:textColor="@color/black"
+        android:gravity="center"
+        tools:text="Загружается список машин\nдля организации Союз317"
+        android:layout_below="@id/pb__act_checklist__loading"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
 
     <!--</androidx.appcompat.widget.LinearLayoutCompat>-->
 

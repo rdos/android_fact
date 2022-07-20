@@ -108,7 +108,10 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                 }
             } else {
                 rvAdapter?.clearItems()
-                (requireActivity() as XChecklistAct).showProgressBar()
+                if(getArgumentName() == null)
+                    (requireActivity() as XChecklistAct).showProgressBar()
+                else
+                    (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
             }
         }
 
@@ -116,7 +119,10 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                 "vm.mLastOwnerId=${viewModel.mLastOwnerId}, " +
                 "getArgumentID(mLastOwnerId)=${getArgumentID()}")
         if(viewModel.mVehicleList.value == null) {
-            (requireActivity() as XChecklistAct).showProgressBar()
+            if(getArgumentName() == null)
+                (requireActivity() as XChecklistAct).showProgressBar()
+            else
+                (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
             viewModel.getVehicleList(getArgumentID())
         } else if(viewModel.mLastOwnerId != getArgumentID()) {
             viewModel.clearVehicleList()
@@ -128,7 +134,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         paramS().vehicleId = vehicle.id
         paramS().vehicleName = vehicle.name
         // TODO!! will be changed to navigateMain
-        navigateMainChecklist(R.id.startWaybillF, vehicle.id)
+        navigateMainChecklist(R.id.startWaybillF, vehicle.id, vehicle.name)
     }
 
     override fun onResume() {

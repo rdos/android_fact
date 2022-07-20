@@ -124,7 +124,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     }
 
     fun updateContainerComment(platformId: Int, containerId: Int, comment: String?) {
-        mWasServedExtended.postValue(true)
         baseDat.updateContainerComment(platformId, containerId, comment)
     }
 

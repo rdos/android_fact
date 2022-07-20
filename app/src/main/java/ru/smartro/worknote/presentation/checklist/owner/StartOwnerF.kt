@@ -84,7 +84,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         paramS().ownerId = ownerId
         paramS().ownerName = ownerName
         // TODO!! will be changed to navigateMain
-        navigateMainChecklist(R.id.startVehicleF, ownerId)
+        navigateMainChecklist(R.id.startVehicleF, ownerId, ownerName)
     }
 
     override fun onRefresh() {

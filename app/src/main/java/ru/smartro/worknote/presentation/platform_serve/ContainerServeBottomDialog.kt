@@ -126,6 +126,15 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.updateContainerComment(
+            viewModel.mPlatformEntity.value!!.platformId!!,
+            p_container_id,
+            comment_et.text.toString()
+        )
+    }
+
     private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_red__usebutton))
     }

@@ -34,13 +34,7 @@ class PServeSimplifyFrag : AFragment() {
             }
 
             override fun onAddPhoto(clientGroupInd: Int, typeGroupInd: Int) {
-//                val intent = Intent(requireActivity(), CameraAct::class.java)
-//                intent.putExtra("isNoLimitPhoto", true)
-//                intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
-//                intent.putExtra("photoFor", PhotoTypeEnum.forSimplifyServeBefore)
                 navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, vm.mPlatformEntity.value!!.platformId!!)
-//hideDialog()
-//                startActivityForResult(intent, 1685)
             }
         })
 
@@ -61,17 +55,5 @@ class PServeSimplifyFrag : AFragment() {
                 adapterCurrentTask.served = list
             }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-//        if(requestCode == 1685 && resultCode == 5861) {
-//            val intent = Intent(requireActivity(), CameraAct::class.java)
-//            intent.putExtra("isNoLimitPhoto", true)
-//            intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
-//            intent.putExtra("photoFor", PhotoTypeEnum.forSimplifyServeAfter)
-//            hideDialog()
-//            startActivityForResult(intent, 2685)
-//        }
     }
 }
