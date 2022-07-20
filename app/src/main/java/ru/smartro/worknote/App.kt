@@ -28,7 +28,8 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.yandex.mapkit.MapKitFactory
-import io.realm.*
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
@@ -36,22 +37,19 @@ import io.sentry.android.core.SentryAndroid
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.AndRoid
+import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.work.NetworkRepository
-import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.adapter.viewModelModule
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
-import ru.terrakok.cicerone.Cicerone
-import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.Router
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
-
 
 
 //INSTANCE
@@ -139,21 +137,6 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
-    }
-
-    private var mCicerone: Cicerone<Router>? = null
-    private fun getCicerone(): Cicerone<Router> {
-        if (mCicerone == null) {
-            mCicerone = Cicerone.create()
-        }
-        return mCicerone!!
-    }
-    fun getNavigatorHolder(): NavigatorHolder {
-        return getCicerone().navigatorHolder
-    }
-
-    fun getRouter(): Router {
-        return getCicerone().router
     }
 
     inner class MyLocationListener() : LocationListener {
