@@ -10,6 +10,7 @@ import ru.smartro.worknote.presentation.checklist.vehicle.StartVehicleViewModel
 import ru.smartro.worknote.presentation.checklist.waybill.StartWaybillViewModel
 import ru.smartro.worknote.presentation.checklist.workorder.StartWorkOrderViewModel
 import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
+import ru.smartro.worknote.presentation.terminate.TerminateViewModel
 import ru.smartro.worknote.work.ac.StartAct
 import ru.smartro.worknote.work.cam.PhotoViewModel
 import ru.smartro.worknote.work.ui.*
@@ -28,7 +29,12 @@ val viewModelModule = module {
     }
 
     viewModel { PlatformServeSharedViewModel(androidApplication()) }
+
     viewModel { PhotoViewModel(androidApplication()) }
+
     viewModel { DebugAct.DebugViewModel(androidApplication()) }
+
     viewModel { JournalChatAct.JournalViewModel(androidApplication()) }
+
+    viewModel { TerminateViewModel(androidApplication()) }
 }

@@ -11,6 +11,7 @@ import android.widget.ToggleButton
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +20,7 @@ import com.google.android.material.textfield.TextInputLayout
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
+import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -32,9 +34,11 @@ import kotlin.math.round
 
 
 class CompleteF : AFragment() {
+
     private lateinit var mReasonAdapter: ReasonAdapter
     private lateinit var mDatabase: RealmRepository
 
+    private val viewModel: TerminateViewModel by viewModels()
 
     override fun onGetLayout(): Int {
         return R.layout.f_complete___map_act
@@ -68,36 +72,45 @@ class CompleteF : AFragment() {
         val llm = LinearLayoutManager(getAct())
 //        llm.
         rvReason.layoutManager = llm
-        mReasonAdapter = ReasonAdapter(workOrderS, cancelWayReasonS)
+        mReasonAdapter = ReasonAdapter(workOrderS, cancelWayReasonS, object : OnSuccessListener {
+            override fun onSuccess() {
+                viewModel.increaseCounter()
+            }
+        })
         rvReason.adapter = mReasonAdapter
 
+        viewModel.mServedCounter.observe(viewLifecycleOwner) {
+            if(it == workOrderS.size) {
+                if(mDatabase.hasWorkOrderInProgress() == false) {
+                    finishTask_know()
+                } else {
+                    getBackToMap()
+                }
+            }
+        }
+    }
+
+    interface OnSuccessListener {
+        fun onSuccess()
+    }
+
+    //todo:!r_dos
+    fun finishTask_know() {
+        Log.i(TAG, "finishTask")
+        getAct().modeSyNChrON_off()
+        mDatabase.clearDataBase()
+
+        getAct().findNavController(R.id.fragment_container_end_tasks).navigate(CompleteFDirections.actionCompleteFToFinishCompleteF())
+    }
+
+    fun getBackToMap() {
+        getAct().finish()
     }
 
     inner class ReasonAdapter(private val workOrderS: MutableList<WorkOrderEntity>,
-                              private val cancelWayReasonS: List<CancelWayReasonEntity>) :
+                              private val cancelWayReasonS: List<CancelWayReasonEntity>,
+                              private val listener: CompleteF.OnSuccessListener) :
         RecyclerView.Adapter<ReasonAdapter.BaseCompleteViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCompleteViewHolder {
-
-            lateinit var viewHolder: RecyclerView.ViewHolder
-
-            when (viewType) {
-                1 -> {
-                    val view = LayoutInflater.from(parent.context).inflate(R.layout.f_complete_success___act_map__rv_item, parent, false)
-                    viewHolder = SuccessAdapterViewHolder(view)
-                }
-                0 -> {
-                    val view = LayoutInflater.from(parent.context).inflate(R.layout.f_complete_early__act_map__rv_item, parent, false)
-                    viewHolder = EarlyAdapterViewHolder(view)
-                }
-                else -> {
-                    val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item_know1, parent, false)
-                    viewHolder = EarlyAdapterViewHolder(view)
-                }
-            }
-
-            return viewHolder as BaseCompleteViewHolder
-        }
 
         override fun getItemCount(): Int {
             return workOrderS.size
@@ -106,6 +119,26 @@ class CompleteF : AFragment() {
         override fun onBindViewHolder(holder: BaseCompleteViewHolder, position: Int) {
             val workOrderEntity = workOrderS[position]
             holder.bind(workOrderEntity)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCompleteViewHolder {
+
+            val viewHolder = when (viewType) {
+                1 -> {
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.f_complete_success___act_map__rv_item, parent, false)
+                    SuccessAdapterViewHolder(view, listener)
+                }
+                0 -> {
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.f_complete_early__act_map__rv_item, parent, false)
+                    EarlyAdapterViewHolder(view, listener)
+                }
+                else -> {
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item_know1, parent, false)
+                    EarlyAdapterViewHolder(view, listener)
+                }
+            }
+
+            return viewHolder as BaseCompleteViewHolder
         }
 
 
@@ -118,16 +151,7 @@ class CompleteF : AFragment() {
             abstract fun bind(workOrderEntity: WorkOrderEntity)
         }
 
-        //todo:!r_dos
-        fun finishTask_know() {
-            Log.i(TAG, "finishTask")
-            getAct().modeSyNChrON_off()
-            mDatabase.clearDataBase()
-
-            getAct().findNavController(R.id.fragment_container_end_tasks).navigate(CompleteFDirections.actionCompleteFToFinishCompleteF())
-        }
-
-        inner class EarlyAdapterViewHolder(itemView: View) : BaseCompleteViewHolder(itemView) {
+        inner class EarlyAdapterViewHolder(itemView: View, listener: OnSuccessListener) : BaseCompleteViewHolder(itemView) {
             val tiedTotalVolume: TextInputEditText by lazy {
                 val view = itemView.findViewById<TextInputEditText>(R.id.tiet_f_complete_early__total_volume)
                 view
@@ -175,9 +199,9 @@ class CompleteF : AFragment() {
                 val view = itemView.findViewById<AppCompatButton>(R.id.acb_f_complete_early__accept)
                 view
             }
-                public fun setBlueAllIn() {
+            public fun setBlueAllIn() {
 
-                }
+            }
 
             override fun bind(workOrderEntity: WorkOrderEntity) {
                 val totalContainersVolume = mDatabase.findContainersVolume(workOrderEntity.id)
@@ -219,9 +243,7 @@ class CompleteF : AFragment() {
                                         hold.itemView.isEnabled = false
                                         workOrderEntity.isShowForUser = false
                                         hideProgress()
-                                        if (mDatabase.hasWorkOrderInNotProgress()) {
-                                            finishTask_know()
-                                        }
+                                        listener.onSuccess()
                                     }
                                     Status.ERROR -> {
                                         hideProgress()
@@ -240,7 +262,7 @@ class CompleteF : AFragment() {
             }
         }
 
-        inner class SuccessAdapterViewHolder(itemView: View) : BaseCompleteViewHolder(itemView) {
+        inner class SuccessAdapterViewHolder(itemView: View, listener: OnSuccessListener) : BaseCompleteViewHolder(itemView) {
             val tiedTotalVolume: TextInputEditText by lazy {
                 val view = itemView.findViewById<TextInputEditText>(R.id.tiet_f_complete_success__total_volume)
                 view
@@ -271,7 +293,7 @@ class CompleteF : AFragment() {
                 }
                 view
             }
-                val acbAccept: AppCompatButton by lazy {
+            val acbAccept: AppCompatButton by lazy {
                 val view = itemView.findViewById<AppCompatButton>(R.id.acb_f_complete_success__accept)
                 view
             }
@@ -301,9 +323,7 @@ class CompleteF : AFragment() {
                                         setUseButtonStyleBackgroundGreen(it as AppCompatButton)
                                         hold.itemView.isEnabled = false
                                         hideProgress()
-                                        if (mDatabase.hasWorkOrderInNotProgress()) {
-                                            finishTask_know()
-                                        }
+                                        listener.onSuccess()
                                     }
                                     Status.ERROR -> {
                                         hideProgress()
