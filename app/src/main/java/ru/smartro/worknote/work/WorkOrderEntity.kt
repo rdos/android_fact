@@ -259,7 +259,9 @@ open class PlatformEntity(
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,
+    // TODO:::Vlad: will be removed
     var afterMediaSize: Int = 0,
+    // TODO:::Vlad: will be removed
     var beforeMediaSize: Int = 0,
     @SerializedName("address")
     var address: String? = null,
@@ -345,12 +347,10 @@ open class PlatformEntity(
 
     private fun isNewPlatform(): Boolean {
         val res = this.getStatusPlatform() == StatusEnum.NEW
-        Log.d("TEST :::", "isNewPlatform().res=${res}")
         return res
     }
     fun isNotNewPlatform(): Boolean {
         val result = !this.isNewPlatform()
-        Log.i("TEST :::", "isNotNewPlatform().result=${result}")
         return result
     }
 

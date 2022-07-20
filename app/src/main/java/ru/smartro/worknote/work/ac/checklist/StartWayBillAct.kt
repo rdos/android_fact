@@ -3,9 +3,6 @@ package ru.smartro.worknote.work.ac.checklist
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
@@ -15,7 +12,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.R
@@ -27,7 +23,7 @@ import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
-import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.Data
+import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.work.ac.PERMISSIONS
@@ -48,19 +44,19 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
-        setContentView(R.layout.act_start_waybill)
+        setContentView(R.layout.f_start_waybill)
 
         val putExtraParamName = getPutExtraParam_NAME()
         supportActionBar?.title = "Путевой Лист"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        swipeRefreshLayout = findViewById(R.id.swipe_refresh)
+        swipeRefreshLayout = findViewById(R.id.srl__f_start_waybill__refresh)
         swipeRefreshLayout?.setOnRefreshListener(this)
 
-        mTvNotFoundData = findViewById(R.id.tv_act_start_waybill__not_found_data)
+        mTvNotFoundData = findViewById(R.id.rv__f_start_waybill__waybills)
         mTvNotFoundData?.text = getString(R.string.tv_no_fount_data)
 
-        mRvWaybill = findViewById(R.id.rv_act_start_waybill)
+        mRvWaybill = findViewById(R.id.rv__f_start_waybill__waybills)
         mRvWaybill?.layoutManager = LinearLayoutManager(this)
         hideNotFoundData()
         showingProgress(putExtraParamName)
@@ -149,13 +145,13 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
 
         fun getWayList(body : WayListBody) {
             viewModelScope.launch {
-                _wayListResponse.postValue(networkDat.getWayList(body))
+//                _wayListResponse.postValue(networkDat.getWayList(body))
             }
         }
 
     }
 
-    inner class WaybillAdapter(private val items: List<Data>) :
+    inner class WaybillAdapter(private val items: List<WayBillDto>) :
         RecyclerView.Adapter<WaybillAdapter.WaybillViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WaybillViewHolder {
@@ -196,15 +192,5 @@ class StartWayBillAct : ActAbstract(), SwipeRefreshLayout.OnRefreshListener {
             vehicleId = paramS().getVehicleId()
         )
         viewModel.getWayList(body)
-    }
-
-    private fun stopRefreshing() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            if(swipeRefreshLayout == null) {
-                stopRefreshing()
-            } else if(swipeRefreshLayout!!.isRefreshing) {
-
-            }
-        }, 10000)
     }
 }

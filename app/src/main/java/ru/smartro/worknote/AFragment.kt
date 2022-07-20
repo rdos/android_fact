@@ -49,6 +49,12 @@ abstract class AFragment : Fragment(){
         navController.navigateUp()
     }
 
+    protected fun navigateBackChecklist() {
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv__act_checklist__f_container) as NavHostFragment)
+        val navController = navHost.navController
+        navController.navigateUp()
+    }
+
     protected fun navigateClose() {
         getAct().finish()
     }
@@ -68,11 +74,24 @@ abstract class AFragment : Fragment(){
 
     }
 
+    protected fun navigateMainChecklist(navFragmentId: Int, argumentId: Int?, argumentName: String? = null) {
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv__act_checklist__f_container) as NavHostFragment)
+        val navController = navHost.navController
 
+        if (argumentId == null) {
+            // TODO: !~r_dos
+//            navController.popBackStack(navFragmentId, true)
+            navController.navigate(navFragmentId)
+            return
+        }
+        val argSBundle = getArgSBundle(argumentId, argumentName)
+        navController.navigate(navFragmentId, argSBundle)
+
+    }
 
     abstract fun onGetLayout(): Int
 
-    fun getArgSBundle(argumentId: Int, argumentName: String?=null): Bundle {
+    fun getArgSBundle(argumentId: Int, argumentName: String ?= null): Bundle {
         val bundle = Bundle(2)
         bundle.putInt(ARGUMENT_NAME___PARAM_ID, argumentId)
         // TODO: 10.12.2021 let на всякий П???

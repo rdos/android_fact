@@ -46,14 +46,14 @@ class StartVehicleAct : ActAbstract() {
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
-        setContentView(R.layout.act_start_vehicle)
+        setContentView(R.layout.f_start_vehicle)
 
         supportActionBar?.title = "Автомобиль"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 //        supportActionBar?.hide()
         /**====================================================================================== */
-        val etVehicleFilter = findViewById<EditText>(R.id.et_act_start_vehicle__filter)
+        val etVehicleFilter = findViewById<EditText>(R.id.et__f_start_vehicle__filter)
 //        val textWatcher = TextWatcher()
         etVehicleFilter.addTextChangedListener { text: Editable? ->
             myAdapter?.let {
@@ -71,21 +71,21 @@ class StartVehicleAct : ActAbstract() {
         })
 
 
-        val rv = findViewById<RecyclerView>(R.id.rv_act_start_vehicle)
+        val rv = findViewById<RecyclerView>(R.id.rv__f_start_vehicle__vehicles)
         rv.layoutManager = LinearLayoutManager(this)
             /**====================================================================================== */
             /**====================================================================================== */
 
-            showingProgress(getPutExtraParam_NAME())
-            vs.getVehicle(paramS().getOwnerId()).observe(this, Observer { result ->
-                val data = result.data
-                when (result.status) {
-                            Status.SUCCESS -> {
-                                myAdapter = VehicleAdapter(data?.data!!)
-                                rv.adapter = myAdapter
-                                if (isDevelMode()) {
-                            etVehicleFilter.setText("Тигуан")
-                            val vehicle = myAdapter!!.findVehicleByName("Тигуан")
+        showingProgress(getPutExtraParam_NAME())
+        vs.getVehicle(paramS().getOwnerId()).observe(this, Observer { result ->
+            val data = result.data
+            when (result.status) {
+                Status.SUCCESS -> {
+                    myAdapter = VehicleAdapter(data?.data!!)
+                    rv.adapter = myAdapter
+                    if (isDevelMode()) {
+                        etVehicleFilter.setText("Тигуан")
+                        val vehicle = myAdapter!!.findVehicleByName("Тигуан")
                         vehicle?.let {
                             gotoNextAct(vehicle.id, vehicle.name)
                         }
@@ -131,7 +131,7 @@ class StartVehicleAct : ActAbstract() {
     open class VehicleViewModel(application: Application) : BaseViewModel(application) {
 
         fun getVehicle(organisationId: Int): LiveData<Resource<VehicleResponse>> {
-            return networkDat.getVehicle(organisationId)
+            return networkDat.getVehicleOld(organisationId)
         }
 /*
     fun getCars(authModel: AuthBody): LiveData<Resource<CarsResponse>> {

@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -29,7 +28,6 @@ import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.MapAct
 import ru.smartro.worknote.abs.ActAbstract
-import ru.smartro.worknote.toast
 
 class StartWorkOrderAct : ActAbstract() {
 
@@ -43,12 +41,12 @@ class StartWorkOrderAct : ActAbstract() {
         if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
         }
-        setContentView(R.layout.act_start_workorder)
+        setContentView(R.layout.f_start_workorder)
         supportActionBar?.title = "Сменное Задание"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val rv = findViewById<RecyclerView>(R.id.rv_act_start_workorder)
+        val rv = findViewById<RecyclerView>(R.id.rv__f_start_workorder__workorders)
         rv.layoutManager = LinearLayoutManager(this)
-        val acbSelectAll = findViewById<AppCompatButton>(R.id.acb_act_start_workorder__select_all)
+        val acbSelectAll = findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_all)
         acbSelectAll.setOnClickListener {
             // TODO: добавить логирование
             if (workOrders.size <= 0) {
@@ -66,28 +64,28 @@ class StartWorkOrderAct : ActAbstract() {
             gotoNextAct(null)
         }
         showingProgress(getPutExtraParam_NAME())
-        vm.networkDat.getWorkOrder(paramS().getOwnerId(), paramS().wayBillId)
-            .observe(this, Observer { result ->
-                val data = result.data
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        workOrders = data!!.dataKnow100.woRKoRDeRknow1s
-                        if (workOrders.size == 1) {
-                            gotoNextAct(0)
-                        }
-                        rv.adapter = WayTaskAdapter(workOrders)
-                        hideProgress()
-                    }
-                    Status.ERROR -> {
-                        toast(result.msg)
-                        hideProgress()
-                    }
-                    Status.NETWORK -> {
-                        toast("Проблемы с интернетом")
-                        hideProgress()
-                    }
-                }
-            })
+//        vm.networkDat.getWorkOrder(paramS().getOwnerId(), paramS().wayBillId)
+//            .observe(this, Observer { result ->
+//                val data = result.data
+//                when (result.status) {
+//                    Status.SUCCESS -> {
+//                        workOrders = data!!.dataKnow100.woRKoRDeRknow1s
+//                        if (workOrders.size == 1) {
+//                            gotoNextAct(0)
+//                        }
+//                        rv.adapter = WayTaskAdapter(workOrders)
+//                        hideProgress()
+//                    }
+//                    Status.ERROR -> {
+//                        toast(result.msg)
+//                        hideProgress()
+//                    }
+//                    Status.NETWORK -> {
+//                        toast("Проблемы с интернетом")
+//                        hideProgress()
+//                    }
+//                }
+//            })
 
 
     }
@@ -131,7 +129,7 @@ class StartWorkOrderAct : ActAbstract() {
         RecyclerView.Adapter<WayTaskAdapter.OwnerViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.start_act__rv_item, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.f_start_workorder__rv_item, parent, false)
             return OwnerViewHolder(view)
         }
 
