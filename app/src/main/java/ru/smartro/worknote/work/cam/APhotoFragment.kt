@@ -132,14 +132,13 @@ abstract class APhotoFragment(
 //        mCameraController.setZoomRatio(.5000F)
 
         mPreviewView.controller = mCameraController
-        showingProgress()
+
         onBeforeUSE()
 
         if (GalleryPhotoF.isCostFileNotExist(getOutputD())) {
             //        getArgSBundle() !!! no_restorePhotoFileS
             restorePhotoFileS(onGetMediaRealmList())
         }
-        hideProgress()
         MyUtil.hideKeyboard(getAct())
     }
 
@@ -412,7 +411,7 @@ abstract class APhotoFragment(
                 return@setOnClickListener
             }
             try {
-                showingProgress("Сохраняем фото")
+//                showingProgress("Сохраняем фото")
                 val photoFileScanner = PhotoFileScanner(getOutputD())
                 val imageS = mutableListOf<ImageEntity>()
                 while (photoFileScanner.scan()) {
@@ -422,7 +421,7 @@ abstract class APhotoFragment(
                 onAfterUSE(imageS)
                 dropOutputD()
             } finally {
-                hideProgress()
+//                hideProgress()
             }
         }
 
