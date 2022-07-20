@@ -365,7 +365,7 @@ class NetworkRepository(private val context: Context) {
                 }
             }
         } catch (ex: Exception) {
-            Log.e(TAG, "test_ping", ex)
+//            Log.e(TAG, "test_ping", ex)
             Resource.network("Проблемы с подключением интернета", null)
         }
     }

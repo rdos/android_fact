@@ -1,18 +1,14 @@
 package ru.smartro.worknote.presentation.platform_serve
 
 import android.app.Application
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
-import java.lang.reflect.Type
 
 data class ClientGroupedContainers(
     var client: String = "",
@@ -38,6 +34,11 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     val mPlatformEntity: LiveData<PlatformEntity>
         get() = _platformEntity
 
+    private val _failReasonS: MutableLiveData<List<String>> = MutableLiveData(emptyList())
+    val mFailReasonS: LiveData<List<String>>
+        get() = _failReasonS
+
+
     private val _sortedContainers: MutableLiveData<List<ClientGroupedContainers>> = MutableLiveData(null)
     val mSortedContainers: LiveData<List<ClientGroupedContainers>>
         get() = _sortedContainers
@@ -55,14 +56,26 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
         _screenMode.postValue(!_screenMode.value!!)
     }
 
+//    fun getPlatformEntity(platformId: Int, viewLifecycleOwner = null, next: () -> Any = null): PlatformEntity {
+    // viewLifecycleOwner где взять?:R_dos))
+
     fun getPlatformEntity(platformId: Int): PlatformEntity {
-        val response = baseDat.getPlatformEntity(platformId)
+        val response: PlatformEntity = baseDat.getPlatformEntity(platformId)
         _platformEntity.postValue(response)
         if(response.containers.all { el -> el.status == StatusEnum.NEW }) {
             val temp = clusterContainers(response.containers.toList())
             _sortedContainers.postValue(temp)
         }
         return response
+    }
+
+    fun getFailReasonS(): List<String> {
+        var result = _failReasonS.value!!
+        if (result.isEmpty()) {
+            result = baseDat.findAllFailReason()
+        }
+        _failReasonS.postValue(result)
+        return result
     }
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -115,9 +128,9 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
         baseDat.updateContainerComment(platformId, containerId, comment)
     }
 
-    fun updateSelectionVolume(platformId: Int, volume: Double?) {
+    fun updateVolumePickup(platformId: Int, volume: Double?) {
         mWasServedExtended.postValue(true)
-        baseDat.updateSelectionVolume(platformId, volume)
+        baseDat.updateVolumePickup(platformId, volume)
         getPlatformEntity(platformId)
     }
 
@@ -147,15 +160,18 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     }
 
     fun removeContainerMedia(photoFor: Int,platformId: Int, containerId: Int, imageBase64: ImageEntity) {
-        mWasServedExtended.postValue(true)
-        baseDat.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
-        getPlatformEntity(platformId)
+//        mWasServedExtended.postValue(true)
+//        baseDat.removeContainerMedia(photoFor, platformId, containerId, imageBase64)
+//        getPlatformEntity(platformId)
     }
 
-    fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
-        mWasServedExtended.postValue(true)
+    fun updatePlatformKGO(platformId: Int?, kgoVolume: String, isServedKGO: Boolean) {
+        if (platformId == null) {
+            return
+        }
+//        mWasServedExtended.postValue(true)
         baseDat.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
-        getPlatformEntity(platformId)
+//        getPlatformEntity(platformId)
     }
 
     // !!!!!!!!!!!!!!!!!!!

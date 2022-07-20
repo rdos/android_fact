@@ -576,17 +576,17 @@ open class PlatformEntity(
         return getRemainingKGOMediaSize() > 0
     }
 
-    fun addServerKGOMedia(imageEntity: ImageEntity) {
+    fun addServerKGOMedia(imageS: List<ImageEntity>) {
         initServedKGOEntity()
         this.kgoServed?.let{
-            it.media.add(imageEntity)
+            it.media.addAll(imageS)
         }
     }
 
-    fun addRemainingKGOMedia(imageEntity: ImageEntity) {
+    fun addRemainingKGOMedia(imageS: List<ImageEntity>) {
         initRemainingKGOEntity()
         this.kgoRemaining?.let{
-            it.media.add(imageEntity)
+            it.media.addAll(imageS)
         }
     }
 
@@ -734,6 +734,7 @@ open class ImageEntity(
     // 0 = vertical, 1 = horizontal
     var origOrient: Int = 0
 ) : Serializable, RealmObject() {
+
 
     fun isCheckedData(): Boolean {
         val res = false

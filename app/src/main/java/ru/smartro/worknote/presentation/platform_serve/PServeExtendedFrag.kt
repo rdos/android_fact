@@ -10,26 +10,22 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import io.realm.Realm
-import ru.smartro.worknote.*
+import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.presentation.platform_serve.adapters.ExtendedContainerAdapter
 import ru.smartro.worknote.work.ContainerEntity
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.work.cam.CameraAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
 
 
 class PServeExtendedFrag :
@@ -38,18 +34,11 @@ class PServeExtendedFrag :
 
     private val THUMB_INACTIVE = "Inactive"
     private val THUMB_ACTIVE = "Active"
-    private val REQUEST_EXIT = 33
     private lateinit var mConrainerAdapter: ExtendedContainerAdapter
     private val vm: PlatformServeSharedViewModel by activityViewModels()
-
-    private var mRemainingKGOVolumeText: String? = null
-    private var mServedKGOVolumeText: String? = null
-
-    private var prevVolumeValue: Double? = null
-    private var newVolumeValue: Double? = null
     private var mVolumePickup: Double? = null
     private var tvVolumePickup: TextView? = null
-    private var mAcbKGORemaining: AppCompatButton? = null
+    private var acbKGORemaining: AppCompatButton? = null
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
     private var recyclerView: RecyclerView? = null
@@ -68,11 +57,8 @@ class PServeExtendedFrag :
         }
         acbProblem = view.findViewById(R.id.acb_activity_platform_serve__problem)
         mAcbKGOServed = view.findViewById(R.id.acb_activity_platform_serve__kgo_served)
-        mAcbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
-        acsbVolumePickup = view.findViewById<SeekBar?>(R.id.acsb_activity_platform_serve__seekbar).apply {
-            thumb = getThumb(null)
-        }
-
+        acbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
+        acsbVolumePickup = view.findViewById<SeekBar?>(R.id.acsb_activity_platform_serve__seekbar)
         vm.mPlatformEntity.observe(viewLifecycleOwner) { platform ->
             if(platform != null) {
                 mConrainerAdapter = ExtendedContainerAdapter(
@@ -86,10 +72,11 @@ class PServeExtendedFrag :
                     acbProblem?.let { setUseButtonStyleBackgroundRed(it) }
                 }
                 acbProblem?.setOnClickListener {
-                    val intent = Intent(getAct(), PlatformFailureAct::class.java)
-                    intent.putExtra("platform_id", platform.platformId)
-                    intent.putExtra("isContainerProblem", false)
-                    startActivityForResult(intent, REQUEST_EXIT)
+//                    val intent = Intent(getAct(), PlatformFailureAct::class.java)
+//                    intent.putExtra("platform_id", platform.platformId)
+//                    intent.putExtra("isContainerProblem", false)
+//                    startActivityForResult(intent, REQUEST_EXIT)
+                    navigateMain(R.id.PhotoFailureMediaF, platform.platformId)
                 }
                 if (platform.isServedKGONotEmpty()) {
                     mAcbKGOServed?.let { setUseButtonStyleBackgroundGreen(it) }
@@ -100,45 +87,51 @@ class PServeExtendedFrag :
                         tietKGOVolumeIn.setText(platform.getServedKGOVolume())
                         val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
                         btnSave.setOnClickListener {
-                            mServedKGOVolumeText = tietKGOVolumeIn.text.toString()
-                            if (mServedKGOVolumeText.isNullOrBlank()) {
+                            val servedKGOVolumeText = tietKGOVolumeIn.text.toString()
+                            if (servedKGOVolumeText.isNullOrBlank()) {
                                 return@setOnClickListener
                             }
+//                            intent.putExtra("photoFor", PhotoTypeEnum.forServedKGO)
+//                                val intent = Intent(getAct(), CameraAct::class.java)
+//                                intent.putExtra("platform_id", platform.platformId)
 
-                            val intent = Intent(getAct(), CameraAct::class.java)
-                            intent.putExtra("platform_id", platform.platformId)
-                            intent.putExtra("photoFor", PhotoTypeEnum.forServedKGO)
-                            startActivityForResult(intent, 101)
+                            vm.updatePlatformKGO(platform.platformId!!, servedKGOVolumeText, isServedKGO = true)
+                            navigateMain(R.id.PhotoKgoServedF, platform.platformId)
+//                                startActivityForResult(intent, 101)
                             hideDialog()
                         }
                     }
                 }
                 if (platform.isRemainingKGONotEmpty()) {
-                    mAcbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
+                    acbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
                 }
-                mAcbKGORemaining?.setOnClickListener {
+
+                acbKGORemaining?.setOnClickListener {
                     showDialogFillKgoVolume().let { view ->
                         val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
                         tietKGOVolumeIn.setText(platform.getRemainingKGOVolume())
                         val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
                         btnSave.setOnClickListener{
-                            mRemainingKGOVolumeText = tietKGOVolumeIn.text.toString()
-                            if (mRemainingKGOVolumeText.isNullOrBlank()) {
+                            val remainingKGOVolumeText = tietKGOVolumeIn.text.toString()
+                            if (remainingKGOVolumeText.isNullOrBlank()) {
                                 return@setOnClickListener
                             }
-                            val intent = Intent(getAct(), CameraAct::class.java)
-                            intent.putExtra("platform_id", platform.platformId)
-                            intent.putExtra("photoFor", PhotoTypeEnum.forRemainingKGO)
-                            startActivityForResult(intent, 102)
+//                            val intent = Intent(getAct(), CameraAct::class.java)
+//                            intent.putExtra("platform_id", platform.platformId)
+//                            intent.putExtra("photoFor", PhotoTypeEnum.forRemainingKGO)
+//                            startActivityForResult(intent, 102)
+                            vm.updatePlatformKGO(platform.platformId, remainingKGOVolumeText, isServedKGO = false)
+                            navigateMain(R.id.PhotoKgoRemainingF, platform.platformId)
                             hideDialog()
                         }
                     }
                 }
                 if (platform.isPickupNotEmpty()) {
-                    acsbVolumePickup?.apply {
-                        progress = max
-                    }
+                    acsbVolumePickup?.progress = platform.volumePickup!!.toInt()
                     tvVolumePickuptext(platform.volumePickup)
+                    acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
+                } else {
+                    acsbVolumePickup?.thumb = getThumb(null)
                 }
                 acsbVolumePickup?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
                     private var mProgressAtStartTracking = 0
@@ -168,11 +161,9 @@ class PServeExtendedFrag :
 
                         acsbVolumePickup?.apply {
                             if (progress > 0 ) {
-                                newVolumeValue = progress.toDouble()
-                                gotoMakePhotoForPickup()
+                                gotoMakePhotoForPickup(progress.toDouble())
                             } else {
-                                vm.updateSelectionVolume(platform.platformId!!, null)
-                                prevVolumeValue = null
+                                vm.updateVolumePickup(platform.platformId!!, null)
                             }
                         }
 
@@ -191,31 +182,27 @@ class PServeExtendedFrag :
                 setResult(Activity.RESULT_OK)
                 finish()
             }
-        } else if (requestCode == REQUEST_EXIT) {
-            if (resultCode == 99) {
-                getAct().apply {
-                    setResult(Activity.RESULT_OK)
-                    finish()
-                }
-            }
+//        } else if (requestCode == REQUEST_EXIT) {
+//            if (resultCode == 99) {
+//                getAct().apply {
+//                    setResult(Activity.RESULT_OK)
+//                    finish()
+//                }
+//            }
         } else {
             val platform = vm.mPlatformEntity.value
             if(platform != null) {
                 if (resultCode == 101 && requestCode == 101) {
-                    vm.updatePlatformKGO(platform.platformId!!, mServedKGOVolumeText!!, isServedKGO = true)
-                    mAcbKGOServed?.let { setUseButtonStyleBackgroundGreen(it) }
+
+
                 } else if (resultCode == 102 && requestCode == 102) {
-                    vm.updatePlatformKGO(platform.platformId!!, mRemainingKGOVolumeText!!, isServedKGO = false)
-                    mAcbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
+
+
                 } else if (requestCode == 14 && resultCode == 404) {
-                    acsbVolumePickup?.progress = prevVolumeValue?.toInt() ?: 0
-                    vm.updateSelectionVolume(platform.platformId!!, prevVolumeValue)
-                    tvVolumePickuptext(prevVolumeValue)
+
+
                 } else if (requestCode == 14 && resultCode == 14) {
-                    vm.updateSelectionVolume(platform.platformId!!, newVolumeValue)
-                    acsbVolumePickup?.progress = newVolumeValue?.toInt() ?: (prevVolumeValue?.toInt() ?: 0)
-                    prevVolumeValue = newVolumeValue
-                    tvVolumePickuptext(prevVolumeValue)
+
                 }
             }
         }
@@ -233,13 +220,12 @@ class PServeExtendedFrag :
 
                     val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
                     btnOk.setOnClickListener {
+                        hideDialog()
                         val volume = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-                        vm.updateSelectionVolume(vm.mPlatformEntity.value!!.platformId!!, volume)
                         if (volume == null) {
                             acsbVolumePickup.progress = 0
                         } else {
-                            newVolumeValue = volume
-                            gotoMakePhotoForPickup()
+                            gotoMakePhotoForPickup(volume)
                         }
                     }
                 }
@@ -249,13 +235,11 @@ class PServeExtendedFrag :
         }
     }
 
-    private fun gotoMakePhotoForPickup() {
-        if(vm.mPlatformEntity.value != null) {
-            val intent = Intent(getAct(), CameraAct::class.java)
-            intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
-            intent.putExtra("photoFor", PhotoTypeEnum.forPlatformPickupVolume)
-            startActivityForResult(intent, 14)
+    private fun gotoMakePhotoForPickup(newVolume: Double) {
+        if(vm.mPlatformEntity.value == null) {
+            return
         }
+        navigateMain(R.id.PhotoPickupMediaF, vm.mPlatformEntity.value!!.platformId, newVolume.toString())
     }
 
     private fun tvVolumePickuptext(progressDouble: Double?) {

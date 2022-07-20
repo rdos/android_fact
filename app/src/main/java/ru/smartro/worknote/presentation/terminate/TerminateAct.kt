@@ -5,7 +5,7 @@ import androidx.navigation.findNavController
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ActNOAbst
 
-//todo: INDEterminate))
+//todo: INDEterminate)) dbb6aec5
 class TerminateAct : ActNOAbst() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

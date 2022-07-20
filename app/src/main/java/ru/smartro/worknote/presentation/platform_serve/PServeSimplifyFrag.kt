@@ -9,11 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContainerAdapter
 import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAdapter
-import ru.smartro.worknote.work.cam.CameraAct
 
 
 class PServeSimplifyFrag : AFragment() {
@@ -37,12 +34,13 @@ class PServeSimplifyFrag : AFragment() {
             }
 
             override fun onAddPhoto(clientGroupInd: Int, typeGroupInd: Int) {
-                val intent = Intent(requireActivity(), CameraAct::class.java)
-                intent.putExtra("isNoLimitPhoto", true)
-                intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
-                intent.putExtra("photoFor", PhotoTypeEnum.forSimplifyServeBefore)
-                hideDialog()
-                startActivityForResult(intent, 1685)
+//                val intent = Intent(requireActivity(), CameraAct::class.java)
+//                intent.putExtra("isNoLimitPhoto", true)
+//                intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
+//                intent.putExtra("photoFor", PhotoTypeEnum.forSimplifyServeBefore)
+                navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, vm.mPlatformEntity.value!!.platformId!!)
+//hideDialog()
+//                startActivityForResult(intent, 1685)
             }
         })
 
@@ -59,6 +57,7 @@ class PServeSimplifyFrag : AFragment() {
 
         vm.mServedContainers.observe(viewLifecycleOwner) { list ->
             if(list != null) {
+                Log.d("TEST ::::", "m SERVED CONTAINERS : ${list}")
                 adapterCurrentTask.served = list
             }
         }
@@ -66,13 +65,13 @@ class PServeSimplifyFrag : AFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 1685 && resultCode == 5861) {
-            val intent = Intent(requireActivity(), CameraAct::class.java)
-            intent.putExtra("isNoLimitPhoto", true)
-            intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
-            intent.putExtra("photoFor", PhotoTypeEnum.forSimplifyServeAfter)
-            hideDialog()
-            startActivityForResult(intent, 2685)
-        }
+//        if(requestCode == 1685 && resultCode == 5861) {
+//            val intent = Intent(requireActivity(), CameraAct::class.java)
+//            intent.putExtra("isNoLimitPhoto", true)
+//            intent.putExtra("platform_id", vm.mPlatformEntity.value!!.platformId!!)
+//            intent.putExtra("photoFor", PhotoTypeEnum.forSimplifyServeAfter)
+//            hideDialog()
+//            startActivityForResult(intent, 2685)
+//        }
     }
 }

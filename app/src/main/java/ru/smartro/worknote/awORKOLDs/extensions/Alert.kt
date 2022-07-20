@@ -120,38 +120,38 @@ fun AAct.showAlertPlatformByPoint(): View {
     return view
 }
 
-fun Fragment.warningCameraShow(title: String): View {
-    val builder = AlertDialog.Builder(this.requireContext())
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_warning_camera, null)
-    view.title_tv.text = title
-    builder.setView(view)
-    builder.setCancelable(false)
-    showCustomDialog(builder)
-    return view
-}
-
-fun AppCompatActivity.showSuccessComplete(): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_successful_complete, null)
-    builder.setView(view)
-    builder.setCancelable(false)
-    showCustomDialog(builder)
-    return view
-}
-
-
-fun AppCompatActivity.showDialogFillKgoVolume(): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.dialog_fill_kgo, null)
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
-
-
+//            fun Fragment.warningCameraShow(title: String): View {
+//                val builder = AlertDialog.Builder(this.requireContext())
+//                val inflater = this.layoutInflater
+//                val view = inflater.inflate(R.layout.alert_warning_camera, null)
+//                view.title_tv.text = title
+//                builder.setView(view)
+//                builder.setCancelable(false)
+//                showCustomDialog(builder)
+//                return view
+//            }
+//
+//            fun AppCompatActivity.showSuccessComplete(): View {
+//                val builder = AlertDialog.Builder(this)
+//                val inflater = this.layoutInflater
+//                val view = inflater.inflate(R.layout.alert_successful_complete, null)
+//                builder.setView(view)
+//                builder.setCancelable(false)
+//                showCustomDialog(builder)
+//                return view
+//            }
+//
+//
+//            fun AppCompatActivity.showDialogFillKgoVolume(): View {
+//                val builder = AlertDialog.Builder(this)
+//                val inflater = this.layoutInflater
+//                val view = inflater.inflate(R.layout.dialog_fill_kgo, null)
+//                builder.setView(view)
+//                showCustomDialog(builder)
+//                return view
+//            }
+//
+//
 fun AFragment.showDialogFillKgoVolume(): View {
     val context = requireActivity() as AAct
     val builder = AlertDialog.Builder(context)
@@ -161,18 +161,18 @@ fun AFragment.showDialogFillKgoVolume(): View {
     showCustomDialog(builder)
     return view
 }
-
-
-fun AppCompatActivity.warningDelete(title: String): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_warning_delete, null)
-    view.title_tv.text = title
-    builder.setView(view)
-    builder.setCancelable(false)
-    showCustomDialog(builder)
-    return view
-}
+//
+//
+//            fun AppCompatActivity.warningDelete(title: String): View {
+//                val builder = AlertDialog.Builder(this)
+//                val inflater = this.layoutInflater
+//                val view = inflater.inflate(R.layout.alert_warning_delete, null)
+//                view.title_tv.text = title
+//                builder.setView(view)
+//                builder.setCancelable(false)
+//                showCustomDialog(builder)
+//                return view
+//            }
 
 //fun AppCompatActivity.showClickedPointDetail(point: PlatformEntity): View {
 //    val customDialog: AlertDialog

@@ -17,7 +17,7 @@
             android:id="@+id/action_extendedServeFragment_to_containerServeBottomDialog"
             app:destination="@id/containerServeBottomDialog">
             <argument
-                android:name="containerId"
+                android:name="ARGUMENT_NAME___PARAM_ID"
                 app:argType="integer"
                 />
         </action>
@@ -39,7 +39,7 @@
         android:name="ru.smartro.worknote.presentation.platform_serve.ContainerServeBottomDialog"
         android:label="ContainerServeBottomDialog">
         <argument
-            android:name="containerId"
+            android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
             android:defaultValue="-1"
             />
