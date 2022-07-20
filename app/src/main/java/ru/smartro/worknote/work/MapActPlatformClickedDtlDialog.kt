@@ -20,7 +20,7 @@ import com.yandex.mapkit.geometry.Point
 import kotlinx.android.synthetic.main.act_map__dialog_platform_clicked_dtl.*
 import kotlinx.android.synthetic.main.alert_warning_camera.view.*
 import ru.smartro.worknote.*
-import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
+import ru.smartro.worknote.abs.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum

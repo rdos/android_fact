@@ -26,8 +26,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/bottom_label"
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_min"
@@ -41,11 +40,11 @@
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/sv__act_map__bottom_behavior__filter"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginHorizontal="10dp"
             android:layout_gravity="bottom"
+            android:maxLines="1"
             android:drawableStart="@drawable/ic_baseline_search_24"
             android:hint=" По адресу"
             android:maxWidth="170dp"

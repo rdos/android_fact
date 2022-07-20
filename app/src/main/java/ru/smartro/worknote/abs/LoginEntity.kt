@@ -1,4 +1,4 @@
-package ru.smartro.worknote.awORKOLDs.base
+package ru.smartro.worknote.abs
 
 //ToD LiveEntity Import io.SUBject
 /**  private fun gotoAddPlatform() {

@@ -15,7 +15,7 @@ import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_container_serve.*
 import ru.smartro.worknote.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.base.AbstractBottomDialog
+import ru.smartro.worknote.abs.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 
 

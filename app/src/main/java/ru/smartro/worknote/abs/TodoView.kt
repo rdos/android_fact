@@ -1,4 +1,4 @@
-package ru.smartro.worknote.awORKOLDs.base
+package ru.smartro.worknote.abs
 
 /**
 alertDialog.show();

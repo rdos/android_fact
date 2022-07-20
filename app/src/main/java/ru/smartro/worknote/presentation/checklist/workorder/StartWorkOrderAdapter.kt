@@ -1,17 +1,13 @@
 package ru.smartro.worknote.presentation.checklist.workorder
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.start_act__rv_item.view.*
-import org.w3c.dom.Text
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 
 class StartWorkOrderAdapter(): RecyclerView.Adapter<StartWorkOrderAdapter.WorkOrderViewHolder>() {

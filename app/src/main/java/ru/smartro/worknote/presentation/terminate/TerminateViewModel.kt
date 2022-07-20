@@ -3,7 +3,7 @@ package ru.smartro.worknote.presentation.terminate
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.BaseViewModel
 
 class TerminateViewModel(application: Application) : BaseViewModel(application) {
 

@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.alert_warning_camera.view.title_tv
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
-import ru.smartro.worknote.awORKOLDs.base.AbstractDialog
+import ru.smartro.worknote.abs.AbstractDialog
 import ru.smartro.worknote.log.AAct
 
 private lateinit var loadingDialog: AlertDialog
