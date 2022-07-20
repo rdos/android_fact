@@ -5,43 +5,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
-
+    android:background="@color/black"
+    >
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </androidx.camera.view.PreviewView>
-
+        android:layout_height="match_parent"
+        />
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/label_for"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:background="@color/white"
         android:padding="6dp"
-        tools:text="Контейнер: фото до"/>
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_6"
-        android:layout_marginStart="@dimen/margin_6"
-        android:orientation="vertical"
-        >
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
+        tools:text="Контейнер: фото до"
+        />
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/camera_ui_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layoutDirection="ltr"
-        android:paddingBottom="52dp">
-
-
-
-
+        android:paddingBottom="52dp"
+        >
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/photo_view_button"
             android:layout_width="@dimen/round_button_medium"
@@ -54,8 +39,8 @@
             app:layout_constraintEnd_toStartOf="@+id/ib_f_aphoto__takephoto"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/ib_f_aphoto__takephoto" />
-
+            app:layout_constraintTop_toTopOf="@+id/ib_f_aphoto__takephoto"
+            />
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/image_counter"
             android:layout_width="0dp"
@@ -67,8 +52,8 @@
             app:layout_constraintEnd_toEndOf="@id/photo_view_button"
             app:layout_constraintStart_toStartOf="@id/photo_view_button"
             app:layout_constraintTop_toTopOf="@id/photo_view_button"
-            tools:text="0" />
-
+            tools:text="0"
+            />
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/ib_f_aphoto__takephoto"
             android:layout_width="@dimen/round_button_large"
@@ -78,8 +63,8 @@
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
+            app:layout_constraintStart_toStartOf="parent"
+            />
         <androidx.appcompat.widget.AppCompatToggleButton
             android:id="@+id/photo_flash"
             android:layout_width="40dp"
@@ -91,8 +76,8 @@
             android:textOn="@null"
             app:layout_constraintStart_toStartOf="@+id/photo_view_button"
             app:layout_constraintBottom_toTopOf="@+id/image_counter"
-            app:layout_constraintEnd_toEndOf="@+id/image_counter" />
-
+            app:layout_constraintEnd_toEndOf="@+id/image_counter"
+            />
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/acet_f_aphoto__comment"
             android:layout_width="280dp" android:layout_height="wrap_content"
@@ -103,7 +88,8 @@
             android:textColor="@color/gray"
             app:layout_constraintBaseline_toBaselineOf="@id/actb_fragment_camera__sound"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/acactv_f_aphoto__fail_reason"/>
+            app:layout_constraintBottom_toTopOf="@id/acactv_f_aphoto__fail_reason"
+            />
         <androidx.appcompat.widget.AppCompatAutoCompleteTextView
             android:id="@+id/acactv_f_aphoto__fail_reason"
             android:layout_width="264dp" android:layout_height="38dp"
@@ -131,8 +117,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ib_f_aphoto__takephoto"
             app:layout_constraintTop_toTopOf="@+id/ib_f_aphoto__takephoto"
-            app:srcCompat="@drawable/ic_send" />
-
+            app:srcCompat="@drawable/ic_send"
+            />
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/acb_f_aphoto__cancel"
             android:layout_width="110dp"
@@ -143,8 +129,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/ib_f_aphoto__takephoto"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ib_f_aphoto__takephoto"
-            app:layout_constraintTop_toTopOf="@+id/ib_f_aphoto__takephoto" />
-
+            app:layout_constraintTop_toTopOf="@+id/ib_f_aphoto__takephoto"
+            />
         <!--ic_baseline_volume_up_24-->
         <androidx.appcompat.widget.AppCompatToggleButton
             android:id="@+id/actb_fragment_camera__sound"
@@ -156,7 +142,8 @@
             android:textOn="@null"
             app:layout_constraintBottom_toTopOf="@id/photo_flash"
             app:layout_constraintEnd_toEndOf="@+id/photo_flash"
-            app:layout_constraintStart_toStartOf="@id/photo_flash" />
+            app:layout_constraintStart_toStartOf="@id/photo_flash"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
 
