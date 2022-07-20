@@ -38,8 +38,9 @@
             android:layout_marginEnd="10dp"
             android:textColorHint="@color/light_gray"
             android:backgroundTint="@color/white"
-            android:hint=" По адресу"
             android:drawableStart="@drawable/ic_baseline_search_white"
+            android:maxLines="1"
+            android:hint=" По адресу"
             android:textColor="@color/white"
             app:defaultQueryHint="@string/hint__search_by_address"
             />
