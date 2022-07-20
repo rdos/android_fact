@@ -124,7 +124,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     }
 
     fun updateContainerComment(platformId: Int, containerId: Int, comment: String?) {
-        mWasServedExtended.postValue(true)
         baseDat.updateContainerComment(platformId, containerId, comment)
     }
 
@@ -177,7 +176,8 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     // !!!!!!!!!!!!!!!!!!!
     // FINISH
     fun updatePlatformStatusSuccess(platformId: Int) {
-        if(mWasServedSimplified.value == true) {
+        // если упрощенный режим
+        if(_screenMode.value == false) {
             mServedContainers.value!!.forEach { el ->
                 val containers = _sortedContainers.value!![el.clientGroupIndex].typeGroupedContainers[el.typeGroupIndex].containersIds
                 val newVolume = el.count.toDouble() / containers.size

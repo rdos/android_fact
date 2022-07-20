@@ -126,6 +126,15 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.updateContainerComment(
+            viewModel.mPlatformEntity.value!!.platformId!!,
+            p_container_id,
+            comment_et.text.toString()
+        )
+    }
+
     private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_red__usebutton))
     }
@@ -136,26 +145,6 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 //    }
 
     private fun setVolume(view: View, volume: Double?) {
-        var prevRadioButton = view.findViewById<RadioButton>(R.id.percent_0)
-        enter_info_percent_rg.setOnCheckedChangeListener { group, checkedId ->
-            if(firstTime) {
-                firstTime = false
-            } else {
-                prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                val radioButton = view.findViewById<RadioButton>(checkedId)
-                this.volume = toPercent(radioButton.text.toString())
-                viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, this.volume)
-                when (radioButton.isChecked) {
-                    true -> {
-                        radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-                    }
-                    false -> {
-                        radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                    }
-                }
-                prevRadioButton = radioButton
-            }
-        }
         when (volume) {
             0.00 -> percent_0.isChecked = true
             0.25 -> percent_25.isChecked = true
@@ -171,6 +160,22 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
                 percent_100.isChecked = true
                 percent_125.isChecked = false
             }
+        }
+        var prevRadioButton = view.findViewById<RadioButton>(R.id.percent_0)
+        enter_info_percent_rg.setOnCheckedChangeListener { group, checkedId ->
+            prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            val radioButton = view.findViewById<RadioButton>(checkedId)
+            this.volume = toPercent(radioButton.text.toString())
+            viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, this.volume)
+            when (radioButton.isChecked) {
+                true -> {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                }
+                false -> {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                }
+            }
+            prevRadioButton = radioButton
         }
     }
 

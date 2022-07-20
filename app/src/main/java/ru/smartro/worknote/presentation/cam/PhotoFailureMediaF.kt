@@ -9,7 +9,7 @@ import java.io.File
 class PhotoFailureMediaF : APhotoFragment() {
     private var mFailReasonS: List<String>? = null
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "невывоза площадки"
+    override fun onGetTextLabelFor() = "Фото невывоза площадки"
     override fun onGetTextForFailHint() = "Причина невывоза площадки"
     override fun onGetStringList(): List<String>? {
         mFailReasonS = viewModel.getFailReasonS()

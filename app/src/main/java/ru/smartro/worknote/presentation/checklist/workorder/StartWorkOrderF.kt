@@ -7,19 +7,19 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
 import ru.smartro.worknote.presentation.checklist.XChecklistAct
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 
 class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
-    private val viewModel: ChecklistViewModel by activityViewModels()
+    private val viewModel: StartWorkOrderViewModel by viewModels()
     private var rvAdapter: StartWorkOrderAdapter? = null
     private var rv: RecyclerView? = null
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
@@ -114,7 +114,10 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                     }
                 }
             } else {
-                (requireActivity() as XChecklistAct).showProgressBar()
+                if(getArgumentName() == null)
+                    (requireActivity() as XChecklistAct).showProgressBar()
+                else
+                    (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
                 rvAdapter?.clearItems()
             }
         }
@@ -131,20 +134,7 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
 
-        Log.d("TEST ::: ${this::class.java.simpleName}",
-            "vm.lastOwnerId=${viewModel.mLastOwnerId}, " +
-                    "params.ownerId=${paramS().getOwnerId()}, " +
-                    "vm.lastWayBillId=${viewModel.mLastWayBillId}, " +
-                    "getArgumentID(waybillId)=${getArgumentID()}")
-        if(viewModel.mWorkOrderList.value == null ||
-            viewModel.mLastOwnerId != paramS().getOwnerId() ||
-            viewModel.mLastWayBillId != getArgumentID()
-        ) {
-            if(viewModel.mWorkOrderList.value != null) {
-                viewModel.clearWorkOrderList()
-            }
-            viewModel.getWorkOrderList(paramS().getOwnerId(), getArgumentID())
-        }
+        viewModel.getWorkOrderList(paramS().getOwnerId(), getArgumentID())
     }
 
     fun goToNextStep(workOrders: List<WoRKoRDeR_know1>) {
@@ -166,6 +156,7 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         super.onDestroyView()
         Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mWorkOrderList.removeObservers(viewLifecycleOwner)
+        viewModel.mSelectedWorkOrders.removeObservers(viewLifecycleOwner)
     }
 
     override fun onRefresh() {

@@ -69,7 +69,6 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             } else {
                 rvAdapter.clearItems()
             }
-
         }
 
         viewModel.mWayBillsViewState.observe(viewLifecycleOwner) { state ->
@@ -80,21 +79,13 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
             when(state) {
                 is ViewState.IDLE -> {
-                    Log.d("TEST ::: ${this::class.java.simpleName}",
-                        "vm.lastOwnerId=${viewModel.mLastOwnerId}, " +
-                                "params.ownerId=${paramS().getOwnerId()}, " +
-                                "vm.mLastVehicleId=${viewModel.mLastVehicleId}, " +
-                                "getArgumentID(VehicleId)=${getArgumentID()}")
-
-                    if(viewModel.mWayBillList.value == null ||
-                        viewModel.mLastVehicleId != getArgumentID() ||
-                        viewModel.mLastOwnerId != paramS().getOwnerId()
-                    ) {
-                        getWayBillList()
-                    }
+                    getWayBillList()
                 }
                 is ViewState.LOADING -> {
-                    (requireActivity() as XChecklistAct).showProgressBar()
+                    if(getArgumentName() == null)
+                        (requireActivity() as XChecklistAct).showProgressBar()
+                    else
+                        (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
                     hideNoData()
                 }
                 is ViewState.DATA -> {
@@ -151,6 +142,6 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         viewModel.mWayBillsViewState.postValue(ViewState.IDLE())
         paramS().wayBillId = wayBillId
         paramS().wayBillNumber = wayBillNumber
-        navigateMainChecklist(R.id.startWorkOrderF, wayBillId)
+        navigateMainChecklist(R.id.startWorkOrderF, wayBillId, wayBillNumber)
     }
 }
