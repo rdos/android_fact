@@ -1,24 +1,28 @@
-package ru.smartro.worknote.work.cam
+package ru.smartro.worknote.presentation.cam
+
 
 import io.realm.RealmList
-import ru.smartro.worknote.*
+import ru.smartro.worknote.R
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoBeforeMediaF : APhotoFragment() {
+// TODO:: NO DIF FROM PhotoAfterMediaContainerF.kt
+class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = getString(R.string.service_before)
+    override fun onGetTextLabelFor() = "Контейнер: Фото после"
+
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mPlatformEntity!!.beforeMedia
+        return mPlatformEntity!!.afterMedia
     }
 
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "beforeMedia"
+        return getArgumentID().toString() + File.separator + "afterMediaContainer"
     }
 
     override fun onBeforeUSE() {
@@ -27,6 +31,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
 //        }
+        mMaxPhotoCount = Int.MAX_VALUE
     }
 
     override fun onGotoNext(): Boolean {
@@ -34,17 +39,15 @@ class PhotoBeforeMediaF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addBeforeMedia(mPlatformEntity?.platformId!!, imageS)
+        viewModel.baseDat.addAfterMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
     override fun onSavePhoto() {
-//        TODO("Not yet implemented")
-//        id: String = UUID.randomUUID().toString(),
+
     }
 
-    override fun onGetIsVisibleBtnCancel() = false
+    override fun onGetIsVisibleBtnCancel(): Boolean = false
 
     override fun onClickBtnCancel() {
 
@@ -58,6 +61,9 @@ class PhotoBeforeMediaF : APhotoFragment() {
             navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
         }
     }
+
     companion object {
+
     }
+
 }

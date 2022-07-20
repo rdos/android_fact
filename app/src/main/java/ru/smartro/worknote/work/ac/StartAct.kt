@@ -1,12 +1,12 @@
 package ru.smartro.worknote.work.ac
 
-import android.Manifest
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
@@ -17,7 +17,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.act_start.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.ActAbstract
@@ -25,24 +24,14 @@ import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.toast
-import ru.smartro.worknote.work.Resource
-import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.checklist.XChecklistAct
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.Resource
+import ru.smartro.worknote.work.Status
 
-val PERMISSIONS = arrayOf(
-    Manifest.permission.ACCESS_FINE_LOCATION,
-    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    Manifest.permission.READ_EXTERNAL_STORAGE,
-    Manifest.permission.READ_PHONE_STATE,
-    Manifest.permission.LOCATION_HARDWARE,
-    Manifest.permission.ACCESS_NETWORK_STATE,
-    Manifest.permission.CAMERA
-)
 
 class StartAct : ActAbstract() {
     private var mInfoDialog: AlertDialog? = null

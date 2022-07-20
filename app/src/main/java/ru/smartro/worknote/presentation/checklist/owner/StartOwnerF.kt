@@ -3,20 +3,19 @@ package ru.smartro.worknote.presentation.checklist.owner
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
 import ru.smartro.worknote.presentation.checklist.XChecklistAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
-import ru.smartro.worknote.work.ac.PERMISSIONS
 
 class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 

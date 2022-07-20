@@ -1,17 +1,16 @@
-package ru.smartro.worknote.work.cam
-
+package ru.smartro.worknote.presentation.cam
 
 import io.realm.RealmList
-import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
+class PhotoBeforeMediaContainerF : APhotoFragment() {
 
     private var mPlatformEntity: PlatformEntity? = null
+
     override fun onGetTextLabelFor() = "Контейнер: Фото до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -22,15 +21,13 @@ class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "beforeMediaContainer"
+       return getArgumentID().toString() + File.separator + "beforeMediaContainer"
     }
 
     override fun onBeforeUSE() {
+//        TODO("Not yet implemented")
         val platformId = getArgumentID()
-        mPlatformEntity = viewModel.getPlatformEntity(platformId)
-//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-//            mPlatformEntity = it
-//        }
+        mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
         mMaxPhotoCount = Int.MAX_VALUE
     }
 
@@ -40,29 +37,14 @@ class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PhotoAfterMediaContainerSimplifyF, mPlatformEntity?.platformId)
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!,"EXTENDED")
+//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
+
+    override fun onGetIsVisibleBtnCancel() = false
+    override fun onClickBtnCancel() {}
 
     override fun onSavePhoto() {
-
-    }
-
-    override fun onGetIsVisibleBtnCancel(): Boolean = false
-
-    override fun onClickBtnCancel() {
-
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        if (getMediaCount() <= 0) {
-            navigateClose()
-        } else {
-            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-        }
-    }
-
-    companion object {
-
+//        TODO("Not yet implemented")
     }
 }

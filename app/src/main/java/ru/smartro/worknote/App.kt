@@ -501,6 +501,16 @@ private const val NOTIFICATION_CHANNEL_ID__DEFAULT = "FACT_CH_ID"
 const val NOTIFICATION_CHANNEL_ID__MAP_ACT = "FACT_APP_CH_ID"
 
 
+val PERMISSIONS = arrayOf(
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    Manifest.permission.READ_EXTERNAL_STORAGE,
+    Manifest.permission.READ_PHONE_STATE,
+    Manifest.permission.LOCATION_HARDWARE,
+    Manifest.permission.ACCESS_NETWORK_STATE,
+    Manifest.permission.CAMERA
+)
+
 //todo:const val A_SLEEP_TIME_1MIN__MS = 60000L
 const val Snull = "rNull"
 const val Inull = -111

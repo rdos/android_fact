@@ -56,7 +56,6 @@ import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
 import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.WorkOrderEntity
-import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.work.ui.DebugAct

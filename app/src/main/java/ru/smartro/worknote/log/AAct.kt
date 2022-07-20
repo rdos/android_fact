@@ -10,7 +10,6 @@ import ru.smartro.worknote.*
  
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ac.checklist.StartVehicleAct
 import java.lang.Exception
 
 //        try {

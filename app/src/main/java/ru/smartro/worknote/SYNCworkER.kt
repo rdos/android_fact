@@ -10,14 +10,11 @@ import com.google.gson.Gson
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.delay
-import ru.smartro.worknote.work.NetworkRepository
-import ru.smartro.worknote.work.Status
+import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
-import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.utils.getActivityProperly
-//import ru.smartro.worknote.utils.DispatcherInfoMessageTypes
 import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.StartAct
 import java.io.File

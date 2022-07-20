@@ -1,27 +1,25 @@
-package ru.smartro.worknote.work.cam
+package ru.smartro.worknote.presentation.cam
 
 import io.realm.RealmList
-import ru.smartro.worknote.R
-import ru.smartro.worknote.toast
+import ru.smartro.worknote.*
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoKgoServedF : APhotoFragment() {
+class PhotoBeforeMediaF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "Крупногабаритные отходы.забрал"
+    override fun onGetTextLabelFor() = getString(R.string.service_before)
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mPlatformEntity!!.kgoServed!!.media
+        return mPlatformEntity!!.beforeMedia
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "kgoServed"
+       return getArgumentID().toString() + File.separator + "beforeMedia"
     }
-
 
     override fun onBeforeUSE() {
         val platformId = getArgumentID()
@@ -36,7 +34,7 @@ class PhotoKgoServedF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addKgoServed(mPlatformEntity?.platformId!!, imageS)
+        viewModel.baseDat.addBeforeMedia(mPlatformEntity?.platformId!!, imageS)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
@@ -60,7 +58,6 @@ class PhotoKgoServedF : APhotoFragment() {
             navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
         }
     }
-
     companion object {
     }
 }

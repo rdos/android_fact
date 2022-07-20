@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -17,7 +18,6 @@ import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
 import ru.smartro.worknote.presentation.checklist.ViewState
 import ru.smartro.worknote.presentation.checklist.XChecklistAct
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.work.ac.PERMISSIONS
 import java.text.SimpleDateFormat
 import java.util.*
 
