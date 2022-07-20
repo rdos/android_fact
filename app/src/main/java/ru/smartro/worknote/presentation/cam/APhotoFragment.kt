@@ -144,7 +144,6 @@ abstract class APhotoFragment(
             //        getArgSBundle() !!! no_restorePhotoFileS
             restorePhotoFileS(onGetMediaRealmList())
         }
-        MyUtil.hideKeyboard(getAct())
     }
 
     protected fun getMediaCount(): Int {

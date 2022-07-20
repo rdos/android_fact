@@ -69,6 +69,10 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 //            val intent = Intent(requireContext(), ContainerFailureAct::class.java)
 //            intent.putExtra("is_container", true)
 //            intent.putExtra("container_id", p_container_id)
+            val checkedId = enter_info_percent_rg.checkedRadioButtonId
+            val radioButton = view.findViewById<RadioButton>(checkedId)
+            val volume = toPercent(radioButton.text.toString())
+            viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, volume)
             navigateMain(R.id.PhotoFailureMediaContainerF, p_container_id, viewModel.mPlatformEntity.value!!.platformId!!.toString())
 //            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
 //            startActivityForResult(intent, 99)
@@ -80,6 +84,10 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         apbBreakdown.setOnClickListener {
 //            val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
 //            intent.putExtra("is_container", true)
+            val checkedId = enter_info_percent_rg.checkedRadioButtonId
+            val radioButton = view.findViewById<RadioButton>(checkedId)
+            val volume = toPercent(radioButton.text.toString())
+            viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, volume)
             navigateMain(R.id.PhotoBreakdownMediaContainerF, p_container_id, viewModel.mPlatformEntity.value!!.platformId!!.toString())
 //            intent.putExtra("container_id", p_container_id)
 //            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
