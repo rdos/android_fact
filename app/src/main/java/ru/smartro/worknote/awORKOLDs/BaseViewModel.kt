@@ -1,4 +1,4 @@
-package ru.smartro.worknote.awORKOLDs.base
+package ru.smartro.worknote.awORKOLDs
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

@@ -86,11 +86,11 @@ class GalleryPhotoF : AFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val apibDelete =  view.findViewById<AppCompatImageButton>(R.id.apib_photo_show_fragment__delete)
+        val apibDelete =  view.findViewById<AppCompatImageButton>(R.id.apib_f_gallery_photo__delete)
 
-        val viewPager = view.findViewById<ViewPager>(R.id.vp_photo_show_fragment)
+        val viewPager = view.findViewById<ViewPager>(R.id.vp_f_gallery_photo)
 
-        val apibBack = view.findViewById<AppCompatImageButton>(R.id.apib_photo_show_fragment__back)
+        val apibBack = view.findViewById<AppCompatImageButton>(R.id.apib_f_gallery_photo__back)
         apibBack.setOnClickListener {
             navigateBack()
         }
@@ -222,9 +222,9 @@ class GalleryPhotoF : AFragment() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 //        val args = arguments ?: return
-            val aptvNumOfCount = view.findViewById<AppCompatTextView>(R.id.aptv_photo_show_fragment__num_of_count)
+            val aptvNumOfCount = view.findViewById<AppCompatTextView>(R.id.aptv_media_fragment__num_of_count)
             aptvNumOfCount.text = numOfCount
-            val imageView = view.findViewById<AppCompatImageView>(R.id.apiv_photo_show_fragment)
+            val imageView = view.findViewById<AppCompatImageView>(R.id.apiv_media_fragment)
 //        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
 //        val bmp = image?.let { BitmapFactory.decodeByteArray(image, 0, it.size) }
 //        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo

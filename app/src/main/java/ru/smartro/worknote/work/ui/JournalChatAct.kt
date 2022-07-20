@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.SearchView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -16,7 +15,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.andPOintD.BaseAdapter
-import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.PlatformEntity

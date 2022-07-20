@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
