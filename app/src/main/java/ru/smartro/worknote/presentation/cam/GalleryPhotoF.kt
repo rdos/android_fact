@@ -81,7 +81,7 @@ class GalleryPhotoF : AFragment() {
 
 
     override fun onGetLayout(): Int {
-        return R.layout.photo_show_fragment
+        return R.layout.f_gallery_photo
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
