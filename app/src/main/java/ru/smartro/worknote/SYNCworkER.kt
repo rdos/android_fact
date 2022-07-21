@@ -135,18 +135,19 @@ class SYNCworkER(
 
     private suspend fun synChrONizationDATA() {
         beforeLOG("synChrONizationDATA")
-        val timeBeforeRequest: Long
+        var timeBeforeRequest: Long = MyUtil.timeStampInSec()
         logSentry("SYNCworkER STARTED")
-        val lastSynchroTimeInSec =App.getAppParaMS().lastSynchroTimeInSec
-        val platforms: List<PlatformEntity>
+        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+        var platforms: List<PlatformEntity> = emptyList()
         LOGWork("SYNCworkER::synChrONizationDATA:Thread.currentThread().id()=${Thread.currentThread().id}")
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
             timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
             platforms = db().findPlatforms30min()
-            Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
-        } else {
+            LOGWork( "SYNCworkER PLATFORMS IN LAST 30 min")
+        }
+        if (platforms.isEmpty()) {
             timeBeforeRequest = MyUtil.timeStampInSec()
             platforms = db().findLastPlatforms()
             LOGWork("SYNCworkER LAST PLATFORMS")

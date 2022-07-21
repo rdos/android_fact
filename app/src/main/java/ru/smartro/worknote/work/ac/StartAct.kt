@@ -77,18 +77,19 @@ class StartAct : ActAbstract() {
                     showingProgress()
                     //ниже "супер код"
                     //todo: copy-past from SYNCworkER
-                    val timeBeforeRequest: Long
-                    val lastSynchroTime = App.getAppParaMS().lastSynchroTimeInSec
-                    val platforms: List<PlatformEntity>
+                    var timeBeforeRequest: Long
+                    val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+                    var platforms: List<PlatformEntity> = emptyList()
 
-                    val mMinutesInSec = 30 * 60
-                    if (MyUtil.timeStampInSec() - lastSynchroTime > mMinutesInSec) {
+                    val m30MinutesInSec = 30 * 60
+                    if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
+                        timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
                         platforms = vm.baseDat.findPlatforms30min()
-                        timeBeforeRequest = lastSynchroTime + mMinutesInSec
-                        Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
-                    } else {
-                        platforms =  vm.baseDat.findLastPlatforms()
+                        log( "SYNCworkER PLATFORMS IN LAST 30 min")
+                    }
+                    if (platforms.isEmpty()) {
                         timeBeforeRequest = MyUtil.timeStampInSec()
+                        platforms = vm.baseDat.findLastPlatforms()
                         log("SYNCworkER LAST PLATFORMS")
                     }
                     val noSentPlatformCnt = platforms.size
