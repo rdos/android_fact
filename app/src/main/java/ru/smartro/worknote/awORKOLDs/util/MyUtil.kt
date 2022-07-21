@@ -78,10 +78,11 @@ object MyUtil {
         val imm: InputMethodManager =
             activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
-        var view: View? = activity.currentFocus
+        val view: View? = activity.currentFocus
         //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
-            view = View(activity)
+//            view = View(activity)
+            return
         }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }

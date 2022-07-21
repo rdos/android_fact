@@ -39,12 +39,14 @@
             />
 
         <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/sv__act_map__bottom_behavior__filter"
+            android:id="@+id/acet__act_map__bottom_behavior__filter"
             android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginHorizontal="10dp"
             android:layout_gravity="bottom"
             android:maxLines="1"
+            android:inputType="text"
+            android:imeOptions="actionDone"
             android:drawableStart="@drawable/ic_baseline_search_24"
             android:hint=" По адресу"
             android:maxWidth="170dp"

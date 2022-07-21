@@ -9,12 +9,14 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -526,17 +528,17 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             else
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            MyUtil.hideKeyboard(this)
         }
-        val svFilterAddress = findViewById<AppCompatEditText>(R.id.sv__act_map__bottom_behavior__filter).apply {
-            removeTextChangedListener(null)
-            addTextChangedListener { newText ->
-                mAdapterBottomBehavior?.let { mapBottom ->
-                    mapBottom.filteredList(newText.toString())
-                    onRefreshMap(mapBottom.getItems())
-                }
+        val acetFilterAddress = findViewById<AppCompatEditText>(R.id.acet__act_map__bottom_behavior__filter)
+        acetFilterAddress.removeTextChangedListener(null)
+        acetFilterAddress.addTextChangedListener { newText ->
+            mAdapterBottomBehavior?.let { mapBottom ->
+                mapBottom.filteredList(newText.toString())
+                onRefreshMap(mapBottom.getItems())
             }
-            clearFocus()
         }
+        acetFilterAddress.clearFocus()
 //        svFilterAddress.setOnQueryTextListener(this)
 //        svFilterAddress.setOnSearchClickListener{
 //            val diP200 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200F, resources.displayMetrics)

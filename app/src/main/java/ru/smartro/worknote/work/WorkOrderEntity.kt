@@ -69,7 +69,7 @@ open class WorkOrderEntity(
                 StatusEnum.NEW -> platformsStatusNewCnt++
                 StatusEnum.SUCCESS -> platformsStatusSuccessCnt++
                 StatusEnum.ERROR -> platformsStatusErrorCnt++
-                StatusEnum.UNFINISHED -> platformsStatusErrorCnt++
+                StatusEnum.UNFINISHED -> platformsStatusNewCnt++
                 StatusEnum.PARTIAL_PROBLEMS -> platformsStatusPartialProblemsCnt++
             }
             /** статистика для ContainerEntity*/
