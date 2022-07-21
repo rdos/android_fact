@@ -9,7 +9,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 // TODO:: NO DIF FROM PhotoAfterMediaContainerSimplifyF.kt
-class PhotoAfterMediaContainerF : PhotoAfterMediaF() {
+class PhotoAfterMediaContainerF : APhotoFragment() {
 
     private var mPlatformEntity: PlatformEntity? = null
     override fun onGetTextLabelFor() = "Контейнер: Фото после"
