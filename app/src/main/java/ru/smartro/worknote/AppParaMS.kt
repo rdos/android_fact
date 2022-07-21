@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.PoinT
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
 private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE
@@ -278,6 +279,7 @@ class AppParaMS {
         wayBillId = Inull
         //TODO:r_Null!
         isModeSYNChrONize = false
+        lastSynchroTimeInSec = MyUtil.timeStampInSec()
     }
 
 
