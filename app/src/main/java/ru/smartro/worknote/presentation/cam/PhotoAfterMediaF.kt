@@ -52,4 +52,11 @@ open class PhotoAfterMediaF : APhotoFragment() {
 
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        dropOutputD()
+    }
+    companion object {
+    }
 }
