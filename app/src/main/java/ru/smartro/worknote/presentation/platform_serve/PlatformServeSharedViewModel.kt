@@ -140,7 +140,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     }
 
     fun updatePlatformStatusUnfinished() {
-        mWasServedExtended.postValue(true)
+//        mWasServedExtended.postValue(true)
         if(mPlatformEntity.value != null && mPlatformEntity.value!!.platformId != null) {
             baseDat.updatePlatformStatusUnfinished(mPlatformEntity.value!!.platformId!!)
         }

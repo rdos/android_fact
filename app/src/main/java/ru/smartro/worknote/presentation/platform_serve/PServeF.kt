@@ -24,6 +24,7 @@ class PServeF : AFragment() {
     override fun onBackPressed() {
         super.onBackPressed()
         vm.updatePlatformStatusUnfinished()
+        navigateClose()
         toast("Вы не завершили обслуживание КП.")
     }
 
