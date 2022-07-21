@@ -81,12 +81,7 @@ class PhotoFailureMediaF : APhotoFragment() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        navigateClose()
         super.dropOutputD()
-       /* if (getMediaCount() <= 0) {
-            navigateClose()
-        } else {
-            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-        }*/
+        navigateBack()
     }
 }

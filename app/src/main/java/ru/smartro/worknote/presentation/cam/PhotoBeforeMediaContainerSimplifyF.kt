@@ -54,11 +54,8 @@ class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        if (getMediaCount() <= 0) {
-            navigateClose()
-        } else {
-            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-        }
+        super.dropOutputD()
+        navigateBack()
     }
 
     companion object {

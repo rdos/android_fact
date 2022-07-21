@@ -164,13 +164,10 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 //        getPlatformEntity(platformId)
     }
 
-    fun updatePlatformKGO(platformId: Int?, kgoVolume: String, isServedKGO: Boolean) {
-        if (platformId == null) {
-            return
-        }
-//        mWasServedExtended.postValue(true)
+    fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
+        mWasServedExtended.postValue(true)
         baseDat.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
-//        getPlatformEntity(platformId)
+        getPlatformEntity(platformId)
     }
 
     // !!!!!!!!!!!!!!!!!!!

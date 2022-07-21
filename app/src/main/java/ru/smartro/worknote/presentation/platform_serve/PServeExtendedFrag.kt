@@ -91,13 +91,7 @@ class PServeExtendedFrag :
                             if (servedKGOVolumeText.isNullOrBlank()) {
                                 return@setOnClickListener
                             }
-//                            intent.putExtra("photoFor", PhotoTypeEnum.forServedKGO)
-//                                val intent = Intent(getAct(), CameraAct::class.java)
-//                                intent.putExtra("platform_id", platform.platformId)
-
-                            vm.updatePlatformKGO(platform.platformId!!, servedKGOVolumeText, isServedKGO = true)
-                            navigateMain(R.id.PhotoKgoServedF, platform.platformId)
-//                                startActivityForResult(intent, 101)
+                            navigateMain(R.id.PhotoKgoServedF, platform.platformId, servedKGOVolumeText)
                             hideDialog()
                         }
                     }
@@ -116,12 +110,7 @@ class PServeExtendedFrag :
                             if (remainingKGOVolumeText.isNullOrBlank()) {
                                 return@setOnClickListener
                             }
-//                            val intent = Intent(getAct(), CameraAct::class.java)
-//                            intent.putExtra("platform_id", platform.platformId)
-//                            intent.putExtra("photoFor", PhotoTypeEnum.forRemainingKGO)
-//                            startActivityForResult(intent, 102)
-                            vm.updatePlatformKGO(platform.platformId, remainingKGOVolumeText, isServedKGO = false)
-                            navigateMain(R.id.PhotoKgoRemainingF, platform.platformId)
+                            navigateMain(R.id.PhotoKgoRemainingF, platform.platformId, remainingKGOVolumeText)
                             hideDialog()
                         }
                     }

@@ -51,17 +51,16 @@ class PhotoPickupMediaF : APhotoFragment() {
     override fun onGetIsVisibleBtnCancel() = true
 
     override fun onClickBtnCancel() {
+        val newVolume = getArgumentName()!!.toDouble()
+        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
     }
 
 
     override fun onBackPressed() {
         super.onBackPressed()
-        if (getMediaCount() <= 0) {
-            navigateClose()
-        } else {
-            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-        }
+        super.dropOutputD()
+        navigateBack()
     }
 
     companion object {

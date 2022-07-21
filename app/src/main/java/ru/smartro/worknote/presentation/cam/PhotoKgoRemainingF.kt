@@ -35,7 +35,9 @@ class PhotoKgoRemainingF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
+        val remainingKGOVolumeText = getArgumentName()!!
         viewModel.baseDat.addPlatformKgoRemaining(mPlatformEntity?.platformId!!, imageS)
+        viewModel.updatePlatformKGO(mPlatformEntity?.platformId!!, remainingKGOVolumeText, isServedKGO = false)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
@@ -53,11 +55,8 @@ class PhotoKgoRemainingF : APhotoFragment() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        if (getMediaCount() <= 0) {
-            navigateClose()
-        } else {
-            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-        }
+        super.dropOutputD()
+        navigateBack()
     }
     companion object {
     }

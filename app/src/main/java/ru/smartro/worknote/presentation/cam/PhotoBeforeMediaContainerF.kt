@@ -47,4 +47,10 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
     override fun onSavePhoto() {
 //        TODO("Not yet implemented")
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        super.dropOutputD()
+        navigateBack()
+    }
 }
