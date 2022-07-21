@@ -108,7 +108,7 @@ abstract class APhotoFragment(
 
     override fun onResume() {
         super.onResume()
-        enableTorch()
+        enableFlash()
     }
 
     //    @SuppressLint("MissingPermission")
@@ -350,13 +350,11 @@ abstract class APhotoFragment(
 //        updateCameraUi()
 //    }
 
-    private fun enableTorch() {
-        if (mPreviewView.controller?.cameraInfo?.hasFlashUnit() == true) {
-            mPreviewView.controller?.enableTorch(paramS().isTorchEnabled)
-            mActbPhotoFlash?.isChecked = paramS().isTorchEnabled
-        } else {
-            Log.e(TAG, "bindCameraUseCases mCamera?.cameraInfo?.hasFlashUnit() == false")
-        }
+    private fun enableFlash() {
+        val isEnableTorch = paramS().isTorchEnabled
+        log("enableFlash:isEnableTorch= ${isEnableTorch}")
+        mCameraController.enableTorch(isEnableTorch)
+        mActbPhotoFlash?.isChecked = isEnableTorch
     }
 
     //onViewCreated
@@ -442,9 +440,10 @@ abstract class APhotoFragment(
         mCameraController.initializationFuture.addListener({
             Log.d("TAGS", "initializationFuture")
             if (hasBackCamera()) {
-//            captureButton.isClickable = false
+                if (hasFlashUnit()) {
+                    enableFlash()
+                }
 
-//            captureButton.isPressed = true
                 ibTakePhoto?.setOnClickListener {
                     ibTakePhoto?.isEnabled = false
                     try {
@@ -458,7 +457,12 @@ abstract class APhotoFragment(
                 }
                 mActbPhotoFlash?.setOnClickListener {
                     paramS().isTorchEnabled = mActbPhotoFlash!!.isChecked
-                    enableTorch()
+                    log("mActbPhotoFlash:setOnClickListener paramS().isTorchEnabled=${paramS().isTorchEnabled}")
+                    if (hasFlashUnit()) {
+                        enableFlash()
+                    } else {
+                        toast("На Вашем телефоне нет фонаря")
+                    }
                 }
                 setImageCounter()
             } else {
@@ -496,6 +500,9 @@ abstract class APhotoFragment(
 //    }
     private fun hasBackCamera(): Boolean {
         return mCameraController.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
+    }
+    private fun hasFlashUnit(): Boolean {
+        return mCameraController.cameraInfo?.hasFlashUnit() ?: false
     }
 
     companion object {
