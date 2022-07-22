@@ -8,7 +8,10 @@
     app:behavior_peekHeight="56dp"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    android:tag="and.constraintlayout.widget.ConstraintLayout"
+    >
+
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/act_map__bottom_behavior__header"
@@ -24,7 +27,9 @@
         android:paddingEnd="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:tag="andr.appcompat.widget.LinearLayoutCompat"
+        >
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
@@ -36,6 +41,7 @@
             android:text="Площадки в задании"
             android:textColor="@color/black"
             android:textSize="16sp"
+            android:tag="andro..appcompat.widget.AppCompatTextView"
             />
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -52,6 +58,7 @@
             android:maxWidth="170dp"
             android:textColorHint="@color/gray"
             android:textSize="16sp"
+            android:tag="acet__act_map__bottom_behavior__filter"
             />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -61,7 +68,10 @@
         android:layout_height="0dp"
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/act_map__bottom_behavior__header">
+        app:layout_constraintTop_toBottomOf="@id/act_map__bottom_behavior__header"
+        android:tag="androi.constraintlayout.widget.ConstraintLayout"
+
+        >
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/map_behavior_rv"
             android:layout_width="match_parent"
@@ -71,6 +81,7 @@
             tools:listitem="@layout/act_map__bottom_behavior__rv_item"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:tag="android1.recyclerview.widget.RecyclerView"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

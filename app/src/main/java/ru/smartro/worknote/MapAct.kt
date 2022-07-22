@@ -5,18 +5,19 @@ import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,18 +47,14 @@ import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.presentation.terminate.TerminateAct
 import ru.smartro.worknote.utils.getActivityProperly
-import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
-import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.WorkOrderEntity
+import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
-import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 
@@ -68,6 +65,9 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
 
 
+    private var mLayoutParams: ViewGroup.LayoutParams? = null
+    private var mSaveObj: View? = null
+    private var mSaveCurs: ViewGroup? = null
     private var mAcbGotoComplete: AppCompatButton? = null
 
     private var mAdapterBottomBehavior: MapActBottomBehaviorAdapter? = null
@@ -203,14 +203,17 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
                 AppliCation().startLocationService(true)
                 mIsAUTOMoveCamera = true
                 moveCameraTo(AppliCation().gps())
+
             } catch (e: Exception) {
+                Log.e(TAG, "", e)
                 toast("Клиент не найден")
             }
         }
 
 
         debug_fab.setOnClickListener {
-            startActivityForResult(Intent(this, DebugAct::class.java), -111)
+            gogogo()
+//            startActivityForResult(Intent(this, DebugAct::class.java), -111)
         }
         navigator_toggle_fab.setOnClickListener {
             drivingModeState = false
@@ -242,8 +245,45 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         paramS.isModeSYNChrONize = true
         AppliCation().startWorkER()
         AppliCation().startLocationService()
+        TooltipCompat.setTooltipText(gotoMyGPS, "Обещания надо сдерживать - я это понимаю\n" +
+                "Кажется, я что-то обещал кому-то в прошлом мае\n" +
+                "Уходили в парк трамваи, но появился Марк на Сюзанне\n" +
+                "И мы успевали без опозданий, чё, погнали?\n" +
+                "Это экзамен, вначале я хочу сказать, что\n" +
+                "Не горел желанием записывать двести строк\n" +
+                "Может быть и не получится ничего вообще\n" +
+                "Но заметьте - их уже осталось сто девяносто две\n" +
+                "Ае! Это поднимает настроение\n" +
+                "По крайней мере мне, но тем не менее\n" +
+                "Если это радует ещё кого-то\n" +
+                "Значит это уже что-то больше, чем просто игра в одни ворота\n" +
+                "Доброе утро, бодрая пудра, долгая мутка, тонкая куртка\n" +
+                "После четвёртого парашюта понимаю смутно - это что, Бутово?\n" +
+                "Как мне теперь выбираться отсюда? Это совсем не круто\n" +
+                "Ну ты и мудак! Ты не можешь больше вести себя так\n" +
+                "Пойми, тебе мешают года\n" +
+                "Ладно, я видел такое в кошмарных снах\n" +
+                "Да ну вас на хуй с таким раскладом!\n" +
+                "Russia громадная, я пока что в Раше")
+        TooltipCompat.setTooltipText(gotoLogActMapAPIB, "Чтобы выйти из системы")
+
+//        findViewById<>()
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+//        val vG = (window.decorView as ViewGroup)
+//        log("getWindow(:${vG.id}")
+//        log("getWindow(:${vG.tag}")
+//        log("getWindow(:::")
+//
+////        for (idx in 0 until vG.childCount) {
+////            log("getWindow(.getChildAt($idx)")
+////            log("getWindow(.getChildAt($idx).id=${vG.getChildAt(idx).id}")
+////        }
+//        fractalS(vG.childCount, vG)
 //        setDevelMode()
+
     }
+
+
 
     private var mMapObjectsDrive: MapObjectCollection? = null
     private fun clearMapObjectsDrive() {
@@ -266,8 +306,115 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         onRefreshMap(platformSWithQueryText)
         setInfoData()
         Log.w(TAG, "onRefreshData.end")
+
     }
 
+    private fun gogogo(){
+        val builder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+
+        val vG = (window.decorView   as ViewGroup)
+        log("getWindow(:${vG.id}")
+        log("getWindow(:${vG.tag}")
+        log("getWindow(:::")
+
+//        for (idx in 0 until vG.childCount) {
+//            log("getWindow(.getChildAt($idx)")
+//            log("getWindow(.getChildAt($idx).id=${vG.getChildAt(idx).id}")
+//        }
+
+
+
+        val view = inflater.inflate(R.layout.dialog_act_map_tooltip_cheat__alert, null, false)
+        builder.setView(view)
+        // Установите заголовок
+        // Установите заголовок
+        val tomDialog = builder.create()
+        tomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val ll = view.findViewById<LinearLayoutCompat>(R.id.privet)
+        val findView = fractalS(vG.childCount, vG, ll)
+    //        findView?.let {
+    //            ll.addView(findView)
+    //        }
+
+//        tomDialog.setTitle("Заголовок диалога")
+        // Передайте ссылку на разметку
+        // Передайте ссылку на разметку
+//        dialog.setContentView(R.layout.dialog_view)
+        // Найдите элемент TextView внутри вашей разметки
+        // и установите ему соответствующий текст
+        // Найдите элемент TextView внутри вашей разметки
+        // и установите ему соответствующий текст
+//        val text = dialog.findViewById(R.id.dialogTextView) as TextView
+//        text.text = "не ссы это не дорого. моя речь будет "
+
+//        tomDialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+        tomDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
+        tomDialog.window?.setDimAmount(0.8f); //0 for no dim to 1 for full dim
+        tomDialog.show()
+        tomDialog.setOnDismissListener {
+            ll.removeView(mSaveObj)
+            mSaveCurs?.addView(mSaveObj)
+            mSaveObj?.layoutParams = mLayoutParams
+        }
+    }
+
+    private fun fractalS(childCnt: Int, currentVG: ViewGroup, ll: LinearLayoutCompat) {
+        for (idx in 0 until childCnt) {
+            val obj = currentVG.getChildAt(idx)
+//            obj.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//            obj.background = null
+
+
+
+            if ( obj is ViewGroup) {
+                val Vg = obj as ViewGroup
+                log("getWindow($idx)Vg.childCount=${Vg.childCount}")
+                log("getWindow($idx)Vg.childCount=${Vg.tag}")
+
+                fractalS(Vg.childCount, Vg, ll)
+            } else {
+                if(obj != null && obj.tag != null) {
+                    if (obj.tag.toString() == "acb_act_map__info") {
+
+                        mSaveCurs = currentVG
+                        mSaveObj = obj
+                        mLayoutParams = mSaveObj?.layoutParams
+
+                        currentVG.removeView(obj)
+                        ll.addView(obj)
+                        }
+                    log("getWindow(.obj.id=${obj.id}")
+                    log("getWindow(:${obj.tag}")
+                    log("getWindow(:::")
+                }
+
+
+            }
+        }
+    }
+
+    /**
+    private fun fractalS(childCnt: Int, currentVG: ViewGroup){
+    for (idx in 0 until childCnt) {
+    val obj = currentVG.getChildAt(idx)
+    //            obj.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    //            obj.background = null
+    if ( obj is ViewGroup) {
+    val Vg = obj as ViewGroup
+    log("getWindow($idx)Vg.childCount=${Vg.childCount}")
+    log("getWindow($idx)Vg.childCount=${Vg.tag}")
+    fractalS(Vg.childCount, Vg)
+    } else {
+    log("getWindow(.obj.id=${obj.id}")
+    log("getWindow(:${obj.tag}")
+    log("getWindow(:::")
+    }
+    }
+    }
+
+     * */
     private fun setInfoData() {
         val workOrders = getActualWorkOrderS()
         var platformCnt = 0

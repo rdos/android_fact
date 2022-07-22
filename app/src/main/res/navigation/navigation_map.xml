@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_map"
     app:startDestination="@id/MAPF">
-
+                                        <!--Directions-->
                                         <fragment
                                             android:id="@+id/MAPF"
                                             android:name="ru.smartro.worknote.work.MapF"

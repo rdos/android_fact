@@ -9,12 +9,15 @@
     android:layout_marginBottom="8dp"
     app:cardCornerRadius="@dimen/margin_default"
     android:stateListAnimator="@animator/selector_raise"
+    android:tag="android2.cardview.widget.CardView"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/margin_default">
+        android:layout_margin="@dimen/margin_default"
+        android:tag="android3.constraintlayout.widget.ConstraintLayout"
+        >
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -23,7 +26,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:tag="android4.appcompat.widget.LinearLayoutCompat"
+            >
 
             <TextView
                 android:id="@+id/tv_item_map_behavior__address"
@@ -31,7 +36,9 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:textSize="18sp"
-                tools:text="Ул Пушкино 64" />
+                tools:text="Ул Пушкино 64"
+                android:tag="tv_item_map_behavior__address"
+                />
 
             <TextView
                 android:id="@+id/tv_item_map_behavior__name"
@@ -41,7 +48,9 @@
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                tools:text="Наименование из логистики. " />
+                tools:text="Наименование из логистики. "
+                android:tag="tv_item_map_behavior__name"
+                />
 
             <TextView
                 android:id="@+id/tv_item_map_behavior__order_time"
@@ -49,7 +58,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:textColor="@color/gray"
-                tools:text="Order Time. " />
+                tools:text="Order Time. "
+                android:tag="tv_item_map_behavior__order_time"
+
+                />
 
             <TextView
                 android:id="@+id/tv_item_map_behavior__status"
@@ -57,13 +69,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:textColor="@color/gray"
-                tools:text="В процессе" />
+                tools:text="В процессе"
+                android:tag="tv_item_map_behavior__status"
+
+                />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:tag="android5.appcompat.widget.LinearLayoutCompat"
+                >
 
                 <TextView
                     android:id="@+id/map_behavior_scrp_id"
@@ -73,7 +90,9 @@
                     android:layout_marginBottom="@dimen/margin_min"
                     android:layout_weight="0.4"
                     android:textColor="@color/black"
-                    tools:text="5960" />
+                    tools:text="5960"
+                    android:tag="map_behavior_scrp_id"
+                    />
 
                 <TextView
                     android:id="@+id/map_behavior_container_count"
@@ -86,7 +105,9 @@
                     android:layout_marginBottom="@dimen/margin_min"
                     android:layout_weight="1"
                     android:textColor="@color/black"
-                    tools:text="12 контайнер" />
+                    tools:text="12 контайнер"
+                    android:tag="map_behavior_container_count"
+                    />
 
                 <TextView
                     android:id="@+id/map_behavior_coordinate"
@@ -95,7 +116,10 @@
                     android:drawableStart="@drawable/ic_baseline_goto_location_24"
                     android:gravity="end"
                     android:padding="@dimen/margin_min"
-                    android:text="@string/goto_location_on_map" />
+                    android:text="@string/goto_location_on_map"
+                    android:tag="map_behavior_coordinate"
+
+                    />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -106,12 +130,16 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/llc_item_map_behavior"
-            tools:el_expanded="true">
+            tools:el_expanded="true"
+            android:tag="map_behavior_expl"
+            >
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:tag="android6.constraintlayout.widget.ConstraintLayout"
+                >
 
                 <ImageButton
                     android:id="@+id/map_behavior_fire"
@@ -122,7 +150,10 @@
                     android:background="@drawable/bg_circle_button"
                     android:src="@drawable/ic_fire"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:tag="map_behavior_fire"
+
+                    />
 
                 <Button
                     android:id="@+id/map_behavior_start_service"
@@ -137,6 +168,8 @@
                     app:layout_constraintStart_toEndOf="@id/map_behavior_fire"
                     app:layout_constraintEnd_toStartOf="@id/map_behavior_location"
                     app:layout_constraintTop_toTopOf="@id/map_behavior_fire"
+                    android:tag="map_behavior_start_service"
+
                     />
 
                 <TextView
@@ -150,7 +183,10 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/map_behavior_start_service"
-                    tools:text="Для связи +79111124594 Вася" />
+                    tools:text="Для связи +79111124594 Вася"
+                    android:tag="tv_item_map_behavior__platform_contact"
+
+                    />
 
                 <ImageButton
                     android:id="@+id/map_behavior_location"
@@ -161,7 +197,10 @@
                     android:layout_weight="2"
                     android:background="@drawable/bg_circle_button"
                     android:src="@drawable/ic_route"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:tag="map_behavior_location"
+
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
