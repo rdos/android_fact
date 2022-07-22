@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
 
 
 import io.realm.RealmList
@@ -8,21 +8,20 @@ import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-// TODO:: NO DIF FROM PhotoAfterMediaContainerF.kt
-class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
-    private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "Контейнер(упрощённый режим): Фото после"
+class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
 
+    private var mPlatformEntity: PlatformEntity? = null
+    override fun onGetTextLabelFor() = "Контейнер(упрощённый режим): Фото до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mPlatformEntity!!.afterMedia
+        return mPlatformEntity!!.beforeMedia
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "afterMediaContainer"
+        return getArgumentID().toString() + File.separator + "beforeMediaContainer"
     }
 
     override fun onBeforeUSE() {
@@ -39,8 +38,8 @@ class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addAfterMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
+        navigateMain(R.id.PhotoAfterMediaContainerSimplifyF, mPlatformEntity?.platformId)
     }
 
     override fun onSavePhoto() {
@@ -62,5 +61,4 @@ class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
     companion object {
 
     }
-
 }

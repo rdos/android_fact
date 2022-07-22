@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
@@ -7,34 +7,33 @@ import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
 import java.io.File
 
-class PhotoFailureMediaContainerF : APhotoFragment() {
-    private var mFailReasonS: List<String>? = null
+class PhotoBreakdownMediaContainerF : APhotoFragment() {
+    private var mBreakDownReasonS: List<String>? = null
     private var mContainerEntity: ContainerEntity? = null
-    override fun onGetTextLabelFor() = "Фото невывоза контейнера"
-    override fun onGetTextForFailHint() = "Причина невывоза контейнера"
+    override fun onGetTextLabelFor() = "Фото поломки контейнера"
+    override fun onGetTextForFailHint() = "Причина поломки контейнера"
     override fun onGetStringList(): List<String>? {
-        mFailReasonS = viewModel.getFailReasonS()
-        if (mFailReasonS == null) {
+        mBreakDownReasonS = viewModel.baseDat.findAllBreakDown()
+        if (mBreakDownReasonS == null) {
             toast("Ошибка.todo:::")
             return emptyList()
         }
-        return mFailReasonS
+        return mBreakDownReasonS
     }
-
-    override fun onGetIsVisibleComment(): Boolean = true
-
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mContainerEntity == null) {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mContainerEntity!!.failureMedia
+        return mContainerEntity!!.breakdownMedia
     }
+
+    override fun onGetIsVisibleComment(): Boolean = true
 
     override fun onGetDirName(): String {
         val containerId = getArgumentID().toString()
         val platformId = getArgumentName()
-        return platformId + File.separator + containerId + File.separator + "failureMediaContainer"
+        return platformId + File.separator + containerId + File.separator + "breakdownMediaContainer"
     }
 
     override fun onBeforeUSE() {
@@ -52,14 +51,14 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
         log(":P:onSavePhoto")
     }
 
-    var failText: String? = null
+    var breakdownText: String? = null
     override fun onGotoNext(): Boolean {
         val result = true
         if (mAcactvFail?.text.isNullOrEmpty()) {
             toast("Выберите причину невывоза")
             return false
         }
-        failText = mAcactvFail?.text.toString()
+        breakdownText = mAcactvFail?.text.toString()
         return result
     }
 
@@ -67,8 +66,8 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
         val platformId = getArgumentName()?.toInt()!!
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
         //        val problemComment = problem_comment.text.toString()
-        viewModel.baseDat.addFailureMediaContainer(platformId, mContainerEntity?.containerId!!, imageS)
-        viewModel.baseDat.setStateFailureForContainer(platformId, mContainerEntity?.containerId!!, failText!!, getCommentText())
+        viewModel.baseDat.addBreakdownMediaContainer(platformId, mContainerEntity?.containerId!!, imageS)
+        viewModel.baseDat.setStateBreakdownForContainer(platformId, mContainerEntity?.containerId!!, breakdownText!!, getCommentText())
         navigateMain(R.id.PServeF, platformId)
     }
 
@@ -83,5 +82,4 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
         super.dropOutputD()
         navigateBack()
     }
-
 }

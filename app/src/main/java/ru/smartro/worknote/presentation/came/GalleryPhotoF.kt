@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
 
 import android.os.Bundle
 import android.view.View
