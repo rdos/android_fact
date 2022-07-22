@@ -8,7 +8,7 @@ import java.io.File
 
 class PhotoBeforeMediaF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = getString(R.string.service_before)
+    override fun onGetTextLabelFor() = "фото до обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")

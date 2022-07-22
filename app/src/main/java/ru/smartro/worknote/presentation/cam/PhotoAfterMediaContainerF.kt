@@ -12,7 +12,7 @@ import java.io.File
 class PhotoAfterMediaContainerF : APhotoFragment() {
 
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "Контейнер: Фото после"
+    override fun onGetTextLabelFor() = "контейнер: фото после"
 
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {

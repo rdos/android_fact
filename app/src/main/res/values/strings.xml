@@ -27,8 +27,6 @@
     <string name="photo_save_error_toast">Неизвестная ошибка камеры</string>
     <string name="cancel">Отменить</string>
     <string name="done">Добавить</string>
-    <string name="service_before">Фотографии до обслуживания КП</string>
-    <string name="service_pickup_volume">Фотографии подбора</string>
     <string name="warning_detele">Вы действительно хотите удалить?</string>
     <string name="capture_button_alt">Capture</string>
     <string name="switch_camera_button_alt">Switch camera</string>
@@ -40,7 +38,6 @@
     <string name="capture_mode_hdr">HDR</string>
     <string name="capture_mode_night">Night</string>
     <string name="delete_button_alt">Delete</string>
-    <string name="service_after">Фотографии после обслуживания КП</string>
     <string name="end_task">Досрочное завершение</string>
     <string name="problem_on_point">Невывоз площадки</string>
     <string name="container_fail">Все оставшиеся контейнеры на площадке будут помечены как невывезенные.</string>

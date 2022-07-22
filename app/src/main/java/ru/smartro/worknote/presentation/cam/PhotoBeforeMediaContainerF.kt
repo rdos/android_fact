@@ -11,7 +11,7 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
 
     private var mPlatformEntity: PlatformEntity? = null
 
-    override fun onGetTextLabelFor() = "Контейнер: Фото до"
+    override fun onGetTextLabelFor() = "контейнер: фото до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
