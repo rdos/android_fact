@@ -1,25 +1,24 @@
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
-import ru.smartro.worknote.R
-import ru.smartro.worknote.toast
+import ru.smartro.worknote.*
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoKgoRemainingF : APhotoFragment() {
+class PhotoBeforeMediaF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "фото крупногабаритных отходов.заказать борт"
+    override fun onGetTextLabelFor() = "фото до обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mPlatformEntity!!.kgoRemaining!!.media
+        return mPlatformEntity!!.beforeMedia
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "kgoRemaining"
+       return getArgumentID().toString() + File.separator + "beforeMedia"
     }
 
     override fun onBeforeUSE() {
@@ -35,9 +34,7 @@ class PhotoKgoRemainingF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        val remainingKGOVolumeText = getArgumentName()!!
-        viewModel.baseDat.addPlatformKgoRemaining(mPlatformEntity?.platformId!!, imageS)
-        viewModel.updatePlatformKGO(mPlatformEntity?.platformId!!, remainingKGOVolumeText, isServedKGO = false)
+        viewModel.baseDat.addBeforeMedia(mPlatformEntity?.platformId!!, imageS)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
@@ -56,7 +53,8 @@ class PhotoKgoRemainingF : APhotoFragment() {
     override fun onBackPressed() {
         super.onBackPressed()
         super.dropOutputD()
-        navigateBack()
+        navigateClose()
+
     }
     companion object {
     }

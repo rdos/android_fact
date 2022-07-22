@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
 
 
 import io.realm.RealmList
@@ -8,10 +8,11 @@ import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-// TODO:: NO DIF FROM PhotoAfterMediaContainerF.kt
-class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
+// TODO:: NO DIF FROM PhotoAfterMediaContainerSimplifyF.kt
+class PhotoAfterMediaContainerF : APhotoFragment() {
+
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "фото контейнера после"
+    override fun onGetTextLabelFor() = "контейнер: фото после"
 
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -40,7 +41,7 @@ class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.baseDat.addAfterMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!,"EXTENDED")
     }
 
     override fun onSavePhoto() {
@@ -62,5 +63,4 @@ class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
     companion object {
 
     }
-
 }

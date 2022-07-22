@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
 
 import android.Manifest
 import android.app.Application
