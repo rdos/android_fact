@@ -12,7 +12,6 @@ private const val MODE = Context.MODE_PRIVATE
 class AppParaMS {
 
 
-
     public var isRestartApp: Boolean = false
     //todo: mEnv? что за ЗАЯЦ/?)
     private val sharedPref__env: SharedPreferences by lazy {
@@ -52,6 +51,12 @@ class AppParaMS {
         get() = sharedPref__env.getBoolean("isCameraSoundEnabled", true)
         set(value) = sharedPref__env.edit {
             it.putBoolean("isCameraSoundEnabled", value)
+        }
+
+    var isWalkthroughWasShown: Boolean
+        get() = sharedPref__env.getBoolean("isWalkthroughWasShown", false)
+        set(value) = sharedPref__env.edit {
+            it.putBoolean("isWalkthroughWasShown", value)
         }
 
     var lastSynchroTimeQueueTwo: Long

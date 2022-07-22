@@ -27,7 +27,7 @@ class PServeAct :
         val navController = (supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment).navController
 
         if(modeTMP_know1 == "itFireMode") {
-            navController.navigate(R.id.PhotoFailureMediaF, bundle)
+            navController.navigate(R.id.FAStPhotoFailureMediaF, bundle)
             return
         }
         if(vm.mBeforeMediaWasInited.value == false) {

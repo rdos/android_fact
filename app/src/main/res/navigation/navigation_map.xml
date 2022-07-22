@@ -216,5 +216,38 @@
             app:argType="string"
             />
     </fragment>
+    <fragment
+        android:id="@+id/fragment_walkthrough_a"
+        tools:layout="@layout/f_pserve_walkthrough_step_a"
+        android:name="ru.smartro.worknote.presentation.platform_serve.walkthrough.WalkthroughStepAF"
+        android:label="WalkthroughStepAF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_walkthrough_b"
+        tools:layout="@layout/f_pserve_walkthrough_step_b"
+        android:name="ru.smartro.worknote.presentation.platform_serve.walkthrough.WalkthroughStepBF"
+        android:label="WalkthroughStepBF" >
+
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/FAStPhotoFailureMediaF"
+        android:name="ru.smartro.worknote.presentation.came.FAStPhotoFailureMediaF"
+        android:label="FAStPhotoFailureMediaF" />
 
 </navigation>

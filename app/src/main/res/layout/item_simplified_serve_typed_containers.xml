@@ -36,10 +36,7 @@
             android:text="-"
             android:textSize="24sp"
             android:padding="0dp"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/containers_count"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/containers_count"
@@ -48,9 +45,7 @@
             android:layout_marginEnd="8dp"
             android:textColor="@color/black"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_increase_cont"
-            app:layout_constraintTop_toTopOf="parent" tools:text="0" />
+            tools:text="0" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_increase_cont"
@@ -63,10 +58,7 @@
             android:text="+"
             android:textSize="20sp"
             android:padding="0dp"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_add_photo"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textColor="@color/white" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_add_photo"
@@ -80,10 +72,7 @@
             android:paddingVertical="6dp"
             android:text="+ фото"
             android:textColor="@color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/slash"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/slash"
@@ -92,10 +81,7 @@
             android:layout_marginEnd="4dp"
             android:text="/"
             android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/containers_size"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/containers_size"
@@ -103,9 +89,6 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             tools:text="20" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

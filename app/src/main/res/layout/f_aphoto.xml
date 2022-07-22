@@ -12,21 +12,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/label_for"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="6dp"
-        tools:text="Контейнер: фото до"
-        />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/camera_ui_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layoutDirection="ltr"
-        android:paddingBottom="52dp"
         >
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/label_for"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="6dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Контейнер: фото до" />
+
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/actb_fragment_camera__sound"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/ic_fragment_camera__sound"
+            android:checked="false"
+            android:textOff="@null"
+            android:textOn="@null"
+            app:layout_constraintBottom_toTopOf="@id/photo_flash"
+            app:layout_constraintEnd_toEndOf="@+id/photo_flash"
+            app:layout_constraintStart_toStartOf="@id/photo_flash"
+            />
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/photo_flash"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_photo_flash"
+            android:checked="false"
+            android:textOff="@null"
+            android:textOn="@null"
+            android:layout_marginBottom="12dp"
+            app:layout_constraintStart_toStartOf="@+id/photo_view_button"
+            app:layout_constraintBottom_toTopOf="@+id/image_counter"
+            app:layout_constraintEnd_toEndOf="@+id/image_counter"
+            />
+
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/photo_view_button"
             android:layout_width="@dimen/round_button_medium"
@@ -61,49 +94,46 @@
             android:background="@drawable/ic_shutter"
             android:contentDescription="@string/capture_button_alt"
             android:scaleType="fitCenter"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/acet_f_aphoto__comment"
+            app:layout_goneMarginBottom="50dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             />
-        <androidx.appcompat.widget.AppCompatToggleButton
-            android:id="@+id/photo_flash"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginBottom="32dp"
-            android:background="@drawable/ic_photo_flash"
-            android:checked="false"
-            android:textOff="@null"
-            android:textOn="@null"
-            app:layout_constraintStart_toStartOf="@+id/photo_view_button"
-            app:layout_constraintBottom_toTopOf="@+id/image_counter"
-            app:layout_constraintEnd_toEndOf="@+id/image_counter"
-            />
+
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/acet_f_aphoto__comment"
-            android:layout_width="280dp" android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/white"
-            android:padding="5dp"
             android:hint="добавьте комментарий"
             android:maxLines="2"
+            android:lines="2"
+            android:padding="6dp"
             android:textColor="@color/gray"
-            android:layout_marginBottom="@dimen/margin_6"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/acactv_f_aphoto__fail_reason"
-            />
+            app:layout_constraintStart_toStartOf="parent" />
+
         <androidx.appcompat.widget.AppCompatAutoCompleteTextView
             android:id="@+id/acactv_f_aphoto__fail_reason"
-            android:layout_width="264dp" android:layout_height="38dp"
-            android:gravity="center" android:editable="false"
+            android:layout_width="wrap_content"
+            android:minWidth="264dp"
+            android:layout_height="38dp"
             android:background="@drawable/bg_button_red_interactive"
-            android:textColorHint="@color/gray" android:textColor="@color/black"
-            android:layout_marginBottom="@dimen/margin_max_max"
-            android:layout_marginEnd="@dimen/margin_default"
-            android:paddingStart="@dimen/margin_min" android:paddingEnd="@dimen/margin_min"
+            android:editable="false"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_min"
+            android:paddingEnd="@dimen/margin_min"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/ib_f_aphoto__takephoto"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/acb_f_aphoto__goto_next"
-            app:layout_constraintBaseline_toBaselineOf="@id/photo_flash"
-            android:textSize="14sp" tools:hint="выберите причину невывоза"
-            />
+            app:layout_constraintStart_toEndOf="@+id/photo_flash"
+            app:layout_constraintTop_toBottomOf="@+id/label_for"
+            tools:hint="выберите причину невывоза" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/acb_f_aphoto__goto_next"
             android:layout_width="110dp"
@@ -130,19 +160,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ib_f_aphoto__takephoto"
             app:layout_constraintTop_toTopOf="@+id/ib_f_aphoto__takephoto"
-            />
-        <!--ic_baseline_volume_up_24-->
-        <androidx.appcompat.widget.AppCompatToggleButton
-            android:id="@+id/actb_fragment_camera__sound"
-            android:layout_width="40dp"
-            android:layout_height="40dp" android:layout_marginBottom="16dp"
-            android:background="@drawable/ic_fragment_camera__sound"
-            android:checked="false"
-            android:textOff="@null"
-            android:textOn="@null"
-            app:layout_constraintBottom_toTopOf="@id/photo_flash"
-            app:layout_constraintEnd_toEndOf="@+id/photo_flash"
-            app:layout_constraintStart_toStartOf="@id/photo_flash"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

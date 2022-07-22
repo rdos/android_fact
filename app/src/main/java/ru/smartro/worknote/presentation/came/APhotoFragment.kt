@@ -77,7 +77,7 @@ abstract class APhotoFragment(
     protected val viewModel: PlatformServeSharedViewModel by activityViewModels()
 
 
-    protected abstract fun onGetTextLabelFor(): String?
+    protected open fun onGetTextLabelFor(): String? = null
     open protected fun onGetTextForFailHint(): String?{
         // TODO: name  onGetTextForFailHint = onGetTextForBlablabla)))!R_dos
         return null
@@ -393,8 +393,10 @@ abstract class APhotoFragment(
         if (reasonsString.isNullOrEmpty()) {
             tvLabelFor(view)
             mAcactvFail?.visibility = View.GONE
+            acetComment?.visibility = View.GONE
         } else {
             mAcactvFail?.visibility = View.VISIBLE
+            acetComment?.visibility = View.VISIBLE
             mAcactvFail?.requestFocus()
             mAcactvFail?.hint = onGetTextForFailHint()
             mAcactvFail?.setAdapter(ArrayAdapter(getAct(), android.R.layout.simple_dropdown_item_1line, android.R.id.text1, reasonsString))
