@@ -57,7 +57,7 @@ abstract class APhotoFragment(
     private var acetComment: AppCompatEditText? = null
     protected var mAcactvFail: AppCompatAutoCompleteTextView? = null
     private var mMediaPlayer: MediaPlayer? = null
-    override var TAG : String = "--Aa${this::class.simpleName}"
+//    override var TAG : String = "--Aa${this::class.simpleName}"
 
     protected var mMaxPhotoCount = 3
     private var acbCancel: AppCompatButton? = null
