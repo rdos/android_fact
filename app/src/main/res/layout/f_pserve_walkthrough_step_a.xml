@@ -22,7 +22,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/actv_f_pserve_walkthrough_step_a__title"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Упрощенный режим"
+                android:text="@string/simplify_serve"
                 android:textColor="@color/black"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="Мы добавили Упрощенный режим обслуживания контейнерной площадки.\n\nВ этом режиме контейнеры сгруппированы по организации, а затем по типу.\n\nЭкран позвоялет быстро выбрать число вывезеных контейнеров.\n\nЕсли установленное число больше количества контейнеров группы, то система засчитает это как подбор.\n\nДанный режим предоставляет возможность быстрее обслуживать площадку в случаях, когда нет необходимости отмечать особенности отдельных контейнеров.\n\nНажмите Далее, чтобы увидеть назначение кнопок в Упрощенном режиме."
+                    android:text="@string/walkthrough_simplify_serve_step_a"
                     android:textSize="18sp" />
             </androidx.core.widget.NestedScrollView>
 

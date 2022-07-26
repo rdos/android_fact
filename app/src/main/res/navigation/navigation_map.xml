@@ -219,7 +219,7 @@
     <fragment
         android:id="@+id/fragment_walkthrough_a"
         tools:layout="@layout/f_pserve_walkthrough_step_a"
-        android:name="ru.smartro.worknote.presentation.platform_serve.walkthrough.WalkthroughStepAF"
+        android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepAF"
         android:label="WalkthroughStepAF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -233,7 +233,7 @@
     <fragment
         android:id="@+id/fragment_walkthrough_b"
         tools:layout="@layout/f_pserve_walkthrough_step_b"
-        android:name="ru.smartro.worknote.presentation.platform_serve.walkthrough.WalkthroughStepBF"
+        android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepBF"
         android:label="WalkthroughStepBF" >
 
         <argument

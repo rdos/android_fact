@@ -130,9 +130,7 @@ class PServeF : AFragment() {
 
         vm.getPlatformEntity(plId)
         if(paramS().isWalkthroughWasShown == false) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                navigateMain(R.id.fragment_walkthrough_a, 1)
-            }, 2000)
+            navigateMain(R.id.fragment_walkthrough_a, 1)
         }
     }
 }

@@ -1,22 +1,12 @@
-package ru.smartro.worknote.presentation.platform_serve.walkthrough
+package ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.SwitchCompat
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.util.StatusEnum
-import ru.smartro.worknote.toast
 
 class WalkthroughStepBF : AFragment() {
 
