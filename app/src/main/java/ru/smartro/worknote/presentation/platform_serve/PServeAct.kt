@@ -62,4 +62,12 @@ class PServeAct :
 //        super.onBackPressed()
     }
 
+    //todo:::
+    override fun onDestroy() {
+        super.onDestroy()
+        if(paramS().walkthroughWasShownCnt < 3) {
+            paramS().isWalkthroughWasShown = false
+        }
+    }
+
 }

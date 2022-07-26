@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_platform_serve"
-    app:startDestination="@id/simplifiedServeFragment">
+    app:startDestination="@id/PServeExtendedFrag">
 
     <fragment
-        android:id="@+id/extendedServeFragment"
-        tools:layout="@layout/fragment_platform_serve_extended"
+        android:id="@+id/PServeExtendedFrag"
+        tools:layout="@layout/f_pserve_extended"
         android:name="ru.smartro.worknote.presentation.platform_serve.PServeExtendedFrag"
-        android:label="ExtendedServeFragment" >
+        android:label="PServeExtendedFrag" >
         <action
             android:id="@+id/action_extendedServeFragment_to_simplifiedServeFragment"
-            app:destination="@id/simplifiedServeFragment" />
+            app:destination="@id/PServeSimplifyFrag" />
         <action
             android:id="@+id/action_extendedServeFragment_to_containerServeBottomDialog"
             app:destination="@id/containerServeBottomDialog">
@@ -24,13 +24,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/simplifiedServeFragment"
+        android:id="@+id/PServeSimplifyFrag"
         tools:layout="@layout/fragment_platform_serve_simplified"
         android:name="ru.smartro.worknote.presentation.platform_serve.PServeSimplifyFrag"
-        android:label="SimplifiedServeFragment" >
+        android:label="PServeSimplifyFrag" >
         <action
             android:id="@+id/action_simplifiedServeFragment_to_extendedServeFragment"
-            app:destination="@id/extendedServeFragment" />
+            app:destination="@id/PServeExtendedFrag" />
     </fragment>
 
     <dialog

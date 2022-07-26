@@ -217,7 +217,7 @@
             />
     </fragment>
     <fragment
-        android:id="@+id/fragment_walkthrough_a"
+        android:id="@+id/WalkthroughStepAF"
         tools:layout="@layout/f_pserve_walkthrough_step_a"
         android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepAF"
         android:label="WalkthroughStepAF" >
@@ -231,7 +231,7 @@
             />
     </fragment>
     <fragment
-        android:id="@+id/fragment_walkthrough_b"
+        android:id="@+id/WalkthroughStepBF"
         tools:layout="@layout/f_pserve_walkthrough_step_b"
         android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepBF"
         android:label="WalkthroughStepBF" >

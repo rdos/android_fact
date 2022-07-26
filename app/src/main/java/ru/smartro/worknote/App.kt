@@ -491,7 +491,8 @@ val PERMISSIONS = arrayOf(
     Manifest.permission.READ_PHONE_STATE,
     Manifest.permission.LOCATION_HARDWARE,
     Manifest.permission.ACCESS_NETWORK_STATE,
-    Manifest.permission.CAMERA
+    Manifest.permission.CAMERA,
+    Manifest.permission.SYSTEM_ALERT_WINDOW
 )
 
 //todo:const val A_SLEEP_TIME_1MIN__MS = 60000L

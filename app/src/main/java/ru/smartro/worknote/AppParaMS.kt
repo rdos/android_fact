@@ -53,12 +53,6 @@ class AppParaMS {
             it.putBoolean("isCameraSoundEnabled", value)
         }
 
-    var isWalkthroughWasShown: Boolean
-        get() = sharedPref__env.getBoolean("isWalkthroughWasShown", false)
-        set(value) = sharedPref__env.edit {
-            it.putBoolean("isWalkthroughWasShown", value)
-        }
-
     var lastSynchroTimeQueueTwo: Long
         get() = sharedPref__env.getLong("lastSynchroTimeQueueTwo", 0)
         set(value) = sharedPref__env.edit {
@@ -247,6 +241,18 @@ class AppParaMS {
         get() = sharedPref__env.getString("wayBillNumber", "")
         set(value) = sharedPref__env.edit {
             it.putString("wayBillNumber", value)
+        }
+
+    var isWalkthroughWasShown: Boolean
+        get() = sharedPref__env.getBoolean("isWalkthroughWasShown", false)
+        set(value) = sharedPref__env.edit {
+            it.putBoolean("isWalkthroughWasShown", value)
+        }
+
+    var walkthroughWasShownCnt: Int
+        get() = sharedPref__env.getInt("walkthroughWasShownCnt", 0)
+        set(value) = sharedPref__env.edit {
+            it.putInt("walkthroughWasShownCnt", value)
         }
 
     var isModeSYNChrONize_FoundError: Boolean = false

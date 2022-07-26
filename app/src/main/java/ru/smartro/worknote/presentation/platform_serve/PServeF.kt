@@ -1,9 +1,6 @@
 package ru.smartro.worknote.presentation.platform_serve
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
@@ -11,7 +8,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -32,18 +28,22 @@ class PServeF : AFragment() {
     private var btnCompleteTask: AppCompatButton? = null
     private var tvContainersProgress: TextView? = null
     private var actvAddress: AppCompatTextView? = null
-    private var switch: SwitchCompat? = null
+    private var scPServeSimplifyMode: SwitchCompat? = null
     private var screenModeLabel: TextView? = null
     private val vm: PlatformServeSharedViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val plId = getArgumentID()
-
+        if (savedInstanceState == null) {
+            log("savedInstanceState == null")
+        } else {
+            log("savedInstanceState HE null")
+        }
         tvContainersProgress = view.findViewById(R.id.tv_platform_serve__cont_progress)
         btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = view.findViewById(R.id.tv_platform_serve__address)
-        switch = view.findViewById(R.id.switch_mode)
+        scPServeSimplifyMode = view.findViewById(R.id.sc_pserve_symplify_mode)
         screenModeLabel = view.findViewById(R.id.screen_mode_label)
 
         val navHostFragment =
@@ -51,16 +51,16 @@ class PServeF : AFragment() {
         val navController = navHostFragment.navController
 
         // TODO?::Vlad setonclicklistener > setonchangedlistener
-        switch?.setOnClickListener {
+        scPServeSimplifyMode?.setOnClickListener {
             vm.changeScreenMode()
         }
 
         vm.mWasServedExtended.observe(getAct()) {
             if(it) {
-                switch?.visibility = View.GONE
+                scPServeSimplifyMode?.visibility = View.GONE
                 screenModeLabel?.visibility = View.GONE
-                if(navController.currentDestination?.id != R.id.extendedServeFragment) {
-                    navController.navigate(R.id.extendedServeFragment)
+                if(navController.currentDestination?.id != R.id.PServeExtendedFrag) {
+                    navController.navigate(R.id.PServeExtendedFrag)
                 }
             }
         }
@@ -73,20 +73,20 @@ class PServeF : AFragment() {
                             navController.currentDestination?.apply {
                                 when(screenMode) {
                                     false -> {
-                                        if (id != R.id.simplifiedServeFragment) {
+                                        if (id != R.id.PServeExtendedFrag) {
                                             navController.popBackStack()
                                         }
-                                        screenModeLabel?.text = "Упрощенный режим"
-                                        if(switch?.isChecked != false)
-                                            switch?.isChecked = false
+                                        screenModeLabel?.text = "Расширенный режим"
+                                        if(scPServeSimplifyMode?.isChecked != false)
+                                            scPServeSimplifyMode?.isChecked = false
                                     }
                                     true -> {
-                                        if (id != R.id.extendedServeFragment) {
-                                            navController.navigate(R.id.extendedServeFragment)
+                                        if (id != R.id.PServeSimplifyFrag) {
+                                            navController.navigate(R.id.PServeSimplifyFrag)
                                         }
-                                        screenModeLabel?.text = "Расширенный режим"
-                                        if(switch?.isChecked != true)
-                                            switch?.isChecked = true
+                                        screenModeLabel?.text = "Упрощенный режим"
+                                        if(scPServeSimplifyMode?.isChecked != true)
+                                            scPServeSimplifyMode?.isChecked = true
                                     }
                                 }
                             }
@@ -94,9 +94,9 @@ class PServeF : AFragment() {
                     }
                 } else {
                     vm.mScreenMode.removeObservers(getAct())
-                    switch?.visibility = View.GONE
+                    scPServeSimplifyMode?.visibility = View.GONE
                     screenModeLabel?.visibility = View.GONE
-                    navController.navigate(R.id.extendedServeFragment)
+                    navController.navigate(R.id.PServeExtendedFrag)
                 }
 
                 tvContainersProgress?.text =
@@ -129,8 +129,5 @@ class PServeF : AFragment() {
         }
 
         vm.getPlatformEntity(plId)
-        if(paramS().isWalkthroughWasShown == false) {
-            navigateMain(R.id.fragment_walkthrough_a, 1)
-        }
     }
 }
