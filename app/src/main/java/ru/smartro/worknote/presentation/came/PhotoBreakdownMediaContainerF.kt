@@ -10,7 +10,6 @@ import java.io.File
 class PhotoBreakdownMediaContainerF : APhotoFragment() {
     private var mBreakDownReasonS: List<String>? = null
     private var mContainerEntity: ContainerEntity? = null
-    override fun onGetTextLabelFor() = "Фото поломки контейнера"
     override fun onGetTextForFailHint() = "Причина поломки контейнера"
     override fun onGetStringList(): List<String>? {
         mBreakDownReasonS = viewModel.baseDat.findAllBreakDown()

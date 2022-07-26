@@ -10,7 +10,7 @@ import java.io.File
 
 open class PhotoAfterMediaF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = getString(R.string.service_after)
+    override fun onGetTextLabelFor() = "фото после обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")

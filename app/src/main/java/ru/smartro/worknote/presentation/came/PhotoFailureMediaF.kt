@@ -6,11 +6,10 @@ import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoFailureMediaF : APhotoFragment() {
+open class PhotoFailureMediaF : APhotoFragment() {
     private var mFailReasonS: List<String>? = null
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "Фото невывоза площадки"
-    override fun onGetTextForFailHint() = "Причина невывоза площадки"
+    override fun onGetTextForFailHint() = "Причина невывоза КП"
     override fun onGetStringList(): List<String>? {
         mFailReasonS = viewModel.getFailReasonS()
         if (mFailReasonS == null) {

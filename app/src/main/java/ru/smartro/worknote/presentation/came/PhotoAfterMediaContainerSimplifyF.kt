@@ -11,7 +11,7 @@ import java.io.File
 // TODO:: NO DIF FROM PhotoAfterMediaContainerF.kt
 class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "Контейнер(упрощённый режим): Фото после"
+    override fun onGetTextLabelFor() = "фото контейнера после"
 
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {

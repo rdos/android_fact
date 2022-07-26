@@ -16,8 +16,12 @@ import ru.smartro.worknote.log.AAct
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
 abstract class AFragment : Fragment(){
-    protected open var TAG : String = "--Aaa${this::class.simpleName}"
-
+    protected var TAG : String = this::class.java.simpleName
+//        get() {
+//            val rootClazz =
+//            rootClazz.getClass
+//            while ()
+//        }
     protected fun paramS() = App.getAppParaMS()
     protected fun getAct() = requireActivity() as AAct
     protected fun showingProgress(text: String? = null){

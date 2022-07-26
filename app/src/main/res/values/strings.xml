@@ -27,8 +27,6 @@
     <string name="photo_save_error_toast">Неизвестная ошибка камеры</string>
     <string name="cancel">Отменить</string>
     <string name="done">Добавить</string>
-    <string name="service_before">Фотографии до обслуживания КП</string>
-    <string name="service_pickup_volume">Фотографии подбора</string>
     <string name="warning_detele">Вы действительно хотите удалить?</string>
     <string name="capture_button_alt">Capture</string>
     <string name="switch_camera_button_alt">Switch camera</string>
@@ -40,7 +38,6 @@
     <string name="capture_mode_hdr">HDR</string>
     <string name="capture_mode_night">Night</string>
     <string name="delete_button_alt">Delete</string>
-    <string name="service_after">Фотографии после обслуживания КП</string>
     <string name="end_task">Досрочное завершение</string>
     <string name="problem_on_point">Невывоз площадки</string>
     <string name="container_fail">Все оставшиеся контейнеры на площадке будут помечены как невывезенные.</string>
@@ -87,4 +84,10 @@
     <string name="channel_name">CHANNEL_NAME_FACT_WORKNOTE</string>
     <string name="platform_serve_mode_simplified">Упрощенный режим</string>
     <string name="platform_serve_mode_extended">Расширенный режим</string>
+    <string name="walkthrough_simplify_serve_step_a">Новый режим предоставляет возможность быстрее обслуживать площадку в случаях, когда нет необходимости отмечать особенности отдельных контейнеров.\n\nВ этом режиме контейнеры сгруппированы по организации и типу.\n\nЭкран позвоялет быстро выбрать число вывезеных контейнеров.\n\nЕсли установленное число больше количества контейнеров группы, то система засчитает это как подбор.</string>
+    <string name="simplify_serve">Упрощенный режим</string>
+    <string name="walkhrough_step_b_a">Переключение между режимами. Нажмите, чтобы перейти в Расширенный режим</string>
+    <string name="walkhrough_step_b_b">Управление количеством обслуженных контейнеров. Выход за пределы количества контейнеров будет приравниваться к подбору</string>
+    <string name="walkhrough_step_b_c">Добавление фото для контейнера. При нажатии, будет предложено сделать фото до и фото после обслуживания</string>
+    <string name="walkhrough_step_b_d">Количество контейнеров данного типа</string>
 </resources>

@@ -11,6 +11,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -128,5 +129,8 @@ class PServeF : AFragment() {
         }
 
         vm.getPlatformEntity(plId)
+        if(paramS().isWalkthroughWasShown == false) {
+            navigateMain(R.id.fragment_walkthrough_a, 1)
+        }
     }
 }

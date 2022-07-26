@@ -9,7 +9,7 @@ import java.io.File
 
 class PhotoPickupMediaF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = getString(R.string.service_pickup_volume)
+    override fun onGetTextLabelFor() = "фото подбора"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")

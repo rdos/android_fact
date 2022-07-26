@@ -11,7 +11,7 @@ import java.io.File
 class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
 
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "Контейнер(упрощённый режим): Фото до"
+    override fun onGetTextLabelFor() = "фото контейнера до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
