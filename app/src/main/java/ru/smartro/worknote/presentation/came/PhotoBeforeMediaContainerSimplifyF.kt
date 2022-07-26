@@ -1,4 +1,5 @@
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
+
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
@@ -7,21 +8,21 @@ import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoPickupMediaF : APhotoFragment() {
+class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
+
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "фото подбора"
+    override fun onGetTextLabelFor() = "фото контейнера до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mPlatformEntity!!.pickupMedia
+        return mPlatformEntity!!.beforeMedia
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "pickupMedia"
+        return getArgumentID().toString() + File.separator + "beforeMediaContainer"
     }
-
 
     override fun onBeforeUSE() {
         val platformId = getArgumentID()
@@ -29,7 +30,7 @@ class PhotoPickupMediaF : APhotoFragment() {
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
 //        }
-        mPlatformEntity?.getPickupMediaSize()
+        mMaxPhotoCount = Int.MAX_VALUE
     }
 
     override fun onGotoNext(): Boolean {
@@ -37,25 +38,19 @@ class PhotoPickupMediaF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        val newVolume = getArgumentName()!!.toDouble()
-        viewModel.baseDat.addPlatformPickupMedia(mPlatformEntity?.platformId!!, imageS)
-        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
+        navigateMain(R.id.PhotoAfterMediaContainerSimplifyF, mPlatformEntity?.platformId)
     }
 
     override fun onSavePhoto() {
-//        TODO("Not yet implemented")
-//        id: String = UUID.randomUUID().toString(),
+
     }
 
-    override fun onGetIsVisibleBtnCancel() = true
+    override fun onGetIsVisibleBtnCancel(): Boolean = false
 
     override fun onClickBtnCancel() {
-        val newVolume = getArgumentName()!!.toDouble()
-        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-    }
 
+    }
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -64,5 +59,6 @@ class PhotoPickupMediaF : APhotoFragment() {
     }
 
     companion object {
+
     }
 }

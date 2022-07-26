@@ -1,14 +1,17 @@
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
-import ru.smartro.worknote.*
+import ru.smartro.worknote.R
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoBeforeMediaF : APhotoFragment() {
+class PhotoBeforeMediaContainerF : APhotoFragment() {
+
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "фото до обслуживания КП"
+
+    override fun onGetTextLabelFor() = "контейнер: фото до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
@@ -18,15 +21,14 @@ class PhotoBeforeMediaF : APhotoFragment() {
     }
 
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "beforeMedia"
+       return getArgumentID().toString() + File.separator + "beforeMediaContainer"
     }
 
     override fun onBeforeUSE() {
+//        TODO("Not yet implemented")
         val platformId = getArgumentID()
-        mPlatformEntity = viewModel.getPlatformEntity(platformId)
-//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-//            mPlatformEntity = it
-//        }
+        mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
+        mMaxPhotoCount = Int.MAX_VALUE
     }
 
     override fun onGotoNext(): Boolean {
@@ -34,28 +36,21 @@ class PhotoBeforeMediaF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addBeforeMedia(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!,"EXTENDED")
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
+    override fun onGetIsVisibleBtnCancel() = false
+    override fun onClickBtnCancel() {}
+
     override fun onSavePhoto() {
 //        TODO("Not yet implemented")
-//        id: String = UUID.randomUUID().toString(),
-    }
-
-    override fun onGetIsVisibleBtnCancel() = false
-
-    override fun onClickBtnCancel() {
-
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         super.dropOutputD()
-        navigateClose()
-
-    }
-    companion object {
+        navigateBack()
     }
 }

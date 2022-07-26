@@ -1,13 +1,10 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.app.Activity
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -45,7 +42,7 @@ class PServeExtendedFrag :
     private var acsbVolumePickup: SeekBar? = null
 
     override fun onGetLayout(): Int {
-        return R.layout.fragment_platform_serve_extended
+        return R.layout.f_pserve_extended
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

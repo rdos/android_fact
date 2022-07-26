@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
@@ -7,28 +7,27 @@ import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoBeforeMediaContainerF : APhotoFragment() {
-
+class PhotoKgoRemainingF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-
-    override fun onGetTextLabelFor() = "контейнер: фото до"
+    override fun onGetTextLabelFor() = "фото крупногабаритных отходов.заказать борт"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
             return RealmList<ImageEntity>()
         }
-        return mPlatformEntity!!.beforeMedia
+        return mPlatformEntity!!.kgoRemaining!!.media
     }
 
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "beforeMediaContainer"
+        return getArgumentID().toString() + File.separator + "kgoRemaining"
     }
 
     override fun onBeforeUSE() {
-//        TODO("Not yet implemented")
         val platformId = getArgumentID()
-        mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
-        mMaxPhotoCount = Int.MAX_VALUE
+        mPlatformEntity = viewModel.getPlatformEntity(platformId)
+//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
+//            mPlatformEntity = it
+//        }
     }
 
     override fun onGotoNext(): Boolean {
@@ -36,21 +35,29 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!,"EXTENDED")
+        val remainingKGOVolumeText = getArgumentName()!!
+        viewModel.baseDat.addPlatformKgoRemaining(mPlatformEntity?.platformId!!, imageS)
+        viewModel.updatePlatformKGO(mPlatformEntity?.platformId!!, remainingKGOVolumeText, isServedKGO = false)
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
-    override fun onGetIsVisibleBtnCancel() = false
-    override fun onClickBtnCancel() {}
-
     override fun onSavePhoto() {
 //        TODO("Not yet implemented")
+//        id: String = UUID.randomUUID().toString(),
+    }
+
+    override fun onGetIsVisibleBtnCancel() = false
+
+    override fun onClickBtnCancel() {
+
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         super.dropOutputD()
         navigateBack()
+    }
+    companion object {
     }
 }

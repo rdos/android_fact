@@ -44,7 +44,7 @@
                 android:textSize="16sp"/>
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switch_mode"
+                android:id="@+id/sc_pserve_symplify_mode"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/PhotoBeforeMediaF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoBeforeMediaF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaF" >
         <argument
@@ -36,7 +36,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoKgoServedF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoKgoServedF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoKgoServedF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoKgoServedF" >
         <argument
@@ -50,7 +50,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoKgoRemainingF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoKgoRemainingF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoKgoRemainingF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoKgoRemainingF" >
         <argument
@@ -64,7 +64,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoPickupMediaF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoPickupMediaF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoPickupMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoPickupMediaF" >
         <argument
@@ -78,7 +78,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoFailureMediaF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoFailureMediaF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoFailureMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoFailureMediaF" >
         <argument
@@ -92,7 +92,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoBreakdownMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoBreakdownMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoBreakdownMediaContainerF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBreakdownMediaContainerF" >
         <argument
@@ -106,7 +106,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoFailureMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoFailureMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoFailureMediaContainerF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoFailureMediaContainerF" >
         <argument
@@ -120,7 +120,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoAfterMediaF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoAfterMediaF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoAfterMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoAfterMediaF" >
         <argument
@@ -134,7 +134,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoBeforeMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoBeforeMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerF" >
         <argument
@@ -148,7 +148,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoAfterMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoAfterMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoAfterMediaContainerF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoAfterMediaContainerF" >
         <argument
@@ -162,7 +162,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoBeforeMediaContainerSimplifyF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoBeforeMediaContainerSimplifyF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerSimplifyF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerSimplifyF" >
         <argument
@@ -176,7 +176,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoAfterMediaContainerSimplifyF"
-        android:name="ru.smartro.worknote.presentation.cam.PhotoAfterMediaContainerSimplifyF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoAfterMediaContainerSimplifyF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoAfterMediaContainerSimplifyF" >
         <argument
@@ -190,7 +190,7 @@
     </fragment>
     <fragment
         android:id="@+id/GalleryPhotoF"
-        android:name="ru.smartro.worknote.presentation.cam.GalleryPhotoF"
+        android:name="ru.smartro.worknote.presentation.came.GalleryPhotoF"
         tools:layout="@layout/media_fragment"
         android:label="GalleryPhotoF" >
         <argument
@@ -216,5 +216,38 @@
             app:argType="string"
             />
     </fragment>
+    <fragment
+        android:id="@+id/WalkthroughStepAF"
+        tools:layout="@layout/f_pserve_walkthrough_step_a"
+        android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepAF"
+        android:label="WalkthroughStepAF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/WalkthroughStepBF"
+        tools:layout="@layout/f_pserve_walkthrough_step_b"
+        android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepBF"
+        android:label="WalkthroughStepBF" >
+
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/FAStPhotoFailureMediaF"
+        android:name="ru.smartro.worknote.presentation.came.FAStPhotoFailureMediaF"
+        android:label="FAStPhotoFailureMediaF" />
 
 </navigation>

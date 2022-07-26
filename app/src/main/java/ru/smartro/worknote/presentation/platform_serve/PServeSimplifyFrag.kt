@@ -1,6 +1,5 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -54,6 +53,10 @@ class PServeSimplifyFrag : AFragment() {
                 Log.d("TEST ::::", "m SERVED CONTAINERS : ${list}")
                 adapterCurrentTask.served = list
             }
+        }
+
+        if(paramS().isWalkthroughWasShown == false) {
+            navigateMain(R.id.WalkthroughStepAF, 1)
         }
     }
 }

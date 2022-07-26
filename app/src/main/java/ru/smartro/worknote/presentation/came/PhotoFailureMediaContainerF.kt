@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation.cam
+package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
@@ -10,8 +10,7 @@ import java.io.File
 class PhotoFailureMediaContainerF : APhotoFragment() {
     private var mFailReasonS: List<String>? = null
     private var mContainerEntity: ContainerEntity? = null
-    override fun onGetTextLabelFor() = "фото невывоза контейнера"
-    override fun onGetTextForFailHint() = "причина невывоза контейнера"
+    override fun onGetTextForFailHint() = "Причина невывоза контейнера"
     override fun onGetStringList(): List<String>? {
         mFailReasonS = viewModel.getFailReasonS()
         if (mFailReasonS == null) {
