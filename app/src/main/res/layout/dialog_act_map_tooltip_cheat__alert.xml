@@ -11,24 +11,29 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
         android:orientation="vertical"
-        android:gravity="center"
-        android:background="@android:color/transparent">
+        android:gravity="center">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/privet"
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:background="@color/red_cool">
+            android:background="@android:color/transparent"
+            >
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Пропустить"
+                />
             <TextView
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="TEXTtextSTEXTS"/>
+                android:text="Здесь будет какое-то описание. \n не слишком короткое но и не сдитшком длинное" android:textColor="@color/white"
+                />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.appcompat.widget.LinearLayoutCompat>
 

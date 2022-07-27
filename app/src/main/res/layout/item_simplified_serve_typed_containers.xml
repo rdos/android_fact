@@ -25,7 +25,7 @@
             android:textSize="16sp"
             tools:text="Euro 1.1\ndsfsdfsdf\ndfsdfsd" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <ru.smartro.worknote.andPOintD.SmartROButton
             android:id="@+id/button_decrease_cont"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -36,7 +36,10 @@
             android:text="-"
             android:textSize="24sp"
             android:padding="0dp"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            app:tooltipNext="@id/button_add_photo"
+            app:tooltipType="LEFT_TO_RIGHT"
+            />
 
         <TextView
             android:id="@+id/containers_count"
@@ -47,7 +50,7 @@
             android:textSize="16sp"
             tools:text="0" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <ru.smartro.worknote.andPOintD.SmartROButton
             android:id="@+id/button_increase_cont"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -58,7 +61,11 @@
             android:text="+"
             android:textSize="20sp"
             android:padding="0dp"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            app:tooltipNext="@id/button_decrease_cont"
+            app:tooltipType="LEFT_TO_RIGHT"
+            android:tag="button_increase_cont"
+            />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_add_photo"

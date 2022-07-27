@@ -29,6 +29,12 @@ class PServeSimplifyFrag : AFragment() {
             }
 
             override fun onIncrease(clientGroupInd: Int, typeGroupInd: Int) {
+                if(paramS().isWalkthroughWasShown == false) {
+//            navigateMain(R.id.WalkthroughStepAF, 1)
+                    (getAct() as PServeAct).mTooltipHell.gogogo()
+                    paramS().isWalkthroughWasShown = true
+                    return
+                }
                 vm.onIncrease(clientGroupInd, typeGroupInd)
             }
 
@@ -45,6 +51,7 @@ class PServeSimplifyFrag : AFragment() {
         vm.mSortedContainers.observe(viewLifecycleOwner) { list ->
             if(list != null) {
                 adapterCurrentTask.containers = list
+
             }
         }
 
@@ -55,8 +62,6 @@ class PServeSimplifyFrag : AFragment() {
             }
         }
 
-        if(paramS().isWalkthroughWasShown == false) {
-            navigateMain(R.id.WalkthroughStepAF, 1)
-        }
+
     }
 }

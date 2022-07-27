@@ -74,7 +74,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/btn_switch_text"/>
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/btn_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -84,7 +83,6 @@
                 app:layout_constraintTop_toTopOf="@+id/btn_counter_text">
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/button_decrease_cont"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="8dp"
@@ -106,7 +104,6 @@
                     android:textSize="16sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/button_increase_cont"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:backgroundTint="@color/colorPrimary"
