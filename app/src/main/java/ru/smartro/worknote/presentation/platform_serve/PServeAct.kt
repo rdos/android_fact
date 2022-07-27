@@ -7,17 +7,16 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.navigation.fragment.NavHostFragment
-import ru.smartro.worknote.AFragment
-import ru.smartro.worknote.Inull
-import ru.smartro.worknote.R
-import ru.smartro.worknote.Snull
+import org.w3c.dom.Text
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.andPOintD.ITooltip
-import ru.smartro.worknote.toast
 
 //todo: INDEterminate)
 class PServeAct :
@@ -47,8 +46,11 @@ class PServeAct :
 //            setupActionBarWithNavController(navController)
             vm.mBeforeMediaWasInited.postValue(true)
         }
-
-
+        if(paramS().isWalkthroughWasShown == false) {
+//            navigateMain(R.id.WalkthroughStepAF, 1)
+            mTooltipHell.setTooltipNextId("ll_containers_count")
+            paramS().isWalkthroughWasShown = true
+        }
     }
 
 
@@ -81,15 +83,29 @@ class PServeAct :
         }
     }
 
+    override fun onNewfromAFragment() {
+        super.onNewfromAFragment()
+        mTooltipHell.getToottimNextId()?.let {
+            mTooltipHell.gogogo(mTooltipHell.getToottimNextId()!!)
+        }
+    }
+
     inner class TooltipHell : AbsObject(TAG, "ImageEntityScanner") {
+        private var mStopScan: Boolean = false
         private var mLayoutParams: ViewGroup.LayoutParams? = null
         private var mSaveObj: View? = null
         private var mSaveVG: ViewGroup? = null
-        open fun gogogo(){
+        private var mTooltipNextId: String? = null
+        fun getToottimNextId(): String? {
+            return mTooltipNextId
+        }
+        fun gogogo(tooltipNextId: String){
+            mStopScan = false
+
             val builder = AlertDialog.Builder(this@PServeAct)
             val inflater = this@PServeAct.layoutInflater
 
-            val vG = (window.decorView.rootView   as ViewGroup)
+            val vG = (this@PServeAct.window.decorView.rootView   as ViewGroup)
             log("getWindow(:${vG.id}")
             log("getWindow(:${vG.tag}")
             log("getWindow(:::")
@@ -102,13 +118,18 @@ class PServeAct :
 
 
             val view = inflater.inflate(R.layout.dialog_act_map_tooltip_cheat__alert, null, false)
-            builder.setView(view)
+
             // Установите заголовок
+            val actvDialog = view.findViewById<TextView>(R.id.actv_dialog)
             // Установите заголовок
-            val tomDialog = builder.create()
-            tomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            val ll = view.findViewById<LinearLayoutCompat>(R.id.privet)
-            val findView = fractalS(vG.childCount, vG, ll)
+
+            val ll = view.findViewById<LinearLayoutCompat>(R.id.llc_component_container)
+            mSaveIndex = null
+            mSaveVG = null
+            mSaveObj = null
+            mLayoutParams = null
+            val findView = fractalS(vG.childCount, vG, ll, tooltipNextId)
+            mStopScan = false
             //        findView?.let {
             //            ll.addView(findView)
             //        }
@@ -125,61 +146,83 @@ class PServeAct :
 //        text.text = "не ссы это не дорого. моя речь будет "
 
 //        tomDialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
+            builder.setView(view)
+            val tomDialog = builder.create()
+            view.findViewById<AppCompatButton>(R.id.apb_dialog).setOnClickListener {
+                tomDialog.dismiss()
+            }
+            tomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             tomDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
             tomDialog.window?.setDimAmount(0.8f); //0 for no dim to 1 for full dim
-            tomDialog.show()
-            tomDialog.setOnDismissListener {
-                ll.removeView(mSaveObj)
-                val viewGroupObjects: Map<View, View> = mutableMapOf()
-                mSaveVG?.addView(mSaveObj, mSaveIndex!!)
+            mSaveObj?.let {
+                actvDialog.text = mSaveObj?.tooltipText
+                tomDialog.show()
 
-                mSaveObj?.layoutParams = mLayoutParams
+                tomDialog.setOnDismissListener {
+                    if (mSaveObj == null) {
+                        return@setOnDismissListener
+                    }
+                    ll.removeView(mSaveObj)
+                    val viewGroupObjects: Map<View, View> = mutableMapOf()
+                    mSaveVG?.addView(mSaveObj, mSaveIndex!!)
+
+                    mSaveObj?.layoutParams = mLayoutParams
+                    mSaveObj?.isEnabled = true
+                    mTooltipNextId?.let {
+                        gogogo(it)
+                        mStopScan = false
+                    }
+                }
             }
+
         }
 
-        private fun fractalS(childCnt: Int, currentVG: ViewGroup, ll: LinearLayoutCompat) {
+        private fun fractalS(childCnt: Int, currentVG: ViewGroup, ll: LinearLayoutCompat, tooltipNextID: String) {
             for (idx in 0 until childCnt) {
                 val obj = currentVG.getChildAt(idx)
 //            obj.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 //            obj.background = null
 
+                if (obj is ITooltip) {
+                    if(obj.getIdText() == tooltipNextID) {
+                        mSaveVG = currentVG
+                        mSaveObj = obj
+                        mLayoutParams = mSaveObj?.layoutParams
+                        for (index in 0 until currentVG.childCount) {
+                            if (currentVG.getChildAt(index).equals(mSaveObj)) {
+                                mSaveIndex = index
+                                break
+                            }
+                        }
+                        currentVG.removeView(obj)
+                        ll.addView(obj)
+                        obj.isEnabled = false
+                        log("getWindow(.obj.getIdText()=${obj.getIdText()}")
+                        mTooltipNextId = obj.getTooltipNext()
 
+                        log("getWindow(.obj.getTooltipNext()=${obj.getTooltipNext()}")
+                        log("getWindow(.obj.getTooltipType()=${obj.getTooltipType()}")
+                        mStopScan = true
+                        return
+                    }
+                    log("getWindow(.obj.id=${obj.id}")
+                    log("getWindow(:${obj.tag}")
+                    log("getWindow(:::")
+                }
 
                 if ( obj is ViewGroup) {
                     val Vg = obj as ViewGroup
                     log("getWindow($idx)Vg.childCount=${Vg.childCount}")
-                    log("getWindow($idx)Vg.childCount=${Vg.tag}")
-
-                    fractalS(Vg.childCount, Vg, ll)
-                } else {
-                    if(obj != null && obj.tag != null) {
-                        if (obj.tag.toString() == "button_increase_cont") {
-                            if (obj is ITooltip) {
-
-                                mSaveVG = currentVG
-                                mSaveObj = obj
-                                mLayoutParams = mSaveObj?.layoutParams
-                                for (index in 0 until currentVG.childCount) {
-                                    if (currentVG.getChildAt(index).equals(mSaveObj)) {
-                                        mSaveIndex = index
-                                        break
-                                    }
-                                }
-                                currentVG.removeView(obj)
-                                ll.addView(obj)
-                                log("getWindow(.obj.getTooltipNext()=${obj.getTooltipNext()}")
-                                log("getWindow(.obj.getTooltipType()=${obj.getTooltipType()}")
-                            }
-                        }
-                        log("getWindow(.obj.id=${obj.id}")
-                        log("getWindow(:${obj.tag}")
-                        log("getWindow(:::")
+                    if (mStopScan == false) {
+                        log("getWindow($idx)Vg.childCount=${Vg.tag}")
+                        fractalS(Vg.childCount, Vg, ll, tooltipNextID)
                     }
-
-
                 }
             }
+        }
+
+        fun setTooltipNextId(s: String) {
+            mTooltipNextId = s
         }
     }
 

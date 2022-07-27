@@ -4,21 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:tag="a.coordinatorlayout.widget.CoordinatorLayout"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="an.coordinatorlayout.widget.CoordinatorLayout"
-        >
+        android:layout_height="match_parent">
 
         <com.yandex.mapkit.mapview.MapView
             android:id="@+id/map_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:tag="map_view"
-            />
+            android:layout_height="match_parent"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/acb_act_map__info"
@@ -30,7 +25,6 @@
             android:background="@drawable/bg_button"
             android:textColor="@color/white"
             android:text="Info 5/0"
-            android:tag="acb_act_map__info"
             />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -41,9 +35,9 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_margin="@dimen/margin_default"
             android:paddingHorizontal="8dp"
+            android:background="@drawable/bg_button"
             android:textColor="@color/white"
             android:text="Выйти"
-            android:tag="acb_act_map__logout"
             />
 
         <!--<include layout="@layout/act_map__workorder_info"/>-->
@@ -57,9 +51,7 @@
             android:backgroundTint="@color/colorPrimary"
             android:src="@drawable/ic_geo"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:tag="gotoMyGPS"
-            />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/debug_fab"
@@ -70,9 +62,7 @@
             android:backgroundTint="@color/colorPrimary"
             android:src="@drawable/ic_bug"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:tag="debug_fab"
-            />
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <ImageButton
             android:id="@+id/navigator_toggle_fab"
@@ -88,7 +78,6 @@
             app:layout_constraintBottom_toTopOf="@id/gotoMyGPS"
             app:layout_constraintEnd_toEndOf="@id/gotoMyGPS"
             app:layout_constraintStart_toStartOf="@id/gotoMyGPS"
-            android:tag="navigator_toggle_fab"
             />
 
         <!--<androidx.appcompat.widget.AppCompatImageButton-->
@@ -113,9 +102,7 @@
             android:src="@drawable/ic_taskline"
             app:layout_constraintBottom_toTopOf="@id/debug_fab"
             app:layout_constraintEnd_toEndOf="@id/debug_fab"
-            app:layout_constraintStart_toStartOf="@id/debug_fab"
-            android:tag="goto_log__act_map__apib"
-            />
+            app:layout_constraintStart_toStartOf="@id/debug_fab" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

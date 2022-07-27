@@ -40,6 +40,7 @@ class SimplifiedContainerAdapter(
 
     override fun onBindViewHolder(holder: ClientGroupViewHolder, position: Int) {
         holder.bind(position, containers[position], served)
+
     }
 
     class ClientGroupViewHolder(

@@ -3,6 +3,7 @@ package ru.smartro.worknote.presentation.platform_serve
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,17 +30,15 @@ class PServeSimplifyFrag : AFragment() {
             }
 
             override fun onIncrease(clientGroupInd: Int, typeGroupInd: Int) {
-                if(paramS().isWalkthroughWasShown == false) {
-//            navigateMain(R.id.WalkthroughStepAF, 1)
-                    (getAct() as PServeAct).mTooltipHell.gogogo()
-                    paramS().isWalkthroughWasShown = true
-                    return
-                }
                 vm.onIncrease(clientGroupInd, typeGroupInd)
             }
 
             override fun onAddPhoto(clientGroupInd: Int, typeGroupInd: Int) {
                 navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, vm.mPlatformEntity.value!!.platformId!!)
+            }
+
+            override fun onInit() {
+
             }
         })
 
@@ -47,7 +46,18 @@ class PServeSimplifyFrag : AFragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterCurrentTask
         }
-
+        rvCurrentTask.viewTreeObserver
+            .addOnGlobalLayoutListener(
+                object : OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        // At this point the layout is complete and the
+                        // dimensions of recyclerView and any child views
+                        getAct().onNewfromAFragment()
+                        // are known.
+                        rvCurrentTask.viewTreeObserver
+                            .removeOnGlobalLayoutListener(this)
+                    }
+                })
         vm.mSortedContainers.observe(viewLifecycleOwner) { list ->
             if(list != null) {
                 adapterCurrentTask.containers = list
@@ -62,6 +72,6 @@ class PServeSimplifyFrag : AFragment() {
             }
         }
 
-
+        paramS().isWalkthroughWasShown = false
     }
 }

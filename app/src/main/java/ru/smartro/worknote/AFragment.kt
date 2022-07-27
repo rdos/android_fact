@@ -75,7 +75,6 @@ abstract class AFragment : Fragment(){
         }
         val argSBundle = getArgSBundle(argumentId, argumentName)
         navController.navigate(navFragmentId, argSBundle)
-
     }
 
     protected fun navigateMainChecklist(navFragmentId: Int, argumentId: Int?, argumentName: String? = null) {
@@ -117,9 +116,14 @@ abstract class AFragment : Fragment(){
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 //        onCreate()
     }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        getAct().onNewfromAFragment()
+    }
+
 
     protected fun log(valueNameAndValue: String) {
         Log.i(TAG, "${valueNameAndValue}")
