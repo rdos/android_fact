@@ -82,8 +82,6 @@
     <string name="problem_container">Невывоз контейнера</string>
     <string name="channel_description">CHANNEL_DESCRIPTION_FACT_WORKNOTE</string>
     <string name="channel_name">CHANNEL_NAME_FACT_WORKNOTE</string>
-    <string name="platform_serve_mode_simplified">Упрощенный режим</string>
-    <string name="platform_serve_mode_extended">Расширенный режим</string>
     <string name="walkthrough_simplify_serve_step_a">\nВ этом режиме можно сгруппировать контейнеры.\n
         \nТеперь несколько контейнеров одного типа или организации обслуживать удобнее и быстрее.\n
         \nТакже нажав на Плюс, можно добавить \"подбор\".</string>

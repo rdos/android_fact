@@ -27,6 +27,7 @@ class WalkthroughStepAF : AFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         paramS().isWalkthroughWasShown = true
+        paramS().walkthroughWasShownCnt += 1
 
         view.findViewById<AppCompatButton>(R.id.acb_f_pserve_walkthrough_step_a__dismiss).setOnClickListener {
             findNavController().popBackStack(R.id.PServeF, false)

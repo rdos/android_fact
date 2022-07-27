@@ -76,7 +76,7 @@ class PServeF : AFragment() {
                                         if (id != R.id.PServeExtendedFrag) {
                                             navController.popBackStack()
                                         }
-                                        screenModeLabel?.text = "Расширенный режим"
+                                        screenModeLabel?.text = "Стандартный режим"
                                         if(scPServeSimplifyMode?.isChecked != false)
                                             scPServeSimplifyMode?.isChecked = false
                                     }
@@ -84,7 +84,7 @@ class PServeF : AFragment() {
                                         if (id != R.id.PServeSimplifyFrag) {
                                             navController.navigate(R.id.PServeSimplifyFrag)
                                         }
-                                        screenModeLabel?.text = "Упрощенный режим"
+                                        screenModeLabel?.text = "Сгруппированный режим"
                                         if(scPServeSimplifyMode?.isChecked != true)
                                             scPServeSimplifyMode?.isChecked = true
                                     }
