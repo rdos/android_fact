@@ -179,15 +179,6 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 99 && resultCode == 99) {
-//            clearContainerVolume()
-            viewModel.getPlatformEntity(viewModel.mPlatformEntity.value!!.platformId!!)
-            dismiss()
-        }
-    }
-
     private fun toPercent(percent: String): Double {
         return when (percent.replace("%", "").toInt()) {
             0 -> 0.00

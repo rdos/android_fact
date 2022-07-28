@@ -37,10 +37,9 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-
         val containerId = getArgumentID()
         mContainerEntity = viewModel.baseDat.getContainerEntity(containerId)
-        tvLabelFor(view!!)
+        tvLabelFor(requireView())
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
 //        }

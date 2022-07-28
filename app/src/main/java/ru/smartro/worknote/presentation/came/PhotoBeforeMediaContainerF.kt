@@ -25,9 +25,9 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-//        TODO("Not yet implemented")
-        val platformId = getArgumentID()
-        mPlatformEntity = viewModel.baseDat.getPlatformEntity(platformId)
+        if(viewModel.mPlatformEntity.value == null)
+            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
+        mPlatformEntity = viewModel.mPlatformEntity.value
         mMaxPhotoCount = Int.MAX_VALUE
     }
 

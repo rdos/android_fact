@@ -7,8 +7,10 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 open class PhotoFailureMediaF : APhotoFragment() {
+
     private var mFailReasonS: List<String>? = null
-    private var mPlatformEntity: PlatformEntity? = null
+    protected var mPlatformEntity: PlatformEntity? = null
+
     override fun onGetTextForFailHint() = "Причина невывоза КП"
     override fun onGetStringList(): List<String>? {
         mFailReasonS = viewModel.getFailReasonS()
@@ -28,6 +30,7 @@ open class PhotoFailureMediaF : APhotoFragment() {
         }
         return mPlatformEntity!!.failureMedia
     }
+
     override fun onSavePhoto() {
 //        TODO("Not yet implemented")
         log(":P:onSavePhoto")
@@ -47,9 +50,10 @@ open class PhotoFailureMediaF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        val platformId = getArgumentID()
-        mPlatformEntity = viewModel.getPlatformEntity(platformId)
-        tvLabelFor(view!!)
+        if(viewModel.mPlatformEntity.value == null)
+            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
+        mPlatformEntity = viewModel.mPlatformEntity.value
+        tvLabelFor(requireView())
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
 //        }
