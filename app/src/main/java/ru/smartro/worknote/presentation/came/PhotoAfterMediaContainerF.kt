@@ -27,8 +27,9 @@ class PhotoAfterMediaContainerF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        val platformId = getArgumentID()
-        mPlatformEntity = viewModel.getPlatformEntity(platformId)
+        if(viewModel.mPlatformEntity.value == null)
+            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
+        mPlatformEntity = viewModel.mPlatformEntity.value
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
 //        }

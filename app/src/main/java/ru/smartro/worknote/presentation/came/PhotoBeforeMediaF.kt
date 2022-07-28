@@ -24,9 +24,6 @@ class PhotoBeforeMediaF : APhotoFragment() {
     override fun onBeforeUSE() {
         val platformId = getArgumentID()
         mPlatformEntity = viewModel.getPlatformEntity(platformId)
-//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-//            mPlatformEntity = it
-//        }
     }
 
     override fun onGotoNext(): Boolean {

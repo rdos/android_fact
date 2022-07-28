@@ -1,11 +1,13 @@
 package ru.smartro.worknote.presentation.came
 
 
+import androidx.navigation.fragment.findNavController
 import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.THR
 import java.io.File
 
 // TODO:: NO DIF FROM PhotoAfterMediaContainerF.kt
@@ -26,11 +28,9 @@ class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        val platformId = getArgumentID()
-        mPlatformEntity = viewModel.getPlatformEntity(platformId)
-//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-//            mPlatformEntity = it
-//        }
+        if(viewModel.mPlatformEntity.value == null)
+            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
+        mPlatformEntity = viewModel.mPlatformEntity.value
         mMaxPhotoCount = Int.MAX_VALUE
     }
 
@@ -40,7 +40,7 @@ class PhotoAfterMediaContainerSimplifyF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.baseDat.addAfterMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        findNavController().popBackStack(R.id.PServeF, false)
     }
 
     override fun onSavePhoto() {

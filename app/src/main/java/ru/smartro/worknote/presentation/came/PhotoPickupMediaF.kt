@@ -24,12 +24,10 @@ class PhotoPickupMediaF : APhotoFragment() {
 
 
     override fun onBeforeUSE() {
-        val platformId = getArgumentID()
-        mPlatformEntity = viewModel.getPlatformEntity(platformId)
-//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-//            mPlatformEntity = it
-//        }
-        mPlatformEntity?.getPickupMediaSize()
+        if(viewModel.mPlatformEntity.value == null)
+            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
+        mPlatformEntity = viewModel.mPlatformEntity.value
+//        mMaxPhotoCount = mPlatformEntity!!.getPickupMediaSize()
     }
 
     override fun onGotoNext(): Boolean {

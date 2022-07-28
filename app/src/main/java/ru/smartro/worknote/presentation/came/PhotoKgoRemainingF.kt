@@ -23,11 +23,9 @@ class PhotoKgoRemainingF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        val platformId = getArgumentID()
-        mPlatformEntity = viewModel.getPlatformEntity(platformId)
-//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-//            mPlatformEntity = it
-//        }
+        if(viewModel.mPlatformEntity.value == null)
+            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
+        mPlatformEntity = viewModel.mPlatformEntity.value
     }
 
     override fun onGotoNext(): Boolean {

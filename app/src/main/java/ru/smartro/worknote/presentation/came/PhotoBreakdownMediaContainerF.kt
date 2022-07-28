@@ -36,13 +36,9 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-
         val containerId = getArgumentID()
         mContainerEntity = viewModel.baseDat.getContainerEntity(containerId)
-        tvLabelFor(view!!)
-//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-//            mPlatformEntity = it
-//        }
+        tvLabelFor(requireView())
     }
 
     override fun onSavePhoto() {
