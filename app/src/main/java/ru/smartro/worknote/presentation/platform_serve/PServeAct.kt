@@ -122,41 +122,45 @@ class PServeAct : ActNOAbst(), IActTooltip {
     class DialogHelpER(val actTooltip: IActTooltip, val p_TAG: String, val p_valim: String="TooltipHelpER") : AbsObject(p_TAG, p_valim) {
         var isRecyclerMode: Boolean = false
         private var mTooltipNextId: String? = null
+        private var vDialog: View? = null
 
         fun run(isFromRecylcer: Boolean = false) {
             if (isShowForUser()) {
-                val builderDialog = actTooltip.createDialogBuilder()
-                val vDialog = actTooltip.createvDialog()
-
                 val vgRootAct = actTooltip.getvgRootAct()
-                val llcDialogView = vDialog.findViewById<LinearLayoutCompat>(R.id.llc_component_container)
+                vDialog = actTooltip.createvDialog()
+                val llcDialogView = vDialog?.findViewById<LinearLayoutCompat>(R.id.llc_component_container)
                 val viewScanner = createViewScanner(isFromRecylcer)
-                viewScanner.findNextTooltip(vgRootAct, llcDialogView) { tooltipText ->
-//TODO:             showDialog()
-                    builderDialog.setView(vDialog)
-                    val createdDialog = builderDialog.create()
-                    vDialog.findViewById<AppCompatButton>(R.id.apb_dialog).setOnClickListener {
-                        createdDialog.dismiss()
+                llcDialogView?.let {
+                    viewScanner.findNextTooltip(vgRootAct, llcDialogView) { tooltipText ->
+                        showTooltipDialogAndText(tooltipText, viewScanner)
                     }
-                    createdDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    createdDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
-                    createdDialog.window?.setDimAmount(0.8f); //0 for no dim to 1 for full dim
+                }
+            }
+        }
 
-                    val actvDialog = vDialog.findViewById<TextView>(R.id.actv_dialog)
-                    actvDialog.text = tooltipText
+        private fun showTooltipDialogAndText(tooltipText: String, viewScanner: ViewScaner) {
+            val builderDialog = actTooltip.createDialogBuilder()
+            builderDialog.setView(vDialog)
+            val createdDialog = builderDialog.create()
+            vDialog?.findViewById<AppCompatButton>(R.id.apb_dialog)?.setOnClickListener {
+                createdDialog.dismiss()
+            }
+            createdDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            createdDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
+            createdDialog.window?.setDimAmount(0.8f); //0 for no dim to 1 for full dim
 
-                    createdDialog.setOnDismissListener {
-                        val nextTooltipAsText = viewScanner.revertSaveView()
-                        nextTooltipAsText?.let {
+            val actvDialog = vDialog?.findViewById<TextView>(R.id.actv_dialog)
+            actvDialog?.text = tooltipText
+
+            createdDialog.setOnDismissListener {
+                val nextTooltipAsText = viewScanner.revertSaveView()
+                nextTooltipAsText?.let {
 //                        gogogo(it)
 //                        viewScanner.findNextTooltip(vgRootAct, ll)
-                            this.run()
-                        }
-                    }
-                    createdDialog.show()
+                    this.run()
                 }
-
             }
+            createdDialog.show()
         }
 
         fun isShowForUser(): Boolean{
