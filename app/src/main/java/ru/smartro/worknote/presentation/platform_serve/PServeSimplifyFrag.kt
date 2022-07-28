@@ -36,32 +36,39 @@ class PServeSimplifyFrag : AFragment() {
             override fun onAddPhoto(clientGroupInd: Int, typeGroupInd: Int) {
                 navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, vm.mPlatformEntity.value!!.platformId!!)
             }
-
-            override fun onInit() {
-
-            }
         })
 
         val rvCurrentTask = view.findViewById<RecyclerView>(R.id.rv_main).apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterCurrentTask
         }
-        rvCurrentTask.viewTreeObserver
-            .addOnGlobalLayoutListener(
-                object : OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        // At this point the layout is complete and the
-                        // dimensions of recyclerView and any child views
-                        getAct().onNewfromAFragment()
-                        // are known.
-                        rvCurrentTask.viewTreeObserver
-                            .removeOnGlobalLayoutListener(this)
-                    }
-                })
+
+        if (getAct() is PServeAct) {
+            (getAct() as PServeAct).setSpecialProcessingForRecycler(rvCurrentTask)
+        }
+
+
+
+
+
+
+//        rvCurrentTask.viewTreeObserver
+//            .addOnGlobalLayoutListener(
+//                object : OnGlobalLayoutListener {
+//                    override fun onGlobalLayout() {
+//                        // At this point the layout is complete and the
+//                        // dimensions of recyclerView and any child views
+//                        if (getAct() is PServeAct) {
+//                            (getAct() as PServeAct).onNewfromAFragment()
+//                        }
+//                        // are known.
+//                        rvCurrentTask.viewTreeObserver
+//                            .removeOnGlobalLayoutListener(this)
+//                    }
+//                })
         vm.mSortedContainers.observe(viewLifecycleOwner) { list ->
             if(list != null) {
                 adapterCurrentTask.containers = list
-
             }
         }
 
@@ -71,7 +78,5 @@ class PServeSimplifyFrag : AFragment() {
                 adapterCurrentTask.served = list
             }
         }
-
-        paramS().isWalkthroughWasShown = false
     }
 }

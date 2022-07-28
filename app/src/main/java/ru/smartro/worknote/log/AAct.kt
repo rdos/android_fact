@@ -4,10 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import io.sentry.Sentry
 import ru.smartro.worknote.*
- 
+import ru.smartro.worknote.andPOintD.IActTooltip
+
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.work.ac.StartAct
 import java.lang.Exception
@@ -17,8 +20,11 @@ import java.lang.Exception
 //        } catch (e: Exception) {
 //            Sentry.captureException(e)
 //        }
-
 abstract class AAct : AppCompatActivity() {
+//abstract class AAct : AppCompatActivity(), IActTooltip {
+//    override fun onNewfromAFragment() {
+//
+//    }
 
     protected fun AppliCation() : App {
         return App.getAppliCation()
@@ -193,9 +199,5 @@ abstract class AAct : AppCompatActivity() {
         val intent = Intent(this, StartAct::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
-    }
-
-    open fun onNewfromAFragment() {
-
     }
 }

@@ -12,6 +12,7 @@ import io.sentry.Sentry
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.log.AAct
+import ru.smartro.worknote.presentation.platform_serve.PServeAct
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
@@ -121,7 +122,10 @@ abstract class AFragment : Fragment(){
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        getAct().onNewfromAFragment()
+        if (getAct() is PServeAct) {
+            (getAct() as PServeAct).onNewfromAFragment(false)
+        }
+
     }
 
 

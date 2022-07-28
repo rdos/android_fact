@@ -1,13 +1,9 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
-import android.view.WindowManager
+import android.view.*
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
@@ -17,13 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
 
 //todo: INDEterminate)
-class PServeAct :
-    ActNOAbst() {
+class PServeAct : ActNOAbst(), IActTooltip {
     val vm: PlatformServeSharedViewModel by viewModels()
-    val mTooltipHell = TooltipHell(TAG, "TooltipHelpER")
+    val mTooltipHell = DialogHelpER(this, TAG)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +42,7 @@ class PServeAct :
 //            setupActionBarWithNavController(navController)
             vm.mBeforeMediaWasInited.postValue(true)
         }
-        mTooltipHell.setStartId("ll_containers_count")
+        mTooltipHell.setStartId("ll_containers_count", paramS())
     }
 
 
@@ -71,122 +67,220 @@ class PServeAct :
 //        super.onBackPressed()
     }
 
+    override fun createvDialog(): View {
+        val vDialog = this.layoutInflater.inflate(R.layout.dialog_act_map_tooltip_cheat__alert, null, false)
+        return vDialog
+    }
+
+    override fun createDialogBuilder(): androidx.appcompat.app.AlertDialog.Builder {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        return builder
+    }
+    override fun getvgRootAct(): ViewGroup {
+        val vgRootAct = (this.window.decorView.rootView   as ViewGroup)
+        return vgRootAct
+    }
+
     //todo:::
     override fun onDestroy() {
         super.onDestroy()
-        mTooltipHell.setNextTime()
+        mTooltipHell.setNextTime(paramS())
 
     }
 
-    override fun onNewfromAFragment() {
-        super.onNewfromAFragment()
-
-
-        if (mTooltipHell.isShowForUser()) {
-            val builder = AlertDialog.Builder(this@PServeAct)
-
-            val vgDialog = this.layoutInflater.inflate(R.layout.dialog_act_map_tooltip_cheat__alert, null, false)
-
-
-            val ll = vgDialog.findViewById<LinearLayoutCompat>(R.id.llc_component_container)
-
-            val vgRootAct = (this@PServeAct.window.decorView.rootView   as ViewGroup)
-            mTooltipHell.findNextTooltip(vgRootAct, ll) {
-                builder.setView(vgDialog)
-                val tomDialog = builder.create()
-                vgDialog.findViewById<AppCompatButton>(R.id.apb_dialog).setOnClickListener {
-                    tomDialog.dismiss()
-                }
-                tomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                tomDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
-                tomDialog.window?.setDimAmount(0.8f); //0 for no dim to 1 for full dim
-
-                val actvDialog = vgDialog.findViewById<TextView>(R.id.actv_dialog)
-                actvDialog.text = it.getSaveView().tooltipText
-                tomDialog.show()
+    final override fun onNewfromAFragment(isFromRecylcer: Boolean) {
+//        super.onNewfromAFragment()
+        if (mTooltipHell.isRecyclerMode) {
+            if (isFromRecylcer) {
+                mTooltipHell.run()
             }
+        } else {
+            mTooltipHell.run()
+        }
+
+    }
+
+    override fun setSpecialProcessingForRecycler(recyclerView: RecyclerView?) {
+        mTooltipHell.isRecyclerMode = true
+        recyclerView?.let {
+            it.viewTreeObserver.addOnGlobalLayoutListener(
+                object : ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        // At this point the layout is complete and the
+                        // dimensions of recyclerView and any child views
+//                            onNewfromAFragment()
+                        onNewfromAFragment(true)
+                        // are known.
+                        it.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                        mTooltipHell.isRecyclerMode = false
+                    }
+                })
         }
     }
+//
 
-
-    class TooltipHell(TAG: String, valim: String) : AbsObject(TAG, valim) {
-        private var mStopScan: Boolean = false
-        private var mSaveObj: View? = null
-        private var mSaveIndex: Int? = null
-        private var mLayoutParams: ViewGroup.LayoutParams? = null
-
-        private var mSaveVG: ViewGroup? = null
+    class DialogHelpER(val actTooltip: IActTooltip, val p_TAG: String, val p_valim: String="TooltipHelpER") : AbsObject(p_TAG, p_valim) {
+        var isRecyclerMode: Boolean = false
         private var mTooltipNextId: String? = null
 
-        fun getSaveView(): View {
-            return mSaveObj!!
+        fun run(isFromRecylcer: Boolean = false) {
+            if (isShowForUser()) {
+                val builderDialog = actTooltip.createDialogBuilder()
+                val vDialog = actTooltip.createvDialog()
+
+                val vgRootAct = actTooltip.getvgRootAct()
+                val llcDialogView = vDialog.findViewById<LinearLayoutCompat>(R.id.llc_component_container)
+                val viewScanner = createViewScanner(isFromRecylcer)
+                viewScanner.findNextTooltip(vgRootAct, llcDialogView) { tooltipText ->
+//TODO:             showDialog()
+                    builderDialog.setView(vDialog)
+                    val createdDialog = builderDialog.create()
+                    vDialog.findViewById<AppCompatButton>(R.id.apb_dialog).setOnClickListener {
+                        createdDialog.dismiss()
+                    }
+                    createdDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    createdDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
+                    createdDialog.window?.setDimAmount(0.8f); //0 for no dim to 1 for full dim
+
+                    val actvDialog = vDialog.findViewById<TextView>(R.id.actv_dialog)
+                    actvDialog.text = tooltipText
+
+                    createdDialog.setOnDismissListener {
+                        val nextTooltipAsText = viewScanner.revertSaveView()
+                        nextTooltipAsText?.let {
+//                        gogogo(it)
+//                        viewScanner.findNextTooltip(vgRootAct, ll)
+                            this.run()
+                        }
+                    }
+                    createdDialog.show()
+                }
+
+            }
         }
+
         fun isShowForUser(): Boolean{
             return getNextTooltipId() != null
         }
         fun getNextTooltipId(): String? {
             return mTooltipNextId
         }
-        fun findNextTooltip(rootViewGroup: ViewGroup, rootDialogViewGroup: ViewGroup, next:(it: TooltipHell) -> Any){
-            val tooltipNextId = getNextTooltipId()!!
-            mStopScan = false
-            mSaveIndex = null
-            mSaveVG = null
-            mSaveObj = null
-            mLayoutParams = null
-            val findView = fractalS(rootViewGroup.childCount, rootViewGroup, rootDialogViewGroup, tooltipNextId)
-            mStopScan = false
+
+        fun createViewScanner(isFromRecylcer: Boolean): ViewScaner {
+            return ViewScaner(this, isFromRecylcer)
+        }
+
+
+        fun setStartId(viewIdAsText: String, paramS: AppParaMS) {
+            if(paramS.isShowTooltipInNextTime) {
+//            navigateMain(R.id.WalkthroughStepAF, 1)
+                setNextId(viewIdAsText)
+                paramS.isShowTooltipInNextTime = false
+            }
+        }
+        fun setNextId(smartROView: ITooltip) {
+            LOGWork("getWindow(.smartROView.getTooltipNext()=${smartROView.getTooltipNext()}")
+            LOGWork("getWindow(.smartROView.getTooltipType()=${smartROView.getTooltipType()}")
+            setNextId(smartROView.getTooltipNext())
+        }
+
+        fun setNextId(tooltipIdAsText: String?) {
+            mTooltipNextId = tooltipIdAsText
+        }
+
+        fun setNextTime(paramS: AppParaMS) {
+            paramS.cntTooltipShow += 1
+            if(paramS.cntTooltipShow < 103) {
+                paramS.isShowTooltipInNextTime = true
+            }
+        }
+
+    }
+
+    class ViewScaner(val _DialogHelper: DialogHelpER, val isFromRecylcer: Boolean) : AbsObject(_DialogHelper.p_TAG, "${_DialogHelper.p_valim}:ViewScaner") {
+        var mStopScan: Boolean = false
+        var mSaveObj: View? = null
+        var mSaveIndex: Int? = null
+        var mLayoutParams: ViewGroup.LayoutParams? = null
+        var mSaveVG: ViewGroup? = null
+
+        private var vgRootAct: ViewGroup? = null
+        private var llcDialogView: ViewGroup? = null
+
+
+        fun getSaveView(): View {
+            return mSaveObj!!
+        }
+
+        fun findNextTooltip(vgRootAct: ViewGroup, llcDialogView: ViewGroup, next:(tooltipText: String) -> Any){
+            this.llcDialogView = llcDialogView
+            this.vgRootAct = vgRootAct
+            val tooltipNextId = _DialogHelper.getNextTooltipId()!!
+
+            val findView = scanViewGroup(vgRootAct, tooltipNextId)
             //        findView?.let {
             //            ll.addView(findView)
             //        }
 
 //        tomDialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-            mSaveObj?.let {
-               next(this)
-
-                tomDialog.setOnDismissListener {
-                    if (mSaveObj == null) {
-                        return@setOnDismissListener
-                    }
-                    ll.removeView(mSaveObj)
-//                    val viewGroupObjects: Map<View, View> = mutableMapOf()
-                    mSaveVG?.addView(mSaveObj, mSaveIndex!!)
-
-                    mSaveObj?.layoutParams = mLayoutParams
-                    mSaveObj?.isEnabled = true
-                    mTooltipNextId?.let {
-                        gogogo(it)
-                        mStopScan = false
-                    }
-                }
+            if (mSaveObj == null) {
+                return
             }
-
+            next(mSaveObj?.tooltipText.toString())
         }
 
-        private fun fractalS(childCnt: Int, currentVG: ViewGroup, ll: ViewGroup, tooltipNextID: String) {
+        private fun pickupSaveView(currentVG: ViewGroup, obj: View) {
+            mSaveVG = currentVG
+            mSaveObj = obj
+            mLayoutParams = obj.layoutParams
+            for (index in 0 until currentVG.childCount) {
+                if (currentVG.getChildAt(index).equals(obj)) {
+                    mSaveIndex = index
+                    break
+                }
+            }
+            currentVG.removeView(obj)
+            llcDialogView?.addView(obj)
+            obj.isEnabled = false
+        }
+
+        fun revertSaveView(): String? {
+            if (mSaveObj == null) {
+                return null
+            }
+//                    val viewGroupObjects: Map<View, View> = mutableMapOf()
+            llcDialogView?.removeView(mSaveObj)
+            mSaveVG?.addView(mSaveObj, mSaveIndex!!)
+
+            mSaveObj?.layoutParams = mLayoutParams
+            mSaveObj?.isEnabled = true
+
+
+            mStopScan = false
+            mSaveObj = null
+            mSaveIndex= null
+            mLayoutParams = null
+            mSaveVG = null
+            return _DialogHelper.getNextTooltipId()
+        }
+
+        private fun scanViewGroup(currentVG: ViewGroup, tooltipNextID: String) {
+            val childCnt = currentVG.childCount
             for (idx in 0 until childCnt) {
                 val obj = currentVG.getChildAt(idx)
+                LOGWork("getWindow(.obj.isFromRecylcer=${isFromRecylcer}")
+//                if (!isFromRecylcer && obj is RecyclerView) {
+//                    _DialogHelper.setSpecialProcessingForRecycler(obj)
+//                    mStopScan = true
+//                    return
+//                }
                 if (obj is ITooltip) {
+                    LOGWork("getWindow(.obj.getIdText()=${obj.getIdText()}")
                     if(obj.getIdText() == tooltipNextID) {
-                        setSpecialProcessingForRecycler(obj)
-                        mSaveVG = currentVG
-                        mSaveObj = obj
-                        mLayoutParams = mSaveObj?.layoutParams
-                        for (index in 0 until currentVG.childCount) {
-                            if (currentVG.getChildAt(index).equals(mSaveObj)) {
-                                mSaveIndex = index
-                                break
-                            }
-                        }
-                        currentVG.removeView(obj)
-                        ll.addView(obj)
-                        obj.isEnabled = false
-                        LOGWork("getWindow(.obj.getIdText()=${obj.getIdText()}")
-                        setNextId(obj.getTooltipNext())
+                        LOGWork("getWindow(.tooltipNextID()=${tooltipNextID}")
+                        pickupSaveView(currentVG, obj)
+                        _DialogHelper.setNextId(obj)
 
-                        LOGWork("getWindow(.obj.getTooltipNext()=${obj.getTooltipNext()}")
-                        LOGWork("getWindow(.obj.getTooltipType()=${obj.getTooltipType()}")
                         mStopScan = true
                         return
                     }
@@ -198,52 +292,17 @@ class PServeAct :
                 if ( obj is ViewGroup) {
                     val Vg = obj as ViewGroup
                     LOGWork("getWindow($idx)Vg.childCount=${Vg.childCount}")
-                    if (mStopScan == false) {
-                        LOGWork("getWindow($idx)Vg.childCount=${Vg.tag}")
-                        fractalS(Vg.childCount, Vg, ll, tooltipNextID)
+                    if (mStopScan) {
+                        LOGWork("getWindow($idx)Vg._DialogHelper.mStopScan")
+                        break
                     }
+                    LOGWork("getWindow($idx)Vg.childCount=${Vg.tag}")
+                    scanViewGroup(Vg, tooltipNextID)
                 }
             }
         }
-        fun setStartId(viewIdAsText: String) {
-            if(paramS().isShowTooltipInNextTime) {
-//            navigateMain(R.id.WalkthroughStepAF, 1)
-                setNextId(viewIdAsText)
-                paramS().isShowTooltipInNextTime = false
-            }
-        }
-        fun setNextId(viewIdAsText: String?) {
-            mTooltipNextId = viewIdAsText
-        }
-
-        fun setNextTime() {
-            paramS().cntTooltipShow += 1
-            if(paramS().cntTooltipShow < 103) {
-                paramS().isShowTooltipInNextTime = true
-            }
-        }
 
 
-        private fun getParentRecycler(smartROView: ITooltip): RecyclerView {
-            return RecyclerView(this@PServeAct)
-        }
-        fun setSpecialProcessingForRecycler(smartROView: ITooltip) {
-            val rv = getParentRecycler(smartROView)
-            rv.let {
-                it.viewTreeObserver.addOnGlobalLayoutListener(
-                    object : ViewTreeObserver.OnGlobalLayoutListener {
-                        override fun onGlobalLayout() {
-                            // At this point the layout is complete and the
-                            // dimensions of recyclerView and any child views
-                            this@PServeAct.onNewfromAFragment()
-                            // are known.
-                            rvCurrentTask.viewTreeObserver
-                                .removeOnGlobalLayoutListener(this)
-                        }
-                    })
-            }
-        }
     }
-
 
 }
