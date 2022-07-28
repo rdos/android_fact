@@ -41,7 +41,7 @@ import java.io.File
 import java.io.InputStream
 import java.util.concurrent.Executors
 
-//todo:
+//todo:AbsViewGroup
 /**
 val imageBase64 = Compressor.compress(requireContext(), photoFile) {
 resolution(1024, 768)
@@ -52,6 +52,7 @@ destination(photoFile)
 }
  */
 
+//mask
 abstract class APhotoFragment(
 ) : AFragment(), OnImageSavedCallback {
     private var acetComment: AppCompatEditText? = null
