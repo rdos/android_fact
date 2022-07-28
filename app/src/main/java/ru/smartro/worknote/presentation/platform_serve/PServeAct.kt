@@ -6,13 +6,14 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.navigation.fragment.NavHostFragment
-import org.w3c.dom.Text
+import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.ActNOAbst
@@ -21,9 +22,8 @@ import ru.smartro.worknote.andPOintD.ITooltip
 //todo: INDEterminate)
 class PServeAct :
     ActNOAbst() {
-    private var mSaveIndex: Int? = null
     val vm: PlatformServeSharedViewModel by viewModels()
-    val mTooltipHell = TooltipHell()
+    val mTooltipHell = TooltipHell(TAG, "TooltipHelpER")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,11 +46,7 @@ class PServeAct :
 //            setupActionBarWithNavController(navController)
             vm.mBeforeMediaWasInited.postValue(true)
         }
-        if(paramS().isWalkthroughWasShown == false) {
-//            navigateMain(R.id.WalkthroughStepAF, 1)
-            mTooltipHell.setTooltipNextId("ll_containers_count")
-            paramS().isWalkthroughWasShown = true
-        }
+        mTooltipHell.setStartId("ll_containers_count")
     }
 
 
@@ -78,92 +74,83 @@ class PServeAct :
     //todo:::
     override fun onDestroy() {
         super.onDestroy()
-        if(paramS().walkthroughWasShownCnt < 103) {
-            paramS().isWalkthroughWasShown = false
-        }
+        mTooltipHell.setNextTime()
+
     }
 
     override fun onNewfromAFragment() {
         super.onNewfromAFragment()
-        mTooltipHell.getToottimNextId()?.let {
-            mTooltipHell.gogogo(mTooltipHell.getToottimNextId()!!)
+
+
+        if (mTooltipHell.isShowForUser()) {
+            val builder = AlertDialog.Builder(this@PServeAct)
+
+            val vgDialog = this.layoutInflater.inflate(R.layout.dialog_act_map_tooltip_cheat__alert, null, false)
+
+
+            val ll = vgDialog.findViewById<LinearLayoutCompat>(R.id.llc_component_container)
+
+            val vgRootAct = (this@PServeAct.window.decorView.rootView   as ViewGroup)
+            mTooltipHell.findNextTooltip(vgRootAct, ll) {
+                builder.setView(vgDialog)
+                val tomDialog = builder.create()
+                vgDialog.findViewById<AppCompatButton>(R.id.apb_dialog).setOnClickListener {
+                    tomDialog.dismiss()
+                }
+                tomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                tomDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
+                tomDialog.window?.setDimAmount(0.8f); //0 for no dim to 1 for full dim
+
+                val actvDialog = vgDialog.findViewById<TextView>(R.id.actv_dialog)
+                actvDialog.text = it.getSaveView().tooltipText
+                tomDialog.show()
+            }
         }
     }
 
-    inner class TooltipHell : AbsObject(TAG, "ImageEntityScanner") {
+
+    class TooltipHell(TAG: String, valim: String) : AbsObject(TAG, valim) {
         private var mStopScan: Boolean = false
-        private var mLayoutParams: ViewGroup.LayoutParams? = null
         private var mSaveObj: View? = null
+        private var mSaveIndex: Int? = null
+        private var mLayoutParams: ViewGroup.LayoutParams? = null
+
         private var mSaveVG: ViewGroup? = null
         private var mTooltipNextId: String? = null
-        fun getToottimNextId(): String? {
+
+        fun getSaveView(): View {
+            return mSaveObj!!
+        }
+        fun isShowForUser(): Boolean{
+            return getNextTooltipId() != null
+        }
+        fun getNextTooltipId(): String? {
             return mTooltipNextId
         }
-        fun gogogo(tooltipNextId: String){
+        fun findNextTooltip(rootViewGroup: ViewGroup, rootDialogViewGroup: ViewGroup, next:(it: TooltipHell) -> Any){
+            val tooltipNextId = getNextTooltipId()!!
             mStopScan = false
-
-            val builder = AlertDialog.Builder(this@PServeAct)
-            val inflater = this@PServeAct.layoutInflater
-
-            val vG = (this@PServeAct.window.decorView.rootView   as ViewGroup)
-            log("getWindow(:${vG.id}")
-            log("getWindow(:${vG.tag}")
-            log("getWindow(:::")
-
-//        for (idx in 0 until vG.childCount) {
-//            log("getWindow(.getChildAt($idx)")
-//            log("getWindow(.getChildAt($idx).id=${vG.getChildAt(idx).id}")
-//        }
-
-
-
-            val view = inflater.inflate(R.layout.dialog_act_map_tooltip_cheat__alert, null, false)
-
-            // Установите заголовок
-            val actvDialog = view.findViewById<TextView>(R.id.actv_dialog)
-            // Установите заголовок
-
-            val ll = view.findViewById<LinearLayoutCompat>(R.id.llc_component_container)
             mSaveIndex = null
             mSaveVG = null
             mSaveObj = null
             mLayoutParams = null
-            val findView = fractalS(vG.childCount, vG, ll, tooltipNextId)
+            val findView = fractalS(rootViewGroup.childCount, rootViewGroup, rootDialogViewGroup, tooltipNextId)
             mStopScan = false
             //        findView?.let {
             //            ll.addView(findView)
             //        }
 
-//        tomDialog.setTitle("Заголовок диалога")
-            // Передайте ссылку на разметку
-            // Передайте ссылку на разметку
-//        dialog.setContentView(R.layout.dialog_view)
-            // Найдите элемент TextView внутри вашей разметки
-            // и установите ему соответствующий текст
-            // Найдите элемент TextView внутри вашей разметки
-            // и установите ему соответствующий текст
-//        val text = dialog.findViewById(R.id.dialogTextView) as TextView
-//        text.text = "не ссы это не дорого. моя речь будет "
-
 //        tomDialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            builder.setView(view)
-            val tomDialog = builder.create()
-            view.findViewById<AppCompatButton>(R.id.apb_dialog).setOnClickListener {
-                tomDialog.dismiss()
-            }
-            tomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            tomDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
-            tomDialog.window?.setDimAmount(0.8f); //0 for no dim to 1 for full dim
+
             mSaveObj?.let {
-                actvDialog.text = mSaveObj?.tooltipText
-                tomDialog.show()
+               next(this)
 
                 tomDialog.setOnDismissListener {
                     if (mSaveObj == null) {
                         return@setOnDismissListener
                     }
                     ll.removeView(mSaveObj)
-                    val viewGroupObjects: Map<View, View> = mutableMapOf()
+//                    val viewGroupObjects: Map<View, View> = mutableMapOf()
                     mSaveVG?.addView(mSaveObj, mSaveIndex!!)
 
                     mSaveObj?.layoutParams = mLayoutParams
@@ -177,14 +164,12 @@ class PServeAct :
 
         }
 
-        private fun fractalS(childCnt: Int, currentVG: ViewGroup, ll: LinearLayoutCompat, tooltipNextID: String) {
+        private fun fractalS(childCnt: Int, currentVG: ViewGroup, ll: ViewGroup, tooltipNextID: String) {
             for (idx in 0 until childCnt) {
                 val obj = currentVG.getChildAt(idx)
-//            obj.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//            obj.background = null
-
                 if (obj is ITooltip) {
                     if(obj.getIdText() == tooltipNextID) {
+                        setSpecialProcessingForRecycler(obj)
                         mSaveVG = currentVG
                         mSaveObj = obj
                         mLayoutParams = mSaveObj?.layoutParams
@@ -197,32 +182,66 @@ class PServeAct :
                         currentVG.removeView(obj)
                         ll.addView(obj)
                         obj.isEnabled = false
-                        log("getWindow(.obj.getIdText()=${obj.getIdText()}")
-                        mTooltipNextId = obj.getTooltipNext()
+                        LOGWork("getWindow(.obj.getIdText()=${obj.getIdText()}")
+                        setNextId(obj.getTooltipNext())
 
-                        log("getWindow(.obj.getTooltipNext()=${obj.getTooltipNext()}")
-                        log("getWindow(.obj.getTooltipType()=${obj.getTooltipType()}")
+                        LOGWork("getWindow(.obj.getTooltipNext()=${obj.getTooltipNext()}")
+                        LOGWork("getWindow(.obj.getTooltipType()=${obj.getTooltipType()}")
                         mStopScan = true
                         return
                     }
-                    log("getWindow(.obj.id=${obj.id}")
-                    log("getWindow(:${obj.tag}")
-                    log("getWindow(:::")
+                    LOGWork("getWindow(.obj.id=${obj.id}")
+                    LOGWork("getWindow(:${obj.tag}")
+                    LOGWork("getWindow(:::")
                 }
 
                 if ( obj is ViewGroup) {
                     val Vg = obj as ViewGroup
-                    log("getWindow($idx)Vg.childCount=${Vg.childCount}")
+                    LOGWork("getWindow($idx)Vg.childCount=${Vg.childCount}")
                     if (mStopScan == false) {
-                        log("getWindow($idx)Vg.childCount=${Vg.tag}")
+                        LOGWork("getWindow($idx)Vg.childCount=${Vg.tag}")
                         fractalS(Vg.childCount, Vg, ll, tooltipNextID)
                     }
                 }
             }
         }
+        fun setStartId(viewIdAsText: String) {
+            if(paramS().isShowTooltipInNextTime) {
+//            navigateMain(R.id.WalkthroughStepAF, 1)
+                setNextId(viewIdAsText)
+                paramS().isShowTooltipInNextTime = false
+            }
+        }
+        fun setNextId(viewIdAsText: String?) {
+            mTooltipNextId = viewIdAsText
+        }
 
-        fun setTooltipNextId(s: String) {
-            mTooltipNextId = s
+        fun setNextTime() {
+            paramS().cntTooltipShow += 1
+            if(paramS().cntTooltipShow < 103) {
+                paramS().isShowTooltipInNextTime = true
+            }
+        }
+
+
+        private fun getParentRecycler(smartROView: ITooltip): RecyclerView {
+            return RecyclerView(this@PServeAct)
+        }
+        fun setSpecialProcessingForRecycler(smartROView: ITooltip) {
+            val rv = getParentRecycler(smartROView)
+            rv.let {
+                it.viewTreeObserver.addOnGlobalLayoutListener(
+                    object : ViewTreeObserver.OnGlobalLayoutListener {
+                        override fun onGlobalLayout() {
+                            // At this point the layout is complete and the
+                            // dimensions of recyclerView and any child views
+                            this@PServeAct.onNewfromAFragment()
+                            // are known.
+                            rvCurrentTask.viewTreeObserver
+                                .removeOnGlobalLayoutListener(this)
+                        }
+                    })
+            }
         }
     }
 

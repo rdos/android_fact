@@ -243,13 +243,13 @@ class AppParaMS {
             it.putString("wayBillNumber", value)
         }
 
-    var isWalkthroughWasShown: Boolean
-        get() = sharedPref__env.getBoolean("isWalkthroughWasShown", false)
+    var isShowTooltipInNextTime: Boolean
+        get() = sharedPref__env.getBoolean("isShownTooltip", true)
         set(value) = sharedPref__env.edit {
-            it.putBoolean("isWalkthroughWasShown", value)
+            it.putBoolean("isShownTooltip", value)
         }
 
-    var walkthroughWasShownCnt: Int
+    var cntTooltipShow: Int
         get() = sharedPref__env.getInt("walkthroughWasShownCnt", 0)
         set(value) = sharedPref__env.edit {
             it.putInt("walkthroughWasShownCnt", value)
