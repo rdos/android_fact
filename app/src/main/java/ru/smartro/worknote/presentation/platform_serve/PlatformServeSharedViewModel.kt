@@ -61,6 +61,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 
     fun getPlatformEntity(platformId: Int): PlatformEntity {
         val response: PlatformEntity = baseDat.getPlatformEntity(platformId)
+        Log.d("TEST:::", response.containers.joinToString(" ,,, ") { el -> "${el.typeName} ${el.volume}" })
         _platformEntity.postValue(response)
         if(response.containers.all { el -> el.status == StatusEnum.NEW }) {
             val temp = clusterContainers(response.containers.toList())
@@ -174,7 +175,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     // FINISH
     fun updatePlatformStatusSuccess(platformId: Int) {
         // если упрощенный режим
-        if(_screenMode.value == false) {
+        if(_screenMode.value == true) {
             mServedContainers.value!!.forEach { el ->
                 val containers = _sortedContainers.value!![el.clientGroupIndex].typeGroupedContainers[el.typeGroupIndex].containersIds
                 val newVolume = el.count.toDouble() / containers.size

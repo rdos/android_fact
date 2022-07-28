@@ -20,7 +20,7 @@ class PServeF : AFragment() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        vm.updatePlatformStatusUnfinished()
+        viewModel.updatePlatformStatusUnfinished()
         navigateClose()
         toast("Вы не завершили обслуживание КП.")
     }
@@ -30,7 +30,7 @@ class PServeF : AFragment() {
     private var actvAddress: AppCompatTextView? = null
     private var scPServeSimplifyMode: SwitchCompat? = null
     private var screenModeLabel: TextView? = null
-    private val vm: PlatformServeSharedViewModel by activityViewModels()
+    private val viewModel: PlatformServeSharedViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -52,10 +52,10 @@ class PServeF : AFragment() {
 
         // TODO?::Vlad setonclicklistener > setonchangedlistener
         scPServeSimplifyMode?.setOnClickListener {
-            vm.changeScreenMode()
+            viewModel.changeScreenMode()
         }
 
-        vm.mWasServedExtended.observe(getAct()) {
+        viewModel.mWasServedExtended.observe(getAct()) {
             if(it) {
                 scPServeSimplifyMode?.visibility = View.GONE
                 screenModeLabel?.visibility = View.GONE
@@ -65,10 +65,10 @@ class PServeF : AFragment() {
             }
         }
 
-        vm.mPlatformEntity.observe(getAct()) { platform ->
+        viewModel.mPlatformEntity.observe(getAct()) { platform ->
             if(platform != null) {
                 if(platform.containers.all { el -> el.status == StatusEnum.NEW }) {
-                    vm.mScreenMode.observe(getAct()) { screenMode ->
+                    viewModel.mScreenMode.observe(getAct()) { screenMode ->
                         if(screenMode != null) {
                             navController.currentDestination?.apply {
                                 when(screenMode) {
@@ -93,7 +93,7 @@ class PServeF : AFragment() {
                         }
                     }
                 } else {
-                    vm.mScreenMode.removeObservers(getAct())
+                    viewModel.mScreenMode.removeObservers(getAct())
                     scPServeSimplifyMode?.visibility = View.GONE
                     screenModeLabel?.visibility = View.GONE
                     navController.navigate(R.id.PServeExtendedFrag)
@@ -103,7 +103,7 @@ class PServeF : AFragment() {
                     "№${platform.srpId} / ${platform.containers.size} конт."
 
                 btnCompleteTask?.setOnClickListener {
-                    vm.updatePlatformStatusSuccess(platform.platformId!!)
+                    viewModel.updatePlatformStatusSuccess(platform.platformId!!)
 //                    val intent = Intent(this, CameraAct::class.java)
 //                    intent.putExtra("platform_id", platform.platformId)
 //                    intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
@@ -128,6 +128,8 @@ class PServeF : AFragment() {
             }
         }
 
-        vm.getPlatformEntity(plId)
+        if(viewModel.mPlatformEntity.value == null) {
+            viewModel.getPlatformEntity(plId)
+        }
     }
 }
