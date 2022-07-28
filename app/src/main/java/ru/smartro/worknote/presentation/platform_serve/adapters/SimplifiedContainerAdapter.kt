@@ -1,7 +1,6 @@
 package ru.smartro.worknote.presentation.platform_serve.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,7 @@ class SimplifiedContainerAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClientGroupViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_platform_serve_client_cluster, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.f_pserve_simplify__rv_clientcluster, parent, false)
         return ClientGroupViewHolder(view, context, listener)
     }
 

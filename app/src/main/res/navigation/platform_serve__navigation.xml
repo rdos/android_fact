@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/PServeSimplifyFrag"
-        tools:layout="@layout/fragment_platform_serve_simplified"
+        tools:layout="@layout/f_pserve_simplify"
         android:name="ru.smartro.worknote.presentation.platform_serve.PServeSimplifyFrag"
         android:label="PServeSimplifyFrag" >
         <action

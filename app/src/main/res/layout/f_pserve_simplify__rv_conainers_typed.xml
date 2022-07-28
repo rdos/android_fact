@@ -70,7 +70,8 @@
             android:minHeight="0dp"
             android:paddingHorizontal="10dp"
             android:paddingVertical="6dp"
-            android:text="+ фото"
+            android:text="+"
+            android:drawableEnd="@drawable/ic_add_photo"
             android:textColor="@color/white"
             android:textSize="16sp"/>
 
