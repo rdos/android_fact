@@ -18,7 +18,7 @@ class PServeSimplifyFrag : AFragment() {
     private val vm: PlatformServeSharedViewModel by activityViewModels()
 
     override fun onGetLayout(): Int {
-        return R.layout.fragment_platform_serve_simplified
+        return R.layout.f_pserve_simplify
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
