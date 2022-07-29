@@ -735,26 +735,6 @@ open class ImageEntity(
     var origOrient: Int = 0
 ) : Serializable, RealmObject() {
 
-
-    fun isCheckedData(): Boolean {
-        val res = false
-        if (date == null) {
-            return res
-        }
-        if (date!! <= 0) {
-            return res
-        }
-        if (image == null) {
-            return res
-        }
-        if (image!!.substring(0, 22) != "data:image/png;base64,") {
-                return res
-            }
-        if (coords.size <= 0) {
-            return res
-        }
-        return true
-    }
 }
 
 
