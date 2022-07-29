@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import ru.smartro.worknote.App
 import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.NetworkRepository
 import kotlin.coroutines.CoroutineContext
@@ -15,11 +16,12 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
     protected var TAG : String = "--Aaa${this::class.simpleName}"
     val networkDat = NetworkRepository(application.applicationContext)
     val baseDat = RealmRepository(Realm.getDefaultInstance())
+    open val params = App.getAppParaMS()
 
     /**
-    fun getRealm(): RealmRepository {
-        return db
-    }
+        fun getRealm(): RealmRepository {
+            return db
+        }
     */
     private val job: Job = SupervisorJob()
 

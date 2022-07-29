@@ -79,8 +79,10 @@ class App : AApp() {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
-
-
+    object ScreenMode {
+        const val EXTENDED = false
+        const val SIMPLIFY = true
+    }
 
     fun gps(): PoinT {
         var gps_enabled = false

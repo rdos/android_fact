@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.awORKOLDs.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
@@ -38,7 +39,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     val mFailReasonS: LiveData<List<String>>
         get() = _failReasonS
 
-
     private val _sortedContainers: MutableLiveData<List<ClientGroupedContainers>> = MutableLiveData(null)
     val mSortedContainers: LiveData<List<ClientGroupedContainers>>
         get() = _sortedContainers
@@ -47,14 +47,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 
     val mWasServedExtended: MutableLiveData<Boolean> = MutableLiveData(false)
     val mWasServedSimplified: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    private val _screenMode: MutableLiveData<Boolean> = MutableLiveData(false)
-    val mScreenMode: LiveData<Boolean>
-        get() = _screenMode
-
-    fun changeScreenMode() {
-        _screenMode.postValue(!_screenMode.value!!)
-    }
 
 //    fun getPlatformEntity(platformId: Int, viewLifecycleOwner = null, next: () -> Any = null): PlatformEntity {
     // viewLifecycleOwner где взять?:R_dos))
@@ -175,7 +167,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     // FINISH
     fun updatePlatformStatusSuccess(platformId: Int) {
         // если упрощенный режим
-        if(_screenMode.value == true) {
+        if(params.lastScreenMode == ScreenMode.SIMPLIFY) {
             mServedContainers.value!!.forEach { el ->
                 val containers = _sortedContainers.value!![el.clientGroupIndex].typeGroupedContainers[el.typeGroupIndex].containersIds
                 val newVolume = el.count.toDouble() / containers.size
