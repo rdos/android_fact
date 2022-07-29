@@ -106,9 +106,7 @@ class PServeF : AFragment() {
             }
         }
 
-        if(viewModel.mPlatformEntity.value == null) {
-            viewModel.getPlatformEntity(plId)
-        }
+        viewModel.getPlatformEntity(plId)
     }
 
     private fun toggleScreenMode() {
