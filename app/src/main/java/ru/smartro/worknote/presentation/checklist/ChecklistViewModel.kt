@@ -13,6 +13,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
+import ru.smartro.worknote.saveJSON
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.THR
 import ru.smartro.worknote.work.WoRKoRDeR_know1
@@ -62,6 +63,9 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
             try {
                 when {
                     response.isSuccessful -> {
+                        val gson = Gson()
+                        val bodyInStringFormat = gson.toJson(response.body())
+                        saveJSON(bodyInStringFormat, "getOwners")
                         _ownersList.postValue(Resource.success(response.body()))
                     }
                     else -> {
@@ -85,6 +89,9 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
                 when {
                     response.isSuccessful -> {
                         mLastOwnerId = organisationId
+                        val gson = Gson()
+                        val bodyInStringFormat = gson.toJson(response.body())
+                        saveJSON(bodyInStringFormat, "getVehicle")
                         _vehicleList.postValue(Resource.success(response.body()))
                     }
                     else -> {
@@ -121,6 +128,9 @@ class ChecklistViewModel(application: Application) : BaseViewModel(application) 
                     response.isSuccessful -> {
                         mLastOwnerId = body.organisationId
                         mLastVehicleId = body.vehicleId
+                        val gson = Gson()
+                        val bodyInStringFormat = gson.toJson(response.body())
+                        saveJSON(bodyInStringFormat, "getWayList")
                         Log.d(TAG, "getWayList.after ${response.body().toString()}")
                         mWayBillsViewState.postValue(ViewState.DATA())
                         Log.d("TEST :::", "waybills:::: ${response.body()?.data}")
