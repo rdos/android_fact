@@ -132,7 +132,7 @@ class PServeF : AFragment() {
                     if (id != R.id.PServeSimplifyFrag) {
                         navController?.navigate(R.id.PServeSimplifyFrag)
                     }
-                    screenModeLabel?.text = "Сгруппированный режим"
+                    screenModeLabel?.text = "Режим группировки"
                     if(scPServeSimplifyMode?.isChecked != true)
                         scPServeSimplifyMode?.isChecked = true
                 }
