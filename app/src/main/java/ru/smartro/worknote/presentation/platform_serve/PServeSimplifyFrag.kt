@@ -55,8 +55,8 @@ class PServeSimplifyFrag : AFragment() {
             }
         }
 
-        if(paramS().isWalkthroughWasShown == false) {
-            navigateMain(R.id.WalkthroughStepAF, 1)
-        }
+//        if(paramS().isWalkthroughWasShown == false) {
+//            navigateMain(R.id.WalkthroughStepAF, 1)
+//        }
     }
 }
