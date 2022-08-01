@@ -174,13 +174,19 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     fun updatePlatformStatusSuccess(platformId: Int) {
         // если упрощенный режим
         if(params.lastScreenMode == ScreenMode.SIMPLIFY) {
-            mServedContainers.value!!.forEach { el ->
-                val containers = _sortedContainers.value!!.find { sorted -> sorted.client == el.client }!!.typeGroupedContainers.find { typed -> typed.typeName == el.typeName }!!.containersIds
-                val newVolume = el.servedCount.toDouble() / containers.size
-                containers.forEach { cont ->
-                    updateContainerVolume(platformId, cont, newVolume)
+            mServedContainers.value?.let {
+                if (_sortedContainers.value != null ) {
+                    it.forEach { el ->
+                        val containers = _sortedContainers.value!!.find { sorted -> sorted.client == el.client }!!.typeGroupedContainers.find { typed -> typed.typeName == el.typeName }!!.containersIds
+                        val newVolume = el.servedCount.toDouble() / containers.size
+                        containers.forEach { cont ->
+                            updateContainerVolume(platformId, cont, newVolume)
+                        }
+                    }
                 }
+
             }
+
         }
         baseDat.updatePlatformStatusSuccess(platformId)
     }

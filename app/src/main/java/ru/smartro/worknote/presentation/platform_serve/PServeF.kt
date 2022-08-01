@@ -81,11 +81,6 @@ class PServeF : AFragment() {
                     "№${platform.srpId} / ${platform.containers.size} конт."
 
                 btnCompleteTask?.setOnClickListener {
-                    viewModel.updatePlatformStatusSuccess(platform.platformId!!)
-//                    val intent = Intent(this, CameraAct::class.java)
-//                    intent.putExtra("platform_id", platform.platformId)
-//                    intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
-//                    startActivityForResult(intent, 13)
                     navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
                 }
 
