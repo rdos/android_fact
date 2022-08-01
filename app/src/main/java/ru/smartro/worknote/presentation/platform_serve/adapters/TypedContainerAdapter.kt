@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation.platform_serve.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,14 +9,13 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.R
-import ru.smartro.worknote.presentation.platform_serve.ServedContainers
 import ru.smartro.worknote.presentation.platform_serve.TypeGroupedContainers
+import ru.smartro.worknote.work.ServedContainers
 
 // TODO VLAD
 data class TCAdata(
     var servedContainers: List<ServedContainers> = listOf(),
     var group: List<TypeGroupedContainers> = listOf(),
-    var clientIndex: Int = -1
 )
 
 class TypedContainerAdapter(
@@ -39,15 +39,14 @@ class TypedContainerAdapter(
     }
 
     override fun onBindViewHolder(holder: TypeGroupedViewHolder, position: Int) {
-        data.servedContainers.find { it.clientGroupIndex == data.clientIndex && it.typeGroupIndex == position }
-            ?.let {
-                holder.bind(
-                    position,
-                    data.group[position],
-                    it,
-                    data.clientIndex
-                )
-            }
+        val typeGroup = data.group[position]
+        Log.d("SHEESH :::", "typeGroup: ${typeGroup}")
+        Log.d("SHEESH :::", "servedContainers: ${data.servedContainers}")
+        val servedContainers = data.servedContainers.find { el -> typeGroup.typeName == el.typeName }
+        if(servedContainers != null)
+            holder.bind(typeGroup, servedContainers)
+        else
+            holder.bind(typeGroup, ServedContainers("", "", 0))
     }
 
     class TypeGroupedViewHolder(
@@ -55,7 +54,7 @@ class TypedContainerAdapter(
         val context: Context,
         val listener: TypedContainerListener
     ) : RecyclerView.ViewHolder(view) {
-        fun bind(index: Int, typeGroup: TypeGroupedContainers, servedGroup: ServedContainers, clientInd: Int) {
+        fun bind(typeGroup: TypeGroupedContainers, servedGroup: ServedContainers) {
 
             val tvTypeName = view.findViewById<TextView>(R.id.container_type)
             val bDecrease = view.findViewById<AppCompatButton>(R.id.button_decrease_cont)
@@ -65,28 +64,27 @@ class TypedContainerAdapter(
             val tvContSize = view.findViewById<TextView>(R.id.containers_size)
 
             tvTypeName.text = typeGroup.typeName.ifEmpty { "Тип не указан" }
+            tvCount.text = servedGroup.servedCount.toString()
+            tvContSize.text = typeGroup.containersIds.size.toString()
+
 
             bDecrease.setOnClickListener {
-                listener.onDecrease(clientInd, index)
+                listener.onDecrease(typeGroup.typeName)
             }
 
-
             bIncrease.setOnClickListener {
-                listener.onIncrease(clientInd, index)
+                listener.onIncrease(typeGroup.typeName)
             }
 
             bAddPhoto.setOnClickListener {
-                listener.onAddPhoto(clientInd, index)
+                listener.onAddPhoto(typeGroup.typeName)
             }
-
-            tvCount.text = if(servedGroup.count == -1) typeGroup.containersIds.size.toString() else servedGroup.count.toString()
-            tvContSize.text = typeGroup.containersIds.size.toString()
         }
     }
 
     interface TypedContainerListener {
-        fun onDecrease(clientGroupInd: Int, typeGroupInd: Int)
-        fun onIncrease(clientGroupInd: Int, typeGroupInd: Int)
-        fun onAddPhoto(clientGroupInd: Int, typeGroupInd: Int)
+        fun onDecrease(typeName: String)
+        fun onIncrease(typeName: String)
+        fun onAddPhoto(typeName: String)
     }
 }

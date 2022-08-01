@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.realm.Realm
 import io.realm.RealmList
@@ -255,6 +256,12 @@ open class KGOEntity(
 
     }
 
+open class ServedContainers(
+    var typeName: String = Snull,
+    var client: String = Snull,
+    var servedCount: Int = Inull
+): Serializable, RealmObject()
+
 open class PlatformEntity(
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
@@ -319,6 +326,10 @@ open class PlatformEntity(
     var orderTimeWarning: String? = null,
     @SerializedName("order_alert_time")
     var orderTimeAlert: String? = null,
+
+    @Expose
+    var servedContainers: RealmList<ServedContainers> = RealmList()
+
 ) : Serializable, RealmObject() {
 
     fun isTypoMiB(): Boolean = this.icon == "Bath"
