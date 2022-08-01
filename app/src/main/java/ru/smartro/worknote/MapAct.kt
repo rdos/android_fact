@@ -9,14 +9,12 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -401,42 +399,73 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     private fun gotoComplete() {
-        val lastPlatforms =  vs.findLastPlatforms()
-        if (lastPlatforms.isEmpty()) {
-            completeWorkOrders()
-        } else {
-            gotoSynchronize(lastPlatforms)
-        }
+        gotoSynchronize()
     }
 
 
-    private fun gotoSynchronize(lastPlatforms: List<PlatformEntity>) {
-        showingProgress()
+    private fun getNextPlatformToSend(next: (nextSentPlatforms: List<PlatformEntity>, timeBefore: Long) -> Any) {
+        var nextSentPlatforms: List<PlatformEntity> = emptyList()
+        var timeBeforeInSec: Long = MyUtil.timeStampInSec()
+        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+        //проблема в секундах синхронизаций
+        val m30MinutesInSec = 30 * 60
+        if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
+            timeBeforeInSec = lastSynchroTimeInSec + m30MinutesInSec
+            nextSentPlatforms = vs.baseDat.findPlatforms30min()
+            log( "SYNCworkER PLATFORMS IN LAST 30 min")
+            next(nextSentPlatforms, timeBeforeInSec)
+        }
+        if (nextSentPlatforms.isEmpty()) {
+            timeBeforeInSec = MyUtil.timeStampInSec()
+            nextSentPlatforms = vs.baseDat.findLastPlatforms()
+            log("SYNCworkER LAST PLATFORMS")
+            next(nextSentPlatforms, timeBeforeInSec)
+        }
+
+    }
+
+    private fun gotoSynchronize() {
+        var lastPlatforms: List<PlatformEntity> = emptyList()
+        lastPlatforms = vs.baseDat.findLastPlatforms()
+        val lastPlatformsSize = lastPlatforms.size
+
         val deviceId = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
+        if (lastPlatformsSize > 0) {
+            showingProgress()
+            getNextPlatformToSend() { nextSentPlatforms, timeBeforeInSec ->
+                showingProgress("отправляются ${nextSentPlatforms.size} КП\n осталось ${lastPlatformsSize}", true)
+                val gps = AppliCation().gps()
+                val synchronizeBody = SynchronizeBody(
+                    paramS().wayBillId,
+                    gps.PointTOBaseData(),
+                    deviceId,
+                    gps.PointTimeToLastKnowTime_SRV(),
+                    nextSentPlatforms)
 
-        val gps = AppliCation().gps()
-
-        val synchronizeBody = SynchronizeBody(
-            paramS().wayBillId,
-            gps.PointTOBaseData(),
-            deviceId,
-            gps.PointTimeToLastKnowTime_SRV(),
-            lastPlatforms)
-
-        vs.networkDat.sendLastPlatforms(synchronizeBody).observe(this) { result ->
-            hideProgress()
-            when (result.status) {
-                Status.SUCCESS -> {
-                    completeWorkOrders()
-                }
-                Status.ERROR -> {
-                    toast(result.msg)
-                }
-                Status.NETWORK -> {
-                    toast("Проблемы с интернетом")
+                vs.networkDat.sendLastPlatforms(synchronizeBody).observe(this) { result ->
+                    hideProgress()
+                    when (result.status) {
+                        Status.SUCCESS -> {
+                            App.getAppParaMS().lastSynchroTimeInSec = timeBeforeInSec
+                            gotoSynchronize()
+                        }
+                        Status.ERROR -> {
+                            toast(result.msg)
+                        }
+                        Status.NETWORK -> {
+                            toast("Проблемы с интернетом")
+                        }
+                    }
                 }
             }
+
+        } else {
+            hideProgress()
+            completeWorkOrders()
         }
+        logSentry("SYNCworkER STARTED")
+        log("gotoComplete::synChrONizationDATA:Thread.currentThread().id()=${Thread.currentThread().id}")
+
     }
 
 
@@ -830,10 +859,6 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
      */
 
     open class MapViewModel(application: Application) : BaseViewModel(application) {
-
-        fun findLastPlatforms() =
-            baseDat.findLastPlatforms()
-        
 
         fun findCancelWayReason(): List<CancelWayReasonEntity> {
             return baseDat.findCancelWayReasonEntity()

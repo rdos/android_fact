@@ -69,7 +69,7 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
     Log.d(TAG, "showLoadingDialog.after")
 }
 
-fun AppCompatActivity.showingProgress(text: String? = null) {
+fun AppCompatActivity.showingProgress(text: String?=null, isEmptyOldText: Boolean=false) {
     hideProgress()
     try {
         val builder = AlertDialog.Builder(this)
@@ -78,7 +78,11 @@ fun AppCompatActivity.showingProgress(text: String? = null) {
         text?.let {
             if (text != Snull) {
                 val tv = view.findViewById<TextView>(R.id.tv_alert_loading)
-                val oldText = tv.text
+                var oldText = tv.text
+                if (isEmptyOldText) {
+                    oldText = ""
+                }
+
                 tv.text = "${text} ${oldText}"
             }
         }
