@@ -1057,4 +1057,17 @@ class RealmRepository(private val p_realm: Realm) {
             return p_realm.where(WorkOrderEntity::class.java).isNotNull("progress_at")
         }
     }
+
+    fun updatePlatformServedContainers(platformId: Int, newServedContainers: List<ServedContainers>) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+
+            platformEntity?.servedContainers?.apply {
+                clear()
+                addAll(newServedContainers)
+            }
+        }
+    }
 }

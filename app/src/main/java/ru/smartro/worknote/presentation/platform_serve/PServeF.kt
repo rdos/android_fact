@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
@@ -81,11 +82,6 @@ class PServeF : AFragment() {
                     "№${platform.srpId} / ${platform.containers.size} конт."
 
                 btnCompleteTask?.setOnClickListener {
-                    viewModel.updatePlatformStatusSuccess(platform.platformId!!)
-//                    val intent = Intent(this, CameraAct::class.java)
-//                    intent.putExtra("platform_id", platform.platformId)
-//                    intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
-//                    startActivityForResult(intent, 13)
                     navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
                 }
 
@@ -117,23 +113,23 @@ class PServeF : AFragment() {
 
     private fun setScreenMode(mode: Boolean) {
         navController?.currentDestination?.apply {
+            scPServeSimplifyMode?.isChecked = mode
             when(mode) {
-                false -> {
-                    if (id != R.id.PServeExtendedFrag) {
+                App.ScreenMode.EXTENDED -> {
+                    screenModeLabel?.text = "Стандартный режим"
+                    if (id == R.id.PServeSimplifyFrag) {
                         navController?.popBackStack()
                     }
-                    screenModeLabel?.text = "Стандартный режим"
-                    if(scPServeSimplifyMode?.isChecked != false)
-                        scPServeSimplifyMode?.isChecked = false
+
                 }
-                true -> {
-                    if (id != R.id.PServeSimplifyFrag) {
+                App.ScreenMode.SIMPLIFY -> {
+                    screenModeLabel?.text = "Режим группировки"
+                    if (id == R.id.PServeExtendedFrag) {
                         navController?.navigate(R.id.PServeSimplifyFrag)
                     }
-                    screenModeLabel?.text = "Режим группировки"
-                    if(scPServeSimplifyMode?.isChecked != true)
-                        scPServeSimplifyMode?.isChecked = true
+
                 }
+                else -> {}
             }
         }
     }
