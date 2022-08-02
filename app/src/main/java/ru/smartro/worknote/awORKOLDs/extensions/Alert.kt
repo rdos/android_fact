@@ -70,6 +70,7 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
 }
 
 fun AppCompatActivity.showingProgress(text: String?=null, isEmptyOldText: Boolean=false) {
+    Log.d("TEST ::::::", "SHOWIUNG PROGRESS!")
     hideProgress()
     try {
         val builder = AlertDialog.Builder(this)

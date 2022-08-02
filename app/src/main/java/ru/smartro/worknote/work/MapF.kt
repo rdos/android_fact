@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -213,7 +214,8 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
         val fabDebug = view.findViewById<FloatingActionButton>(R.id.fab_act_map__debug)
         fabDebug.setOnClickListener {
-            startActivity(Intent(getAct(), DebugAct::class.java))
+            navigateMain(R.id.debugFragment, null)
+//            startActivity(Intent(getAct(), DebugAct::class.java))
         }
 
         acibNavigatorToggle = view.findViewById<AppCompatImageButton>(R.id.acib__act_map__navigator_toggle)
@@ -225,7 +227,8 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         }
         val acibGotoLogActMapAPIB = view.findViewById<AppCompatImageButton>(R.id.goto_log__act_map__apib)
         acibGotoLogActMapAPIB.setOnClickListener {
-            startActivity(Intent(getAct(), JournalChatAct::class.java))
+            navigateMain(R.id.journalChatFragment, null)
+        //            startActivity(Intent(getAct(), JournalChatAct::class.java))
         }
 
         mDrivingRouter = DirectionsFactory.getInstance().createDrivingRouter()

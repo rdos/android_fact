@@ -247,5 +247,13 @@
         android:id="@+id/FAStPhotoFailureMediaF"
         android:name="ru.smartro.worknote.presentation.came.FAStPhotoFailureMediaF"
         android:label="FAStPhotoFailureMediaF" />
+    <fragment
+        android:id="@+id/debugFragment"
+        android:name="ru.smartro.worknote.work.ui.DebugFragment"
+        android:label="DebugFragment" />
+    <fragment
+        android:id="@+id/journalChatFragment"
+        android:name="ru.smartro.worknote.work.ui.JournalChatFragment"
+        android:label="JournalChatFragment" />
 
 </navigation>

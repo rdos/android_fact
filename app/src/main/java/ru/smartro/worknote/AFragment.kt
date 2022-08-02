@@ -26,6 +26,7 @@ abstract class AFragment : Fragment(){
     fun getAct() = requireActivity() as AAct
     protected fun showingProgress(text: String? = null, isEmptyOldText: Boolean=false){
         //todo:ActAbstract
+        Log.d("TEST :::::", "FRAG NAME: ${this::class.java.simpleName}")
         (requireActivity() as AAct).showingProgress(text, isEmptyOldText)
     }
 

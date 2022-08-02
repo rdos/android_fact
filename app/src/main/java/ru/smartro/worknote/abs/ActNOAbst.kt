@@ -22,7 +22,7 @@ abstract class ActNOAbst : AAct() {
 
     override fun onPause() {
         super.onPause()
-        showingProgress()
+//        showingProgress()
     }
 
     override fun onStop() {
