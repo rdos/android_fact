@@ -28,6 +28,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.checklist.XChecklistAct
+import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.Status
@@ -53,7 +54,7 @@ class StartAct : ActAbstract() {
         if (isHasToken && isHasTask) {
             hideDialog()
             hideInfoDialog()
-            startActivity(Intent(this, MapAct::class.java))
+            startActivity(Intent(this, PServeAct::class.java))
             finish()
             return
         }
@@ -68,7 +69,7 @@ class StartAct : ActAbstract() {
                 btnOk.setOnClickListener {
                     hideDialog()
                     hideInfoDialog()
-                    startActivity(Intent(this, MapAct::class.java))
+                    startActivity(Intent(this, PServeAct::class.java))
                     finish()
                 }
                 val btnCancel = dialogView.findViewById<Button>(R.id.dialog___act_start_point__ie)
@@ -124,7 +125,7 @@ class StartAct : ActAbstract() {
                         btnCancel2.setOnClickListener {
                             hideDialog()
                             hideInfoDialog()
-                            startActivity(Intent(this, MapAct::class.java))
+                            startActivity(Intent(this, PServeAct::class.java))
                             finish()
                         }
                     }

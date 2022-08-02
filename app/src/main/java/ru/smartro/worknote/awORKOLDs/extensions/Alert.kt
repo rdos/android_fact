@@ -115,8 +115,8 @@ fun AbstractDialog.showAlertPlatformByPoint(): View {
     return view
 }
 
-fun AAct.showAlertPlatformByPoint(): View {
-    val builder = AlertDialog.Builder(this)
+fun AFragment.showAlertPlatformByPoint(): View {
+    val builder = AlertDialog.Builder(getAct())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.act_map__dialog_platform_clicked_dtl__alert_by_point, null)
     builder.setView(view)
@@ -198,8 +198,8 @@ fun AFragment.showDialogFillKgoVolume(): View {
 
 
 
-fun AppCompatActivity.warningClearNavigator(title: String): View {
-    val builder = AlertDialog.Builder(this)
+fun AFragment.warningClearNavigator(title: String): View {
+    val builder = AlertDialog.Builder(getAct())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_clear_navigator, null)
     builder.setView(view)

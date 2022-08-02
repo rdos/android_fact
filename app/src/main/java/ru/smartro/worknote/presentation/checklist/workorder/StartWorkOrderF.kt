@@ -14,6 +14,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.checklist.XChecklistAct
+import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 
@@ -138,7 +139,7 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     fun goToNextStep(workOrders: List<WoRKoRDeR_know1>) {
-        val intent = Intent(requireActivity(), MapAct::class.java)
+        val intent = Intent(requireActivity(), PServeAct::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
 
         if(workOrders.size == 1) {

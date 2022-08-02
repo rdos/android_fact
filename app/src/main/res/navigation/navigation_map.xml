@@ -3,23 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_map"
-    app:startDestination="@id/MAPF">
-
-                                        <fragment
-                                            android:id="@+id/MAPF"
-                                            android:name="ru.smartro.worknote.work.MapF"
-                                            tools:layout="@layout/f_aphoto"
-                                            android:label="MAPF" >
-                                            <argument
-                                                android:name="ARGUMENT_NAME___PARAM_ID"
-                                                app:argType="integer"
-                                                />
-                                            <argument
-                                                android:name="ARGUMENT_NAME___PARAM_NAME"
-                                                app:argType="string"
-                                                />
-                                        </fragment>
-
+    app:startDestination="@id/MapF">
+    <fragment
+        android:id="@+id/MapF"
+        android:name="ru.smartro.worknote.work.MapF"
+        tools:layout="@layout/act_map"
+        android:label="MapF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
     <fragment
         android:id="@+id/PhotoBeforeMediaF"
         android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaF"

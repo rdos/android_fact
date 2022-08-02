@@ -26,9 +26,10 @@ import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import kotlin.math.min
 
-class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point) : AbstractDialog(), View.OnClickListener {
+class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point,
+                                     private val listener: MapActBottomBehaviorAdapter.PlatformClickListener
+) : AbstractDialog(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
-    private var mIsServeAgain = false
     private val mOnClickListener = this as View.OnClickListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -39,7 +40,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         //onBindViewHolder
         super.onViewCreated(view, savedInstanceState)
         Log.w("RRRRRR", "R_dos")
-        mCurrentActivity = requireActivity() as MapAct
+        mCurrentActivity = requireActivity() as PServeAct
 
         val spanCount = min(_platform.containers.size, 10)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_dialog_platform_clicked_dtl)
@@ -50,13 +51,13 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containers.size)
 
 
-        mIsServeAgain = _platform.getStatusPlatform() != StatusEnum.NEW
+        val isServeAgain = _platform.getStatusPlatform() != StatusEnum.NEW
 
         val cvStartServe = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
-        cvStartServe.isVisible = !mIsServeAgain
+        cvStartServe.isVisible = !isServeAgain
 
         val cvServeAgain = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__serve_again)
-        cvServeAgain.isVisible = mIsServeAgain
+        cvServeAgain.isVisible = isServeAgain
         val tvAddress = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__address)
         tvAddress.text = String.format(getString(R.string.dialog_platform_clicked_dtl__address), _platform.address, _platform.srpId)
 
@@ -91,32 +92,15 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btn_dialog_platform_clicked_dtl__serve_again  -> {
-                gotoNextAct()
+                listener.startPlatformService(_platform)
             }
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
-                if (App.getAppliCation().gps().isThisPoint(_platform.coordLat, _platform.coordLong)) {
-                    gotoNextAct()
-                } else {
-                    showAlertPlatformByPoint().let { view ->
-                        val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
-                        btnOk.setOnClickListener {
-                            gotoNextAct()
-                            hideDialog()
-                        }
-                    }
-                }
+                listener.startPlatformService(_platform)
             }
         }
 
     }
 
-    private fun gotoNextAct() {
-        val intent = Intent(requireActivity(), PServeAct::class.java)
-        intent.putExtra("platform_id", _platform.platformId)
-        intent.putExtra("mIsServeAgain", mIsServeAgain)
-        dismiss()
-        startActivity(intent)
-    }
 
     override fun onResume() {
         super.onResume()
@@ -130,7 +114,6 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
 
     private fun initButtonsViews() {
         platform_detail_fire.setOnClickListener {
-
             val intent = Intent(requireActivity(), PServeAct::class.java)
             intent.putExtra("platform_id", _platform.platformId)
             intent.putExtra("mode", "itFireMode")
@@ -139,20 +122,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
 
         //коммент инициализации
         platform_location.setOnClickListener {
-            val currentActivity = requireActivity() as MapAct
-            val drivingModeState = currentActivity.drivingModeState
-            if (drivingModeState) {
-                currentActivity.warningClearNavigator("У вас уже есть построенный маршрут. Отменить старый и построить новый?")
-                    .let {
-                        it.accept_btn.setOnClickListener {
-                            currentActivity.buildNavigator(_point)
-                            dismiss()
-                        }
-                    }
-            } else {
-                currentActivity.buildNavigator(_point)
-                dismiss()
-            }
+            listener.navigatePlatform(_point)
         }
     }
     

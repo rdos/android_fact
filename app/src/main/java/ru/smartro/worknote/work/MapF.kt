@@ -1,71 +1,83 @@
-package ru.smartro.worknote
+package ru.smartro.worknote.work
 
 import android.app.AlertDialog
-import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.Gravity
+import android.view.Window
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.*
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.RequestPoint
-import com.yandex.mapkit.RequestPointType
 import com.yandex.mapkit.directions.DirectionsFactory
-import com.yandex.mapkit.directions.driving.*
+import com.yandex.mapkit.directions.driving.DrivingRoute
+import com.yandex.mapkit.directions.driving.DrivingRouter
+import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
-import com.yandex.mapkit.map.*
+import com.yandex.mapkit.map.InertiaMoveListener
 import com.yandex.mapkit.map.Map
+import com.yandex.mapkit.map.PlacemarkMapObject
+import com.yandex.mapkit.map.MapObject
+import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.map.MapObjectCollection
+import com.yandex.mapkit.map.MapObjectTapListener
 import com.yandex.mapkit.mapview.MapView
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
-import com.yandex.runtime.Error
 import com.yandex.runtime.ui_view.ViewProvider
-import kotlinx.android.synthetic.main.act_map.*
-import kotlinx.android.synthetic.main.act_map__bottom_behavior.*
-import kotlinx.android.synthetic.main.alert_clear_navigator.view.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.abs.ActAbstract
+import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.PERMISSIONS
+import ru.smartro.worknote.R
+import ru.smartro.worknote.isShowForUser
+import ru.smartro.worknote.NOTIFICATION_CHANNEL_ID__MAP_ACT
+import ru.smartro.worknote.Lnull
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.BaseViewModel
-import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.work.Status
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.awORKOLDs.extensions.showAlertPlatformByPoint
+import ru.smartro.worknote.awORKOLDs.extensions.warningClearNavigator
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.terminate.TerminateAct
-import ru.smartro.worknote.utils.getActivityProperly
-import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
-import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.WorkOrderEntity
-import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.presentation.platform_serve.PServeAct
+import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
+import ru.smartro.worknote.presentation.terminate.TerminateAct
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
 
-
-//todo: тодо:!r_dos
-//Двигается карта deselectGeoObject()
-class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
+class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
 
 
+    private var acibNavigatorToggle: AppCompatImageButton? = null
+    private var clMapBehavior: ConstraintLayout? = null
     private var mAcbGotoComplete: AppCompatButton? = null
 
     private var mAdapterBottomBehavior: MapActBottomBehaviorAdapter? = null
@@ -74,13 +86,12 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mMapMyYandex: MapView
-    private val vs: MapViewModel by viewModel()
+    private val vs: PlatformServeSharedViewModel by activityViewModels()
     private val mWorkOrderFilteredIds: MutableList<Int> = mutableListOf()
     private var mWorkOrderS: List<WorkOrderEntity>? = null
     private var mPlatformS: List<PlatformEntity>? = null
     var drivingModeState = false
 
-    private val REQUEST_EXIT = 41
     private var mIsFirstTime = true
 
     private lateinit var userLocationLayer: UserLocationLayer
@@ -88,115 +99,109 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private lateinit var mDrivingSession: DrivingSession.DrivingRouteListener
 //    private lateinit var selectedPlatformToNavigate: Point
 
-    override fun onNewGPS() {
-        log("onNewGPS")
-
-        val point = AppliCation().gps()
-        if (mIsFirstTime) {
-            moveCameraTo(point)
-            mIsFirstTime = false
-        }
-        if (mIsAUTOMoveCamera) {
-            moveCameraTo(point)
-        }
-
-        val platformNear = vs.baseDat.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
-
-        if (platformNear == null) {
-            log("platformNear.is null")
-            for ((key, _) in mNotifyMap) {
-                App.getAppliCation().cancelNotification(key)
-                mNotifyMap.remove(key)
-            }
-        } else {
-//            toast("FFFFFFFFFFFFF${platformNear.srpId}")]
-            if (!platformNear.isTypoMiB()) {
-                // TODO: !!!r_dos
-                showNotificationPlatfrom(platformNear.platformId, platformNear.srpId!!, platformNear.name)
-            }
-        }
-
-//       platformNear.observe(this, Observer { platformList ->
-//        if (!platformNear.isNullOrEmpty()) {
-//            if (platformNear.size == 1) {
-//                val platform = platformNear[0]
-//                toast("FFFFFFFFFFFFF${platform.platformId}")
-//                showNotificationPlatfrom(platform.platformId, platform.name)
-//            } else {
-//                toast("platformList.size=${platformList.size}")
+    //    override fun onNewGPS() {
+//        log("onNewGPS")
+//
+//        val point = AppliCation().gps()
+//        if (mIsFirstTime) {
+//            moveCameraTo(point)
+//            mIsFirstTime = false
+//        }
+//        if (mIsAUTOMoveCamera) {
+//            moveCameraTo(point)
+//        }
+//
+//        val platformNear = vs.baseDat.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
+//
+//        if (platformNear == null) {
+//            log("platformNear.is null")
+//            for ((key, _) in mNotifyMap) {
+//                App.getAppliCation().cancelNotification(key)
+//                mNotifyMap.remove(key)
 //            }
 //        } else {
-//            LOGWork("platformList.is null")
-//        }
-//       })
-
-//        Log.d("LogDistance", "###################")
-//
-//
-//
-//        val distanceToPoint = MyUtil.calculateDistance(AppliCation().LocationPOINT, selectedPlatformToNavigate)
-////        Log.d("LogDistance", "Distance: $distanceToPoint")
-//        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
-//            isOnPointFirstTime = false
-//            alertOnPoint().let {
-//                it.
-    //                dismiss_btn.setOnClickListener {
-//                    drivingModeState = false
-//                    isOnPointFirstTime = true
-//                    clearMapIbjectsDrive()
-//                    hideDialog()
-//                }
+////            toast("FFFFFFFFFFFFF${platformNear.srpId}")]
+//            if (!platformNear.isTypoMiB()) {
+//                // TODO: !!!r_dos
+//                showNotificationPlatfrom(platformNear.platformId, platformNear.srpId!!, platformNear.name)
 //            }
-//        } else {
-////            Log.d("LogDistance", "Distance not arrive")
 //        }
-
 //
-//        Log.d("LogDistance", "Location updated")
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        if (!MyUtil.hasPermissions(this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
+////       platformNear.observe(this, Observer { platformList ->
+////        if (!platformNear.isNullOrEmpty()) {
+////            if (platformNear.size == 1) {
+////                val platform = platformNear[0]
+////                toast("FFFFFFFFFFFFF${platform.platformId}")
+////                showNotificationPlatfrom(platform.platformId, platform.name)
+////            } else {
+////                toast("platformList.size=${platformList.size}")
+////            }
+////        } else {
+////            LOGWork("platformList.is null")
+////        }
+////       })
+//
+////        Log.d("LogDistance", "###################")
+////
+////
+////
+////        val distanceToPoint = MyUtil.calculateDistance(AppliCation().LocationPOINT, selectedPlatformToNavigate)
+//////        Log.d("LogDistance", "Distance: $distanceToPoint")
+////        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
+////            isOnPointFirstTime = false
+////            alertOnPoint().let {
+////                it.
+//        //                dismiss_btn.setOnClickListener {
+////                    drivingModeState = false
+////                    isOnPointFirstTime = true
+////                    clearMapIbjectsDrive()
+////                    hideDialog()
+////                }
+////            }
+////        } else {
+//////            Log.d("LogDistance", "Distance not arrive")
+////        }
+//
+////
+////        Log.d("LogDistance", "Location updated")
+//    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (!MyUtil.hasPermissions(getAct(), PERMISSIONS)) {
+            ActivityCompat.requestPermissions(getAct(), PERMISSIONS, 1)
         }
 
-
-        setContentView(R.layout.act_map)
-
-        mMapMyYandex = findViewById(R.id.map_view)
+        mMapMyYandex = view.findViewById(R.id.map_view)
         val hasWorkOrdersInNotProgress = vs.baseDat.hasWorkOrderInNotProgress()
         if (hasWorkOrdersInNotProgress) {
             showingProgress()
-            val extraPramId = getPutExtraParam_ID()
+            val extraPramId = getArgumentID()
             val workOrderS = vs.baseDat.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
         }
         mMapMyYandex.map.addInertiaMoveListener(this)
 
-        mAcbInfo = findViewById(R.id.acb_act_map__info)
+        mAcbInfo = view.findViewById(R.id.acb_act_map__info)
         mAcbInfo.setOnClickListener {
             createInfoDialog({})
         }
         setInfoData()
 
 
-        val acbLogout = findViewById<AppCompatButton>(R.id.acb_act_map__logout)
+        val acbLogout = view.findViewById<AppCompatButton>(R.id.acb_act_map__logout)
         acbLogout.setOnClickListener {
-            logout()
+            getAct().logout()
         }
 
-        initBottomBehavior()
+        initBottomBehavior(view)
 
         userLocationLayer = MapKitFactory.getInstance().createUserLocationLayer(mMapMyYandex.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.isAutoZoomEnabled = true
         userLocationLayer.setObjectListener(this)
-
-        gotoMyGPS.setOnClickListener {
+        val fabGotoMyGPS = view.findViewById<FloatingActionButton>(R.id.fab_act_map__goto_my_gps)
+        fabGotoMyGPS.setOnClickListener {
             try {
                 AppliCation().startLocationService(true)
                 mIsAUTOMoveCamera = true
@@ -206,24 +211,26 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             }
         }
 
-
-        debug_fab.setOnClickListener {
-            startActivityForResult(Intent(this, DebugAct::class.java), -111)
+        val fabDebug = view.findViewById<FloatingActionButton>(R.id.fab_act_map__debug)
+        fabDebug.setOnClickListener {
+            startActivity(Intent(getAct(), DebugAct::class.java))
         }
-        navigator_toggle_fab.setOnClickListener {
+
+        acibNavigatorToggle = view.findViewById<AppCompatImageButton>(R.id.acib__act_map__navigator_toggle)
+        acibNavigatorToggle?.setOnClickListener {
             drivingModeState = false
-            navigator_toggle_fab.isVisible = drivingModeState
+            acibNavigatorToggle?.isVisible = drivingModeState
             clearMapObjectsDrive()
             hideDialog()
         }
-        val gotoLogActMapAPIB = findViewById<AppCompatImageButton>(R.id.goto_log__act_map__apib)
-        gotoLogActMapAPIB.setOnClickListener {
-            startActivity(Intent(this@MapAct, JournalChatAct::class.java))
+        val acibGotoLogActMapAPIB = view.findViewById<AppCompatImageButton>(R.id.goto_log__act_map__apib)
+        acibGotoLogActMapAPIB.setOnClickListener {
+            startActivity(Intent(getAct(), JournalChatAct::class.java))
         }
 
         mDrivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
         mDrivingSession = object : DrivingSession.DrivingRouteListener {
-            override fun onDrivingRoutesError(p0: Error) {
+            override fun onDrivingRoutesError(p0: com.yandex.runtime.Error) {
                 toast("Ошибка при построении маршрута")
             }
 
@@ -231,13 +238,15 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
                 routes.forEach { getMapObjectsDrive()?.addPolyline(it.geometry) }
             }
 
+
+
         }
         Log.w(TAG, "r_dos/onStart.before")
         mMapMyYandex.onStart()
         MapKitFactory.getInstance().onStart()
         Log.w(TAG, "r_dos/onStart.after")
         //todo:  R_dos!!! modeSyNChrON_off(false)
-        paramS.isModeSYNChrONize = true
+        paramS().isModeSYNChrONize = true
         AppliCation().startWorkER()
         AppliCation().startLocationService()
 //        setDevelMode()
@@ -295,9 +304,9 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             workOrderS.forEach {
                 newPlatformS.addAll(it.platforms)
             }
-        // TODO: R_dos!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        /**@kotlin.internal.InlineOnly
-        public inline fun <T> compareByDescending(crossinline selector: (T) -> Comparable<*>?): Comparator<T> =
+            // TODO: R_dos!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            /**@kotlin.internal.InlineOnly
+            public inline fun <T> compareByDescending(crossinline selector: (T) -> Comparable<*>?): Comparator<T> =
             Comparator { a, b -> compareValuesBy(b, a, selector) }*/
             newPlatformS.sortWith(compareBy { (it.updateAt) })
             newPlatformS.sortWith(compareBy { (it.finishedAt) })
@@ -324,7 +333,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     private fun saveBreakDownTypes() {
-        vs.networkDat.getBreakDownTypes().observe(this) { result ->
+        vs.networkDat.getBreakDownTypes().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     // TODO: ПО голове себе постучи
@@ -341,7 +350,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     private fun saveFailReason() {
         Log.i(TAG, "saveFailReason.before")
-        vs.networkDat.getFailReason().observe(this) { result ->
+        vs.networkDat.getFailReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     Log.d(TAG, "saveFailReason. Status.SUCCESS")
@@ -355,7 +364,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     private fun saveCancelWayReason() {
         Log.d(TAG, "saveCancelWayReason.before")
-        vs.networkDat.getCancelWayReason().observe(this) { result ->
+        vs.networkDat.getCancelWayReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     Log.d(TAG, "saveCancelWayReason. Status.SUCCESS")
@@ -374,14 +383,14 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {
         Log.d(TAG, "acceptProgress.before")
-        vs.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec())).observe(this) { result ->
+        vs.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec())).observe(getAct()) { result ->
             resultStatusList.add(result.status)
-            modeSyNChrON_off(false)
+            getAct().modeSyNChrON_off(false)
             when (result.status) {
                 Status.SUCCESS -> {
                     logSentry("acceptProgress Status.SUCCESS ")
                     vs.baseDat.setProgressData(workOrder)
-                    modeSyNChrON_off(false)
+                    getAct().modeSyNChrON_off(false)
                     hideProgress()
                 }
                 else -> {
@@ -406,7 +415,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     private fun getNextPlatformToSend(next: (nextSentPlatforms: List<PlatformEntity>, timeBefore: Long) -> Any) {
         var nextSentPlatforms: List<PlatformEntity> = emptyList()
         var timeBeforeInSec: Long = MyUtil.timeStampInSec()
-        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+        val lastSynchroTimeInSec = paramS().lastSynchroTimeInSec
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
@@ -429,7 +438,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         lastPlatforms = vs.baseDat.findLastPlatforms()
         val lastPlatformsSize = lastPlatforms.size
 
-        val deviceId = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
+        val deviceId = Settings.Secure.getString(getAct().contentResolver, Settings.Secure.ANDROID_ID)
         if (lastPlatformsSize > 0) {
             showingProgress()
             getNextPlatformToSend() { nextSentPlatforms, timeBeforeInSec ->
@@ -442,11 +451,11 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
                     gps.PointTimeToLastKnowTime_SRV(),
                     nextSentPlatforms)
 
-                vs.networkDat.sendLastPlatforms(synchronizeBody).observe(this) { result ->
+                vs.networkDat.sendLastPlatforms(synchronizeBody).observe(getAct()) { result ->
                     hideProgress()
                     when (result.status) {
                         Status.SUCCESS -> {
-                            App.getAppParaMS().lastSynchroTimeInSec = timeBeforeInSec
+                            paramS().lastSynchroTimeInSec = timeBeforeInSec
                             gotoSynchronize()
                         }
                         Status.ERROR -> {
@@ -471,7 +480,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     private fun completeWorkOrders() {
         hideInfoDialog()
-        val intent = Intent(this, TerminateAct::class.java)
+        val intent = Intent(getAct(), TerminateAct::class.java)
         startActivity(intent)
     }
 
@@ -482,8 +491,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     //todo:::Гавно кодика?*
     private fun createInfoDialog(next: () -> Any) {
         lateinit var result: AlertDialog
-        val builder = AlertDialog.Builder(this)
-        val inflater = LayoutInflater.from(this)
+        val builder = AlertDialog.Builder(getAct())
+        val inflater = LayoutInflater.from(getAct())
         val view = inflater.inflate(R.layout.act_map__workorder_info, null)
         // TODO:
         val workOrderS = getActualWorkOrderS(true, isFilterMode = false)
@@ -496,7 +505,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
         setAcbCompleteText(workOrderS)
 
-        rvInfo.layoutManager = LinearLayoutManager(this)
+        rvInfo.layoutManager = LinearLayoutManager(getAct())
         val infoAdapter = InfoAdapter(workOrderS)
         rvInfo.adapter = infoAdapter
 
@@ -541,25 +550,26 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         return mAdapterBottomBehavior!!.getItems()
     }
 
-    private fun initBottomBehavior() {
+    private fun initBottomBehavior(view: View) {
         val platforms = getActualPlatformS()
-        val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+        clMapBehavior = view.findViewById(R.id.map_behavior)
+        val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
 
         bottomSheetBehavior.expandedOffset = 100
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        val rvBehavior = findViewById<RecyclerView>(R.id.map_behavior_rv)
+        val rvBehavior = view.findViewById<RecyclerView>(R.id.map_behavior_rv)
         mAdapterBottomBehavior = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
         rvBehavior.adapter = mAdapterBottomBehavior
 //        rvBehavior.adapter.notifyDataSetChanged()
-        val clBottomHavior = findViewById<LinearLayoutCompat>(R.id.act_map__bottom_behavior__header)
-        clBottomHavior.setOnClickListener {
+        val llcBottomHavior = view.findViewById<LinearLayoutCompat>(R.id.act_map__bottom_behavior__header)
+        llcBottomHavior.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             else
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            MyUtil.hideKeyboard(this)
+            MyUtil.hideKeyboard(getAct())
         }
-        val acetFilterAddress = findViewById<AppCompatEditText>(R.id.acet__act_map__bottom_behavior__filter)
+        val acetFilterAddress = view.findViewById<AppCompatEditText>(R.id.acet__act_map__bottom_behavior__filter)
         acetFilterAddress.removeTextChangedListener(null)
         acetFilterAddress.addTextChangedListener { newText ->
             mAdapterBottomBehavior?.let { mapBottom ->
@@ -584,39 +594,36 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     override fun startPlatformService(item: PlatformEntity) {
-        if (App.getAppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
-            gotoNextAct(item)
+        if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
+            navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
         } else {
             showAlertPlatformByPoint().let { view ->
-                val btnOk = view.findViewById<Button>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
+                val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
                 btnOk.setOnClickListener {
                     hideDialog()
-                    gotoNextAct(item)
+                    navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
                 }
             }
         }
 
     }
 
-    //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
-    //тодо)) код фанатика m4 из cs)))
-        private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
-        val intent = Intent(this, PServeAct::class.java)
-        intent.putExtra("platform_id", plaform.platformId)
-        if (todoParamREQUEST_EXIT != Inull) {
-            intent.putExtra("mode", "itFireMode")
-        }
-        startActivity(intent)
+    override fun startPlatformServiceAgain(item: PlatformEntity) {
+        hideDialog()
+        navigateMain(R.id.PServeF, item.platformId)
     }
 
-    override fun startPlatformProblem(plaform: PlatformEntity) {
+    override fun startPlatformProblem(item: PlatformEntity) {
         hideDialog()
-        gotoNextAct(plaform, REQUEST_EXIT)
+        navigateMain(R.id.FAStPhotoFailureMediaF, item.platformId)
     }
 
     override fun moveCameraPlatform(point: PoinT) {
         mIsAUTOMoveCamera = false
-        val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
+        if (clMapBehavior == null) {
+            return
+        }
+        val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         moveCameraTo(point)
     }
@@ -624,7 +631,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     override fun navigatePlatform(checkPoint: Point) {
         if (drivingModeState) {
             warningClearNavigator(getString(R.string.way_is_exist)).let {
-                it.accept_btn.setOnClickListener {
+                val btnAccept = it.findViewById<Button>(R.id.accept_btn)
+                btnAccept.setOnClickListener {
                     buildNavigator(checkPoint)
                 }
             }
@@ -639,10 +647,12 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             clearMapObjectsDrive()
             vs.buildMapNavigator(AppliCation().gps(), checkPoint, mDrivingRouter, mDrivingSession)
             drivingModeState = true
-            navigator_toggle_fab.isVisible = drivingModeState
+            acibNavigatorToggle?.isVisible = drivingModeState
             hideDialog()
-            val bottomSheetBehavior = BottomSheetBehavior.from(map_behavior)
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            if (clMapBehavior != null) {
+                val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
             moveCameraTo(AppliCation().gps())
         } catch (ex: Exception) {
             Log.e(TAG, "buildNavigator", ex)
@@ -695,14 +705,14 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
         mNotifyMap[srpId] = Lnull
 
-        val intent = Intent(this, PServeAct::class.java)
+        val intent = Intent(getAct(), PServeAct::class.java)
 
         // TODO: !!?R_dos(;:)
         intent.putExtra("srpId", srpId)
         intent.putExtra("platform_id", platformId)
         intent.putExtra("mIsServeAgain", false)
 
-        val pendingIntent = getActivityProperly(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+        val pendingIntent = getActivityProperly(getAct(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
         AppliCation().showNotificationForce(pendingIntent,
             "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",
@@ -710,6 +720,10 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             srpId,
             NOTIFICATION_CHANNEL_ID__MAP_ACT
         )
+    }
+
+    override fun onGetLayout(): Int {
+        return R.layout.act_map
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -758,7 +772,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
         mMapObjectCollection?.removeTapListener(this)
         for (platform in platformS) {
-            val iconProvider = getIconViewProvider(this, platform)
+            val iconProvider = getIconViewProvider(getAct(), platform)
             val pointYandex = Point(platform.coordLat, platform.coordLong)
             mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
 
@@ -778,8 +792,8 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             return false
         }
         Log.w("RRRR", "onMapObjectTap")
-        val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coord)
-        platformClickedDtlDialog.show(supportFragmentManager, "PlaceMarkDetailDialog")
+        val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coord, this)
+        platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
         return true
     }
 
@@ -794,7 +808,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
             val orderTime = _platform.getOrderTimeForMaps()
             if (orderTime.isShowForUser()) {
                 tv.text = orderTime
-                tv.setTextColor(_platform.getOrderTimeColor(this))
+                tv.setTextColor(_platform.getOrderTimeColor(getAct()))
                 tv.isVisible = true
             }
         }
@@ -828,7 +842,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 //    }
 
 
-/** РИСУЕМ МАШИНКУ, нормальную ic_truck_icon.png*/
+    /** РИСУЕМ МАШИНКУ, нормальную ic_truck_icon.png*/
     override fun onObjectAdded(userLocationView: UserLocationView) {
         userLocationView.accuracyCircle.isVisible =true
 //        userLocationLayer.setObjectListener(this)
@@ -847,54 +861,17 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
 
     /**
-//        val source = BitmapFactory.decodeResource(context.resources, R.drawable.your_icon_name)
-// создаем mutable копию, чтобы можно было рисовать поверх
-// создаем mutable копию, чтобы можно было рисовать поверх
-//        val bitmap = source.copy(Bitmap.Config.ARGB_8888, true)
-// инициализируем канвас
-// инициализируем канвас
-//        val canvas = Canvas(bitmap)
-// рисуем текст на канвасе аналогично примеру выше
+    //        val source = BitmapFactory.decodeResource(context.resources, R.drawable.your_icon_name)
+    // создаем mutable копию, чтобы можно было рисовать поверх
+    // создаем mutable копию, чтобы можно было рисовать поверх
+    //        val bitmap = source.copy(Bitmap.Config.ARGB_8888, true)
+    // инициализируем канвас
+    // инициализируем канвас
+    //        val canvas = Canvas(bitmap)
+    // рисуем текст на канвасе аналогично примеру выше
 
      */
 
-    open class MapViewModel(application: Application) : BaseViewModel(application) {
-
-        fun findCancelWayReason(): List<CancelWayReasonEntity> {
-            return baseDat.findCancelWayReasonEntity()
-        }
-
-        fun findCancelWayReasonByValue(reason: String): Int {
-            return baseDat.findCancelWayReasonIdByValue(reason)
-        }
-
-        fun buildMapNavigator(
-            point: Point,
-            checkPoint: Point, drivingRouter: DrivingRouter,
-            drivingSession: DrivingSession.DrivingRouteListener
-        ) {
-            val drivingOptions = DrivingOptions()
-            drivingOptions.routesCount = 1
-            drivingOptions.avoidTolls = true
-            val vehicleOptions = VehicleOptions()
-            val requestPoints = ArrayList<RequestPoint>()
-            requestPoints.add(
-                RequestPoint(
-                    point,
-                    RequestPointType.WAYPOINT,
-                    null
-                )
-            )
-            requestPoints.add(
-                RequestPoint(
-                    checkPoint,
-                    RequestPointType.WAYPOINT,
-                    null
-                )
-            )
-            drivingRouter.requestRoutes(requestPoints, drivingOptions, vehicleOptions, drivingSession)
-        }
-    }
 
     override fun onStart() {
         super.onStart()
@@ -1003,7 +980,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         if (cntWorkOrderShowForUser <= 0) {
             mAcbGotoComplete?.isEnabled = false
             mAcbGotoComplete?.text = "Выберите задание"
-            mAcbGotoComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button_gray)
+            mAcbGotoComplete?.background = ContextCompat.getDrawable(getAct(), R.drawable.bg_button_gray)
             return
         }
         if (getActualWorkOrderS().size == 1) {
@@ -1011,7 +988,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         } else {
             mAcbGotoComplete?.text = "Завершить задания"
         }
-        mAcbGotoComplete?.background = ContextCompat.getDrawable(this, R.drawable.bg_button)
+        mAcbGotoComplete?.background = ContextCompat.getDrawable(getAct(), R.drawable.bg_button)
         mAcbGotoComplete?.isEnabled = true
     }
 

@@ -23,10 +23,18 @@ abstract class AFragment : Fragment(){
 //            while ()
 //        }
     protected fun paramS() = App.getAppParaMS()
-    protected fun getAct() = requireActivity() as AAct
-    protected fun showingProgress(text: String? = null){
+    fun getAct() = requireActivity() as AAct
+    protected fun showingProgress(text: String? = null, isEmptyOldText: Boolean=false){
         //todo:ActAbstract
-        (requireActivity() as AAct).showingProgress(text)
+        (requireActivity() as AAct).showingProgress(text, isEmptyOldText)
+    }
+
+    protected fun AppliCation() : App {
+        return App.getAppliCation()
+    }
+
+    protected fun oops(){
+        toast("Простите, Произошёл сбой. Inc:)oops!")
     }
 
     protected fun hideProgress(){
@@ -51,6 +59,12 @@ abstract class AFragment : Fragment(){
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
         val navController = navHost.navController
         navController.navigateUp()
+    }
+
+    protected fun navigateBack(navFragmentId: Int) {
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
+        val navController = navHost.navController
+        navController.popBackStack(navFragmentId, false)
     }
 
     protected fun navigateBackChecklist() {
