@@ -75,7 +75,10 @@ class PServeF : AFragment() {
                 } else {
                     scPServeSimplifyMode?.visibility = View.GONE
                     screenModeLabel?.visibility = View.GONE
-                    navController?.navigate(R.id.PServeExtendedFrag)
+                    if(platform.containers.any { el -> el.volume != null && el.volume!! > 1.25f })
+                        navController?.navigate(R.id.PServeSimplifyFrag)
+                    else
+                        navController?.navigate(R.id.PServeExtendedFrag)
                 }
 
                 tvContainersProgress?.text =
@@ -120,14 +123,12 @@ class PServeF : AFragment() {
                     if (id == R.id.PServeSimplifyFrag) {
                         navController?.popBackStack()
                     }
-
                 }
                 App.ScreenMode.SIMPLIFY -> {
                     screenModeLabel?.text = "Режим группировки"
                     if (id == R.id.PServeExtendedFrag) {
                         navController?.navigate(R.id.PServeSimplifyFrag)
                     }
-
                 }
                 else -> {}
             }

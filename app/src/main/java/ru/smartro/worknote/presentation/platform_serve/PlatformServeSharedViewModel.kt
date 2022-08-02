@@ -49,14 +49,28 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     fun getPlatformEntity(platformId: Int): PlatformEntity {
         val response: PlatformEntity = baseDat.getPlatformEntity(platformId)
         _platformEntity.postValue(response)
-        if(response.containers.all { el -> el.status == StatusEnum.NEW }) {
+        val isAnyContainerServedInSimplify = response.containers.any { el -> el.volume != null && el.volume!! > 1.25 }
+        if(response.containers.all { el -> el.status == StatusEnum.NEW } || response.servedContainers.isNotEmpty() || isAnyContainerServedInSimplify) {
             val temp = clusterContainers(response.containers.toList())
             if(response.servedContainers.isNotEmpty()) {
                 mServedContainers.postValue(response.servedContainers)
+            } else if(isAnyContainerServedInSimplify) {
+                val result: MutableList<ServedContainers> = mutableListOf()
+                temp.forEach { clientGroup ->
+                    clientGroup.typeGroupedContainers.forEach { typeGroup ->
+                        val container = response.containers.find { el ->
+                            el.typeName == typeGroup.typeName
+                            && el.client == clientGroup.client
+                        }
+                        val count = container!!.volume!! * typeGroup.containersIds.size
+                        result.add(ServedContainers(typeGroup.typeName, clientGroup.client, count.toInt()))
+                    }
+                }
+                mServedContainers.postValue(result)
             } else {
                 val result = countServedContainers(temp)
                 Log.d("SHEESH :::", "getPlatformEntity: countServedContainers ${result}")
-                mServedContainers.postValue(countServedContainers(temp))
+                mServedContainers.postValue(result)
             }
             _sortedContainers.postValue(temp)
         }
