@@ -187,7 +187,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     // FINISH
     fun updatePlatformStatusSuccess(platformId: Int) {
         // если упрощенный режим
-        if(params.lastScreenMode == ScreenMode.SIMPLIFY) {
+        if(params.lastScreenMode == ScreenMode.SIMPLIFY && _platformEntity.value!!.containers.all { el -> el.volume == null }) {
             mServedContainers.value?.let {
                 if (_sortedContainers.value != null ) {
                     it.forEach { el ->
