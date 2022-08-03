@@ -84,7 +84,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mMapMyYandex: MapView
-    private val vs: PlatformServeSharedViewModel by activityViewModels()
+    private val viewModel: PlatformServeSharedViewModel by activityViewModels()
     private val mWorkOrderFilteredIds: MutableList<Int> = mutableListOf()
     private var mWorkOrderS: List<WorkOrderEntity>? = null
     private var mPlatformS: List<PlatformEntity>? = null
@@ -110,7 +110,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
             moveCameraTo(point)
         }
 
-        val platformNear = vs.baseDat.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
+        val platformNear = viewModel.baseDat.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
 
         if (platformNear == null) {
             log("platformNear.is null")
@@ -171,11 +171,11 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         }
 
         mMapMyYandex = view.findViewById(R.id.map_view)
-        val hasWorkOrdersInNotProgress = vs.baseDat.hasWorkOrderInNotProgress()
+        val hasWorkOrdersInNotProgress = viewModel.baseDat.hasWorkOrderInNotProgress()
         if (hasWorkOrdersInNotProgress) {
             showingProgress()
             val extraPramId = getAct().getPutExtraParam_ID()
-            val workOrderS = vs.baseDat.findWorkOrders_Old(extraPramId)
+            val workOrderS = viewModel.baseDat.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
         }
         mMapMyYandex.map.addInertiaMoveListener(this)
@@ -199,6 +199,13 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.isAutoZoomEnabled = true
         userLocationLayer.setObjectListener(this)
+
+        if(viewModel.mPlatformEntity.value != null) {
+            val lat = viewModel.mPlatformEntity.value!!.coordLat
+            val long = viewModel.mPlatformEntity.value!!.coordLong
+            moveCameraTo(PoinT(lat, long))
+        }
+
         val fabGotoMyGPS = view.findViewById<FloatingActionButton>(R.id.fab_f_map__goto_my_gps)
         fabGotoMyGPS.setOnClickListener {
             try {
@@ -301,9 +308,9 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
     private fun getActualWorkOrderS(isForceMode: Boolean = false, isFilterMode: Boolean = true): List<WorkOrderEntity> {
         if (mWorkOrderS == null || isForceMode) {
-            mWorkOrderS = vs.baseDat.findWorkOrders(isFilterMode)
+            mWorkOrderS = viewModel.baseDat.findWorkOrders(isFilterMode)
             if (mWorkOrderS?.isEmpty() == true) {
-                mWorkOrderS = vs.baseDat.findWorkOrders(false)
+                mWorkOrderS = viewModel.baseDat.findWorkOrders(false)
             }
         }
         return mWorkOrderS!!
@@ -346,7 +353,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     private fun saveBreakDownTypes() {
-        vs.networkDat.getBreakDownTypes().observe(getAct()) { result ->
+        viewModel.networkDat.getBreakDownTypes().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     // TODO: ПО голове себе постучи
@@ -363,7 +370,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
     private fun saveFailReason() {
         Log.i(TAG, "saveFailReason.before")
-        vs.networkDat.getFailReason().observe(getAct()) { result ->
+        viewModel.networkDat.getFailReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     Log.d(TAG, "saveFailReason. Status.SUCCESS")
@@ -377,7 +384,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
     private fun saveCancelWayReason() {
         Log.d(TAG, "saveCancelWayReason.before")
-        vs.networkDat.getCancelWayReason().observe(getAct()) { result ->
+        viewModel.networkDat.getCancelWayReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     Log.d(TAG, "saveCancelWayReason. Status.SUCCESS")
@@ -396,20 +403,20 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {
         Log.d(TAG, "acceptProgress.before")
-        vs.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec())).observe(getAct()) { result ->
+        viewModel.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec())).observe(getAct()) { result ->
             resultStatusList.add(result.status)
             getAct().modeSyNChrON_off(false)
             when (result.status) {
                 Status.SUCCESS -> {
                     logSentry("acceptProgress Status.SUCCESS ")
-                    vs.baseDat.setProgressData(workOrder)
+                    viewModel.baseDat.setProgressData(workOrder)
                     getAct().modeSyNChrON_off(false)
                     hideProgress()
                 }
                 else -> {
                     logSentry("acceptProgress Status.ERROR")
                     toast(result.msg)
-                    vs.baseDat.setNextProcessDate(workOrder)
+                    viewModel.baseDat.setNextProcessDate(workOrder)
                 }
             }
             if (workOrderSize == resultStatusList.size) {
@@ -433,13 +440,13 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
             timeBeforeInSec = lastSynchroTimeInSec + m30MinutesInSec
-            nextSentPlatforms = vs.baseDat.findPlatforms30min()
+            nextSentPlatforms = viewModel.baseDat.findPlatforms30min()
             log( "SYNCworkER PLATFORMS IN LAST 30 min")
             next(nextSentPlatforms, timeBeforeInSec)
         }
         if (nextSentPlatforms.isEmpty()) {
             timeBeforeInSec = MyUtil.timeStampInSec()
-            nextSentPlatforms = vs.baseDat.findLastPlatforms()
+            nextSentPlatforms = viewModel.baseDat.findLastPlatforms()
             log("SYNCworkER LAST PLATFORMS")
             next(nextSentPlatforms, timeBeforeInSec)
         }
@@ -448,7 +455,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
     private fun gotoSynchronize() {
         var lastPlatforms: List<PlatformEntity> = emptyList()
-        lastPlatforms = vs.baseDat.findLastPlatforms()
+        lastPlatforms = viewModel.baseDat.findLastPlatforms()
         val lastPlatformsSize = lastPlatforms.size
 
         val deviceId = Settings.Secure.getString(getAct().contentResolver, Settings.Secure.ANDROID_ID)
@@ -464,7 +471,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
                     gps.PointTimeToLastKnowTime_SRV(),
                     nextSentPlatforms)
 
-                vs.networkDat.sendLastPlatforms(synchronizeBody).observe(getAct()) { result ->
+                viewModel.networkDat.sendLastPlatforms(synchronizeBody).observe(getAct()) { result ->
                     hideProgress()
                     when (result.status) {
                         Status.SUCCESS -> {
@@ -512,7 +519,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         val rvInfo = view.findViewById<RecyclerView>(R.id.rv_f_map__workorder_info)
         mAcbGotoComplete = view.findViewById(R.id.acb_f_map__workorder_info__gotocomplete)
         mAcbGotoComplete?.setOnClickListener {
-            vs.baseDat.setWorkOrderIsShowForUser(workOrderS)
+            viewModel.baseDat.setWorkOrderIsShowForUser(workOrderS)
             gotoComplete()
         }
         setAcbCompleteText(workOrderS)
@@ -524,7 +531,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         builder.setView(view)
         result = builder.create()
         result.setOnCancelListener {
-            val workorder: Unit = vs.baseDat.setWorkOrderIsShowForUser(workOrderS)
+            val workorder: Unit = viewModel.baseDat.setWorkOrderIsShowForUser(workOrderS)
             next()
             onRefreshData()
         }
@@ -653,11 +660,15 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         }
     }
 
+    override fun openFailureFire(item: PlatformEntity) {
+        navigateMain(R.id.FAStPhotoFailureMediaF, item.platformId)
+    }
+
     fun buildNavigator(checkPoint: Point) {
         try {
 //            getMapObjCollection().clear()
             clearMapObjectsDrive()
-            vs.buildMapNavigator(AppliCation().gps(), checkPoint, mDrivingRouter, mDrivingSession)
+            viewModel.buildMapNavigator(AppliCation().gps(), checkPoint, mDrivingRouter, mDrivingSession)
             drivingModeState = true
             acibNavigatorToggle?.isVisible = drivingModeState
             hideDialog()
@@ -806,6 +817,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         Log.w("RRRR", "onMapObjectTap")
         val platformClickedDtlDialog = MapFPlatformClickedDtlDialog(clickedPlatform, coord, this)
         platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
+
 //        todo: !!!R_dos
 //        findNavController().navigate(
 //            PServeExtendedFragDirections

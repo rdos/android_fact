@@ -14,11 +14,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.*
+import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbstractDialog
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.PlatformEntity
@@ -114,14 +117,13 @@ class MapFPlatformClickedDtlDialog(private val _platform: PlatformEntity, privat
 
     private fun initButtonsViews(view: View) {
         view.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener {
-            val intent = Intent(requireActivity(), MainAct::class.java)
-            intent.putExtra("platform_id", _platform.platformId)
-            intent.putExtra("mode", "itFireMode")
-            startActivity(intent)
+            dismiss()
+            listener.openFailureFire(_platform)
         }
 
         //коммент инициализации
         view.findViewById<ImageButton>(R.id.platform_location).setOnClickListener {
+            dismiss()
             listener.navigatePlatform(_point)
         }
     }

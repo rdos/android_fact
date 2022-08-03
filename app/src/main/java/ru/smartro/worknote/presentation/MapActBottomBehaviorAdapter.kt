@@ -225,5 +225,6 @@ class MapActBottomBehaviorAdapter(
         fun startPlatformProblem(item: PlatformEntity)
         fun moveCameraPlatform(point: PoinT)
         fun navigatePlatform(checkPoint: Point)
+        fun openFailureFire(item: PlatformEntity)
     }
 }

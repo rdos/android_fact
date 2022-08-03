@@ -16,15 +16,21 @@ import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
 
 class PServeF : AFragment() {
+    private var mBackPressedCnt: Int = 2
+
     override fun onGetLayout(): Int {
         return R.layout.f_pserve
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        viewModel.updatePlatformStatusUnfinished()
-        navigateBack(R.id.MapF)
-        toast("Вы не завершили обслуживание КП.")
+        mBackPressedCnt--
+        if (mBackPressedCnt <= 0) {
+            viewModel.updatePlatformStatusUnfinished()
+            navigateBack(R.id.MapF)
+            toast("Вы не завершили обслуживание КП.")
+        } else {
+            toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
+        }
     }
 
     private var navController: NavController? = null

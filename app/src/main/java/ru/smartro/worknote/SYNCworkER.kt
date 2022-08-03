@@ -119,7 +119,8 @@ class SYNCworkER(
         val pingResponse = mNetworkRepository.ping(PingBody("ping"))
         when (pingResponse.status) {
             Status.SUCCESS -> {
-                Log.d("TEST :::: ", pingResponse.data.toString())
+                Log.d(TAG, "PING RESPONSE:")
+                Log.d(TAG, pingResponse.data.toString())
                 val message = pingResponse.data?.payload?.message
                 if(message != null)
                     (applicationContext as App).showAlertNotification(message)
