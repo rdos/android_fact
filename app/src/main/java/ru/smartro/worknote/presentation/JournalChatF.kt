@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.ui
+package ru.smartro.worknote.presentation
 
 import android.app.Application
 import android.os.Bundle
@@ -12,23 +12,21 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.act_messager__rv_item.view.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
-import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.andPOintD.BaseAdapter
-import ru.smartro.worknote.awORKOLDs.BaseViewModel
+import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.PlatformEntity
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JournalChatFragment : AFragment() {
+class JournalChatF : AFragment() {
 
     private var mAdapter: JournalChatAdapter? = null
-    private val viewModel: JournalViewModel by viewModels()
+    private val viewModel: JournalChatViewModel by viewModels()
 
     override fun onGetLayout(): Int {
         return R.layout.act_journalchat
@@ -187,7 +185,7 @@ class JournalChatFragment : AFragment() {
         findNavController().popBackStack()
     }
 
-    class JournalViewModel(application: Application) : BaseViewModel(application) {
+    class JournalChatViewModel(application: Application) : BaseViewModel(application) {
 
         fun findPlatformsIsServed(): List<PlatformEntity> {
             return baseDat.findPlatformsIsServed()

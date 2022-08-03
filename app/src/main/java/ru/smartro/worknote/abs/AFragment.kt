@@ -1,4 +1,4 @@
-package ru.smartro.worknote
+package ru.smartro.worknote.abs
 
 import android.os.Bundle
 import android.util.Log
@@ -7,11 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import io.sentry.Sentry
+import ru.smartro.worknote.App
+import ru.smartro.worknote.Inull
+import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.log.AAct
+import ru.smartro.worknote.toast
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"

@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work
+package ru.smartro.worknote.presentation
 
 import android.app.AlertDialog
 import android.app.PendingIntent
@@ -51,7 +51,7 @@ import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.ui_view.ViewProvider
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.isShowForUser
@@ -64,10 +64,11 @@ import ru.smartro.worknote.awORKOLDs.extensions.warningClearNavigator
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.platform_serve.PServeAct
+import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.utils.getActivityProperly
+import ru.smartro.worknote.work.*
 
 class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
@@ -703,7 +704,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         }
         mNotifyMap[srpId] = Lnull
 
-        val intent = Intent(getAct(), PServeAct::class.java)
+        val intent = Intent(getAct(), MainAct::class.java)
 
         // TODO: !!?R_dos(;:)
         intent.putExtra("srpId", srpId)

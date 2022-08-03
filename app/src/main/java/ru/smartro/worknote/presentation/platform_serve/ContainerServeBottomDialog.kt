@@ -1,6 +1,5 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,16 +14,17 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.textfield.TextInputEditText
-import ru.smartro.worknote.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.abs.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.presentation.ac.MainAct
 
 
 class ContainerServeBottomDialog : AbstractBottomDialog() {
     private val viewModel: PlatformServeSharedViewModel by activityViewModels()
     private var volume: Double? = null
-    private lateinit var parentAct: PServeAct
+    private lateinit var parentAct: MainAct
 
     private var firstTime = true
 
@@ -46,7 +46,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parentAct = requireActivity() as PServeAct
+        parentAct = requireActivity() as MainAct
 
         p_container_id = arguments?.getInt(ARGUMENT_NAME___PARAM_ID)!!
 

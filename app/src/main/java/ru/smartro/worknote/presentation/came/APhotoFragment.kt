@@ -29,9 +29,10 @@ import com.bumptech.glide.request.RequestOptions
 import io.realm.RealmList
 import ru.smartro.worknote.*
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.ActNOAbst
-import ru.smartro.worknote.awORKOLDs.BaseViewModel
+import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel

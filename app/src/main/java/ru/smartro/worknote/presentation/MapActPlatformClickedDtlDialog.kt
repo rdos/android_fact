@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work
+package ru.smartro.worknote.presentation
 
 import android.content.Intent
 import android.graphics.Color
@@ -19,9 +19,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AbstractDialog
-import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.presentation.platform_serve.PServeAct
+import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.work.PlatformEntity
 import kotlin.math.min
 
 class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point,
@@ -38,7 +38,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         //onBindViewHolder
         super.onViewCreated(view, savedInstanceState)
         Log.w("RRRRRR", "R_dos")
-        mCurrentActivity = requireActivity() as PServeAct
+        mCurrentActivity = requireActivity() as MainAct
 
         val spanCount = min(_platform.containers.size, 10)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_dialog_platform_clicked_dtl)
@@ -112,7 +112,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
 
     private fun initButtonsViews(view: View) {
         view.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener {
-            val intent = Intent(requireActivity(), PServeAct::class.java)
+            val intent = Intent(requireActivity(), MainAct::class.java)
             intent.putExtra("platform_id", _platform.platformId)
             intent.putExtra("mode", "itFireMode")
             startActivity(intent)

@@ -6,7 +6,7 @@
     app:startDestination="@id/MapF">
     <fragment
         android:id="@+id/MapF"
-        android:name="ru.smartro.worknote.work.MapF"
+        android:name="ru.smartro.worknote.presentation.MapF"
         tools:layout="@layout/f_map"
         android:label="MapF" >
         <argument
@@ -21,7 +21,7 @@
     <dialog
         android:id="@+id/MapActPlatformClickedDtlDialog"
 
-        android:name="ru.smartro.worknote.work.MapActPlatformClickedDtlDialog"
+        android:name="ru.smartro.worknote.presentation.MapActPlatformClickedDtlDialog"
         android:label="MapActPlatformClickedDtlDialog">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -272,7 +272,7 @@
     </fragment>
     <fragment
         android:id="@+id/DebugFragment"
-        android:name="ru.smartro.worknote.work.ui.DebugFragment"
+        android:name="ru.smartro.worknote.presentation.DebugF"
         android:label="DebugFragment" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -285,7 +285,7 @@
     </fragment>
     <fragment
         android:id="@+id/JournalChatFragment"
-        android:name="ru.smartro.worknote.work.ui.JournalChatFragment"
+        android:name="ru.smartro.worknote.presentation.JournalChatF"
         android:label="JournalChatFragment" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"

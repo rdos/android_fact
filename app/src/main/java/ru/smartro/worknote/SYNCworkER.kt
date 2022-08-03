@@ -16,7 +16,7 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
-import ru.smartro.worknote.work.ac.StartAct
+import ru.smartro.worknote.presentation.ac.StartAct
 import java.io.File
 import java.io.FileOutputStream
 

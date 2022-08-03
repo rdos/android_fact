@@ -27,7 +27,6 @@ import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.google.gson.Gson
 import com.yandex.mapkit.MapKitFactory
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -41,9 +40,7 @@ import org.koin.core.context.startKoin
 import ru.smartro.worknote.andPOintD.AndRoid
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.BaseViewModel
-import ru.smartro.worknote.awORKOLDs.adapter.viewModelModule
-import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
+import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp

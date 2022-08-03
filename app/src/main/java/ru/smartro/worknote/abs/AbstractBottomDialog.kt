@@ -6,8 +6,6 @@ import android.view.View
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.sentry.Sentry
-import ru.smartro.worknote.ARGUMENT_NAME___PARAM_ID
-import ru.smartro.worknote.ARGUMENT_NAME___PARAM_NAME
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log.AAct
 

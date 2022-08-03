@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work
+package ru.smartro.worknote.presentation
 
 import android.view.View
 import android.widget.Button
@@ -14,6 +14,7 @@ import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.isShowForUser
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.work.PlatformEntity
 
 
 class MapActBottomBehaviorAdapter(

@@ -1,14 +1,12 @@
-package ru.smartro.worknote.work.ui
+package ru.smartro.worknote.presentation
 
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.core.content.getSystemService
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.yandex.mapkit.Animation
@@ -16,16 +14,14 @@ import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.mapview.MapView
 import kotlinx.android.synthetic.main.activity_debug.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ActNOAbst
-import ru.smartro.worknote.awORKOLDs.BaseViewModel
+import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
 
-class DebugFragment : AFragment() {
+class DebugF : AFragment() {
     private lateinit var mMapView: MapView
     private val vs: DebugViewModel by viewModels()
     override fun onGetLayout(): Int {

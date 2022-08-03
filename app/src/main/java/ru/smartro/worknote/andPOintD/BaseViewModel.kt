@@ -1,4 +1,4 @@
-package ru.smartro.worknote.awORKOLDs
+package ru.smartro.worknote.andPOintD
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

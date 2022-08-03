@@ -12,14 +12,12 @@ import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.directions.driving.VehicleOptions
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.App.ScreenMode
-import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.BaseViewModel
+import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.ServedContainers
-import ru.smartro.worknote.work.net.CancelWayReasonEntity
 
 data class ClientGroupedContainers(
     var client: String = "",

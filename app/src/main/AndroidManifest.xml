@@ -27,12 +27,12 @@
         android:allowBackup="false"
         android:theme="@style/AppTheme">
         <activity  android:exported="false"
-            android:name="ru.smartro.worknote.presentation.platform_serve.PServeAct"
+            android:name="ru.smartro.worknote.presentation.ac.MainAct"
             android:screenOrientation="portrait" />
 
 
         <activity  android:exported="true"
-            android:name=".work.ac.StartAct"
+            android:name="ru.smartro.worknote.presentation.ac.StartAct"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>
@@ -41,12 +41,7 @@
             </intent-filter>
         </activity>
         <activity  android:exported="true"
-            android:name="ru.smartro.worknote.presentation.terminate.TerminateAct"
-            android:screenOrientation="portrait"
-            >
-        </activity>
-        <activity  android:exported="true"
-            android:name="ru.smartro.worknote.presentation.checklist.XChecklistAct"
+            android:name="ru.smartro.worknote.presentation.ac.XChecklistAct"
             android:screenOrientation="portrait"
             >
         </activity>

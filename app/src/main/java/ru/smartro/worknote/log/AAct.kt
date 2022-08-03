@@ -9,7 +9,7 @@ import io.sentry.Sentry
 import ru.smartro.worknote.*
  
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
-import ru.smartro.worknote.work.ac.StartAct
+import ru.smartro.worknote.presentation.ac.StartAct
 import java.lang.Exception
 
 //        try {
