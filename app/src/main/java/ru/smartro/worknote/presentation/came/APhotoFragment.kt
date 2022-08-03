@@ -258,7 +258,7 @@ abstract class APhotoFragment(
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        (requireActivity() as ActNOAbst).hideProgress()
+        getAct().hideProgress()
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (PackageManager.PERMISSION_GRANTED == grantResults.firstOrNull()) {
@@ -277,7 +277,7 @@ abstract class APhotoFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity() as ActNOAbst).hideProgress()
+        getAct().hideProgress()
         if (!MyUtil.hasPermissions(requireContext())) {
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         }

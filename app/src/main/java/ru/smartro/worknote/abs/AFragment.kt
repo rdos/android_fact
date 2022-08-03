@@ -29,7 +29,7 @@ abstract class AFragment : Fragment(){
     protected fun showingProgress(text: String? = null, isEmptyOldText: Boolean=false){
         //todo:ActAbstract
         Log.d("TEST :::::", "FRAG NAME: ${this::class.java.simpleName}")
-        (requireActivity() as AAct).showingProgress(text, isEmptyOldText)
+        getAct().showingProgress(text, isEmptyOldText)
     }
 
     protected fun AppliCation() : App {
@@ -41,7 +41,7 @@ abstract class AFragment : Fragment(){
     }
 
     protected fun hideProgress(){
-        (requireActivity() as AAct).hideProgress()
+        getAct().hideProgress()
     }
 
     protected fun logSentry(text: String) {
