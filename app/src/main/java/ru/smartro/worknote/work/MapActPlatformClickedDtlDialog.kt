@@ -17,8 +17,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
-import kotlinx.android.synthetic.main.act_map__dialog_platform_clicked_dtl.*
-import kotlinx.android.synthetic.main.alert_warning_camera.view.*
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AbstractDialog
 import ru.smartro.worknote.awORKOLDs.extensions.*
@@ -67,7 +65,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
 
         // TODO: 27.10.2021 !! !?
-        initButtonsViews()
+        initButtonsViews(view)
         view.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener {
             dismiss()
         }
@@ -112,8 +110,8 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         dialog?.window?.attributes = params
     }
 
-    private fun initButtonsViews() {
-        platform_detail_fire.setOnClickListener {
+    private fun initButtonsViews(view: View) {
+        view.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener {
             val intent = Intent(requireActivity(), PServeAct::class.java)
             intent.putExtra("platform_id", _platform.platformId)
             intent.putExtra("mode", "itFireMode")
@@ -121,7 +119,7 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
         }
 
         //коммент инициализации
-        platform_location.setOnClickListener {
+        view.findViewById<ImageButton>(R.id.platform_location).setOnClickListener {
             listener.navigatePlatform(_point)
         }
     }

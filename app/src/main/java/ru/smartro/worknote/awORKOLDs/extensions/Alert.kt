@@ -4,12 +4,13 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.alert_clear_navigator.view.dismiss_btn
-import kotlinx.android.synthetic.main.alert_warning_camera.view.title_tv
+import org.w3c.dom.Text
 import ru.smartro.worknote.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
@@ -100,7 +101,7 @@ fun AppCompatActivity.warningCameraShow(title: String): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_warning_camera, null)
-    view.title_tv.text = title
+    view.findViewById<TextView>(R.id.title_tv).text = title
     builder.setView(view)
     builder.setCancelable(false)
     showCustomDialog(builder)
@@ -206,8 +207,8 @@ fun AFragment.warningClearNavigator(title: String): View {
     builder.setView(view)
     builder.setCancelable(false)
     mCustomDialog = builder.create()
-    view.title_tv.text = title
-    view.dismiss_btn.setOnClickListener {
+    view.findViewById<TextView>(R.id.title_tv).text = title
+    view.findViewById<Button>(R.id.dismiss_btn).setOnClickListener {
         mCustomDialog.dismiss()
     }
     mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -220,7 +221,7 @@ fun Fragment.warningDelete(title: String): View {
     val builder = AlertDialog.Builder(activity!!)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_warning_delete, null)
-    view.title_tv.text = title
+    view.findViewById<TextView>(R.id.title_tv).text = title
     builder.setView(view)
     builder.setCancelable(false)
     showCustomDialog(builder)

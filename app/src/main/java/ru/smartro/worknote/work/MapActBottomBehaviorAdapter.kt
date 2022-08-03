@@ -1,12 +1,14 @@
 package ru.smartro.worknote.work
 
 import android.view.View
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
-import kotlinx.android.synthetic.main.f_map__bottom_behavior__rv_item.view.*
+import net.cachapa.expandablelayout.ExpandableLayout
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
@@ -98,13 +100,15 @@ class MapActBottomBehaviorAdapter(
         if (item.workOrderId in mFilteredWayTaskIds) {
             holder.itemView.alpha = 0.1f
         }
-        if (lastHolder?.platformId == item.platformId) {
-            holder.itemView.map_behavior_expl.expand(false)
-        } else {
-            holder.itemView.map_behavior_expl.collapse(false)
+        holder.itemView.findViewById<ExpandableLayout>(R.id.map_behavior_expl).apply {
+            if (lastHolder?.platformId == item.platformId) {
+                expand(false)
+            } else {
+                collapse(false)
+            }
         }
 
-        holder.itemView.tv_item_map_behavior__address.text = item.address
+        holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__address).text = item.address
         val tvName = holder.itemView.findViewById<TextView>(R.id.tv_item_map_behavior__name)
         tvName.isVisible = false
         if (item.name.isShowForUser()) {
@@ -134,14 +138,14 @@ class MapActBottomBehaviorAdapter(
             tvCurrentStatus.text =status
 
 
-        holder.itemView.map_behavior_scrp_id.text = item.srpId.toString()
+        holder.itemView.findViewById<TextView>(R.id.map_behavior_scrp_id).text = item.srpId.toString()
         val containerString: String = holder.itemView.context.resources.getQuantityString(R.plurals.container_count, item.containers.size)
-        holder.itemView.map_behavior_container_count.text = "${item.containers.size} $containerString"
+        holder.itemView.findViewById<TextView>(R.id.map_behavior_container_count).text = "${item.containers.size} $containerString"
 
-        holder.itemView.map_behavior_coordinate.setOnClickListener {
+        holder.itemView.findViewById<TextView>(R.id.map_behavior_coordinate).setOnClickListener {
             listener.moveCameraPlatform(PoinT(item.coordLat, item.coordLong))
         }
-        holder.itemView.map_behavior_location.setOnClickListener {
+        holder.itemView.findViewById<ImageButton>(R.id.map_behavior_location).setOnClickListener {
             listener.navigatePlatform(Point(item.coordLat, item.coordLong))
         }
 
@@ -156,22 +160,27 @@ class MapActBottomBehaviorAdapter(
 
         val currentStatus = item.getStatusPlatform()
         if(currentStatus == StatusEnum.NEW || currentStatus == StatusEnum.UNFINISHED) {
-            holder.itemView.setOnClickListener {
-                if (!holder.itemView.map_behavior_expl.isExpanded) {
-                    holder.itemView.map_behavior_expl.expand()
-                    holder.itemView.map_behavior_start_service.setOnClickListener {
-                        listener.startPlatformService(item)
+            holder.itemView.apply {
+                setOnClickListener {
+                    if (!findViewById<ExpandableLayout>(R.id.map_behavior_expl).isExpanded) {
+                        findViewById<ExpandableLayout>(R.id.map_behavior_expl).expand()
+
+                        findViewById<Button>(R.id.map_behavior_start_service).setOnClickListener {
+                            listener.startPlatformService(item)
+                        }
+
+                        findViewById<ImageButton>(R.id.map_behavior_fire).setOnClickListener {
+                            listener.startPlatformProblem(item)
+                        }
+
+                        if (lastHolder?.platformId != item.platformId) {
+                            lastHolder?.collapseOld()
+                        }
+                        lastHolder = holder
+                        lastHolder?.platformId = item.platformId
+                    } else {
+                        findViewById<ExpandableLayout>(R.id.map_behavior_expl).collapse(true)
                     }
-                    holder.itemView.map_behavior_fire.setOnClickListener {
-                        listener.startPlatformProblem(item)
-                    }
-                    if (lastHolder?.platformId != item.platformId) {
-                        lastHolder?.collapseOld()
-                    }
-                    lastHolder = holder
-                    lastHolder?.platformId = item.platformId
-                } else {
-                    holder.itemView.map_behavior_expl.collapse(true)
                 }
             }
         } else {
@@ -184,7 +193,7 @@ class MapActBottomBehaviorAdapter(
             }
             StatusEnum.UNFINISHED -> {
                 setUseButtonStyleBackgroundYellow(holder.itemView)
-                holder.itemView.map_behavior_start_service.setText(R.string.start_serve_again)
+                holder.itemView.findViewById<Button>(R.id.map_behavior_start_service).setText(R.string.start_serve_again)
             }
             StatusEnum.PARTIAL_PROBLEMS -> {
                 setUseButtonStyleBackgroundOrange(holder.itemView)
@@ -203,7 +212,7 @@ class MapActBottomBehaviorAdapter(
             if (platformId == null) {
                 return
             }
-            itemView.map_behavior_expl?.collapse()
+            itemView.findViewById<ExpandableLayout>(R.id.map_behavior_expl)?.collapse()
             platformId = null
         }
         var platformId: Int? = null
