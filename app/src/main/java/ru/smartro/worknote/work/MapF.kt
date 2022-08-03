@@ -27,7 +27,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -67,11 +66,8 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBod
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
-import ru.smartro.worknote.presentation.terminate.TerminateAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.utils.getActivityProperly
-import ru.smartro.worknote.work.ui.DebugAct
-import ru.smartro.worknote.work.ui.JournalChatAct
 
 class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
@@ -176,20 +172,20 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         val hasWorkOrdersInNotProgress = vs.baseDat.hasWorkOrderInNotProgress()
         if (hasWorkOrdersInNotProgress) {
             showingProgress()
-            val extraPramId = getArgumentID()
+            val extraPramId = getAct().getPutExtraParam_ID()
             val workOrderS = vs.baseDat.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
         }
         mMapMyYandex.map.addInertiaMoveListener(this)
 
-        mAcbInfo = view.findViewById(R.id.acb_act_map__info)
+        mAcbInfo = view.findViewById(R.id.acb_f_map__info)
         mAcbInfo.setOnClickListener {
             createInfoDialog({})
         }
         setInfoData()
 
 
-        val acbLogout = view.findViewById<AppCompatButton>(R.id.acb_act_map__logout)
+        val acbLogout = view.findViewById<AppCompatButton>(R.id.acb_f_map__logout)
         acbLogout.setOnClickListener {
             getAct().logout()
         }
@@ -201,7 +197,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.isAutoZoomEnabled = true
         userLocationLayer.setObjectListener(this)
-        val fabGotoMyGPS = view.findViewById<FloatingActionButton>(R.id.fab_act_map__goto_my_gps)
+        val fabGotoMyGPS = view.findViewById<FloatingActionButton>(R.id.fab_f_map__goto_my_gps)
         fabGotoMyGPS.setOnClickListener {
             try {
                 AppliCation().startLocationService(true)
@@ -212,22 +208,22 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
             }
         }
 
-        val fabDebug = view.findViewById<FloatingActionButton>(R.id.fab_act_map__debug)
+        val fabDebug = view.findViewById<FloatingActionButton>(R.id.fab_f_map__debug)
         fabDebug.setOnClickListener {
-            navigateMain(R.id.debugFragment, null)
+            navigateMain(R.id.DebugFragment, null)
 //            startActivity(Intent(getAct(), DebugAct::class.java))
         }
 
-        acibNavigatorToggle = view.findViewById<AppCompatImageButton>(R.id.acib__act_map__navigator_toggle)
+        acibNavigatorToggle = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__navigator_toggle)
         acibNavigatorToggle?.setOnClickListener {
             drivingModeState = false
             acibNavigatorToggle?.isVisible = drivingModeState
             clearMapObjectsDrive()
             hideDialog()
         }
-        val acibGotoLogActMapAPIB = view.findViewById<AppCompatImageButton>(R.id.goto_log__act_map__apib)
+        val acibGotoLogActMapAPIB = view.findViewById<AppCompatImageButton>(R.id.goto_log__f_map__apib)
         acibGotoLogActMapAPIB.setOnClickListener {
-            navigateMain(R.id.journalChatFragment, null)
+            navigateMain(R.id.JournalChatFragment, null)
         //            startActivity(Intent(getAct(), JournalChatAct::class.java))
         }
 
@@ -483,8 +479,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
     private fun completeWorkOrders() {
         hideInfoDialog()
-        val intent = Intent(getAct(), TerminateAct::class.java)
-        startActivity(intent)
+        navigateMain(R.id.CompleteF)
     }
 
     private fun showInfoDialog() {
@@ -496,12 +491,12 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         lateinit var result: AlertDialog
         val builder = AlertDialog.Builder(getAct())
         val inflater = LayoutInflater.from(getAct())
-        val view = inflater.inflate(R.layout.act_map__workorder_info, null)
+        val view = inflater.inflate(R.layout.f_map__workorder_info, null)
         // TODO:
         val workOrderS = getActualWorkOrderS(true, isFilterMode = false)
 //            var infoText = "**Статистика**\n"
-        val rvInfo = view.findViewById<RecyclerView>(R.id.rv_act_map__workorder_info)
-        mAcbGotoComplete = view.findViewById(R.id.acb_act_map__workorder_info__gotocomplete)
+        val rvInfo = view.findViewById<RecyclerView>(R.id.rv_f_map__workorder_info)
+        mAcbGotoComplete = view.findViewById(R.id.acb_f_map__workorder_info__gotocomplete)
         mAcbGotoComplete?.setOnClickListener {
             vs.baseDat.setWorkOrderIsShowForUser(workOrderS)
             gotoComplete()
@@ -572,7 +567,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             MyUtil.hideKeyboard(getAct())
         }
-        val acetFilterAddress = view.findViewById<AppCompatEditText>(R.id.acet__act_map__bottom_behavior__filter)
+        val acetFilterAddress = view.findViewById<AppCompatEditText>(R.id.acet__f_map__bottom_behavior__filter)
         acetFilterAddress.removeTextChangedListener(null)
         acetFilterAddress.addTextChangedListener { newText ->
             mAdapterBottomBehavior?.let { mapBottom ->
@@ -726,7 +721,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     override fun onGetLayout(): Int {
-        return R.layout.act_map
+        return R.layout.f_map
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -797,6 +792,10 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         Log.w("RRRR", "onMapObjectTap")
         val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coord, this)
         platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
+//        todo: !!!R_dos
+//        findNavController().navigate(
+//            PServeExtendedFragDirections
+//            .actionExtendedServeFragmentToContainerServeBottomDialog(item.containerId!!))
         return true
     }
 
@@ -901,7 +900,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InfoViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.act_map__workorder_info__rv_item, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.f_map__workorder_info__rv_item, parent, false)
             return InfoViewHolder(view)
         }
 
@@ -946,29 +945,29 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
         inner class InfoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val tvPlatformCnt: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_cnt)
+                itemView.findViewById(R.id.tv_f_map__workorder_info__rv__platform_cnt)
             }
             val tvPlatformSuccess: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_success)
+                itemView.findViewById(R.id.tv_f_map__workorder_info__rv__platform_success)
             }
             val tvPlatformError: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_error)
+                itemView.findViewById(R.id.tv_f_map__workorder_info__rv__platform_error)
             }
             val tvPlatformProgress: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__platform_progress)
+                itemView.findViewById(R.id.tv_f_map__workorder_info__rv__platform_progress)
             }
 
             val tvContainerCnt: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_cnt)
+                itemView.findViewById(R.id.tv_f_map__workorder_info__rv__container_cnt)
             }
             val tvContainerSuccess: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_success)
+                itemView.findViewById(R.id.tv_f_map__workorder_info__rv__container_success)
             }
             val tvContainerError: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_error)
+                itemView.findViewById(R.id.tv_f_map__workorder_info__rv__container_error)
             }
             val tvContainerProgress: TextView by lazy {
-                itemView.findViewById(R.id.tv_act_map__workorder_info__rv__container_progress)
+                itemView.findViewById(R.id.tv_f_map__workorder_info__rv__container_progress)
             }
             val accbCheckBox: AppCompatCheckBox by lazy {
                 val checkBox = itemView.findViewById<AppCompatCheckBox>(R.id.act_map__workorder_info__checkbox)

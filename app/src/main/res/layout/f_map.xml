@@ -16,7 +16,7 @@
             android:layout_height="match_parent"/>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/acb_act_map__info"
+            android:id="@+id/acb_f_map__info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
             />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/acb_act_map__logout"
+            android:id="@+id/acb_f_map__logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +43,7 @@
         <!--<include layout="@layout/act_map__workorder_info"/>-->
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_act_map__goto_my_gps"
+            android:id="@+id/fab_f_map__goto_my_gps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default"
@@ -54,7 +54,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_act_map__debug"
+            android:id="@+id/fab_f_map__debug"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_default"
@@ -65,7 +65,7 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/acib__act_map__navigator_toggle"
+            android:id="@+id/acib__f_map__navigator_toggle"
             android:layout_width="43dp"
             android:layout_height="43dp"
             android:layout_marginStart="@dimen/margin_default"
@@ -75,9 +75,9 @@
             android:src="@drawable/ic_route_off"
             android:visibility="gone"
             tools:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@id/fab_act_map__goto_my_gps"
-            app:layout_constraintEnd_toEndOf="@id/fab_act_map__goto_my_gps"
-            app:layout_constraintStart_toStartOf="@id/fab_act_map__goto_my_gps"
+            app:layout_constraintBottom_toTopOf="@id/fab_f_map__goto_my_gps"
+            app:layout_constraintEnd_toEndOf="@id/fab_f_map__goto_my_gps"
+            app:layout_constraintStart_toStartOf="@id/fab_f_map__goto_my_gps"
             />
 
         <!--<androidx.appcompat.widget.AppCompatImageButton-->
@@ -90,22 +90,22 @@
         <!--    android:background="@drawable/bg_circle_button"-->
         <!--    android:src="@drawable/ic_euro_blue"-->
         <!--    app:layout_constraintBottom_toTopOf="@id/navigator_toggle_fab"-->
-        <!--    app:layout_constraintEnd_toEndOf="@id/fab_act_map__goto_my_gps"-->
-        <!--    app:layout_constraintStart_toStartOf="@id/fab_act_map__goto_my_gps" />-->
+        <!--    app:layout_constraintEnd_toEndOf="@id/fab_f_map__goto_my_gps"-->
+        <!--    app:layout_constraintStart_toStartOf="@id/fab_f_map__goto_my_gps" />-->
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/goto_log__act_map__apib"
+            android:id="@+id/goto_log__f_map__apib"
             android:layout_width="43dp"
             android:layout_height="43dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/bg_circle_button"
             android:src="@drawable/ic_taskline"
-            app:layout_constraintBottom_toTopOf="@id/fab_act_map__debug"
-            app:layout_constraintEnd_toEndOf="@id/fab_act_map__debug"
-            app:layout_constraintStart_toStartOf="@id/fab_act_map__debug" />
+            app:layout_constraintBottom_toTopOf="@id/fab_f_map__debug"
+            app:layout_constraintEnd_toEndOf="@id/fab_f_map__debug"
+            app:layout_constraintStart_toStartOf="@id/fab_f_map__debug" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <include layout="@layout/act_map__bottom_behavior" />
+    <include layout="@layout/f_map__bottom_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

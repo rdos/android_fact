@@ -54,7 +54,7 @@
         android:layout_height="match_parent"
         android:layout_below="@id/llc__act_checklist__bar"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/checklist_nav_graph" />
+        app:navGraph="@navigation/checklist__nav_graph" />
 
     <ProgressBar
         android:id="@+id/pb__act_checklist__loading"

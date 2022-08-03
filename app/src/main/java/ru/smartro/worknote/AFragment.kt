@@ -78,7 +78,7 @@ abstract class AFragment : Fragment(){
         getAct().finish()
     }
 
-    protected fun navigateMain(navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
+    protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
         val navController = navHost.navController
 

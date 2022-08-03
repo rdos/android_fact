@@ -15,7 +15,8 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:paddingHorizontal="12dp"
-            android:paddingVertical="16dp">
+            android:paddingVertical="16dp"
+            >
 
             <TextView
                 android:id="@+id/nav_title"
@@ -87,7 +88,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        app:navGraph="@navigation/platform_serve__navigation"
+        app:navGraph="@navigation/platform_serve__nav_graph"
         android:layout_weight="1"
         android:layout_width="match_parent" android:layout_height="0dp"/>
 

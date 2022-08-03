@@ -26,17 +26,10 @@
         android:supportsRtl="true"
         android:allowBackup="false"
         android:theme="@style/AppTheme">
-        <activity android:name="ru.smartro.worknote.work.ui.JournalChatAct" />
-
-        <activity android:name="ru.smartro.worknote.work.ui.DebugAct" />
         <activity  android:exported="false"
             android:name="ru.smartro.worknote.presentation.platform_serve.PServeAct"
             android:screenOrientation="portrait" />
 
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.MapAct"
-            android:screenOrientation="portrait"
-            android:theme="@style/NoToolbar" />
 
         <activity  android:exported="true"
             android:name=".work.ac.StartAct"

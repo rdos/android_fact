@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
-import kotlinx.android.synthetic.main.act_map__bottom_behavior__rv_item.view.*
+import kotlinx.android.synthetic.main.f_map__bottom_behavior__rv_item.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
@@ -27,7 +27,7 @@ class MapActBottomBehaviorAdapter(
     }
 
     override fun onGetLayout(): Int {
-        return R.layout.act_map__bottom_behavior__rv_item
+        return R.layout.f_map__bottom_behavior__rv_item
     }
 
     fun filter(platformList: List<PlatformEntity>, filterText: String): List<PlatformEntity> {

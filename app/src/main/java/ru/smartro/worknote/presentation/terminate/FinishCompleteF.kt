@@ -18,7 +18,7 @@ class FinishCompleteF : AFragment() {
     }
 
     override fun onGetLayout(): Int {
-        return R.layout.fragment_successful_complete
+        return R.layout.f_finish_complete
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

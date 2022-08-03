@@ -84,10 +84,15 @@ class CompleteF : AFragment() {
                 if(mDatabase.hasWorkOrderInProgress() == false) {
                     finishTask_know()
                 } else {
-                    getBackToMap()
+                    navigateBack(R.id.MapF)
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateBack()
     }
 
     interface OnSuccessListener {
@@ -100,11 +105,7 @@ class CompleteF : AFragment() {
         getAct().modeSyNChrON_off()
         mDatabase.clearDataBase()
 
-        getAct().findNavController(R.id.fragment_container_end_tasks).navigate(CompleteFDirections.actionCompleteFToFinishCompleteF())
-    }
-
-    fun getBackToMap() {
-        getAct().finish()
+        getAct().findNavController(R.id.f_container).navigate(R.id.FinishCompleteF)
     }
 
     inner class ReasonAdapter(private val workOrderS: MutableList<WorkOrderEntity>,

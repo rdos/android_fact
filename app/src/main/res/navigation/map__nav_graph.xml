@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/MapF"
         android:name="ru.smartro.worknote.work.MapF"
-        tools:layout="@layout/act_map"
+        tools:layout="@layout/f_map"
         android:label="MapF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -18,6 +18,20 @@
             app:argType="string"
             />
     </fragment>
+    <dialog
+        android:id="@+id/MapActPlatformClickedDtlDialog"
+
+        android:name="ru.smartro.worknote.work.MapActPlatformClickedDtlDialog"
+        android:label="MapActPlatformClickedDtlDialog">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
     <fragment
         android:id="@+id/PhotoBeforeMediaF"
         android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaF"
@@ -246,14 +260,71 @@
     <fragment
         android:id="@+id/FAStPhotoFailureMediaF"
         android:name="ru.smartro.worknote.presentation.came.FAStPhotoFailureMediaF"
-        android:label="FAStPhotoFailureMediaF" />
+        android:label="FAStPhotoFailureMediaF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
     <fragment
-        android:id="@+id/debugFragment"
+        android:id="@+id/DebugFragment"
         android:name="ru.smartro.worknote.work.ui.DebugFragment"
-        android:label="DebugFragment" />
+        android:label="DebugFragment" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
     <fragment
-        android:id="@+id/journalChatFragment"
+        android:id="@+id/JournalChatFragment"
         android:name="ru.smartro.worknote.work.ui.JournalChatFragment"
-        android:label="JournalChatFragment" />
+        android:label="JournalChatFragment" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/CompleteF"
+        android:name="ru.smartro.worknote.presentation.terminate.CompleteF"
+        tools:layout="@layout/f_complete___map_act"
+        android:label="CompleteF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/FinishCompleteF"
+        tools:layout="@layout/f_finish_complete"
+        android:name="ru.smartro.worknote.presentation.terminate.FinishCompleteF"
+        android:label="FinishCompleteF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
 
 </navigation>

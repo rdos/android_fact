@@ -15,7 +15,7 @@
             app:destination="@id/PServeSimplifyFrag" />
         <action
             android:id="@+id/action_extendedServeFragment_to_containerServeBottomDialog"
-            app:destination="@id/containerServeBottomDialog">
+            app:destination="@id/ContainerServeBottomDialog">
             <argument
                 android:name="ARGUMENT_NAME___PARAM_ID"
                 app:argType="integer"
@@ -34,7 +34,7 @@
     </fragment>
 
     <dialog
-        android:id="@+id/containerServeBottomDialog"
+        android:id="@+id/ContainerServeBottomDialog"
         tools:layout="@layout/fragment_container_serve"
         android:name="ru.smartro.worknote.presentation.platform_serve.ContainerServeBottomDialog"
         android:label="ContainerServeBottomDialog">

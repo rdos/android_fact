@@ -9,27 +9,22 @@ import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewMo
 import ru.smartro.worknote.presentation.terminate.TerminateViewModel
 import ru.smartro.worknote.presentation.came.PhotoViewModel
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.DebugFragment
-import ru.smartro.worknote.work.ui.JournalChatAct
+import ru.smartro.worknote.work.ui.JournalChatFragment
 
 
 val viewModelModule = module {
     viewModel { StartAct.AuthViewModel(androidApplication()) }
 
+    viewModel { ChecklistViewModel(androidApplication()) }
     viewModel { DebugFragment.DebugViewModel(androidApplication()) }
 
-    viewModel { ChecklistViewModel(androidApplication()) }
-
+    viewModel { JournalChatFragment.JournalViewModel(androidApplication()) }
     viewModel { StartWorkOrderViewModel(androidApplication()) }
 
     viewModel { PlatformServeSharedViewModel(androidApplication()) }
 
     viewModel { PhotoViewModel(androidApplication()) }
-
-    viewModel { DebugAct.DebugViewModel(androidApplication()) }
-
-    viewModel { JournalChatAct.JournalViewModel(androidApplication()) }
 
     viewModel { TerminateViewModel(androidApplication()) }
 }
