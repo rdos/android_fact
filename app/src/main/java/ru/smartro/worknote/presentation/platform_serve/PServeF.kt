@@ -119,13 +119,13 @@ class PServeF : AFragment() {
             scPServeSimplifyMode?.isChecked = mode
             when(mode) {
                 App.ScreenMode.EXTENDED -> {
-                    screenModeLabel?.text = "Стандартный режим"
+                    screenModeLabel?.text = "список"
                     if (id == R.id.PServeSimplifyFrag) {
                         navController?.popBackStack()
                     }
                 }
                 App.ScreenMode.SIMPLIFY -> {
-                    screenModeLabel?.text = "Режим группировки"
+                    screenModeLabel?.text = "по типам"
                     if (id == R.id.PServeExtendedFrag) {
                         navController?.navigate(R.id.PServeSimplifyFrag)
                     }
