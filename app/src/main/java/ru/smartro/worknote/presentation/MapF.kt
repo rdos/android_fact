@@ -252,6 +252,18 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 //        setDevelMode()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (clMapBehavior != null) {
+            val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                return
+            }
+        }
+        navigateClose()
+    }
+
     private var mMapObjectsDrive: MapObjectCollection? = null
     private fun clearMapObjectsDrive() {
         mMapObjectsDrive?.clear()
@@ -791,7 +803,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
             return false
         }
         Log.w("RRRR", "onMapObjectTap")
-        val platformClickedDtlDialog = MapActPlatformClickedDtlDialog(clickedPlatform, coord, this)
+        val platformClickedDtlDialog = MapFPlatformClickedDtlDialog(clickedPlatform, coord, this)
         platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
 //        todo: !!!R_dos
 //        findNavController().navigate(

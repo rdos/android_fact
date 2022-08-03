@@ -24,8 +24,8 @@ import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.PlatformEntity
 import kotlin.math.min
 
-class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point,
-                                     private val listener: MapActBottomBehaviorAdapter.PlatformClickListener
+class MapFPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point,
+                                   private val listener: MapActBottomBehaviorAdapter.PlatformClickListener
 ) : AbstractDialog(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
     private val mOnClickListener = this as View.OnClickListener
@@ -90,9 +90,11 @@ class MapActPlatformClickedDtlDialog(private val _platform: PlatformEntity, priv
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btn_dialog_platform_clicked_dtl__serve_again  -> {
+                dismiss()
                 listener.startPlatformService(_platform)
             }
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
+                dismiss()
                 listener.startPlatformService(_platform)
             }
         }

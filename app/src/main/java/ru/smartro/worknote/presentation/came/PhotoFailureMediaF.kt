@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
+import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
@@ -76,7 +77,7 @@ open class PhotoFailureMediaF : APhotoFragment() {
 //        val problemComment = problem_comment.text.toString()
 
         viewModel.baseDat.setStateFailureForPlatform(mPlatformEntity?.platformId!!, failText!!, getCommentText())
-        navigateClose()
+        navigateBack(R.id.MapF)
     }
 
 

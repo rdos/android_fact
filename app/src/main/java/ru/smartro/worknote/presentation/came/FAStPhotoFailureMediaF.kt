@@ -12,7 +12,7 @@ class FAStPhotoFailureMediaF : PhotoFailureMediaF() {
 
     override fun onBackPressed() {
         super.dropOutputD()
-        navigateClose()
+        navigateBack()
     }
 
 }

@@ -30,7 +30,7 @@ class MainAct :
         if (navController.currentDestination?.id == R.id.PServeF) {
             mBackPressedCnt--
             if (mBackPressedCnt <= 0) {
-                (navHostFragment.getChildFragmentManager().getFragments().get(0) as AFragment).onBackPressed()
+                (navHostFragment.childFragmentManager.fragments[0] as AFragment).onBackPressed()
                 super.onBackPressed()
                 return
             }
@@ -38,7 +38,7 @@ class MainAct :
             return
         }
 
-        (navHostFragment.getChildFragmentManager().getFragments().get(0) as AFragment).onBackPressed()
+        (navHostFragment.childFragmentManager.fragments[0] as AFragment).onBackPressed()
 //        super.onBackPressed()
     }
 

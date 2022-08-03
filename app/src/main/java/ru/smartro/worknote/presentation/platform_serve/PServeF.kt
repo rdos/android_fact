@@ -23,7 +23,7 @@ class PServeF : AFragment() {
     override fun onBackPressed() {
         super.onBackPressed()
         viewModel.updatePlatformStatusUnfinished()
-        navigateClose()
+        navigateBack(R.id.MapF)
         toast("Вы не завершили обслуживание КП.")
     }
 
