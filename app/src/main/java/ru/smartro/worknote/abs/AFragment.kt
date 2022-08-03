@@ -13,7 +13,6 @@ import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
-import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.toast
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
@@ -60,29 +59,24 @@ abstract class AFragment : Fragment(){
     }
 
     protected fun navigateBack() {
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
         navController.navigateUp()
     }
 
     protected fun navigateBack(navFragmentId: Int) {
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
         navController.popBackStack(navFragmentId, false)
     }
 
-    protected fun navigateBackChecklist() {
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv__act_checklist__f_container) as NavHostFragment)
-        val navController = navHost.navController
-        navController.navigateUp()
-    }
 
     protected fun navigateClose() {
         getAct().finish()
     }
 
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
 
         if (argumentId == null) {
@@ -97,7 +91,7 @@ abstract class AFragment : Fragment(){
     }
 
     protected fun navigateMainChecklist(navFragmentId: Int, argumentId: Int?, argumentName: String? = null) {
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv__act_checklist__f_container) as NavHostFragment)
+        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
 
         if (argumentId == null) {
@@ -145,6 +139,10 @@ abstract class AFragment : Fragment(){
 
     open fun onBackPressed() {
         log("onBackPressed")
+    }
+
+    open fun onNewGPS() {
+
     }
     //    companion object {
                                     //        private const val TAG = "CameraXBasic"

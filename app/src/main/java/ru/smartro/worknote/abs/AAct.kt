@@ -1,13 +1,14 @@
-package ru.smartro.worknote.log
+package ru.smartro.worknote.abs
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
 import io.sentry.Sentry
 import ru.smartro.worknote.*
- 
+
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.presentation.ac.StartAct
 import java.lang.Exception
@@ -49,12 +50,12 @@ abstract class AAct : AppCompatActivity() {
         }
     }
 
-    protected abstract fun onNewGPS()
 
     //todo !r_dos onNEW-_Service(Srv) 
-    public fun onNEWfromGPSSrv() {
+    public fun onNewGPS() {
         beforeLOG("onNewGPS")
-        onNewGPS()
+        val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
+        (navHostFragment.childFragmentManager.fragments[0] as AFragment).onNewGPS()
         LOGafter()
     }
     // TODO: !r_dos feed(stuff)

@@ -5,13 +5,13 @@ import androidx.activity.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
 import ru.smartro.worknote.toast
 
 //todo: INDEterminate)
 class MainAct :
-    ActNOAbst() {
+    AAct() {
     val vm: PlatformServeSharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +25,7 @@ class MainAct :
 
     // TODO: !~!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     override fun onBackPressed() {
-        val navHostFragment = (supportFragmentManager.findFragmentById(R.id.f_container) as NavHostFragment)
+        val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHostFragment.navController
         if (navController.currentDestination?.id == R.id.PServeF) {
             mBackPressedCnt--

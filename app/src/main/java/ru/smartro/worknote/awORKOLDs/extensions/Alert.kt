@@ -8,14 +8,12 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
-import org.w3c.dom.Text
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.AbstractDialog
-import ru.smartro.worknote.log.AAct
+import ru.smartro.worknote.abs.AAct
 
 private lateinit var loadingDialog: AlertDialog
 private lateinit var mCustomDialog: AlertDialog

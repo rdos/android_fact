@@ -15,7 +15,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ActNOAbst
+import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
@@ -29,7 +29,7 @@ import ru.smartro.worknote.work.THR
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.WorkOrderResponse_know1
 
-class XChecklistAct: ActNOAbst() {
+class XChecklistAct: AAct() {
 
     var acibGoToBack: AppCompatImageButton? = null
     private var pbLoading: ProgressBar? = null

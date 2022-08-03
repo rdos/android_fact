@@ -3,15 +3,12 @@ package ru.smartro.worknote.awORKOLDs.util
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Matrix
 import android.location.Location
 import android.location.LocationManager
-import android.net.Uri
 import android.os.Build
 import android.util.Base64
 import android.view.View
@@ -20,10 +17,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.yandex.mapkit.geometry.Point
-import ru.smartro.worknote.App
-import ru.smartro.worknote.Inull
-import ru.smartro.worknote.R
-import ru.smartro.worknote.log.AAct
 import java.text.SimpleDateFormat
 import java.util.*
 

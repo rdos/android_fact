@@ -42,8 +42,9 @@ import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.log.AAct
+import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
 import java.io.File
@@ -201,7 +202,9 @@ class App : AApp() {
 //                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
                     getAppParaMS().saveLastGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY.LET)
                     try {
-                        LASTact?.onNEWfromGPSSrv()
+                        if (LASTact is MainAct) {
+                            LASTact?.onNewGPS()
+                        }
                     } catch (ex: Exception) {
                         logSentry("Exception!!! LASTact?.onNEWfromGPSSrv()")
                         log("Exception!!! LASTact?.onNEWfromGPSSrv()")

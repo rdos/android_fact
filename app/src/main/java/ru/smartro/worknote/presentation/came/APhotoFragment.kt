@@ -31,7 +31,6 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.abs.AbsObject
-import ru.smartro.worknote.abs.ActNOAbst
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil

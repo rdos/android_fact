@@ -19,7 +19,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
@@ -27,12 +26,13 @@ import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.Status
 
 
-class StartAct : ActAbstract() {
+class StartAct : AAct() {
     private var mInfoDialog: AlertDialog? = null
     private val vm: AuthViewModel by viewModel()
 
@@ -137,10 +137,6 @@ class StartAct : ActAbstract() {
             finish()
         }
 
-    }
-
-    override fun onNewGPS() {
-        // TODO: r_dos!!!
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

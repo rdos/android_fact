@@ -47,7 +47,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             // TODO::Vlad -- Можно поставить один раз тут и не трогать в последующих фрагах
             acibGoToBack?.visibility = View.VISIBLE
             acibGoToBack?.setOnClickListener {
-                navigateBackChecklist()
+                navigateBack()
             }
             setBarTitle("Автомобиль")
         }
