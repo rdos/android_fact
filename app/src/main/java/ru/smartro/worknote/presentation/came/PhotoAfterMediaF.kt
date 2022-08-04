@@ -27,6 +27,7 @@ open class PhotoAfterMediaF : APhotoFragment() {
         if(viewModel.mPlatformEntity.value == null)
             throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
         mPlatformEntity = viewModel.mPlatformEntity.value
+        mMaxPhotoCount = Int.MAX_VALUE
     }
 
     override fun onGotoNext(): Boolean {

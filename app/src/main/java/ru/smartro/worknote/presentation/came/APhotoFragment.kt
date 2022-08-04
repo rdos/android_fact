@@ -575,6 +575,8 @@ abstract class APhotoFragment(
             Log.w("TAGS", "imageBase64=${imageBase64.length}")
             val gps = App.getAppliCation().gps()
             val imageEntity = gps.inImageEntity(imageBase64)
+
+            imageEntity.date = imageFile.name.substring(0, imageFile.name.length - 4).toLong()
 //        imageEntity.isNoLimitPhoto = true
 //        onGetImage
             return imageEntity

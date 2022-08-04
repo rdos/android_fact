@@ -38,7 +38,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="@string/simplify_serve"
+                android:text="id/screen_mode_label"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textColor="@color/white"

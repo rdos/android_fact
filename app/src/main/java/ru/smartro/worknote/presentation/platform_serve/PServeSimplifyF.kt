@@ -12,7 +12,7 @@ import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContai
 import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAdapter
 
 
-class PServeSimplifyFrag : AFragment() {
+class PServeSimplifyF : AFragment() {
 
     private val vm: PlatformServeSharedViewModel by activityViewModels()
 
