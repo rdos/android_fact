@@ -22,7 +22,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/simplify_serve"
+                android:text="Упрощенный режим"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:textSize="20sp"
@@ -147,7 +147,8 @@
                 android:minHeight="0dp"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
-                android:text="+ фото"
+                android:text="+"
+                android:drawableEnd="@drawable/ic_add_photo"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/btn_photo_text"

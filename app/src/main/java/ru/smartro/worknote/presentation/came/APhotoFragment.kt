@@ -41,7 +41,7 @@ import java.io.File
 import java.io.InputStream
 import java.util.concurrent.Executors
 
-//todo:
+//todo:AbsViewGroup
 /**
 val imageBase64 = Compressor.compress(requireContext(), photoFile) {
 resolution(1024, 768)
@@ -52,6 +52,7 @@ destination(photoFile)
 }
  */
 
+//mask
 abstract class APhotoFragment(
 ) : AFragment(), OnImageSavedCallback {
     private var acetComment: AppCompatEditText? = null
@@ -574,6 +575,8 @@ abstract class APhotoFragment(
             Log.w("TAGS", "imageBase64=${imageBase64.length}")
             val gps = App.getAppliCation().gps()
             val imageEntity = gps.inImageEntity(imageBase64)
+
+            imageEntity.date = imageFile.name.substring(0, imageFile.name.length - 4).toLong()
 //        imageEntity.isNoLimitPhoto = true
 //        onGetImage
             return imageEntity

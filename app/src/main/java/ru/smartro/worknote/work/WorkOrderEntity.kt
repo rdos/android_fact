@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.realm.Realm
 import io.realm.RealmList
@@ -255,6 +256,12 @@ open class KGOEntity(
 
     }
 
+open class ServedContainers(
+    var typeName: String = Snull,
+    var client: String = Snull,
+    var servedCount: Int = Inull
+): Serializable, RealmObject()
+
 open class PlatformEntity(
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
@@ -319,6 +326,10 @@ open class PlatformEntity(
     var orderTimeWarning: String? = null,
     @SerializedName("order_alert_time")
     var orderTimeAlert: String? = null,
+
+    @Expose
+    var servedContainers: RealmList<ServedContainers> = RealmList()
+
 ) : Serializable, RealmObject() {
 
     fun isTypoMiB(): Boolean = this.icon == "Bath"
@@ -730,31 +741,8 @@ open class ImageEntity(
     var coords: RealmList<Double> = RealmList(),
     var accuracy: String? = null,
     var lastKnownLocationTime: Long? =null,
-    var isNoLimitPhoto: Boolean = false,
-    // 0 = vertical, 1 = horizontal
-    var origOrient: Int = 0
 ) : Serializable, RealmObject() {
 
-
-    fun isCheckedData(): Boolean {
-        val res = false
-        if (date == null) {
-            return res
-        }
-        if (date!! <= 0) {
-            return res
-        }
-        if (image == null) {
-            return res
-        }
-        if (image!!.substring(0, 22) != "data:image/png;base64,") {
-                return res
-            }
-        if (coords.size <= 0) {
-            return res
-        }
-        return true
-    }
 }
 
 

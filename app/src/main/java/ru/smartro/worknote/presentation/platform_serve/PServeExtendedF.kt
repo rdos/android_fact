@@ -25,7 +25,7 @@ import ru.smartro.worknote.presentation.platform_serve.adapters.ExtendedContaine
 import ru.smartro.worknote.work.ContainerEntity
 
 
-class PServeExtendedFrag :
+class PServeExtendedF :
     AFragment(),
     ExtendedContainerAdapter.ContainerPointClickListener {
 
@@ -236,7 +236,7 @@ class PServeExtendedFrag :
     }
 
     override fun startContainerService(item: ContainerEntity) {
-        findNavController().navigate(PServeExtendedFragDirections
+        findNavController().navigate(PServeExtendedFDirections
             .actionExtendedServeFragmentToContainerServeBottomDialog(item.containerId!!))
     }
 }

@@ -25,7 +25,7 @@
             android:id="@+id/label_for"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@drawable/bg_button_white_interactive"
             android:padding="6dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

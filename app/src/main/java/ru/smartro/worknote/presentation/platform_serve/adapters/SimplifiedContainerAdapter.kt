@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation.platform_serve.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,15 +10,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.platform_serve.ClientGroupedContainers
-import ru.smartro.worknote.presentation.platform_serve.ServedContainers
+import ru.smartro.worknote.work.ServedContainers
 
 class SimplifiedContainerAdapter(
     private val context: Context,
-    private val listener: TypedContainerAdapter.TypedContainerListener
+    private val listener: SimplifyContainerServeListener
 ) : RecyclerView.Adapter<SimplifiedContainerAdapter.ClientGroupViewHolder>() {
 
     var served: List<ServedContainers> = listOf()
         set(value) {
+            Log.d("SHEESH ::: SimplifiedContainerAdapter", "servedContainers: ${value}")
             field = value
             notifyDataSetChanged()
         }
@@ -38,16 +40,18 @@ class SimplifiedContainerAdapter(
     }
 
     override fun onBindViewHolder(holder: ClientGroupViewHolder, position: Int) {
-        holder.bind(position, containers[position], served)
-
+        val clientGroup = containers[position]
+        val servedContainersFilteredByClient = served.filter { el -> el.client == clientGroup.client }
+        holder.bind(clientGroup, servedContainersFilteredByClient)
     }
 
     class ClientGroupViewHolder(
         val view: View,
         val context: Context,
-        val listener: TypedContainerAdapter.TypedContainerListener
+        val listener: SimplifyContainerServeListener
     ) : RecyclerView.ViewHolder(view) {
-        fun bind(clientGroupIndex: Int, clientGroup: ClientGroupedContainers, servedConts: List<ServedContainers>) {
+
+        fun bind(clientGroup: ClientGroupedContainers, servedConts: List<ServedContainers>) {
             val tvClient = view.findViewById<TextView>(R.id.client_label)
             val rvGroupedContainers = view.findViewById<RecyclerView>(R.id.typed_containers)
 
@@ -55,10 +59,30 @@ class SimplifiedContainerAdapter(
             rvGroupedContainers.layoutManager = LinearLayoutManager(context)
             rvGroupedContainers.adapter = TypedContainerAdapter(
                 context,
-                listener
+                object : TypedContainerAdapter.TypedContainerListener {
+                    override fun onDecrease(typeName: String) {
+                        listener.onDecrease(clientGroup.client, typeName)
+                    }
+
+                    override fun onIncrease(typeName: String) {
+                        listener.onIncrease(clientGroup.client, typeName)
+                    }
+
+                    override fun onAddPhoto(typeName: String) {
+                        listener.onAddPhoto(clientGroup.client, typeName)
+                    }
+
+                }
             ).apply {
-                data = TCAdata(servedConts, clientGroup.typeGroupedContainers, clientGroupIndex)
+                data = TCAdata(servedConts, clientGroup.typeGroupedContainers)
             }
         }
+
+    }
+
+    interface SimplifyContainerServeListener {
+        fun onDecrease(clientName: String, typeName: String)
+        fun onIncrease(clientName: String, typeName: String)
+        fun onAddPhoto(clientName: String, typeName: String)
     }
 }

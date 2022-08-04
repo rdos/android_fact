@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import ru.smartro.worknote.awORKOLDs.BaseViewModel
+import ru.smartro.worknote.saveJSON
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.THR
 import ru.smartro.worknote.work.WoRKoRDeR_know1
@@ -32,6 +33,9 @@ class StartWorkOrderViewModel(application: Application) : BaseViewModel(applicat
                 Log.d(TAG, "getWorkOder.after ${response.body().toString()}")
                 when {
                     response.isSuccessful -> {
+                        val gson = Gson()
+                        val bodyInStringFormat = gson.toJson(response.body())
+                        saveJSON(bodyInStringFormat, "getWorkOrder")
                         _workOrderList.postValue(Resource.success(response.body()))
                     }
                     else -> {

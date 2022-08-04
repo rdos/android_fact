@@ -40,10 +40,6 @@ object MyUtil {
         return System.currentTimeMillis() / 1000L
     }
 
-    fun timeStampInMSec(): Long {
-        return System.currentTimeMillis()
-    }
-
     fun currentTime(): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", Locale.getDefault())
         return sdf.format(Date())

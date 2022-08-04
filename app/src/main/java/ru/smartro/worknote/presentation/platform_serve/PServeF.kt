@@ -7,8 +7,10 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
@@ -25,6 +27,7 @@ class PServeF : AFragment() {
         toast("Вы не завершили обслуживание КП.")
     }
 
+    private var navController: NavController? = null
     private var btnCompleteTask: AppCompatButton? = null
     private var tvContainersProgress: TextView? = null
     private var actvAddress: AppCompatTextView? = null
@@ -48,19 +51,19 @@ class PServeF : AFragment() {
 
         val navHostFragment =
             childFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
+        navController = navHostFragment.navController
 
         // TODO?::Vlad setonclicklistener > setonchangedlistener
         scPServeSimplifyMode?.setOnClickListener {
-            viewModel.changeScreenMode()
+            toggleScreenMode()
         }
 
         viewModel.mWasServedExtended.observe(getAct()) {
             if(it) {
                 scPServeSimplifyMode?.visibility = View.GONE
                 screenModeLabel?.visibility = View.GONE
-                if(navController.currentDestination?.id != R.id.PServeExtendedFrag) {
-                    navController.navigate(R.id.PServeExtendedFrag)
+                if(navController?.currentDestination?.id != R.id.PServeExtendedF) {
+                    navController?.navigate(R.id.PServeExtendedF)
                 }
             }
         }
@@ -68,46 +71,20 @@ class PServeF : AFragment() {
         viewModel.mPlatformEntity.observe(getAct()) { platform ->
             if(platform != null) {
                 if(platform.containers.all { el -> el.status == StatusEnum.NEW }) {
-                    viewModel.mScreenMode.observe(getAct()) { screenMode ->
-                        if(screenMode != null) {
-                            navController.currentDestination?.apply {
-                                when(screenMode) {
-                                    false -> {
-                                        if (id != R.id.PServeExtendedFrag) {
-                                            navController.popBackStack()
-                                        }
-                                        screenModeLabel?.text = "Стандартный режим"
-                                        if(scPServeSimplifyMode?.isChecked != false)
-                                            scPServeSimplifyMode?.isChecked = false
-                                    }
-                                    true -> {
-                                        if (id != R.id.PServeSimplifyFrag) {
-                                            navController.navigate(R.id.PServeSimplifyFrag)
-                                        }
-                                        screenModeLabel?.text = "Сгруппированный режим"
-                                        if(scPServeSimplifyMode?.isChecked != true)
-                                            scPServeSimplifyMode?.isChecked = true
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    setScreenMode(paramS().lastScreenMode)
                 } else {
-                    viewModel.mScreenMode.removeObservers(getAct())
                     scPServeSimplifyMode?.visibility = View.GONE
                     screenModeLabel?.visibility = View.GONE
-                    navController.navigate(R.id.PServeExtendedFrag)
+                    if(platform.containers.any { el -> el.volume != null && el.volume!! > 1.25f })
+                        navController?.navigate(R.id.PServeSimplifyF)
+                    else
+                        navController?.navigate(R.id.PServeExtendedF)
                 }
 
                 tvContainersProgress?.text =
                     "№${platform.srpId} / ${platform.containers.size} конт."
 
                 btnCompleteTask?.setOnClickListener {
-                    viewModel.updatePlatformStatusSuccess(platform.platformId!!)
-//                    val intent = Intent(this, CameraAct::class.java)
-//                    intent.putExtra("platform_id", platform.platformId)
-//                    intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
-//                    startActivityForResult(intent, 13)
                     navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
                 }
 
@@ -128,8 +105,33 @@ class PServeF : AFragment() {
             }
         }
 
-        if(viewModel.mPlatformEntity.value == null) {
-            viewModel.getPlatformEntity(plId)
+        viewModel.getPlatformEntity(plId)
+    }
+
+    private fun toggleScreenMode() {
+        val newScreenMode = !paramS().lastScreenMode
+        paramS().lastScreenMode = newScreenMode
+        setScreenMode(newScreenMode)
+    }
+
+    private fun setScreenMode(mode: Boolean) {
+        navController?.currentDestination?.apply {
+            scPServeSimplifyMode?.isChecked = mode
+            when(mode) {
+                App.ScreenMode.EXTENDED -> {
+                    screenModeLabel?.text = "список"
+                    if (id == R.id.PServeSimplifyF) {
+                        navController?.popBackStack()
+                    }
+                }
+                App.ScreenMode.SIMPLIFY -> {
+                    screenModeLabel?.text = "по типам"
+                    if (id == R.id.PServeExtendedF) {
+                        navController?.navigate(R.id.PServeSimplifyF)
+                    }
+                }
+                else -> {}
+            }
         }
     }
 }

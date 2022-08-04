@@ -9,7 +9,7 @@ import java.io.File
 
 class PhotoKgoServedF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "фото крупногабаритных отходов.забрал"
+    override fun onGetTextLabelFor() = "КГО.забрал"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")

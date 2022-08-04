@@ -13,7 +13,7 @@ import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContai
 import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAdapter
 
 
-class PServeSimplifyFrag : AFragment() {
+class PServeSimplifyF : AFragment() {
 
     private val vm: PlatformServeSharedViewModel by activityViewModels()
 
@@ -24,16 +24,16 @@ class PServeSimplifyFrag : AFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapterCurrentTask = SimplifiedContainerAdapter(requireContext(), object : TypedContainerAdapter.TypedContainerListener {
-            override fun onDecrease(clientGroupInd: Int, typeGroupInd: Int) {
-                vm.onDecrease(clientGroupInd, typeGroupInd)
+        val adapterCurrentTask = SimplifiedContainerAdapter(requireContext(), object : SimplifiedContainerAdapter.SimplifyContainerServeListener {
+            override fun onDecrease(clientName: String, typeName: String) {
+                vm.onDecrease(clientName, typeName)
             }
 
-            override fun onIncrease(clientGroupInd: Int, typeGroupInd: Int) {
-                vm.onIncrease(clientGroupInd, typeGroupInd)
+            override fun onIncrease(clientName: String, typeName: String) {
+                vm.onIncrease(clientName, typeName)
             }
 
-            override fun onAddPhoto(clientGroupInd: Int, typeGroupInd: Int) {
+            override fun onAddPhoto(clientName: String, typeName: String) {
                 navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, vm.mPlatformEntity.value!!.platformId!!)
             }
         })

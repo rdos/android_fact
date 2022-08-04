@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.gson.Gson
 import com.yandex.mapkit.MapKitFactory
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -40,12 +41,16 @@ import org.koin.core.context.startKoin
 import ru.smartro.worknote.andPOintD.AndRoid
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
+import ru.smartro.worknote.awORKOLDs.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.adapter.viewModelModule
+import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -74,8 +79,10 @@ class App : AApp() {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
-
-
+    object ScreenMode {
+        const val EXTENDED = false
+        const val SIMPLIFY = true
+    }
 
     fun gps(): PoinT {
         var gps_enabled = false
@@ -533,6 +540,40 @@ fun Fragment.toast(text: String? = "") {
     }
 
 }
+
+fun BaseViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+    fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
+        var dirPath = App.getAppliCation().filesDir.absolutePath
+        if(containerUuid == null) {
+            dirPath = dirPath + File.separator + platformUuid
+        } else {
+            dirPath = dirPath + File.separator + platformUuid + File.separator + containerUuid
+        }
+
+        val file = File(dirPath)
+        if (!file.exists()) file.mkdirs()
+        return file
+    }
+    val file: File = File(getOutputDirectory("ttest", null), "${p_jsonName}.json")
+
+    //This point and below is responsible for the write operation
+
+    //This point and below is responsible for the write operation
+    var outputStream: FileOutputStream? = null
+    try {
+
+        file.createNewFile()
+        //second argument of FileOutputStream constructor indicates whether
+        //to append or create new file if one exists
+        outputStream = FileOutputStream(file, true)
+        outputStream.write(bodyInStringFormat.toByteArray())
+        outputStream.flush()
+        outputStream.close()
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+    }
+}
+
 
 //fun App.toast(text: String? = "") {
 //    try {

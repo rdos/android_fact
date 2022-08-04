@@ -10,7 +10,7 @@ import java.io.File
 
 open class PhotoAfterMediaF : APhotoFragment() {
     private var mPlatformEntity: PlatformEntity? = null
-    override fun onGetTextLabelFor() = "фото после обслуживания КП"
+//    override fun onGetTextLabelFor() = "фото после обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
             toast("Ошибка.todo:::")
@@ -27,6 +27,7 @@ open class PhotoAfterMediaF : APhotoFragment() {
         if(viewModel.mPlatformEntity.value == null)
             throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
         mPlatformEntity = viewModel.mPlatformEntity.value
+        mMaxPhotoCount = Int.MAX_VALUE
     }
 
     override fun onGotoNext(): Boolean {
@@ -36,6 +37,7 @@ open class PhotoAfterMediaF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.baseDat.addAfterMedia(mPlatformEntity?.platformId!!, imageS)
+        viewModel.updatePlatformStatusSuccess(mPlatformEntity?.platformId!!)
         navigateClose()
     }
 

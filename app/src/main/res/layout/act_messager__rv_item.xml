@@ -49,11 +49,13 @@
 
         <ImageView
             android:id="@+id/img_act_messager__media_before"
-            android:layout_width="wrap_content"
-            android:layout_height="130dp"
+            android:layout_width="100dp"
+            android:layout_height="90dp"
             android:layout_gravity="center"
             android:layout_marginTop="4dp"
             android:src="@drawable/ic_many_blue"
+            android:scaleType="centerInside"
+            android:layout_marginEnd="@dimen/margin_min"
             app:layout_constraintBaseline_creator="@id/tv_act_messager__media_before"
             app:layout_constraintBottom_toBottomOf="@+id/img_act_messager__media_after"
             app:layout_constraintStart_toStartOf="parent"
@@ -72,11 +74,13 @@
 
         <ImageView
             android:id="@+id/img_act_messager__media_after"
-            android:layout_width="wrap_content"
-            android:layout_height="130dp"
+            android:layout_width="100dp"
+            android:layout_height="90dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_many_blue"
+            android:scaleType="centerInside"
             android:layout_marginTop="4dp"
+            android:layout_marginStart="@dimen/margin_min"
             app:layout_constraintBaseline_creator="@id/tv_act_messager__media_after"
             app:layout_constraintStart_toEndOf="@+id/tv_act_messager__media_before"
             app:layout_constraintTop_toBottomOf="@id/tv_act_messager__media_after" />

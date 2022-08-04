@@ -85,7 +85,6 @@
     <string name="walkthrough_simplify_serve_step_a">\nВ этом режиме можно сгруппировать контейнеры.\n
         \nТеперь несколько контейнеров одного типа или организации обслуживать удобнее и быстрее.\n
         \nТакже нажав на Плюс, можно добавить \"подбор\".</string>
-    <string name="simplify_serve">Упрощенный режим</string>
     <string name="walkhrough_step_b_a">Переключение между режимами.</string>
     <string name="walkhrough_step_b_b">Кол-во контейнеров на КП. \nПлюсом добавляется \"подбор\"</string>
     <string name="walkhrough_step_b_c">Фото \"до\" и \"после\" для каждого контейнера.</string>
