@@ -62,8 +62,8 @@ class PServeF : AFragment() {
             if(it) {
                 scPServeSimplifyMode?.visibility = View.GONE
                 screenModeLabel?.visibility = View.GONE
-                if(navController?.currentDestination?.id != R.id.PServeExtendedFrag) {
-                    navController?.navigate(R.id.PServeExtendedFrag)
+                if(navController?.currentDestination?.id != R.id.PServeExtendedF) {
+                    navController?.navigate(R.id.PServeExtendedF)
                 }
             }
         }
@@ -76,9 +76,9 @@ class PServeF : AFragment() {
                     scPServeSimplifyMode?.visibility = View.GONE
                     screenModeLabel?.visibility = View.GONE
                     if(platform.containers.any { el -> el.volume != null && el.volume!! > 1.25f })
-                        navController?.navigate(R.id.PServeSimplifyFrag)
+                        navController?.navigate(R.id.PServeSimplifyF)
                     else
-                        navController?.navigate(R.id.PServeExtendedFrag)
+                        navController?.navigate(R.id.PServeExtendedF)
                 }
 
                 tvContainersProgress?.text =
@@ -120,14 +120,14 @@ class PServeF : AFragment() {
             when(mode) {
                 App.ScreenMode.EXTENDED -> {
                     screenModeLabel?.text = "список"
-                    if (id == R.id.PServeSimplifyFrag) {
+                    if (id == R.id.PServeSimplifyF) {
                         navController?.popBackStack()
                     }
                 }
                 App.ScreenMode.SIMPLIFY -> {
                     screenModeLabel?.text = "по типам"
-                    if (id == R.id.PServeExtendedFrag) {
-                        navController?.navigate(R.id.PServeSimplifyFrag)
+                    if (id == R.id.PServeExtendedF) {
+                        navController?.navigate(R.id.PServeSimplifyF)
                     }
                 }
                 else -> {}

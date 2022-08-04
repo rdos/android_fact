@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_platform_serve"
-    app:startDestination="@id/PServeExtendedFrag">
+    app:startDestination="@id/PServeExtendedF">
 
     <fragment
-        android:id="@+id/PServeExtendedFrag"
+        android:id="@+id/PServeExtendedF"
         tools:layout="@layout/f_pserve_extended"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeExtendedFrag"
-        android:label="PServeExtendedFrag" >
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeExtendedF"
+        android:label="PServeExtendedF" >
         <action
             android:id="@+id/action_extendedServeFragment_to_simplifiedServeFragment"
-            app:destination="@id/PServeSimplifyFrag" />
+            app:destination="@id/PServeSimplifyF" />
         <action
             android:id="@+id/action_extendedServeFragment_to_containerServeBottomDialog"
-            app:destination="@id/containerServeBottomDialog">
+            app:destination="@id/ContainerServeBottomDialog">
             <argument
                 android:name="ARGUMENT_NAME___PARAM_ID"
                 app:argType="integer"
@@ -24,17 +24,17 @@
     </fragment>
 
     <fragment
-        android:id="@+id/PServeSimplifyFrag"
+        android:id="@+id/PServeSimplifyF"
         tools:layout="@layout/f_pserve_simplify"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeSimplifyFrag"
-        android:label="PServeSimplifyFrag" >
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeSimplifyF"
+        android:label="PServeSimplifyF" >
         <action
             android:id="@+id/action_simplifiedServeFragment_to_extendedServeFragment"
-            app:destination="@id/PServeExtendedFrag" />
+            app:destination="@id/PServeExtendedF" />
     </fragment>
 
     <dialog
-        android:id="@+id/containerServeBottomDialog"
+        android:id="@+id/ContainerServeBottomDialog"
         tools:layout="@layout/fragment_container_serve"
         android:name="ru.smartro.worknote.presentation.platform_serve.ContainerServeBottomDialog"
         android:label="ContainerServeBottomDialog">
