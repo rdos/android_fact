@@ -741,9 +741,6 @@ open class ImageEntity(
     var coords: RealmList<Double> = RealmList(),
     var accuracy: String? = null,
     var lastKnownLocationTime: Long? =null,
-    var isNoLimitPhoto: Boolean = false,
-    // 0 = vertical, 1 = horizontal
-    var origOrient: Int = 0
 ) : Serializable, RealmObject() {
 
 }
