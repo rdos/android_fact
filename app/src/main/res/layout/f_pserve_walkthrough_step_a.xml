@@ -22,7 +22,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/actv_f_pserve_walkthrough_step_a__title"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/simplify_serve"
+                android:text="Упрощенный режим"
                 android:textColor="@color/black"
                 android:textSize="22sp"
                 android:textStyle="bold"
