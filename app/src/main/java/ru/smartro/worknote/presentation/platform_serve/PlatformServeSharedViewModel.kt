@@ -213,9 +213,9 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
             val clientName = el.client ?: ""
             val typeName = el.typeName ?: ""
 
-            val clientGroup = temp.find { it.client == el.client }
+            val clientGroup = temp.find { it.client == clientName }
             if(clientGroup != null) {
-                val typeGroup = clientGroup.typeGroupedContainers.find { it.typeName == el.typeName }
+                val typeGroup = clientGroup.typeGroupedContainers.find { it.typeName == typeName }
                 if(typeGroup != null) {
                     // TODO VLAD CONTAINER ID -1
                     typeGroup.containersIds.add(el.containerId ?: -1)
