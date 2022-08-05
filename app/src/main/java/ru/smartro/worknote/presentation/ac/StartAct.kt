@@ -187,12 +187,21 @@ class StartAct : AAct() {
             }
         }
 //
-        if (isDevelMode()) {
-            authLoginEditText?.setText("admin@smartro.ru")
-            authPasswordEditText?.setText("xot1ieG5ro~hoa,ng4Sh")
-            clickAuthEnter()
+        if (BuildConfig.BUILD_TYPE != "debugProd") {
+            if (isDevelMode()) {
+                authLoginEditText?.setText("g79015884904@gmail.com")
+                authPasswordEditText?.setText("Grafik+76")
+            }
         }
 
+        if (BuildConfig.BUILD_TYPE != "release") {
+            if (isDevelMode()) {
+                authLoginEditText?.setText("admin@smartro.ru")
+                authPasswordEditText?.setText("xot1ieG5ro~hoa,ng4Sh")
+                clickAuthEnter()
+            }
+        }
+//
 
 /*        auth_enter.setOnLongClickListener {
             auth_login.setText("gkh2@smartro.ru")
