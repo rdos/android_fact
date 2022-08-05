@@ -10,21 +10,15 @@ import com.google.gson.Gson
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.delay
-import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
-import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
-import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
-import ru.smartro.worknote.utils.getActivityProperly
-//import ru.smartro.worknote.utils.DispatcherInfoMessageTypes
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ui.JournalChatAct
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.math.log
 
 //private var App.LocationLAT: Double
 //    get() {
@@ -141,18 +135,19 @@ class SYNCworkER(
 
     private suspend fun synChrONizationDATA() {
         beforeLOG("synChrONizationDATA")
-        val timeBeforeRequest: Long
+        var timeBeforeRequest: Long = MyUtil.timeStampInSec()
         logSentry("SYNCworkER STARTED")
-        val lastSynchroTimeInSec =App.getAppParaMS().lastSynchroTimeInSec
-        val platforms: List<PlatformEntity>
+        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+        var platforms: List<PlatformEntity> = emptyList()
         LOGWork("SYNCworkER::synChrONizationDATA:Thread.currentThread().id()=${Thread.currentThread().id}")
         //проблема в секундах синхронизаций
-        val mMinutesInSec = 30 * 60
-        if (lastSynchroTimeInSec - MyUtil.timeStampInSec() > mMinutesInSec) {
-            timeBeforeRequest = lastSynchroTimeInSec + mMinutesInSec
+        val m30MinutesInSec = 30 * 60
+        if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
+            timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
             platforms = db().findPlatforms30min()
-            Log.d(TAG, "SYNCworkER PLATFORMS IN LAST 30 min")
-        } else {
+            LOGWork( "SYNCworkER PLATFORMS IN LAST 30 min")
+        }
+        if (platforms.isEmpty()) {
             timeBeforeRequest = MyUtil.timeStampInSec()
             platforms = db().findLastPlatforms()
             LOGWork("SYNCworkER LAST PLATFORMS")

@@ -1,48 +1,36 @@
-package ru.smartro.worknote.di
+package ru.smartro.worknote.awORKOLDs.adapter
+
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import ru.smartro.worknote.MapAct
-import ru.smartro.worknote.work.platform_serve.PlatformServeViewModel
+import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
+import ru.smartro.worknote.presentation.checklist.workorder.StartWorkOrderViewModel
+import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
+import ru.smartro.worknote.presentation.terminate.TerminateViewModel
+import ru.smartro.worknote.presentation.came.PhotoViewModel
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
-import ru.smartro.worknote.work.ac.checklist.StartWorkOrderAct
-import ru.smartro.worknote.work.ac.checklist.StartVehicleAct
-import ru.smartro.worknote.work.ac.checklist.StartWayBillAct
-import ru.smartro.worknote.work.cam.CameraViewModel
-import ru.smartro.worknote.work.ui.*
+import ru.smartro.worknote.work.ui.DebugAct
+import ru.smartro.worknote.work.ui.JournalChatAct
+
 
 val viewModelModule = module {
     viewModel { StartAct.AuthViewModel(androidApplication()) }
 
-    viewModel {
-        StartOwnerAct.OrganisationViewModel(androidApplication())
-    }
-    viewModel {
-        StartVehicleAct.VehicleViewModel(androidApplication())
-    }
-    viewModel {
-        StartWayBillAct.WayListViewModel(androidApplication())
-    }
-    viewModel {
-        StartWorkOrderAct.WayTaskViewModel(androidApplication())
-    }
+    viewModel { ChecklistViewModel(androidApplication()) }
+    viewModel { StartWorkOrderViewModel(androidApplication()) }
+
     viewModel {
         MapAct.MapViewModel(androidApplication())
     }
-    viewModel {
-        ContainerFailureAct.ContainerFailureViewModel(androidApplication())
-    }
-    viewModel {
-        ContainerBreakdownAct.ContainerBreakdownViewModel(androidApplication())
-    }
 
-    viewModel {
-        PlatformFailureAct.NonPickupPlatformViewModel(androidApplication())
-    }
+    viewModel { PlatformServeSharedViewModel(androidApplication()) }
 
-    viewModel { PlatformServeViewModel(androidApplication()) }
-    viewModel { CameraViewModel(androidApplication()) }
+    viewModel { PhotoViewModel(androidApplication()) }
+
     viewModel { DebugAct.DebugViewModel(androidApplication()) }
+
     viewModel { JournalChatAct.JournalViewModel(androidApplication()) }
+
+    viewModel { TerminateViewModel(androidApplication()) }
 }

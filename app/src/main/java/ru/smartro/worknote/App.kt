@@ -24,39 +24,37 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.gson.Gson
 import com.yandex.mapkit.MapKitFactory
-import io.realm.*
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
-import io.sentry.protocol.User
-import kotlinx.android.synthetic.main.act_start.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.AndRoid
+import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
+import ru.smartro.worknote.awORKOLDs.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.adapter.viewModelModule
+import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.di.viewModelModule
 import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
-import ru.terrakok.cicerone.Router
-import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.Cicerone
-
 
 
 //INSTANCE
@@ -81,8 +79,10 @@ class App : AApp() {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
-
-
+    object ScreenMode {
+        const val EXTENDED = false
+        const val SIMPLIFY = true
+    }
 
     fun gps(): PoinT {
         var gps_enabled = false
@@ -144,21 +144,6 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
-    }
-
-    private var mCicerone: Cicerone<Router>? = null
-    private fun getCicerone(): Cicerone<Router> {
-        if (mCicerone == null) {
-            mCicerone = Cicerone.create()
-        }
-        return mCicerone!!
-    }
-    fun getNavigatorHolder(): NavigatorHolder {
-        return getCicerone().navigatorHolder
-    }
-
-    fun getRouter(): Router {
-        return getCicerone().router
     }
 
     inner class MyLocationListener() : LocationListener {
@@ -314,8 +299,8 @@ class App : AApp() {
 
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channelId)
 
-        builder.setSmallIcon(R.drawable.ic_app)
-            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_app))
+        builder.setSmallIcon(R.drawable.ic_container)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_container))
             .setContentTitle(textTitle)
             .setContentText(textContent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -506,6 +491,17 @@ private const val NOTIFICATION_CHANNEL_ID__DEFAULT = "FACT_CH_ID"
 const val NOTIFICATION_CHANNEL_ID__MAP_ACT = "FACT_APP_CH_ID"
 
 
+val PERMISSIONS = arrayOf(
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    Manifest.permission.READ_EXTERNAL_STORAGE,
+    Manifest.permission.READ_PHONE_STATE,
+    Manifest.permission.LOCATION_HARDWARE,
+    Manifest.permission.ACCESS_NETWORK_STATE,
+    Manifest.permission.CAMERA,
+    Manifest.permission.SYSTEM_ALERT_WINDOW
+)
+
 //todo:const val A_SLEEP_TIME_1MIN__MS = 60000L
 const val Snull = "rNull"
 const val Inull = -111
@@ -544,6 +540,40 @@ fun Fragment.toast(text: String? = "") {
     }
 
 }
+
+fun BaseViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+    fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
+        var dirPath = App.getAppliCation().filesDir.absolutePath
+        if(containerUuid == null) {
+            dirPath = dirPath + File.separator + platformUuid
+        } else {
+            dirPath = dirPath + File.separator + platformUuid + File.separator + containerUuid
+        }
+
+        val file = File(dirPath)
+        if (!file.exists()) file.mkdirs()
+        return file
+    }
+    val file: File = File(getOutputDirectory("ttest", null), "${p_jsonName}.json")
+
+    //This point and below is responsible for the write operation
+
+    //This point and below is responsible for the write operation
+    var outputStream: FileOutputStream? = null
+    try {
+
+        file.createNewFile()
+        //second argument of FileOutputStream constructor indicates whether
+        //to append or create new file if one exists
+        outputStream = FileOutputStream(file, true)
+        outputStream.write(bodyInStringFormat.toByteArray())
+        outputStream.flush()
+        outputStream.close()
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+    }
+}
+
 
 //fun App.toast(text: String? = "") {
 //    try {

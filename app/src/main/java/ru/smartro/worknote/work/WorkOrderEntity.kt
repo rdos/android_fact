@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.realm.Realm
 import io.realm.RealmList
@@ -69,7 +70,7 @@ open class WorkOrderEntity(
                 StatusEnum.NEW -> platformsStatusNewCnt++
                 StatusEnum.SUCCESS -> platformsStatusSuccessCnt++
                 StatusEnum.ERROR -> platformsStatusErrorCnt++
-                StatusEnum.UNFINISHED -> platformsStatusErrorCnt++
+                StatusEnum.UNFINISHED -> platformsStatusNewCnt++
                 StatusEnum.PARTIAL_PROBLEMS -> platformsStatusPartialProblemsCnt++
             }
             /** статистика для ContainerEntity*/
@@ -255,11 +256,19 @@ open class KGOEntity(
 
     }
 
+open class ServedContainers(
+    var typeName: String = Snull,
+    var client: String = Snull,
+    var servedCount: Int = Inull
+): Serializable, RealmObject()
+
 open class PlatformEntity(
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,
+    // TODO:::Vlad: will be removed
     var afterMediaSize: Int = 0,
+    // TODO:::Vlad: will be removed
     var beforeMediaSize: Int = 0,
     @SerializedName("address")
     var address: String? = null,
@@ -317,6 +326,10 @@ open class PlatformEntity(
     var orderTimeWarning: String? = null,
     @SerializedName("order_alert_time")
     var orderTimeAlert: String? = null,
+
+    @Expose
+    var servedContainers: RealmList<ServedContainers> = RealmList()
+
 ) : Serializable, RealmObject() {
 
     fun isTypoMiB(): Boolean = this.icon == "Bath"
@@ -330,8 +343,6 @@ open class PlatformEntity(
         val _beforeMediaSize = if(this.beforeMedia.size == 0) this.beforeMediaSize else this.beforeMedia.size
         val _afterMediaSize = if(this.afterMedia.size == 0) this.afterMediaSize else this.afterMedia.size
 
-        Log.d("TEST:::", "! ${this.address} ${_beforeMediaSize} ${_afterMediaSize}")
-
         val result = when {
             isAllError -> StatusEnum.ERROR
             _beforeMediaSize == 0 && _afterMediaSize == 0 -> StatusEnum.NEW
@@ -339,22 +350,18 @@ open class PlatformEntity(
             isAllSuccess -> StatusEnum.SUCCESS
             filteredContainers.all { el -> el.status != StatusEnum.NEW } -> StatusEnum.PARTIAL_PROBLEMS
             else -> {
-                Log.d("TEST:::", "ELSE FIRED: ${_beforeMediaSize}")
                 return StatusEnum.UNFINISHED
             }
         }
-        Log.d("TEST :::", "WorkOrderEntity/getPlatformStatus() result: ${result}")
         return result
     }
 
     private fun isNewPlatform(): Boolean {
         val res = this.getStatusPlatform() == StatusEnum.NEW
-        Log.d("TEST :::", "isNewPlatform().res=${res}")
         return res
     }
     fun isNotNewPlatform(): Boolean {
         val result = !this.isNewPlatform()
-        Log.i("TEST :::", "isNotNewPlatform().result=${result}")
         return result
     }
 
@@ -580,17 +587,17 @@ open class PlatformEntity(
         return getRemainingKGOMediaSize() > 0
     }
 
-    fun addServerKGOMedia(imageEntity: ImageEntity) {
+    fun addServerKGOMedia(imageS: List<ImageEntity>) {
         initServedKGOEntity()
         this.kgoServed?.let{
-            it.media.add(imageEntity)
+            it.media.addAll(imageS)
         }
     }
 
-    fun addRemainingKGOMedia(imageEntity: ImageEntity) {
+    fun addRemainingKGOMedia(imageS: List<ImageEntity>) {
         initRemainingKGOEntity()
         this.kgoRemaining?.let{
-            it.media.add(imageEntity)
+            it.media.addAll(imageS)
         }
     }
 
@@ -678,18 +685,11 @@ open class ContainerEntity(
 ) : Serializable, RealmObject() {
 
     fun convertVolumeToPercent() : Double {
-        var result = -111.1
-
-        result =  when (this.volume) {
-            0.00 -> 0.0
-            0.25 -> 25.0
-            0.50 -> 50.0
-            0.75 -> 75.0
-            1.00 -> 100.0
-            1.25 -> 125.0
-            else -> 100.0
-            }
-        return result
+        if(this.volume == null) {
+            return 100.0
+        } else {
+            return (this.volume!! * 100).toInt().toDouble()
+        }
     }
 
     // TODO: 23.12.2021
@@ -741,30 +741,8 @@ open class ImageEntity(
     var coords: RealmList<Double> = RealmList(),
     var accuracy: String? = null,
     var lastKnownLocationTime: Long? =null,
-    var isNoLimitPhoto: Boolean = false,
-    // 0 = vertical, 1 = horizontal
-    var origOrient: Int = 0
 ) : Serializable, RealmObject() {
 
-    fun isCheckedData(): Boolean {
-        val res = false
-        if (date == null) {
-            return res
-        }
-        if (date!! <= 0) {
-            return res
-        }
-        if (image == null) {
-            return res
-        }
-        if (image!!.substring(0, 22) != "data:image/png;base64,") {
-                return res
-            }
-        if (coords.size <= 0) {
-            return res
-        }
-        return true
-    }
 }
 
 

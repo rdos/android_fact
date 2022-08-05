@@ -34,6 +34,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_margin="@dimen/margin_default"
+            android:paddingHorizontal="8dp"
             android:background="@drawable/bg_button"
             android:textColor="@color/white"
             android:text="Выйти"
@@ -72,11 +73,25 @@
             android:layout_marginBottom="8dp"
             android:background="@drawable/bg_circle_button"
             android:src="@drawable/ic_route_off"
-            android:visibility="invisible"
+            android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintBottom_toTopOf="@id/gotoMyGPS"
             app:layout_constraintEnd_toEndOf="@id/gotoMyGPS"
             app:layout_constraintStart_toStartOf="@id/gotoMyGPS"
-            tools:visibility="visible" />
+            />
+
+        <!--<androidx.appcompat.widget.AppCompatImageButton-->
+        <!--    android:id="@+id/btn_to_nearest"-->
+        <!--    android:layout_width="43dp"-->
+        <!--    android:layout_height="43dp"-->
+        <!--    android:layout_marginStart="@dimen/margin_default"-->
+        <!--    android:layout_marginEnd="@dimen/margin_default"-->
+        <!--    android:layout_marginBottom="8dp"-->
+        <!--    android:background="@drawable/bg_circle_button"-->
+        <!--    android:src="@drawable/ic_euro_blue"-->
+        <!--    app:layout_constraintBottom_toTopOf="@id/navigator_toggle_fab"-->
+        <!--    app:layout_constraintEnd_toEndOf="@id/gotoMyGPS"-->
+        <!--    app:layout_constraintStart_toStartOf="@id/gotoMyGPS" />-->
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/goto_log__act_map__apib"

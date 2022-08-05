@@ -26,50 +26,11 @@
         android:supportsRtl="true"
         android:allowBackup="false"
         android:theme="@style/AppTheme">
-     <activity android:name="ru.smartro.worknote.work.ui.ScannerAct" />
-        
         <activity android:name="ru.smartro.worknote.work.ui.JournalChatAct" />
 
         <activity android:name="ru.smartro.worknote.work.ui.DebugAct" />
-        <activity
-            android:name="ru.smartro.worknote.work.ui.ContainerFailureAct"
-            android:screenOrientation="portrait"
-            android:theme="@style/Problem" />
         <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.ui.ContainerBreakdownAct"
-            android:screenOrientation="portrait"
-            android:theme="@style/Problem"/>
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.ui.PlatformFailureAct"
-            android:screenOrientation="portrait"
-            android:theme="@style/Problem" />
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.cam.CameraAct"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <!--<action android:name="android.media.action.IMAGE_CAPTURE" />-->
-                <!--<action android:name="android.media.action.STILL_IMAGE_CAMERA" />-->
-                <!--<action android:name="android.media.action.VIDEO_CAMERA" />-->
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter android:autoVerify="true" >
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="http" />
-                <data android:scheme="https" />
-                <data android:host="example.android.com" />
-                <data android:pathPattern="/camerax" />
-            </intent-filter>
-            <meta-data
-                android:name="android.notch_support"
-                android:value="true" />
-        </activity>
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.platform_serve.PlatformServeAct"
+            android:name="ru.smartro.worknote.presentation.platform_serve.PServeAct"
             android:screenOrientation="portrait" />
 
         <activity  android:exported="false"
@@ -77,18 +38,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoToolbar" />
 
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.ac.checklist.StartWorkOrderAct"
-            android:screenOrientation="portrait" />
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.ac.checklist.StartWayBillAct"
-            android:screenOrientation="portrait" />
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.ac.checklist.StartVehicleAct"
-            android:screenOrientation="portrait" />
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.work.ac.checklist.StartOwnerAct"
-            android:screenOrientation="portrait" />
         <activity  android:exported="true"
             android:name=".work.ac.StartAct"
             android:screenOrientation="portrait"
@@ -99,24 +48,15 @@
             </intent-filter>
         </activity>
         <activity  android:exported="true"
-            android:name="ru.smartro.worknote.TerminateAct"
+            android:name="ru.smartro.worknote.presentation.terminate.TerminateAct"
             android:screenOrientation="portrait"
             >
-
         </activity>
-
-        <!--<provider-->
-        <!--    android:name="androidx.core.content.FileProvider"-->
-        <!--    android:authorities="${applicationId}.provider"-->
-        <!--    android:exported="false"-->
-        <!--    android:grantUriPermissions="true">-->
-
-        <!--    &lt;!&ndash; resource file to create &ndash;&gt;-->
-        <!--    <meta-data-->
-        <!--        android:name="android.support.FILE_PROVIDER_PATHS"-->
-        <!--        android:resource="@xml/file_paths" />-->
-        <!--</provider>-->
-
+        <activity  android:exported="true"
+            android:name="ru.smartro.worknote.presentation.checklist.XChecklistAct"
+            android:screenOrientation="portrait"
+            >
+        </activity>
         <meta-data
             android:name="io.sentry.dsn"
             android:value="https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17" />

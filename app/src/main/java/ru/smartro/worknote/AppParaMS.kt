@@ -4,12 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import ru.smartro.worknote.*
+import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.andPOintD.PoinT
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
 private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE
 class AppParaMS {
-
 
 
     public var isRestartApp: Boolean = false
@@ -63,6 +64,12 @@ class AppParaMS {
         get() = sharedPref__env.getString("accessToken", "")
         set(value) = sharedPref__env.edit {
             it.putString("accessToken", value)
+        }
+
+    var lastScreenMode: Boolean
+        get() = sharedPref__env.getBoolean("lastScreenMode", ScreenMode.EXTENDED)
+        set(value) = sharedPref__env.edit {
+            it.putBoolean("lastScreenMode", value)
         }
 
     var userName: String
@@ -206,12 +213,6 @@ class AppParaMS {
             it.putLong("lastSynchronizeTime", value)
         }
 
-    var serviceStartedAt: Long
-        get() = sharedPref__env.getLong("serviceStartedAt", 0L)
-        set(value) = sharedPref__env.edit {
-            it.putLong("serviceStartedAt", value)
-        }
-
     fun getVehicleId(): Int {
         return vehicleId?: Inull
     }
@@ -249,6 +250,18 @@ class AppParaMS {
             it.putString("wayBillNumber", value)
         }
 
+    var isWalkthroughWasShown: Boolean
+        get() = sharedPref__env.getBoolean("isWalkthroughWasShown", false)
+        set(value) = sharedPref__env.edit {
+            it.putBoolean("isWalkthroughWasShown", value)
+        }
+
+    var walkthroughWasShownCnt: Int
+        get() = sharedPref__env.getInt("walkthroughWasShownCnt", 0)
+        set(value) = sharedPref__env.edit {
+            it.putInt("walkthroughWasShownCnt", value)
+        }
+
     var isModeSYNChrONize_FoundError: Boolean = false
         get() = field
         set(value) {
@@ -284,6 +297,7 @@ class AppParaMS {
         wayBillId = Inull
         //TODO:r_Null!
         isModeSYNChrONize = false
+        lastSynchroTimeInSec = MyUtil.timeStampInSec()
     }
 
 

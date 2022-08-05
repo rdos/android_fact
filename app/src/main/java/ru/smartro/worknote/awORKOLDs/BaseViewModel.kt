@@ -1,0 +1,36 @@
+package ru.smartro.worknote.awORKOLDs
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import io.realm.Realm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import ru.smartro.worknote.App
+import ru.smartro.worknote.work.RealmRepository
+import ru.smartro.worknote.work.NetworkRepository
+import kotlin.coroutines.CoroutineContext
+
+abstract class BaseViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {
+    protected var TAG : String = "--Aaa${this::class.simpleName}"
+    val networkDat = NetworkRepository(application.applicationContext)
+    val baseDat = RealmRepository(Realm.getDefaultInstance())
+    open val params = App.getAppParaMS()
+
+    /**
+        fun getRealm(): RealmRepository {
+            return db
+        }
+    */
+    private val job: Job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    override fun onCleared() {
+        super.onCleared()
+        job.cancel()
+    }
+
+}

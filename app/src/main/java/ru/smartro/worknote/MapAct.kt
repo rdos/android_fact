@@ -8,19 +8,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.util.TypedValue
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.SearchView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.appcompat.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -46,30 +44,28 @@ import kotlinx.android.synthetic.main.alert_clear_navigator.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.abs.ActAbstract
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.base.BaseViewModel
+import ru.smartro.worknote.awORKOLDs.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.awORKOLDs.service.network.Status
+import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.presentation.terminate.TerminateAct
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.MapActBottomBehaviorAdapter
 import ru.smartro.worknote.work.MapActPlatformClickedDtlDialog
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.WorkOrderEntity
-import ru.smartro.worknote.work.ac.PERMISSIONS
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
-import ru.smartro.worknote.work.platform_serve.PlatformServeAct
+import ru.smartro.worknote.presentation.platform_serve.PServeAct
 import ru.smartro.worknote.work.ui.DebugAct
 import ru.smartro.worknote.work.ui.JournalChatAct
-import ru.smartro.worknote.work.ui.PlatformFailureAct
 
 
 //todo: тодо:!r_dos
 //Двигается карта deselectGeoObject()
 class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
-    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener,
-    SearchView.OnQueryTextListener {
+    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
 
 
     private var mAcbGotoComplete: AppCompatButton? = null
@@ -526,27 +522,36 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         mAdapterBottomBehavior = MapActBottomBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
         rvBehavior.adapter = mAdapterBottomBehavior
 //        rvBehavior.adapter.notifyDataSetChanged()
-        val clBottomHavior = findViewById<ConstraintLayout>(R.id.act_map__bottom_behavior__header)
+        val clBottomHavior = findViewById<LinearLayoutCompat>(R.id.act_map__bottom_behavior__header)
         clBottomHavior.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             else
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            MyUtil.hideKeyboard(this)
         }
-        val svFilterAddress = findViewById<SearchView>(R.id.sv__act_map__bottom_behavior__filter)
-        svFilterAddress.setOnQueryTextListener(this)
-        svFilterAddress.setOnSearchClickListener{
-            val diP200 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200F, resources.displayMetrics)
-                .toInt()
-            svFilterAddress.layoutParams.width = diP200
-
-            log("svFilterAddress:::setOnSearchClickListener. ")
+        val acetFilterAddress = findViewById<AppCompatEditText>(R.id.acet__act_map__bottom_behavior__filter)
+        acetFilterAddress.removeTextChangedListener(null)
+        acetFilterAddress.addTextChangedListener { newText ->
+            mAdapterBottomBehavior?.let { mapBottom ->
+                mapBottom.filteredList(newText.toString())
+                onRefreshMap(mapBottom.getItems())
+            }
         }
-        svFilterAddress.setOnCloseListener{
-            log("svFilterAddress:::setOnCloseListener. before")
-            svFilterAddress.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-            false
-        }
+        acetFilterAddress.clearFocus()
+//        svFilterAddress.setOnQueryTextListener(this)
+//        svFilterAddress.setOnSearchClickListener{
+//            val diP200 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200F, resources.displayMetrics)
+//                .toInt()
+//            svFilterAddress.layoutParams.width = diP200
+//
+//            log("svFilterAddress:::setOnSearchClickListener. ")
+//        }
+//        svFilterAddress.setOnCloseListener{
+//            log("svFilterAddress:::setOnCloseListener. before")
+//            svFilterAddress.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+//            false
+//        }
     }
 
     override fun startPlatformService(item: PlatformEntity) {
@@ -566,15 +571,13 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
 
     //todo: https://www.gamemodd.com/uploads/posts/2017-05/1495207495_1.6-m4a1-retexture2.jpg
     //тодо)) код фанатика m4 из cs)))
-    private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
-        val intent = Intent(this, if(todoParamREQUEST_EXIT == Inull) PlatformServeAct::class.java else PlatformFailureAct::class.java)
+        private fun gotoNextAct(plaform: PlatformEntity, todoParamREQUEST_EXIT: Int = Inull) {
+        val intent = Intent(this, PServeAct::class.java)
         intent.putExtra("platform_id", plaform.platformId)
-
-        if (todoParamREQUEST_EXIT == Inull) {
-            startActivity(intent)
-        } else {
-            startActivityForResult(intent, todoParamREQUEST_EXIT)
+        if (todoParamREQUEST_EXIT != Inull) {
+            intent.putExtra("mode", "itFireMode")
         }
+        startActivity(intent)
     }
 
     override fun startPlatformProblem(plaform: PlatformEntity) {
@@ -663,7 +666,7 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
         }
         mNotifyMap[srpId] = Lnull
 
-        val intent = Intent(this, PlatformServeAct::class.java)
+        val intent = Intent(this, PServeAct::class.java)
 
         // TODO: !!?R_dos(;:)
         intent.putExtra("srpId", srpId)
@@ -1002,19 +1005,5 @@ class MapAct : ActAbstract(), MapActBottomBehaviorAdapter.PlatformClickListener,
     override fun onFinish(p0: Map, p1: CameraPosition) {
         Log.d("AAAA", "onFinish")
 //        this as InertiaMoveListener
-    }
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        val result = false
-        log("svFilterAddress:::onQueryTextSubmit. result=${result} query=${query}")
-        return result
-    }
-    override fun onQueryTextChange(newText: String?): Boolean {
-        val res = true
-        mAdapterBottomBehavior?.let {
-            it.filteredList(newText)
-            onRefreshMap(it.getItems())
-        }
-        log("svFilterAddress:::onQueryTextChange.result=${res} newText=${newText}")
-        return res
     }
 }

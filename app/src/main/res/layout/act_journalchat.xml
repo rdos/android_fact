@@ -12,6 +12,8 @@
         android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
         android:gravity="center"
         android:background="@color/colorPrimary"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
         >
 
         <androidx.appcompat.widget.AppCompatImageButton
@@ -28,10 +30,20 @@
             android:gravity="center"
             android:text="Журнал" android:textSize="18sp" android:textColor="@android:color/white" android:textStyle="bold"
             />
-        <androidx.appcompat.widget.SearchView
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/sv__act_journalchat__filteraddress"
             android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="10dp"
+            android:textColorHint="@color/light_gray"
+            android:backgroundTint="@color/white"
+            android:drawableStart="@drawable/ic_baseline_search_white"
+            android:maxLines="1"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:hint=" По адресу"
+            android:textColor="@color/white"
             app:defaultQueryHint="@string/hint__search_by_address"
             />
     </androidx.appcompat.widget.LinearLayoutCompat>

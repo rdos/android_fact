@@ -10,7 +10,6 @@ import ru.smartro.worknote.*
  
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ac.checklist.StartVehicleAct
 import java.lang.Exception
 
 //        try {
@@ -90,7 +89,7 @@ abstract class AAct : AppCompatActivity() {
         log("${valueName}=$value\"")
     }
 
-    protected fun logSentry(text: String) {
+    fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
         Log.i(TAG + "Sent", text)
     }
@@ -136,7 +135,7 @@ abstract class AAct : AppCompatActivity() {
     }
 
 
-    protected val PUT_EXTRA_PARAM_ID: String = "PUT_EXTRA_PARAM_ID"
+    val PUT_EXTRA_PARAM_ID: String = "PUT_EXTRA_PARAM_ID"
     fun getPutExtraParam_ID(): Int {
         val res = intent.getIntExtra(PUT_EXTRA_PARAM_ID, Inull)
         if (res == Inull) {

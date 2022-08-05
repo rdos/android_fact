@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class WayListResponse(
     @SerializedName("data")
-    val data: List<Data>,
+    val data: List<WayBillDto>,
     @SerializedName("success")
     val success: Boolean
 )
