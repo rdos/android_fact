@@ -1,28 +1,30 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
-import kotlinx.android.synthetic.main.fragment_container_serve.*
-import ru.smartro.worknote.ARGUMENT_NAME___PARAM_ID
+import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.abs.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.presentation.ac.MainAct
 
 
 class ContainerServeBottomDialog : AbstractBottomDialog() {
     private val viewModel: PlatformServeSharedViewModel by activityViewModels()
     private var volume: Double? = null
-    private lateinit var parentAct: PServeAct
+    private lateinit var parentAct: MainAct
 
     private var firstTime = true
 
@@ -44,18 +46,18 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parentAct = requireActivity() as PServeAct
+        parentAct = requireActivity() as MainAct
 
         p_container_id = arguments?.getInt(ARGUMENT_NAME___PARAM_ID)!!
 
         val containerEntity = viewModel.baseDat.getContainerEntity(p_container_id)
         containerEntity.let {
-            comment_et.setText(it.comment)
+            view.findViewById<TextInputEditText>(R.id.comment_et).setText(it.comment)
             volume = it.volume
             setVolume(view, it.volume)
-            enter_info_tittle.text = "Заполненность конт №${it.number}"
+            view.findViewById<TextView>(R.id.enter_info_tittle).text = "Заполненность конт №${it.number}"
         }
-        comment_et.addTextChangedListener{
+        view.findViewById<TextInputEditText>(R.id.comment_et).addTextChangedListener{
             // TODO:
             viewModel.updateContainerComment(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, it.toString())
         }
@@ -69,7 +71,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 //            val intent = Intent(requireContext(), ContainerFailureAct::class.java)
 //            intent.putExtra("is_container", true)
 //            intent.putExtra("container_id", p_container_id)
-            val checkedId = enter_info_percent_rg.checkedRadioButtonId
+            val checkedId = view.findViewById<RadioGroup>(R.id.enter_info_percent_rg).checkedRadioButtonId
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val volume = toPercent(radioButton.text.toString())
             viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, volume)
@@ -84,7 +86,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         apbBreakdown.setOnClickListener {
 //            val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
 //            intent.putExtra("is_container", true)
-            val checkedId = enter_info_percent_rg.checkedRadioButtonId
+            val checkedId = view.findViewById<RadioGroup>(R.id.enter_info_percent_rg).checkedRadioButtonId
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val volume = toPercent(radioButton.text.toString())
             viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, volume)
@@ -131,7 +133,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         viewModel.updateContainerComment(
             viewModel.mPlatformEntity.value!!.platformId!!,
             p_container_id,
-            comment_et.text.toString()
+            view?.findViewById<TextInputEditText>(R.id.comment_et)?.text.toString()
         )
     }
 
@@ -145,24 +147,30 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 //    }
 
     private fun setVolume(view: View, volume: Double?) {
+        val percent0 = view.findViewById<RadioButton>(R.id.percent_0)
+        val percent25 = view.findViewById<RadioButton>(R.id.percent_25)
+        val percent50 = view.findViewById<RadioButton>(R.id.percent_50)
+        val percent75 = view.findViewById<RadioButton>(R.id.percent_75)
+        val percent100 = view.findViewById<RadioButton>(R.id.percent_100)
+        val percent125 = view.findViewById<RadioButton>(R.id.percent_125)
         when (volume) {
-            0.00 -> percent_0.isChecked = true
-            0.25 -> percent_25.isChecked = true
-            0.50 -> percent_50.isChecked = true
-            0.75 -> percent_75.isChecked = true
-            1.00 -> percent_100.isChecked = true
-            1.25 -> percent_125.isChecked = true
+            0.00 -> percent0.isChecked = true
+            0.25 -> percent25.isChecked = true
+            0.50 -> percent50.isChecked = true
+            0.75 -> percent75.isChecked = true
+            1.00 -> percent100.isChecked = true
+            1.25 -> percent125.isChecked = true
             null -> {
-                percent_0.isChecked = false
-                percent_25.isChecked = false
-                percent_50.isChecked = false
-                percent_75.isChecked = false
-                percent_100.isChecked = true
-                percent_125.isChecked = false
+                percent0.isChecked = false
+                percent25.isChecked = false
+                percent50.isChecked = false
+                percent75.isChecked = false
+                percent100.isChecked = true
+                percent125.isChecked = false
             }
         }
-        var prevRadioButton = view.findViewById<RadioButton>(R.id.percent_0)
-        enter_info_percent_rg.setOnCheckedChangeListener { group, checkedId ->
+        var prevRadioButton = percent0
+        view.findViewById<RadioGroup>(R.id.enter_info_percent_rg).setOnCheckedChangeListener { group, checkedId ->
             prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             val radioButton = view.findViewById<RadioButton>(checkedId)
             this.volume = toPercent(radioButton.text.toString())

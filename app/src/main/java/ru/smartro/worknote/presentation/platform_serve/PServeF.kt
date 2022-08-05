@@ -9,22 +9,28 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
 
 class PServeF : AFragment() {
+    private var mBackPressedCnt: Int = 2
+
     override fun onGetLayout(): Int {
         return R.layout.f_pserve
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        viewModel.updatePlatformStatusUnfinished()
-        navigateClose()
-        toast("Вы не завершили обслуживание КП.")
+        mBackPressedCnt--
+        if (mBackPressedCnt <= 0) {
+            viewModel.updatePlatformStatusUnfinished()
+            navigateBack(R.id.MapF)
+            toast("Вы не завершили обслуживание КП.")
+        } else {
+            toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
+        }
     }
 
     private var navController: NavController? = null

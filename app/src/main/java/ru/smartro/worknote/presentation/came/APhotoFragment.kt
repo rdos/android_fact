@@ -29,9 +29,9 @@ import com.bumptech.glide.request.RequestOptions
 import io.realm.RealmList
 import ru.smartro.worknote.*
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.abs.AbsObject
-import ru.smartro.worknote.abs.ActNOAbst
-import ru.smartro.worknote.awORKOLDs.BaseViewModel
+import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
@@ -258,7 +258,7 @@ abstract class APhotoFragment(
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        (requireActivity() as ActNOAbst).hideProgress()
+        getAct().hideProgress()
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (PackageManager.PERMISSION_GRANTED == grantResults.firstOrNull()) {
@@ -277,7 +277,7 @@ abstract class APhotoFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity() as ActNOAbst).hideProgress()
+        getAct().hideProgress()
         if (!MyUtil.hasPermissions(requireContext())) {
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         }

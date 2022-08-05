@@ -17,19 +17,18 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
-import ru.smartro.worknote.presentation.checklist.XChecklistAct
+import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 
 class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
-    private val viewModel: ChecklistViewModel by activityViewModels()
+    private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
 
     private var etVehicleFilter: EditText? = null
     private var rvAdapter: StartVehicleAdapter? = null
@@ -48,7 +47,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             // TODO::Vlad -- Можно поставить один раз тут и не трогать в последующих фрагах
             acibGoToBack?.visibility = View.VISIBLE
             acibGoToBack?.setOnClickListener {
-                navigateBackChecklist()
+                navigateBack()
             }
             setBarTitle("Автомобиль")
         }

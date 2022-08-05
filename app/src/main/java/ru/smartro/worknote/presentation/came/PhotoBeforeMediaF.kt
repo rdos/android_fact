@@ -50,7 +50,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
     override fun onBackPressed() {
         super.onBackPressed()
         super.dropOutputD()
-        navigateClose()
+        navigateBack()
 
     }
     companion object {

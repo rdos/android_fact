@@ -1,5 +1,6 @@
 package ru.smartro.worknote.presentation.terminate
 
+import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,15 +13,17 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
+import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -38,7 +41,7 @@ class CompleteF : AFragment() {
     private lateinit var mReasonAdapter: ReasonAdapter
     private lateinit var mDatabase: RealmRepository
 
-    private val viewModel: TerminateViewModel by viewModels()
+    private val viewModel: CompleteViewModel by viewModels()
 
     override fun onGetLayout(): Int {
         return R.layout.f_complete___map_act
@@ -84,10 +87,15 @@ class CompleteF : AFragment() {
                 if(mDatabase.hasWorkOrderInProgress() == false) {
                     finishTask_know()
                 } else {
-                    getBackToMap()
+                    navigateBack(R.id.MapF)
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateBack()
     }
 
     interface OnSuccessListener {
@@ -100,11 +108,7 @@ class CompleteF : AFragment() {
         getAct().modeSyNChrON_off()
         mDatabase.clearDataBase()
 
-        getAct().findNavController(R.id.fragment_container_end_tasks).navigate(CompleteFDirections.actionCompleteFToFinishCompleteF())
-    }
-
-    fun getBackToMap() {
-        getAct().finish()
+        getAct().findNavController(R.id.fcv_container).navigate(R.id.FinishCompleteF)
     }
 
     inner class ReasonAdapter(private val workOrderS: MutableList<WorkOrderEntity>,
@@ -340,6 +344,18 @@ class CompleteF : AFragment() {
                     }
                 }
             }
+        }
+    }
+
+    open class CompleteViewModel(application: Application) : BaseViewModel(application) {
+
+        private val _servedCounter: MutableLiveData<Int> = MutableLiveData(0)
+        val mServedCounter: LiveData<Int>
+            get() = _servedCounter
+
+
+        fun increaseCounter() {
+            _servedCounter.postValue((mServedCounter.value ?: 0) + 1)
         }
     }
 }

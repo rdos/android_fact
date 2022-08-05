@@ -17,7 +17,7 @@
         android:textSize="18sp"
         android:text="Вы находитесь слишком далеко от контейнерной площадки. \nВы уверены, что хотите взять в работу эту КП?" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/act_map__dialog_platform_clicked_dtl__alert_by_point__ok"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

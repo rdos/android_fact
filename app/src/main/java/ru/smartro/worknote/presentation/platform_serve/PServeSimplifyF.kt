@@ -6,7 +6,7 @@ import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContainerAdapter
 import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAdapter

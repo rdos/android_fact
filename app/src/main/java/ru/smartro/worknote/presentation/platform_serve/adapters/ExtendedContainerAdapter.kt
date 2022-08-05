@@ -10,10 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatButton
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.alert_take_inactive_container.view.*
-import kotlinx.android.synthetic.main.item_container_adapter.view.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
@@ -37,10 +37,10 @@ class ExtendedContainerAdapter(
     override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
         val container = containers[position]
 
-        holder.itemView.choose_title.text = container.number
-        holder.itemView.tv_item_container_adapter__type_name.text = container.typeName
+        holder.itemView.findViewById<TextView>(R.id.choose_title).text = container.number
+        holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__type_name).text = container.typeName
         // TODO: 25.10.2021 add getString() + format
-        holder.itemView.tv_item_container_adapter__constructiveVolume.text = container.constructiveVolume.toStr("м³")
+        holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__constructiveVolume).text = container.constructiveVolume.toStr("м³")
         holder.itemView.setOnClickListener {
             if(!container.isActiveToday && container.volume == null) {
                 showTakeInactiveContainerAlert(holder.activity) {
@@ -57,18 +57,18 @@ class ExtendedContainerAdapter(
         tvVolume.setTextColor(container.getVolumePercentColor(holder.itemView.context))
 
         if(!container.isActiveToday && container.volume == null) {
-            holder.itemView.choose_title.setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
-            holder.itemView.tv_item_container_adapter__type_name.setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
-            holder.itemView.tv_item_container_adapter__constructiveVolume.setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
-            holder.itemView.tv_item_container_adapter__volume.setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
+            holder.itemView.findViewById<TextView>(R.id.choose_title).setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
+            holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__type_name).setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
+            holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__constructiveVolume).setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
+            tvVolume.setTextColor(ContextCompat.getColor(holder.activity, R.color.light_gray))
         }
 
         if (container.isFailureNotEmpty()) {
-            holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red_cool))
+            holder.itemView.findViewById<CardView>(R.id.choose_cardview).setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red_cool))
         }
 
         if(container.volume != null && !container.isFailureNotEmpty()) {
-            holder.itemView.choose_cardview.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.green_cool))
+            holder.itemView.findViewById<CardView>(R.id.choose_cardview).setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.green_cool))
         }
     }
 
@@ -77,11 +77,11 @@ class ExtendedContainerAdapter(
             lateinit var alertDialog: AlertDialog
             val builder = AlertDialog.Builder(context)
             val view = (context as Activity).layoutInflater.inflate(R.layout.alert_take_inactive_container, null)
-            view.acb_alert_inactive_container___accept.setOnClickListener {
+            view.findViewById<AppCompatButton>(R.id.acb_alert_inactive_container___accept).setOnClickListener {
                 next()
                 alertDialog.dismiss()
             }
-            view.acb_alert_inactive_container___decline.setOnClickListener {
+            view.findViewById<AppCompatButton>(R.id.acb_alert_inactive_container___decline).setOnClickListener {
                 alertDialog.dismiss()
             }
             builder.setView(view)

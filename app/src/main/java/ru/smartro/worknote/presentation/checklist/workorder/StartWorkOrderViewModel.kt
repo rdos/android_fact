@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import ru.smartro.worknote.awORKOLDs.BaseViewModel
+import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.saveJSON
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.THR

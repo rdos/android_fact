@@ -4,17 +4,16 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.alert_clear_navigator.view.dismiss_btn
-import kotlinx.android.synthetic.main.alert_warning_camera.view.title_tv
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.AbstractDialog
-import ru.smartro.worknote.log.AAct
+import ru.smartro.worknote.abs.AAct
 
 private lateinit var loadingDialog: AlertDialog
 private lateinit var mCustomDialog: AlertDialog
@@ -69,7 +68,7 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
     Log.d(TAG, "showLoadingDialog.after")
 }
 
-fun AppCompatActivity.showingProgress(text: String? = null) {
+fun AppCompatActivity.showingProgress(text: String?=null, isEmptyOldText: Boolean=false) {
     hideProgress()
     try {
         val builder = AlertDialog.Builder(this)
@@ -78,7 +77,11 @@ fun AppCompatActivity.showingProgress(text: String? = null) {
         text?.let {
             if (text != Snull) {
                 val tv = view.findViewById<TextView>(R.id.tv_alert_loading)
-                val oldText = tv.text
+                var oldText = tv.text
+                if (isEmptyOldText) {
+                    oldText = ""
+                }
+
                 tv.text = "${text} ${oldText}"
             }
         }
@@ -95,7 +98,7 @@ fun AppCompatActivity.warningCameraShow(title: String): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_warning_camera, null)
-    view.title_tv.text = title
+    view.findViewById<TextView>(R.id.title_tv).text = title
     builder.setView(view)
     builder.setCancelable(false)
     showCustomDialog(builder)
@@ -111,8 +114,8 @@ fun AbstractDialog.showAlertPlatformByPoint(): View {
     return view
 }
 
-fun AAct.showAlertPlatformByPoint(): View {
-    val builder = AlertDialog.Builder(this)
+fun AFragment.showAlertPlatformByPoint(): View {
+    val builder = AlertDialog.Builder(getAct())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.act_map__dialog_platform_clicked_dtl__alert_by_point, null)
     builder.setView(view)
@@ -194,15 +197,15 @@ fun AFragment.showDialogFillKgoVolume(): View {
 
 
 
-fun AppCompatActivity.warningClearNavigator(title: String): View {
-    val builder = AlertDialog.Builder(this)
+fun AFragment.warningClearNavigator(title: String): View {
+    val builder = AlertDialog.Builder(getAct())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_clear_navigator, null)
     builder.setView(view)
     builder.setCancelable(false)
     mCustomDialog = builder.create()
-    view.title_tv.text = title
-    view.dismiss_btn.setOnClickListener {
+    view.findViewById<TextView>(R.id.title_tv).text = title
+    view.findViewById<Button>(R.id.dismiss_btn).setOnClickListener {
         mCustomDialog.dismiss()
     }
     mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -215,7 +218,7 @@ fun Fragment.warningDelete(title: String): View {
     val builder = AlertDialog.Builder(activity!!)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_warning_delete, null)
-    view.title_tv.text = title
+    view.findViewById<TextView>(R.id.title_tv).text = title
     builder.setView(view)
     builder.setCancelable(false)
     showCustomDialog(builder)

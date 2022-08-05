@@ -16,7 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume

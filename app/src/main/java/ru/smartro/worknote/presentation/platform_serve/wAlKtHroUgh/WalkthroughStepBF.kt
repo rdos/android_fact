@@ -5,7 +5,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.navigation.fragment.findNavController
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
 
 class WalkthroughStepBF : AFragment() {

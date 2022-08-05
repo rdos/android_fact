@@ -16,7 +16,7 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
-import ru.smartro.worknote.work.ac.StartAct
+import ru.smartro.worknote.presentation.ac.StartAct
 import java.io.File
 import java.io.FileOutputStream
 
@@ -119,7 +119,8 @@ class SYNCworkER(
         val pingResponse = mNetworkRepository.ping(PingBody("ping"))
         when (pingResponse.status) {
             Status.SUCCESS -> {
-                Log.d("TEST :::: ", pingResponse.data.toString())
+                Log.d(TAG, "PING RESPONSE:")
+                Log.d(TAG, pingResponse.data.toString())
                 val message = pingResponse.data?.payload?.message
                 if(message != null)
                     (applicationContext as App).showAlertNotification(message)
