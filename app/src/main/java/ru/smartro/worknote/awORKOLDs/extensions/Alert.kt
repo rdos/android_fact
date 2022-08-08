@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
@@ -18,18 +19,19 @@ import ru.smartro.worknote.abs.AAct
 private lateinit var loadingDialog: AlertDialog
 private lateinit var mCustomDialog: AlertDialog
 private val TAG = "Alert.kt"
+val log = LoggerFactory.getLogger("ALERT")
 
 fun showCustomDialog(builder: AlertDialog.Builder) {
-    Log.i(TAG, "showCustomDialog.before")
+    log.info( "before")
     try {
         mCustomDialog = builder.create()
         mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         mCustomDialog.show()
     }  catch (e: Exception) {
         // TODO: 02.11.2021
-        Log.e(TAG, "showCustomDialog", e)
+        log.error("showCustomDialog", e)
     }
-    Log.d(TAG, "showCustomDialog.after")
+    log.debug("after")
 }
 
 //showDlgPickup!r_dos
@@ -56,16 +58,16 @@ fun AFragment.showDlgPickup(): View {
 
 
 private fun showLoadingDialog(builder: AlertDialog.Builder) {
-    Log.i(TAG, "showLoadingDialog.before")
+    log.info( "before")
     try {
         loadingDialog = builder.create()
         loadingDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         loadingDialog.show()
     }  catch (e: Exception) {
         // TODO: 02.11.2021
-        Log.e(TAG, "showLoadingDialog", e)
+        log.error("showLoadingDialog", e)
     }
-    Log.d(TAG, "showLoadingDialog.after")
+    log.debug("after")
 }
 
 fun AppCompatActivity.showingProgress(text: String?=null, isEmptyOldText: Boolean=false) {
@@ -239,20 +241,20 @@ fun AbstractDialog.hideDialog() {
     private fun hideCustomDialog() {
         try {
             mCustomDialog.dismiss()
-        } catch (e: Exception) {
+        } catch (ex: Exception) {
             // TODO: 02.11.2021
-            Log.e(TAG, "AppCompatActivity.hideDialog", e)
+            log.error("hideCustomDialog", ex)
         }
     }
 
 fun AppCompatActivity.hideProgress() {
     try {
-        Log.w(TAG, "hideProgress")
+        log.warn( "hideProgress")
         if (loadingDialog.isShowing) {
             loadingDialog.dismiss()
         }
-    } catch (e: Exception) {
+    } catch (ex: Exception) {
         // TODO: 02.11.2021
-        Log.e(TAG, "AppCompatActivity.loadingHide", e)
+        log.error("hideProgress", ex)
     }
 }

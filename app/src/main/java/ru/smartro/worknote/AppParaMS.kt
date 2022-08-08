@@ -3,6 +3,7 @@ package ru.smartro.worknote
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
 import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.andPOintD.PoinT
@@ -12,6 +13,7 @@ private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE
 class AppParaMS {
 
+    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
 
     public var isRestartApp: Boolean = false
     //todo: mEnv? что за ЗАЯЦ/?)
@@ -90,13 +92,13 @@ class AppParaMS {
             return devId
         }
         set(value) {
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.w("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
+            log.error( "deviceIdset(value)")
+            log.error( "deviceIdset(value)")
+            log.error( "deviceIdset(value)")
+            log.warn( "deviceIdset(value)")
+            log.error( "deviceIdset(value)")
+            log.error( "deviceIdset(value)")
+            log.error( "deviceIdset(value)")
         }
 
 //    base = device ОКРУЖЕНИЕ...
@@ -106,7 +108,7 @@ class AppParaMS {
         val currentTimeMS = System.currentTimeMillis()
         val diff = currentTimeMS - (time?:gpsTIME)
         val res =  diff >= 30_000
-        Log.w("AppParaMS", "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
+        log.warn( "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
         return res
     }
     fun iSoldGPSdataSaved(): Boolean {
@@ -123,11 +125,11 @@ class AppParaMS {
 //        if (iSoldGPSdataSaved()) {
 //            return res
 //        }
-//        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
-//        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
+//        log.error( "if (isLastGPSSaved()) == false")
+//        log.warn( "if (isLastGPSSaved()) == false")
 //        Log.i("getSaveGPS", "if (isLastGPSSaved()) == false")
-//        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
-//        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
+//        log.warn( "if (isLastGPSSaved()) == false")
+//        log.error( "if (isLastGPSSaved()) == false")
         return res
     }
 

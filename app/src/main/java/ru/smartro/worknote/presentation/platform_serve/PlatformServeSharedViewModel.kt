@@ -11,6 +11,7 @@ import com.yandex.mapkit.directions.driving.DrivingRouter
 import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.directions.driving.VehicleOptions
 import com.yandex.mapkit.geometry.Point
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -30,6 +31,7 @@ data class TypeGroupedContainers(
 )
 
 class PlatformServeSharedViewModel(application: Application) : BaseViewModel(application) {
+    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
 
     val mBeforeMediaWasInited: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -76,7 +78,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
                 mServedContainers.postValue(result)
             } else {
                 val result = countServedContainers(temp)
-                Log.d("SHEESH :::", "getPlatformEntity: countServedContainers ${result}")
+                log.debug("getPlatformEntity: countServedContainers ${result}")
                 mServedContainers.postValue(result)
             }
             _sortedContainers.postValue(temp)
@@ -105,7 +107,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 
 
     fun onDecrease(clientName: String, typeName: String) {
-        Log.d("SHEESH ::: VM_ON_DEC", "client: ${clientName}, type: ${typeName}")
+        log.debug("client: ${clientName}, type: ${typeName}")
         mWasServedSimplified.postValue(true)
         val servedContainers = mServedContainers.value!!.toMutableList()
         val servedCluster = servedContainers.find { el -> el.client == clientName && el.typeName == typeName }
@@ -122,7 +124,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     }
 
     fun onIncrease(clientName: String, typeName: String) {
-        Log.d("SHEESH ::: VM_ON_INC", "client: ${clientName}, type: ${typeName}")
+        log.debug("client: ${clientName}, type: ${typeName}")
         mWasServedSimplified.postValue(true)
         val servedContainers = mServedContainers.value!!.toMutableList()
         val servedCluster = servedContainers.find { el -> el.client == clientName && el.typeName == typeName }
@@ -250,7 +252,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 
     override fun onCleared() {
         super.onCleared()
-        Log.d("VM ::TEST :::", "VM IS CLEARED")
+        log.debug("VM IS CLEARED")
     }
 
     fun buildMapNavigator(

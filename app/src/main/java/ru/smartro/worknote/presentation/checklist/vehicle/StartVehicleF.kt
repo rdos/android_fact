@@ -114,9 +114,8 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
 
-        Log.d("TEST ::: ${this::class.java.simpleName}",
-                "vm.mLastOwnerId=${viewModel.mLastOwnerId}, " +
-                "getArgumentID(mLastOwnerId)=${getArgumentID()}")
+        log.debug("viewModel.mLastOwnerId=${viewModel.mLastOwnerId}")
+        log.debug("getArgumentID(mLastOwnerId)=${getArgumentID()}")
         if(viewModel.mVehicleList.value == null) {
             if(getArgumentName() == null)
                 (requireActivity() as XChecklistAct).showProgressBar()
@@ -149,7 +148,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mVehicleList.removeObservers(viewLifecycleOwner)
     }
 

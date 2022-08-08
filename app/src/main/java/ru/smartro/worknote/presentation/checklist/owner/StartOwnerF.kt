@@ -26,7 +26,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("TEST :::", "STARTOWNERFRAG :: onViewCreated")
+        log.debug("STARTOWNERFRAG :: onViewCreated")
 
         if (!MyUtil.hasPermissions(requireContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
@@ -56,7 +56,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                 when (result.status) {
                     Status.SUCCESS -> {
                         val owners = data!!.data.organisations
-                        Log.d("TEST :::", "owners size: ${owners.size}")
+                        log.debug("owners size: ${owners.size}")
                         if (owners.size == 1)
                             goToNextStep(owners[0].id, owners[0].name)
                         else
@@ -93,7 +93,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mOwnersList.removeObservers(viewLifecycleOwner)
     }
 }

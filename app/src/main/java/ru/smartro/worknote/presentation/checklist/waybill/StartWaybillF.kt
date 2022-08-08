@@ -70,7 +70,7 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         viewModel.mWayBillsViewState.observe(viewLifecycleOwner) { state ->
-            Log.d("TEST :::", "WAYBILL STATE::: ${state}")
+            log.debug("WAYBILL STATE::: ${state}")
             if(state !is XChecklistAct.ViewState.LOADING) {
                 (requireActivity() as XChecklistAct).hideProgressBar()
             }
@@ -131,7 +131,7 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mWayBillList.removeObservers(viewLifecycleOwner)
         viewModel.mWayBillsViewState.postValue(XChecklistAct.ViewState.IDLE())
     }

@@ -40,7 +40,7 @@ class MapFPlatformClickedDtlDialog(private val _platform: PlatformEntity, privat
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //onBindViewHolder
         super.onViewCreated(view, savedInstanceState)
-        Log.w("RRRRRR", "R_dos")
+        log.warn( "R_dos")
         mCurrentActivity = requireActivity() as MainAct
 
         val spanCount = min(_platform.containers.size, 10)

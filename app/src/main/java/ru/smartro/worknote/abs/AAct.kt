@@ -7,6 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import io.sentry.Sentry
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
 
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
@@ -20,7 +21,7 @@ import java.lang.Exception
 //        }
 
 abstract class AAct : AppCompatActivity() {
-
+    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
     protected fun AppliCation() : App {
         return App.getAppliCation()
     }
@@ -65,7 +66,7 @@ abstract class AAct : AppCompatActivity() {
     public var TAG : String = "${this::class.simpleName}"
     private val TAGLOG = "AActLOG"
     protected fun beforeLOG(method: String, valueName: String = "") {
-        AppliCation().beforeLOG(method, valueName)
+        AppliCation().LOGbeforeLOG(method, valueName)
     }
 
     private fun logAfterResult(result: String) {
@@ -80,10 +81,10 @@ abstract class AAct : AppCompatActivity() {
 
     protected fun log(valueNameAndValue: String) {
         mMethodName?.let {
-            Log.i(TAG, "${TAG}:${mMethodName}.${valueNameAndValue}")
+            log.info( "${TAG}:${mMethodName}.${valueNameAndValue}")
             return@log
         }
-        Log.i(TAG, "${TAG}:${valueNameAndValue}")
+        log.info( "${TAG}:${valueNameAndValue}")
     }
 
     protected fun log(valueName: String, value: Int) {
@@ -100,18 +101,18 @@ abstract class AAct : AppCompatActivity() {
 
     fun INcyclEStart(s: String) {
         mMethodName?.let {
-            Log.d(TAGLOG, "${mMethodName}.CYCLes.${s}")
+            log.debug("${mMethodName}.CYCLes.${s}")
             return@INcyclEStart
         }
-        Log.d(TAGLOG, "CYCLes.${s}")
+        log.debug("CYCLes.${s}")
     }
 
     fun INcyclEStop() {
         mMethodName?.let {
-            Log.d(TAGLOG, "${mMethodName}.************-_(:;)")
+            log.debug("${mMethodName}.************-_(:;)")
             return@INcyclEStop
         }
-        Log.d(TAGLOG, ".************-_(:;)")
+        log.debug(".************-_(:;)")
     }
 
 
@@ -132,7 +133,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate")
+        log.debug("onCreate")
     }
 
 
@@ -157,29 +158,29 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause")
+        log.debug("onPause")
     }
 
     override fun onResume() {
         super.onResume()
         AppliCation().LASTact = this
-        Log.d(TAG, "onResume")
+        log.debug("onResume")
     }
 
     override fun onStart() {
         super.onStart()
-        Log.d(TAG, "onStart")
+        log.debug("onStart")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onStop")
+        log.debug("onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         AppliCation().LASTact = null
-        Log.d(TAG, "onDestroy")
+        log.debug("onDestroy")
 
     }
 

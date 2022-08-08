@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import io.sentry.Sentry
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.R
@@ -19,7 +20,9 @@ const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
 abstract class AFragment : Fragment(){
     protected var TAG : String = this::class.java.simpleName
-//        get() {
+    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
+
+    //        get() {
 //            val rootClazz =
 //            rootClazz.getClass
 //            while ()
@@ -28,7 +31,7 @@ abstract class AFragment : Fragment(){
     fun getAct() = requireActivity() as AAct
     protected fun showingProgress(text: String? = null, isEmptyOldText: Boolean=false){
         //todo:ActAbstract
-        Log.d("TEST :::::", "FRAG NAME: ${this::class.java.simpleName}")
+        log.debug("FRAG NAME: ${this::class.java.simpleName}")
         getAct().showingProgress(text, isEmptyOldText)
     }
 
@@ -47,35 +50,48 @@ abstract class AFragment : Fragment(){
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
         // TODO: )))
-        Log.i(TAG, "onCreate")
+        log.info( "onCreate")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 //        try {
 //          это провал!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //        }
+        log.debug("onCreateView onGetLayout.before")
         val view = inflater.inflate(onGetLayout(), container, false)
+        log.debug("onCreateView onGetLayout.after")
         return view
     }
 
     protected fun navigateBack() {
+        log.debug("navigateBack.before")
+
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
         navController.navigateUp()
+        log.trace("navigateBack.after")
+
     }
 
     protected fun navigateBack(navFragmentId: Int) {
+        log.debug("navigateBack.before")
+        log.debug("navigateBack .navFragmentId=${navFragmentId}")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
         navController.popBackStack(navFragmentId, false)
+        log.trace("navigateBack.after")
     }
 
 
     protected fun navigateClose() {
+        log.debug("navigateClose.before")
         getAct().finish()
+        log.trace("navigateClose.after")
     }
 
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
+        log.trace("navigateMain.before")
+        log.debug("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
 
@@ -119,29 +135,40 @@ abstract class AFragment : Fragment(){
 
 
     protected fun getArgumentID(): Int {
+        log.debug("getArgumentID.before")
         val result = requireArguments().getInt(ARGUMENT_NAME___PARAM_ID, Inull)
+        log.info("getArgumentID .result = ${result}")
         return result
     }
 
     protected fun getArgumentName(): String? {
+        log.debug("getArgumentName.before")
         val result = requireArguments().getString(ARGUMENT_NAME___PARAM_NAME)
+        log.info("getArgumentName .result = ${result}")
         return result
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        log.info("onViewCreated")
 //        onCreate()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        log.debug("onDestroyView")
+
+    }
+
     protected fun log(valueNameAndValue: String) {
-        Log.i(TAG, "${valueNameAndValue}")
+        log.info( "${valueNameAndValue}")
     }
 
     open fun onBackPressed() {
-        log("onBackPressed")
+        log.debug("onBackPressed")
     }
 
     open fun onNewGPS() {
+        log.warn("onNewGPS")
 
     }
     //    companion object {

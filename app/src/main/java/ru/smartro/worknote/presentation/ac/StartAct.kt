@@ -259,7 +259,7 @@ class StartAct : AAct() {
 //            window.attributes = wlp
             mInfoDialog?.show()
         } catch (ex: Exception) {
-            Log.e(TAG, "showInfoDialog", ex)
+            log.error("createInfoDialog", ex)
         }
         return view
     }

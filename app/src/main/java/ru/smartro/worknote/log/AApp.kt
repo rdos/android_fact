@@ -2,37 +2,38 @@ package ru.smartro.worknote.log
 
 import android.app.Application
 import android.provider.Settings
-import android.util.Log
-import ru.smartro.worknote.App
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
+import java.io.File
 
 abstract class AApp : Application() {
+    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
 
 
     protected val aPPParamS: AppParaMS by lazy {
         AppParaMS.create()
     }
 
-    protected var mMethodName: String? = null
     public val TAG = "App"
     private val TAGLOG = "AAppLOG"
 
 
-    fun beforeLOG(method: String, valueName: String = "") {
-        mMethodName = method
-        Log.w(TAG, ".thread_id=${Thread.currentThread().id}")
-        Log.d(TAGLOG, "${mMethodName}.before")
+    fun LOGbeforeLOG(valueName: String? = null) {
+        if (valueName == null) {
+            log.debug("before")
+            return
+        }
+        log.debug("before.valueName=${valueName}")
     }
 
-    private fun logAfterResult(result: String) {
+    private fun logAfterResult(result: String? = null) {
         result?.let {
-            Log.d(TAGLOG, "${mMethodName}.after result=${result} ")
+            log.debug("after result=${result} ")
             return@logAfterResult
         }
-        Log.d(TAGLOG, "${mMethodName}.after")
-        mMethodName = null
+        log.debug("after")
     }
 
     protected fun LOGafterLOG(res: Boolean? = null) {
@@ -40,11 +41,7 @@ abstract class AApp : Application() {
     }
 
     protected fun log(valueNameAndValue: String) {
-        mMethodName?.let {
-            Log.i(TAGLOG, "${TAGLOG}:${mMethodName}.${valueNameAndValue}")
-            return@log
-        }
-        Log.i(TAGLOG, "${TAGLOG}:${valueNameAndValue}")
+        log.debug(valueNameAndValue)
     }
 
     protected fun log(valueName: String, value: Int) {
@@ -70,6 +67,30 @@ abstract class AApp : Application() {
         } catch (ex: Throwable) {
             return "ThrowableDeviceId"
         }
+    }
+
+    fun getDPath(Dname: String): String {
+        return this.dataDir.absolutePath + File.separator + Dname
+    }
+
+    fun getD(Dname: String): File {
+        val fl = getDPath(Dname)
+        makeD(fl)
+        return File(fl)
+    }
+
+
+    fun makeD(fl: String) {
+        val file = File(fl)
+        if (!file.exists()) file.mkdirs()
+    }
+
+
+    fun getF(Dname: String, Fname: String): File {
+        val fl = getDPath(Dname)
+        makeD(fl)
+        val file = File(fl, Fname)
+        return file
     }
 
 

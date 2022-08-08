@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.BaseViewModel
@@ -90,6 +91,7 @@ class XChecklistAct: AAct() {
     }
 
     class ChecklistViewModel(application: Application) : BaseViewModel(application) {
+        protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
 
         // OWNERS
         private val _ownersList: MutableLiveData<Resource<OrganisationResponse>> = MutableLiveData(null)
@@ -119,7 +121,7 @@ class XChecklistAct: AAct() {
 
         fun getOwnersList() {
             viewModelScope.launch {
-                Log.i(TAG, "getOwners")
+                log.info( "getOwners")
                 val response = networkDat.getOwners()
                 try {
                     when {
@@ -143,10 +145,10 @@ class XChecklistAct: AAct() {
 
         fun getVehicleList(organisationId: Int) {
             viewModelScope.launch {
-                Log.i(TAG, "getVehicle.before")
+                log.info( "getVehicle.before")
                 try {
                     val response = networkDat.getVehicle(organisationId)
-                    Log.d(TAG, "getVehicle.after ${response.body().toString()}")
+                    log.debug("getVehicle.after ${response.body().toString()}")
                     when {
                         response.isSuccessful -> {
                             mLastOwnerId = organisationId
@@ -158,7 +160,7 @@ class XChecklistAct: AAct() {
                         else -> {
                             THR.BadRequestVehicle(response)
                             val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                            Log.d(TAG, "getVehicle.after errorResponse=${errorResponse}")
+                            log.debug("getVehicle.after errorResponse=${errorResponse}")
                             _vehicleList.postValue(Resource.error("Ошибка ${response.code()}", null))
                         }
                     }
@@ -192,15 +194,15 @@ class XChecklistAct: AAct() {
                             val gson = Gson()
                             val bodyInStringFormat = gson.toJson(response.body())
                             saveJSON(bodyInStringFormat, "getWayList")
-                            Log.d(TAG, "getWayList.after ${response.body().toString()}")
+                            log.debug("getWayList.after ${response.body().toString()}")
                             mWayBillsViewState.postValue(ViewState.DATA())
-                            Log.d("TEST :::", "waybills:::: ${response.body()?.data}")
+                            log.debug("waybills:::: ${response.body()?.data}")
                             _wayBillList.postValue(response.body()?.data)
                         }
                         else -> {
                             THR.BadRequestWaybill(response)
                             val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                            Log.d(TAG, "getWayList.after errorResponse=${errorResponse}")
+                            log.debug("getWayList.after errorResponse=${errorResponse}")
                             mWayBillsViewState.postValue(ViewState.ERROR("Ошибка ${response.code()}"))
                         }
                     }
@@ -212,11 +214,11 @@ class XChecklistAct: AAct() {
 
         fun getWorkOrderList(orgId: Int, wayBillId: Int) {
             viewModelScope.launch {
-                Log.i(TAG, "getWorkOder.before")
+                log.info( "getWorkOder.before")
                 try {
                     val response = networkDat.getWorkOrder(orgId, wayBillId)
                     mSelectedWorkOrders.postValue(mutableListOf())
-                    Log.d(TAG, "getWorkOder.after ${response.body().toString()}")
+                    log.debug("getWorkOder.after ${response.body().toString()}")
                     when {
                         response.isSuccessful -> {
                             mLastOwnerId = orgId

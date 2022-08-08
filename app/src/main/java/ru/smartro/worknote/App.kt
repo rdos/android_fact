@@ -15,7 +15,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
-import android.util.Log
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +26,12 @@ import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.LoggerContext
+import ch.qos.logback.classic.android.LogcatAppender
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.FileAppender
 import com.yandex.mapkit.MapKitFactory
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -37,12 +42,13 @@ import io.sentry.android.core.SentryAndroid
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.slf4j.LoggerFactory
+import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AndRoid
+import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.NetworkRepository
@@ -50,8 +56,7 @@ import ru.smartro.worknote.work.RealmRepository
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -83,6 +88,7 @@ class App : AApp() {
     }
 
     fun gps(): PoinT {
+        log.debug("BBBB")
         var gps_enabled = false
         var network_enabled = false
         val lm = AndRoid.getService()
@@ -117,15 +123,31 @@ class App : AApp() {
 
     private var mGPS: PoinT = PoinT()
 
+
     override fun onCreate() {
         super.onCreate()
         INSTANCE = this
 
+//        val context = LoggerFactory.getILoggerFactory() as LoggerContext
+//        for (logger in context.loggerList) {
+//            val index = logger.iteratorForAppenders()
+//            while (index.hasNext()) {
+//                val appender = index.next()
+//                if (appender is FileAppender<*>) {
+//                    val file = getF("logs", "file.log")
+//                    (appender as FileAppender<*>).file = "/data/data/ru.smartro.worknote/logs/log.log"
+//                    appender.start()
+//                }
+//            }
+//        }
+
+        logbackInit()
+        log.debug("AAAAAAAAAAAA")
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
 
-        Log.i(TAG, "on App created App.onCreate onAppCreate")
+        log.info("on App created App.onCreate onAppCreate")
         sentryInit()
         initRealm()
         startKoin {
@@ -144,27 +166,79 @@ class App : AApp() {
 
     }
 
+    private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){
+        val logsFilesArray = this.getD("logs").listFiles()
+
+        if (logsFilesArray != null) {
+            val delCount = logsFilesArray.size - maxHistoryFileCount-1
+            if (delCount <= 0) {
+                return
+            }
+            val logsFilesList = mutableListOf<File>()
+            for (idx in logsFilesArray.indices) {
+                logsFilesList.add(logsFilesArray[idx])
+            }
+
+            logsFilesList.sortedBy { it.name }
+
+            for (idx in 0 until delCount) {
+                logsFilesList[idx].delete()
+            }
+        }
+    }
+
+    private fun logbackInit() {
+        clearLogbackDirectory()
+        // reset the default context (which may already have been initialized)
+        // since we want to reconfigure it
+        val lc = LoggerFactory.getILoggerFactory() as LoggerContext
+        lc.stop()
+
+        // setup FileAppender
+        val encoder1 = PatternLayoutEncoder()
+        encoder1.context = lc
+        encoder1.pattern = "%d{HH:mm:ss.SSS}[%thread]%-5level[%relative] %logger{41}[%line]:%method:: %msg%n"
+        encoder1.start()
+        val fileAppender = FileAppender<ILoggingEvent>()
+        fileAppender.context = lc
+        val file = getF("logs", "${MyUtil.currentTime()}.log")
+        fileAppender.file = file.absolutePath
+        fileAppender.encoder = encoder1
+        fileAppender.start()
+
+        val logcatAppender = LogcatAppender()
+        logcatAppender.context = lc
+        logcatAppender.encoder = encoder1
+        logcatAppender.start()
+
+        // add the newly created appenders to the root logger;
+        // qualify Logger to disambiguate from org.slf4j.Logger
+        val root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+        root.addAppender(fileAppender)
+        root.addAppender(logcatAppender)
+    }
+
     inner class MyLocationListener() : LocationListener {
         override fun onProviderEnabled(provider: String) {
-            beforeLOG("onProviderEnabled")
+            LOGbeforeLOG("onProviderEnabled")
             log("provider=${provider}")
             LOGafterLOG()
         }
 
         override fun onProviderDisabled(provider: String) {
-            beforeLOG("onProviderDisabled")
+            LOGbeforeLOG("onProviderDisabled")
             log("provider=${provider}")
             LOGafterLOG()
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            beforeLOG("onProviderStatusChanged")
+            LOGbeforeLOG("onProviderStatusChanged")
             log("provider=${provider}, status=${status}")
             LOGafterLOG()
         }
 
         override fun onLocationChanged(location: Location) {
-            beforeLOG("onLocationChanged")
+            LOGbeforeLOG("onLocationChanged")
 
             val LocationACCURACY = FloatCool("LocationACCURACY", this@App)
             LocationACCURACY.setDATAing(location.accuracy)
@@ -218,7 +292,7 @@ class App : AApp() {
 
     override fun onTerminate() {
         super.onTerminate()
-        beforeLOG("onTerminate")
+        LOGbeforeLOG("onTerminate")
     }
     //Реплику: gjпох
     public fun getDB(): RealmRepository {
@@ -352,7 +426,7 @@ class App : AApp() {
     }
 
     fun cancelNotification(id: Int? = 1) {
-        Log.d(TAG, "cancelNotification.before")
+        log.debug("cancelNotification.before")
         val notificationManager = NotificationManagerCompat.from(this)
         if (id == null) {
             notificationManager.cancelAll()
@@ -365,7 +439,7 @@ class App : AApp() {
 
 
     fun startLocationService(isForceMode: Boolean=false) {
-        beforeLOG("runLocationService")
+        LOGbeforeLOG("runLocationService")
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -409,7 +483,7 @@ class App : AApp() {
 
 
     fun startWorkER() {
-        beforeLOG("runSyncWorkER")
+        LOGbeforeLOG("runSyncWorkER")
         if(getAppParaMS().isModeWorkER) {
             log("getAppParaMS().isModeWorkER=true")
             LOGafterLOG()
@@ -543,7 +617,7 @@ fun Fragment.toast(text: String? = "") {
 
 fun BaseViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
     fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
-        var dirPath = App.getAppliCation().filesDir.absolutePath
+        var dirPath = App.getAppliCation().dataDir.absolutePath
         if(containerUuid == null) {
             dirPath = dirPath + File.separator + platformUuid
         } else {
@@ -554,7 +628,7 @@ fun BaseViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
         if (!file.exists()) file.mkdirs()
         return file
     }
-    val file: File = File(getOutputDirectory("ttest", null), "${p_jsonName}.json")
+    val file: File = File(getOutputDirectory("saveJSON", null), "${p_jsonName}.json")
 
     //This point and below is responsible for the write operation
 

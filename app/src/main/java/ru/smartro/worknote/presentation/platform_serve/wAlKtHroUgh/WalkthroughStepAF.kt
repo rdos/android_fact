@@ -12,7 +12,7 @@ class WalkthroughStepAF : AFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("TEST: :::", "walkt A CREATE")
+        log.debug("walkt A CREATE")
     }
 
     override fun onGetLayout(): Int {

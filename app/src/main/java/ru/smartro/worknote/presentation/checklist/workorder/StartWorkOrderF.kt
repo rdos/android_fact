@@ -155,7 +155,7 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mWorkOrderList.removeObservers(viewLifecycleOwner)
         viewModel.mSelectedWorkOrders.removeObservers(viewLifecycleOwner)
     }

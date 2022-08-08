@@ -104,7 +104,7 @@ class CompleteF : AFragment() {
 
     //todo:!r_dos
     fun finishTask_know() {
-        Log.i(TAG, "finishTask")
+        log.info( "finishTask")
         getAct().modeSyNChrON_off()
         mDatabase.clearDataBase()
 

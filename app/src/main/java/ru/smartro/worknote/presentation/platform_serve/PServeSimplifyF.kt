@@ -50,7 +50,7 @@ class PServeSimplifyF : AFragment() {
 
         vm.mServedContainers.observe(viewLifecycleOwner) { list ->
             if(list != null) {
-                Log.d("TEST ::::", "m SERVED CONTAINERS : ${list}")
+                log.debug("m SERVED CONTAINERS : ${list}")
                 adapterCurrentTask.served = list
             }
         }

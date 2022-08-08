@@ -14,6 +14,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
@@ -29,6 +30,7 @@ class ExtendedContainerAdapter(
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_adapter, parent, false)
         return OwnerViewHolder(view, activity)
     }
+    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
 
     override fun getItemCount(): Int {
         return containers.size
@@ -49,7 +51,7 @@ class ExtendedContainerAdapter(
             } else {
                 listener.startContainerService(item = containers[position])
             }
-            Log.d("ContainerPointAdapter", "onBindViewHolder: true")
+            log.debug("onBindViewHolder: true")
         }
         val tvVolume = holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__volume)
         tvVolume.text =  "${container.getVolumeInPercent()}%"
@@ -89,7 +91,7 @@ class ExtendedContainerAdapter(
             alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             alertDialog.show()
         } catch (e: Exception) {
-            Log.e("ALERT INACTIVE CONTAINER :::", e.stackTraceToString())
+            log.error( e.stackTraceToString())
         }
     }
 

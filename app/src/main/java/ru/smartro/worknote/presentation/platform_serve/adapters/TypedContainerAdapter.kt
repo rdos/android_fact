@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.platform_serve.TypeGroupedContainers
 import ru.smartro.worknote.work.ServedContainers
@@ -22,6 +23,7 @@ class TypedContainerAdapter(
     private val context: Context,
     private val listener: TypedContainerListener
 ) : RecyclerView.Adapter<TypedContainerAdapter.TypeGroupedViewHolder>() {
+    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
 
     var data: TCAdata = TCAdata()
         set(value) {
@@ -40,8 +42,8 @@ class TypedContainerAdapter(
 
     override fun onBindViewHolder(holder: TypeGroupedViewHolder, position: Int) {
         val typeGroup = data.group[position]
-        Log.d("SHEESH :::", "typeGroup: ${typeGroup}")
-        Log.d("SHEESH :::", "servedContainers: ${data.servedContainers}")
+        log.debug("typeGroup: ${typeGroup}")
+        log.debug("servedContainers: ${data.servedContainers}")
         val servedContainers = data.servedContainers.find { el -> typeGroup.typeName == el.typeName }
         if(servedContainers != null)
             holder.bind(typeGroup, servedContainers)

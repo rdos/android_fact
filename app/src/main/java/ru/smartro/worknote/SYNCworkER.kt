@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.delay
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -31,6 +32,8 @@ class SYNCworkER(
     p_application: Context,
     params: WorkerParameters
 ) : CoroutineWorker(p_application, params) {
+    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
+
     private val mNetworkRepository = NetworkRepository(applicationContext)
     // TODO: r_dos....кака код))раз
     private fun showWorkERNotification(isForceMode: Boolean = true,
@@ -103,7 +106,7 @@ class SYNCworkER(
                 delay(DELAY_MS)
             } //todo: while (true) {
         } catch (eXthr: Throwable) {
-            Log.e(TAG, "eXthr.message", eXthr)
+            log.error("", eXthr)
 //            аккуратней::r_dos
             params.isModeSYNChrONize_FoundError = true
             showWorkERROR()
@@ -119,16 +122,16 @@ class SYNCworkER(
         val pingResponse = mNetworkRepository.ping(PingBody("ping"))
         when (pingResponse.status) {
             Status.SUCCESS -> {
-                Log.d(TAG, "PING RESPONSE:")
-                Log.d(TAG, pingResponse.data.toString())
+                log.debug("PING RESPONSE:")
+                log.error( pingResponse.data.toString())
                 val message = pingResponse.data?.payload?.message
                 if(message != null)
                     (applicationContext as App).showAlertNotification(message)
                 else
-                    Log.e(TAG, "Ping EMPTY MESSAGE ${pingResponse.data}")
+                    log.error( "Ping EMPTY MESSAGE ${pingResponse.data}")
             }
-            Status.ERROR -> Log.e(TAG, "Ping ERROR ${pingResponse.msg}")
-            Status.NETWORK -> Log.w(TAG, "Ping NO INTERNET")
+            Status.ERROR -> log.error( "Ping ERROR ${pingResponse.msg}")
+            Status.NETWORK -> log.warn( "Ping NO INTERNET")
         }
 
         LOGafterLOG()
@@ -162,7 +165,7 @@ class SYNCworkER(
             gps.PointTimeToLastKnowTime_SRV(),
             platforms)
 
-        Log.d(TAG, "platforms.size=${platforms.size}")
+        log.debug("platforms.size=${platforms.size}")
 
 
 //        saveJSON(synchronizeBody)
@@ -171,11 +174,11 @@ class SYNCworkER(
             Status.SUCCESS -> {
                 if (platforms.isNotEmpty()) {
                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
-                    Log.d("TAGS:::SYNCworkER", Thread.currentThread().getId().toString())
+                    log.error( Thread.currentThread().getId().toString())
                     db().updatePlatformNetworkStatus(platforms)
-                    Log.d(TAG, "SYNCworkER SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
+                    log.debug("SYNCworkER SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
                 } else {
-                    Log.d(TAG, "SYNCworkER SUCCESS: GPS SENT")
+                    log.debug("SYNCworkER SUCCESS: GPS SENT")
                 }
                 val alertMsg = synchronizeResponse.data?.alert
                 if (!alertMsg.isNullOrEmpty()) {
@@ -183,11 +186,11 @@ class SYNCworkER(
 //                    App.getAppliCation().showNotification(alertMsg, "Уведомление")
                 }
             }
-            Status.ERROR -> Log.e(TAG, "SYNCworkER ERROR")
-            Status.NETWORK -> Log.w(TAG, "SYNCworkER NO INTERNET")
+            Status.ERROR -> log.error( "SYNCworkER ERROR")
+            Status.NETWORK -> log.warn( "SYNCworkER NO INTERNET")
         }
         LOGafterLOG()
-
+        
     }
 
 
@@ -259,30 +262,30 @@ class SYNCworkER(
     private val TAGLOG = TAG
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
-        Log.i(TAG, "text")
+        log.info( "text")
     }
 
     //SYNCworkER
     fun beforeLOG(method: String, valueName: String = "") {
         mMethodName = method
-        Log.w(TAG, ".thread_id=${Thread.currentThread().id}")
-        Log.d(TAGLOG, "${mMethodName}.before")
+        log.warn( ".thread_id=${Thread.currentThread().id}")
+        log.debug("${mMethodName}.before")
     }
 
     fun INcyclEStart(s: String) {
         mMethodName?.let {
-            Log.d(TAGLOG, "${mMethodName}.CYCLes.${s}")
+            log.debug("${mMethodName}.CYCLes.${s}")
             return@INcyclEStart
         }
-        Log.d(TAGLOG, "CYCLes.${s}")
+        log.debug("CYCLes.${s}")
     }
 
     fun INcyclEStop() {
         mMethodName?.let {
-            Log.d(TAGLOG, "${mMethodName}.************-_(:;)")
+            log.debug("${mMethodName}.************-_(:;)")
             return@INcyclEStop
         }
-        Log.d(TAGLOG, ".************-_(:;)")
+        log.debug(".************-_(:;)")
     }
 
     //SYNCworkER
@@ -297,10 +300,10 @@ class SYNCworkER(
 
     private fun logAfterResult(result: String) {
         result?.let {
-            Log.d(TAGLOG, "${mMethodName}.after result=${result} ")
+            log.debug("${mMethodName}.after result=${result} ")
             return@logAfterResult
         }
-        Log.d(TAGLOG, "${mMethodName}.after")
+        log.debug("${mMethodName}.after")
         mMethodName = null
     }
 
@@ -345,7 +348,7 @@ Toast.makeText(context, "Alarm running", Toast.LENGTH_SHORT).show();
 public class DeviceBootReceiver extends BroadcastReceiver {
 @Override
 public void onReceive(Context context, Intent intent) {
-if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED") {
 // on device boot compelete, reset the alarm
 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);

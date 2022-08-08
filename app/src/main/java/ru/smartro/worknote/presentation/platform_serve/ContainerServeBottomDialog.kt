@@ -63,7 +63,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         }
 
         val apbFailure = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_failure)
-        Log.d("TEST:::", "fucked up : ${containerEntity.containerId} : ${containerEntity.isFailureNotEmpty()}")
+        log.debug("fucked up : ${containerEntity.containerId} : ${containerEntity.isFailureNotEmpty()}")
         if (containerEntity.isFailureNotEmpty()) {
             setUseButtonStyleBackgroundRed(apbFailure)
         }
