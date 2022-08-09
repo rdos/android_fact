@@ -22,6 +22,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.App
+import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.work.Status
@@ -104,7 +105,7 @@ class CompleteF : AFragment() {
 
     //todo:!r_dos
     fun finishTask_know() {
-        log.info( "finishTask")
+        LoG.info( "finishTask")
         getAct().modeSyNChrON_off()
         mDatabase.clearDataBase()
 

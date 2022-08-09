@@ -17,13 +17,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.PERMISSIONS
-import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
-import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 
 class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -62,7 +60,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         etVehicleFilter = view.findViewById(R.id.et__f_start_vehicle__filter)
         etVehicleFilter?.addTextChangedListener { text: Editable? ->
             val filterText = text.toString()
-            getAct().logSentry(filterText)
+            logSentry(filterText)
             rvAdapter?.updateList(filterText)
         }
         etVehicleFilter?.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
@@ -114,8 +112,8 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
 
-        log.debug("viewModel.mLastOwnerId=${viewModel.mLastOwnerId}")
-        log.debug("getArgumentID(mLastOwnerId)=${getArgumentID()}")
+        log("viewModel.mLastOwnerId=${viewModel.mLastOwnerId}")
+        log("getArgumentID(mLastOwnerId)=${getArgumentID()}")
         if(viewModel.mVehicleList.value == null) {
             if(getArgumentName() == null)
                 (requireActivity() as XChecklistAct).showProgressBar()
@@ -139,7 +137,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         super.onResume()
         if(etVehicleFilter != null && etVehicleFilter?.text.toString().isNotEmpty()) {
             val filterText = if(etVehicleFilter!!.text != null) etVehicleFilter!!.text.toString() else return
-            getAct().logSentry(filterText)
+            logSentry(filterText)
             Handler(Looper.getMainLooper()).postDelayed({
                 rvAdapter?.updateList(filterText)
             }, 500)
@@ -148,7 +146,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        log.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mVehicleList.removeObservers(viewLifecycleOwner)
     }
 

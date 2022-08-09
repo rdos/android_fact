@@ -77,7 +77,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LoG.debug("onCreate")
+        log("onCreate")
     }
 
 
@@ -102,29 +102,29 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        LoG.debug("onPause")
+        log("onPause")
     }
 
     override fun onResume() {
         super.onResume()
         AppliCation().LASTact = this
-        LoG.debug("onResume")
+        log("onResume")
     }
 
     override fun onStart() {
         super.onStart()
-        LoG.debug("onStart")
+        log("onStart")
     }
 
     override fun onStop() {
         super.onStop()
-        LoG.debug("onStop")
+        log("onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         AppliCation().LASTact = null
-        LoG.debug("onDestroy")
+        log("onDestroy")
 
     }
 

@@ -89,7 +89,7 @@ class App : AApp() {
     }
 
     fun gps(): PoinT {
-        LoG.debug("BBBB")
+        log("BBBB")
         var gps_enabled = false
         var network_enabled = false
         val lm = AndRoid.getService()
@@ -143,7 +143,7 @@ class App : AApp() {
 //        }
 
         logbackInit()
-        LoG.debug("AAAAAAAAAAAA")
+        log("AAAAAAAAAAAA")
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
@@ -427,7 +427,7 @@ class App : AApp() {
     }
 
     fun cancelNotification(id: Int? = 1) {
-        LoG.debug("cancelNotification.before")
+        log("cancelNotification.before")
         val notificationManager = NotificationManagerCompat.from(this)
         if (id == null) {
             notificationManager.cancelAll()
@@ -693,9 +693,14 @@ val Any.TAG: String
 val Any.LoG: org.slf4j.Logger
     get() = LoggerFactory.getLogger(TAG)
 
+
+fun Any.getLogger(): org.slf4j.Logger {
+   return LoggerFactory.getLogger( "${this::class.simpleName}")
+}
+
 fun Any.LOGbefore(valueName: String? = Snull) {
 //todo:???        AppliCation().LOGbefore(valueName)
-    LoG.debug(":Before")
+    log(":Before")
 }
 
 fun Any.LOGafterLOG(result: String? = Snull) {
@@ -707,7 +712,7 @@ fun Any.LOGafterLOG(result: String? = Snull) {
 //    }
 
 fun Any.log(valueNameAndValue: String) {
-    LoG.debug(valueNameAndValue)
+    log(valueNameAndValue)
 }
 //
 //    protected fun log(valueName: String, value: Int) {
@@ -716,16 +721,16 @@ fun Any.log(valueNameAndValue: String) {
 
 fun  Any.LOGinCYCLEStart(s: String) {
 //        mMethodName?.let {
-//            LoG.debug("${mMethodName}.CYCLes.${s}")
+//            log("${mMethodName}.CYCLes.${s}")
 //            return@INcyclEStart
 //        }
-    LoG.debug("CYCLes.${s}")
+    log("CYCLes.${s}")
 }
 
 fun  Any.LOGINcyclEStop() {
 //        mMethodName?.let {
-//            LoG.debug("${mMethodName}.************-_(:;)")
+//            log("${mMethodName}.************-_(:;)")
 //            return@INcyclEStop
 //        }
-    LoG.debug(".************-_(:;)")
+    log(".************-_(:;)")
 }

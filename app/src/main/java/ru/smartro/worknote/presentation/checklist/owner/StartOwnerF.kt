@@ -12,6 +12,7 @@ import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
@@ -26,7 +27,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        log.debug("STARTOWNERFRAG :: onViewCreated")
+        log("STARTOWNERFRAG :: onViewCreated")
 
         if (!MyUtil.hasPermissions(requireContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
@@ -56,7 +57,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                 when (result.status) {
                     Status.SUCCESS -> {
                         val owners = data!!.data.organisations
-                        log.debug("owners size: ${owners.size}")
+                        log("owners size: ${owners.size}")
                         if (owners.size == 1)
                             goToNextStep(owners[0].id, owners[0].name)
                         else
@@ -93,7 +94,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        log.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mOwnersList.removeObservers(viewLifecycleOwner)
     }
 }

@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -259,7 +258,7 @@ class StartAct : AAct() {
 //            window.attributes = wlp
             mInfoDialog?.show()
         } catch (ex: Exception) {
-            log.error("createInfoDialog", ex)
+            LoG.error("createInfoDialog", ex)
         }
         return view
     }

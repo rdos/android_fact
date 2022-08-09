@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory
 import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.log
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
@@ -31,7 +32,7 @@ data class TypeGroupedContainers(
 )
 
 class PlatformServeSharedViewModel(application: Application) : BaseViewModel(application) {
-    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
+    
 
     val mBeforeMediaWasInited: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -78,7 +79,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
                 mServedContainers.postValue(result)
             } else {
                 val result = countServedContainers(temp)
-                log.debug("getPlatformEntity: countServedContainers ${result}")
+                log("getPlatformEntity: countServedContainers ${result}")
                 mServedContainers.postValue(result)
             }
             _sortedContainers.postValue(temp)
@@ -107,7 +108,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 
 
     fun onDecrease(clientName: String, typeName: String) {
-        log.debug("client: ${clientName}, type: ${typeName}")
+        log("client: ${clientName}, type: ${typeName}")
         mWasServedSimplified.postValue(true)
         val servedContainers = mServedContainers.value!!.toMutableList()
         val servedCluster = servedContainers.find { el -> el.client == clientName && el.typeName == typeName }
@@ -124,7 +125,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     }
 
     fun onIncrease(clientName: String, typeName: String) {
-        log.debug("client: ${clientName}, type: ${typeName}")
+        log("client: ${clientName}, type: ${typeName}")
         mWasServedSimplified.postValue(true)
         val servedContainers = mServedContainers.value!!.toMutableList()
         val servedCluster = servedContainers.find { el -> el.client == clientName && el.typeName == typeName }
@@ -252,7 +253,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 
     override fun onCleared() {
         super.onCleared()
-        log.debug("VM IS CLEARED")
+        log("VM IS CLEARED")
     }
 
     fun buildMapNavigator(

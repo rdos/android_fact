@@ -13,8 +13,6 @@ private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE
 class AppParaMS {
 
-    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
-
     public var isRestartApp: Boolean = false
     //todo: mEnv? что за ЗАЯЦ/?)
     private val sharedPref__env: SharedPreferences by lazy {
@@ -92,13 +90,13 @@ class AppParaMS {
             return devId
         }
         set(value) {
-            log.error( "deviceIdset(value)")
-            log.error( "deviceIdset(value)")
-            log.error( "deviceIdset(value)")
-            log.warn( "deviceIdset(value)")
-            log.error( "deviceIdset(value)")
-            log.error( "deviceIdset(value)")
-            log.error( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.warn( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
         }
 
 //    base = device ОКРУЖЕНИЕ...
@@ -108,7 +106,7 @@ class AppParaMS {
         val currentTimeMS = System.currentTimeMillis()
         val diff = currentTimeMS - (time?:gpsTIME)
         val res =  diff >= 30_000
-        log.warn( "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
+        LoG.warn( "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
         return res
     }
     fun iSoldGPSdataSaved(): Boolean {
@@ -125,11 +123,11 @@ class AppParaMS {
 //        if (iSoldGPSdataSaved()) {
 //            return res
 //        }
-//        log.error( "if (isLastGPSSaved()) == false")
-//        log.warn( "if (isLastGPSSaved()) == false")
+//        LoG.error( "if (isLastGPSSaved()) == false")
+//        LoG.warn( "if (isLastGPSSaved()) == false")
 //        Log.i("getSaveGPS", "if (isLastGPSSaved()) == false")
-//        log.warn( "if (isLastGPSSaved()) == false")
-//        log.error( "if (isLastGPSSaved()) == false")
+//        LoG.warn( "if (isLastGPSSaved()) == false")
+//        LoG.error( "if (isLastGPSSaved()) == false")
         return res
     }
 
@@ -287,6 +285,13 @@ class AppParaMS {
     var isModeLOCATION: Boolean=false
 
     var isModeDEVEL: Boolean = false
+
+    var isDevModeEnableCounter: Int
+        get() = sharedPref__env.getInt("isDevModeEnableCounter", 5)
+        set(value) = sharedPref__env.edit {
+            it.putInt("isDevModeEnableCounter", value)
+        }
+
 
     fun setLogoutParams() {
         token = null

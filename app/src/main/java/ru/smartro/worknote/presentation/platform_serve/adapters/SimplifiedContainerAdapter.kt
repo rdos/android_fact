@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.R
+import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.platform_serve.ClientGroupedContainers
 import ru.smartro.worknote.work.ServedContainers
 
@@ -17,11 +18,11 @@ class SimplifiedContainerAdapter(
     private val context: Context,
     private val listener: SimplifyContainerServeListener
 ) : RecyclerView.Adapter<SimplifiedContainerAdapter.ClientGroupViewHolder>() {
-    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
+    
 
     var served: List<ServedContainers> = listOf()
         set(value) {
-            log.debug("servedContainers: ${value}")
+            log("servedContainers: ${value}")
             field = value
             notifyDataSetChanged()
         }

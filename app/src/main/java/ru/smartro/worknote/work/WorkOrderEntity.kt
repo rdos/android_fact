@@ -3,7 +3,6 @@ package ru.smartro.worknote.work
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -114,7 +113,7 @@ open class WorkOrderEntity(
     }
 
     companion object {
-        protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
+        
         private fun mapMedia(data: List<String>): RealmList<ImageEntity> {
             return data.mapTo(RealmList()) {
                 ImageEntity(
@@ -129,9 +128,9 @@ open class WorkOrderEntity(
             return list.mapTo(RealmList()) {
 //                var volumeReal : Double? = null
 //                if (it.volume >  0) {
-//                    log.error("mapContainers.it.volume >  0")
+//                    LoG.error("mapContainers.it.volume >  0")
 //                    volumeReal = it.volume
-//                    log.error("mapContainers.volumeReal = ${volumeReal}")
+//                    LoG.error("mapContainers.volumeReal = ${volumeReal}")
 //                }
                 ContainerEntity(
                     workOrderId = workorderId,
@@ -215,7 +214,7 @@ open class WorkOrderEntity(
                     res.add(workOrder)
                 }
             } catch (eXthr: Exception) {
-                log.error("eXthr", eXthr)
+                LoG.error("eXthr", eXthr)
             }
             return res
         }
@@ -490,8 +489,8 @@ open class PlatformEntity(
             val today = getDeviceDateTime()
             val diff: Long = orderEndTime.time - today.time
             val minutes = diff / (1000 * 60)
-            log.error( this.orderTimeWarning!!)
-            log.error( minutes.toString())
+            LoG.error( this.orderTimeWarning!!)
+            LoG.error( minutes.toString())
             if (minutes < 0) {
                 result = true
             }
@@ -611,7 +610,7 @@ open class PlatformEntity(
         try {
             kgoVolumeDouble = kgoVolume.toDouble()
         } catch (ex: Exception) {
-            log.error("setServedKGOVolume", ex)
+            LoG.error("setServedKGOVolume", ex)
         }
         this.kgoServed?.let{
             it.volume = kgoVolumeDouble
@@ -624,7 +623,7 @@ open class PlatformEntity(
         try {
             kgoVolumeDouble = kgoVolume.toDouble()
         } catch (ex: Exception) {
-            log.error("ex", ex)
+            LoG.error("ex", ex)
         }
         this.kgoRemaining?.let{
             it.volume = kgoVolumeDouble
@@ -632,7 +631,7 @@ open class PlatformEntity(
     }
 
     companion object {
-        protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
+        
     }
 
 

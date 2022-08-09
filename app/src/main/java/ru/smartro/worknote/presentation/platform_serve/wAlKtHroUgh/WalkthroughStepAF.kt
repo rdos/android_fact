@@ -1,7 +1,6 @@
 package ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.navigation.fragment.findNavController
@@ -12,7 +11,6 @@ class WalkthroughStepAF : AFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        log.debug("walkt A CREATE")
     }
 
     override fun onGetLayout(): Int {

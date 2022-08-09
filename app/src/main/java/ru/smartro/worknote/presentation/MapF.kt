@@ -51,12 +51,8 @@ import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.ui_view.ViewProvider
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.PERMISSIONS
-import ru.smartro.worknote.R
-import ru.smartro.worknote.isShowForUser
-import ru.smartro.worknote.NOTIFICATION_CHANNEL_ID__MAP_ACT
-import ru.smartro.worknote.Lnull
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showAlertPlatformByPoint
@@ -66,7 +62,6 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBod
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
-import ru.smartro.worknote.toast
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 
@@ -140,12 +135,12 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 //        }
 //       })
 
-//        log.debug("###################")
+//        log("###################")
 //
 //
 //
 //        val distanceToPoint = MyUtil.calculateDistance(AppliCation().LocationPOINT, selectedPlatformToNavigate)
-////        log.debug("Distance: $distanceToPoint")
+////        log("Distance: $distanceToPoint")
 //        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
 //            isOnPointFirstTime = false
 //            alertOnPoint().let {
@@ -158,11 +153,11 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 //                }
 //            }
 //        } else {
-////            log.debug("Distance not arrive")
+////            log("Distance not arrive")
 //        }
 
 //
-//        log.debug("Location updated")
+//        log("Location updated")
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -249,10 +244,10 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
 
         }
-        log.warn( "r_dos/onStart.before")
+        LoG.warn( "r_dos/onStart.before")
         mMapMyYandex.onStart()
         MapKitFactory.getInstance().onStart()
-        log.warn( "r_dos/onStart.after")
+        LoG.warn( "r_dos/onStart.after")
         //todo:  R_dos!!! modeSyNChrON_off(false)
         paramS().isModeSYNChrONize = true
         AppliCation().startWorkER()
@@ -286,13 +281,13 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     private fun onRefreshData() {
-        log.warn( "onRefreshData.init")
+        LoG.warn( "onRefreshData.init")
         mWorkOrderS = getActualWorkOrderS(true)
         mPlatformS = getActualPlatformS(true)
         val platformSWithQueryText = onRefreshBottomBehavior(mPlatformS!!)
         onRefreshMap(platformSWithQueryText)
         setInfoData()
-        log.warn( "onRefreshData.end")
+        LoG.warn( "onRefreshData.end")
     }
 
     private fun setInfoData() {
@@ -357,23 +352,23 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
             when (result.status) {
                 Status.SUCCESS -> {
                     // TODO: ПО голове себе постучи
-                    log.debug("saveBreakDownTypes. Status.SUCCESS")
+                    log("saveBreakDownTypes. Status.SUCCESS")
                 }
                 Status.ERROR -> {
                     toast(result.msg)
                 }
-                else -> log.debug("saveBreakDownTypes:")
+                else -> log("saveBreakDownTypes:")
             }
 
         }
     }
 
     private fun saveFailReason() {
-        log.info( "saveFailReason.before")
+        LoG.info( "saveFailReason.before")
         viewModel.networkDat.getFailReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
-                    log.debug("saveFailReason. Status.SUCCESS")
+                    log("saveFailReason. Status.SUCCESS")
                 }
                 Status.ERROR -> {
                     toast(result.msg)
@@ -383,14 +378,14 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     }
 
     private fun saveCancelWayReason() {
-        log.debug("saveCancelWayReason.before")
+        log("saveCancelWayReason.before")
         viewModel.networkDat.getCancelWayReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
-                    log.debug("saveCancelWayReason. Status.SUCCESS")
+                    log("saveCancelWayReason. Status.SUCCESS")
                 }
                 Status.ERROR -> {
-                    log.debug("saveCancelWayReason. Status.ERROR")
+                    log("saveCancelWayReason. Status.ERROR")
                     toast(result.msg)
                 }
                 else -> {
@@ -402,7 +397,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
     private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {
-        log.debug("acceptProgress.before")
+        log("acceptProgress.before")
         viewModel.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec())).observe(getAct()) { result ->
             resultStatusList.add(result.status)
             getAct().modeSyNChrON_off(false)
@@ -544,7 +539,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
             wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
             window.attributes = wlp
         } catch (ex: Exception) {
-            log.error("createInfoDialog", ex)
+            LoG.error("createInfoDialog", ex)
         }
         mInfoDialog = result
         mInfoDialog?.show()
@@ -555,7 +550,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
             mInfoDialog?.dismiss()
         } catch (ex: Exception) {
             // TODO: 02.11.2021
-            log.error("hideInfoDialog", ex)
+            LoG.error("hideInfoDialog", ex)
         }
     }
 
@@ -678,7 +673,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
             }
             moveCameraTo(AppliCation().gps())
         } catch (ex: Exception) {
-            log.error("buildNavigator", ex)
+            LoG.error("buildNavigator", ex)
             toast(getString(R.string.error_build_way))
         }
 
@@ -693,8 +688,8 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 //    override fun onLocationStatusUpdated(locationStatus: LocationStatus) {
 //        logSentry("onLocationStatusUpdated ${locationStatus.name.toStr()}")
 //        when (locationStatus) {
-//            LocationStatus.NOT_AVAILABLE -> log.debug("GPS STOP")
-//            LocationStatus.AVAILABLE -> log.debug("GPS START")
+//            LocationStatus.NOT_AVAILABLE -> log("GPS STOP")
+//            LocationStatus.AVAILABLE -> log("GPS START")
 //
 //        }
 //    }
@@ -756,13 +751,13 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
     }
 //    override fun onLocationUpdated(location: Location) {
-////        log.debug("###################")
+////        log("###################")
 //        currentLocation = location
 //        LOGWork("onLocationUpdatedaccuracy.${currentLocation.accuracy}")
 //        paramS().currentCoordinate = "${location.position.longitude}#${location.position.latitude}"
 //        paramS().currentCoordinateAccuracy = location.accuracy.toString()
 //        val distanceToPoint = MyUtil.calculateDistance(location.position, selectedPlatformToNavigate)
-////        log.debug("Distance: $distanceToPoint")
+////        log("Distance: $distanceToPoint")
 //        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
 //            isOnPointFirstTime = false
 //            alertOnPoint().let {
@@ -774,13 +769,13 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 //                }
 //            }
 //        } else {
-////            log.debug("Distance not arrive")
+////            log("Distance not arrive")
 //        }
 //        if (firstTime) {
 //            moveCameraToUser(location)
 //            firstTime = false
 //        }
-////        log.debug("Location updated")
+////        log("Location updated")
 //    }
 
     private fun onRefreshMap(platformS: List<PlatformEntity>) {
@@ -788,7 +783,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         try {
             mMapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
         } catch (ex: Exception) {
-            log.error("onRefreshMap", ex)
+            LoG.error("onRefreshMap", ex)
             // TODO: :)!!!
             mMapObjectCollection = null
         }
@@ -814,7 +809,7 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
             toast("Платформа не найдена")
             return false
         }
-        log.warn( "onMapObjectTap")
+        LoG.warn( "onMapObjectTap")
         val platformClickedDtlDialog = MapFPlatformClickedDtlDialog(clickedPlatform, coord, this)
         platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
 
@@ -907,9 +902,9 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
     override fun onResume() {
         super.onResume()
-        log.error( "r_dos/onResume.before")
+        LoG.error( "r_dos/onResume.before")
         onRefreshData()
-        log.error( "r_dos/onResume.after")
+        LoG.error( "r_dos/onResume.after")
     }
 
     override fun onStop() {
@@ -1029,11 +1024,11 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
 
     override fun onCancel(p0: Map, p1: CameraPosition) {
         this as InertiaMoveListener
-        log.debug("onCancel")
+        log("onCancel")
     }
 
     override fun onFinish(p0: Map, p1: CameraPosition) {
-        log.debug("onFinish")
+        log("onFinish")
 //        this as InertiaMoveListener
     }
 }
