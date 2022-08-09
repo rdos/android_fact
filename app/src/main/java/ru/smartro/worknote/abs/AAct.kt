@@ -2,15 +2,12 @@ package ru.smartro.worknote.abs
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import io.sentry.Sentry
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
 
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.presentation.ac.StartAct
 import java.lang.Exception
 
@@ -21,7 +18,6 @@ import java.lang.Exception
 //        }
 
 abstract class AAct : AppCompatActivity() {
-    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
     protected fun AppliCation() : App {
         return App.getAppliCation()
     }
@@ -54,66 +50,14 @@ abstract class AAct : AppCompatActivity() {
 
     //todo !r_dos onNEW-_Service(Srv) 
     public fun onNewGPS() {
-        beforeLOG("onNewGPS")
+        LOGbefore()
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         (navHostFragment.childFragmentManager.fragments[0] as AFragment).onNewGPS()
-        LOGafter()
+        LOGafterLOG()
     }
     // TODO: !r_dos feed(stuff)
-    
-    private var mMethodName: String? = null
 
-    public var TAG : String = "${this::class.simpleName}"
-    private val TAGLOG = "AActLOG"
-    protected fun beforeLOG(method: String, valueName: String = "") {
-        AppliCation().LOGbeforeLOG(method, valueName)
-    }
 
-    private fun logAfterResult(result: String) {
-        log("${mMethodName}.after result=${result} ")
-        mMethodName = null
-
-    }
-
-    protected fun LOGafter(res: Boolean? = null) {
-        logAfterResult(res.toStr())
-    }
-
-    protected fun log(valueNameAndValue: String) {
-        mMethodName?.let {
-            log.info( "${TAG}:${mMethodName}.${valueNameAndValue}")
-            return@log
-        }
-        log.info( "${TAG}:${valueNameAndValue}")
-    }
-
-    protected fun log(valueName: String, value: Int) {
-        log("${valueName}=$value\"")
-    }
-
-    fun logSentry(text: String) {
-        Sentry.addBreadcrumb("${TAG} : $text")
-        Log.i(TAG + "Sent", text)
-    }
-    protected fun logSentry(data: Int) {
-        logSentry(data.toString())
-    }
-
-    fun INcyclEStart(s: String) {
-        mMethodName?.let {
-            log.debug("${mMethodName}.CYCLes.${s}")
-            return@INcyclEStart
-        }
-        log.debug("CYCLes.${s}")
-    }
-
-    fun INcyclEStop() {
-        mMethodName?.let {
-            log.debug("${mMethodName}.************-_(:;)")
-            return@INcyclEStop
-        }
-        log.debug(".************-_(:;)")
-    }
 
 
     public fun isDevelMode(): Boolean{
@@ -133,7 +77,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        log.debug("onCreate")
+        LoG.debug("onCreate")
     }
 
 
@@ -141,7 +85,7 @@ abstract class AAct : AppCompatActivity() {
     fun getPutExtraParam_ID(): Int {
         val res = intent.getIntExtra(PUT_EXTRA_PARAM_ID, Inull)
         if (res == Inull) {
-            logSentry("res == Inull")
+            log("res == Inull")
         }
         return res
     }
@@ -150,7 +94,7 @@ abstract class AAct : AppCompatActivity() {
     fun getPutExtraParam_NAME(): String {
         var res = intent.getStringExtra(PUT_EXTRA_PARAM_NAME)
         if (res.isNullOrEmpty()) {
-            logSentry("resres.isNullOrEmpty()")
+            log("resres.isNullOrEmpty()")
             res = Snull
         }
         return res
@@ -158,29 +102,29 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        log.debug("onPause")
+        LoG.debug("onPause")
     }
 
     override fun onResume() {
         super.onResume()
         AppliCation().LASTact = this
-        log.debug("onResume")
+        LoG.debug("onResume")
     }
 
     override fun onStart() {
         super.onStart()
-        log.debug("onStart")
+        LoG.debug("onStart")
     }
 
     override fun onStop() {
         super.onStop()
-        log.debug("onStop")
+        LoG.debug("onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         AppliCation().LASTact = null
-        log.debug("onDestroy")
+        LoG.debug("onDestroy")
 
     }
 

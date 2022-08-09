@@ -21,6 +21,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.utils.ZipManager
 import java.io.*
 
@@ -104,12 +105,34 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
         }
         val acbSendLogs =  view.findViewById<AppCompatButton>(R.id.acb__f_debug__send_logs)
         acbSendLogs.setOnClickListener {
-            sharePhoto()
+            shareDevInformation()
+        }
+        val acbOpenLogs =  view.findViewById<AppCompatButton>(R.id.acb__f_debug__open_logs)
+
+
+        val actvDevMode = view.findViewById<AppCompatTextView>(R.id.actv__f_debug__dev_mode)
+        actvDevMode.setOnClickListener{
+            if (paramS().isDevModeEnableCounter <= 0) {
+                toast("похоже Вы разработчик")
+                acbOpenLogs.setOnClickListener {
+
+                }
+                return@setOnClickListener
+            }
+            paramS().isDevModeEnableCounter -= 1
+            if (paramS().isDevModeEnableCounter <= 1) {
+                toast("остался ${paramS().isDevModeEnableCounter } шаг.(:")
+                return@setOnClickListener
+            }
+            if (paramS().isDevModeEnableCounter <= 3) {
+                toast("осталось ${paramS().isDevModeEnableCounter } шага)))")
+            }
+
         }
 
     }
 
-    private fun sharePhoto() {
+    private fun getzipFiles(): Array<File> {
         val zipFiles = mutableListOf<File>()
         val saveJSONFiles = AppliCation().getD("saveJSON").listFiles()
         if (saveJSONFiles != null) {
@@ -129,10 +152,15 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
             zipFiles.addAll(logsFiles)
         }
 
+        return zipFiles.toTypedArray()
+    }
+    private fun shareDevInformation() {
+
+
         val downloadD = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val zipFile = File(downloadD, "ttest.zip")
+        val zipFile = File(downloadD,  "${BuildConfig.APPLICATION_ID}.${BuildConfig.VERSION_NAME}")
         //        val zipFile = AppliCation().getF("toSend", "ttest.zip")
-        ZipManager.zip(zipFiles.toTypedArray(), zipFile)
+        ZipManager.zip(this.getzipFiles(), zipFile)
 
         //Media type da foto selecionada
         val mediaType = MimeTypeMap.getSingleton()
@@ -143,7 +171,6 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
             arrayOf(zipFile.absolutePath),
             arrayOf(mediaType), this@DebugF
         )
-
 
     }
 
@@ -177,6 +204,6 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
 
         //Abrindo modal de opções de compartilhamento
 
-        startActivity(Intent.createChooser(intent, "Поделиться с помощью"))
+        startActivity(Intent.createChooser(intent, "Помогите нам стать лучше"))
     }
 }

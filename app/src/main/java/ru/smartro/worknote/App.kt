@@ -71,7 +71,8 @@ class App : AApp() {
 
         fun getAppParaMS(): AppParaMS = getAppliCation().aPPParamS
         fun getMethodMan(): String? {
-            return getAppliCation().mMethodName
+            return "MethodMan"
+//            return getAppliCation().mMethodName
         }
 //    private fun getLocationMAN(): LocationManager {
 //        return getLocationService()!!
@@ -88,7 +89,7 @@ class App : AApp() {
     }
 
     fun gps(): PoinT {
-        log.debug("BBBB")
+        LoG.debug("BBBB")
         var gps_enabled = false
         var network_enabled = false
         val lm = AndRoid.getService()
@@ -142,12 +143,12 @@ class App : AApp() {
 //        }
 
         logbackInit()
-        log.debug("AAAAAAAAAAAA")
+        LoG.debug("AAAAAAAAAAAA")
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
 
-        log.info("on App created App.onCreate onAppCreate")
+        LoG.info("on App created App.onCreate onAppCreate")
         sentryInit()
         initRealm()
         startKoin {
@@ -220,25 +221,25 @@ class App : AApp() {
 
     inner class MyLocationListener() : LocationListener {
         override fun onProviderEnabled(provider: String) {
-            LOGbeforeLOG("onProviderEnabled")
+            LOGbefore("onProviderEnabled")
             log("provider=${provider}")
             LOGafterLOG()
         }
 
         override fun onProviderDisabled(provider: String) {
-            LOGbeforeLOG("onProviderDisabled")
+            LOGbefore("onProviderDisabled")
             log("provider=${provider}")
             LOGafterLOG()
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            LOGbeforeLOG("onProviderStatusChanged")
+            LOGbefore("onProviderStatusChanged")
             log("provider=${provider}, status=${status}")
             LOGafterLOG()
         }
 
         override fun onLocationChanged(location: Location) {
-            LOGbeforeLOG("onLocationChanged")
+            LOGbefore("onLocationChanged")
 
             val LocationACCURACY = FloatCool("LocationACCURACY", this@App)
             LocationACCURACY.setDATAing(location.accuracy)
@@ -292,7 +293,7 @@ class App : AApp() {
 
     override fun onTerminate() {
         super.onTerminate()
-        LOGbeforeLOG("onTerminate")
+        LOGbefore("onTerminate")
     }
     //Реплику: gjпох
     public fun getDB(): RealmRepository {
@@ -332,7 +333,7 @@ class App : AApp() {
         }
     }
 
-    protected fun logSentry(text: String) {
+    fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
         log("${text}")
     }
@@ -426,7 +427,7 @@ class App : AApp() {
     }
 
     fun cancelNotification(id: Int? = 1) {
-        log.debug("cancelNotification.before")
+        LoG.debug("cancelNotification.before")
         val notificationManager = NotificationManagerCompat.from(this)
         if (id == null) {
             notificationManager.cancelAll()
@@ -439,7 +440,7 @@ class App : AApp() {
 
 
     fun startLocationService(isForceMode: Boolean=false) {
-        LOGbeforeLOG("runLocationService")
+        LOGbefore("runLocationService")
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -483,7 +484,7 @@ class App : AApp() {
 
 
     fun startWorkER() {
-        LOGbeforeLOG("runSyncWorkER")
+        LOGbefore("runSyncWorkER")
         if(getAppParaMS().isModeWorkER) {
             log("getAppParaMS().isModeWorkER=true")
             LOGafterLOG()
@@ -687,3 +688,44 @@ fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 
     }, delayAfter)
 }
 
+val Any.TAG: String
+    get() = "${this::class.simpleName}"
+val Any.LoG: org.slf4j.Logger
+    get() = LoggerFactory.getLogger(TAG)
+
+fun Any.LOGbefore(valueName: String? = Snull) {
+//todo:???        AppliCation().LOGbefore(valueName)
+    LoG.debug(":Before")
+}
+
+fun Any.LOGafterLOG(result: String? = Snull) {
+    LoG.trace(":After")
+}
+//
+//    protected fun LOGafterLOG(res: Boolean? = null) {
+//        logAfterResult(res.toStr())
+//    }
+
+fun Any.log(valueNameAndValue: String) {
+    LoG.debug(valueNameAndValue)
+}
+//
+//    protected fun log(valueName: String, value: Int) {
+//        log("${valueName}=$value\"")
+//    }
+
+fun  Any.LOGinCYCLEStart(s: String) {
+//        mMethodName?.let {
+//            LoG.debug("${mMethodName}.CYCLes.${s}")
+//            return@INcyclEStart
+//        }
+    LoG.debug("CYCLes.${s}")
+}
+
+fun  Any.LOGINcyclEStop() {
+//        mMethodName?.let {
+//            LoG.debug("${mMethodName}.************-_(:;)")
+//            return@INcyclEStop
+//        }
+    LoG.debug(".************-_(:;)")
+}

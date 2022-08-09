@@ -9,47 +9,8 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import java.io.File
 
 abstract class AApp : Application() {
-    protected val log = LoggerFactory.getLogger("${this::class.simpleName}")
-
-
     protected val aPPParamS: AppParaMS by lazy {
         AppParaMS.create()
-    }
-
-    public val TAG = "App"
-    private val TAGLOG = "AAppLOG"
-
-
-    fun LOGbeforeLOG(valueName: String? = null) {
-        if (valueName == null) {
-            log.debug("before")
-            return
-        }
-        log.debug("before.valueName=${valueName}")
-    }
-
-    private fun logAfterResult(result: String? = null) {
-        result?.let {
-            log.debug("after result=${result} ")
-            return@logAfterResult
-        }
-        log.debug("after")
-    }
-
-    protected fun LOGafterLOG(res: Boolean? = null) {
-        logAfterResult(res.toStr())
-    }
-
-    protected fun log(valueNameAndValue: String) {
-        log.debug(valueNameAndValue)
-    }
-
-    protected fun log(valueName: String, value: Int) {
-        log("${valueName}=$value")
-    }
-
-    protected fun log(valueName: String, value: String) {
-        log("${valueName}=$value")
     }
 
     fun setDevelMODE(): Boolean {
@@ -92,6 +53,5 @@ abstract class AApp : Application() {
         val file = File(fl, Fname)
         return file
     }
-
 
 }
