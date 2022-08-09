@@ -192,8 +192,16 @@ class StartAct : AAct() {
                 authLoginEditText?.setText("g79015884904@gmail.com")
                 authPasswordEditText?.setText("Grafik+76")
             }
-        }
 
+        if (BuildConfig.BUILD_TYPE == "debugProd") {
+            if (isDevelMode()) {
+                authEnter?.setOnLongClickListener {
+                    authLoginEditText?.setText("g79015884904@gmail.com")
+                    authPasswordEditText?.setText("Grafik+76")
+                    return@setOnLongClickListener true
+                }
+            }
+        }
         if (BuildConfig.BUILD_TYPE != "release") {
             if (isDevelMode()) {
                 authLoginEditText?.setText("admin@smartro.ru")
@@ -208,6 +216,20 @@ class StartAct : AAct() {
             auth_password.setText("JT8NcST%sDqUpuc")
             return@setOnLongClickListener true
         }*/
+
+        if (BuildConfig.BUILD_TYPE != "release") {
+            if (isDevelMode()) {
+                if (BuildConfig.BUILD_TYPE == "debugProd") {
+                    authLoginEditText?.setText("gkh2@smartro.ru")
+                    authPasswordEditText?.setText("JT8NcST%sDqUpuc")
+                } else {
+                    authLoginEditText?.setText("admin@smartro.ru")
+                    authPasswordEditText?.setText("xot1ieG5ro~hoa,ng4Sh")
+                    clickAuthEnter()
+                }
+                return
+            }
+        }
     }
 
     private fun clickAuthEnter() {
