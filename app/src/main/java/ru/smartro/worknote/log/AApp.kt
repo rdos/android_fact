@@ -15,7 +15,7 @@ abstract class AApp : Application() {
 
     fun setDevelMODE(): Boolean {
         val isResTrue = false
-        if ((BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "debugRC") && (BuildConfig.VERSION_CODE == 1234567890)) {
+        if ((BuildConfig.BUILD_TYPE != "release") && (BuildConfig.VERSION_CODE == 1234567890)) {
             return true
         }
         return isResTrue
