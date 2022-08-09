@@ -712,7 +712,11 @@ fun Any.LOGafterLOG(result: String? = Snull) {
 //    }
 
 fun Any.log(valueNameAndValue: String) {
-    log(valueNameAndValue)
+    LoG.debug(valueNameAndValue)
+}
+
+fun Any.info(valueNameAndValue: String) {
+    LoG.info(valueNameAndValue)
 }
 //
 //    protected fun log(valueName: String, value: Int) {

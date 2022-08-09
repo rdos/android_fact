@@ -2,6 +2,7 @@ package ru.smartro.worknote.presentation
 
 import android.app.ActivityManager
 import android.app.Application
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
@@ -11,9 +12,11 @@ import android.os.Environment
 import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.ProgressBar
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.net.toFile
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.BuildConfig
@@ -21,9 +24,10 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.log
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.utils.ZipManager
-import java.io.*
+import java.io.File
 
 
 class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
@@ -111,27 +115,82 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
 
 
         val actvDevMode = view.findViewById<AppCompatTextView>(R.id.actv__f_debug__dev_mode)
+        var lastClickTimeSec = MyUtil.timeStampInSec()
+
+        val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            // Handle the returned Uri
+            uri?.let {
+                val imageFile = File(it.path!!)
+                log("registerForActivityResul= ${imageFile.absolutePath}")
+                ZipManager.unzip(imageFile, AppliCation().getDPath("r_dos"))
+            }
+        }
+
         actvDevMode.setOnClickListener{
             if (paramS().isDevModeEnableCounter <= 0) {
-                toast("похоже Вы разработчик")
+                if (lastClickTimeSec <= MyUtil.timeStampInSec() - 2) {
+                    toast("похоже Вы разработчик")
+                    lastClickTimeSec = MyUtil.timeStampInSec()
+                }
+                acbOpenLogs.visibility = View.VISIBLE
                 acbOpenLogs.setOnClickListener {
+//                    openZipFiles()
 
+//                    val intent = Intent(Intent.ACTION_GET_CONTENT);
+//                    intent.setType("*/*");
+//                    startActivityForResult(intent, 7);
+
+                    getContent.launch("zip/*")
                 }
                 return@setOnClickListener
             }
             paramS().isDevModeEnableCounter -= 1
             if (paramS().isDevModeEnableCounter <= 1) {
-                toast("остался ${paramS().isDevModeEnableCounter } шаг.(:")
+                toast("остался ${paramS().isDevModeEnableCounter } шаг)")
                 return@setOnClickListener
             }
             if (paramS().isDevModeEnableCounter <= 3) {
-                toast("осталось ${paramS().isDevModeEnableCounter } шага)))")
+                if (lastClickTimeSec <= MyUtil.timeStampInSec() - 2) {
+                    toast("осталось ${paramS().isDevModeEnableCounter } шага)))")
+                    lastClickTimeSec = MyUtil.timeStampInSec()
+                }
+
             }
 
         }
 
     }
 
+    private fun openZipFiles() {
+        val file = File(
+            Environment.getExternalStorageDirectory(),
+            "Report.pdf"
+        )
+
+        val downloadD = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val path = Uri.fromFile(downloadD)
+        val pdfOpenintent = Intent(Intent.ACTION_VIEW)
+        pdfOpenintent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        pdfOpenintent.setDataAndType(path, "application/pdf")
+        try {
+            startActivity(pdfOpenintent)
+        } catch (e: ActivityNotFoundException) {
+        }
+
+
+    }
+
+//
+//    fun openFolder() {
+//        val file = File(
+//            Environment.getExternalStorageDirectory(),
+//            "myFolder"
+//        )
+//        Log.d("path", file.toString())
+//        val intent = Intent(Intent.ACTION_GET_CONTENT)
+//        intent.setDataAndType(Uri.fromFile(file), "*/*")
+//        startActivity(intent)
+//    }
     private fun getzipFiles(): Array<File> {
         val zipFiles = mutableListOf<File>()
         val saveJSONFiles = AppliCation().getD("saveJSON").listFiles()

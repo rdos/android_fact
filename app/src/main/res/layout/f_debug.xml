@@ -204,6 +204,7 @@
             android:id="@+id/acb__f_debug__open_logs"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="(Для разработчиков)Dev Recovery Mode"
+            android:visibility="gone"
             />
     </androidx.appcompat.widget.LinearLayoutCompat>
 

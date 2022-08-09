@@ -114,32 +114,32 @@ class SYNCworkER(
     }
 
     private suspend fun ping() {
-        LOGbefore("PING STARTED ::::")
+//        LOGbefore("PING STARTED ::::")
         val pingResponse = mNetworkRepository.ping(PingBody("ping"))
         when (pingResponse.status) {
             Status.SUCCESS -> {
-                log("PING RESPONSE:")
-                LoG.error( pingResponse.data.toString())
+//                log("PING RESPONSE:")
+//                LoG.error( pingResponse.data.toString())
                 val message = pingResponse.data?.payload?.message
                 if(message != null)
                     (applicationContext as App).showAlertNotification(message)
-                else
-                    LoG.error( "Ping EMPTY MESSAGE ${pingResponse.data}")
+                else {
+//                    LoG.error("Ping EMPTY MESSAGE ${pingResponse.data}")
+                }
             }
-            Status.ERROR -> LoG.error( "Ping ERROR ${pingResponse.msg}")
-            Status.NETWORK -> LoG.warn( "Ping NO INTERNET")
+//            Status.ERROR -> LoG.error( "Ping ERROR ${pingResponse.msg}")
+//            Status.NETWORK -> LoG.warn( "Ping NO INTERNET")
         }
 
-        LOGafterLOG()
+//        LOGafterLOG()
     }
 
     private suspend fun synChrONizationDATA() {
-        LOGbefore("synChrONizationDATA")
-        var timeBeforeRequest: Long = MyUtil.timeStampInSec()
+        LOGbefore()
         logSentry("SYNCworkER STARTED")
+        var timeBeforeRequest: Long = MyUtil.timeStampInSec()
         val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
         var platforms: List<PlatformEntity> = emptyList()
-        log("SYNCworkER::synChrONizationDATA:Thread.currentThread().id()=${Thread.currentThread().id}")
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
@@ -161,9 +161,7 @@ class SYNCworkER(
             gps.PointTimeToLastKnowTime_SRV(),
             platforms)
 
-        log("platforms.size=${platforms.size}")
-
-
+        info("platforms.size=${platforms.size}")
 //        saveJSON(synchronizeBody)
         val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
         when (synchronizeResponse.status) {
@@ -172,9 +170,9 @@ class SYNCworkER(
                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
                     LoG.error( Thread.currentThread().getId().toString())
                     db().updatePlatformNetworkStatus(platforms)
-                    log("SYNCworkER SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
+                    info("SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
                 } else {
-                    log("SYNCworkER SUCCESS: GPS SENT")
+                    info("SUCCESS: GPS SENT")
                 }
                 val alertMsg = synchronizeResponse.data?.alert
                 if (!alertMsg.isNullOrEmpty()) {
@@ -182,8 +180,8 @@ class SYNCworkER(
 //                    App.getAppliCation().showNotification(alertMsg, "Уведомление")
                 }
             }
-            Status.ERROR -> LoG.error( "SYNCworkER ERROR")
-            Status.NETWORK -> LoG.warn( "SYNCworkER NO INTERNET")
+            Status.ERROR -> LoG.error( "Status.ERROR")
+            Status.NETWORK -> LoG.warn( "Status.NETWORK==NO INTERNET")
         }
         LOGafterLOG()
         
@@ -203,8 +201,7 @@ class SYNCworkER(
 //    }
 
     protected fun logSentry(text: String) {
-        Sentry.addBreadcrumb("${TAG} : $text")
-        LoG.info( "text")
+        App.getAppliCation().logSentry(text)
     }
 }
 /**   //SYNCworkER
