@@ -2,9 +2,11 @@ package ru.smartro.worknote.presentation
 
 import android.app.ActivityManager
 import android.app.Application
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
@@ -16,18 +18,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.net.toFile
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import ru.smartro.worknote.BuildConfig
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.log
-import ru.smartro.worknote.toast
 import ru.smartro.worknote.utils.ZipManager
 import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 
 class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
@@ -109,7 +109,9 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
         }
         val acbSendLogs =  view.findViewById<AppCompatButton>(R.id.acb__f_debug__send_logs)
         acbSendLogs.setOnClickListener {
+            AppliCation().stopWorkERS()
             shareDevInformation()
+            AppliCation().startWorkER()
         }
         val acbOpenLogs =  view.findViewById<AppCompatButton>(R.id.acb__f_debug__open_logs)
 
@@ -120,9 +122,29 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
         val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             // Handle the returned Uri
             uri?.let {
-                val imageFile = File(it.path!!)
-                log("registerForActivityResul= ${imageFile.absolutePath}")
-                ZipManager.unzip(imageFile, AppliCation().getDPath("r_dos"))
+                val zipFile = File(it.path!!)
+                log("registerForActivityResult= ${zipFile.absolutePath}")
+//                //Media type da foto selecionada
+//                val mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(zipFile.extension)
+////
+//                MediaScannerConnection.scanFile(
+//                    requireView().context,
+//                    arrayOf(zipFile.absolutePath),
+//                    arrayOf(mediaType), this@DebugF
+//                )
+                savefile(uri, "r_dos", "r.zip")
+                val zipF = AppliCation().getF("r_dos", "r.zip")
+                ZipManager.unzip(zipF, AppliCation().getDPath("r_dos"))
+                AppliCation().stopWorkERS()
+
+                val realmFileNew = AppliCation().getF("r_dos", "FACT.realm")
+                val realmFileOld = AppliCation().getF("files", "FACT.realm")
+                realmFileNew.copyTo(realmFileOld, overwrite = true)
+
+                val sharedPrefsFileNew = AppliCation().getF("r_dos", "AppParaMS.xml")
+                val sharedPrefsFileOld = AppliCation().getF("shared_prefs", "AppParaMS.xml")
+                sharedPrefsFileNew.copyTo(realmFileOld, overwrite = true)
+
             }
         }
 
@@ -140,7 +162,7 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
 //                    intent.setType("*/*");
 //                    startActivityForResult(intent, 7);
 
-                    getContent.launch("zip/*")
+                    getContent.launch("*/*")
                 }
                 return@setOnClickListener
             }
@@ -159,25 +181,18 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
 
         }
 
+
+
     }
 
-    private fun openZipFiles() {
-        val file = File(
-            Environment.getExternalStorageDirectory(),
-            "Report.pdf"
-        )
+    fun savefile(sourceuri: Uri, dirName: String, fileName: String) {
+        val file = AppliCation().getF(dirName, fileName)
+        val inputStream: InputStream? = requireContext().contentResolver.openInputStream(sourceuri)
+        val outputStream = FileOutputStream(file)
+        inputStream?.copyTo(outputStream)
 
-        val downloadD = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val path = Uri.fromFile(downloadD)
-        val pdfOpenintent = Intent(Intent.ACTION_VIEW)
-        pdfOpenintent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        pdfOpenintent.setDataAndType(path, "application/pdf")
-        try {
-            startActivity(pdfOpenintent)
-        } catch (e: ActivityNotFoundException) {
-        }
-
-
+        inputStream?.close()
+        outputStream.close()
     }
 
 //
@@ -198,8 +213,8 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
             zipFiles.addAll(saveJSONFiles)
         }
 
-        val realmFiles = AppliCation().getF("files", "FACT.realm")
-        zipFiles.add(realmFiles)
+        val realmFile = AppliCation().getF("files", "FACT.realm")
+        zipFiles.add(realmFile)
 
         val sharedPrefsFiles = AppliCation().getD("shared_prefs").listFiles()
         if (sharedPrefsFiles != null) {
@@ -213,11 +228,10 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
 
         return zipFiles.toTypedArray()
     }
+
     private fun shareDevInformation() {
-
-
         val downloadD = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val zipFile = File(downloadD,  "${BuildConfig.APPLICATION_ID}.${BuildConfig.VERSION_NAME}")
+        val zipFile = File(downloadD,  "${BuildConfig.BUILD_TYPE}.${BuildConfig.VERSION_NAME}.zip")
         //        val zipFile = AppliCation().getF("toSend", "ttest.zip")
         ZipManager.zip(this.getzipFiles(), zipFile)
 
@@ -243,9 +257,9 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
     open class DebugViewModel(application: Application) : BaseViewModel(application)
 
     override fun onScanCompleted(path: String?, uri: Uri?) {
-
-        val mediaType = MimeTypeMap.getSingleton()
-            .getMimeTypeFromExtension("zip")
+        log("onScanCompleted.path=${path}")
+        log("onScanCompleted.uri=${uri}")
+        val mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("zip")
 
         val intent = Intent()
 //

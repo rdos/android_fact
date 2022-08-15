@@ -171,7 +171,7 @@ abstract class APhotoFragment(
     }
 
     protected fun dropOutputD() {
-        val basePhotoD = App.getAppliCation().filesDir.absolutePath + File.separator + "photo"
+        val basePhotoD = AppliCation().getDPath("photo")
         val file = File(basePhotoD)
         file.deleteRecursively()
     }

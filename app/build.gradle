@@ -71,6 +71,7 @@ android {
             versionNameSuffix '-STAGE'
             resValue "string", "app_name", "Fact.STAGE"
             signingConfig signingConfigs.release
+            debuggable true
         }
 
         release {
