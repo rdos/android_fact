@@ -267,25 +267,25 @@ class RealmRepository(private val p_realm: Realm) {
             setEntityUpdateAt(platformEntity)
         }
     }
-
-    fun clearContainerVolume(platformId: Int, containerId: Int) {
-        p_realm.executeTransaction {
-            val container = getQueryContainer()
-                .equalTo("containerId", containerId)
-                .findFirst()!!
-            val platformEntity = getQueryPlatform()
-                .equalTo("platformId", platformId)
-                .findFirst()!!
-            container.volume = null
-            // TODO: 02.11.2021 !!!
-            if (container.failureReasonId == null) {
-                container.comment = null
-            }
-            if (container.status == StatusEnum.SUCCESS)
-                container.status = StatusEnum.NEW
-            setEntityUpdateAt(platformEntity)
-        }
-    }
+//   TODO::: Vlad: Это нужно вообще?
+//    fun clearContainerVolume(platformId: Int, containerId: Int) {
+//        p_realm.executeTransaction {
+//            val container = getQueryContainer()
+//                .equalTo("containerId", containerId)
+//                .findFirst()!!
+//            val platformEntity = getQueryPlatform()
+//                .equalTo("platformId", platformId)
+//                .findFirst()!!
+//            container.volume = null
+//            // TODO: 02.11.2021 !!!
+//            if (container.failureReasonId == null) {
+//                container.comment = null
+//            }
+//            if (container.status == StatusEnum.SUCCESS)
+//                container.status = StatusEnum.NEW
+//            setEntityUpdateAt(platformEntity)
+//        }
+//    }
 
     fun setStateFailureForPlatform(platformId: Int, problem: String, failureComment: String?=null) {
         p_realm.executeTransaction { realm ->

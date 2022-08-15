@@ -215,49 +215,6 @@
             />
     </fragment>
     <fragment
-        android:id="@+id/PServeF"
-        tools:layout="@layout/f_pserve"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeF"
-        android:label="PServeF">
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
-        android:id="@+id/WalkthroughStepAF"
-        tools:layout="@layout/f_pserve_walkthrough_step_a"
-        android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepAF"
-        android:label="WalkthroughStepAF" >
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
-        android:id="@+id/WalkthroughStepBF"
-        tools:layout="@layout/f_pserve_walkthrough_step_b"
-        android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepBF"
-        android:label="WalkthroughStepBF" >
-
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
         android:id="@+id/FAStPhotoFailureMediaF"
         android:name="ru.smartro.worknote.presentation.came.FAStPhotoFailureMediaF"
         android:label="FAStPhotoFailureMediaF">
@@ -326,5 +283,51 @@
             app:argType="string"
             />
     </fragment>
+
+    <fragment
+        android:id="@+id/PServe"
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeF"
+        tools:layout="@layout/f_pserve"
+        android:label="CompleteF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/PServeByTypes"
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeByTypesF"
+        tools:layout="@layout/f_pserve_by_types"
+        android:label="CompleteF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <dialog
+        android:id="@+id/ContainerServeBottomDialog"
+        tools:layout="@layout/fragment_container_serve"
+        android:name="ru.smartro.worknote.presentation.platform_serve.ContainerServeBottomDialog"
+        android:label="ContainerServeBottomDialog">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            android:defaultValue="-1"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
 
 </navigation>

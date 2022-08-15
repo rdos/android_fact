@@ -11,6 +11,8 @@ import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.presentation.terminate.CompleteF
 import ru.smartro.worknote.presentation.DebugF
 import ru.smartro.worknote.presentation.JournalChatF
+import ru.smartro.worknote.presentation.platform_serve.PServeByTypesViewModel
+import ru.smartro.worknote.presentation.platform_serve.PServeViewModel
 
 
 val viewModelModule = module {
@@ -23,6 +25,10 @@ val viewModelModule = module {
     viewModel { StartWorkOrderViewModel(androidApplication()) }
 
     viewModel { PlatformServeSharedViewModel(androidApplication()) }
+    viewModel { PServeViewModel(androidApplication()) }
+    viewModel { PServeByTypesViewModel(androidApplication()) }
+
+    viewModel { MapViewModel(androidApplication()) }
 
     viewModel { PhotoViewModel(androidApplication()) }
 

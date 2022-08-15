@@ -1,143 +1,307 @@
 package ru.smartro.worknote.presentation.platform_serve
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.App
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
+import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
+import ru.smartro.worknote.presentation.platform_serve.adapters.PServeAdapter
 import ru.smartro.worknote.toast
+import ru.smartro.worknote.work.ContainerEntity
 
-class PServeF : AFragment() {
+
+class PServeF :
+    AFragment(),
+    PServeAdapter.ContainerPointClickListener {
+
     private var mBackPressedCnt: Int = 2
 
-    override fun onGetLayout(): Int {
-        return R.layout.f_pserve
-    }
+    private val THUMB_INACTIVE = "Inactive"
+    private val THUMB_ACTIVE = "Active"
+    private lateinit var mContainerAdapter: PServeAdapter
+    private var mVolumePickup: Double? = null
+    private var tvVolumePickup: TextView? = null
+    private var acbKGORemaining: AppCompatButton? = null
+    private var mAcbKGOServed: AppCompatButton? = null
+    private var acbProblem: AppCompatButton? = null
+    private var recyclerView: RecyclerView? = null
+    private var acsbVolumePickup: SeekBar? = null
 
-    override fun onBackPressed() {
-        mBackPressedCnt--
-        if (mBackPressedCnt <= 0) {
-            viewModel.updatePlatformStatusUnfinished()
-            navigateBack(R.id.MapF)
-            toast("Вы не завершили обслуживание КП.")
-        } else {
-            toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
-        }
-    }
-
-    private var navController: NavController? = null
     private var btnCompleteTask: AppCompatButton? = null
     private var tvContainersProgress: TextView? = null
     private var actvAddress: AppCompatTextView? = null
     private var scPServeSimplifyMode: SwitchCompat? = null
     private var screenModeLabel: TextView? = null
-    private val viewModel: PlatformServeSharedViewModel by activityViewModels()
+
+    private val vm: PServeViewModel by viewModels()
+
+    override fun onGetLayout(): Int {
+        return R.layout.f_pserve
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val plId = getArgumentID()
         if (savedInstanceState == null) {
             log("savedInstanceState == null")
         } else {
             log("savedInstanceState HE null")
         }
+
         tvContainersProgress = view.findViewById(R.id.tv_platform_serve__cont_progress)
+
         btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = view.findViewById(R.id.tv_platform_serve__address)
         scPServeSimplifyMode = view.findViewById(R.id.sc_pserve_symplify_mode)
         screenModeLabel = view.findViewById(R.id.screen_mode_label)
 
-        val navHostFragment =
-            childFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
+        tvVolumePickup = view.findViewById(R.id.et_act_platformserve__volumepickup)
+        recyclerView = view.findViewById<RecyclerView?>(R.id.rv_activity_platform_serve).apply {
+            recycledViewPool.setMaxRecycledViews(0, 0)
+        }
+        acbProblem = view.findViewById(R.id.acb_activity_platform_serve__problem)
+        mAcbKGOServed = view.findViewById(R.id.acb_activity_platform_serve__kgo_served)
+        acbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
+        acsbVolumePickup = view.findViewById(R.id.acsb_activity_platform_serve__seekbar)
 
-        // TODO?::Vlad setonclicklistener > setonchangedlistener
+        scPServeSimplifyMode?.isEnabled = false
+        scPServeSimplifyMode?.isClickable = false
+//        TODO::: 15.08.2022 18:14 CHECK ABOVE THEN DELETE THIS IF NECESSARY
+//        scPServeSimplifyMode?.isFocusable = false
         scPServeSimplifyMode?.setOnClickListener {
-            toggleScreenMode()
+            val newScreenMode = !paramS().lastScreenMode
+            paramS().lastScreenMode = newScreenMode
+            navigateMain(R.id.PServeByTypes, plId)
         }
 
-        viewModel.mWasServedExtended.observe(getAct()) {
-            if(it) {
-                scPServeSimplifyMode?.visibility = View.GONE
-                screenModeLabel?.visibility = View.GONE
-                if(navController?.currentDestination?.id != R.id.PServeExtendedF) {
-                    navController?.navigate(R.id.PServeExtendedF)
+        tvContainersProgress?.text =
+            "№${platform.srpId} / ${platform.containers.size} конт."
+
+        btnCompleteTask?.setOnClickListener {
+            navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
+        }
+
+        actvAddress?.text = "${platform.address}"
+        if (platform.containers.size >= 7 ) {
+            actvAddress?.apply {
+                setOnClickListener { view ->
+                    maxLines = if (maxLines < 3) {
+                        3
+                    } else {
+                        1
+                    }
                 }
             }
+        } else {
+            actvAddress?.maxLines = 3
         }
 
-        viewModel.mPlatformEntity.observe(getAct()) { platform ->
+        vm.mPlatformEntity.observe(viewLifecycleOwner) { platform ->
             if(platform != null) {
-                if(platform.containers.all { el -> el.status == StatusEnum.NEW }) {
-                    setScreenMode(paramS().lastScreenMode)
-                } else {
-                    scPServeSimplifyMode?.visibility = View.GONE
-                    screenModeLabel?.visibility = View.GONE
-                    if(platform.containers.any { el -> el.volume != null && el.volume!! > 1.25f })
-                        navController?.navigate(R.id.PServeSimplifyF)
-                    else
-                        navController?.navigate(R.id.PServeExtendedF)
+                mContainerAdapter = PServeAdapter(
+                    getAct(),
+                    this,
+                    platform.containers.sortedBy { !it.isActiveToday }
+                )
+                recyclerView?.adapter = mContainerAdapter
+
+                if (platform.failureMedia.size > 0) {
+                    acbProblem?.let { setUseButtonStyleBackgroundRed(it) }
                 }
-
-                tvContainersProgress?.text =
-                    "№${platform.srpId} / ${platform.containers.size} конт."
-
-                btnCompleteTask?.setOnClickListener {
-                    navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
+                acbProblem?.setOnClickListener {
+                    navigateMain(R.id.PhotoFailureMediaF, platform.platformId)
                 }
-
-                actvAddress?.text = "${platform.address}"
-                if (platform.containers.size >= 7 ) {
-                    actvAddress?.apply {
-                        setOnClickListener { view ->
-                            maxLines = if (maxLines < 3) {
-                                3
-                            } else {
-                                1
+                if (platform.isServedKGONotEmpty()) {
+                    mAcbKGOServed?.let { setUseButtonStyleBackgroundGreen(it) }
+                }
+                mAcbKGOServed?.setOnClickListener {
+                    showDialogFillKgoVolume().let { view ->
+                        val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
+                        tietKGOVolumeIn.setText(platform.getServedKGOVolume())
+                        val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
+                        btnSave.setOnClickListener {
+                            val servedKGOVolumeText = tietKGOVolumeIn.text.toString()
+                            if (servedKGOVolumeText.isNullOrBlank()) {
+                                return@setOnClickListener
                             }
+                            navigateMain(R.id.PhotoKgoServedF, platform.platformId, servedKGOVolumeText)
+                            hideDialog()
                         }
                     }
-                } else {
-                    actvAddress?.maxLines = 3
                 }
+                if (platform.isRemainingKGONotEmpty()) {
+                    acbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
+                }
+
+                acbKGORemaining?.setOnClickListener {
+                    showDialogFillKgoVolume().let { view ->
+                        val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
+                        tietKGOVolumeIn.setText(platform.getRemainingKGOVolume())
+                        val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
+                        btnSave.setOnClickListener{
+                            val remainingKGOVolumeText = tietKGOVolumeIn.text.toString()
+                            if (remainingKGOVolumeText.isNullOrBlank()) {
+                                return@setOnClickListener
+                            }
+                            navigateMain(R.id.PhotoKgoRemainingF, platform.platformId, remainingKGOVolumeText)
+                            hideDialog()
+                        }
+                    }
+                }
+                if (platform.isPickupNotEmpty()) {
+                    acsbVolumePickup?.progress = platform.volumePickup!!.toInt()
+                    tvVolumePickuptext(platform.volumePickup)
+                    acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
+                } else {
+                    acsbVolumePickup?.thumb = getThumb(null)
+                }
+                acsbVolumePickup?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+                    private var mProgressAtStartTracking = 0
+                    private val SENSITIVITY = 1
+                    override fun onProgressChanged(s: SeekBar?, progress: Int, fromUser: Boolean) {
+                        tvVolumePickuptext(progress)
+                        if(progress > 0 && tag != THUMB_ACTIVE){
+                            acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
+                            acsbVolumePickup?.tag = THUMB_ACTIVE
+                        } else if(progress <= 0 && tag != THUMB_INACTIVE) {
+                            acsbVolumePickup?.thumb = getThumb(null)
+                            acsbVolumePickup?.tag = THUMB_INACTIVE
+                        }
+                    }
+
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                        mProgressAtStartTracking = seekBar!!.progress
+                    }
+
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                        if(Math.abs(mProgressAtStartTracking - seekBar!!.progress) <= SENSITIVITY){
+                            acsbVolumePickup?.apply {
+                                onClickPickup(this)
+                            }
+                            return
+                        }
+
+                        acsbVolumePickup?.apply {
+                            if (progress > 0 ) {
+                                gotoMakePhotoForPickup(progress.toDouble())
+                            } else {
+                                vm.updateVolumePickup(platform.platformId!!, null)
+                            }
+                        }
+
+                    }
+                })
             }
         }
-
-        viewModel.getPlatformEntity(plId)
     }
 
-    private fun toggleScreenMode() {
-        val newScreenMode = !paramS().lastScreenMode
-        paramS().lastScreenMode = newScreenMode
-        setScreenMode(newScreenMode)
-    }
 
-    private fun setScreenMode(mode: Boolean) {
-        navController?.currentDestination?.apply {
-            scPServeSimplifyMode?.isChecked = mode
-            when(mode) {
-                App.ScreenMode.EXTENDED -> {
-                    screenModeLabel?.text = "список"
-                    if (id == R.id.PServeSimplifyF) {
-                        navController?.popBackStack()
+    private fun onClickPickup(acsbVolumePickup: SeekBar) {
+        acsbVolumePickup.isEnabled = false
+        try {
+            if(vm.mPlatformEntity.value != null) {
+                showDlgPickup().let{ dialogView ->
+                    val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
+                    vm.mPlatformEntity.value!!.volumePickup?.let{
+                        tietAdditionalVolumeInM3.setText(vm.mPlatformEntity.value!!.volumePickup.toString())
+                    }
+
+                    val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
+                    btnOk.setOnClickListener {
+                        hideDialog()
+                        val volume = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
+                        if (volume == null) {
+                            acsbVolumePickup.progress = 0
+                        } else {
+                            gotoMakePhotoForPickup(volume)
+                        }
                     }
                 }
-                App.ScreenMode.SIMPLIFY -> {
-                    screenModeLabel?.text = "по типам"
-                    if (id == R.id.PServeExtendedF) {
-                        navController?.navigate(R.id.PServeSimplifyF)
-                    }
-                }
-                else -> {}
             }
+        } finally {
+            acsbVolumePickup.isEnabled = true
+        }
+    }
+
+    private fun gotoMakePhotoForPickup(newVolume: Double) {
+        if(vm.mPlatformEntity.value == null) {
+            return
+        }
+        navigateMain(R.id.PhotoPickupMediaF, vm.mPlatformEntity.value!!.platformId, newVolume.toString())
+    }
+
+    private fun tvVolumePickuptext(progressDouble: Double?) {
+        val progressText = if (progressDouble != null)
+            String.format("%.1f", progressDouble)
+        else
+            String.format("%.1f", 0.0)
+
+        tvVolumePickup?.text = "$progressText м³"
+        mVolumePickup = progressDouble
+    }
+
+    private fun tvVolumePickuptext(progress: Int) {
+        if (progress < 0) {
+            tvVolumePickuptext(0.0)
+            return
+        }
+        tvVolumePickuptext(progress.toDouble())
+    }
+
+    private fun getThumb(background: Int? = null): Drawable {
+        val thumbView: View = LayoutInflater.from(getAct())
+            .inflate(R.layout.act_platformserve__pickup_seekbarthumb, null, false)
+        if(background != null)
+            thumbView
+                .findViewById<AppCompatButton>(R.id.acb_act_platformserve__pickup_seekbarthumb)
+                .setBackgroundDrawable(ContextCompat.getDrawable(getAct(), R.drawable.bg_button_green__usebutton))
+        thumbView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val bitmap = Bitmap.createBitmap(thumbView.measuredWidth, thumbView.measuredHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        thumbView.layout(0, 0, thumbView.measuredWidth, thumbView.measuredHeight)
+        thumbView.draw(canvas)
+        return BitmapDrawable(resources, bitmap)
+    }
+
+    private fun setUseButtonStyleBackgroundGreen(appCompatButton: AppCompatButton) {
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(getAct(), R.drawable.bg_button_green__usebutton))
+    }
+
+    private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(getAct(), R.drawable.bg_button_red__usebutton))
+    }
+
+    override fun startContainerService(item: ContainerEntity) {
+        navigateMain(R.id.ContainerServeBottomDialog, item.containerId!!, vm.mPlatformEntity.value!!.platformId!!.toString())
+    }
+
+    override fun onBackPressed() {
+        mBackPressedCnt--
+        if (mBackPressedCnt <= 0) {
+            vm.updatePlatformStatusUnfinished()
+            navigateBack(R.id.MapF)
+            toast("Вы не завершили обслуживание КП.")
+        } else {
+            toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
         }
     }
 }

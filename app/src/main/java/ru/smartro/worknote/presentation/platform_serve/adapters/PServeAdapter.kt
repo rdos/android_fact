@@ -19,11 +19,11 @@ import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 
 // TODO: 22.10.2021 !!!когда?
-class ExtendedContainerAdapter(
+class PServeAdapter(
     private val activity: Context,
     private val listener: ContainerPointClickListener,
     private val containers: List<ContainerEntity>
-) : RecyclerView.Adapter<ExtendedContainerAdapter.OwnerViewHolder>() {
+) : RecyclerView.Adapter<PServeAdapter.OwnerViewHolder>() {
     // TODO: 22.10.2021  item_container_adapter !!!
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_adapter, parent, false)

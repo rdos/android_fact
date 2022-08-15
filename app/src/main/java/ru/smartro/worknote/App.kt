@@ -78,8 +78,8 @@ class App : AApp() {
     var LASTact: AAct? = null
 
     object ScreenMode {
-        const val EXTENDED = false
-        const val SIMPLIFY = true
+        const val DEFAULT = false
+        const val BY_TYPES = true
     }
 
     fun gps(): PoinT {

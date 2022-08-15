@@ -4,13 +4,6 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.yandex.mapkit.RequestPoint
-import com.yandex.mapkit.RequestPointType
-import com.yandex.mapkit.directions.driving.DrivingOptions
-import com.yandex.mapkit.directions.driving.DrivingRouter
-import com.yandex.mapkit.directions.driving.DrivingSession
-import com.yandex.mapkit.directions.driving.VehicleOptions
-import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -18,16 +11,6 @@ import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.ServedContainers
-
-data class ClientGroupedContainers(
-    var client: String = "",
-    var typeGroupedContainers: MutableList<TypeGroupedContainers>
-)
-
-data class TypeGroupedContainers(
-    var typeName: String = "",
-    var containersIds: MutableList<Int>
-)
 
 class PlatformServeSharedViewModel(application: Application) : BaseViewModel(application) {
 
@@ -145,19 +128,9 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
         getPlatformEntity(platformId)
     }
 
-    fun updateContainerComment(platformId: Int, containerId: Int, comment: String?) {
-        baseDat.updateContainerComment(platformId, containerId, comment)
-    }
-
     fun updateVolumePickup(platformId: Int, volume: Double?) {
         mWasServedExtended.postValue(true)
         baseDat.updateVolumePickup(platformId, volume)
-        getPlatformEntity(platformId)
-    }
-
-    fun clearContainerVolume(platformId: Int, containerId: Int) {
-        mWasServedExtended.postValue(true)
-        baseDat.clearContainerVolume(platformId, containerId)
         getPlatformEntity(platformId)
     }
 
@@ -196,7 +169,7 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     // FINISH
     fun updatePlatformStatusSuccess(platformId: Int) {
         // если упрощенный режим
-        if(params.lastScreenMode == ScreenMode.SIMPLIFY && _platformEntity.value!!.containers.all { el -> el.volume == null }) {
+        if(params.lastScreenMode == ScreenMode.BY_TYPES && _platformEntity.value!!.containers.all { el -> el.volume == null }) {
             mServedContainers.value?.let {
                 if (_sortedContainers.value != null ) {
                     it.forEach { el ->
@@ -248,38 +221,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
             }
         }
         return temp
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("VM ::TEST :::", "VM IS CLEARED")
-    }
-
-    fun buildMapNavigator(
-        point: Point,
-        checkPoint: Point, drivingRouter: DrivingRouter,
-        drivingSession: DrivingSession.DrivingRouteListener
-    ) {
-        val drivingOptions = DrivingOptions()
-        drivingOptions.routesCount = 1
-        drivingOptions.avoidTolls = true
-        val vehicleOptions = VehicleOptions()
-        val requestPoints = ArrayList<RequestPoint>()
-        requestPoints.add(
-            RequestPoint(
-                point,
-                RequestPointType.WAYPOINT,
-                null
-            )
-        )
-        requestPoints.add(
-            RequestPoint(
-                checkPoint,
-                RequestPointType.WAYPOINT,
-                null
-            )
-        )
-        drivingRouter.requestRoutes(requestPoints, drivingOptions, vehicleOptions, drivingSession)
     }
 
 }

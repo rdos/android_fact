@@ -30,7 +30,7 @@ class TypedContainerAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TypeGroupedViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.f_pserve_simplify__rv_conainers_typed, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.f_pserve_by_types__rv_conainers_typed, parent, false)
         return TypeGroupedViewHolder(view, context, listener)
     }
 

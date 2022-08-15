@@ -67,7 +67,7 @@ class AppParaMS {
         }
 
     var lastScreenMode: Boolean
-        get() = sharedPref__env.getBoolean("lastScreenMode", ScreenMode.EXTENDED)
+        get() = sharedPref__env.getBoolean("lastScreenMode", ScreenMode.DEFAULT)
         set(value) = sharedPref__env.edit {
             it.putBoolean("lastScreenMode", value)
         }

@@ -51,12 +51,8 @@ import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.ui_view.ViewProvider
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.PERMISSIONS
-import ru.smartro.worknote.R
-import ru.smartro.worknote.isShowForUser
-import ru.smartro.worknote.NOTIFICATION_CHANNEL_ID__MAP_ACT
-import ru.smartro.worknote.Lnull
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showAlertPlatformByPoint
@@ -65,8 +61,6 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.MainAct
-import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
-import ru.smartro.worknote.toast
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 
@@ -84,7 +78,9 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mMapMyYandex: MapView
-    private val viewModel: PlatformServeSharedViewModel by activityViewModels()
+
+    private val viewModel: MapViewModel by activityViewModels()
+
     private val mWorkOrderFilteredIds: MutableList<Int> = mutableListOf()
     private var mWorkOrderS: List<WorkOrderEntity>? = null
     private var mPlatformS: List<PlatformEntity>? = null
@@ -199,12 +195,6 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.isAutoZoomEnabled = true
         userLocationLayer.setObjectListener(this)
-
-        if(viewModel.mPlatformEntity.value != null) {
-            val lat = viewModel.mPlatformEntity.value!!.coordLat
-            val long = viewModel.mPlatformEntity.value!!.coordLong
-            moveCameraTo(PoinT(lat, long))
-        }
 
         val fabGotoMyGPS = view.findViewById<FloatingActionButton>(R.id.fab_f_map__goto_my_gps)
         fabGotoMyGPS.setOnClickListener {
@@ -625,11 +615,6 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
             }
         }
 
-    }
-
-    override fun startPlatformServiceAgain(item: PlatformEntity) {
-        hideDialog()
-        navigateMain(R.id.PServeF, item.platformId)
     }
 
     override fun startPlatformProblem(item: PlatformEntity) {

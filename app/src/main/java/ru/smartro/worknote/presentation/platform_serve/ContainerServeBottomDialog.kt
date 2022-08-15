@@ -11,26 +11,29 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.navArgs
+import androidx.fragment.app.viewModels
 import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
+import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_NAME
 import ru.smartro.worknote.abs.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.presentation.ac.MainAct
 
 
 class ContainerServeBottomDialog : AbstractBottomDialog() {
-    private val viewModel: PlatformServeSharedViewModel by activityViewModels()
+    private val viewModel: ContainerServeBottomViewModel by viewModels()
     private var volume: Double? = null
     private lateinit var parentAct: MainAct
 
-    private var firstTime = true
-
-    val args: ContainerServeBottomDialogArgs by navArgs()
+    private var rgPercents: RadioGroup? = null
+    private var apbFailure: AppCompatButton? = null
+    private var apbBreakdown: AppCompatButton? = null
+    private var apbBeforeMedia: AppCompatButton? = null
+    private var apbAfterMedia: AppCompatButton? = null
 
     private var p_container_id: Int = -1
+    private var p_id: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,90 +51,74 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         super.onViewCreated(view, savedInstanceState)
         parentAct = requireActivity() as MainAct
 
+        p_id = arguments?.getString(ARGUMENT_NAME___PARAM_NAME)!!.toInt()
         p_container_id = arguments?.getInt(ARGUMENT_NAME___PARAM_ID)!!
 
-        val containerEntity = viewModel.baseDat.getContainerEntity(p_container_id)
-        containerEntity.let {
-            view.findViewById<TextInputEditText>(R.id.comment_et).setText(it.comment)
-            volume = it.volume
-            setVolume(view, it.volume)
-            view.findViewById<TextView>(R.id.enter_info_tittle).text = "Заполненность конт №${it.number}"
-        }
-        view.findViewById<TextInputEditText>(R.id.comment_et).addTextChangedListener{
-            // TODO:
-            viewModel.updateContainerComment(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, it.toString())
-        }
+        rgPercents = view.findViewById(R.id.enter_info_percent_rg)
+        apbFailure = view.findViewById(R.id.apb_fragment_container_serve_failure)
+        apbBreakdown = view.findViewById(R.id.apb_fragment_container_serve_breakdown)
+        apbBeforeMedia = view.findViewById(R.id.apb_fragment_container_serve__before_media)
+        apbAfterMedia = view.findViewById(R.id.apb_fragment_container_serve__after_media)
 
-        val apbFailure = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_failure)
-        Log.d("TEST:::", "fucked up : ${containerEntity.containerId} : ${containerEntity.isFailureNotEmpty()}")
-        if (containerEntity.isFailureNotEmpty()) {
-            setUseButtonStyleBackgroundRed(apbFailure)
-        }
-        apbFailure.setOnClickListener {
-//            val intent = Intent(requireContext(), ContainerFailureAct::class.java)
-//            intent.putExtra("is_container", true)
-//            intent.putExtra("container_id", p_container_id)
-            val checkedId = view.findViewById<RadioGroup>(R.id.enter_info_percent_rg).checkedRadioButtonId
-            val radioButton = view.findViewById<RadioButton>(checkedId)
-            val volume = toPercent(radioButton.text.toString())
-            viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, volume)
-            navigateMain(R.id.PhotoFailureMediaContainerF, p_container_id, viewModel.mPlatformEntity.value!!.platformId!!.toString())
-//            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
-//            startActivityForResult(intent, 99)
-        }
-        val apbBreakdown = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_breakdown)
-        if (containerEntity.isBreakdownNotEmpty()) {
-            setUseButtonStyleBackgroundRed(apbBreakdown)
-        }
-        apbBreakdown.setOnClickListener {
-//            val intent = Intent(requireContext(), ContainerBreakdownAct::class.java)
-//            intent.putExtra("is_container", true)
-            val checkedId = view.findViewById<RadioGroup>(R.id.enter_info_percent_rg).checkedRadioButtonId
-            val radioButton = view.findViewById<RadioButton>(checkedId)
-            val volume = toPercent(radioButton.text.toString())
-            viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, volume)
-            navigateMain(R.id.PhotoBreakdownMediaContainerF, p_container_id, viewModel.mPlatformEntity.value!!.platformId!!.toString())
-//            intent.putExtra("container_id", p_container_id)
-//            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
-//            startActivityForResult(intent, 99)
-        }
+        viewModel.mContainerEntity.observe(viewLifecycleOwner) { containerEntity ->
+            if(containerEntity != null) {
+                containerEntity.let {
+                    view.findViewById<TextInputEditText>(R.id.comment_et).setText(it.comment)
+                    volume = it.volume
+                    setVolume(view, it.volume)
+                    view.findViewById<TextView>(R.id.enter_info_tittle).text = "Заполненность конт №${it.number}"
+                }
+                view.findViewById<TextInputEditText>(R.id.comment_et).addTextChangedListener{
+                    // TODO:
+                    viewModel.updateContainerComment(p_id, p_container_id, it.toString())
+                }
 
-        val apbBeforeMedia = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve__before_media)
+                if (containerEntity.isFailureNotEmpty()) {
+                    setUseButtonStyleBackgroundRed(apbFailure!!)
+                }
+                apbFailure?.setOnClickListener {
+                    val checkedId = rgPercents!!.checkedRadioButtonId
+                    val radioButton = view.findViewById<RadioButton>(checkedId)
+                    val volume = toPercent(radioButton.text.toString())
+                    viewModel.updateContainerVolume(p_id, p_container_id, volume)
+                    navigateMain(R.id.PhotoFailureMediaContainerF, p_container_id, p_id.toString())
+                }
+                if (containerEntity.isBreakdownNotEmpty()) {
+                    setUseButtonStyleBackgroundRed(apbBreakdown!!)
+                }
+                apbBreakdown?.setOnClickListener {
+                    val checkedId = rgPercents!!.checkedRadioButtonId
+                    val radioButton = view.findViewById<RadioButton>(checkedId)
+                    val volume = toPercent(radioButton.text.toString())
+                    viewModel.updateContainerVolume(p_id, p_container_id, volume)
+                    navigateMain(R.id.PhotoBreakdownMediaContainerF, p_container_id, p_id.toString())
+                }
+
 //        if (containerEntity.isBreakdownNotEmpty()) {
 //            setUseButtonStyleBackgroundRed(apbBreakdown)
 //        }
-        apbBeforeMedia.setOnClickListener {
-            //todo: жопа))))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
-//            val intent = Intent(requireActivity(), CameraAct::class.java)
-//            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
-////            intent.putExtra("photoFor", PhotoTypeEnum.forBeforeMedia)
-//            intent.putExtra("isNoLimitPhoto", true)
-//            startActivityForResult(intent, 1001)
-            navigateMain(R.id.PhotoBeforeMediaContainerF, viewModel.mPlatformEntity.value!!.platformId!!)
-            hideDialog()
-        }
+                apbBeforeMedia?.setOnClickListener {
+                    navigateMain(R.id.PhotoBeforeMediaContainerF, p_id)
+                    hideDialog()
+                }
 
-        val apbAfterMedia = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve__after_media)
 //        if (containerEntity.isBreakdownNotEmpty()) {
 //            setUseButtonStyleBackgroundRed(apbBreakdown)
 //        }
-        apbAfterMedia.setOnClickListener {
-            //todo: жоpa)№2)))))))))))) copy-past from PlatformServeAct search(startActivityForResult(intent, 1001)
-//            val intent = Intent(requireActivity(), CameraAct::class.java)
-//            intent.putExtra("platform_id", viewModel.mPlatformEntity.value!!.platformId!!)
-//            intent.putExtra("photoFor", PhotoTypeEnum.forAfterMedia)
-//            intent.putExtra("isNoLimitPhoto", true)
-//            startActivityForResult(intent, 1001)
-            navigateMain(R.id.PhotoAfterMediaContainerF, viewModel.mPlatformEntity.value!!.platformId!!)
-            hideDialog()
+                apbAfterMedia?.setOnClickListener {
+                    navigateMain(R.id.PhotoAfterMediaContainerF, p_id)
+                    hideDialog()
+                }
+            }
         }
 
+        viewModel.getContainerEntity(p_container_id)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         viewModel.updateContainerComment(
-            viewModel.mPlatformEntity.value!!.platformId!!,
+            p_id,
             p_container_id,
             view?.findViewById<TextInputEditText>(R.id.comment_et)?.text.toString()
         )
@@ -140,11 +127,6 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
     private fun setUseButtonStyleBackgroundRed(appCompatButton: AppCompatButton) {
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_red__usebutton))
     }
-
-//    override fun onDismiss(dialog: DialogInterface) {
-//        super.onDismiss(dialog)
-//        parentAct.findNavController(R.id.navigation_terminate).updateRecyclerView()
-//    }
 
     private fun setVolume(view: View, volume: Double?) {
         val percent0 = view.findViewById<RadioButton>(R.id.percent_0)
@@ -170,11 +152,11 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
             }
         }
         var prevRadioButton = percent0
-        view.findViewById<RadioGroup>(R.id.enter_info_percent_rg).setOnCheckedChangeListener { group, checkedId ->
+        rgPercents?.setOnCheckedChangeListener { group, checkedId ->
             prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             val radioButton = view.findViewById<RadioButton>(checkedId)
             this.volume = toPercent(radioButton.text.toString())
-            viewModel.updateContainerVolume(viewModel.mPlatformEntity.value!!.platformId!!, p_container_id, this.volume)
+            viewModel.updateContainerVolume(p_id, p_container_id, this.volume)
             when (radioButton.isChecked) {
                 true -> {
                     radioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))

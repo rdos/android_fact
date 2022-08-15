@@ -12,10 +12,10 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.platform_serve.ClientGroupedContainers
 import ru.smartro.worknote.work.ServedContainers
 
-class SimplifiedContainerAdapter(
+class PServeGroupedByClientsAdapter(
     private val context: Context,
     private val listener: SimplifyContainerServeListener
-) : RecyclerView.Adapter<SimplifiedContainerAdapter.ClientGroupViewHolder>() {
+) : RecyclerView.Adapter<PServeGroupedByClientsAdapter.ClientGroupViewHolder>() {
 
     var served: List<ServedContainers> = listOf()
         set(value) {
@@ -31,7 +31,7 @@ class SimplifiedContainerAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClientGroupViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.f_pserve_simplify__rv_clientcluster, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.f_pserve_by_types__rv_clientcluster, parent, false)
         return ClientGroupViewHolder(view, context, listener)
     }
 

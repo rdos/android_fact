@@ -220,7 +220,6 @@ class MapActBottomBehaviorAdapter(
     }
 
     interface PlatformClickListener {
-        fun startPlatformServiceAgain(item: PlatformEntity)
         fun startPlatformService(item: PlatformEntity)
         fun startPlatformProblem(item: PlatformEntity)
         fun moveCameraPlatform(point: PoinT)
