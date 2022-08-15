@@ -86,7 +86,11 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 
     private fun countServedContainers(groupedContainers: List<ClientGroupedContainers>): List<ServedContainers> {
         val temp = mutableListOf<ServedContainers>()
-        groupedContainers.forEach { clientGroup -> clientGroup.typeGroupedContainers.forEach { typeGroup -> temp.add(ServedContainers(typeGroup.typeName, clientGroup.client, typeGroup.containersIds.size)) } }
+        groupedContainers.forEach { clientGroup ->
+            clientGroup.typeGroupedContainers.forEach { typeGroup ->
+                temp.add(ServedContainers(typeGroup.typeName, clientGroup.client, 0))
+            }
+        }
         return temp
     }
 
@@ -105,7 +109,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
 
 
     fun onDecrease(clientName: String, typeName: String) {
-        Log.d("SHEESH ::: VM_ON_DEC", "client: ${clientName}, type: ${typeName}")
         mWasServedSimplified.postValue(true)
         val servedContainers = mServedContainers.value!!.toMutableList()
         val servedCluster = servedContainers.find { el -> el.client == clientName && el.typeName == typeName }
@@ -122,7 +125,6 @@ class PlatformServeSharedViewModel(application: Application) : BaseViewModel(app
     }
 
     fun onIncrease(clientName: String, typeName: String) {
-        Log.d("SHEESH ::: VM_ON_INC", "client: ${clientName}, type: ${typeName}")
         mWasServedSimplified.postValue(true)
         val servedContainers = mServedContainers.value!!.toMutableList()
         val servedCluster = servedContainers.find { el -> el.client == clientName && el.typeName == typeName }
