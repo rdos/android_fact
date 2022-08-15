@@ -22,15 +22,14 @@ import ru.smartro.worknote.presentation.ac.MainAct
 
 
 class ContainerServeBottomDialog : AbstractBottomDialog() {
-    private val viewModel: ContainerServeBottomViewModel by viewModels()
+
+    private val viewModel: PServeViewModel by viewModels(ownerProducer = { requireParentFragment() })
     private var volume: Double? = null
-    private lateinit var parentAct: MainAct
 
     private var rgPercents: RadioGroup? = null
     private var apbFailure: AppCompatButton? = null
     private var apbBreakdown: AppCompatButton? = null
     private var apbBeforeMedia: AppCompatButton? = null
-    private var apbAfterMedia: AppCompatButton? = null
 
     private var p_container_id: Int = -1
     private var p_id: Int = -1
@@ -49,16 +48,17 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parentAct = requireActivity() as MainAct
 
         p_id = arguments?.getString(ARGUMENT_NAME___PARAM_NAME)!!.toInt()
         p_container_id = arguments?.getInt(ARGUMENT_NAME___PARAM_ID)!!
+
+        Log.d("TEST::::", "DIALOG:: PL :${viewModel.mPlatformEntity.value}")
+
 
         rgPercents = view.findViewById(R.id.enter_info_percent_rg)
         apbFailure = view.findViewById(R.id.apb_fragment_container_serve_failure)
         apbBreakdown = view.findViewById(R.id.apb_fragment_container_serve_breakdown)
         apbBeforeMedia = view.findViewById(R.id.apb_fragment_container_serve__before_media)
-        apbAfterMedia = view.findViewById(R.id.apb_fragment_container_serve__after_media)
 
         viewModel.mContainerEntity.observe(viewLifecycleOwner) { containerEntity ->
             if(containerEntity != null) {
@@ -105,10 +105,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 //        if (containerEntity.isBreakdownNotEmpty()) {
 //            setUseButtonStyleBackgroundRed(apbBreakdown)
 //        }
-                apbAfterMedia?.setOnClickListener {
-                    navigateMain(R.id.PhotoAfterMediaContainerF, p_id)
-                    hideDialog()
-                }
+
             }
         }
 

@@ -43,8 +43,6 @@ val EXTENSION_WHITELIST = arrayOf("JPG")
 class GalleryPhotoF : AFragment() {
 
     private lateinit var mediaList: MutableList<File>
-    private val viewModel: PhotoViewModel by viewModel()
-
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
     inner class MediaAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {

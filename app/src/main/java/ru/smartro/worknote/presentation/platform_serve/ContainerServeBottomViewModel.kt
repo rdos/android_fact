@@ -21,21 +21,4 @@ import ru.smartro.worknote.work.ServedContainers
 
 class ContainerServeBottomViewModel(application: Application) : BaseViewModel(application) {
 
-    private val _containerEntity: MutableLiveData<ContainerEntity> = MutableLiveData(null)
-    val mContainerEntity: LiveData<ContainerEntity>
-        get() = _containerEntity
-
-    fun getContainerEntity(containerId: Int) {
-        val response: ContainerEntity = baseDat.getContainerEntity(containerId)
-        _containerEntity.postValue(response)
-    }
-
-    fun updateContainerVolume(platformId: Int, containerId: Int, volume: Double?) {
-        baseDat.updateContainerVolume(platformId, containerId, volume)
-        getContainerEntity(platformId)
-    }
-
-    fun updateContainerComment(platformId: Int, containerId: Int, comment: String?) {
-        baseDat.updateContainerComment(platformId, containerId, comment)
-    }
 }

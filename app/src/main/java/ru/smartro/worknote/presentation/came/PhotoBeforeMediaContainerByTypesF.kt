@@ -8,7 +8,7 @@ import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
+class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
 
     private var mPlatformEntity: PlatformEntity? = null
     override fun onGetTextLabelFor() = "фото контейнера до"
@@ -37,7 +37,7 @@ class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PhotoAfterMediaContainerSimplifyF, mPlatformEntity?.platformId)
+        navigateMain(R.id.PServeByTypesF, mPlatformEntity?.platformId)
     }
 
     override fun onSavePhoto() {

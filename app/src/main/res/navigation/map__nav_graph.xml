@@ -159,38 +159,10 @@
             />
     </fragment>
     <fragment
-        android:id="@+id/PhotoAfterMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoAfterMediaContainerF"
-        tools:layout="@layout/f_aphoto"
-        android:label="PhotoAfterMediaContainerF" >
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
         android:id="@+id/PhotoBeforeMediaContainerSimplifyF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerSimplifyF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerByTypesF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerSimplifyF" >
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
-        android:id="@+id/PhotoAfterMediaContainerSimplifyF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoAfterMediaContainerSimplifyF"
-        tools:layout="@layout/f_aphoto"
-        android:label="PhotoAfterMediaContainerSimplifyF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -285,7 +257,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/PServe"
+        android:id="@+id/PServeF"
         android:name="ru.smartro.worknote.presentation.platform_serve.PServeF"
         tools:layout="@layout/f_pserve"
         android:label="CompleteF">
@@ -300,7 +272,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/PServeByTypes"
+        android:id="@+id/PServeByTypesF"
         android:name="ru.smartro.worknote.presentation.platform_serve.PServeByTypesF"
         tools:layout="@layout/f_pserve_by_types"
         android:label="CompleteF">

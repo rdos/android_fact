@@ -25,7 +25,7 @@ class PServeFr : AFragment() {
     override fun onBackPressed() {
         mBackPressedCnt--
         if (mBackPressedCnt <= 0) {
-            viewModel.updatePlatformStatusUnfinished()
+//            viewModel.updatePlatformStatusUnfinished()
             navigateBack(R.id.MapF)
             toast("Вы не завершили обслуживание КП.")
         } else {
@@ -56,7 +56,8 @@ class PServeFr : AFragment() {
         screenModeLabel = view.findViewById(R.id.screen_mode_label)
 
         val navHostFragment =
-            childFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+//            childFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            childFragmentManager.findFragmentById(R.id.nav_title) as NavHostFragment
         navController = navHostFragment.navController
 
         // TODO?::Vlad setonclicklistener > setonchangedlistener
@@ -64,52 +65,52 @@ class PServeFr : AFragment() {
             toggleScreenMode()
         }
 
-        viewModel.mWasServedExtended.observe(getAct()) {
-            if(it) {
-                scPServeSimplifyMode?.visibility = View.GONE
-                screenModeLabel?.visibility = View.GONE
-                if(navController?.currentDestination?.id != R.id.PServeExtendedF) {
-                    navController?.navigate(R.id.PServeExtendedF)
-                }
-            }
-        }
-
-        viewModel.mPlatformEntity.observe(getAct()) { platform ->
-            if(platform != null) {
-                if(platform.containers.all { el -> el.status == StatusEnum.NEW }) {
-                    setScreenMode(paramS().lastScreenMode)
-                } else {
-                    scPServeSimplifyMode?.visibility = View.GONE
-                    screenModeLabel?.visibility = View.GONE
-                    if(platform.containers.any { el -> el.volume != null && el.volume!! > 1.25f })
-                        navController?.navigate(R.id.PServeSimplifyF)
-                    else
-                        navController?.navigate(R.id.PServeExtendedF)
-                }
-
-                tvContainersProgress?.text =
-                    "№${platform.srpId} / ${platform.containers.size} конт."
-
-                btnCompleteTask?.setOnClickListener {
-                    navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
-                }
-
-                actvAddress?.text = "${platform.address}"
-                if (platform.containers.size >= 7 ) {
-                    actvAddress?.apply {
-                        setOnClickListener { view ->
-                            maxLines = if (maxLines < 3) {
-                                3
-                            } else {
-                                1
-                            }
-                        }
-                    }
-                } else {
-                    actvAddress?.maxLines = 3
-                }
-            }
-        }
+//        viewModel.mWasServedExtended.observe(getAct()) {
+//            if(it) {
+//                scPServeSimplifyMode?.visibility = View.GONE
+//                screenModeLabel?.visibility = View.GONE
+//                if(navController?.currentDestination?.id != R.id.PServeExtendedF) {
+//                    navController?.navigate(R.id.PServeExtendedF)
+//                }
+//            }
+//        }
+//
+//        viewModel.mPlatformEntity.observe(getAct()) { platform ->
+//            if(platform != null) {
+//                if(platform.containers.all { el -> el.status == StatusEnum.NEW }) {
+//                    setScreenMode(paramS().lastScreenMode)
+//                } else {
+//                    scPServeSimplifyMode?.visibility = View.GONE
+//                    screenModeLabel?.visibility = View.GONE
+//                    if(platform.containers.any { el -> el.volume != null && el.volume!! > 1.25f })
+//                        navController?.navigate(R.id.PServeSimplifyF)
+//                    else
+//                        navController?.navigate(R.id.PServeExtendedF)
+//                }
+//
+//                tvContainersProgress?.text =
+//                    "№${platform.srpId} / ${platform.containers.size} конт."
+//
+//                btnCompleteTask?.setOnClickListener {
+//                    navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
+//                }
+//
+//                actvAddress?.text = "${platform.address}"
+//                if (platform.containers.size >= 7 ) {
+//                    actvAddress?.apply {
+//                        setOnClickListener { view ->
+//                            maxLines = if (maxLines < 3) {
+//                                3
+//                            } else {
+//                                1
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    actvAddress?.maxLines = 3
+//                }
+//            }
+//        }
 
         viewModel.getPlatformEntity(plId)
     }
@@ -126,15 +127,15 @@ class PServeFr : AFragment() {
             when(mode) {
                 App.ScreenMode.DEFAULT -> {
                     screenModeLabel?.text = "список"
-                    if (id == R.id.PServeSimplifyF) {
-                        navController?.popBackStack()
-                    }
+//                    if (id == R.id.PServeSimplifyF) {
+//                        navController?.popBackStack()
+//                    }
                 }
                 App.ScreenMode.BY_TYPES -> {
                     screenModeLabel?.text = "по типам"
-                    if (id == R.id.PServeExtendedF) {
-                        navController?.navigate(R.id.PServeSimplifyF)
-                    }
+//                    if (id == R.id.PServeExtendedF) {
+//                        navController?.navigate(R.id.PServeSimplifyF)
+//                    }
                 }
                 else -> {}
             }

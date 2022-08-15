@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -48,8 +49,7 @@ class PServeF :
     private var btnCompleteTask: AppCompatButton? = null
     private var tvContainersProgress: TextView? = null
     private var actvAddress: AppCompatTextView? = null
-    private var scPServeSimplifyMode: SwitchCompat? = null
-    private var screenModeLabel: TextView? = null
+    private var scScreenMode: SwitchCompat? = null
 
     private val vm: PServeViewModel by viewModels()
 
@@ -71,8 +71,7 @@ class PServeF :
 
         btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = view.findViewById(R.id.tv_platform_serve__address)
-        scPServeSimplifyMode = view.findViewById(R.id.sc_pserve_symplify_mode)
-        screenModeLabel = view.findViewById(R.id.screen_mode_label)
+        scScreenMode = view.findViewById(R.id.sc_screen_mode)
 
         tvVolumePickup = view.findViewById(R.id.et_act_platformserve__volumepickup)
         recyclerView = view.findViewById<RecyclerView?>(R.id.rv_activity_platform_serve).apply {
@@ -83,40 +82,41 @@ class PServeF :
         acbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
         acsbVolumePickup = view.findViewById(R.id.acsb_activity_platform_serve__seekbar)
 
-        scPServeSimplifyMode?.isEnabled = false
-        scPServeSimplifyMode?.isClickable = false
+        scScreenMode?.isEnabled = false
+        scScreenMode?.isClickable = false
 //        TODO::: 15.08.2022 18:14 CHECK ABOVE THEN DELETE THIS IF NECESSARY
 //        scPServeSimplifyMode?.isFocusable = false
-        scPServeSimplifyMode?.setOnClickListener {
+        scScreenMode?.setOnClickListener {
             val newScreenMode = !paramS().lastScreenMode
             paramS().lastScreenMode = newScreenMode
-            navigateMain(R.id.PServeByTypes, plId)
-        }
-
-        tvContainersProgress?.text =
-            "№${platform.srpId} / ${platform.containers.size} конт."
-
-        btnCompleteTask?.setOnClickListener {
-            navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
-        }
-
-        actvAddress?.text = "${platform.address}"
-        if (platform.containers.size >= 7 ) {
-            actvAddress?.apply {
-                setOnClickListener { view ->
-                    maxLines = if (maxLines < 3) {
-                        3
-                    } else {
-                        1
-                    }
-                }
-            }
-        } else {
-            actvAddress?.maxLines = 3
+            navigateMain(R.id.PServeByTypesF, plId)
         }
 
         vm.mPlatformEntity.observe(viewLifecycleOwner) { platform ->
             if(platform != null) {
+
+                tvContainersProgress?.text =
+                    "№${platform.srpId} / ${platform.containers.size} конт."
+
+                btnCompleteTask?.setOnClickListener {
+                    navigateMain(R.id.PhotoAfterMediaF, platform.platformId!!)
+                }
+
+                actvAddress?.text = "${platform.address}"
+                if (platform.containers.size >= 7 ) {
+                    actvAddress?.apply {
+                        setOnClickListener { view ->
+                            maxLines = if (maxLines < 3) {
+                                3
+                            } else {
+                                1
+                            }
+                        }
+                    }
+                } else {
+                    actvAddress?.maxLines = 3
+                }
+
                 mContainerAdapter = PServeAdapter(
                     getAct(),
                     this,
@@ -212,6 +212,8 @@ class PServeF :
                 })
             }
         }
+
+        vm.getPlatformEntity(plId)
     }
 
 
@@ -243,9 +245,6 @@ class PServeF :
     }
 
     private fun gotoMakePhotoForPickup(newVolume: Double) {
-        if(vm.mPlatformEntity.value == null) {
-            return
-        }
         navigateMain(R.id.PhotoPickupMediaF, vm.mPlatformEntity.value!!.platformId, newVolume.toString())
     }
 

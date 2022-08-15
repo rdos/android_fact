@@ -34,7 +34,7 @@ class WalkthroughStepAF : AFragment() {
         }
 
         view.findViewById<AppCompatButton>(R.id.acb_f_pserve_walkthrough_step_a__next).setOnClickListener {
-            findNavController().navigate(R.id.WalkthroughStepBF)
+//            findNavController().navigate(R.id.WalkthroughStepBF)
         }
     }
 }

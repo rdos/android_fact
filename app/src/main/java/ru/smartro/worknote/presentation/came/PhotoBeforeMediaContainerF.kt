@@ -37,7 +37,7 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!,"EXTENDED")
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 

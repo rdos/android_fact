@@ -39,14 +39,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="id/screen_mode_label"
+                android:text="Списком"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textColor="@color/white"
                 android:textSize="16sp"/>
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/sc_pserve_symplify_mode"
+                android:id="@+id/sc_screen_mode"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
