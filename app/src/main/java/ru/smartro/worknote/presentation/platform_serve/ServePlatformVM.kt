@@ -16,11 +16,14 @@ import ru.smartro.worknote.Inull
 import ru.smartro.worknote.LoG
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.ContainerEntity
+import ru.smartro.worknote.work.GroupByContainerClientEntity
+import ru.smartro.worknote.work.GroupByContainerClientTypeEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 class ServePlatformVM(app: Application) : AViewModel(app) {
 
-//    private var mContainerSGroupBy: MutableList<ContainerGroupByEntity>? = null
+    private var mGroupByContainerClientEntity: MutableList<GroupByContainerClientEntity>? = null
+    private var mGroupByContainerClientTypeEntity: MutableList<GroupByContainerClientTypeEntity>? = null
     private var mPlatformEntity: PlatformEntity? = null
     private var mPlatformId: Int = Inull
     private val mPlatformMutableLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
@@ -65,7 +68,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         }
         mPlatformId = platformEntity.platformId
         mPlatformEntity = null
-//        mContainerSGroupBy = null
+        mGroupByContainerClientEntity = null
     }
 
     fun getContainerS(): RealmList<ContainerEntity> {
@@ -86,13 +89,32 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
 
-//    fun getContainerSGroupBy(): MutableList<ContainerGroupByEntity> {
-//        mContainerSGroupBy = database.loadContainerGroupBy(mPlatformId)
-//        if (mContainerSGroupBy == null) {
-//            mContainerSGroupBy = database.createContainerGroupBy(mPlatformId)
-//        }
-//        return mContainerSGroupBy!!
-//    }
+    fun getGroupByContainerClientEntity(): MutableList<GroupByContainerClientEntity> {
+        mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
+        if (mGroupByContainerClientEntity == null) {
+            database.createGroupByContainerEntityS(mPlatformId)
+            mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
+        }
+        if (mGroupByContainerClientEntity == null) {
+            LoG.error("mGroupByContainerClientEntity == null")
+            mGroupByContainerClientEntity = mutableListOf(GroupByContainerClientEntity.createEmpty())
+        }
+        return mGroupByContainerClientEntity!!
+    }
+
+
+    fun getGroupByContainerClientTypeEntity(): MutableList<GroupByContainerClientTypeEntity> {
+        mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId)
+        if (mGroupByContainerClientTypeEntity == null) {
+            database.createGroupByContainerEntityS(mPlatformId)
+            mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId)
+        }
+        if (mGroupByContainerClientTypeEntity == null) {
+            LoG.error("mGroupByContainerClientTypeEntity == null")
+            mGroupByContainerClientTypeEntity = mutableListOf(GroupByContainerClientTypeEntity.createEmpty())
+        }
+        return mGroupByContainerClientTypeEntity!!
+    }
 
 
     fun getFailReasonS(): List<String> {

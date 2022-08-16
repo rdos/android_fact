@@ -62,6 +62,7 @@ class PServeF :
         return R.layout.f_pserve
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -88,15 +89,13 @@ class PServeF :
         acsbVolumePickup = view.findViewById(R.id.acsb_activity_platform_serve__seekbar)
 
 
-
-
-
 //        TODO::: 15.08.2022 18:14 CHECK ABOVE THEN DELETE THIS IF NECESSARY
 //        scPServeSimplifyMode?.isFocusable = false
         scScreenMode?.setOnClickListener {
             val newScreenMode = !paramS().lastScreenMode
             paramS().lastScreenMode = newScreenMode
             navigateMain(R.id.PServeByTypesF, plId)
+
         }
         
 

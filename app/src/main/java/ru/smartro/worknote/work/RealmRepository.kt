@@ -1098,8 +1098,18 @@ class RealmRepository(private val p_realm: Realm) {
 
     fun loadGroupByContainerClient(platformId: Int): MutableList<GroupByContainerClientEntity>? {
         var result: MutableList<GroupByContainerClientEntity>?  = null
-        val realmResult =getQueryGroupByContainerClient(platformId)
-                .findAll()
+        val realmResult =getQueryGroupByContainerClient(platformId).findAll()
+        LoG.trace("realmResult=${realmResult.count()}")
+        if (realmResult.isNotEmpty()) {
+            result = p_realm.copyFromRealm(realmResult)
+        }
+        LoG.trace("result=${result?.count()}")
+        return result
+    }
+
+    fun loadGroupByContainerClientTypeEntity(platformId: Int): MutableList<GroupByContainerClientTypeEntity>? {
+        var result: MutableList<GroupByContainerClientTypeEntity>?  = null
+        val realmResult =getQueryGroupByContainerClientType(platformId).findAll()
         LoG.trace("realmResult=${realmResult.count()}")
         if (realmResult.isNotEmpty()) {
             result = p_realm.copyFromRealm(realmResult)
