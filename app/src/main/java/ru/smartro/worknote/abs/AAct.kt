@@ -3,10 +3,13 @@ package ru.smartro.worknote.abs
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
+import ru.smartro.worknote.andPOintD.IActTooltip
 
 import ru.smartro.worknote.presentation.ac.StartAct
 import java.lang.Exception
@@ -16,8 +19,12 @@ import java.lang.Exception
 //        } catch (e: Exception) {
 //            Sentry.captureException(e)
 //        }
-
 abstract class AAct : AppCompatActivity() {
+//abstract class AAct : AppCompatActivity(), IActTooltip {
+//    override fun onNewfromAFragment() {
+//
+//    }
+
     protected fun AppliCation() : App {
         return App.getAppliCation()
     }

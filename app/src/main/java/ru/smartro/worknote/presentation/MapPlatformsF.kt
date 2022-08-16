@@ -1,26 +1,18 @@
 package ru.smartro.worknote.presentation
 
 import android.app.AlertDialog
+import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.view.LayoutInflater
-import android.view.View
-import android.view.Gravity
-import android.view.Window
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.appcompat.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -39,13 +31,8 @@ import com.yandex.mapkit.directions.driving.DrivingRouter
 import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
-import com.yandex.mapkit.map.InertiaMoveListener
+import com.yandex.mapkit.map.*
 import com.yandex.mapkit.map.Map
-import com.yandex.mapkit.map.PlacemarkMapObject
-import com.yandex.mapkit.map.MapObject
-import com.yandex.mapkit.map.CameraPosition
-import com.yandex.mapkit.map.MapObjectCollection
-import com.yandex.mapkit.map.MapObjectTapListener
 import com.yandex.mapkit.mapview.MapView
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
@@ -66,7 +53,11 @@ import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.platform_serve.VMPlatformServeShared
 import ru.smartro.worknote.utils.getActivityProperly
-import ru.smartro.worknote.work.*
+import ru.smartro.worknote.work.ConfigName
+import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.Status
+import ru.smartro.worknote.work.WorkOrderEntity
+import ru.smartro.worknote.work.net.CancelWayReasonEntity
 
 class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
@@ -165,6 +156,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
 //
 //        log("Location updated")
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (!MyUtil.hasPermissions(getAct(), PERMISSIONS)) {
@@ -195,7 +187,8 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
 
         initBottomBehavior(view)
 
-        userLocationLayer = MapKitFactory.getInstance().createUserLocationLayer(mMapMyYandex.mapWindow)
+        userLocationLayer = MapKitFactory.getInstance()
+            .createUserLocationLayer(mMapMyYandex.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = true
         userLocationLayer.isAutoZoomEnabled = true
@@ -228,7 +221,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         val acibGotoLogActMapAPIB = view.findViewById<AppCompatImageButton>(R.id.goto_log__f_map__apib)
         acibGotoLogActMapAPIB.setOnClickListener {
             navigateMain(R.id.JournalChatFragment, null)
-        //            startActivity(Intent(getAct(), JournalChatAct::class.java))
+            //            startActivity(Intent(getAct(), JournalChatAct::class.java))
         }
 
         mDrivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
@@ -242,12 +235,11 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
             }
 
 
-
         }
-        LoG.warn( "r_dos/onStart.before")
+        LoG.warn("r_dos/onStart.before")
         mMapMyYandex.onStart()
         MapKitFactory.getInstance().onStart()
-        LoG.warn( "r_dos/onStart.after")
+        LoG.warn("r_dos/onStart.after")
         //todo:  R_dos!!! modeSyNChrON_off(false)
         paramS().isModeSYNChrONize = true
         AppliCation().startWorkER()
@@ -281,20 +273,20 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
     }
 
     private fun onRefreshData() {
-        LoG.warn( "onRefreshData.init")
+        LoG.warn("onRefreshData.init")
         mWorkOrderS = getActualWorkOrderS(true)
         mPlatformS = getActualPlatformS(true)
         val platformSWithQueryText = onRefreshBottomBehavior(mPlatformS!!)
         onRefreshMap(platformSWithQueryText)
         setInfoData()
-        LoG.warn( "onRefreshData.end")
+        LoG.warn("onRefreshData.end")
     }
 
     private fun setInfoData() {
         val workOrders = getActualWorkOrderS()
         var platformCnt = 0
         var platformProgress = 0
-        for(workOrder in workOrders) {
+        for (workOrder in workOrders) {
             platformCnt += workOrder.cnt_platform
             platformProgress += workOrder.cnt_platform - workOrder.cnt_platform_status_new
         }
@@ -364,7 +356,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
     }
 
     private fun saveFailReason() {
-        LoG.info( "saveFailReason.before")
+        LoG.info("saveFailReason.before")
         viewModel.networkDat.getFailReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
@@ -398,27 +390,28 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
     private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {
         log("acceptProgress.before")
-        viewModel.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec())).observe(getAct()) { result ->
-            resultStatusList.add(result.status)
-            getAct().modeSyNChrON_off(false)
-            when (result.status) {
-                Status.SUCCESS -> {
-                    logSentry("acceptProgress Status.SUCCESS ")
-                    viewModel.baseDat.setProgressData(workOrder)
-                    getAct().modeSyNChrON_off(false)
+        viewModel.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec()))
+            .observe(getAct()) { result ->
+                resultStatusList.add(result.status)
+                getAct().modeSyNChrON_off(false)
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        logSentry("acceptProgress Status.SUCCESS ")
+                        viewModel.baseDat.setProgressData(workOrder)
+                        getAct().modeSyNChrON_off(false)
+                        hideProgress()
+                    }
+                    else -> {
+                        logSentry("acceptProgress Status.ERROR")
+                        toast(result.msg)
+                        viewModel.baseDat.setNextProcessDate(workOrder)
+                    }
+                }
+                if (workOrderSize == resultStatusList.size) {
+                    onRefreshData()
                     hideProgress()
                 }
-                else -> {
-                    logSentry("acceptProgress Status.ERROR")
-                    toast(result.msg)
-                    viewModel.baseDat.setNextProcessDate(workOrder)
-                }
             }
-            if (workOrderSize == resultStatusList.size) {
-                onRefreshData()
-                hideProgress()
-            }
-        }
 
     }
 
@@ -436,7 +429,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
             timeBeforeInSec = lastSynchroTimeInSec + m30MinutesInSec
             nextSentPlatforms = viewModel.baseDat.findPlatforms30min()
-            log( "SYNCworkER PLATFORMS IN LAST 30 min")
+            log("SYNCworkER PLATFORMS IN LAST 30 min")
             next(nextSentPlatforms, timeBeforeInSec)
         }
         if (nextSentPlatforms.isEmpty()) {
@@ -464,23 +457,25 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
                     gps.PointTOBaseData(),
                     deviceId,
                     gps.PointTimeToLastKnowTime_SRV(),
-                    nextSentPlatforms)
+                    nextSentPlatforms
+                )
 
-                viewModel.networkDat.sendLastPlatforms(synchronizeBody).observe(getAct()) { result ->
-                    hideProgress()
-                    when (result.status) {
-                        Status.SUCCESS -> {
-                            paramS().lastSynchroTimeInSec = timeBeforeInSec
-                            gotoSynchronize()
-                        }
-                        Status.ERROR -> {
-                            toast(result.msg)
-                        }
-                        Status.NETWORK -> {
-                            toast("Проблемы с интернетом")
+                viewModel.networkDat.sendLastPlatforms(synchronizeBody)
+                    .observe(getAct()) { result ->
+                        hideProgress()
+                        when (result.status) {
+                            Status.SUCCESS -> {
+                                paramS().lastSynchroTimeInSec = timeBeforeInSec
+                                gotoSynchronize()
+                            }
+                            Status.ERROR -> {
+                                toast(result.msg)
+                            }
+                            Status.NETWORK -> {
+                                toast("Проблемы с интернетом")
+                            }
                         }
                     }
-                }
             }
 
         } else {
@@ -677,7 +672,8 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
     private fun moveCameraTo(pont: PoinT) {
         mMapMyYandex.map.move(
             CameraPosition(pont, 15.0f, 0.0f, 0.0f),
-            Animation(Animation.Type.SMOOTH, 1F), null)
+            Animation(Animation.Type.SMOOTH, 1F), null
+        )
     }
 
 //    override fun onLocationStatusUpdated(locationStatus: LocationStatus) {
@@ -726,7 +722,8 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         intent.putExtra("mIsServeAgain", false)
 
         val pendingIntent = getActivityProperly(getAct(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
-        AppliCation().showNotificationForce(pendingIntent,
+        AppliCation().showNotificationForce(
+            pendingIntent,
             "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",
             "Начать обслуживание ",
@@ -800,11 +797,11 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         val clickedPlatform = plaformS.find {
             it.coordLat == coord.latitude && it.coordLong == coord.longitude
         }
-        if(clickedPlatform == null) {
+        if (clickedPlatform == null) {
             toast("Платформа не найдена")
             return false
         }
-        LoG.warn( "onMapObjectTap")
+        LoG.warn("onMapObjectTap")
         val platformClickedDtlDialog = MapPlatformClickedDtlF(clickedPlatform, coord, this)
         platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
 
@@ -816,7 +813,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
     }
 
 
-    private fun getIconViewProvider (_context: Context, _platform: PlatformEntity): ViewProvider {
+    private fun getIconViewProvider(_context: Context, _platform: PlatformEntity): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
         iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconFromStatus()))
@@ -862,7 +859,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
 
     /** РИСУЕМ МАШИНКУ, нормальную ic_truck_icon.png*/
     override fun onObjectAdded(userLocationView: UserLocationView) {
-        userLocationView.accuracyCircle.isVisible =true
+        userLocationView.accuracyCircle.isVisible = true
 //        userLocationLayer.setObjectListener(this)
     }
 
@@ -897,9 +894,9 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
 
     override fun onResume() {
         super.onResume()
-        LoG.error( "r_dos/onResume.before")
+        LoG.error("r_dos/onResume.before")
         onRefreshData()
-        LoG.error( "r_dos/onResume.after")
+        LoG.error("r_dos/onResume.after")
     }
 
     override fun onStop() {
@@ -920,7 +917,8 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InfoViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.f_map__workorder_info__rv_item, parent, false)
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.f_map__workorder_info__rv_item, parent, false)
             return InfoViewHolder(view)
         }
 

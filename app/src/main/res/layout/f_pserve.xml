@@ -45,12 +45,13 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"/>
 
-            <androidx.appcompat.widget.SwitchCompat
+            <ru.smartro.worknote.andPOintD.SmartROSwitch
                 android:id="@+id/sc_screen_mode"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                app:tooltipNext="acb_f_aphoto__goto_next"
+                android:tooltipText="@string/walkhrough_step_b_a"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -148,7 +149,7 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <androidx.appcompat.widget.AppCompatButton
+ <ru.smartro.worknote.andPOintD.SmartROButton
         android:id="@+id/acb_activity_platform_serve__complete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -158,6 +159,6 @@
         android:layout_marginBottom="@dimen/margin_default"
         android:background="@drawable/bg_button"
         android:text="Завершить"
+        android:tooltipText="Какой-то текст про кнопку Завершить"
         android:textColor="@color/white" />
-
 </androidx.appcompat.widget.LinearLayoutCompat>

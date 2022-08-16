@@ -21,7 +21,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.log
 
 
-class ContainerServeF : AbstractBottomSheetF() {
+class PServeContainerServeF : AbstractBottomSheetF() {
 
     private val viewModel: VMPServe by viewModels(ownerProducer = { requireParentFragment() })
     private var volume: Double? = null

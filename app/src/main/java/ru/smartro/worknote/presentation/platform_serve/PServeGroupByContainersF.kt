@@ -12,11 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.log
+import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.platform_serve.adapters.PServeGroupedByClientsAdapter
 import ru.smartro.worknote.toast
 
 
-class PServeGroupByContainerSF : AFragment() {
+class PServeGroupByContainersF : AFragment() {
     private var mBackPressedCnt: Int = 2
 
     private var btnCompleteTask: AppCompatButton? = null
@@ -61,8 +62,8 @@ class PServeGroupByContainerSF : AFragment() {
             }
         })
 
-//        val rvCurrentTask =
-        view.findViewById<RecyclerView>(R.id.rv_main).apply {
+        val rvCurrentTask = view.findViewById<RecyclerView>(R.id.rv_main)
+        rvCurrentTask.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = adapterCurrentTask
         }
@@ -106,6 +107,28 @@ class PServeGroupByContainerSF : AFragment() {
         }
 
         viewModel.getPlatformEntity(plId)
+
+        if (getAct() is MainAct) {
+            (getAct() as MainAct).setSpecialProcessingForRecycler(rvCurrentTask)
+        }
+
+
+
+
+//        rvCurrentTask.viewTreeObserver
+//            .addOnGlobalLayoutListener(
+//                object : OnGlobalLayoutListener {
+//                    override fun onGlobalLayout() {
+//                        // At this point the layout is complete and the
+//                        // dimensions of recyclerView and any child views
+//                        if (getAct() is PServeAct) {
+//                            (getAct() as PServeAct).onNewfromAFragment()
+//                        }
+//                        // are known.
+//                        rvCurrentTask.viewTreeObserver
+//                            .removeOnGlobalLayoutListener(this)
+//                    }
+//                })
     }
 
     override fun onBackPressed() {

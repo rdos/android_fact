@@ -335,7 +335,7 @@ open class PlatformEntity(
     var orderTimeAlert: String? = null,
 
     @Expose
-    var servedContainers:  String = "почему поле уходи???????????????? Expose"
+    var served11Containers:  String = "почему поле уходи???????????????? Expose",
     var serveModeCodeName: String? = null,
 
 ) : Serializable, RealmObject() {
