@@ -260,11 +260,14 @@ open class KGOEntity(
 
     }
 
-open class ServedContainers(
+
+open class ContainerGroupByEntity(
+    var platformId: Int = Inull,
     var typeName: String = Snull,
-    var client: String = Snull,
-    var servedCount: Int = Inull
-): Serializable, RealmObject()
+    var client: String = "Клиент не указан",
+    var containers: RealmList<ContainerEntity> = RealmList(),
+) : Serializable, RealmObject()
+
 
 open class PlatformEntity(
     var workOrderId: Int = Inull,
@@ -332,7 +335,8 @@ open class PlatformEntity(
     var orderTimeAlert: String? = null,
 
     @Expose
-    var servedContainers: RealmList<ServedContainers> = RealmList()
+    var servedContainers:  String = "почему поле уходи???????????????? Expose"
+    var serveModeCodeName: String? = null,
 
 ) : Serializable, RealmObject() {
 
@@ -641,7 +645,6 @@ open class PlatformEntity(
 //        return result
 //    }
 }
-
 
 
 open class UnloadEntity(
