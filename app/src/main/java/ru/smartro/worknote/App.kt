@@ -5,11 +5,19 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -53,6 +61,8 @@ import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
+import ru.smartro.worknote.work.ConfigName
+import ru.smartro.worknote.work.ac.AirplanemodeIntentService
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -165,6 +175,21 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
+
+        val configEntity = getDB().loadConfig(ConfigName.RUNAPP_CNT)
+        configEntity.cntPlusOne()
+        getDB().saveConfig(configEntity)
+
+        registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
+
+// todo: https://developer.android.com/training/monitoring-device-state/connectivity-status-type
+//        val networkRequest = NetworkRequest.Builder()
+//            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+//            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+//            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+//            .build()
+//        val connectivityManager = getSystemService(ConnectivityManager::class.java) as ConnectivityManager
+//        connectivityManager.requestNetwork(networkRequest, networkCallback)
     }
 
     private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){
@@ -298,7 +323,7 @@ class App : AApp() {
     //Реплику: gjпох
     public fun getDB(): RealmRepository {
         if(mDB == null) {
-            initRealm()
+//            initRealm()
             mDB = RealmRepository(Realm.getDefaultInstance())
         }
       return mDB!!
@@ -557,8 +582,23 @@ class App : AApp() {
         }
         return App.getAppParaMS().isModeDEVEL
     }
+    private val receiver by lazy { getAirplaneModeBroadcastReceiver() }
 
-
+    private fun getAirplaneModeBroadcastReceiver(): BroadcastReceiver {
+        return object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent?) {
+                if (intent?.action == Intent.ACTION_AIRPLANE_MODE_CHANGED) {
+                    val isAirplaneModeEnabled = intent.getBooleanExtra("state", false)
+//                    textView.text = isAirplaneModeEnabled.toString()
+                    log("isAirplaneModeEnabled=${isAirplaneModeEnabled}")
+                    if (isAirplaneModeEnabled) {
+                        val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
+                        context.startService(serviceIntent)
+                    }
+                }
+            }
+        }
+    }
 }
 
 const val TIME_OUT = 240000L

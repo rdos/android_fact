@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.smartro.worknote">
 
+    <!--todo:https://developer.android.com/training/monitoring-device-state/connectivity-status-type-->
+    <!--<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -46,6 +49,14 @@
             >
         </activity>
 
+        <!-- Voice Recognition Samples -->
+        <!--отказ-->
+        <!--<activity android:name=".app.VoiceRecognition" android:label="@string/voice_recognition">-->
+        <!--    <intent-filter>-->
+        <!--        <action android:name="android.intent.action.MAIN" />-->
+        <!--        <category android:name="android.intent.category.SAMPLE_CODE" />-->
+        <!--    </intent-filter>-->
+        <!--</activity>-->
         <!-- FilterProvider para conseguirmos compartilhar fotos com outros apps -->
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -56,6 +67,22 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <receiver android:exported="true"
+            android:enabled="true"
+            android:name=".work.ac.BootBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:directBootAware="true"
+            android:name=".work.ac.BootIntentService"
+            android:enabled="true" />
+        <service
+            android:directBootAware="true"
+            android:name=".work.ac.AirplanemodeIntentService"
+            android:enabled="true" />
 
         <meta-data
             android:name="io.sentry.dsn"
