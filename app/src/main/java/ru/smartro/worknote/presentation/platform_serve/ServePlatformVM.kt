@@ -71,8 +71,12 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         mGroupByContainerClientEntity = null
     }
 
-    fun getContainerS(): RealmList<ContainerEntity> {
-        val result =  this.getPlatformEntity().containers
+    fun getContainerS(): List<ContainerEntity> {
+        var result =  this.getPlatformEntity().containers.toList()
+
+        result = result.sortedBy {
+            it.isActiveToday == false
+        }
         LoG.trace("result=${result.count()}")
         return result
     }
@@ -89,7 +93,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
 
-    fun getGroupByContainerClientEntity(): MutableList<GroupByContainerClientEntity> {
+    fun getGroupByContainerClientS(): MutableList<GroupByContainerClientEntity> {
         mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
         if (mGroupByContainerClientEntity == null) {
             database.createGroupByContainerEntityS(mPlatformId)
@@ -103,7 +107,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
 
-    fun getGroupByContainerClientTypeEntity(): MutableList<GroupByContainerClientTypeEntity> {
+    fun getGroupByContainerClientTypeS(): MutableList<GroupByContainerClientTypeEntity> {
         mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId)
         if (mGroupByContainerClientTypeEntity == null) {
             database.createGroupByContainerEntityS(mPlatformId)
@@ -141,9 +145,8 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     }
 
-
     fun updatePlatformStatusUnfinished() {
-        database.updatePlatformStatusUnfinished(mPlatformEntityLiveData.value!!.platformId!!)
+        database.updatePlatformStatusUnfinished(getPlatformId())
 //        getPlatformEntity(mPlatformEntityLiveData.value!!.platformId!!)
     }
 

@@ -282,6 +282,12 @@ open class GroupByContainerClientTypeEntity(
     var typeName: String = Snull,
     var containers: RealmList<ContainerEntity> = RealmList(),
 ) : Serializable, RealmObject() {
+    fun getTypeCount(): String {
+        val result = containers.size.toString()
+        LoG.trace("result=${result}")
+        return result
+    }
+
     companion object {
         // TODO: !!!
         fun createEmpty(): GroupByContainerClientTypeEntity {
@@ -687,6 +693,7 @@ enum class ConfigName(val displayName: String) {
     AIRPLANEMODE_CNT("AIRPLANEMODE_CNT"),
     NOINTERNET_CNT("NOINTERNET_CNT"),
     MAPACTDESTROY_CNT("MAPACTDESTROY_CNT"),
+    USER_WORK_SERVE_MODE("USER_WORK_SERVE_MODE"),
 }
 
 open class ConfigEntity(

@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.android.LogcatAppender
@@ -90,9 +91,9 @@ class App : AApp() {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
-    object ScreenMode {
-        const val DEFAULT = false
-        const val BY_TYPES = true
+    object ServeMode {
+        const val PServeF = "PServeF"
+        const val PServeGroupByContainersF = "PServeGroupByContainersF"
     }
 
     fun gps(): PoinT {
@@ -219,6 +220,7 @@ class App : AApp() {
         encoder1.start()
         val fileAppender = FileAppender<ILoggingEvent>()
         fileAppender.context = lc
+
         val file = getF("logs", "${MyUtil.currentTime()}.log")
         fileAppender.file = file.absolutePath
         fileAppender.encoder = encoder1
@@ -232,6 +234,7 @@ class App : AApp() {
         // add the newly created appenders to the root logger;
         // qualify Logger to disambiguate from org.slf4j.Logger
         val root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+        root.level = Level.TRACE
         root.addAppender(fileAppender)
         root.addAppender(logcatAppender)
     }

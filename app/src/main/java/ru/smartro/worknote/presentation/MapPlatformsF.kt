@@ -601,9 +601,9 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
     }
 
     override fun startPlatformService(item: PlatformEntity) {
+        viewModel.setPlatformEntity(item)
         if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
             navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
-            viewModel.setPlatformEntity(item)
         } else {
             showAlertPlatformByPoint().let { view ->
                 val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)

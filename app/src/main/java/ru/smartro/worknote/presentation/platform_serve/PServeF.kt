@@ -1,54 +1,52 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.app.Application
+import android.app.Activity
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import ru.smartro.worknote.LoG
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
-import ru.smartro.worknote.log
-import ru.smartro.worknote.toast
+import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
+import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ContainerEntity
-import ru.smartro.worknote.work.PlatformEntity
 
 
 class PServeF :
-    AFragment(),
-    PServeAdapter.ContainerPointClickListener {
+    AFragment(){
 
     private var mBackPressedCnt: Int = 2
 
     private val THUMB_INACTIVE = "Inactive"
     private val THUMB_ACTIVE = "Active"
-    private lateinit var mContainerAdapter: PServeAdapter
     private var mVolumePickup: Double? = null
     private var tvVolumePickup: TextView? = null
     private var acbKGORemaining: AppCompatButton? = null
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
-    private var recyclerView: RecyclerView? = null
+    private var rvContainers: RecyclerView? = null
     private var acsbVolumePickup: SeekBar? = null
 
     private var btnCompleteTask: AppCompatButton? = null
@@ -80,7 +78,7 @@ class PServeF :
         scScreenMode = view.findViewById(R.id.sc_screen_mode)
 
         tvVolumePickup = view.findViewById(R.id.et_act_platformserve__volumepickup)
-        recyclerView = view.findViewById<RecyclerView?>(R.id.rv_activity_platform_serve).apply {
+        rvContainers = view.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
             recycledViewPool.setMaxRecycledViews(0, 0)
         }
         acbProblem = view.findViewById(R.id.acb_activity_platform_serve__problem)
@@ -92,10 +90,11 @@ class PServeF :
 //        TODO::: 15.08.2022 18:14 CHECK ABOVE THEN DELETE THIS IF NECESSARY
 //        scPServeSimplifyMode?.isFocusable = false
         scScreenMode?.setOnClickListener {
-            val newScreenMode = !paramS().lastScreenMode
-            paramS().lastScreenMode = newScreenMode
-            navigateMain(R.id.PServeByTypesF, plId)
+            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE)
+            configEntity.value = App.ServeMode.PServeGroupByContainersF
+            vm.database.saveConfig(configEntity)
 
+            navigateMain(R.id.PServeByTypesF, plId)
         }
         
 
@@ -122,12 +121,10 @@ class PServeF :
             actvAddress?.maxLines = 3
         }
 
-        mContainerAdapter = PServeAdapter(
-            getAct(),
-            this,
-            platformEntity.containers.sortedBy { !it.isActiveToday }
-        )
-        recyclerView?.adapter = mContainerAdapter
+
+
+        val containersAdapter = PServeContainersAdapter(vm.getContainerS())
+        rvContainers?.adapter = containersAdapter
 
         if (platformEntity.failureMedia.size > 0) {
             acbProblem?.let { setUseButtonStyleBackgroundRed(it) }
@@ -289,9 +286,6 @@ class PServeF :
         appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(getAct(), R.drawable.bg_button_red__usebutton))
     }
 
-    override fun startContainerService(item: ContainerEntity) {
-        navigateMain(R.id.ContainerServeBottomDialog, item.containerId!!, vm.getPlatformId().toString())
-    }
 
     override fun onBackPressed() {
         mBackPressedCnt--
@@ -304,6 +298,94 @@ class PServeF :
         }
     }
 
+
+    /********************************************************************************************************************
+     ********************************************************************************************************************
+     ********************************************************************************************************************
+     * **************************************VIEW MODEL
+     */
+//
+   inner class PServeContainersAdapter(
+        private val containers: List<ContainerEntity>,
+    ) : RecyclerView.Adapter<PServeContainersAdapter.OwnerViewHolder>() {
+        // TODO: 22.10.2021  item_container_adapter !!!
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_adapter, parent, false)
+            return OwnerViewHolder(view)
+        }
+
+
+        override fun getItemCount(): Int {
+            LoG.debug("${containers.size}")
+            return containers.size
+        }
+
+        override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
+            val container = containers[position]
+
+            holder.itemView.findViewById<TextView>(R.id.choose_title).text = container.number
+            holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__type_name).text = container.typeName
+            // TODO: 25.10.2021 add getString() + format
+            holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__constructiveVolume).text = container.constructiveVolume.toStr("м³")
+            holder.itemView.setOnClickListener {
+                if(container.isActiveToday && container.volume != null) {
+                    navigateMain(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
+                    return@setOnClickListener
+                }
+                showTakeInactiveContainerAlert(getAct()) {
+                    navigateMain(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
+                }
+                LoG.info("onBindViewHolder: true")
+            }
+            val tvVolume = holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__volume)
+            tvVolume.text =  "${container.getVolumeInPercent()}%"
+            //2&
+            tvVolume.setTextColor(container.getVolumePercentColor(holder.itemView.context))
+
+            if(!container.isActiveToday && container.volume == null) {
+                holder.itemView.findViewById<TextView>(R.id.choose_title).setTextColor(ContextCompat.getColor(getAct(), R.color.light_gray))
+                holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__type_name).setTextColor(ContextCompat.getColor(getAct(), R.color.light_gray))
+                holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__constructiveVolume).setTextColor(ContextCompat.getColor(getAct(), R.color.light_gray))
+                tvVolume.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.light_gray))
+            }
+
+            if (container.isFailureNotEmpty()) {
+                holder.itemView.findViewById<CardView>(R.id.choose_cardview).setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red_cool))
+            }
+
+            if(container.volume != null && !container.isFailureNotEmpty()) {
+                holder.itemView.findViewById<CardView>(R.id.choose_cardview).setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.green_cool))
+            }
+        }
+
+        private fun showTakeInactiveContainerAlert(context: Context, next: () -> Any) {
+            try {
+                lateinit var alertDiaLoG: AlertDialog
+                val builder = AlertDialog.Builder(context)
+                val view = (context as Activity).layoutInflater.inflate(R.layout.alert_take_inactive_container, null)
+                view.findViewById<AppCompatButton>(R.id.acb_alert_inactive_container___accept).setOnClickListener {
+                    next()
+                    alertDiaLoG.dismiss()
+                }
+                view.findViewById<AppCompatButton>(R.id.acb_alert_inactive_container___decline).setOnClickListener {
+                    alertDiaLoG.dismiss()
+                }
+                builder.setView(view)
+                alertDiaLoG = builder.create()
+                alertDiaLoG.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                alertDiaLoG.show()
+            } catch (e: Exception) {
+                LoG.error( e.stackTraceToString())
+            }
+        }
+
+       inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+
+    }
+    interface ContainerPointClickListener {
+        fun startContainerService(item: ContainerEntity)
+    }
 
     /********************************************************************************************************************
      ********************************************************************************************************************

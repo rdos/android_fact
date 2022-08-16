@@ -45,8 +45,9 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"/>
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/sc_pserve_symplify_mode"
+            <ru.smartro.worknote.andPOintD.SmartROSwitch
+                android:id="@+id/sros_f_pserve_groupby__mode"
+                android:enabled="true"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -91,7 +92,7 @@
         android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1"
         tools:itemCount="1"
-        tools:listitem="@layout/f_pserve_by_types__rv_clientcluster"/>
+        tools:listitem="@layout/f_pserve_groupby_container_client__rv_item"/>
 
 
     <androidx.appcompat.widget.AppCompatButton
