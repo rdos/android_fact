@@ -915,6 +915,10 @@ class MapF: AFragment() , MapActBottomBehaviorAdapter.PlatformClickListener,
         super.onDestroy()
         mMapMyYandex.onStop()
         MapKitFactory.getInstance().onStop()
+        val configEntity = viewModel.baseDat.loadConfig(ConfigName.MAPACTDESTROY_CNT)
+        configEntity.cntPlusOne()
+        viewModel.baseDat.saveConfig(configEntity)
+        viewModel.baseDat.close()
     }
 
     inner class InfoAdapter(private var p_workOrderS: List<WorkOrderEntity>) :

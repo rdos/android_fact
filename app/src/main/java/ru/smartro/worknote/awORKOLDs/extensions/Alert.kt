@@ -16,8 +16,8 @@ import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.abs.AbstractDialog
 
-private lateinit var loadingDialog: AlertDialog
-private lateinit var mCustomDialog: AlertDialog
+private var loadingDialog: AlertDialog? = null
+private var mCustomDialog: AlertDialog? = null
 private val TAG = "Alert.kt"
 private val log = LoggerFactory.getLogger("ALERT")
 
@@ -35,7 +35,7 @@ fun AbstractDialog.hideDialog() {
 
 private fun hideCustomDialog() {
     try {
-        mCustomDialog.dismiss()
+        mCustomDialog?.dismiss()
     } catch (ex: Exception) {
         // TODO: 02.11.2021
         log.error("hideCustomDialog", ex)
@@ -46,8 +46,8 @@ fun showCustomDialog(builder: AlertDialog.Builder) {
     log.info( "before")
     try {
         mCustomDialog = builder.create()
-        mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        mCustomDialog.show()
+        mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        mCustomDialog?.show()
     }  catch (e: Exception) {
         // TODO: 02.11.2021
         log.error("showCustomDialog", e)
@@ -82,8 +82,8 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
     log.info( "before")
     try {
         loadingDialog = builder.create()
-        loadingDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        loadingDialog.show()
+        loadingDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        loadingDialog?.show()
     }  catch (e: Exception) {
         // TODO: 02.11.2021
         log.error("showLoadingDialog", e)
@@ -95,8 +95,8 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
 fun AppCompatActivity.hideProgress() {
     try {
         LoG.warn( "hideProgress")
-        if (loadingDialog.isShowing) {
-            loadingDialog.dismiss()
+        if (loadingDialog?.isShowing == true) {
+            loadingDialog?.dismiss()
         }
     } catch (ex: Exception) {
         // TODO: 02.11.2021
@@ -162,10 +162,10 @@ fun AFragment.warningClearNavigator(title: String): View {
     mCustomDialog = builder.create()
     view.findViewById<TextView>(R.id.title_tv).text = title
     view.findViewById<Button>(R.id.dismiss_btn).setOnClickListener {
-        mCustomDialog.dismiss()
+        mCustomDialog?.dismiss()
     }
-    mCustomDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    mCustomDialog.show()
+    mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog?.show()
     return view
 }
 

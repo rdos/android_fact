@@ -1,5 +1,6 @@
 package ru.smartro.worknote
 
+//import ru.smartro.worknote.utils.DispatcherInfoMessageTypes
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -7,14 +8,13 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import io.realm.Realm
-import io.sentry.Sentry
 import kotlinx.coroutines.delay
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
-import ru.smartro.worknote.presentation.ac.StartAct
 
 //private var App.LocationLAT: Double
 //    get() {
@@ -179,6 +179,13 @@ class SYNCworkER(
                     logSentry("ValertMsgalertMsgalertMsgalertMsgalertMsg!!!!!!!")
 //                    App.getAppliCation().showNotification(alertMsg, "Уведомление")
                 }
+            }
+            Status.ERROR -> LoG.error("SYNCworkER ERROR")
+            Status.NETWORK -> {
+                LoG.warn("SYNCworkER NO INTERNET")
+                val configEntity = db().loadConfig(ConfigName.NOINTERNET_CNT)
+                configEntity.cntPlusOne()
+                db().saveConfig(configEntity)
             }
             Status.ERROR -> LoG.error( "Status.ERROR")
             Status.NETWORK -> LoG.warn( "Status.NETWORK==NO INTERNET")
