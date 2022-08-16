@@ -18,9 +18,9 @@
             app:argType="string"
             />
     </fragment>
+    <!--Directions-->
     <dialog
         android:id="@+id/MapActPlatformClickedDtlDialog"
-
         android:name="ru.smartro.worknote.presentation.MapFPlatformClickedDtlDialog"
         android:label="MapActPlatformClickedDtlDialog">
         <argument

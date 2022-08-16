@@ -1,17 +1,15 @@
 package ru.smartro.worknote.abs
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
-import io.sentry.Sentry
-import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
+import ru.smartro.worknote.presentation.ac.MainAct
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
@@ -94,7 +92,6 @@ abstract class AFragment : Fragment(){
         }
         val argSBundle = getArgSBundle(argumentId, argumentName)
         navController.navigate(navFragmentId, argSBundle)
-
     }
 
     protected fun navigateMainChecklist(navFragmentId: Int, argumentId: Int?, argumentName: String? = null) {
@@ -142,6 +139,13 @@ abstract class AFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
        LoG.info("onViewCreated")
 //        onCreate()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (getAct() is MainAct) {
+            (getAct() as MainAct).onNewfromAFragment(false)
+        }
     }
 
     override fun onDestroyView() {

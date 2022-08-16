@@ -2,12 +2,14 @@ package ru.smartro.worknote.presentation.platform_serve
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.log
+import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContainerAdapter
 
 
@@ -41,6 +43,29 @@ class PServeSimplifyF : AFragment() {
             adapter = adapterCurrentTask
         }
 
+        if (getAct() is MainAct) {
+            (getAct() as MainAct).setSpecialProcessingForRecycler(rvCurrentTask)
+        }
+
+
+
+
+
+
+//        rvCurrentTask.viewTreeObserver
+//            .addOnGlobalLayoutListener(
+//                object : OnGlobalLayoutListener {
+//                    override fun onGlobalLayout() {
+//                        // At this point the layout is complete and the
+//                        // dimensions of recyclerView and any child views
+//                        if (getAct() is PServeAct) {
+//                            (getAct() as PServeAct).onNewfromAFragment()
+//                        }
+//                        // are known.
+//                        rvCurrentTask.viewTreeObserver
+//                            .removeOnGlobalLayoutListener(this)
+//                    }
+//                })
         vm.mSortedContainers.observe(viewLifecycleOwner) { list ->
             if(list != null) {
                 adapterCurrentTask.containers = list
@@ -53,9 +78,5 @@ class PServeSimplifyF : AFragment() {
                 adapterCurrentTask.served = list
             }
         }
-
-//        if(paramS().isWalkthroughWasShown == false) {
-//            navigateMain(R.id.WalkthroughStepAF, 1)
-//        }
     }
 }
