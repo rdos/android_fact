@@ -1,7 +1,6 @@
 package ru.smartro.worknote.presentation
 
 import android.app.AlertDialog
-import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -51,13 +50,12 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBod
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.ac.MainAct
-import ru.smartro.worknote.presentation.platform_serve.VMPlatformServeShared
+import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.WorkOrderEntity
-import ru.smartro.worknote.work.net.CancelWayReasonEntity
 
 class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
@@ -75,7 +73,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
     private lateinit var mMapMyYandex: MapView
 
 
-    private val viewModel: VMPlatformServeShared by activityViewModels()
+    private val viewModel: ServePlatformVM by activityViewModels()
 
     private val mWorkOrderFilteredIds: MutableList<Int> = mutableListOf()
     private var mWorkOrderS: List<WorkOrderEntity>? = null
@@ -102,7 +100,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
             moveCameraTo(point)
         }
 
-        val platformNear = viewModel.baseDat.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
+        val platformNear = viewModel.database.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
 
         if (platformNear == null) {
             log("platformNear.is null")
@@ -164,11 +162,11 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
 
         mMapMyYandex = view.findViewById(R.id.map_view)
-        val hasWorkOrdersInNotProgress = viewModel.baseDat.hasWorkOrderInNotProgress()
+        val hasWorkOrdersInNotProgress = viewModel.database.hasWorkOrderInNotProgress()
         if (hasWorkOrdersInNotProgress) {
             showingProgress()
             val extraPramId = getAct().getPutExtraParam_ID()
-            val workOrderS = viewModel.baseDat.findWorkOrders_Old(extraPramId)
+            val workOrderS = viewModel.database.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
         }
         mMapMyYandex.map.addInertiaMoveListener(this)
@@ -295,9 +293,9 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
 
     private fun getActualWorkOrderS(isForceMode: Boolean = false, isFilterMode: Boolean = true): List<WorkOrderEntity> {
         if (mWorkOrderS == null || isForceMode) {
-            mWorkOrderS = viewModel.baseDat.findWorkOrders(isFilterMode)
+            mWorkOrderS = viewModel.database.findWorkOrders(isFilterMode)
             if (mWorkOrderS?.isEmpty() == true) {
-                mWorkOrderS = viewModel.baseDat.findWorkOrders(false)
+                mWorkOrderS = viewModel.database.findWorkOrders(false)
             }
         }
         return mWorkOrderS!!
@@ -397,14 +395,14 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
                 when (result.status) {
                     Status.SUCCESS -> {
                         logSentry("acceptProgress Status.SUCCESS ")
-                        viewModel.baseDat.setProgressData(workOrder)
+                        viewModel.database.setProgressData(workOrder)
                         getAct().modeSyNChrON_off(false)
                         hideProgress()
                     }
                     else -> {
                         logSentry("acceptProgress Status.ERROR")
                         toast(result.msg)
-                        viewModel.baseDat.setNextProcessDate(workOrder)
+                        viewModel.database.setNextProcessDate(workOrder)
                     }
                 }
                 if (workOrderSize == resultStatusList.size) {
@@ -428,13 +426,13 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
             timeBeforeInSec = lastSynchroTimeInSec + m30MinutesInSec
-            nextSentPlatforms = viewModel.baseDat.findPlatforms30min()
+            nextSentPlatforms = viewModel.database.findPlatforms30min()
             log("SYNCworkER PLATFORMS IN LAST 30 min")
             next(nextSentPlatforms, timeBeforeInSec)
         }
         if (nextSentPlatforms.isEmpty()) {
             timeBeforeInSec = MyUtil.timeStampInSec()
-            nextSentPlatforms = viewModel.baseDat.findLastPlatforms()
+            nextSentPlatforms = viewModel.database.findLastPlatforms()
             log("SYNCworkER LAST PLATFORMS")
             next(nextSentPlatforms, timeBeforeInSec)
         }
@@ -443,7 +441,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
 
     private fun gotoSynchronize() {
         var lastPlatforms: List<PlatformEntity> = emptyList()
-        lastPlatforms = viewModel.baseDat.findLastPlatforms()
+        lastPlatforms = viewModel.database.findLastPlatforms()
         val lastPlatformsSize = lastPlatforms.size
 
         val deviceId = Settings.Secure.getString(getAct().contentResolver, Settings.Secure.ANDROID_ID)
@@ -509,7 +507,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         val rvInfo = view.findViewById<RecyclerView>(R.id.rv_f_map__workorder_info)
         mAcbGotoComplete = view.findViewById(R.id.acb_f_map__workorder_info__gotocomplete)
         mAcbGotoComplete?.setOnClickListener {
-            viewModel.baseDat.setWorkOrderIsShowForUser(workOrderS)
+            viewModel.database.setWorkOrderIsShowForUser(workOrderS)
             gotoComplete()
         }
         setAcbCompleteText(workOrderS)
@@ -521,7 +519,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         builder.setView(view)
         result = builder.create()
         result.setOnCancelListener {
-            val workorder: Unit = viewModel.baseDat.setWorkOrderIsShowForUser(workOrderS)
+            val workorder: Unit = viewModel.database.setWorkOrderIsShowForUser(workOrderS)
             next()
             onRefreshData()
         }
@@ -605,6 +603,7 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
     override fun startPlatformService(item: PlatformEntity) {
         if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
             navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
+            viewModel.setPlatformEntity(item)
         } else {
             showAlertPlatformByPoint().let { view ->
                 val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
@@ -907,10 +906,10 @@ class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickList
         super.onDestroy()
         mMapMyYandex.onStop()
         MapKitFactory.getInstance().onStop()
-        val configEntity = viewModel.baseDat.loadConfig(ConfigName.MAPACTDESTROY_CNT)
+        val configEntity = viewModel.database.loadConfig(ConfigName.MAPACTDESTROY_CNT)
         configEntity.cntPlusOne()
-        viewModel.baseDat.saveConfig(configEntity)
-        viewModel.baseDat.close()
+        viewModel.database.saveConfig(configEntity)
+        viewModel.database.close()
     }
 
     inner class InfoAdapter(private var p_workOrderS: List<WorkOrderEntity>) :

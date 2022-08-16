@@ -4,9 +4,6 @@ import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
@@ -43,7 +40,7 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
     }
 
     private fun initViews(view: View) {
-        val workOrders = vs.baseDat.findWorkOrders(false)
+        val workOrders = vs.database.findWorkOrders(false)
 //        val containerProgress = workOrders.
 //        val platformProgress = vs.findPlatformProgress()
         var platformCnt = 0

@@ -25,9 +25,9 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        if(viewModel.mPlatformEntity.value == null)
+        if(vm.mPlatformEntityLiveData.value == null)
             throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = viewModel.mPlatformEntity.value
+        mPlatformEntity = vm.mPlatformEntityLiveData.value
         mMaxPhotoCount = Int.MAX_VALUE
     }
 
@@ -36,7 +36,7 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
+        vm.database.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }

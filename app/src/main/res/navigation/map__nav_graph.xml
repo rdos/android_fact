@@ -274,7 +274,7 @@
     <fragment
         android:id="@+id/PServeByTypesF"
         android:name="ru.smartro.worknote.presentation.platform_serve.PServeGroupByContainersF"
-        tools:layout="@layout/f_pserve_by_types"
+        tools:layout="@layout/f_pserve_groupby"
         android:label="CompleteF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"

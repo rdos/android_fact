@@ -73,8 +73,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_platform_serve__cont_progress"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/actv_f_pserve_groupby__sprid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -87,7 +87,7 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_main"
+        android:id="@+id/rv_f_pserve_groupby__main"
         android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1"
         tools:itemCount="1"

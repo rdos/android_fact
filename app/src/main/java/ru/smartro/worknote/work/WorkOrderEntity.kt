@@ -21,7 +21,7 @@ import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
-
+const val THIS_IS_ERROR = "это ошибка?"
 open class WorkOrderEntity(
     @PrimaryKey
     var id: Int = Inull,
@@ -261,13 +261,35 @@ open class KGOEntity(
     }
 
 
-open class ContainerGroupByEntity(
+open class GroupByContainerClientEntity(
     var platformId: Int = Inull,
-    var typeName: String = Snull,
     var client: String = "Клиент не указан",
     var containers: RealmList<ContainerEntity> = RealmList(),
-) : Serializable, RealmObject()
+) : Serializable, RealmObject() {
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): GroupByContainerClientEntity {
+            val result = GroupByContainerClientEntity(platformId = Inull, client = THIS_IS_ERROR)
+            return result
+        }
+    }
+}
 
+open class GroupByContainerClientTypeEntity(
+    var platformId: Int = Inull,
+    var client: String = "Клиент не указан",
+    var typeId: Int = Inull,
+    var typeName: String = Snull,
+    var containers: RealmList<ContainerEntity> = RealmList(),
+) : Serializable, RealmObject() {
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): GroupByContainerClientTypeEntity {
+            val result = GroupByContainerClientTypeEntity(platformId = Inull, client = THIS_IS_ERROR)
+            return result
+        }
+    }
+}
 
 open class PlatformEntity(
     var workOrderId: Int = Inull,
@@ -318,7 +340,7 @@ open class PlatformEntity(
     @SerializedName("finished_at")
     var finishedAt: String? = null,
     @SerializedName("id")
-    var platformId: Int? = null,
+    var platformId: Int = Inull,
     @SerializedName("name")
     var name: String? = null,
     @SerializedName("srp_id")
@@ -339,6 +361,7 @@ open class PlatformEntity(
     var serveModeCodeName: String? = null,
 
 ) : Serializable, RealmObject() {
+
 
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
@@ -636,7 +659,11 @@ open class PlatformEntity(
     }
 
     companion object {
-        
+        // TODO: !!!
+        fun createEmpty(): PlatformEntity {
+            val result = PlatformEntity(platformId = Inull, address = THIS_IS_ERROR)
+            return result
+        }
     }
 
 
@@ -781,6 +808,13 @@ open class ContainerEntity(
 
     fun isBreakdownNotEmpty(): Boolean {
         return getBreakdownMediaSize() > 0
+    }
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): ContainerEntity {
+            val result = ContainerEntity(containerId = Inull, client = THIS_IS_ERROR, number = THIS_IS_ERROR)
+            return result
+        }
     }
 }
 

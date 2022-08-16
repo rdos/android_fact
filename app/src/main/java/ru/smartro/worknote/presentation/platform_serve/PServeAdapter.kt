@@ -1,10 +1,9 @@
-package ru.smartro.worknote.presentation.platform_serve.adapters
+package ru.smartro.worknote.presentation.platform_serve
 
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,6 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import org.slf4j.LoggerFactory
 import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ContainerEntity
@@ -32,7 +30,7 @@ class PServeAdapter(
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_adapter, parent, false)
         return OwnerViewHolder(view, activity)
     }
-    
+
 
     override fun getItemCount(): Int {
         return containers.size

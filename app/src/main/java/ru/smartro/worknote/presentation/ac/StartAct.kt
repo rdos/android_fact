@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -16,8 +15,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.activity.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import ru.smartro.worknote.*
@@ -50,7 +47,7 @@ class StartAct : AAct() {
     // TODO: 27.05.2022 !! !
     private fun gotoNextAct(isHasToken: Boolean = false) {
 //            val isHasTask = true
-        val isHasTask = vm.baseDat.hasWorkOrderInProgress()
+        val isHasTask = vm.database.hasWorkOrderInProgress()
         if (isHasToken && isHasTask) {
             hideDialog()
             hideInfoDialog()
@@ -85,18 +82,18 @@ class StartAct : AAct() {
                     val m30MinutesInSec = 30 * 60
                     if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
                         timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
-                        platforms = vm.baseDat.findPlatforms30min()
+                        platforms = vm.database.findPlatforms30min()
                         log( "SYNCworkER PLATFORMS IN LAST 30 min")
                     }
                     if (platforms.isEmpty()) {
                         timeBeforeRequest = MyUtil.timeStampInSec()
-                        platforms = vm.baseDat.findLastPlatforms()
+                        platforms = vm.database.findLastPlatforms()
                         log("SYNCworkER LAST PLATFORMS")
                     }
                     val noSentPlatformCnt = platforms.size
 
 
-                    val noServedPlatformCnt = vm.baseDat.findPlatformsIsNew().size
+                    val noServedPlatformCnt = vm.database.findPlatformsIsNew().size
                     var dialogString = ""
                     if (noSentPlatformCnt > 0) {
                         dialogString += "Не отправлено ${noSentPlatformCnt} данных, если не взять в работу, данные не будут отправлены на сервер;"
@@ -116,7 +113,7 @@ class StartAct : AAct() {
                             hideDialog()
                             hideInfoDialog()
                             App.getAppParaMS().setAppRestartParams()
-                            vm.baseDat.clearDataBase()
+                            vm.database.clearDataBase()
                             startActivity(Intent(this,  XChecklistAct::class.java))
                             finish()
                         }

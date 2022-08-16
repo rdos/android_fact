@@ -23,9 +23,9 @@ class PhotoKgoRemainingF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        if(viewModel.mPlatformEntity.value == null)
+        if(vm.mPlatformEntityLiveData.value == null)
             throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = viewModel.mPlatformEntity.value
+        mPlatformEntity = vm.mPlatformEntityLiveData.value
     }
 
     override fun onGotoNext(): Boolean {
@@ -34,8 +34,8 @@ class PhotoKgoRemainingF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val remainingKGOVolumeText = getArgumentName()!!
-        viewModel.baseDat.addPlatformKgoRemaining(mPlatformEntity?.platformId!!, imageS)
-        viewModel.updatePlatformKGO(mPlatformEntity?.platformId!!, remainingKGOVolumeText, isServedKGO = false)
+        vm.database.addPlatformKgoRemaining(mPlatformEntity?.platformId!!, imageS)
+        vm.updatePlatformKGO(mPlatformEntity?.platformId!!, remainingKGOVolumeText, isServedKGO = false)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }

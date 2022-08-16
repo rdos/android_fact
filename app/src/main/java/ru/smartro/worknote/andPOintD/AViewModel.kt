@@ -15,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
 
 abstract class AViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {
     val networkDat = NetworkRepository(application)
-    val baseDat = RealmRepository(Realm.getDefaultInstance())
+    val database = RealmRepository(Realm.getDefaultInstance())
     open val params = App.getAppParaMS()
 
     /**

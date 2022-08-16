@@ -24,9 +24,9 @@ open class PhotoAfterMediaF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        if(viewModel.mPlatformEntity.value == null)
+        if(vm.mPlatformEntityLiveData.value == null)
             throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = viewModel.mPlatformEntity.value
+        mPlatformEntity = vm.mPlatformEntityLiveData.value
         mMaxPhotoCount = Int.MAX_VALUE
     }
 
@@ -36,8 +36,8 @@ open class PhotoAfterMediaF : APhotoFragment() {
 
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addAfterMedia(mPlatformEntity?.platformId!!, imageS)
-        viewModel.updatePlatformStatusSuccess(mPlatformEntity?.platformId!!)
+        vm.database.addAfterMedia(mPlatformEntity?.platformId!!, imageS)
+        vm.updatePlatformStatusSuccess(mPlatformEntity?.platformId!!)
         navigateBack(R.id.MapF)
     }
 

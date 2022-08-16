@@ -212,7 +212,7 @@ class JournalChatF : AFragment() {
     class JournalChatViewModel(app: Application) : AViewModel(app) {
 
         fun findPlatformsIsServed(): List<PlatformEntity> {
-            return baseDat.findPlatformsIsServed()
+            return database.findPlatformsIsServed()
         }
     }
 }

@@ -22,12 +22,12 @@ import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
 import ru.smartro.worknote.log
-import ru.smartro.worknote.presentation.platform_serve.VMPlatformServeShared
+import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 
 //todo: INDEterminate)
 class MainAct :
     AAct(), IActTooltip {
-    val vm: VMPlatformServeShared by viewModels()
+    val vm: ServePlatformVM by viewModels()
     val mTooltipHell = MainAct.DialogHelpER(this, TAG)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

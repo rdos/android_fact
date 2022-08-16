@@ -15,7 +15,7 @@ open class PhotoFailureMediaF : APhotoFragment() {
 
     override fun onGetTextForFailHint() = "Причина невывоза КП"
     override fun onGetStringList(): List<String>? {
-        mFailReasonS = viewModel.getFailReasonS()
+        mFailReasonS = vm.getFailReasonS()
         if (mFailReasonS == null) {
             toast("Ошибка.todo:::")
             return emptyList()
@@ -52,9 +52,9 @@ open class PhotoFailureMediaF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        if(viewModel.mPlatformEntity.value == null)
+        if(vm.mPlatformEntityLiveData.value == null)
             throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = viewModel.mPlatformEntity.value
+        mPlatformEntity = vm.mPlatformEntityLiveData.value
         tvLabelFor(requireView())
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
@@ -74,10 +74,10 @@ open class PhotoFailureMediaF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
-        viewModel.baseDat.addFailureMediaPlatform(mPlatformEntity?.platformId!!, imageS)
+        vm.database.addFailureMediaPlatform(mPlatformEntity?.platformId!!, imageS)
 //        val problemComment = problem_comment.text.toString()
 
-        viewModel.baseDat.setStateFailureForPlatform(mPlatformEntity?.platformId!!, failText!!, getCommentText())
+        vm.database.setStateFailureForPlatform(mPlatformEntity?.platformId!!, failText!!, getCommentText())
         navigateBack(R.id.MapF)
     }
 

@@ -2,7 +2,6 @@ package ru.smartro.worknote.presentation.ac
 
 import android.app.Application
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -14,7 +13,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import org.slf4j.LoggerFactory
 import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
@@ -240,8 +238,8 @@ class XChecklistAct: AAct() {
         }
 
         fun insertWorkOrders(workOrders: List<WoRKoRDeR_know1>) {
-            baseDat.clearDataBase()
-            baseDat.insertWorkorder(workOrders)
+            database.clearDataBase()
+            database.insertWorkorder(workOrders)
         }
 
         fun clearWorkOrderList() {

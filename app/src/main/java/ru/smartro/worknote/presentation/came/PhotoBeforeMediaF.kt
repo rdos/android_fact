@@ -22,8 +22,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        val platformId = getArgumentID()
-        mPlatformEntity = viewModel.getPlatformEntity(platformId)
+        mPlatformEntity = vm.getPlatformEntity()
     }
 
     override fun onGotoNext(): Boolean {
@@ -31,7 +30,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addBeforeMedia(mPlatformEntity?.platformId!!, imageS)
+        vm.database.addBeforeMedia(mPlatformEntity?.platformId!!, imageS)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }

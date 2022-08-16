@@ -1,7 +1,6 @@
 package ru.smartro.worknote.presentation.came
 
 import android.Manifest
-import android.app.Application
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -30,10 +29,9 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.abs.AbsObject
-import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.platform_serve.VMPlatformServeShared
+import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ImageEntity
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -74,7 +72,7 @@ abstract class APhotoFragment(
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 //  todo:!R_dos??  protected val viewModel: PlatformServeSharedViewModel by viewModel()
-    protected val viewModel: VMPlatformServeShared by activityViewModels()
+    protected val vm: ServePlatformVM by activityViewModels()
 
 
     protected open fun onGetTextLabelFor(): String? = null
