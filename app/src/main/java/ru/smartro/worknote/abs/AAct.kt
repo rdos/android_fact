@@ -2,14 +2,12 @@ package ru.smartro.worknote.abs
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import io.sentry.Sentry
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
 
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.presentation.ac.StartAct
 import java.lang.Exception
 
@@ -20,7 +18,6 @@ import java.lang.Exception
 //        }
 
 abstract class AAct : AppCompatActivity() {
-
     protected fun AppliCation() : App {
         return App.getAppliCation()
     }
@@ -53,66 +50,14 @@ abstract class AAct : AppCompatActivity() {
 
     //todo !r_dos onNEW-_Service(Srv) 
     public fun onNewGPS() {
-        beforeLOG("onNewGPS")
+        LOGbefore()
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         (navHostFragment.childFragmentManager.fragments[0] as AFragment).onNewGPS()
-        LOGafter()
+        LOGafterLOG()
     }
     // TODO: !r_dos feed(stuff)
-    
-    private var mMethodName: String? = null
 
-    public var TAG : String = "${this::class.simpleName}"
-    private val TAGLOG = "AActLOG"
-    protected fun beforeLOG(method: String, valueName: String = "") {
-        AppliCation().beforeLOG(method, valueName)
-    }
 
-    private fun logAfterResult(result: String) {
-        log("${mMethodName}.after result=${result} ")
-        mMethodName = null
-
-    }
-
-    protected fun LOGafter(res: Boolean? = null) {
-        logAfterResult(res.toStr())
-    }
-
-    protected fun log(valueNameAndValue: String) {
-        mMethodName?.let {
-            Log.i(TAG, "${TAG}:${mMethodName}.${valueNameAndValue}")
-            return@log
-        }
-        Log.i(TAG, "${TAG}:${valueNameAndValue}")
-    }
-
-    protected fun log(valueName: String, value: Int) {
-        log("${valueName}=$value\"")
-    }
-
-    fun logSentry(text: String) {
-        Sentry.addBreadcrumb("${TAG} : $text")
-        Log.i(TAG + "Sent", text)
-    }
-    protected fun logSentry(data: Int) {
-        logSentry(data.toString())
-    }
-
-    fun INcyclEStart(s: String) {
-        mMethodName?.let {
-            Log.d(TAGLOG, "${mMethodName}.CYCLes.${s}")
-            return@INcyclEStart
-        }
-        Log.d(TAGLOG, "CYCLes.${s}")
-    }
-
-    fun INcyclEStop() {
-        mMethodName?.let {
-            Log.d(TAGLOG, "${mMethodName}.************-_(:;)")
-            return@INcyclEStop
-        }
-        Log.d(TAGLOG, ".************-_(:;)")
-    }
 
 
     public fun isDevelMode(): Boolean{
@@ -132,7 +77,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate")
+        log("onCreate")
     }
 
 
@@ -140,7 +85,7 @@ abstract class AAct : AppCompatActivity() {
     fun getPutExtraParam_ID(): Int {
         val res = intent.getIntExtra(PUT_EXTRA_PARAM_ID, Inull)
         if (res == Inull) {
-            logSentry("res == Inull")
+            log("res == Inull")
         }
         return res
     }
@@ -149,7 +94,7 @@ abstract class AAct : AppCompatActivity() {
     fun getPutExtraParam_NAME(): String {
         var res = intent.getStringExtra(PUT_EXTRA_PARAM_NAME)
         if (res.isNullOrEmpty()) {
-            logSentry("resres.isNullOrEmpty()")
+            log("resres.isNullOrEmpty()")
             res = Snull
         }
         return res
@@ -157,29 +102,29 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause")
+        log("onPause")
     }
 
     override fun onResume() {
         super.onResume()
         AppliCation().LASTact = this
-        Log.d(TAG, "onResume")
+        log("onResume")
     }
 
     override fun onStart() {
         super.onStart()
-        Log.d(TAG, "onStart")
+        log("onStart")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onStop")
+        log("onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         AppliCation().LASTact = null
-        Log.d(TAG, "onDestroy")
+        log("onDestroy")
 
     }
 

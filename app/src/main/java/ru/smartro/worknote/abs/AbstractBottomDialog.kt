@@ -1,29 +1,30 @@
 package ru.smartro.worknote.abs
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.sentry.Sentry
+import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
+import ru.smartro.worknote.log
 
 abstract class AbstractBottomDialog : BottomSheetDialogFragment() {
-
+    
     protected var TAG : String = "${this::class.simpleName}"
     protected fun getAct() = requireActivity() as AAct
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
-        Log.i(TAG, "onCreate")
+        LoG.info( "onCreate")
     }
 
     init {
-        Log.i(TAG, "init AbstractBottomDialog")
+        LoG.info( "init AbstractBottomDialog")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated")
+        log("onViewCreated")
 
     }
 

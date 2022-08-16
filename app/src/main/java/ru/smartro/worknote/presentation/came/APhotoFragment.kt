@@ -10,7 +10,6 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
-import android.util.Log
 import android.util.Size
 import android.view.*
 import android.widget.*
@@ -172,23 +171,23 @@ abstract class APhotoFragment(
     }
 
     protected fun dropOutputD() {
-        val basePhotoD = App.getAppliCation().filesDir.absolutePath + File.separator + "photo"
+        val basePhotoD = AppliCation().getDPath("photo")
         val file = File(basePhotoD)
         file.deleteRecursively()
     }
 
     override fun onDetach() {
         super.onDetach()
-        Log.w(TAG, "onDetach")
+        LoG.warn( "onDetach")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.i(TAG, "onDestroy")
+        LoG.info( "onDestroy")
     }
 
     fun getOutputD(): File {
-        val basePhotoD = App.getAppliCation().filesDir.absolutePath + File.separator + "photo"
+        val basePhotoD =AppliCation().getDPath("photo")
         val dirPath = basePhotoD + File.separator  + onGetDirName()
         val file = File(dirPath)
         if (!file.exists()) file.mkdirs()
@@ -214,8 +213,8 @@ abstract class APhotoFragment(
     override fun onImageSaved(outputFileResults: OutputFileResults) {
         val imageUri = outputFileResults.savedUri!!
 
-        Log.d("TAGS", "Photo capture succeeded: $imageUri path: ${imageUri.path}")
-        Log.e("TAGS", "Current thread: ${Thread.currentThread().id}")
+        log("Photo capture succeeded: $imageUri path: ${imageUri.path}")
+        LoG.error( "Current thread: ${Thread.currentThread().id}")
         setImageCounter()
         setGalleryThumbnail(imageUri)
 
@@ -241,19 +240,19 @@ abstract class APhotoFragment(
             outputStream.use { it ->
                 it.write(byteArray)
             }
-            Log.w("TAGS", Thread.currentThread().name)
+            LoG.warn( Thread.currentThread().name)
 
 
             onSavePhoto()
         } catch (ex: Exception) {
-            Log.e(TAG, "eXthr.message", ex)
+            LoG.error("onImageSaved", ex)
             toast(TOAST_TEXT)
         }
     }
 
     override fun onError(exception: ImageCaptureException) {
         toast(TOAST_TEXT)
-        Log.e("TAGS", "Photo capture failed: ${exception.message}", exception)
+        LoG.error("onError", exception)
     }
 
 
@@ -297,8 +296,8 @@ abstract class APhotoFragment(
             }
         } catch (ex: Exception) {
             logSentry("setGalleryThumbnail и try{}catch")
-            Log.i(TAG, "setGalleryThumbnail и try{}catch")
-            Log.e(TAG, "eXthr.message", ex)
+            LoG.info( "setGalleryThumbnail и try{}catch")
+            LoG.error("setGalleryThumbnail", ex)
         }
     }
 
@@ -337,8 +336,8 @@ abstract class APhotoFragment(
 
             } catch (ex: Exception) {
                 logSentry("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
-                Log.i(TAG, "setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
-                Log.e(TAG, "eXthr.message", ex)
+                LoG.info("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
+                LoG.error("setImageCounter", ex)
             }
 
         }
@@ -376,7 +375,7 @@ abstract class APhotoFragment(
 
 
     private fun initViews(view: View) {
-        Log.d("TAGS", "initViews")
+        log("initViews")
 
         mImageCounter = view.findViewById(R.id.image_counter)
         acbCancel = view.findViewById(R.id.acb_f_aphoto__cancel)
@@ -441,7 +440,7 @@ abstract class APhotoFragment(
         ibTakePhoto = view.findViewById(R.id.ib_f_aphoto__takephoto)
         mActbPhotoFlash = view.findViewById<AppCompatToggleButton>(R.id.photo_flash)
         mCameraController.initializationFuture.addListener({
-            Log.d("TAGS", "initializationFuture")
+            log("initializationFuture")
             if (hasBackCamera()) {
                 if (hasFlashUnit()) {
                     enableFlash()
@@ -453,7 +452,7 @@ abstract class APhotoFragment(
                         takePhoto()
                     } catch (ex: Exception) {
                         toast("Извините, произошла ошибка \n повторите, пожалуйста, попытку")
-                        Log.e(TAG, "eXthr.message", ex)
+                        LoG.error("ibTakePhoto?.setOnClickListener", ex)
                         ibTakePhoto?.isEnabled = true
                     }
 
@@ -472,7 +471,7 @@ abstract class APhotoFragment(
                 toast("Извините, но на вашем устройстве \n отсутсвует камера")
             }
 
-            Log.d("TAGS", Thread.currentThread().name)
+            LoG.error( Thread.currentThread().name)
         }, ContextCompat.getMainExecutor(requireContext()))
 
 
@@ -538,27 +537,27 @@ abstract class APhotoFragment(
         private var mFileS: Array<File>? = null
 
         fun scan(): Boolean {
-            Log.w(TAG, "scan().before")
+            LoG.warn( "scan().before")
             if (mFileS == null) {
-                Log.e(TAG, "scan(false).after mFileS == null")
+                LoG.error( "scan(false).after mFileS == null")
                 return false
             }
             if (mIdx > mFileS!!.size - 1) {
-                Log.d(TAG, "scan(false).after mIdx > mFileS!!.size")
+                log("scan(false).after mIdx > mFileS!!.size")
                 return false
             }
             while (mFileS!![mIdx].isDirectory) {
                 mIdx++
                 if (mIdx > mFileS!!.size - 1) {
-                    Log.d(TAG, "scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
+                    log("scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
                     return false
                 }
-                Log.w(TAG, "onAfterUSE")
-                Log.e(TAG, "onAfterUSE")
-                Log.d(TAG, "onAfterUSE")
+                LoG.warn( "onAfterUSE")
+                LoG.error( "onAfterUSE")
+                log("onAfterUSE")
             }
 
-            Log.d(TAG, "scan(true).after ")
+            log("scan(true).after ")
             return true
         }
 
@@ -570,9 +569,9 @@ abstract class APhotoFragment(
                 resource.compress(Bitmap.CompressFormat.WEBP, 90, baos)
             }
             val b: ByteArray = baos.toByteArray()
-            Log.w("TAGS", "b.size=${b.size}")
+            LoG.warn( "b.size=${b.size}")
             val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
-            Log.w("TAGS", "imageBase64=${imageBase64.length}")
+            LoG.warn( "imageBase64=${imageBase64.length}")
             val gps = App.getAppliCation().gps()
             val imageEntity = gps.inImageEntity(imageBase64)
 
@@ -609,8 +608,7 @@ class PhotoViewModel(application: Application) : BaseViewModel(application) {
 /**
  *    val orientationEventListener = object : OrientationEventListener(context) {
 override fun onOrientationChanged(orientation: Int) {
-// Monitors orientation values to determine the target rotation value
-Log.i(TAG, "onOrientationChanged.before.mRotation=${mRotation} orientation=${orientation}")
+// Monitors orientation values to determine the target rotation valueLoG.info( "onOrientationChanged.before.mRotation=${mRotation} orientation=${orientation}")
 when (orientation) {
 in 45..134 -> {
 mRotation = Surface.ROTATION_270
@@ -628,8 +626,7 @@ else -> {
 mRotation = Surface.ROTATION_0
 rotationDegrees = 0F
 }
-}
-Log.i(TAG, "onOrientationChanged.after.mRotation=${mRotation}")
+}LoG.info( "onOrientationChanged.after.mRotation=${mRotation}")
 mImageCapture?.targetRotation = mRotation
 imageAnalyzer?.targetRotation = mRotation
 }
@@ -665,7 +662,7 @@ orientationEventListener.enable()
 //                // Compute average luminance for the image
 //                val luma = pixels.average()
 //                // Log the new luma value
-//                Log.d( "CameraX Demo" , "Average luminosity: $luma")
+//                log("Average luminosity: $luma")
 //                // Update timestamp of last analyzed frame
 //                lastAnalyzedTimestamp = currentTimestamp
 //            }

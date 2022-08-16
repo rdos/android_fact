@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.R
+import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.platform_serve.ClientGroupedContainers
 import ru.smartro.worknote.work.ServedContainers
 
@@ -19,7 +21,7 @@ class PServeGroupedByClientsAdapter(
 
     var served: List<ServedContainers> = listOf()
         set(value) {
-            Log.d("SHEESH ::: SimplifiedContainerAdapter", "servedContainers: ${value}")
+            log("servedContainers: ${value}")
             field = value
             notifyDataSetChanged()
         }

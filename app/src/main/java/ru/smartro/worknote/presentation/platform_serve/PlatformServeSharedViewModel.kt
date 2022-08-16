@@ -4,15 +4,18 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.log
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.ServedContainers
 
 class PlatformServeSharedViewModel(application: Application) : BaseViewModel(application) {
+    
 
     private val _platformEntity: MutableLiveData<PlatformEntity> = MutableLiveData(null)
     val mPlatformEntity: LiveData<PlatformEntity>

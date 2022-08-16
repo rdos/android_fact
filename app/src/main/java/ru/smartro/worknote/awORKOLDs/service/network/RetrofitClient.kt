@@ -6,16 +6,19 @@ import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.slf4j.LoggerFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.smartro.worknote.App
 import ru.smartro.worknote.BuildConfig
+import ru.smartro.worknote.LoG
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.service.network.interceptor.TokenAuthenticator
 import java.util.concurrent.TimeUnit
 import ru.smartro.worknote.awORKOLDs.service.network.ApiService
 
 class RetrofitClient(context: Context) {
+    
 
 
     private val authInterceptor = Interceptor { chain ->
@@ -32,7 +35,7 @@ class RetrofitClient(context: Context) {
     }
 
     private var httpLoggingInterceptor = run {
-        val httpLoggingInterceptor1 = HttpLoggingInterceptor { message -> Log.d("okhttp", message) }
+        val httpLoggingInterceptor1 = HttpLoggingInterceptor { message -> LoG.error( message) }
         httpLoggingInterceptor1.apply {
             httpLoggingInterceptor1.level = HttpLoggingInterceptor.Level.BODY
         }

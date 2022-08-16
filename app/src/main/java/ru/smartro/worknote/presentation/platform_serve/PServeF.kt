@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -16,14 +15,14 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
+import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.platform_serve.adapters.PServeAdapter
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ContainerEntity

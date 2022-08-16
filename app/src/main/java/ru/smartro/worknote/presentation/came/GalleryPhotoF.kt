@@ -56,7 +56,7 @@ class GalleryPhotoF : AFragment() {
 
     fun getOutputD(): File {
         //todo:!!r_dos
-        val basePhotoD = App.getAppliCation().filesDir.absolutePath + File.separator + "photo"
+        val basePhotoD = App.getAppliCation().getDPath("photo")
         val dirPath = basePhotoD + File.separator  + getArgumentName()
         val file = File(dirPath)
         if (!file.exists()) file.mkdirs()

@@ -14,6 +14,7 @@ import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.toast
 import java.text.SimpleDateFormat
@@ -70,7 +71,7 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         viewModel.mWayBillsViewState.observe(viewLifecycleOwner) { state ->
-            Log.d("TEST :::", "WAYBILL STATE::: ${state}")
+            log("WAYBILL STATE::: ${state}")
             if(state !is XChecklistAct.ViewState.LOADING) {
                 (requireActivity() as XChecklistAct).hideProgressBar()
             }
@@ -131,7 +132,7 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mWayBillList.removeObservers(viewLifecycleOwner)
         viewModel.mWayBillsViewState.postValue(XChecklistAct.ViewState.IDLE())
     }

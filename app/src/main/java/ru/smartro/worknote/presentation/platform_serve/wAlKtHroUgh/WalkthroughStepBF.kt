@@ -1,18 +1,16 @@
 package ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.navigation.fragment.findNavController
-import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.AFragment
 
 class WalkthroughStepBF : AFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("TEST: :::", "WALKTHROUGH B CREATE")
     }
 
     override fun onGetLayout(): Int {

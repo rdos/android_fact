@@ -18,6 +18,7 @@ import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_NAME
 import ru.smartro.worknote.abs.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.ac.MainAct
 
 
@@ -54,6 +55,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 
         Log.d("TEST::::", "DIALOG:: PL :${viewModel.mPlatformEntity.value}")
 
+        log("fucked up : ${containerEntity.containerId} : ${containerEntity.isFailureNotEmpty()}")
 
         rgPercents = view.findViewById(R.id.enter_info_percent_rg)
         apbFailure = view.findViewById(R.id.apb_fragment_container_serve_failure)
