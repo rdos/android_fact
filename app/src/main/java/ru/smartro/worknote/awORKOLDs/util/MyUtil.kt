@@ -1,38 +1,22 @@
 package ru.smartro.worknote.awORKOLDs.util
 
 import android.Manifest
-import android.R.attr.path
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Matrix
-import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationManager
-import android.net.Uri
 import android.os.Build
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.yandex.mapkit.geometry.Point
-import ru.smartro.worknote.App
-import ru.smartro.worknote.R
-import ru.smartro.worknote.Inull
-import ru.smartro.worknote.log.AAct
-import ru.smartro.worknote.work.ac.StartAct
-import ru.smartro.worknote.work.ac.checklist.StartOwnerAct
-import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -83,48 +67,20 @@ object MyUtil {
         val imm: InputMethodManager =
             activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
-        var view: View? = activity.currentFocus
+        val view: View? = activity.currentFocus
         //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
-            view = View(activity)
+//            view = View(activity)
+            return
         }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    fun onMenuOptionClicked(context: Context, id: Int) {
-        when (id) {
-            R.id.change_organisation -> {
-                App.getAppParaMS().ownerId = Inull
-                App.getAppParaMS().vehicleId = Inull
-                context.startActivity(Intent(context, StartOwnerAct::class.java))
-            }
-            R.id.logout -> {
-                //todo:
-                (context as AAct).logout()
-            }
-        }
-    }
-
-    fun imageToBase64(imageUri: Uri, context: Context): String {
-
-
-
-//        val selectedImage = BitmapFactory.decodeStream(imageStream)
-        val matrix = Matrix()
-//        Log.w("TAGS", "selectedImage.width= ${selectedImage.width}, selectedImage.height = ${selectedImage.height}" )
-//        val rotatedBitmap = Bitmap.createBitmap(selectedImage, 0, 0, selectedImage.width, selectedImage.height, matrix, true)
-//        val compressedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, 1280 , 960, false)
-
-//        selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-
-
-
-        return "data:image/png;base64,}"
-    }
 
     fun base64ToImage(encodedImage: String?): Bitmap {
         val decodedString: ByteArray =
             Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
+
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     }
 

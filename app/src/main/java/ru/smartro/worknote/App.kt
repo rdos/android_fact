@@ -23,7 +23,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
-import android.util.Log
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -35,8 +34,15 @@ import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.LoggerContext
+import ch.qos.logback.classic.android.LogcatAppender
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.FileAppender
 import com.yandex.mapkit.MapKitFactory
-import io.realm.*
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
@@ -44,24 +50,24 @@ import io.sentry.android.core.SentryAndroid
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import ru.smartro.worknote.andPOintD.FloatCool
+import org.slf4j.LoggerFactory
+import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AndRoid
+import ru.smartro.worknote.andPOintD.BaseViewModel
+import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.service.network.NetworkRepository
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.di.viewModelModule
-import ru.smartro.worknote.log.AAct
 import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.presentation.ac.MainAct
+import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ac.AirplanemodeIntentService
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import ru.terrakok.cicerone.Router
-import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.Cicerone
-
 
 
 //INSTANCE
@@ -75,7 +81,8 @@ class App : AApp() {
 
         fun getAppParaMS(): AppParaMS = getAppliCation().aPPParamS
         fun getMethodMan(): String? {
-            return getAppliCation().mMethodName
+            return "MethodMan"
+//            return getAppliCation().mMethodName
         }
 //    private fun getLocationMAN(): LocationManager {
 //        return getLocationService()!!
@@ -86,10 +93,13 @@ class App : AApp() {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
-
-
+    object ScreenMode {
+        const val EXTENDED = false
+        const val SIMPLIFY = true
+    }
 
     fun gps(): PoinT {
+        log("BBBB")
         var gps_enabled = false
         var network_enabled = false
         val lm = AndRoid.getService()
@@ -124,15 +134,31 @@ class App : AApp() {
 
     private var mGPS: PoinT = PoinT()
 
+
     override fun onCreate() {
         super.onCreate()
         INSTANCE = this
 
+//        val context = LoggerFactory.getILoggerFactory() as LoggerContext
+//        for (logger in context.loggerList) {
+//            val index = logger.iteratorForAppenders()
+//            while (index.hasNext()) {
+//                val appender = index.next()
+//                if (appender is FileAppender<*>) {
+//                    val file = getF("logs", "file.log")
+//                    (appender as FileAppender<*>).file = "/data/data/ru.smartro.worknote/logs/log.log"
+//                    appender.start()
+//                }
+//            }
+//        }
+
+        logbackInit()
+        log("AAAAAAAAAAAA")
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
 
-        Log.i(TAG, "on App created App.onCreate onAppCreate")
+        LoG.info("on App created App.onCreate onAppCreate")
         sentryInit()
         initRealm()
         startKoin {
@@ -166,42 +192,79 @@ class App : AApp() {
 //        connectivityManager.requestNetwork(networkRequest, networkCallback)
     }
 
-    private var mCicerone: Cicerone<Router>? = null
-    private fun getCicerone(): Cicerone<Router> {
-        if (mCicerone == null) {
-            mCicerone = Cicerone.create()
+    private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){
+        val logsFilesArray = this.getD("logs").listFiles()
+
+        if (logsFilesArray != null) {
+            val delCount = logsFilesArray.size - maxHistoryFileCount-1
+            if (delCount <= 0) {
+                return
+            }
+            val logsFilesList = mutableListOf<File>()
+            for (idx in logsFilesArray.indices) {
+                logsFilesList.add(logsFilesArray[idx])
+            }
+
+            logsFilesList.sortedBy { it.name }
+
+            for (idx in 0 until delCount) {
+                logsFilesList[idx].delete()
+            }
         }
-        return mCicerone!!
-    }
-    fun getNavigatorHolder(): NavigatorHolder {
-        return getCicerone().navigatorHolder
     }
 
-    fun getRouter(): Router {
-        return getCicerone().router
+    private fun logbackInit() {
+        clearLogbackDirectory()
+        // reset the default context (which may already have been initialized)
+        // since we want to reconfigure it
+        val lc = LoggerFactory.getILoggerFactory() as LoggerContext
+        lc.stop()
+
+        // setup FileAppender
+        val encoder1 = PatternLayoutEncoder()
+        encoder1.context = lc
+        encoder1.pattern = "%d{HH:mm:ss.SSS}[%thread]%-5level[%relative] %logger{41}[%line]:%method:: %msg%n"
+        encoder1.start()
+        val fileAppender = FileAppender<ILoggingEvent>()
+        fileAppender.context = lc
+        val file = getF("logs", "${MyUtil.currentTime()}.log")
+        fileAppender.file = file.absolutePath
+        fileAppender.encoder = encoder1
+        fileAppender.start()
+
+        val logcatAppender = LogcatAppender()
+        logcatAppender.context = lc
+        logcatAppender.encoder = encoder1
+        logcatAppender.start()
+
+        // add the newly created appenders to the root logger;
+        // qualify Logger to disambiguate from org.slf4j.Logger
+        val root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+        root.addAppender(fileAppender)
+        root.addAppender(logcatAppender)
     }
 
     inner class MyLocationListener() : LocationListener {
         override fun onProviderEnabled(provider: String) {
-            beforeLOG("onProviderEnabled")
+            LOGbefore("onProviderEnabled")
             log("provider=${provider}")
             LOGafterLOG()
         }
 
         override fun onProviderDisabled(provider: String) {
-            beforeLOG("onProviderDisabled")
+            LOGbefore("onProviderDisabled")
             log("provider=${provider}")
             LOGafterLOG()
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            beforeLOG("onProviderStatusChanged")
+            LOGbefore("onProviderStatusChanged")
             log("provider=${provider}, status=${status}")
             LOGafterLOG()
         }
 
         override fun onLocationChanged(location: Location) {
-            beforeLOG("onLocationChanged")
+            LOGbefore("onLocationChanged")
 
             val LocationACCURACY = FloatCool("LocationACCURACY", this@App)
             LocationACCURACY.setDATAing(location.accuracy)
@@ -239,7 +302,9 @@ class App : AApp() {
 //                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
                     getAppParaMS().saveLastGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY.LET)
                     try {
-                        LASTact?.onNEWfromGPSSrv()
+                        if (LASTact is MainAct) {
+                            LASTact?.onNewGPS()
+                        }
                     } catch (ex: Exception) {
                         logSentry("Exception!!! LASTact?.onNEWfromGPSSrv()")
                         log("Exception!!! LASTact?.onNEWfromGPSSrv()")
@@ -253,7 +318,7 @@ class App : AApp() {
 
     override fun onTerminate() {
         super.onTerminate()
-        beforeLOG("onTerminate")
+        LOGbefore("onTerminate")
     }
     //Реплику: gjпох
     public fun getDB(): RealmRepository {
@@ -293,7 +358,7 @@ class App : AApp() {
         }
     }
 
-    protected fun logSentry(text: String) {
+    fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
         log("${text}")
     }
@@ -334,8 +399,8 @@ class App : AApp() {
 
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channelId)
 
-        builder.setSmallIcon(R.drawable.ic_app)
-            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_app))
+        builder.setSmallIcon(R.drawable.ic_container)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_container))
             .setContentTitle(textTitle)
             .setContentText(textContent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -387,7 +452,7 @@ class App : AApp() {
     }
 
     fun cancelNotification(id: Int? = 1) {
-        Log.d(TAG, "cancelNotification.before")
+        log("cancelNotification.before")
         val notificationManager = NotificationManagerCompat.from(this)
         if (id == null) {
             notificationManager.cancelAll()
@@ -400,7 +465,7 @@ class App : AApp() {
 
 
     fun startLocationService(isForceMode: Boolean=false) {
-        beforeLOG("runLocationService")
+        LOGbefore("runLocationService")
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -444,7 +509,7 @@ class App : AApp() {
 
 
     fun startWorkER() {
-        beforeLOG("runSyncWorkER")
+        LOGbefore("runSyncWorkER")
         if(getAppParaMS().isModeWorkER) {
             log("getAppParaMS().isModeWorkER=true")
             LOGafterLOG()
@@ -525,7 +590,7 @@ class App : AApp() {
                 if (intent?.action == Intent.ACTION_AIRPLANE_MODE_CHANGED) {
                     val isAirplaneModeEnabled = intent.getBooleanExtra("state", false)
 //                    textView.text = isAirplaneModeEnabled.toString()
-                    Log.w(TAG, "isAirplaneModeEnabled=${isAirplaneModeEnabled}")
+                    log("isAirplaneModeEnabled=${isAirplaneModeEnabled}")
                     if (isAirplaneModeEnabled) {
                         val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
                         context.startService(serviceIntent)
@@ -541,10 +606,22 @@ private const val NOTIFICATION_CHANNEL_ID__DEFAULT = "FACT_CH_ID"
 const val NOTIFICATION_CHANNEL_ID__MAP_ACT = "FACT_APP_CH_ID"
 
 
+val PERMISSIONS = arrayOf(
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    Manifest.permission.READ_EXTERNAL_STORAGE,
+    Manifest.permission.READ_PHONE_STATE,
+    Manifest.permission.LOCATION_HARDWARE,
+    Manifest.permission.ACCESS_NETWORK_STATE,
+    Manifest.permission.CAMERA,
+    Manifest.permission.SYSTEM_ALERT_WINDOW
+)
+
 //todo:const val A_SLEEP_TIME_1MIN__MS = 60000L
 const val Snull = "rNull"
 const val Inull = -111
-const val Lnull = 999222333L
+const val LTIMEnull = 999222333L
+const val Lnull = -111111L
 const val Fnull = 0.0f
 const val Dnull = 0.0
 const val ErrorsE = "ErrorsE"
@@ -578,6 +655,40 @@ fun Fragment.toast(text: String? = "") {
     }
 
 }
+
+fun BaseViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+    fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
+        var dirPath = App.getAppliCation().dataDir.absolutePath
+        if(containerUuid == null) {
+            dirPath = dirPath + File.separator + platformUuid
+        } else {
+            dirPath = dirPath + File.separator + platformUuid + File.separator + containerUuid
+        }
+
+        val file = File(dirPath)
+        if (!file.exists()) file.mkdirs()
+        return file
+    }
+    val file: File = File(getOutputDirectory("saveJSON", null), "${p_jsonName}.json")
+
+    //This point and below is responsible for the write operation
+
+    //This point and below is responsible for the write operation
+    var outputStream: FileOutputStream? = null
+    try {
+
+        file.createNewFile()
+        //second argument of FileOutputStream constructor indicates whether
+        //to append or create new file if one exists
+        outputStream = FileOutputStream(file, true)
+        outputStream.write(bodyInStringFormat.toByteArray())
+        outputStream.flush()
+        outputStream.close()
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+    }
+}
+
 
 //fun App.toast(text: String? = "") {
 //    try {
@@ -617,3 +728,53 @@ fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 
     }, delayAfter)
 }
 
+val Any.TAG: String
+    get() = "${this::class.simpleName}"
+val Any.LoG: org.slf4j.Logger
+    get() = LoggerFactory.getLogger(TAG)
+
+
+fun Any.getLogger(): org.slf4j.Logger {
+   return LoggerFactory.getLogger( "${this::class.simpleName}")
+}
+
+fun Any.LOGbefore(valueName: String? = Snull) {
+//todo:???        AppliCation().LOGbefore(valueName)
+    log(":Before")
+}
+
+fun Any.LOGafterLOG(result: String? = Snull) {
+    LoG.trace(":After")
+}
+//
+//    protected fun LOGafterLOG(res: Boolean? = null) {
+//        logAfterResult(res.toStr())
+//    }
+
+fun Any.log(valueNameAndValue: String) {
+    LoG.debug(valueNameAndValue)
+}
+
+fun Any.info(valueNameAndValue: String) {
+    LoG.info(valueNameAndValue)
+}
+//
+//    protected fun log(valueName: String, value: Int) {
+//        log("${valueName}=$value\"")
+//    }
+
+fun  Any.LOGinCYCLEStart(s: String) {
+//        mMethodName?.let {
+//            log("${mMethodName}.CYCLes.${s}")
+//            return@INcyclEStart
+//        }
+    log("CYCLes.${s}")
+}
+
+fun  Any.LOGINcyclEStop() {
+//        mMethodName?.let {
+//            log("${mMethodName}.************-_(:;)")
+//            return@INcyclEStop
+//        }
+    log(".************-_(:;)")
+}

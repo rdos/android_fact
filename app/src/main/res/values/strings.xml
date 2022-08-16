@@ -3,6 +3,7 @@
     <string name="yandex_map_key">948e55bc-da44-452d-9629-00898d438ca9</string>
     <string name="sentry_url">https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17</string>
 
+    <string name="hint__search_by_address">по адресу</string>
     <string name="act_st_art_it_test_version">Тестовая версия (%1$s). \n За рабочей версией обратитесь, пожалуйста, в клиентский сервис</string>
     <string name="enter_system">Вход в систему</string>
     <string name="login">Логин</string>
@@ -15,6 +16,7 @@
     <string name="loading">Загрузка</string>
     <string name="choose">Выбрать</string>
     <string name="choose_all_in">Взять все</string>
+    <string name="take_selected">Взять выбранные</string>
     <string name="tv_no_fount_data">Список Путевых Листов пуст</string>
     <string name="choose_vehicle">Выбрать автомобиль</string>
     <!--   <string name="yandex_map_key">f7873ee7-b6a0-4527-8df1-215f37ba0f97</string>-->
@@ -25,8 +27,6 @@
     <string name="photo_save_error_toast">Неизвестная ошибка камеры</string>
     <string name="cancel">Отменить</string>
     <string name="done">Добавить</string>
-    <string name="service_before">Фотографии до обслуживания КП</string>
-    <string name="service_pickup_volume">Фотографии подбора</string>
     <string name="warning_detele">Вы действительно хотите удалить?</string>
     <string name="capture_button_alt">Capture</string>
     <string name="switch_camera_button_alt">Switch camera</string>
@@ -38,11 +38,8 @@
     <string name="capture_mode_hdr">HDR</string>
     <string name="capture_mode_night">Night</string>
     <string name="delete_button_alt">Delete</string>
-    <string name="delete_dialog">Delete current photo?</string>
-    <string name="delete_title">Confirm</string>
-    <string name="service_after">Фотографии после обслуживания КП</string>
     <string name="end_task">Досрочное завершение</string>
-    <string name="problem_on_point">Невывоз</string>
+    <string name="problem_on_point">Невывоз площадки</string>
     <string name="container_fail">Все оставшиеся контейнеры на площадке будут помечены как невывезенные.</string>
     <string name="finish_way">Завершить маршрут</string>
     <string name="finish_way_now">Досрочно завершить маршрут</string>
@@ -85,4 +82,11 @@
     <string name="problem_container">Невывоз контейнера</string>
     <string name="channel_description">CHANNEL_DESCRIPTION_FACT_WORKNOTE</string>
     <string name="channel_name">CHANNEL_NAME_FACT_WORKNOTE</string>
+    <string name="walkthrough_simplify_serve_step_a">\nВ этом режиме можно сгруппировать контейнеры.\n
+        \nТеперь несколько контейнеров одного типа или организации обслуживать удобнее и быстрее.\n
+        \nТакже нажав на Плюс, можно добавить \"подбор\".</string>
+    <string name="walkhrough_step_b_a">Переключение между режимами.</string>
+    <string name="walkhrough_step_b_b">Кол-во контейнеров на КП. \nПлюсом добавляется \"подбор\"</string>
+    <string name="walkhrough_step_b_c">Фото \"до\" и \"после\" для каждого контейнера.</string>
+    <string name="walkhrough_step_b_d">Кол-во сгруппированных контейнеров по типу</string>
 </resources>

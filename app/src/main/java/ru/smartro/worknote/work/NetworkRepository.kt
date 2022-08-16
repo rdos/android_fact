@@ -1,4 +1,4 @@
-package ru.smartro.worknote.awORKOLDs.service.network
+package ru.smartro.worknote.work
 
 import android.content.Context
 import android.util.Log
@@ -7,12 +7,15 @@ import com.google.gson.Gson
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
+import org.slf4j.LoggerFactory
 import retrofit2.Response
 import ru.smartro.worknote.App
+import ru.smartro.worknote.LoG
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
+import ru.smartro.worknote.awORKOLDs.service.network.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
@@ -20,21 +23,32 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.work.net.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.awORKOLDs.service.network.exception.BadRequestException
+//import ru.smartro.worknote.awORKOLDs.service.network.exception.THR
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
+import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
-import ru.smartro.worknote.toast
+import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
+import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
+import ru.smartro.worknote.log
 import ru.smartro.worknote.work.RealmRepository
+import ru.smartro.worknote.work.WorkOrderResponse_know1
+import java.util.zip.ZipEntry
 
 
 class NetworkRepository(private val context: Context) {
     private val TAG: String = "NetworkRepository--AAA"
 
     protected fun paramS() =  App.getAppParaMS()
+    
 
     fun auth(model: AuthBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "auth")
+        LoG.info( "auth")
         try {
             val response = RetrofitClient(context).apiService(false).auth(model)
             when {
@@ -42,8 +56,7 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    response.raw().request.url
-                    badRequest(response)
+                    THR.BadRequestLogin(response)
                     emit(Resource.error("Неверный логин или пароль", null))
                 }
             }
@@ -52,20 +65,24 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-      fun getVehicle(organisationId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "getVehicle.before")
+    suspend fun getVehicle(organisationId: Int) =
+        RetrofitClient(context).apiService(true).getVehicle(organisationId)
+    fun getVehicleOld(organisationId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
+        LoG.info( "getVehicle.before")
         try {
+
             val response = RetrofitClient(context)
+
                 .apiService(true).getVehicle(organisationId)
-            Log.d(TAG, "getVehicle.after ${response.body().toString()}")
+            log("getVehicle.after ${response.body()}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestVehicle(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    Log.d(TAG, "getVehicle.after errorResponse=${errorResponse}")
+                    log("getVehicle.after errorResponse=${errorResponse}")
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -73,6 +90,7 @@ class NetworkRepository(private val context: Context) {
             emit(Resource.network("Проблемы с подключением интернета", null))
         }
     }
+
 
     private fun insertBreakDown(data: List<ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.Data>?) {
         val db = RealmRepository(Realm.getDefaultInstance())
@@ -85,20 +103,20 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getBreakDownTypes() = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "getBreakDownTypes")
+        LoG.info( "getBreakDownTypes")
         try {
             val response = RetrofitClient(context)
                 .apiService(true).getBreakDownTypes()
-            Log.d(TAG, "getBreakDownTypes.after ${response.body().toString()}")
+            log("getBreakDownTypes.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     insertBreakDown(response.body()?.data)
 //                    emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestBreakdown_type(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    Log.d(TAG, "getBreakDownTypes.after errorResponse=${errorResponse}")
+                    log("getBreakDownTypes.after errorResponse=${errorResponse}")
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -119,20 +137,19 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getFailReason() = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "getFailReason.before")
+        LoG.info( "getFailReason.before")
         try {
             val response = RetrofitClient(context).apiService(true).getFailReason()
-            Log.d(TAG, "getFailReason.after ${response.body().toString()}")
+            log("getFailReason.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     insertFailReason(response.body()?.data)
 //                    emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestFailure_reason(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    Log.d(TAG, "getFailReason.after errorResponse=${errorResponse}")
-                    badRequest(response)
-
+                    log("getFailReason.after errorResponse=${errorResponse}")
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -152,128 +169,92 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getCancelWayReason() = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "getCancelWayReason.before")
+        LoG.info( "getCancelWayReason.before")
         try {
             val response = RetrofitClient(context).apiService(true).getCancelWayReason()
             when {
                 response.isSuccessful -> {
-                    Log.d(TAG, "getCancelWayReason.after ${response.body().toString()}")
+                    log("getCancelWayReason.after ${response.body().toString()}")
                     insertCancelWayReason(response.body()?.data)
 //                    emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestWork_order_cancelation_reason(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
         } catch (ex: Exception) {
-            Log.e(TAG, "getCancelWayReason.after", ex)
+            LoG.error("getCancelWayReason", ex)
             emit(Resource.network("Проблемы с подключением интернета", null))
         }
     }
 
-    fun getWayList(body: WayListBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "getWayList.before")
-
-        try {
-            val response = RetrofitClient(context)
-                .apiService(true).getWayList(body)
-            when {
-                response.isSuccessful -> {
-                    Log.d(TAG, "getWayList.after ${response.body().toString()}")
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    Log.d(TAG, "getWayList.after errorResponse=${errorResponse}")
-                    badRequest(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
+    suspend fun getWayList(body: WayListBody) = RetrofitClient(context).apiService(true).getWayList(body)
 
 
-    fun getWorkOrder(organisationId: Int, wayId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "getWorkOder.before")
+    suspend fun getWorkOrder(organisationId: Int, wayId: Int) =
+        RetrofitClient(context).apiService(true).getWorkOrder(organisationId, wayId)
 
-        try {
-            val response = RetrofitClient(context)
-                .apiService(true).getWorkOrder(organisationId, wayId)
-            Log.d(TAG, "getWorkOder.after ${response.body().toString()}")
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    badRequest(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
 
     fun progress(id: Int, body: ProgressBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "progress.before id=${id} body=${body}")
+        LoG.info( "progress.before id=${id} body=${body}")
         try {
             val response = RetrofitClient(context).apiService(true).progress(id, body)
-            Log.d(TAG, "progress.after ${response.body().toString()}")
+            log("progress.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestProgress(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    Log.d(TAG, "progress.after errorResponse=${errorResponse}")
-                    badRequest(response)
+                    log("progress.after errorResponse=${errorResponse}")
+
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "progress.after", e)
+            LoG.error("progress", e)
             emit(Resource.network("Проблемы с подключением интернета", null))
         }
     }
 
     fun completeWay(id: Int, body: CompleteWayBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "completeWay.before id=${id}, body=${body}")
+        LoG.info( "completeWay.before id=${id}, body=${body}")
         try {
             val response = RetrofitClient(context).apiService(true).complete(id, body)
-            Log.d(TAG, "completeWay.after ${response.body().toString()}")
+            log("completeWay.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestWorkorder__id__complete(response)
                     val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    Log.d(TAG, "completeWay.after errorResponse=${errorResponse}")
-                    badRequest(response)
+                    log("completeWay.after errorResponse=${errorResponse}")
+
                     emit(Resource.error(errorResponse.message, null))
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "completeWay.after", e)
+            LoG.error("completeWay", e)
             emit(Resource.network("Проблемы с подключением интернета", null))
         }
     }
 
     fun earlyComplete(id: Int, body: EarlyCompleteBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "earlyComplete.before id={$id}, body={$body}")
+        LoG.info( "earlyComplete.before id={$id}, body={$body}")
         try {
             val response = RetrofitClient(context).apiService(true).earlyComplete(id, body)
-            Log.d(TAG, "earlyComplete.after ${response.body().toString()}")
+            log("earlyComplete.after ${response.body().toString()}")
             val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-            Log.d(TAG, "earlyComplete.after errorResponse=${errorResponse}")
+            log("earlyComplete.after errorResponse=${errorResponse}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestWorkorder__id__early_complete(response)
 //                    App.getAppliCation().toast(result.msg)
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
@@ -284,7 +265,7 @@ class NetworkRepository(private val context: Context) {
     }
 
     suspend fun postSynchro(body: SynchronizeBody): Resource<SynchronizeResponse> {
-        Log.i(TAG, "synchronizeData.before")
+        LoG.info( "synchronizeData.before")
         return try {
             val response = RetrofitClient(context).apiService(true).postSynchro(body)
             when {
@@ -292,29 +273,30 @@ class NetworkRepository(private val context: Context) {
                     Resource.success(response.body())
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestPOSTsynchro(response)
                     Resource.error("Ошибка ${response.code()}", null)
                 }
             }
         } catch (ex: Exception) {
-            Log.e(TAG, "synchronizeData", ex)
+            LoG.error("postSynchro", ex)
             Resource.network("Проблемы с подключением интернета", null)
         }
     }
 
     fun sendLastPlatforms(body: SynchronizeBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "sendLastPlatforms.before")
+        LoG.info( "sendLastPlatforms.before")
 
         try {
             val response = RetrofitClient(context).apiService(true).postSynchro(body)
-            Log.d(TAG, "sendLastPlatforms.after ${response.body().toString()}")
+            log("sendLastPlatforms.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestPOSTsynchro(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
-                    badRequest(response)
+
                 }
             }
         } catch (e: Exception) {
@@ -322,8 +304,9 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    fun getOwners() = liveData(Dispatchers.IO, TIME_OUT) {
-        Log.i(TAG, "getOwners")
+    suspend fun getOwners() = RetrofitClient(context).apiService(false).getOwners()
+    fun getOwnersOld() = liveData(Dispatchers.IO, TIME_OUT) {
+        LoG.info( "getOwners")
 
         try {
             val response = RetrofitClient(context).apiService(false).getOwners()
@@ -332,8 +315,9 @@ class NetworkRepository(private val context: Context) {
                     emit(Resource.success(response.body()))
                 }
                 else -> {
+                    THR.BadRequestOwner(response)
                     emit(Resource.error("Ошибка ${response.code()}", null))
-                    badRequest(response)
+
                 }
             }
         } catch (e: Exception) {
@@ -342,7 +326,7 @@ class NetworkRepository(private val context: Context) {
     }
 
     suspend fun ping(pingBody: PingBody): Resource<PingBody> {
-        Log.i(TAG, "test_ping.before")
+        LoG.info( "test_ping.before")
         return try {
             val response = RetrofitClient(context).testApiService().ping(pingBody)
             when {
@@ -350,12 +334,12 @@ class NetworkRepository(private val context: Context) {
                     Resource.success(response.body())
                 }
                 else -> {
-                    badRequest(response)
+                    THR.BadRequestRPC(response)
                     Resource.error("Ошибка ${response.code()}", null)
                 }
             }
         } catch (ex: Exception) {
-            Log.e(TAG, "test_ping", ex)
+//            LoG.error( ex)
             Resource.network("Проблемы с подключением интернета", null)
         }
     }
@@ -383,19 +367,134 @@ enum class Status {
     NETWORK,
 }
 
+sealed class THR(code: Int) : Throwable(code.toString()) {
+    //    abstract val message: String
+    fun <T> sentToSentry(response: Response<T>){
+        if (response.code() in 400..599) {
+            val urlName = response.raw().request.url.encodedPath
+            Sentry.setTag("url_name", urlName)
+            Sentry.setTag("http_code", response.code().toString())
+            Sentry.setTag("url_host_name", response.raw().request.url.host)
 
-private fun <T> badRequest(response: Response<T>) {
-    if (response.code() in 400..599) {
-        val urlName = response.raw().request.url.encodedPath
-        Sentry.setTag("url_name", urlName)
-        Sentry.setTag("http_code", response.code().toString())
-        Sentry.setTag("url_host_name", response.raw().request.url.host)
-
-//        Sentry.setTag("user", AppPreferences.BoTlogin)
-        // TODO: replace  BadRequestException for post  @POST("synchro")
+            Sentry.setTag("user", App.getAppParaMS().userName)
+            // TODO: replace  BadRequestException for post  @POST("synchro")
 //        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
-        Sentry.captureException(BadRequestException(urlName))
+            Sentry.captureException(this)
+        }
     }
+
+
+    class BadRequestLogin(response: Response<AuthResponse>) : THR(response.code()) {
+        //        override val message = 70.0
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
+    class BadRequestOwner(response: Response<OrganisationResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
+    class BadRequestVehicle(response: Response<VehicleResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestBreakdown_type(response: Response<BreakDownResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestFailure_reason(response: Response<FailureReasonResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
+    class BadRequestWaybill(response: Response<WayListResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+//    class breakdown(response: String) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
+//    class failure(response: String) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
+    class BadRequestProgress(response: Response<ServedResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestWorkorder__id__complete(response: Response<EmptyResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
+    class BadRequestWork_order_cancelation_reason(response: Response<CancelationReasonResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestWorkorder__id__early_complete(response: Response<EmptyResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestPOSTsynchro(response: Response<SynchronizeResponse>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+    class BadRequestRPC(response: Response<PingBody>) : THR(response.code()) {
+        
+        init {
+            sentToSentry(response)
+        }
+
+    }
+//    BadRequestSynchro__o_id__w_id
+    class BadRequestSynchro__o_id__w_id(response: Response<WorkOrderResponse_know1>) : THR(response.code()) {
+
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
 }
 
 

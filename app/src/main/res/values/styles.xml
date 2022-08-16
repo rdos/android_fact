@@ -14,13 +14,6 @@
         <item name="buttonStyle">@style/MyButton</item>
     </style>
 
-    <style name="Problem" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <item name="colorPrimary">@color/dark_red</item>
-        <item name="colorPrimaryDark">#600202</item>
-        <item name="buttonStyle">@style/MyButton</item>
-        <item name="colorAccent">#A31C1C</item>
-    </style>
-
     <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="colorAccent">#fff</item>
     </style>

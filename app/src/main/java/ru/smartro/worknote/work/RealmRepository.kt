@@ -1,115 +1,29 @@
 package ru.smartro.worknote.work
 
-import android.util.Log
 import io.realm.*
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
+import ru.smartro.worknote.LoG
 import ru.smartro.worknote.andPOintD.LiveRealmData
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
-import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.awORKOLDs.util.NonPickupEnum
-import ru.smartro.worknote.awORKOLDs.util.PhotoTypeEnum
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.log
+import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import kotlin.math.round
 
 
 class RealmRepository(private val p_realm: Realm) {
     private val TAG: String = "RealmRepository"
+    
 
-    fun insertWayTask(woRKoRDeRknow1: WoRKoRDeR_know1) {
+    // TODO: ][3
+    private val mEmptyImageEntityList = RealmList<ImageEntity>()
 
-        fun mapMedia(data: List<String>): RealmList<ImageEntity> {
-            return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0,
-                coords = RealmList()) }
-        }
-
-
-        // TODO: 29.10.2021 ! it.volume = 0.0 ??Error
-        fun mapContainers(list: List<CoNTaiNeR_know1>, workorderId: Int): RealmList<ContainerEntity> {
-            return list.mapTo(RealmList()) {
-//                var volumeReal : Double? = null
-//                if (it.volume >  0) {
-//                    Log.e(TAG ,"mapContainers.it.volume >  0")
-//                    volumeReal = it.volume
-//                    Log.e(TAG ,"mapContainers.volumeReal = ${volumeReal}")
-//                }
-                ContainerEntity(
-                    workOrderId = workorderId,
-                    client = it.client,
-                    contacts = it.contacts,
-                    failureMedia = mapMedia(it.failureMedia),
-                    failureReasonId = it.failureReasonId,
-                    containerId = it.id,
-                    isActiveToday = it.isActiveToday,/* breakdownReasonId = it.breakdownReasonId,*/
-                    number = it.number,
-                    status = it.status,
-                    typeId = it.typeId,
-                    constructiveVolume = it.constructiveVolume,
-                    typeName = it.typeName,
-                    volume = it.volume
-                )
-            }
-        }
-
-        fun mapPlatforms(data: List<Platform_know1>, workorderId: Int): RealmList<PlatformEntity> {
-             val result = data.mapTo(RealmList()) {
-                PlatformEntity(
-                    workOrderId = workorderId,
-                    address = it.address,
-                    afterMedia = mapMedia(it.afterMedia),
-                    beforeMedia = mapMedia(it.beforeMedia),
-                    beginnedAt = it.beginnedAt,
-                    containers = mapContainers(it.coNTaiNeRKnow1s, workorderId),
-                    coords = RealmList(it.coords[0], it.coords[1]),
-                    coordLat = it.coords[0],
-                    coordLong = it.coords[1],
-                    failureMedia = mapMedia(it.failureMedia),
-                    failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
-                    finishedAt = it.finishedAt,
-                    platformId = it.id,
-                    name = it.name,
-                    updateAt = 0,
-                    srpId = it.srpId,
-                    status = it.status,
-                    /** volumeKGO = null,*/ icon = it.icon,
-                    orderTimeEnd = it.orderEndTime,
-                    orderTimeStart = it.orderStartTime,
-                    orderTimeAlert = it.orderAlertTime,
-                    orderTimeWarning = it.orderWarningTime,
-                    kgoServed = KGOEntity().copyKGOEntity(it.kgo_served),
-                    kgoRemaining = KGOEntity().copyKGOEntity(it.kgo_remaining)
-                )
-            }
-            return result
-        }
-
-        fun mapStart(data: STaRT_know1?): StartEntity? {
-            var result: StartEntity? = null
-            if (data != null) {
-                result= StartEntity(
-                    coords = RealmList(data.coords[0], data.coords[1]),
-                    name = data.name,
-                    id = data.id
-                )
-            }
-            return result
-        }
-
-
-        val wayTask = WorkOrderEntity(
-            id = woRKoRDeRknow1.id,
-            start_at = MyUtil.currentTime(),
-            name = woRKoRDeRknow1.name,
-            waste_type_id = woRKoRDeRknow1.waste_type?.id,
-            waste_type_name = woRKoRDeRknow1.waste_type?.name,
-            waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
-            platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id),
-            start = mapStart(woRKoRDeRknow1.STaRTknow1)
-        )
-
-        insUpdWorkOrders(wayTask, true)
+    fun insertWorkorder(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
+        val workOrderS = WorkOrderEntity.map(woRKoRDeRknow1List)
+        insUpdWorkOrders(workOrderS, true)
     }
 
     fun <T:RealmObject> RealmResults<T>.asLiveData() = LiveRealmData<T>(this)
@@ -119,28 +33,28 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //    fun findPlatforms(): List<PlatformEntity> {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //        Log.w(TAG, "r_dos/findPlatforms.before")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //        LoG.warn( "r_dos/findPlatforms.before")
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        p_realm.refresh()
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        var res = emptyList<PlatformEntity>()
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        // TODO: 25.10.2021 !!!???
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        //  return WayTaskEntity() is fail
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //        Log.w(TAG, "r_dos/findAll.before")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //        LoG.warn( "r_dos/findAll.before")
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        val realmResults: RealmResults<PlatformEntity>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        if (workOrderSIntArray.isEmpty()) {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //            realmResults = getQueryPlatform().findAll()
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        } else {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //            realmResults = getQueryPlatform().`in`("workOrderId", workOrderSIntArray).sort("updateAt").findAll()
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //        Log.w(TAG, "r_dos/findAll.after")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //        LoG.warn( "r_dos/findAll.after")
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        if (realmResults != null) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //            Log.w(TAG, "r_dos/copyFromRealm.before")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //            LoG.warn( "r_dos/copyFromRealm.before")
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //            res = p_realm.copyFromRealm(realmResults)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //            Log.w(TAG, "r_dos/copyFromRealm.after")
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //            Log.w(TAG, "r_dos/setEmptyImageEntity.before")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //            LoG.warn( "r_dos/copyFromRealm.after")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //            LoG.warn( "r_dos/setEmptyImageEntity.before")
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //            setEmptyImageEntity(res)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //            Log.w(TAG, "r_dos/setEmptyImageEntity.after")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //            LoG.warn( "r_dos/setEmptyImageEntity.after")
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //        Log.w(TAG, "r_dos/findPlatforms.after")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //        LoG.warn( "r_dos/findPlatforms.after")
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //        return res
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //    }
 
@@ -266,15 +180,15 @@ class RealmRepository(private val p_realm: Realm) {
     // TODO: 26.10.2021 oopS errorS "${entities.size}"
     //  так надо чтобы возможно поймать плавающую ошибку :(
     fun insertFailReason(entities: List<FailReasonEntity>) {
-        Log.d(TAG, "insertFailReason.before ${entities.size}")
+        log("insertFailReason.before ${entities.size}")
         p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }
-        Log.d(TAG, "insertFailReason.after")
+        log("insertFailReason.after")
     }
 
     fun insertCancelWayReason(entities: List<CancelWayReasonEntity>) {
-        Log.d(TAG, "insertCancelWayReason.before  ${entities.size}")
+        log("insertCancelWayReason.before  ${entities.size}")
         p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }
@@ -311,7 +225,7 @@ class RealmRepository(private val p_realm: Realm) {
             .findFirst()?.id!!
     }
 
-    fun updateSelectionVolume(platformId: Int, volumePickup: Double?) {
+    fun updateVolumePickup(platformId: Int, volumePickup: Double?) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
@@ -320,7 +234,6 @@ class RealmRepository(private val p_realm: Realm) {
             if (volumePickup == null) {
                 platformEntity?.pickupMedia = RealmList()
             }
-            platformEntity?.beginnedAt = MyUtil.currentTime()
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -339,7 +252,6 @@ class RealmRepository(private val p_realm: Realm) {
                 container.status = StatusEnum.SUCCESS
             }
 
-            platformEntity?.beginnedAt = MyUtil.currentTime()
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -376,36 +288,7 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun updateContainerFailure(platformId: Int, containerId: Int,
-                               problemComment: String, nonPickupType: NonPickupEnum,
-                               problem: String) {
-        Log.d(TAG, "updateContainerProblem.before platformId=${platformId}")
-        Log.d(TAG, "updateContainerProblem.containerId=${containerId}, problemComment=${problemComment}")
-        Log.d(TAG, "updateContainerProblem.problemType=${nonPickupType}, problem=${problem}")
-        p_realm.executeTransaction { realm ->
-            val container = realm.where(ContainerEntity::class.java)
-                .equalTo("containerId", containerId)
-                .findFirst()!!
-            val platform = getQueryPlatform()
-                .equalTo("platformId", platformId)
-                .findFirst()!!
-            when (nonPickupType) {
-                NonPickupEnum.BREAKDOWN -> {
-                    val problemId = findBreakdownByValue(realm, problem).id
-                    container.breakdownReasonId = problemId
-                }
-                NonPickupEnum.FAILURE -> {
-                    val problemId = findFailReasonByValue(realm, problem).id
-                    container.failureReasonId = problemId
-                    container.status = StatusEnum.ERROR
-                }
-            }
-            container.comment = problemComment
-            setEntityUpdateAt(platform)
-        }
-    }
-
-    fun updateNonPickupPlatform(platformId: Int, failureComment: String, problem: String) {
+    fun setStateFailureForPlatform(platformId: Int, problem: String, failureComment: String?=null) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform()
                 .equalTo("platformId", platformId)
@@ -419,8 +302,52 @@ class RealmRepository(private val p_realm: Realm) {
                     container.status = StatusEnum.ERROR
                 }
             }
+            if (!failureComment.isNullOrEmpty()) {
+                platform.failureComment = failureComment
+            }
+            val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
+                .findFirst()
+            workOrder?.calcInfoStatistics()
+            setEntityUpdateAt(platform)
+        }
+    }
 
-            platform.failureComment = failureComment
+    fun setStateFailureForContainer(platformId: Int, containerId: Int, problem: String, comment: String?=null) {
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            val containerEntity = getQueryContainer()
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val problemId = findFailReasonByValue(realm, problem).id
+            log("FIND CONTAINER NUMBER ${containerId}  problem: ${problemId}")
+            containerEntity.failureReasonId = problemId
+            if (!comment.isNullOrEmpty()) {
+                containerEntity.comment = comment
+            }
+            containerEntity.status = StatusEnum.ERROR
+            val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
+                .findFirst()
+            workOrder?.calcInfoStatistics()
+            setEntityUpdateAt(platform)
+        }
+    }
+
+    fun setStateBreakdownForContainer(platformId: Int, containerId: Int, problem: String, comment: String? = null) {
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            val containerEntity = getQueryContainer()
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val problemId = findBreakdownByValue(realm, problem).id
+            log("FIND CONTAINER NUMBER ${containerId} problem: ${problem} problemid: ${problemId}")
+            containerEntity.breakdownReasonId = problemId
+            if (!comment.isNullOrEmpty()) {
+                containerEntity.comment = comment
+            }
             val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
                 .findFirst()
             workOrder?.calcInfoStatistics()
@@ -450,7 +377,6 @@ class RealmRepository(private val p_realm: Realm) {
 
             workOrder?.calcInfoStatistics()
 
-            platform.beginnedAt = MyUtil.currentTime()
             setEntityUpdateAt(platform)
         }
     }
@@ -465,25 +391,23 @@ class RealmRepository(private val p_realm: Realm) {
 
             workOrder?.calcInfoStatistics()
 
-            platform.beginnedAt = MyUtil.currentTime()
             setEntityUpdateAt(platform)
         }
     }
 
     fun setEmptyImageEntity(platforms: List<PlatformEntity>) {
-        val emptyImageEntityList = RealmList<ImageEntity>()
         platforms.forEach { platform ->
             platform.afterMediaSize = platform.afterMedia.size
             platform.beforeMediaSize = platform.beforeMedia.size
-            platform.afterMedia = emptyImageEntityList
-            platform.beforeMedia = emptyImageEntityList
-            platform.failureMedia = emptyImageEntityList
-            platform.pickupMedia = emptyImageEntityList
-            platform.kgoRemaining?.media = emptyImageEntityList
-            platform.kgoServed?.media = emptyImageEntityList
+            platform.afterMedia = mEmptyImageEntityList
+            platform.beforeMedia = mEmptyImageEntityList
+            platform.failureMedia = mEmptyImageEntityList
+            platform.pickupMedia = mEmptyImageEntityList
+            platform.kgoRemaining?.media = mEmptyImageEntityList
+            platform.kgoServed?.media = mEmptyImageEntityList
             platform.containers.forEach { container ->
-                container.failureMedia = emptyImageEntityList
-                container.breakdownMedia = emptyImageEntityList
+                container.failureMedia = mEmptyImageEntityList
+                container.breakdownMedia = mEmptyImageEntityList
             }
         }
     }
@@ -512,18 +436,18 @@ class RealmRepository(private val p_realm: Realm) {
             .greaterThanOrEqualTo("coordLong", minLong)
             .lessThanOrEqualTo("coordLong", maxLong)
             .findAll()
-            .filter { it.getPlatformStatus() == StatusEnum.NEW  }
+            .filter { it.getStatusPlatform() == StatusEnum.NEW  }
         if (platformByCoord.isNullOrEmpty()) {
             return res
         }
         if (platformByCoord.size == 1) {
             res = platformByCoord[0]?.let { p_realm.copyFromRealm(it) }
             if (res != null) {
-                Log.w(TAG, "res.address=${res.address} ")
+                LoG.warn( "res.address=${res.address} ")
             }
         }
         if (res == null) {
-            Log.w(TAG, "platformByCoord.count=${platformByCoord.size} ")
+            LoG.warn( "platformByCoord.count=${platformByCoord.size} ")
         }
         return res
     }
@@ -577,7 +501,7 @@ class RealmRepository(private val p_realm: Realm) {
         p_realm.executeTransaction {
             list.forEach {
                 val platform = _getPlatformEntity_know0(it.platformId!!)
-                if (platform.getPlatformStatus() != StatusEnum.NEW && !platform.networkStatus!!) {
+                if (platform.getStatusPlatform() != StatusEnum.NEW && !platform.networkStatus!!) {
                     platform.networkStatus = true
                 }
             }
@@ -601,7 +525,7 @@ class RealmRepository(private val p_realm: Realm) {
     fun findContainersVolume(workOrderId: Int): Double {
         var totalKgoVolume = 0.0
         var totalContainersVolume = 0.0
-        Log.d(TAG, "findContainersVolume.before")
+        log("findContainersVolume.before")
 
 
         val allContainers = p_realm.copyFromRealm(
@@ -609,16 +533,16 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("workOrderId", workOrderId)
                 .findAll()
         )
-        Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
+        log("findContainersVolume.totalContainersVolume=${totalContainersVolume}")
         allContainers.forEach { container ->
             container.volume?.let{
                 val filledVolume = container.constructiveVolume!! * (container.convertVolumeToPercent() / 100)
-                Log.d(TAG, "findContainersVolume.filledVolume=${filledVolume}")
+                log("findContainersVolume.filledVolume=${filledVolume}")
                 totalContainersVolume += filledVolume
-                Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
+                log("findContainersVolume.totalContainersVolume=${totalContainersVolume}")
             }
         }
-        Log.d(TAG, "findContainersVolume.totalContainersVolume=${totalContainersVolume}")
+        log("findContainersVolume.totalContainersVolume=${totalContainersVolume}")
 
         val allPlatforms = p_realm.copyFromRealm(
             getQueryPlatform()
@@ -636,19 +560,13 @@ class RealmRepository(private val p_realm: Realm) {
                 totalKgoVolume += it
             } //код всегда показывает, где(когда) Люди ошиблись
         }
-        Log.d(TAG, "findContainersVolume.totalKgoVolume=${totalKgoVolume}")
+        log("findContainersVolume.totalKgoVolume=${totalKgoVolume}")
 
         val result = totalContainersVolume + totalKgoVolume
-        Log.d(TAG, "findContainersVolume.result=${result}")
+        log("findContainersVolume.result=${result}")
         val resultRound = round(result * 100) / 100
-        Log.d(TAG, "findContainersVolume.resultRound=${resultRound}")
+        log("findContainersVolume.resultRound=${resultRound}")
         return resultRound
-    }
-
-    fun findPlatformByCoordinate(lat: Double, lon: Double): PlatformEntity? {
-        return p_realm.copyFromRealm(
-            getQueryPlatform().findAll()
-        ).find { it.coords[0] == lat && it.coords[1] == lon }
     }
 
     fun <E : RealmModel?> createObjectFromJson(clazz: Class<E>, json: String): E {
@@ -706,9 +624,7 @@ class RealmRepository(private val p_realm: Realm) {
         val result = p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
-        Log.d("TEST:::", "PLTFRMS LIST : ${result.size}")
-        val filteredList = result.filter { it.getPlatformStatus() != StatusEnum.NEW && it.beginnedAt != null }
-        Log.d("TEST:::", "FILTERED LIST : ${filteredList.size}")
+        val filteredList = result.filter { it.getStatusPlatform() != StatusEnum.NEW && it.beginnedAt != null }
         return filteredList
     }
 
@@ -716,10 +632,89 @@ class RealmRepository(private val p_realm: Realm) {
         val result = p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
         )
-        val filteredList = result.filter { it.getPlatformStatus() == StatusEnum.NEW }
+        val filteredList = result.filter { it.getStatusPlatform() == StatusEnum.NEW }
         return filteredList
     }
 
+    fun addBeforeMedia(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            if (platformEntity?.beginnedAt == null) {
+                platformEntity?.beginnedAt = MyUtil.currentTime()
+            }
+            platformEntity?.beforeMedia = mEmptyImageEntityList
+            platformEntity?.beforeMedia?.addAll(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun addKgoServed(platformId: Int, imageS: List<ImageEntity>) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.kgoServed?.media = mEmptyImageEntityList
+            platformEntity!!.addServerKGOMedia(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun addPlatformKgoRemaining(platformId: Int, imageS: List<ImageEntity>) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.kgoRemaining?.media = mEmptyImageEntityList
+            platformEntity!!.addRemainingKGOMedia(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun addPlatformPickupMedia(platformId: Int, imageS: List<ImageEntity>) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity!!.pickupMedia = mEmptyImageEntityList
+            platformEntity.pickupMedia.addAll(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun addAfterMedia(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.afterMedia = mEmptyImageEntityList
+            platformEntity?.afterMedia?.addAll(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun addBeforeMediaSimplifyServe(platformId: Int, imageS: List<ImageEntity>) {
+        addBeforeMedia(platformId, imageS)
+    }
+
+    fun addAfterMediaSimplifyServe(platformId: Int, imageS: List<ImageEntity>) {
+        addAfterMedia(platformId, imageS)
+    }
+
+    fun addFailureMediaPlatform(platformId: Int, imageS: List<ImageEntity>) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            if (platformEntity?.beginnedAt == null) {
+                platformEntity?.beginnedAt = MyUtil.currentTime()
+            }
+            platformEntity?.failureMedia = mEmptyImageEntityList
+            platformEntity?.failureMedia?.addAll(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
 
     /** добавление фото в платформу **/
     fun updatePlatformMedia(imageFor: Int, platformId: Int, imageEntity: ImageEntity) {
@@ -727,28 +722,15 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
-            when (imageFor) {
-                PhotoTypeEnum.forAfterMedia -> {
-                    platformEntity?.afterMedia?.add(imageEntity)
-                }
-                PhotoTypeEnum.forBeforeMedia -> {
-                    platformEntity?.beginnedAt = MyUtil.currentTime()
-                    platformEntity?.beforeMedia?.add(imageEntity)
-                }
-                PhotoTypeEnum.forPlatformProblem -> {
-                    platformEntity?.failureMedia?.add(imageEntity)
-                }
-                PhotoTypeEnum.forPlatformPickupVolume -> {
-                    platformEntity?.pickupMedia?.add(imageEntity)
-                }
-                PhotoTypeEnum.forServedKGO -> {
-                    platformEntity!!.addServerKGOMedia(imageEntity)
-                }
-                PhotoTypeEnum.forRemainingKGO -> {
-                    platformEntity!!.addRemainingKGOMedia(imageEntity)
-                }
-            }
-            setEntityUpdateAt(platformEntity)
+//            when (imageFor) {
+//              PhotoTypeEnum.forSimplifyServeAfter -> {
+//
+//                }
+//                PhotoTypeEnum.forSimplifyServeBefore -> {
+//                    platformEntity?.beforeMedia?.add(imageEntity)
+//                }
+//            }
+
         }
     }
 
@@ -766,6 +748,36 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun addFailureMediaContainer(platformId: Int, containerId: Int, imageS: List<ImageEntity>) {
+        p_realm.executeTransaction { realm ->
+            val containerEntity = getQueryContainer()
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            containerEntity.failureMedia = mEmptyImageEntityList
+            containerEntity.failureMedia.addAll(imageS)
+
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun addBreakdownMediaContainer(platformId: Int, containerId: Int, imageS: List<ImageEntity>) {
+        p_realm.executeTransaction { realm ->
+            val containerEntity = getQueryContainer()
+                .equalTo("containerId", containerId)
+                .findFirst()!!
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            containerEntity.breakdownMedia = mEmptyImageEntityList
+            containerEntity.breakdownMedia.addAll(imageS)
+
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
     fun updateContainerMedia(imageFor: Int,
         platformId: Int, containerId: Int, imageEntity: ImageEntity
     ) {
@@ -777,85 +789,174 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             when (imageFor) {
-                PhotoTypeEnum.forContainerFailure -> {
-                    containerEntity.failureMedia.add(imageEntity)
-                }
-                PhotoTypeEnum.forContainerBreakdown -> {
-                    containerEntity.breakdownMedia.add(imageEntity)
-                }
+
+//                PhotoTypeEnum.forContainerBreakdown -> {
+//
+//                }
             }
 
             setEntityUpdateAt(platformEntity)
         }
     }
     /** удалить фото с контейнера **/
-    fun removeContainerMedia(photoFor: Int,platformId: Int, containerId: Int, imageBase64: ImageEntity) {
-        p_realm.executeTransaction { realm ->
-            val containerEntity = realm.where(ContainerEntity::class.java)
-                .equalTo("containerId", containerId)
-                .findFirst()!!
-            val platformEntity = getQueryPlatform()
-                .equalTo("platformId", platformId)
-                .findFirst()!!
+//    fun removeContainerMedia(photoFor: Int,platformId: Int, containerId: Int, imageBase64: ImageEntity) {
+//        p_realm.executeTransaction { realm ->
+//            val containerEntity = realm.where(ContainerEntity::class.java)
+//                .equalTo("containerId", containerId)
+//                .findFirst()!!
+//            val platformEntity = getQueryPlatform()
+//                .equalTo("platformId", platformId)
+//                .findFirst()!!
+//
+//            when (photoFor) {
+//                PhotoTypeEnum.forContainerFailure -> {
+//                    containerEntity.failureMedia.remove(imageBase64)
+//                }
+//                PhotoTypeEnum.forContainerBreakdown -> {
+//                    containerEntity.breakdownMedia.remove(imageBase64)
+//                }
+//            }
+//            setEntityUpdateAt(platformEntity)
+//        }
+//    }
 
-            when (photoFor) {
-                PhotoTypeEnum.forContainerFailure -> {
-                    containerEntity.failureMedia.remove(imageBase64)
-                }
-                PhotoTypeEnum.forContainerBreakdown -> {
-                    containerEntity.breakdownMedia.remove(imageBase64)
-                }
-            }
-            setEntityUpdateAt(platformEntity)
-        }
+    fun getImageList(platformId: Int, containerId: Int, photoFor: Int): List<ImageEntity> {
+        val platformEntity = p_realm.where(PlatformEntity::class.java).equalTo("platformId", platformId).findFirst()
+        var result = emptyList<ImageEntity>()
+//        var md5List: RealmList<ImageEntity>? = null
+//        when (photoFor) {
+//            PhotoTypeEnum.forBeforeMedia -> {
+//                md5List = platformEntity!!.beforeMedia
+//            }
+//            PhotoTypeEnum.forAfterMedia -> {
+//                md5List = platformEntity!!.afterMedia
+//            }
+//            PhotoTypeEnum.forPlatformProblem -> {
+//                md5List = platformEntity!!.failureMedia
+//            }
+//            PhotoTypeEnum.forPlatformPickupVolume -> {
+//                md5List = platformEntity!!.pickupMedia
+//            }
+//            PhotoTypeEnum.forServedKGO -> {
+//                md5List = platformEntity!!.kgoServed!!.media
+//            }
+//            PhotoTypeEnum.forRemainingKGO -> {
+//                md5List = platformEntity!!.kgoRemaining!!.media
+//            }
+//            PhotoTypeEnum.forContainerFailure -> {
+//                val containerEntity = p_realm.where(ContainerEntity::class.java)
+//                    .equalTo("containerId", containerId)
+//                    .findFirst()!!
+//                md5List = containerEntity.failureMedia
+//            }
+//            PhotoTypeEnum.forContainerBreakdown -> {
+//                val containerEntity = p_realm.where(ContainerEntity::class.java)
+//                    .equalTo("containerId", containerId)
+//                    .findFirst()!!
+//                md5List = containerEntity.breakdownMedia
+//            }
+////            else -> {
+////                md5List = emptyList()
+////            }
+//        }
+////        val result = realm.copyFromRealm(realm.where(ImageEntity::class.java).findAll().filter { it.md5 in (md5List) }
+////        )
+//        if(md5List == null) {
+//            return result
+//        }
+//        result = p_realm.copyFromRealm(md5List)
+        return result
     }
 
     /** удалить фото с платформы **/
     fun removePlatformMedia(imageFor: Int, imageBase64: ImageEntity, platformId: Int) {
-        p_realm.executeTransaction { realm ->
-            val platformEntity = getQueryPlatform()
-                .equalTo("platformId", platformId).findFirst()
-            when (imageFor) {
-                PhotoTypeEnum.forBeforeMedia -> {
-                    platformEntity?.beforeMedia?.remove(imageBase64)
-                }
-
-                PhotoTypeEnum.forAfterMedia -> {
-                    platformEntity?.afterMedia?.remove(imageBase64)
-                }
-                PhotoTypeEnum.forPlatformProblem -> {
-                    platformEntity?.failureMedia?.remove(imageBase64)
-                }
-
-                PhotoTypeEnum.forPlatformPickupVolume -> {
-                    platformEntity!!.pickupMedia.remove(imageBase64)
-                }
-                PhotoTypeEnum.forServedKGO -> {
-                    platformEntity!!.kgoServed!!.media.remove(imageBase64)
-                }
-                PhotoTypeEnum.forRemainingKGO -> {
-                    platformEntity!!.kgoRemaining!!.media.remove(imageBase64)
-                }
-            }
-            setEntityUpdateAt(platformEntity)
-        }
+//        p_realm.executeTransaction { realm ->
+//            val platformEntity = getQueryPlatform()
+//                .equalTo("platformId", platformId).findFirst()
+//            when (imageFor) {
+//                PhotoTypeEnum.forBeforeMedia -> {
+//                    platformEntity?.beforeMedia?.remove(imageBase64)
+//                }
+//
+//                PhotoTypeEnum.forAfterMedia -> {
+//                    platformEntity?.afterMedia?.remove(imageBase64)
+//                }
+//                PhotoTypeEnum.forPlatformProblem -> {
+//                    platformEntity?.failureMedia?.remove(imageBase64)
+//                }
+//
+//                PhotoTypeEnum.forPlatformPickupVolume -> {
+//                    platformEntity!!.pickupMedia.remove(imageBase64)
+//                }
+//                PhotoTypeEnum.forServedKGO -> {
+//                    platformEntity!!.kgoServed!!.media.remove(imageBase64)
+//                }
+//                PhotoTypeEnum.forRemainingKGO -> {
+//                    platformEntity!!.kgoRemaining!!.media.remove(imageBase64)
+//                }
+//            }
+//            setEntityUpdateAt(platformEntity)
+//        }
     }
 
     private fun setEntityUpdateAt(entity: PlatformEntity?) {
         entity?.updateAt = MyUtil.timeStampInSec()
     }
 
-
-    fun insUpdWorkOrders(workOrder: WorkOrderEntity, isInfoChange: Boolean = true): WorkOrderEntity  {
-        p_realm.executeTransaction { realm ->
-            if (isInfoChange) {
-                workOrder.calcInfoStatistics()
-            }
-            realm.insertOrUpdate(workOrder)
+    private fun _changePlatformSCoordinate(platformS: List<PlatformEntity>) {
+//        TODO("Not yet implemented")
+        //          lat=0,000133755 это 15 метров
+        val LAT1M = 0.000008917
+        val LONG1M = 0.00001488
+        //val alpha: Double = idx * Math.PI /180
+        //          long=0,0002232 это 15 метров
+        //var koef = 15f + platforms.size
+        val koef = 1f
+        var stepLat = LAT1M * koef
+        var stepLong = LONG1M * koef
+        for( idx in 1..platformS.size-1) {
+            val platform = platformS[idx]
+            val xLat: Double = platform.coordLat + stepLat
+            val yLong: Double = platform.coordLong + stepLong
+            LoG.warn( "changePlatformSCoordinate.platform.coordLat= ${platform.coordLat}.old")
+            LoG.warn( "changePlatformSCoordinate.platform.coordLong= ${platform.coordLong}.old")
+            platform.coordLat = xLat
+            platform.coordLong = yLong
+            LoG.warn( "changePlatformSCoordinate.platform.coordLat= ${platform.coordLat}.new")
+            LoG.warn( "changePlatformSCoordinate.platform.coordLong= ${platform.coordLong}.new")
+            stepLat += LAT1M * koef
+            stepLong += LONG1M * koef
         }
-        return workOrder
     }
 
+    private fun insUpdWorkOrders(workOrderS: RealmList<WorkOrderEntity>, isInfoChange: Boolean = true) {
+        p_realm.executeTransaction { realm ->
+            for (workOrder in workOrderS) {
+                if (isInfoChange) {
+                    workOrder.calcInfoStatistics()
+                }
+                realm.insertOrUpdate(workOrder)
+            }
+            val platformS = getQueryPlatform(true).findAll()
+            for (platform in platformS) {
+                var platformSForChange = _getPlatformSForChange(platform, platformS)
+                //todo: count(-ом) ограничить? не зациклиться ли?)
+                while (platformSForChange.size > 1) {
+                    _changePlatformSCoordinate(platformSForChange)
+                    platformSForChange = _getPlatformSForChange(platform, platformS)
+                }
+            }
+            realm.insertOrUpdate(platformS)
+        }
+//        return workOrder
+    }
+
+    private fun _getPlatformSForChange(platform: PlatformEntity, platformS: RealmResults<PlatformEntity>): List<PlatformEntity> {
+        val platformSForChange = platformS.filter {
+            it.coordLat == platform.coordLat && it.coordLong == platform.coordLong
+        }
+        return platformSForChange
+    }
 
 
                 private fun todo_know1(workOrderId: Int, isShowForUser: Boolean): WorkOrderEntity {
@@ -872,13 +973,13 @@ class RealmRepository(private val p_realm: Realm) {
                 }
 
     fun setWorkOrderIsShowForUser(workOrderS: List<WorkOrderEntity>) {
-        Log.i(TAG, "setWorkOrderIsShowForUser.before")
+        LoG.info( "setWorkOrderIsShowForUser.before")
         p_realm.executeTransaction { realm ->
             for (workorder in workOrderS) {
                 todo_know1(workorder.id, workorder.isShowForUser)
             }
         }
-        Log.w(TAG, "setWorkOrderIsShowForUser.after")
+        LoG.warn( "setWorkOrderIsShowForUser.after")
 }
 
     fun setNextProcessDate(workOrder: WorkOrderEntity) {
@@ -932,11 +1033,14 @@ class RealmRepository(private val p_realm: Realm) {
                 res = false
             }
         }
-        Log.d(TAG, "hasWorkOrderInProgress.${res}")
+        log("hasWorkOrderInProgress.${res}")
         return res
     }
 
-    private fun getQueryPlatform(): RealmQuery<PlatformEntity> {
+    private fun getQueryPlatform(isForceMode: Boolean = false): RealmQuery<PlatformEntity> {
+        if (isForceMode) {
+            return p_realm.where(PlatformEntity::class.java)
+        }
         return p_realm.where(PlatformEntity::class.java)
             .equalTo("isWorkOrderProgress", true)
             .equalTo("isWorkOrderComplete", false)
@@ -975,5 +1079,18 @@ class RealmRepository(private val p_realm: Realm) {
 
     fun close() {
         p_realm.close()
+    }
+
+    fun updatePlatformServedContainers(platformId: Int, newServedContainers: List<ServedContainers>) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+
+            platformEntity?.servedContainers?.apply {
+                clear()
+                addAll(newServedContainers)
+            }
+        }
     }
 }

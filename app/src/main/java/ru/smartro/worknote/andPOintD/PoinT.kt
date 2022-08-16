@@ -12,7 +12,7 @@ class PoinT(latitude: Double, longitude: Double,
             private val pointTime: Long?, private val pointAccuracy: Float?
 ): Point(latitude, longitude) {
 
-    constructor() : this(Dnull, Dnull, Lnull, Fnull) {
+    constructor() : this(Dnull, Dnull, LTIMEnull, Fnull) {
         isFakeGPS = true
     }
 
@@ -45,10 +45,9 @@ class PoinT(latitude: Double, longitude: Double,
         return res
     }
 
-    fun inImageEntity(imageBase64: String, isNoLimitPhoto: Boolean): ImageEntity {
+    fun inImageEntity(imageBase64: String): ImageEntity {
         val imageEntity = ImageEntity(imageBase64, MyUtil.timeStampInSec(),
             PointTOBaseData(), PoinAccuracyTO_SRV(), PointTimeToLastKnowTime_SRV())
-        imageEntity.isNoLimitPhoto = isNoLimitPhoto
         return imageEntity
     }
 
