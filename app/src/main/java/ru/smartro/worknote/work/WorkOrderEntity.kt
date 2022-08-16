@@ -3,7 +3,6 @@ package ru.smartro.worknote.work
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -11,6 +10,7 @@ import io.realm.Realm
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
@@ -51,6 +51,8 @@ open class WorkOrderEntity(
     var isShowForUser: Boolean = true,
 
     ) : Serializable, RealmObject() {
+
+
 
     fun calcInfoStatistics() {
         var platformsCnt = 0
@@ -111,6 +113,7 @@ open class WorkOrderEntity(
     }
 
     companion object {
+        
         private fun mapMedia(data: List<String>): RealmList<ImageEntity> {
             return data.mapTo(RealmList()) {
                 ImageEntity(
@@ -125,9 +128,9 @@ open class WorkOrderEntity(
             return list.mapTo(RealmList()) {
 //                var volumeReal : Double? = null
 //                if (it.volume >  0) {
-//                    Log.e(TAG ,"mapContainers.it.volume >  0")
+//                    LoG.error("mapContainers.it.volume >  0")
 //                    volumeReal = it.volume
-//                    Log.e(TAG ,"mapContainers.volumeReal = ${volumeReal}")
+//                    LoG.error("mapContainers.volumeReal = ${volumeReal}")
 //                }
                 ContainerEntity(
                     workOrderId = workorderId,
@@ -211,7 +214,7 @@ open class WorkOrderEntity(
                     res.add(workOrder)
                 }
             } catch (eXthr: Exception) {
-                Log.e("TAGS", "map", eXthr)
+                LoG.error("eXthr", eXthr)
             }
             return res
         }
@@ -486,8 +489,8 @@ open class PlatformEntity(
             val today = getDeviceDateTime()
             val diff: Long = orderEndTime.time - today.time
             val minutes = diff / (1000 * 60)
-            Log.d("AAAA", this.orderTimeWarning!!)
-            Log.d("AAAA", minutes.toString())
+            LoG.error( this.orderTimeWarning!!)
+            LoG.error( minutes.toString())
             if (minutes < 0) {
                 result = true
             }
@@ -607,7 +610,7 @@ open class PlatformEntity(
         try {
             kgoVolumeDouble = kgoVolume.toDouble()
         } catch (ex: Exception) {
-            Log.e("TMP", "setRemainingKGOVolume", ex)
+            LoG.error("setServedKGOVolume", ex)
         }
         this.kgoServed?.let{
             it.volume = kgoVolumeDouble
@@ -620,14 +623,16 @@ open class PlatformEntity(
         try {
             kgoVolumeDouble = kgoVolume.toDouble()
         } catch (ex: Exception) {
-            Log.e("TMP", "setRemainingKGOVolume", ex)
+            LoG.error("ex", ex)
         }
         this.kgoRemaining?.let{
             it.volume = kgoVolumeDouble
         }
     }
 
-
+    companion object {
+        
+    }
 
 
 //    fun createServedKGO(realm: Realm): KGOEntity {

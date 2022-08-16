@@ -14,9 +14,12 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import org.slf4j.LoggerFactory
+import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
+import ru.smartro.worknote.log
 
 // TODO: 22.10.2021 !!!когда?
 class ExtendedContainerAdapter(
@@ -29,6 +32,7 @@ class ExtendedContainerAdapter(
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_adapter, parent, false)
         return OwnerViewHolder(view, activity)
     }
+    
 
     override fun getItemCount(): Int {
         return containers.size
@@ -49,7 +53,7 @@ class ExtendedContainerAdapter(
             } else {
                 listener.startContainerService(item = containers[position])
             }
-            Log.d("ContainerPointAdapter", "onBindViewHolder: true")
+            log("onBindViewHolder: true")
         }
         val tvVolume = holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__volume)
         tvVolume.text =  "${container.getVolumeInPercent()}%"
@@ -74,22 +78,22 @@ class ExtendedContainerAdapter(
 
     private fun showTakeInactiveContainerAlert(context: Context, next: () -> Any) {
         try {
-            lateinit var alertDialog: AlertDialog
+            lateinit var alertDiaLoG: AlertDialog
             val builder = AlertDialog.Builder(context)
             val view = (context as Activity).layoutInflater.inflate(R.layout.alert_take_inactive_container, null)
             view.findViewById<AppCompatButton>(R.id.acb_alert_inactive_container___accept).setOnClickListener {
                 next()
-                alertDialog.dismiss()
+                alertDiaLoG.dismiss()
             }
             view.findViewById<AppCompatButton>(R.id.acb_alert_inactive_container___decline).setOnClickListener {
-                alertDialog.dismiss()
+                alertDiaLoG.dismiss()
             }
             builder.setView(view)
-            alertDialog = builder.create()
-            alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            alertDialog.show()
+            alertDiaLoG = builder.create()
+            alertDiaLoG.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDiaLoG.show()
         } catch (e: Exception) {
-            Log.e("ALERT INACTIVE CONTAINER :::", e.stackTraceToString())
+            LoG.error( e.stackTraceToString())
         }
     }
 

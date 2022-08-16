@@ -18,6 +18,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.abs.AbstractBottomDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.ac.MainAct
 
 
@@ -63,7 +64,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
         }
 
         val apbFailure = view.findViewById<AppCompatButton>(R.id.apb_fragment_container_serve_failure)
-        Log.d("TEST:::", "fucked up : ${containerEntity.containerId} : ${containerEntity.isFailureNotEmpty()}")
+        log("fucked up : ${containerEntity.containerId} : ${containerEntity.isFailureNotEmpty()}")
         if (containerEntity.isFailureNotEmpty()) {
             setUseButtonStyleBackgroundRed(apbFailure)
         }

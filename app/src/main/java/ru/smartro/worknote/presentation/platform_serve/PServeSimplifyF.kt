@@ -1,15 +1,14 @@
 package ru.smartro.worknote.presentation.platform_serve
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.platform_serve.adapters.SimplifiedContainerAdapter
-import ru.smartro.worknote.presentation.platform_serve.adapters.TypedContainerAdapter
 
 
 class PServeSimplifyF : AFragment() {
@@ -50,7 +49,7 @@ class PServeSimplifyF : AFragment() {
 
         vm.mServedContainers.observe(viewLifecycleOwner) { list ->
             if(list != null) {
-                Log.d("TEST ::::", "m SERVED CONTAINERS : ${list}")
+                log("m SERVED CONTAINERS : ${list}")
                 adapterCurrentTask.served = list
             }
         }
