@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.LoG
-import ru.smartro.worknote.andPOintD.BaseViewModel
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.log
 import ru.smartro.worknote.saveJSON
 import ru.smartro.worknote.work.Resource
@@ -17,7 +17,7 @@ import ru.smartro.worknote.work.THR
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 import ru.smartro.worknote.work.WorkOrderResponse_know1
 
-class StartWorkOrderViewModel(application: Application) : BaseViewModel(application) {
+class StartWorkOrderViewModel(app: Application) : AViewModel(app) {
 
     // WORKORDERS
     private val _workOrderList: MutableLiveData<Resource<WorkOrderResponse_know1>> = MutableLiveData(null)

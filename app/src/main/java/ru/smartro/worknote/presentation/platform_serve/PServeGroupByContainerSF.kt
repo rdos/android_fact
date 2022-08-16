@@ -9,13 +9,14 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.platform_serve.adapters.PServeGroupedByClientsAdapter
 import ru.smartro.worknote.toast
 
 
-class PServeByTypesF : AFragment() {
+class PServeGroupByContainerSF : AFragment() {
     private var mBackPressedCnt: Int = 2
 
     private var btnCompleteTask: AppCompatButton? = null

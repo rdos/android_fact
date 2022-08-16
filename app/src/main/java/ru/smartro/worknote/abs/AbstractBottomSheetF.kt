@@ -9,7 +9,7 @@ import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log
 
-abstract class AbstractBottomDialog : BottomSheetDialogFragment() {
+abstract class AbstractBottomSheetF : BottomSheetDialogFragment() {
     
     protected var TAG : String = "${this::class.simpleName}"
     protected fun getAct() = requireActivity() as AAct

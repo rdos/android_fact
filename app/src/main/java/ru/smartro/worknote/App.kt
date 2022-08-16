@@ -47,13 +47,10 @@ import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.andPOintD.AndRoid
-import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -161,11 +158,6 @@ class App : AApp() {
         LoG.info("on App created App.onCreate onAppCreate")
         sentryInit()
         initRealm()
-        startKoin {
-            androidLogger()
-            androidContext(this@App)
-            modules(listOf(viewModelModule))
-        }
 //        try {    // Add a breadcrumb that will be sent with the next event(s)//            throw Exception("This is a devel.")//        } catch (e: Exception) {
 //            Sentry.captureException(e) //        }                                             //        val objectAnimator: ObjectAnimator = ObjectAnimator.ofFloat( //            mLlcMap, "alpha", 0f
 //        ) //        objectAnimator.setDuration(4000);
@@ -656,7 +648,7 @@ fun Fragment.toast(text: String? = "") {
 
 }
 
-fun BaseViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
     fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
         var dirPath = App.getAppliCation().dataDir.absolutePath
         if(containerUuid == null) {

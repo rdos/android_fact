@@ -16,15 +16,14 @@ import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_NAME
-import ru.smartro.worknote.abs.AbstractBottomDialog
+import ru.smartro.worknote.abs.AbstractBottomSheetF
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.log
-import ru.smartro.worknote.presentation.ac.MainAct
 
 
-class ContainerServeBottomDialog : AbstractBottomDialog() {
+class ContainerServeF : AbstractBottomSheetF() {
 
-    private val viewModel: PServeViewModel by viewModels(ownerProducer = { requireParentFragment() })
+    private val viewModel: VMPServe by viewModels(ownerProducer = { requireParentFragment() })
     private var volume: Double? = null
 
     private var rgPercents: RadioGroup? = null
@@ -50,12 +49,11 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         p_id = arguments?.getString(ARGUMENT_NAME___PARAM_NAME)!!.toInt()
         p_container_id = arguments?.getInt(ARGUMENT_NAME___PARAM_ID)!!
 
         Log.d("TEST::::", "DIALOG:: PL :${viewModel.mPlatformEntity.value}")
-
-        log("fucked up : ${containerEntity.containerId} : ${containerEntity.isFailureNotEmpty()}")
 
         rgPercents = view.findViewById(R.id.enter_info_percent_rg)
         apbFailure = view.findViewById(R.id.apb_fragment_container_serve_failure)
@@ -64,6 +62,7 @@ class ContainerServeBottomDialog : AbstractBottomDialog() {
 
         viewModel.mContainerEntity.observe(viewLifecycleOwner) { containerEntity ->
             if(containerEntity != null) {
+                log("fucked up : ${containerEntity.containerId} : ${containerEntity.isFailureNotEmpty()}")
                 containerEntity.let {
                     view.findViewById<TextInputEditText>(R.id.comment_et).setText(it.comment)
                     volume = it.volume

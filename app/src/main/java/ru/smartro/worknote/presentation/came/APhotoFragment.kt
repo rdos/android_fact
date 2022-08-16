@@ -30,10 +30,10 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.abs.AbsObject
-import ru.smartro.worknote.andPOintD.BaseViewModel
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
+import ru.smartro.worknote.presentation.platform_serve.VMPlatformServeShared
 import ru.smartro.worknote.work.ImageEntity
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -74,7 +74,7 @@ abstract class APhotoFragment(
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 //  todo:!R_dos??  protected val viewModel: PlatformServeSharedViewModel by viewModel()
-    protected val viewModel: PlatformServeSharedViewModel by activityViewModels()
+    protected val viewModel: VMPlatformServeShared by activityViewModels()
 
 
     protected open fun onGetTextLabelFor(): String? = null
@@ -600,11 +600,6 @@ abstract class APhotoFragment(
     }
 }
 
-class PhotoViewModel(application: Application) : BaseViewModel(application) {
-    fun getImageList(platformId: Int, containerId: Int, photoFor: Int): MutableList<ImageEntity> {
-        return baseDat.getImageList(platformId, containerId, photoFor) as MutableList<ImageEntity>
-    }
-}
 /**
  *    val orientationEventListener = object : OrientationEventListener(context) {
 override fun onOrientationChanged(orientation: Int) {

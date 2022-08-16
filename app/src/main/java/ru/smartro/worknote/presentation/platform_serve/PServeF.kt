@@ -50,7 +50,7 @@ class PServeF :
     private var actvAddress: AppCompatTextView? = null
     private var scScreenMode: SwitchCompat? = null
 
-    private val vm: PServeViewModel by viewModels()
+    private val vm: VMPServe by viewModels()
 
     override fun onGetLayout(): Int {
         return R.layout.f_pserve

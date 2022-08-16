@@ -4,21 +4,23 @@ import android.app.AlertDialog
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
@@ -26,15 +28,16 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.abs.AAct
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.Status
 
 
 class StartAct : AAct() {
+//    private var vm: AuthViewModel? = null
     private var mInfoDialog: AlertDialog? = null
-    private val vm: AuthViewModel by viewModel()
-
+    private val vm: AuthViewModel by viewModels()
     private var authLoginEditText: TextInputEditText? = null
     private var authPasswordEditText: TextInputEditText? = null
     private var authAppVersion: TextView? = null
@@ -140,6 +143,7 @@ class StartAct : AAct() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        vm = ViewModelProvider(this)[AuthViewModel::class.java]
         AppliCation().stopWorkERS()
         if (paramS().isRestartApp) {
             paramS().AppRestarted()
@@ -164,6 +168,7 @@ class StartAct : AAct() {
         }
         viewInit()
     }
+
 
     private fun viewInit() {
         authEnter?.setOnClickListener {
@@ -282,7 +287,7 @@ class StartAct : AAct() {
         }
     }
 
-    open class AuthViewModel(application: Application) : BaseViewModel(application) {
+    open class AuthViewModel(app: Application) : AViewModel(app) {
 
         fun auth(authModel: AuthBody): LiveData<Resource<AuthResponse>> {
             return networkDat.auth(authModel)

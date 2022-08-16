@@ -30,7 +30,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.App
 import ru.smartro.worknote.R

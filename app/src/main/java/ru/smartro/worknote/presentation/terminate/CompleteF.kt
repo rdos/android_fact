@@ -24,7 +24,7 @@ import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.BaseViewModel
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -348,7 +348,7 @@ class CompleteF : AFragment() {
         }
     }
 
-    open class CompleteViewModel(application: Application) : BaseViewModel(application) {
+    open class CompleteViewModel(app: Application) : AViewModel(app) {
 
         private val _servedCounter: MutableLiveData<Int> = MutableLiveData(0)
         val mServedCounter: LiveData<Int>

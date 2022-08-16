@@ -6,7 +6,7 @@
     app:startDestination="@id/MapF">
     <fragment
         android:id="@+id/MapF"
-        android:name="ru.smartro.worknote.presentation.MapF"
+        android:name="ru.smartro.worknote.presentation.MapPlatformsF"
         tools:layout="@layout/f_map"
         android:label="MapF" >
         <argument
@@ -21,7 +21,7 @@
     <dialog
         android:id="@+id/MapActPlatformClickedDtlDialog"
 
-        android:name="ru.smartro.worknote.presentation.MapFPlatformClickedDtlDialog"
+        android:name="ru.smartro.worknote.presentation.MapPlatformClickedDtlF"
         android:label="MapActPlatformClickedDtlDialog">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -273,7 +273,7 @@
 
     <fragment
         android:id="@+id/PServeByTypesF"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeByTypesF"
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeGroupByContainerSF"
         tools:layout="@layout/f_pserve_by_types"
         android:label="CompleteF">
         <argument
@@ -289,7 +289,7 @@
     <dialog
         android:id="@+id/ContainerServeBottomDialog"
         tools:layout="@layout/fragment_container_serve"
-        android:name="ru.smartro.worknote.presentation.platform_serve.ContainerServeBottomDialog"
+        android:name="ru.smartro.worknote.presentation.platform_serve.ContainerServeF"
         android:label="ContainerServeBottomDialog">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"

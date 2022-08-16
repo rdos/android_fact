@@ -18,7 +18,8 @@ import org.slf4j.LoggerFactory
 import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.andPOintD.BaseViewModel
+import ru.smartro.worknote.andPOintD.AViewModel
+
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
@@ -92,7 +93,7 @@ class XChecklistAct: AAct() {
         class REFRESH(): ViewState()
     }
 
-    class ChecklistViewModel(application: Application) : BaseViewModel(application) {
+    class ChecklistViewModel(app: Application) : AViewModel(app) {
         
 
         // OWNERS
