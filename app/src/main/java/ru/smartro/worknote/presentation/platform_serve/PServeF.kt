@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -53,7 +54,9 @@ class PServeF :
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
     private var scScreenMode: SwitchCompat? = null
+    private var actvScreenLabel: AppCompatTextView? = null
 
+    private var plId: Int? = null
     private val vm: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {
@@ -64,7 +67,7 @@ class PServeF :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val plId = getArgumentID()
+        plId = getArgumentID()
         if (savedInstanceState == null) {
             log("savedInstanceState == null")
         } else {
@@ -76,6 +79,7 @@ class PServeF :
         btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = view.findViewById(R.id.tv_platform_serve__address)
         scScreenMode = view.findViewById(R.id.sc_screen_mode)
+        actvScreenLabel = view.findViewById(R.id.screen_mode_label)
 
         tvVolumePickup = view.findViewById(R.id.et_act_platformserve__volumepickup)
         rvContainers = view.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
@@ -86,24 +90,20 @@ class PServeF :
         acbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
         acsbVolumePickup = view.findViewById(R.id.acsb_activity_platform_serve__seekbar)
 
-
-//        TODO::: 15.08.2022 18:14 CHECK ABOVE THEN DELETE THIS IF NECESSARY
-//        scPServeSimplifyMode?.isFocusable = false
-        scScreenMode?.setOnClickListener {
-            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE)
-            configEntity.value = App.ServeMode.PServeGroupByContainersF
-            vm.database.saveConfig(configEntity)
-
-            navigateMain(R.id.PServeByTypesF, plId)
-        }
-        
+        actvScreenLabel?.text = "Списком"
 
         val platformEntity = vm.getPlatformEntity()
+        /////////////////////////////////////////////
+        if(platformEntity.serveModeCodeName == App.ServeMode.PServeF)
+            scScreenMode?.visibility = View.GONE
+        else
+            initSwitch()
+        ////////////////////////////////////////////
         tvPlatformSrpId?.text =
             "№${platformEntity.srpId} / ${platformEntity.containers.size} конт."
 
         btnCompleteTask?.setOnClickListener {
-            navigateMain(R.id.PhotoAfterMediaF, platformEntity.platformId!!)
+            navigateMain(R.id.PhotoAfterMediaF, platformEntity.platformId)
         }
 
         actvAddress?.text = "${platformEntity.address}"
@@ -121,9 +121,9 @@ class PServeF :
             actvAddress?.maxLines = 3
         }
 
-
-
-        val containersAdapter = PServeContainersAdapter(vm.getContainerS())
+        val containers = vm.getContainerS()
+        LoG.debug("CONTAINERS::: ${containers.joinToString { it.volume.toString() }}")
+        val containersAdapter = PServeContainersAdapter(containers)
         rvContainers?.adapter = containersAdapter
 
         if (platformEntity.failureMedia.size > 0) {
@@ -206,13 +206,24 @@ class PServeF :
                     if (progress > 0 ) {
                         gotoMakePhotoForPickup(progress.toDouble())
                     } else {
-                        vm.updateVolumePickup(platformEntity.platformId!!, null)
-                        vm.updateVolumePickup(platformEntity.platformId!!, null)
+                        vm.updateVolumePickup(platformEntity.platformId, null)
                     }
                 }
 
             }
         })
+    }
+
+    private fun initSwitch() {
+        // DISABLING SWIPE MOTION ON SWITCH
+        scScreenMode?.setOnTouchListener { v, event -> event.actionMasked == MotionEvent.ACTION_MOVE }
+        scScreenMode?.setOnClickListener {
+            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE)
+            configEntity.value = App.ServeMode.PServeGroupByContainersF
+            vm.database.saveConfig(configEntity)
+
+            navigateMain(R.id.PServeByTypesF, plId!!)
+        }
     }
 
 
@@ -328,12 +339,14 @@ class PServeF :
             // TODO: 25.10.2021 add getString() + format
             holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__constructiveVolume).text = container.constructiveVolume.toStr("м³")
             holder.itemView.setOnClickListener {
-                if(container.isActiveToday && container.volume != null) {
+                LoG.debug("CONTAINER::: id: ${container.containerId}, isActive: ${container.isActiveToday}, volume: ${container.volume}")
+                if(container.isActiveToday || container.volume != null) {
                     navigateMain(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
-                    return@setOnClickListener
-                }
-                showTakeInactiveContainerAlert(getAct()) {
-                    navigateMain(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
+//                    return@setOnClickListener // не работал
+                } else {
+                    showTakeInactiveContainerAlert(getAct()) {
+                        navigateMain(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
+                    }
                 }
                 LoG.info("onBindViewHolder: true")
             }

@@ -2,6 +2,7 @@ package ru.smartro.worknote.presentation.platform_serve
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -49,6 +50,10 @@ class PServeGroupByContainersF : AFragment() {
         srosToPserveFMode = view.findViewById(R.id.sros_f_pserve_groupby__mode)
         screenModeLabel = view.findViewById(R.id.screen_mode_label)
 
+        screenModeLabel?.text = "По типам"
+
+        initSwitch()
+
 //        val adapterCurrentTask = PServeGroupedByClientsAdapter(requireContext(), object : PServeGroupedByClientsAdapter.SimplifyContainerServeListener {
 //            override fun onDecrease(clientName: String, typeName: String) {
 //                viewModel.onDecrease(clientName, typeName)
@@ -61,20 +66,12 @@ class PServeGroupByContainersF : AFragment() {
 //            override fun onAddPhoto(clientName: String, typeName: String) {
 //                navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, viewModel.mPlatformEntity.value!!.platformId!!)
 //            }
-//        })
-
-        srosToPserveFMode?.setOnClickListener {
-            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE)
-            configEntity.value = App.ServeMode.PServeF
-            vm.database.saveConfig(configEntity)
-
-            navigateMain(R.id.PServeF, vm.getPlatformId())
-        }
+//        }
 
         val rvMain = view.findViewById<RecyclerView>(R.id.rv_f_pserve_groupby__main)
         rvMain.layoutManager = LinearLayoutManager(getAct())
         val groupByContainerClientS = vm.getGroupByContainerClientS()
-        LoG.debug("groupByContainerClientS.size=${groupByContainerClientS.size}")
+        LoG.debug("CLIENT GROUPS IN FRAG::: ${groupByContainerClientS.joinToString { "client: ${it.client}, containers size: ${it.containers.size}" }}")
         rvMain.adapter = PServeGroupedByClientsAdapter(groupByContainerClientS)
 //        rvMain.apply {
 //            layoutManager = LinearLayoutManager(requireContext())
@@ -142,6 +139,23 @@ class PServeGroupByContainersF : AFragment() {
 //                })
     }
 
+    private fun initSwitch() {
+        // DISABLING SWIPE MOTION ON SWITCH
+        srosToPserveFMode?.setOnTouchListener { v, event -> event.actionMasked == MotionEvent.ACTION_MOVE }
+        srosToPserveFMode?.isChecked = true
+        srosToPserveFMode?.setOnClickListener {
+            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE)
+            configEntity.value = App.ServeMode.PServeF
+            vm.database.saveConfig(configEntity)
+
+            navigateMain(R.id.PServeF, vm.getPlatformId())
+        }
+    }
+
+    private fun hideSwitch() {
+        srosToPserveFMode?.visibility = View.GONE
+    }
+
     override fun onBackPressed() {
         mBackPressedCnt--
         if (mBackPressedCnt <= 0) {
@@ -165,6 +179,7 @@ class PServeGroupByContainersF : AFragment() {
         }
 
         override fun getItemCount(): Int {
+            LoG.debug("GET ITEM COUNT PSERVE GROUPED ::: ${groupByContainerClientS.size}")
             return groupByContainerClientS.size
         }
 
@@ -172,7 +187,7 @@ class PServeGroupByContainersF : AFragment() {
             val clientGroup = groupByContainerClientS[position]
             LoG.debug("clientGroup = ${clientGroup} name: ${clientGroup.client}")
 
-            val rvGroupedContainers = view?.findViewById<RecyclerView>(R.id.typed_containers)
+            val rvGroupedContainers = holder.itemView.findViewById<RecyclerView>(R.id.typed_containers)
 
             holder.tvClient.text = clientGroup.client
             rvGroupedContainers?.layoutManager = LinearLayoutManager(context)
