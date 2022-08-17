@@ -45,8 +45,8 @@
                 android:textSize="16sp"/>
 
             <ru.smartro.worknote.andPOintD.SmartROSwitch
+                android:id="@+id/sc_f_serve__screen_mode"
                 android:layout_height="wrap_content" android:layout_width="wrap_content"
-                android:id="@+id/sc_screen_mode"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"

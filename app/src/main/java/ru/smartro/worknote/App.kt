@@ -87,10 +87,6 @@ class App : AApp() {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
-    object ServeMode {
-        const val PServeF = "PServeF"
-        const val PServeGroupByContainersF = "PServeGroupByContainersF"
-    }
 
     fun gps(): PoinT {
         log("BBBB")
@@ -154,7 +150,7 @@ class App : AApp() {
 
         LoG.info("on App created App.onCreate onAppCreate")
         sentryInit()
-        initRealm()
+        RealmInit()
 //        try {    // Add a breadcrumb that will be sent with the next event(s)//            throw Exception("This is a devel.")//        } catch (e: Exception) {
 //            Sentry.captureException(e) //        }                                             //        val objectAnimator: ObjectAnimator = ObjectAnimator.ofFloat( //            mLlcMap, "alpha", 0f
 //        ) //        objectAnimator.setDuration(4000);
@@ -328,7 +324,7 @@ class App : AApp() {
     }
 
 
-    private fun initRealm() {
+    private fun RealmInit() {
         Realm.init(this@App)
         val config = RealmConfiguration.Builder()
         config.allowWritesOnUiThread(true)

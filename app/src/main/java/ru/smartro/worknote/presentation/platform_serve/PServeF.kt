@@ -1,5 +1,6 @@
 package ru.smartro.worknote.presentation.platform_serve
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
@@ -33,6 +34,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ContainerEntity
+import ru.smartro.worknote.work.PlatformEntity
 
 
 class PServeF :
@@ -53,7 +55,7 @@ class PServeF :
     private var btnCompleteTask: AppCompatButton? = null
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
-    private var scScreenMode: SwitchCompat? = null
+    private var srosToGroupByFMode: SwitchCompat? = null
     private var actvScreenLabel: AppCompatTextView? = null
 
     private var plId: Int? = null
@@ -67,7 +69,6 @@ class PServeF :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        plId = getArgumentID()
         if (savedInstanceState == null) {
             log("savedInstanceState == null")
         } else {
@@ -78,7 +79,7 @@ class PServeF :
 
         btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = view.findViewById(R.id.tv_platform_serve__address)
-        scScreenMode = view.findViewById(R.id.sc_screen_mode)
+        srosToGroupByFMode = view.findViewById(R.id.sc_f_serve__screen_mode)
         actvScreenLabel = view.findViewById(R.id.screen_mode_label)
 
         tvVolumePickup = view.findViewById(R.id.et_act_platformserve__volumepickup)
@@ -94,13 +95,9 @@ class PServeF :
 
         val platformEntity = vm.getPlatformEntity()
         /////////////////////////////////////////////
-        if(platformEntity.serveModeCodeName == App.ServeMode.PServeF)
-            scScreenMode?.visibility = View.GONE
-        else
-            initSwitch()
+        switchInit()
         ////////////////////////////////////////////
-        tvPlatformSrpId?.text =
-            "№${platformEntity.srpId} / ${platformEntity.containers.size} конт."
+        tvPlatformSrpId?.text = "№${platformEntity.srpId} / ${platformEntity.containers.size} конт."
 
         btnCompleteTask?.setOnClickListener {
             navigateMain(R.id.PhotoAfterMediaF, platformEntity.platformId)
@@ -214,15 +211,22 @@ class PServeF :
         })
     }
 
-    private fun initSwitch() {
+    @SuppressLint("ClickableViewAccessibility")
+    private fun switchInit() {
+        if(vm.getPlatformEntity().isServeModeFix()){
+            srosToGroupByFMode?.visibility = View.GONE
+            return
+        }
         // DISABLING SWIPE MOTION ON SWITCH
-        scScreenMode?.setOnTouchListener { v, event -> event.actionMasked == MotionEvent.ACTION_MOVE }
-        scScreenMode?.setOnClickListener {
-            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE)
-            configEntity.value = App.ServeMode.PServeGroupByContainersF
+        srosToGroupByFMode?.setOnTouchListener { v, event ->
+            event.actionMasked == MotionEvent.ACTION_MOVE
+        }
+        srosToGroupByFMode?.setOnClickListener {
+            // TODO: !!!
+            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
+            configEntity.value = PlatformEntity.Companion.ServeMode.PServeGroupByContainersF
             vm.database.saveConfig(configEntity)
-
-            navigateMain(R.id.PServeByTypesF, plId!!)
+            navigateMain(R.id.PServeByTypesF, vm.getPlatformId())
         }
     }
 

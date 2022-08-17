@@ -1107,7 +1107,7 @@ class RealmRepository(private val p_realm: Realm) {
         return result
     }
 
-    fun loadGroupByContainerClientTypeEntity(platformId: Int, client: String?): MutableList<GroupByContainerTypeClientEntity>? {
+    fun loadGroupByContainerTypeClientEntity(platformId: Int, client: String?): MutableList<GroupByContainerTypeClientEntity>? {
         var result: MutableList<GroupByContainerTypeClientEntity>?  = null
         val realmResult =getQueryGroupByContainerClientType(platformId).equalTo("client", client).findAll()
         LoG.trace("realmResult=${realmResult.count()}")
@@ -1120,6 +1120,12 @@ class RealmRepository(private val p_realm: Realm) {
 
 //    эх.... работа тяжкая))))
     fun createGroupByContainerEntityS(platformId: Int) {
+//   todo: эх.... работа тяжкая:(2
+
+//        if (isNotCheckedCreate(platformId)) {
+//            return
+//        }
+
         LoG.trace("platformId=${platformId}")
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform(platformId = platformId).findFirst()
@@ -1133,9 +1139,9 @@ class RealmRepository(private val p_realm: Realm) {
                 LoG.error("containerSSorted.isEmpty()")
                 return@executeTransaction
             }
-            LoG.info("containerS.count = ${containerS.count()}")
+            LoG.debug("containerS.count = ${containerS.count()}")
             for(container in containerS) {
-                LoG.trace("containerSBeforeSortWith::cont.number=${container.number}" + "cont.client=${container.client}" + "cont.typeName=${container.typeName}")
+                LoG.warn("containerSBeforeSortWith::cont.number=${container.number}" + "cont.client=${container.client}" + "cont.typeName=${container.typeName}")
             }
             containerS.sortWith(compareBy{it.client})
             containerS.sortWith(compareBy{it.typeName})
@@ -1146,6 +1152,11 @@ class RealmRepository(private val p_realm: Realm) {
             LoG.debug("create:GroupByContainerClientEntity::before")
             var clientName: String = Snull
 
+                                                                                    //            val groupByContainerClient = this.loadGroupByContainerClient(platformId)
+                                                                                    //            if (groupByContainerClient != null) {
+                                                                                    //
+                                                                                    //            }
+//                                                                              todo: WTF????????????????????????
             var groupByContainerClientEntity = GroupByContainerClientEntity.createEmpty()//todo:R_dos!!!
             for(cont in containerS) {
                 if (clientName == cont.client) {
@@ -1158,7 +1169,7 @@ class RealmRepository(private val p_realm: Realm) {
 
                 groupByContainerClientEntity.containers.add(cont)
 
-                realm.insertOrUpdate(groupByContainerClientEntity)
+//   todo: КТО ГДЕ КОГДА! r_dos??                    realm.insertOrUpdate(groupByContainerClientEntity)
                 clientName = cont.client!!
             }
             LoG.debug("create:GroupByContainerClientEntity::after")
@@ -1179,16 +1190,29 @@ class RealmRepository(private val p_realm: Realm) {
                     }
                     groupByContainerTypeClientEntity = realm.createObject(GroupByContainerTypeClientEntity::class.java)
                     groupByContainerTypeClientEntity.platformId = platformId
-                    groupByContainerClientEntity.addClient(groupByContainerClientContainer)
+                    groupByContainerTypeClientEntity.addClient(groupByContainerClient.getClientForUser())
                     groupByContainerTypeClientEntity.typeId = groupByContainerClientContainer.typeId!!
                     groupByContainerTypeClientEntity.typeName = groupByContainerClientContainer.typeName!!
                     groupByContainerTypeClientEntity.containers.add(groupByContainerClientContainer)
 
-                    realm.insertOrUpdate(groupByContainerClientEntity)
+//   todo: КТО ГДЕ КОГДА! r_dos??                 realm.insertOrUpdate(groupByContainerClientEntity)
                     typeName = groupByContainerClientContainer.typeName!!
                 }
 
             }
         }
+    }
+
+    private fun isNotCheckedCreate(platformId: Int): Boolean {
+        var result = false
+
+
+//        val groupByContainerTypeClient = this.loadGroupByContainerTypeClientEntity(platformId)
+//        if (groupByContainerClient == null) {
+//            return result
+//        }
+
+        result = true
+        return result
     }
 }

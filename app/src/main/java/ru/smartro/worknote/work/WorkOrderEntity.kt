@@ -325,7 +325,7 @@ open class PlatformEntity(
 
     @Expose
     var served11Containers:  String = "почему поле уходи???????????????? Expose",
-    var serveModeCodeName: String? = null,
+    var serveModeFixCODENAME: String? = null,
 
 ) : Serializable, RealmObject() {
 
@@ -625,11 +625,20 @@ open class PlatformEntity(
         }
     }
 
+    fun isServeModeFix(): Boolean {
+        val result = this.serveModeFixCODENAME != null
+        return result
+    }
+
     companion object {
         // TODO: !!!
         fun createEmpty(): PlatformEntity {
             val result = PlatformEntity(platformId = Inull, address = THIS_IS_ERROR)
             return result
+        }
+        object ServeMode {
+            const val PServeF = "PServeF"
+            const val PServeGroupByContainersF = "PServeGroupByContainersF"
         }
     }
 
@@ -654,7 +663,7 @@ enum class ConfigName(val displayName: String) {
     AIRPLANEMODE_CNT("AIRPLANEMODE_CNT"),
     NOINTERNET_CNT("NOINTERNET_CNT"),
     MAPACTDESTROY_CNT("MAPACTDESTROY_CNT"),
-    USER_WORK_SERVE_MODE("USER_WORK_SERVE_MODE"),
+    USER_WORK_SERVE_MODE_CODENAME("USER_WORK_SERVE_MODE_CODENAME"),
 }
 
 open class ConfigEntity(
@@ -687,8 +696,6 @@ open class ConfigEntity(
             this.name = value.displayName.uppercase()
         }
 }
-
-
 
 open class ContainerEntity(
     var workOrderId: Int = Inull,
@@ -798,16 +805,8 @@ open class GroupByContainerClientEntity(
 // TODO: //GroBy
 
     // TODO: !!r_dos!!!
-    fun addClient(containerSorted: ContainerEntity?) {
-        if (containerSorted == null) {
-            return
-        }
-        containerSorted.client?.let {
-            this.client = containerSorted?.client
-            if (containerSorted.client.isNullOrEmpty()) {
-                return
-            }
-        }
+    fun addClient(container: ContainerEntity) {
+        this.client = container.client
     }
 
     fun getClientForUser(): String {
@@ -840,10 +839,8 @@ open class GroupByContainerTypeClientEntity(
     }
 
     // TODO: !!r_dos!!!
-    fun addClient(clientName: String?) {
-        if (clientName.isNullOrEmpty()) {
-            this.client = clientName
-        }
+    fun addClient(clientName: String) {
+        this.client = clientName
     }
 
     companion object {

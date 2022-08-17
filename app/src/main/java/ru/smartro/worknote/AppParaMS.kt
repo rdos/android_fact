@@ -2,7 +2,6 @@ package ru.smartro.worknote
 
 import android.content.Context
 import android.content.SharedPreferences
-import ru.smartro.worknote.App.ServeMode
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 

@@ -38,8 +38,8 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun getPlatformEntity(): PlatformEntity {
         if (mPlatformEntity == null) {
-            mPlatformEntity =  database.getPlatformEntity(mPlatformId)
-            LoG.trace("result=${mPlatformEntity}")
+            mPlatformEntity = database.getPlatformEntity(mPlatformId)
+            LoG.trace("result=${mPlatformEntity?.platformId}")
         }
         return mPlatformEntity!!
     }
@@ -60,14 +60,21 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
 
-    fun setPlatformEntity(platformEntity: PlatformEntity){
+    // TODO: !!!
+    fun setPlatformEntity(platformEntity: PlatformEntity) {
+        LoG.debug("before.mPlatformId=${mPlatformId}")
+        LoG.debug("before.platformEntity.platformId=${platformEntity.platformId}")
+
 //        mPlatformEntity = platformEntity
         if (mPlatformId == platformEntity.platformId) {
+            LoG.warn("mPlatformId == platformEntity.platformId")
             return
         }
         mPlatformId = platformEntity.platformId
         mPlatformEntity = null
         mGroupByContainerClientEntity = null
+
+        LoG.trace("after.mPlatformId=${mPlatformId}")
     }
 
     fun getContainerS(): List<ContainerEntity> {
@@ -91,7 +98,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         return result
     }
 
-
+    // TODO: !!! ))
     fun getGroupByContainerClientS(): MutableList<GroupByContainerClientEntity> {
         mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
         LoG.info("mGroupByContainerClientEntity START = ${mGroupByContainerClientEntity}")
@@ -107,13 +114,13 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         return mGroupByContainerClientEntity!!
     }
 
-
-    fun getGroupByContainerClientTypeS(client: String?): MutableList<GroupByContainerTypeClientEntity> {
+    // TODO: !!! ))
+    fun getGroupByContainerTypeClientS(client: String?): MutableList<GroupByContainerTypeClientEntity> {
         LoG.debug("before, client = ${client}")
-        mGroupByContainerTypeClientEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
+        mGroupByContainerTypeClientEntity = database.loadGroupByContainerTypeClientEntity(mPlatformId, client)
         if (mGroupByContainerTypeClientEntity == null) {
             database.createGroupByContainerEntityS(mPlatformId)
-            mGroupByContainerTypeClientEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
+            mGroupByContainerTypeClientEntity = database.loadGroupByContainerTypeClientEntity(mPlatformId, client)
         }
         if (mGroupByContainerTypeClientEntity == null) {
             LoG.error("mGroupByContainerClientTypeEntity == null")

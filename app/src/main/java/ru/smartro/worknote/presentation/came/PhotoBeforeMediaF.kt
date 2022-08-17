@@ -2,6 +2,7 @@ package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
 import ru.smartro.worknote.*
+import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
@@ -29,10 +30,28 @@ class PhotoBeforeMediaF : APhotoFragment() {
         return true
     }
 
+    //TODO: r_dos!!!
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         vm.database.addBeforeMedia(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
-//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
+        if (mPlatformEntity?.isServeModeFix() == true) {
+            // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
+            if (mPlatformEntity?.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeF) {
+                navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+            }
+                             //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+            if (mPlatformEntity?.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
+                navigateMain(R.id.PServeByTypesF, mPlatformEntity?.platformId)
+            }
+            return
+        }
+        // TODO: !!!
+        val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
+        if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeF) {
+            navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        }
+        if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
+            navigateMain(R.id.PServeByTypesF, mPlatformEntity?.platformId)
+        }
     }
 
     override fun onSavePhoto() {

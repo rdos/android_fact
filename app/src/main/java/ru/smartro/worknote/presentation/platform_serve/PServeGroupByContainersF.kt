@@ -18,6 +18,7 @@ import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.GroupByContainerClientEntity
 import ru.smartro.worknote.work.GroupByContainerTypeClientEntity
+import ru.smartro.worknote.work.PlatformEntity
 
 
 class PServeGroupByContainersF : AFragment() {
@@ -52,7 +53,7 @@ class PServeGroupByContainersF : AFragment() {
 
         screenModeLabel?.text = "По типам"
 
-        initSwitch()
+        switchInit()
 
 //        val adapterCurrentTask = PServeGroupedByClientsAdapter(requireContext(), object : PServeGroupedByClientsAdapter.SimplifyContainerServeListener {
 //            override fun onDecrease(clientName: String, typeName: String) {
@@ -93,8 +94,7 @@ class PServeGroupByContainersF : AFragment() {
 
             val platformEntity = vm.getPlatformEntity()
 
-            tvContainersProgress?.text =
-                "№${platformEntity.srpId} / ${platformEntity.containers.size} конт."
+            tvContainersProgress?.text = "№${platformEntity.srpId} / ${platformEntity.containers.size} конт."
 
             btnCompleteTask?.setOnClickListener {
                 navigateMain(R.id.PhotoAfterMediaF, platformEntity.platformId!!)
@@ -139,22 +139,28 @@ class PServeGroupByContainersF : AFragment() {
 //                })
     }
 
-    private fun initSwitch() {
+    private fun switchInit() {
+        if(vm.getPlatformEntity().isServeModeFix()){
+            srosToPserveFMode?.visibility = View.GONE
+            return
+        }
         // DISABLING SWIPE MOTION ON SWITCH
-        srosToPserveFMode?.setOnTouchListener { v, event -> event.actionMasked == MotionEvent.ACTION_MOVE }
-        srosToPserveFMode?.isChecked = true
+        srosToPserveFMode?.setOnTouchListener { v, event ->
+            event.actionMasked == MotionEvent.ACTION_MOVE
+        }
         srosToPserveFMode?.setOnClickListener {
-            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE)
-            configEntity.value = App.ServeMode.PServeF
+            // TODO: !!!
+            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
+            configEntity.value = PlatformEntity.Companion.ServeMode.PServeF
             vm.database.saveConfig(configEntity)
-
             navigateMain(R.id.PServeF, vm.getPlatformId())
         }
     }
 
-    private fun hideSwitch() {
-        srosToPserveFMode?.visibility = View.GONE
-    }
+//    todo: Ох, рано встаёт охрана!
+//    private fun hideSwitch() {
+//        srosToPserveFMode?.visibility = View.GONE
+//    }
 
     override fun onBackPressed() {
         mBackPressedCnt--
@@ -191,7 +197,7 @@ class PServeGroupByContainersF : AFragment() {
 
             holder.tvClient.text = clientGroup.client
             rvGroupedContainers?.layoutManager = LinearLayoutManager(context)
-            val groupByContainerClientTypeS = vm.getGroupByContainerClientTypeS(clientGroup.client)
+            val groupByContainerClientTypeS = vm.getGroupByContainerTypeClientS(clientGroup.client)
             LoG.debug("A groupByContainerClientTypeS=${groupByContainerClientTypeS}")
             rvGroupedContainers?.adapter = PServeGroupedByContainerClientTypesAdapter(groupByContainerClientTypeS)
         }
