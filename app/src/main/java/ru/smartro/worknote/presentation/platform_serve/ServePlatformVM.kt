@@ -10,20 +10,19 @@ import com.yandex.mapkit.directions.driving.DrivingRouter
 import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.directions.driving.VehicleOptions
 import com.yandex.mapkit.geometry.Point
-import io.realm.RealmList
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.LoG
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.GroupByContainerClientEntity
-import ru.smartro.worknote.work.GroupByContainerClientTypeEntity
+import ru.smartro.worknote.work.GroupByContainerTypeClientEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 class ServePlatformVM(app: Application) : AViewModel(app) {
 
     private var mGroupByContainerClientEntity: MutableList<GroupByContainerClientEntity>? = null
-    private var mGroupByContainerClientTypeEntity: MutableList<GroupByContainerClientTypeEntity>? = null
+    private var mGroupByContainerTypeClientEntity: MutableList<GroupByContainerTypeClientEntity>? = null
     private var mPlatformEntity: PlatformEntity? = null
     private var mPlatformId: Int = Inull
     private val mPlatformMutableLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
@@ -109,19 +108,19 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
 
-    fun getGroupByContainerClientTypeS(client: String?): MutableList<GroupByContainerClientTypeEntity> {
+    fun getGroupByContainerClientTypeS(client: String?): MutableList<GroupByContainerTypeClientEntity> {
         LoG.debug("before, client = ${client}")
-        mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
-        if (mGroupByContainerClientTypeEntity == null) {
+        mGroupByContainerTypeClientEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
+        if (mGroupByContainerTypeClientEntity == null) {
             database.createGroupByContainerEntityS(mPlatformId)
-            mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
+            mGroupByContainerTypeClientEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
         }
-        if (mGroupByContainerClientTypeEntity == null) {
+        if (mGroupByContainerTypeClientEntity == null) {
             LoG.error("mGroupByContainerClientTypeEntity == null")
-            mGroupByContainerClientTypeEntity = mutableListOf(GroupByContainerClientTypeEntity.createEmpty())
+            mGroupByContainerTypeClientEntity = mutableListOf(GroupByContainerTypeClientEntity.createEmpty())
         }
-        LoG.debug("mGroupByContainerClientTypeEntity = ${mGroupByContainerClientTypeEntity!!.size}")
-        return mGroupByContainerClientTypeEntity!!
+        LoG.debug("mGroupByContainerClientTypeEntity = ${mGroupByContainerTypeClientEntity!!.size}")
+        return mGroupByContainerTypeClientEntity!!
     }
 
 

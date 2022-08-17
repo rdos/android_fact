@@ -16,7 +16,7 @@ import ru.smartro.worknote.andPOintD.SmartROSwitch
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.GroupByContainerClientEntity
-import ru.smartro.worknote.work.GroupByContainerClientTypeEntity
+import ru.smartro.worknote.work.GroupByContainerTypeClientEntity
 
 
 class PServeGroupByContainersF : AFragment() {
@@ -191,7 +191,7 @@ class PServeGroupByContainersF : AFragment() {
 
 
         inner class PServeGroupedByContainerClientTypesAdapter(
-            private val groupByContainerClientTypeS: List<GroupByContainerClientTypeEntity>
+            private val groupByContainerClientTypeS: List<GroupByContainerTypeClientEntity>
         ) : RecyclerView.Adapter<PServeGroupedByContainerClientTypesAdapter.PServeGroupedByContainerClientTypeViewHolder>() {
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PServeGroupedByContainerClientTypeViewHolder {
@@ -211,7 +211,7 @@ class PServeGroupByContainersF : AFragment() {
 
 
             inner class PServeGroupedByContainerClientTypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-                fun bind(groupByContainerClientTypeEntity: GroupByContainerClientTypeEntity) {
+                fun bind(groupByContainerTypeClientEntity: GroupByContainerTypeClientEntity) {
 
                     val tvTypeName = itemView.findViewById<TextView>(R.id.container_type)
                     val bDecrease = itemView.findViewById<AppCompatButton>(R.id.button_decrease_cont)
@@ -220,9 +220,9 @@ class PServeGroupByContainersF : AFragment() {
                     val bAddPhoto = itemView.findViewById<AppCompatButton>(R.id.button_add_photo)
                     val tvContSize = itemView.findViewById<TextView>(R.id.containers_size)
 
-                    tvTypeName.text = groupByContainerClientTypeEntity.typeName
+                    tvTypeName.text = groupByContainerTypeClientEntity.typeName
 //                    tvCount.text = groupByContainerClientType.containers.count { it.volume != null }.toString()
-                    tvContSize.text = groupByContainerClientTypeEntity.getTypeCount()
+                    tvContSize.text = groupByContainerTypeClientEntity.getTypeCount()
 
 
                     bDecrease.setOnClickListener {

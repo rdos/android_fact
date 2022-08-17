@@ -10,9 +10,7 @@ import io.realm.Realm
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
-import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.isNotNull
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -259,76 +257,6 @@ open class KGOEntity(
         }
 
     }
-
-
-open class GroupByContainerClientEntity(
-    var platformId: Int = Inull,
-    var clientShowForUser: String = "Клиент не указан",
-    var client: String? = null ,
-
-    var containers: RealmList<ContainerEntity> = RealmList(),
-) : Serializable, RealmObject() {
-
-
-    // TODO: !!r_dos!!!
-    fun addClient(containerSorted: ContainerEntity?) {
-        if (containerSorted == null) {
-            return
-        }
-        containerSorted.client?.let {
-            this.client = containerSorted?.client
-            if (containerSorted.client.isNullOrEmpty()) {
-                return
-            }
-            this.clientShowForUser = containerSorted.client!!
-        }
-    }
-
-    companion object {
-        // TODO: !!!
-        fun createEmpty(): GroupByContainerClientEntity {
-            val result = GroupByContainerClientEntity(platformId = Inull, client = THIS_IS_ERROR)
-            return result
-        }
-    }
-}
-
-open class GroupByContainerClientTypeEntity(
-    var platformId: Int = Inull,
-    var clientShowForUser: String = "Клиент не указан",
-    var client: String? = null ,
-    var typeId: Int = Inull,
-    var typeName: String = Snull,
-    var containers: RealmList<ContainerEntity> = RealmList(),
-) : Serializable, RealmObject() {
-    fun getTypeCount(): String {
-        val result = containers.size.toString()
-        LoG.trace("result=${result}")
-        return result
-    }
-
-    // TODO: !!r_dos!!!
-    fun addClient(containerSorted: ContainerEntity?) {
-        if (containerSorted == null) {
-            return
-        }
-        containerSorted.client?.let {
-            this.client = containerSorted?.client
-            if (containerSorted.client.isNullOrEmpty()) {
-                return
-            }
-            this.clientShowForUser = containerSorted.client!!
-        }
-    }
-
-    companion object {
-        // TODO: !!!
-        fun createEmpty(): GroupByContainerClientTypeEntity {
-            val result = GroupByContainerClientTypeEntity(platformId = Inull, client = THIS_IS_ERROR)
-            return result
-        }
-    }
-}
 
 open class PlatformEntity(
     var workOrderId: Int = Inull,
@@ -760,6 +688,8 @@ open class ConfigEntity(
         }
 }
 
+
+
 open class ContainerEntity(
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
@@ -857,6 +787,75 @@ open class ContainerEntity(
         }
     }
 }
+
+// TODO: //ContainerGroupClient
+open class GroupByContainerClientEntity(
+    var platformId: Int = Inull,
+    var client: String? = null ,
+
+    var containers: RealmList<ContainerEntity> = RealmList(),
+) : Serializable, RealmObject() {
+// TODO: //GroBy
+
+    // TODO: !!r_dos!!!
+    fun addClient(containerSorted: ContainerEntity?) {
+        if (containerSorted == null) {
+            return
+        }
+        containerSorted.client?.let {
+            this.client = containerSorted?.client
+            if (containerSorted.client.isNullOrEmpty()) {
+                return
+            }
+        }
+    }
+
+    fun getClientForUser(): String {
+        // TODO: VT!!!
+        val result = client?:"Клиент не указан"
+        return result
+    }
+
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): GroupByContainerClientEntity {
+            val result = GroupByContainerClientEntity(platformId = Inull, client = THIS_IS_ERROR)
+            return result
+        }
+    }
+}
+// TODO: //GroBy
+open class GroupByContainerTypeClientEntity(
+    // TODO: //GroBy
+    var platformId: Int = Inull,
+    var client: String? = null,
+    var typeId: Int = Inull,
+    var typeName: String = Snull,
+    var containers: RealmList<ContainerEntity> = RealmList(),
+) : Serializable, RealmObject() {
+    fun getTypeCount(): String {
+        val result = containers.size.toString()
+        LoG.trace("result=${result}")
+        return result
+    }
+
+    // TODO: !!r_dos!!!
+    fun addClient(clientName: String?) {
+        if (clientName.isNullOrEmpty()) {
+            this.client = clientName
+        }
+    }
+
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): GroupByContainerTypeClientEntity {
+            val result = GroupByContainerTypeClientEntity(platformId = Inull, client = THIS_IS_ERROR)
+            return result
+        }
+    }
+}
+
+
 
 open class ImageEntity(
     var image: String? = null,
