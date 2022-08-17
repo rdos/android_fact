@@ -95,9 +95,11 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun getGroupByContainerClientS(): MutableList<GroupByContainerClientEntity> {
         mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
+        LoG.info("mGroupByContainerClientEntity START = ${mGroupByContainerClientEntity}")
         if (mGroupByContainerClientEntity == null) {
             database.createGroupByContainerEntityS(mPlatformId)
             mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
+            LoG.info("mGroupByContainerClientEntity NULL 1 = ${mGroupByContainerClientEntity}")
         }
         if (mGroupByContainerClientEntity == null) {
             LoG.error("mGroupByContainerClientEntity == null")
@@ -107,16 +109,18 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
 
-    fun getGroupByContainerClientTypeS(): MutableList<GroupByContainerClientTypeEntity> {
-        mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId)
+    fun getGroupByContainerClientTypeS(client: String?): MutableList<GroupByContainerClientTypeEntity> {
+        LoG.debug("before, client = ${client}")
+        mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
         if (mGroupByContainerClientTypeEntity == null) {
             database.createGroupByContainerEntityS(mPlatformId)
-            mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId)
+            mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
         }
         if (mGroupByContainerClientTypeEntity == null) {
             LoG.error("mGroupByContainerClientTypeEntity == null")
             mGroupByContainerClientTypeEntity = mutableListOf(GroupByContainerClientTypeEntity.createEmpty())
         }
+        LoG.debug("mGroupByContainerClientTypeEntity = ${mGroupByContainerClientTypeEntity!!.size}")
         return mGroupByContainerClientTypeEntity!!
     }
 

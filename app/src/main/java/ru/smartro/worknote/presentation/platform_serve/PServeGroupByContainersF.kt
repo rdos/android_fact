@@ -10,13 +10,10 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.smartro.worknote.App
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.andPOintD.SmartROSwitch
-import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.ac.MainAct
-import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.GroupByContainerClientEntity
 import ru.smartro.worknote.work.GroupByContainerClientTypeEntity
@@ -77,6 +74,7 @@ class PServeGroupByContainersF : AFragment() {
         val rvMain = view.findViewById<RecyclerView>(R.id.rv_f_pserve_groupby__main)
         rvMain.layoutManager = LinearLayoutManager(getAct())
         val groupByContainerClientS = vm.getGroupByContainerClientS()
+        LoG.debug("groupByContainerClientS.size=${groupByContainerClientS.size}")
         rvMain.adapter = PServeGroupedByClientsAdapter(groupByContainerClientS)
 //        rvMain.apply {
 //            layoutManager = LinearLayoutManager(requireContext())
@@ -172,12 +170,14 @@ class PServeGroupByContainersF : AFragment() {
 
         override fun onBindViewHolder(holder: PServeGroupedByContainerClientViewHolder, position: Int) {
             val clientGroup = groupByContainerClientS[position]
+            LoG.debug("clientGroup = ${clientGroup} name: ${clientGroup.client}")
 
             val rvGroupedContainers = view?.findViewById<RecyclerView>(R.id.typed_containers)
 
             holder.tvClient.text = clientGroup.client
             rvGroupedContainers?.layoutManager = LinearLayoutManager(context)
-            val groupByContainerClientTypeS = vm.getGroupByContainerClientTypeS()
+            val groupByContainerClientTypeS = vm.getGroupByContainerClientTypeS(clientGroup.client)
+            LoG.debug("A groupByContainerClientTypeS=${groupByContainerClientTypeS}")
             rvGroupedContainers?.adapter = PServeGroupedByContainerClientTypesAdapter(groupByContainerClientTypeS)
         }
 

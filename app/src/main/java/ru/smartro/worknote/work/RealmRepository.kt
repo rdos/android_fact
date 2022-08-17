@@ -1107,9 +1107,9 @@ class RealmRepository(private val p_realm: Realm) {
         return result
     }
 
-    fun loadGroupByContainerClientTypeEntity(platformId: Int): MutableList<GroupByContainerClientTypeEntity>? {
+    fun loadGroupByContainerClientTypeEntity(platformId: Int, client: String?): MutableList<GroupByContainerClientTypeEntity>? {
         var result: MutableList<GroupByContainerClientTypeEntity>?  = null
-        val realmResult =getQueryGroupByContainerClientType(platformId).findAll()
+        val realmResult =getQueryGroupByContainerClientType(platformId).equalTo("client", client).findAll()
         LoG.trace("realmResult=${realmResult.count()}")
         if (realmResult.isNotEmpty()) {
             result = p_realm.copyFromRealm(realmResult)
@@ -1133,23 +1133,26 @@ class RealmRepository(private val p_realm: Realm) {
                 LoG.error("containerSSorted.isEmpty()")
                 return@executeTransaction
             }
+            LoG.info("containerSSorted INIT = ${containerSSorted}")
             containerSSorted.sortWith(compareBy{it.client})
+            LoG.info("containerSSorted SORT CLIENT = ${containerSSorted}")
             containerSSorted.sortWith(compareBy{it.typeName})
+            LoG.info("containerSSorted SORT TYPENAME = ${containerSSorted}")
 
 
             var clientName: String = Snull
 
             var groupByContainerClientEntity = GroupByContainerClientEntity.createEmpty()//todo:R_dos!!!
             containerSSorted.forEach { containerSorted ->
+                LoG.info("LOAD CONTAINERS FOREACH ::: ${loadGroupByContainerClient(platformId)}")
                 if (clientName == containerSorted.client) {
                     groupByContainerClientEntity.containers.add(containerSorted)
                     return@forEach
                 }
                 groupByContainerClientEntity = realm.createObject(GroupByContainerClientEntity::class.java)
                 groupByContainerClientEntity.platformId = platformId
-                if (containerSorted.client != null) {
-                    groupByContainerClientEntity.client = containerSorted.client!!
-                }
+                groupByContainerClientEntity.addClient(containerSorted)
+
                 groupByContainerClientEntity.containers.add(containerSorted)
 
                 realm.insertOrUpdate(groupByContainerClientEntity)
@@ -1158,25 +1161,24 @@ class RealmRepository(private val p_realm: Realm) {
 
 
             var groupByContainerClientS = getQueryGroupByContainerClient(platformId).findAll()
+            LoG.info("groupByContainerClientS INIT11 = ${groupByContainerClientS}")
             var groupByContainerClientTypeEntity = GroupByContainerClientTypeEntity.createEmpty()//todo:
             var typeName = Snull
-            groupByContainerClientS.forEach {
-                it.containers.forEach {
-                    if (typeName == it.typeName) {
-                        groupByContainerClientTypeEntity.containers.add(it)
+            groupByContainerClientS.forEach { groupByContainerClientEntity ->
+                groupByContainerClientEntity.containers.forEach { containerEntity ->
+                    if (typeName == containerEntity.typeName) {
+                        groupByContainerClientTypeEntity.containers.add(containerEntity)
                         return@forEach
                     }
                     groupByContainerClientTypeEntity = realm.createObject(GroupByContainerClientTypeEntity::class.java)
                     groupByContainerClientTypeEntity.platformId = platformId
-                    if (it.client != null) {
-                        groupByContainerClientEntity.client = it.client!!
-                    }
-                    groupByContainerClientTypeEntity.typeId = it.typeId!!
-                    groupByContainerClientTypeEntity.typeName = it.typeName!!
-                    groupByContainerClientTypeEntity.containers.add(it)
+                    groupByContainerClientEntity.addClient(containerEntity)
+                    groupByContainerClientTypeEntity.typeId = containerEntity.typeId!!
+                    groupByContainerClientTypeEntity.typeName = containerEntity.typeName!!
+                    groupByContainerClientTypeEntity.containers.add(containerEntity)
 
                     realm.insertOrUpdate(groupByContainerClientEntity)
-                    typeName = it.typeName!!
+                    typeName = containerEntity.typeName!!
                 }
 
             }

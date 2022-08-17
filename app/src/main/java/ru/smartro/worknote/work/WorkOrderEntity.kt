@@ -263,9 +263,27 @@ open class KGOEntity(
 
 open class GroupByContainerClientEntity(
     var platformId: Int = Inull,
-    var client: String = "Клиент не указан",
+    var clientShowForUser: String = "Клиент не указан",
+    var client: String? = null ,
+
     var containers: RealmList<ContainerEntity> = RealmList(),
 ) : Serializable, RealmObject() {
+
+
+    // TODO: !!r_dos!!!
+    fun addClient(containerSorted: ContainerEntity?) {
+        if (containerSorted == null) {
+            return
+        }
+        containerSorted.client?.let {
+            this.client = containerSorted?.client
+            if (containerSorted.client.isNullOrEmpty()) {
+                return
+            }
+            this.clientShowForUser = containerSorted.client!!
+        }
+    }
+
     companion object {
         // TODO: !!!
         fun createEmpty(): GroupByContainerClientEntity {
@@ -277,7 +295,8 @@ open class GroupByContainerClientEntity(
 
 open class GroupByContainerClientTypeEntity(
     var platformId: Int = Inull,
-    var client: String = "Клиент не указан",
+    var clientShowForUser: String = "Клиент не указан",
+    var client: String? = null ,
     var typeId: Int = Inull,
     var typeName: String = Snull,
     var containers: RealmList<ContainerEntity> = RealmList(),
@@ -286,6 +305,20 @@ open class GroupByContainerClientTypeEntity(
         val result = containers.size.toString()
         LoG.trace("result=${result}")
         return result
+    }
+
+    // TODO: !!r_dos!!!
+    fun addClient(containerSorted: ContainerEntity?) {
+        if (containerSorted == null) {
+            return
+        }
+        containerSorted.client?.let {
+            this.client = containerSorted?.client
+            if (containerSorted.client.isNullOrEmpty()) {
+                return
+            }
+            this.clientShowForUser = containerSorted.client!!
+        }
     }
 
     companion object {
