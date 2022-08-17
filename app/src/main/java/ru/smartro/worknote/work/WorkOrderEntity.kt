@@ -271,16 +271,13 @@ open class GroupByContainerClientEntity(
 
 
     // TODO: !!r_dos!!!
-    fun addClient(containerSorted: ContainerEntity?) {
-        if (containerSorted == null) {
-            return
-        }
+    fun addClient(containerSorted: ContainerEntity) {
         containerSorted.client?.let {
-            this.client = containerSorted?.client
-            if (containerSorted.client.isNullOrEmpty()) {
+            this.client = it
+            if (it.isEmpty()) {
                 return
             }
-            this.clientShowForUser = containerSorted.client!!
+            this.clientShowForUser = it
         }
     }
 
@@ -308,16 +305,13 @@ open class GroupByContainerClientTypeEntity(
     }
 
     // TODO: !!r_dos!!!
-    fun addClient(containerSorted: ContainerEntity?) {
-        if (containerSorted == null) {
-            return
-        }
+    fun addClient(containerSorted: ContainerEntity) {
         containerSorted.client?.let {
-            this.client = containerSorted?.client
-            if (containerSorted.client.isNullOrEmpty()) {
+            this.client = it
+            if (it.isEmpty()) {
                 return
             }
-            this.clientShowForUser = containerSorted.client!!
+            this.clientShowForUser = it
         }
     }
 

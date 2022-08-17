@@ -216,7 +216,7 @@ class App : AApp() {
         // setup FileAppender
         val encoder1 = PatternLayoutEncoder()
         encoder1.context = lc
-        encoder1.pattern = "%d{HH:mm:ss.SSS}[%thread]%-5level[%relative] %logger{41}[%line]:%method:: %msg%n"
+        encoder1.pattern = "VT-%d{HH:mm:ss.SSS}[%thread]%-5level[%relative] %logger{41}[%line]:%method:: %msg%n"
         encoder1.start()
         val fileAppender = FileAppender<ILoggingEvent>()
         fileAppender.context = lc

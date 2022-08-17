@@ -38,10 +38,10 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         get() = _failReasonS
 
     fun getPlatformEntity(): PlatformEntity {
-        if (mPlatformEntity == null) {
-            mPlatformEntity =  database.getPlatformEntity(mPlatformId)
-            LoG.trace("result=${mPlatformEntity}")
-        }
+//        if (mPlatformEntity == null) {
+            mPlatformEntity = database.getPlatformEntity(mPlatformId)
+//            LoG.trace("result=${mPlatformEntity}")
+//        }
         return mPlatformEntity!!
     }
 
@@ -95,32 +95,12 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun getGroupByContainerClientS(): MutableList<GroupByContainerClientEntity> {
         mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
-        LoG.info("mGroupByContainerClientEntity START = ${mGroupByContainerClientEntity}")
-        if (mGroupByContainerClientEntity == null) {
-            database.createGroupByContainerEntityS(mPlatformId)
-            mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
-            LoG.info("mGroupByContainerClientEntity NULL 1 = ${mGroupByContainerClientEntity}")
-        }
-        if (mGroupByContainerClientEntity == null) {
-            LoG.error("mGroupByContainerClientEntity == null")
-            mGroupByContainerClientEntity = mutableListOf(GroupByContainerClientEntity.createEmpty())
-        }
         return mGroupByContainerClientEntity!!
     }
 
 
     fun getGroupByContainerClientTypeS(client: String?): MutableList<GroupByContainerClientTypeEntity> {
-        LoG.debug("before, client = ${client}")
         mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
-        if (mGroupByContainerClientTypeEntity == null) {
-            database.createGroupByContainerEntityS(mPlatformId)
-            mGroupByContainerClientTypeEntity = database.loadGroupByContainerClientTypeEntity(mPlatformId, client)
-        }
-        if (mGroupByContainerClientTypeEntity == null) {
-            LoG.error("mGroupByContainerClientTypeEntity == null")
-            mGroupByContainerClientTypeEntity = mutableListOf(GroupByContainerClientTypeEntity.createEmpty())
-        }
-        LoG.debug("mGroupByContainerClientTypeEntity = ${mGroupByContainerClientTypeEntity!!.size}")
         return mGroupByContainerClientTypeEntity!!
     }
 

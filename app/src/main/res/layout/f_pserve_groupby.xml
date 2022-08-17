@@ -47,7 +47,6 @@
 
             <ru.smartro.worknote.andPOintD.SmartROSwitch
                 android:id="@+id/sros_f_pserve_groupby__mode"
-                android:enabled="true"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
