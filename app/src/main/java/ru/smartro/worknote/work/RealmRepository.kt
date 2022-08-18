@@ -228,6 +228,7 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()
             platformEntity?.volumePickup = volumePickup
+            platformEntity?.serveModeFixCODENAME = PlatformEntity.Companion.ServeMode.PServeF
             if (volumePickup == null) {
                 platformEntity?.pickupMedia = RealmList()
             }
@@ -244,8 +245,11 @@ class RealmRepository(private val p_realm: Realm) {
                 .findFirst()!!
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
-                .findFirst()
+                .findFirst()!!
             container.volume = volume
+            if(volume == 0.25 || volume == 0.5 || volume == 0.75 || volume == 1.25) {
+                platformEntity.serveModeFixCODENAME = PlatformEntity.Companion.ServeMode.PServeF
+            }
             if (container.status == StatusEnum.NEW) {
                 container.status = StatusEnum.SUCCESS
             }
@@ -758,6 +762,7 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             if (isServedKGO) {
+                platformEntity.serveModeFixCODENAME = PlatformEntity.Companion.ServeMode.PServeF
                 platformEntity.setServedKGOVolume(kgoVolume)
             } else {
                 platformEntity.setRemainingKGOVolume(kgoVolume)

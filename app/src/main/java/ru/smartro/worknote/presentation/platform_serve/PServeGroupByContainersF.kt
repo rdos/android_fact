@@ -145,6 +145,7 @@ class PServeGroupByContainersF : AFragment() {
             srosToPserveFMode?.visibility = View.GONE
             return
         }
+        srosToPserveFMode?.isChecked = true
         // DISABLING SWIPE MOTION ON SWITCH
         srosToPserveFMode?.setOnTouchListener { v, event ->
             event.actionMasked == MotionEvent.ACTION_MOVE

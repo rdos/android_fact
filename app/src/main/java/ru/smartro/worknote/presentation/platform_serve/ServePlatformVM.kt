@@ -116,12 +116,21 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
     fun incGroupByContainerTypeClientS(typeClientEntity: GroupByContainerTypeClientEntity) {
-        val containers = typeClientEntity.containers
+        var containers = typeClientEntity.containers
         var min: Double? = containers.minOf {
             it.volume ?: Dnull
         }
 
         if(min == Dnull) {
+            val filteredContainers = containers.filter {
+                it.volume != null
+            }
+            min = filteredContainers.minOf {
+                it.volume!!
+            }
+            if(min == 0.0) {
+                return
+            }
             min = null
         }
 
@@ -133,11 +142,17 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun decGroupByContainerTypeClientS(typeClientEntity: GroupByContainerTypeClientEntity) {
         val containers = typeClientEntity.containers
-        val max: Double = containers.maxOf {
-            it.volume ?: Dnull
+
+        if(containers.all { it.volume == null }) {
+            return
         }
 
-        if(max == Dnull) {
+        val filteredContainers = containers.filter { it.volume != null }
+        val max: Double = filteredContainers.maxOf {
+            it.volume!!
+        }
+
+        if(max == 0.0) {
             return
         }
 
