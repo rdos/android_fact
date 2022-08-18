@@ -27,7 +27,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     private var mPlatformEntity: PlatformEntity? = null
     private var mPlatformId: Int = Inull
     private val mPlatformMutableLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
-    val mPlatformEntityLiveData: LiveData<PlatformEntity>
+    val platformEntityLiveData: LiveData<PlatformEntity>
         get() = mPlatformMutableLiveData
 
     val mContainerEntityLiveData: LiveData<PlatformEntity>

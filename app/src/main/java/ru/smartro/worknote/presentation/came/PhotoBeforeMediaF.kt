@@ -33,13 +33,15 @@ class PhotoBeforeMediaF : APhotoFragment() {
     //TODO: r_dos!!!
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         vm.database.addBeforeMedia(mPlatformEntity?.platformId!!, imageS)
-        if (mPlatformEntity?.isServeModeFix() == true) {
+        if (mPlatformEntity?.isModeServeFix() == true) {
             // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
+//            if mPLatformEntity.isServeModeFixPServeF
             if (mPlatformEntity?.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeF) {
                 navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
                 return
             }
                              //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+//            //            if mPLatformEntity.isModeFixPServeGroupByContainersF
             if (mPlatformEntity?.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
                 navigateMain(R.id.PServeByTypesF, mPlatformEntity?.platformId)
                 return

@@ -14,6 +14,7 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.presentation.platform_serve.PServeF
 import java.io.Serializable
 import java.lang.Exception
 import java.text.SimpleDateFormat
@@ -65,7 +66,7 @@ open class WorkOrderEntity(
         var containersStatusSuccessCnt = 0
         var containersStatusErrorCnt = 0
         for (platform in platforms) {
-            /** статистика для PlatformEntity*/
+            /** статистика для */
             platformsCnt++
             when(platform.getStatusPlatform()) {
                 StatusEnum.NEW -> platformsStatusNewCnt++
@@ -625,10 +626,21 @@ open class PlatformEntity(
         }
     }
 
-    fun isServeModeFix(): Boolean {
+    fun isModeServeFix(): Boolean {
         val result = this.serveModeFixCODENAME != null
         return result
     }
+    
+    fun isModePServeF(): Boolean {
+        val result = this.serveModeFixCODENAME == ServeMode.PServeF
+        return result
+    }
+
+    fun isModePServeGroupByContainersF(): Boolean {
+        val result = this.serveModeFixCODENAME == ServeMode.PServeGroupByContainersF
+        return result
+    }
+
 
     companion object {
         // TODO: !!!

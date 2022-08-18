@@ -69,6 +69,7 @@ class PServeGroupByContainersF : AFragment() {
 //            }
 //        }
 
+
         val rvMain = view.findViewById<RecyclerView>(R.id.rv_f_pserve_groupby__main)
         rvMain.layoutManager = LinearLayoutManager(getAct())
         val groupByContainerClientS = vm.getGroupByContainerClientS()
@@ -140,7 +141,7 @@ class PServeGroupByContainersF : AFragment() {
     }
 
     private fun switchInit() {
-        if(vm.getPlatformEntity().isServeModeFix()){
+        if(vm.getPlatformEntity().isModeServeFix()){
             srosToPserveFMode?.visibility = View.GONE
             return
         }
@@ -178,12 +179,23 @@ class PServeGroupByContainersF : AFragment() {
     inner class PServeGroupedByClientsAdapter(
         private val groupByContainerClientS: List<GroupByContainerClientEntity>
     ) : RecyclerView.Adapter<PServeGroupedByClientsAdapter.PServeGroupedByContainerClientViewHolder>() {
-
+/** следOK
+        init {
+            groupByContainerClientS.observe(viewLifecycleOwner) { groupByContainerClientEntity ->
+                onNewItem(groupByContainerClientEntity)
+            }
+        }
+        */
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PServeGroupedByContainerClientViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.f_pserve_groupby_container_client__rv_item, parent, false)
             return PServeGroupedByContainerClientViewHolder(view)
         }
-
+/** следOK2
+        fun onNewItem(item: Entity){
+            groupByContainerClientS.item
+            this.notifyItemChanged()
+        }
+ */
         override fun getItemCount(): Int {
             LoG.debug("GET ITEM COUNT PSERVE GROUPED ::: ${groupByContainerClientS.size}")
             return groupByContainerClientS.size

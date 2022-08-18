@@ -52,9 +52,9 @@ open class PhotoFailureMediaF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        if(vm.mPlatformEntityLiveData.value == null)
+        if(vm.platformEntityLiveData.value == null)
             throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = vm.mPlatformEntityLiveData.value
+        mPlatformEntity = vm.platformEntityLiveData.value
         tvLabelFor(requireView())
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it

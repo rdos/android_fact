@@ -24,9 +24,9 @@ class PhotoPickupMediaF : APhotoFragment() {
 
 
     override fun onBeforeUSE() {
-        if(vm.mPlatformEntityLiveData.value == null)
+        if(vm.platformEntityLiveData.value == null)
             throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = vm.mPlatformEntityLiveData.value
+        mPlatformEntity = vm.platformEntityLiveData.value
 //        mMaxPhotoCount = mPlatformEntity!!.getPickupMediaSize()
     }
 
