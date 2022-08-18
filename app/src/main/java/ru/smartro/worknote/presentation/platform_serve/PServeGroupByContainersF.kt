@@ -117,9 +117,9 @@ class PServeGroupByContainersF : ANOFragment() {
             }
 
 
-        if (getAct() is MainAct) {
-            (getAct() as MainAct).setSpecialProcessingForRecycler(rvMain)
-        }
+//        if (getAct() is MainAct) {
+//            (getAct() as MainAct).setSpecialProcessingForRecycler(rvMain)
+//        }
 
 
 

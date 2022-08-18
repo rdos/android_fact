@@ -28,13 +28,13 @@ import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 class MainAct :
     AAct(), IActTooltip {
     val vm: ServePlatformVM by viewModels()
-    val mTooltipHell = MainAct.DialogHelpER(this, TAG)
+//    val mTooltipHell = MainAct.DialogHelpER(this, TAG)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_main)
         supportActionBar?.hide()
 
-        mTooltipHell.setStartId("ll_containers_count", paramS())
+//        mTooltipHell.setStartId("ll_containers_count", paramS())
     }
 
 
@@ -61,38 +61,38 @@ class MainAct :
     //todo:::
     override fun onDestroy() {
         super.onDestroy()
-        mTooltipHell.setNextTime(paramS())
+//        mTooltipHell.setNextTime(paramS())
 
     }
 
     final override fun onNewfromAFragment(isFromRecylcer: Boolean) {
 //        super.onNewfromAFragment()
-        if (mTooltipHell.isRecyclerMode) {
-            if (isFromRecylcer) {
-                mTooltipHell.run()
-            }
-        } else {
-            mTooltipHell.run()
-        }
+//        if (mTooltipHell.isRecyclerMode) {
+//            if (isFromRecylcer) {
+//                mTooltipHell.run()
+//            }
+//        } else {
+//            mTooltipHell.run()
+//        }
 
     }
 
     override fun setSpecialProcessingForRecycler(recyclerView: RecyclerView?) {
-        mTooltipHell.isRecyclerMode = true
-        recyclerView?.let {
-            it.viewTreeObserver.addOnGlobalLayoutListener(
-                object : ViewTreeObserver.OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        // At this point the layout is complete and the
-                        // dimensions of recyclerView and any child views
-//                            onNewfromAFragment()
-                        onNewfromAFragment(true)
-                        // are known.
-                        it.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                        mTooltipHell.isRecyclerMode = false
-                    }
-                })
-        }
+//        mTooltipHell.isRecyclerMode = true
+//        recyclerView?.let {
+//            it.viewTreeObserver.addOnGlobalLayoutListener(
+//                object : ViewTreeObserver.OnGlobalLayoutListener {
+//                    override fun onGlobalLayout() {
+//                        // At this point the layout is complete and the
+//                        // dimensions of recyclerView and any child views
+////                            onNewfromAFragment()
+//                        onNewfromAFragment(true)
+//                        // are known.
+//                        it.viewTreeObserver.removeOnGlobalLayoutListener(this)
+//                        mTooltipHell.isRecyclerMode = false
+//                    }
+//                })
+//        }
     }
 //
 
