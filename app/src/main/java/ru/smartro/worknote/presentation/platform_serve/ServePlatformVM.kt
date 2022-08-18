@@ -11,6 +11,7 @@ import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.directions.driving.VehicleOptions
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.App
+import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.LoG
 import ru.smartro.worknote.andPOintD.AViewModel
@@ -117,32 +118,34 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     fun incGroupByContainerTypeClientS(typeClientEntity: GroupByContainerTypeClientEntity) {
         val containers = typeClientEntity.containers
         var min: Double? = containers.minOf {
-            it.volume ?: -1.0
+            it.volume ?: Dnull
         }
 
-        if(min == -1.0) {
+        if(min == Dnull) {
             min = null
         }
 
         val container = containers.find { it.volume == min }!!
         val newVolume = (container.volume ?: 0.0) + 1.0
-        database.updateContainerVolume(typeClientEntity.platformId, container.containerId!!, newVolume)
+        database.setGroByContainerTypeClientVolume(typeClientEntity, container.containerId!!, newVolume)
         // updatePlatformEntity()
     }
 
     fun decGroupByContainerTypeClientS(typeClientEntity: GroupByContainerTypeClientEntity) {
         val containers = typeClientEntity.containers
         val max: Double = containers.maxOf {
-            it.volume ?: -1.0
+            it.volume ?: Dnull
         }
 
-        if(max == -1.0) {
+        if(max == Dnull) {
             return
         }
 
-        val container = containers.findLast { it.volume == max }!!
+        val container = containers.findLast {
+            it.volume == max
+        }!!
         val newVolume = container.volume!! - 1.0
-        database.updateContainerVolume(typeClientEntity.platformId, container.containerId!!, newVolume)
+        database.setGroByContainerTypeClientVolume(typeClientEntity, container.containerId!!, newVolume)
         // updatePlatformEntity()
     }
 

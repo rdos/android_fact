@@ -619,7 +619,7 @@ const val Inull = -111
 const val LTIMEnull = 999222333L
 const val Lnull = -111111L
 const val Fnull = 0.0f
-const val Dnull = 0.0
+const val Dnull = -222.0
 const val ErrorsE = "ErrorsE"
 
 typealias DoubleCool = Double
