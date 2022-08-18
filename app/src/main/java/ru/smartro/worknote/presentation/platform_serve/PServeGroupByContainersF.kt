@@ -20,6 +20,8 @@ import ru.smartro.worknote.work.PlatformEntity
 
 
 class PServeGroupByContainersF : AFragment() {
+
+    private var adapter: PServeGroupedByClientsAdapter? = null
     private var mBackPressedCnt: Int = 2
     private val _PlatformEntity: PlatformEntity
         get() = vm.getPlatformEntity()
@@ -44,7 +46,8 @@ class PServeGroupByContainersF : AFragment() {
         screenModeLabel = view.findViewById(R.id.screen_mode_label)
         rvMain = view.findViewById(R.id.rv_f_pserve_groupby__main)
         rvMain?.layoutManager = LinearLayoutManager(getAct())
-        rvMain?.adapter = PServeGroupedByClientsAdapter(listOf())
+        adapter = PServeGroupedByClientsAdapter(listOf())
+        rvMain?.adapter = adapter
         screenModeLabel?.text = "По типам"
 
         if(vm.getPlatformEntity().isModeServeFix()){
@@ -67,7 +70,19 @@ class PServeGroupByContainersF : AFragment() {
         val groupByContainerClientS = vm.getGroupByContainerClientS()
 
         LoG.debug("CLIENT GROUPS IN FRAG::: ${groupByContainerClientS.joinToString { "client: ${it.client}, containers size: ${it.containers.size}" }}")
-        PServeGroupedByClientsAdapter(groupByContainerClientS)
+        val isAnyContainerGroupByServed = groupByContainerClientS.any { clientGroup ->
+            clientGroup.containers.any { container ->
+                container.volume != null && container.volume!! > 1.0
+            }
+        }
+
+        if(isAnyContainerGroupByServed) {
+            srosToPserveFMode?.visibility = View.GONE
+        } else {
+            srosToPserveFMode?.visibility = View.VISIBLE
+        }
+        
+        adapter?.change(groupByContainerClientS)
 
         tvContainersProgress?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containers.size} конт."
 
@@ -179,7 +194,7 @@ class PServeGroupByContainersF : AFragment() {
 
 
     inner class PServeGroupedByClientsAdapter(
-        private val groupByContainerClientS: List<GroupByContainerClientEntity>
+        private var groupByContainerClientS: List<GroupByContainerClientEntity>
     ) : RecyclerView.Adapter<PServeGroupedByClientsAdapter.PServeGroupedByContainerClientViewHolder>() {
 /** следOK
         init {
@@ -188,6 +203,13 @@ class PServeGroupByContainersF : AFragment() {
             }
         }
         */
+
+        fun change(groupByContainerClientS: MutableList<GroupByContainerClientEntity>) {
+            this.groupByContainerClientS = groupByContainerClientS
+            notifyDataSetChanged()
+        }
+
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PServeGroupedByContainerClientViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.f_pserve_groupby_container_client__rv_item, parent, false)
             return PServeGroupedByContainerClientViewHolder(view)
@@ -215,7 +237,6 @@ class PServeGroupByContainersF : AFragment() {
             LoG.debug("A groupByContainerClientTypeS=${groupByContainerClientTypeS}")
             rvGroupedContainers?.adapter = PServeGroupedByContainerClientTypesAdapter(groupByContainerClientTypeS)
         }
-
 
         inner class PServeGroupedByContainerClientViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val tvClient: AppCompatTextView by lazy {
@@ -270,6 +291,7 @@ class PServeGroupByContainersF : AFragment() {
                     }
 
                     bAddPhoto.setOnClickListener {
+                        vm.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
                        navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, vm.getPlatformId())
                     }
                 }

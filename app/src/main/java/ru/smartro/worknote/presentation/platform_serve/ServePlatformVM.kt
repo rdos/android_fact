@@ -103,7 +103,8 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     // TODO: !??
     fun getGroupByContainerClientS(): MutableList<GroupByContainerClientEntity> {
-        if (mGroupByContainerClientEntity == null) {
+        // todo:: !!!!
+//        if (mGroupByContainerClientEntity == null) {
             mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
             LoG.info("mGroupByContainerClientEntity START = ${mGroupByContainerClientEntity}")
             if (mGroupByContainerClientEntity == null) {
@@ -115,7 +116,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
                 LoG.error("mGroupByContainerClientEntity == null")
                 mGroupByContainerClientEntity = mutableListOf(GroupByContainerClientEntity.createEmpty())
             }
-        }
+//        }
         return mGroupByContainerClientEntity!!
     }
 
@@ -126,15 +127,6 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         }
 
         if(min == Dnull) {
-            val filteredContainers = containers.filter {
-                it.volume != null
-            }
-            min = filteredContainers.minOf {
-                it.volume!!
-            }
-            if(min == 0.0) {
-                return
-            }
             min = null
         }
 
@@ -171,7 +163,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         val container = containers.findLast {
             it.volume == max
         }!!
-        val newVolume = container.volume!! - 1.0
+        val newVolume = container.volume!! - 1f
         database.setGroByContainerTypeClientVolume(typeClientEntity, container.containerId!!, newVolume)
         set_PlatformLiveData()
     }
@@ -179,7 +171,8 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     // TODO: !!! ))
     fun getGroupByContainerTypeClientS(client: String?): MutableList<GroupByContainerTypeClientEntity> {
         LoG.debug("before, client = ${client}")
-        if (mGroupByContainerTypeClientEntity == null) {
+        // TODO: !!!
+//        if (mGroupByContainerTypeClientEntity == null) {
             mGroupByContainerTypeClientEntity = database.loadGroupByContainerTypeClientEntity(mPlatformId, client)
             if (mGroupByContainerTypeClientEntity == null) {
                 database.createGroupByContainerEntityS(mPlatformId)
@@ -189,7 +182,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
                 LoG.error("mGroupByContainerClientTypeEntity == null")
                 mGroupByContainerTypeClientEntity = mutableListOf(GroupByContainerTypeClientEntity.createEmpty())
             }
-        }
+//        }
         LoG.debug("mGroupByContainerClientTypeEntity = ${mGroupByContainerTypeClientEntity!!.size}")
         return mGroupByContainerTypeClientEntity!!
     }
