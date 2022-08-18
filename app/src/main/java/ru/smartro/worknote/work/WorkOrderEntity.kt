@@ -346,8 +346,8 @@ open class PlatformEntity(
             isAllError -> StatusEnum.ERROR
             _beforeMediaSize == 0 && _afterMediaSize == 0 -> StatusEnum.NEW
             _beforeMediaSize != 0 && hasUnservedContainers -> StatusEnum.UNFINISHED
-            isAllSuccess -> StatusEnum.SUCCESS
-            filteredContainers.all { el -> el.status != StatusEnum.NEW } -> StatusEnum.PARTIAL_PROBLEMS
+            isAllSuccess && _afterMediaSize > 0 -> StatusEnum.SUCCESS
+            filteredContainers.all { el -> el.status != StatusEnum.NEW } && _afterMediaSize > 0 -> StatusEnum.PARTIAL_PROBLEMS
             else -> {
                 return StatusEnum.UNFINISHED
             }

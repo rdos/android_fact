@@ -1162,7 +1162,7 @@ class RealmRepository(private val p_realm: Realm) {
                 LoG.error("platformEntity == null")
                 return@executeTransaction
             }
-            val containerS = platformEntity.containers
+            val containerS = platformEntity.containers.filterTo(RealmList(), { it.isActiveToday })
             if (containerS.isEmpty()) {
                 LoG.error("containerSSorted.isEmpty()")
                 return@executeTransaction
@@ -1171,8 +1171,7 @@ class RealmRepository(private val p_realm: Realm) {
             for(container in containerS) {
                 LoG.warn("containerSBeforeSortWith::cont.number=${container.number}" + "cont.client=${container.client}" + "cont.typeName=${container.typeName}")
             }
-            containerS.sortWith(compareBy{it.client})
-            containerS.sortWith(compareBy{it.typeName})
+            containerS.sortWith(compareBy({ it.client }, { it.typeName }))
             for(container in containerS) {
                 LoG.trace("containerSAfterSortWith::cont.number=${container.number}" + "cont.client=${container.client}" + "cont.typeName=${container.typeName}")
             }
