@@ -1,8 +1,6 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -13,10 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.SmartROLinearLayout
 import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
-import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.GroupByContainerClientEntity
 import ru.smartro.worknote.work.GroupByContainerTypeClientEntity
@@ -25,7 +21,8 @@ import ru.smartro.worknote.work.PlatformEntity
 
 class PServeGroupByContainersF : AFragment() {
     private var mBackPressedCnt: Int = 2
-
+    private val _PlatformEntity: PlatformEntity
+        get() = vm.getPlatformEntity()
     private var btnCompleteTask: AppCompatButton? = null
     private var tvContainersProgress: AppCompatTextView? = null
     private var actvAddress: AppCompatTextView? = null
@@ -48,7 +45,6 @@ class PServeGroupByContainersF : AFragment() {
         rvMain = view.findViewById(R.id.rv_f_pserve_groupby__main)
         rvMain?.layoutManager = LinearLayoutManager(getAct())
         rvMain?.adapter = PServeGroupedByClientsAdapter(listOf())
-
         screenModeLabel?.text = "По типам"
 
         if(vm.getPlatformEntity().isModeServeFix()){
@@ -68,20 +64,19 @@ class PServeGroupByContainersF : AFragment() {
     }
 
     override fun onBindLayoutState(): Boolean {
-        val platformEntity = vm.getPlatformEntity()
         val groupByContainerClientS = vm.getGroupByContainerClientS()
 
         LoG.debug("CLIENT GROUPS IN FRAG::: ${groupByContainerClientS.joinToString { "client: ${it.client}, containers size: ${it.containers.size}" }}")
-        rvMain?.adapter = PServeGroupedByClientsAdapter(groupByContainerClientS)
+        PServeGroupedByClientsAdapter(groupByContainerClientS)
 
-        tvContainersProgress?.text = "№${platformEntity.srpId} / ${platformEntity.containers.size} конт."
+        tvContainersProgress?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containers.size} конт."
 
         btnCompleteTask?.setOnClickListener {
-            navigateMain(R.id.PhotoAfterMediaF, platformEntity.platformId!!)
+            navigateMain(R.id.PhotoAfterMediaF, _PlatformEntity.platformId!!)
         }
 
-        actvAddress?.text = "${platformEntity.address}"
-        if (platformEntity.containers.size >= 7 ) {
+        actvAddress?.text = "${_PlatformEntity.address}"
+        if (_PlatformEntity.containers.size >= 7 ) {
             actvAddress?.apply {
                 setOnClickListener { view ->
                     maxLines = if (maxLines < 3) {

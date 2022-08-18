@@ -334,9 +334,15 @@ open class PlatformEntity(
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
     fun getStatusPlatform(): String {
-        val filteredContainers = this.containers.filter { el -> el.isActiveToday }
-        val hasUnservedContainers = filteredContainers.any { el -> el.status == StatusEnum.NEW  }
-        val isAllSuccess = filteredContainers.all { el -> el.status == StatusEnum.SUCCESS }
+        val filteredContainers = this.containers.filter {
+                el -> el.isActiveToday
+        }
+        val hasUnservedContainers = filteredContainers.any {
+                el -> el.status == StatusEnum.NEW
+        }
+        val isAllSuccess = filteredContainers.all {
+                el -> el.status == StatusEnum.SUCCESS
+        }
         val isAllError = filteredContainers.all { el -> el.status == StatusEnum.ERROR }
 
         val _beforeMediaSize = if(this.beforeMedia.size == 0) this.beforeMediaSize else this.beforeMedia.size
@@ -347,7 +353,7 @@ open class PlatformEntity(
             _beforeMediaSize == 0 && _afterMediaSize == 0 -> StatusEnum.NEW
             _beforeMediaSize != 0 && hasUnservedContainers -> StatusEnum.UNFINISHED
             isAllSuccess && _afterMediaSize > 0 -> StatusEnum.SUCCESS
-            filteredContainers.all { el -> el.status != StatusEnum.NEW } && _afterMediaSize > 0 -> StatusEnum.PARTIAL_PROBLEMS
+            filteredContainers.all { el -> el.status == StatusEnum.NEW } && _afterMediaSize > 0 -> StatusEnum.PARTIAL_PROBLEMS
             else -> {
                 return StatusEnum.UNFINISHED
             }

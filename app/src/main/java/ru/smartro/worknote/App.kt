@@ -62,6 +62,7 @@ import java.util.concurrent.TimeUnit
 
 
 //INSTANCE
+// TODO: service locator паттерн альтернатива DI
 private var INSTANCE: App? = null
 
 class App : AApp() {

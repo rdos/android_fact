@@ -76,7 +76,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         mPlatformId = platformEntity.platformId
         mPlatformEntity = null
         mGroupByContainerClientEntity = null
-
+        mGroupByContainerTypeClientEntity = null
         LoG.trace("after.mPlatformId=${mPlatformId}")
     }
 
@@ -179,14 +179,16 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     // TODO: !!! ))
     fun getGroupByContainerTypeClientS(client: String?): MutableList<GroupByContainerTypeClientEntity> {
         LoG.debug("before, client = ${client}")
-        mGroupByContainerTypeClientEntity = database.loadGroupByContainerTypeClientEntity(mPlatformId, client)
         if (mGroupByContainerTypeClientEntity == null) {
-            database.createGroupByContainerEntityS(mPlatformId)
             mGroupByContainerTypeClientEntity = database.loadGroupByContainerTypeClientEntity(mPlatformId, client)
-        }
-        if (mGroupByContainerTypeClientEntity == null) {
-            LoG.error("mGroupByContainerClientTypeEntity == null")
-            mGroupByContainerTypeClientEntity = mutableListOf(GroupByContainerTypeClientEntity.createEmpty())
+            if (mGroupByContainerTypeClientEntity == null) {
+                database.createGroupByContainerEntityS(mPlatformId)
+                mGroupByContainerTypeClientEntity = database.loadGroupByContainerTypeClientEntity(mPlatformId, client)
+            }
+            if (mGroupByContainerTypeClientEntity == null) {
+                LoG.error("mGroupByContainerClientTypeEntity == null")
+                mGroupByContainerTypeClientEntity = mutableListOf(GroupByContainerTypeClientEntity.createEmpty())
+            }
         }
         LoG.debug("mGroupByContainerClientTypeEntity = ${mGroupByContainerTypeClientEntity!!.size}")
         return mGroupByContainerTypeClientEntity!!
