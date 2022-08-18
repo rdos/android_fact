@@ -1,10 +1,7 @@
 package ru.smartro.worknote
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -53,9 +50,9 @@ import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.presentation.ac.MainAct
+import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ac.AirplanemodeIntentService
 import java.io.File
 import java.io.FileOutputStream
@@ -123,11 +120,21 @@ class App : AApp() {
     }
 
     private var mGPS: PoinT = PoinT()
-
+    private var mSystemUncaughtHandler: Thread.UncaughtExceptionHandler? = null
 
     override fun onCreate() {
         super.onCreate()
         INSTANCE = this
+        mSystemUncaughtHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            LoG.warn("exTHR")
+            LoG.error("exTHR", throwable)
+//            todo: start THRActivity (oops for user)))
+            mSystemUncaughtHandler?.uncaughtException(thread, throwable)
+            throw throwable
+        }
+
+
 
 //        val context = LoggerFactory.getILoggerFactory() as LoggerContext
 //        for (logger in context.loggerList) {
@@ -208,7 +215,7 @@ class App : AApp() {
         // setup FileAppender
         val encoder1 = PatternLayoutEncoder()
         encoder1.context = lc
-        encoder1.pattern = "VT-%d{HH:mm:ss.SSS}[%thread]%-5level[%relative] %logger{41}[%line]:%method:: %msg%n"
+        encoder1.pattern = "VT---%d{HH:mm:ss.SSS}[%thread]%-5level[%relative] %logger{41}[%line]:%method:: %msg%n"
         encoder1.start()
         val fileAppender = FileAppender<ILoggingEvent>()
         fileAppender.context = lc
@@ -230,6 +237,7 @@ class App : AApp() {
         root.addAppender(fileAppender)
         root.addAppender(logcatAppender)
     }
+
 
     inner class MyLocationListener() : LocationListener {
         override fun onProviderEnabled(provider: String) {
@@ -586,6 +594,7 @@ class App : AApp() {
             }
         }
     }
+
 }
 
 const val TIME_OUT = 240000L

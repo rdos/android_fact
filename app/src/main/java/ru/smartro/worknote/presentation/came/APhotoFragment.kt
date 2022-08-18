@@ -50,6 +50,7 @@ destination(photoFile)
  */
 
 //mask
+const val C_PHOTO_D = "photo"
 abstract class APhotoFragment(
 ) : AFragment(), OnImageSavedCallback {
     private var acetComment: AppCompatEditText? = null
@@ -144,7 +145,7 @@ abstract class APhotoFragment(
         }
     }
 
-    protected fun getMediaCount(): Int {
+    private fun getMediaCount(): Int {
 //        val imageS = onGetMediaRealmList()
 //        val result = imageS.size + getOutputFileCount()
         val result = getOutputFileCount()
@@ -155,21 +156,22 @@ abstract class APhotoFragment(
         val mediaSize = getMediaCount()
         if (mediaSize >= mMaxPhotoCount) {
             toast("Разрешенное количество фотографий: ${mMaxPhotoCount}")
-        } else {
-            onTakePhoto()
-            val photoFL = createFile(getOutputD(), MyUtil.timeStampInSec().toString())
-            val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFL).build()
+            ibTakePhoto?.isEnabled = true
+            return
+        }
+        onTakePhoto()
+        val photoFL = createFile(getOutputD(), MyUtil.timeStampInSec().toString())
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFL).build()
 
-            mCameraController.takePicture(outputOptions, mCameraExecutor, this)
+        mCameraController.takePicture(outputOptions, mCameraExecutor, this)
 
-            if (paramS().isCameraSoundEnabled) {
-                mMediaPlayer?.start()
-            }
+        if (paramS().isCameraSoundEnabled) {
+            mMediaPlayer?.start()
         }
     }
 
     protected fun dropOutputD() {
-        val basePhotoD = AppliCation().getDPath("photo")
+        val basePhotoD = AppliCation().getDPath(C_PHOTO_D)
         val file = File(basePhotoD)
         file.deleteRecursively()
     }
@@ -185,15 +187,12 @@ abstract class APhotoFragment(
     }
 
     fun getOutputD(): File {
-        val basePhotoD =AppliCation().getDPath("photo")
-        val dirPath = basePhotoD + File.separator  + onGetDirName()
-        val file = File(dirPath)
-        if (!file.exists()) file.mkdirs()
-        return file
+        val basePhotoD = AppliCation().getD(C_PHOTO_D)
+        return basePhotoD
     }
 
     fun getOutputFileCount(): Int {
-        val files = GalleryPhotoF.getFileList(getOutputD())
+        val files = AppliCation().getDFileList(C_PHOTO_D)
         var result = 0
         files?.let { itS ->
             result = itS.size
@@ -300,7 +299,7 @@ abstract class APhotoFragment(
     }
 
     private fun setImageCounter() {
-        val mediaSize = getMediaCount()
+            val mediaSize = getMediaCount()
         mImageCounter?.post{
             mImageCounter?.text = "$mediaSize"
             try {
@@ -421,7 +420,7 @@ abstract class APhotoFragment(
             }
             try {
 //                showingProgress("Сохраняем фото")
-                val photoFileScanner = PhotoFileScanner(getOutputD())
+                val photoFileScanner = PhotoFileScanner(C_PHOTO_D)
                 val imageS = mutableListOf<ImageEntity>()
                 while (photoFileScanner.scan()) {
                     val imageEntity = photoFileScanner.getImageEntity()
@@ -530,7 +529,7 @@ abstract class APhotoFragment(
         log("restorePhotoFileS()after")
     }
 
-    inner class PhotoFileScanner(val p_outputD: File) : AbsObject(TAG, "ImageEntityScanner") {
+    inner class PhotoFileScanner(val Dname: String) : AbsObject(TAG, "ImageEntityScanner") {
         private var mIdx: Int = Inull
         private var mFileS: Array<File>? = null
 
@@ -588,7 +587,7 @@ abstract class APhotoFragment(
 
         private fun init(){
 //            val filter = FilenameFilter { dir, name ->!!!
-            mFileS = GalleryPhotoF.getFileList(p_outputD)
+            mFileS = AppliCation().getDFileList(Dname)
             mIdx = 0
         }
 

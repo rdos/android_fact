@@ -37,21 +37,27 @@ class PhotoBeforeMediaF : APhotoFragment() {
             // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
             if (mPlatformEntity?.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeF) {
                 navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+                return
             }
                              //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
             if (mPlatformEntity?.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
                 navigateMain(R.id.PServeByTypesF, mPlatformEntity?.platformId)
+                return
             }
-            return
+
         }
         // TODO: !!!
         val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
+
         if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeF) {
             navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+            return
         }
         if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
             navigateMain(R.id.PServeByTypesF, mPlatformEntity?.platformId)
+            return
         }
+        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
     }
 
     override fun onSavePhoto() {
