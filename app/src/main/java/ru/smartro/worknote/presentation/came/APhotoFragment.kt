@@ -146,9 +146,16 @@ abstract class APhotoFragment(
     }
 
     private fun getMediaCount(): Int {
-//        val imageS = onGetMediaRealmList()
-//        val result = imageS.size + getOutputFileCount()
-        val result = getOutputFileCount()
+        val files = AppliCation().getDFileList(C_PHOTO_D)
+        var result = 0
+        files?.let { itS ->
+            result = itS.size
+            for(f in  itS) {
+                if (f.isDirectory) {
+                    result -= 1
+                }
+            }
+        }
         return result
     }
 
@@ -189,20 +196,6 @@ abstract class APhotoFragment(
     fun getOutputD(): File {
         val basePhotoD = AppliCation().getD(C_PHOTO_D)
         return basePhotoD
-    }
-
-    fun getOutputFileCount(): Int {
-        val files = AppliCation().getDFileList(C_PHOTO_D)
-        var result = 0
-        files?.let { itS ->
-            result = itS.size
-            for(f in  itS) {
-                if (f.isDirectory) {
-                    result -= 1
-                }
-            }
-        }
-        return result
     }
 
 

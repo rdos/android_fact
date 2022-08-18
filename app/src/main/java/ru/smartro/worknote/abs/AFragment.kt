@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
+import ru.smartro.worknote.andPOintD.SmartROLinearLayout
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.presentation.ac.MainAct
@@ -14,12 +15,21 @@ import ru.smartro.worknote.presentation.ac.MainAct
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
 abstract class AFragment : Fragment(){
+     abstract fun onGetLayout(): Int
 
-    //        get() {
-//            val rootClazz =
-//            rootClazz.getClass
-//            while ()
-//        }
+    //todo: ???onCreate
+    // TODO: abstract fun onInitLayoutView(view: View): Boolean
+    protected open fun onInitLayoutView(view: SmartROLinearLayout): Boolean {
+        LoG.warn(" LoG.todo()")
+        return true
+    }
+
+    // TODO:  abstract fun onBindLayoutState(): Boolean
+    protected open fun onBindLayoutState(): Boolean {
+        LoG.warn(" LoG.todo()")
+        return false
+    }
+
     protected fun paramS() = App.getAppParaMS()
     fun getAct() = requireActivity() as AAct
     protected fun showingProgress(text: String? = null, isEmptyOldText: Boolean=false){
@@ -109,8 +119,6 @@ abstract class AFragment : Fragment(){
 
     }
 
-    abstract fun onGetLayout(): Int
-
     fun getArgSBundle(argumentId: Int, argumentName: String ?= null): Bundle {
         val bundle = Bundle(2)
         bundle.putInt(ARGUMENT_NAME___PARAM_ID, argumentId)
@@ -135,10 +143,29 @@ abstract class AFragment : Fragment(){
        LoG.info("getArgumentName .result = ${result}")
         return result
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+    final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       LoG.info("onViewCreated")
+        LoG.debug("onInitLayoutView")
+        if (view is SmartROLinearLayout) {
+            val result = onInitLayoutView(view) //ой пахнет savedInstanceState
+            LoG.trace("onInitLayoutView.result=${result}")
+        } else {
+            throw Throwable("TODO: onViewCreated.if (view is SmartROLinearLayout) ")
+            LoG.error("onInitLayoutView.result")
+        }
+        onNewLiveData() //todo:r_dos!!!
+        if (savedInstanceState == null) {
+            log("savedInstanceState == null")
+        } else {
+            log("savedInstanceState HE null")
+        }
+
 //        onCreate()
+    }
+
+    open fun onNewLiveData() {
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -148,7 +175,7 @@ abstract class AFragment : Fragment(){
         }
     }
 
-    override fun onDestroyView() {
+    final override fun onDestroyView() {
         super.onDestroyView()
         log("onDestroyView")
 

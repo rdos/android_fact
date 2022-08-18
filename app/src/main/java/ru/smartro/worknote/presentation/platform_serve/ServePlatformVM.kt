@@ -27,9 +27,9 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     private var mPlatformEntity: PlatformEntity? = null
 
-    private val mPlatformMutableLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
-    val platformEntityLiveData: LiveData<PlatformEntity>
-        get() = mPlatformMutableLiveData
+    private val _PlatformLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
+    val todoLiveData: LiveData<PlatformEntity>
+        get() = _PlatformLiveData
     
 
 
@@ -142,7 +142,12 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         val container = containers.find { it.volume == min }!!
         val newVolume = (container.volume ?: 0.0) + 1.0
         database.setGroByContainerTypeClientVolume(typeClientEntity, container.containerId!!, newVolume)
-        // updatePlatformEntity()
+        set_PlatformLiveData()
+    }
+
+    private fun set_PlatformLiveData() {
+        mPlatformEntity = getPlatformEntity()
+        _PlatformLiveData.postValue(mPlatformEntity!!)
     }
 
     fun decGroupByContainerTypeClientS(typeClientEntity: GroupByContainerTypeClientEntity) {
@@ -166,7 +171,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         }!!
         val newVolume = container.volume!! - 1.0
         database.setGroByContainerTypeClientVolume(typeClientEntity, container.containerId!!, newVolume)
-        // updatePlatformEntity()
+        set_PlatformLiveData()
     }
 
     // TODO: !!! ))
@@ -200,14 +205,14 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun updateContainerVolume( containerId: Int, volume: Double?) {
         database.updateContainerVolume(this.getPlatformId(), containerId, volume)
+        set_PlatformLiveData()
 //        getContainerEntity(containerId)
 //        getPlatformEntity(platformId)
-
     }
 
     fun updateContainerComment(containerId: Int, comment: String?) {
         database.updateContainerComment(this.getPlatformId(), containerId, comment)
-
+//        set_PlatformLiveData()
     }
 
     fun updatePlatformStatusUnfinished() {
@@ -217,12 +222,12 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun updateVolumePickup(platformId: Int, volume: Double?) {
         database.updateVolumePickup(platformId, volume)
-//        getPlatformEntity(platformId)
+        set_PlatformLiveData()
     }
 
     fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
         database.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
-//        getPlatformEntity(platformId)
+        set_PlatformLiveData()
     }
 
     fun updatePlatformStatusSuccess(platformId: Int) {

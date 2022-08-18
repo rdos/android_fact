@@ -1,6 +1,5 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
@@ -9,9 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -20,7 +17,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -28,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.SmartROLinearLayout
+import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
@@ -40,8 +38,11 @@ import ru.smartro.worknote.work.PlatformEntity
 class PServeF :
     AFragment(){
 
-    private var mBackPressedCnt: Int = 2
+    private var mContainersAdapter: PServeContainersAdapter? = null
+    private val _PlatformEntity: PlatformEntity
+        get() = vm.getPlatformEntity()
 
+    private var mBackPressedCnt: Int = 2
     private val THUMB_INACTIVE = "Inactive"
     private val THUMB_ACTIVE = "Active"
     private var mVolumePickup: Double? = null
@@ -49,13 +50,12 @@ class PServeF :
     private var acbKGORemaining: AppCompatButton? = null
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
-    private var rvContainers: RecyclerView? = null
     private var acsbVolumePickup: SeekBar? = null
 
     private var btnCompleteTask: AppCompatButton? = null
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
-    private var srosToGroupByFMode: SwitchCompat? = null
+    private var sscToGroupByFMode: SmartROSwitchCompat? = null
     private var actvScreenLabel: AppCompatTextView? = null
 
     private var plId: Int? = null
@@ -65,171 +65,176 @@ class PServeF :
         return R.layout.f_pserve
     }
 
+    override fun onInitLayoutView(sview: SmartROLinearLayout): Boolean {
+        tvPlatformSrpId = sview.findViewById(R.id.tv_f_pserve__sprid)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        btnCompleteTask = sview.findViewById(R.id.acb_activity_platform_serve__complete)
+        actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
+        sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
+        actvScreenLabel = sview.findViewById(R.id.screen_mode_label)
 
-        if (savedInstanceState == null) {
-            log("savedInstanceState == null")
-        } else {
-            log("savedInstanceState HE null")
-        }
-
-
-        tvPlatformSrpId = view.findViewById(R.id.tv_f_pserve__sprid)
-
-        btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
-        actvAddress = view.findViewById(R.id.tv_platform_serve__address)
-        srosToGroupByFMode = view.findViewById(R.id.sc_f_serve__screen_mode)
-        actvScreenLabel = view.findViewById(R.id.screen_mode_label)
-
-        tvVolumePickup = view.findViewById(R.id.et_act_platformserve__volumepickup)
-        rvContainers = view.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
+        tvVolumePickup = sview.findViewById(R.id.et_act_platformserve__volumepickup)
+        val rvContainers = sview.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
             recycledViewPool.setMaxRecycledViews(0, 0)
         }
-        acbProblem = view.findViewById(R.id.acb_activity_platform_serve__problem)
-        mAcbKGOServed = view.findViewById(R.id.acb_activity_platform_serve__kgo_served)
-        acbKGORemaining = view.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
-        acsbVolumePickup = view.findViewById(R.id.acsb_activity_platform_serve__seekbar)
+        mContainersAdapter = PServeContainersAdapter(emptyList())
+        rvContainers?.adapter = mContainersAdapter
+
+        acbProblem = sview.findViewById(R.id.acb_activity_platform_serve__problem)
+        mAcbKGOServed = sview.findViewById(R.id.acb_activity_platform_serve__kgo_served)
+        acbKGORemaining = sview.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
+        acsbVolumePickup = sview.findViewById(R.id.acsb_activity_platform_serve__seekbar)
 
         actvScreenLabel?.text = "Списком"
 
-        val platformEntity = vm.getPlatformEntity()
         /////////////////////////////////////////////
-        switchInit()
-        ////////////////////////////////////////////
-        vm.platformEntityLiveData.observe(viewLifecycleOwner) { platformEntity ->
-            tvPlatformSrpId?.text = "№${platformEntity.srpId} / ${platformEntity.containers.size} конт."
 
-            btnCompleteTask?.setOnClickListener {
-                navigateMain(R.id.PhotoAfterMediaF, platformEntity.platformId)
-            }
-
-            actvAddress?.text = "${platformEntity.address}"
-            if (platformEntity.containers.size >= 7 ) {
-                actvAddress?.apply {
-                    setOnClickListener { view ->
-                        maxLines = if (maxLines < 3) {
-                            3
-                        } else {
-                            1
-                        }
-                    }
-                }
-            } else {
-                actvAddress?.maxLines = 3
-            }
-
-            val containers = vm.getContainerS()
-            LoG.debug("CONTAINERS::: ${containers.joinToString { it.volume.toString() }}")
-            val containersAdapter = PServeContainersAdapter(containers)
-            rvContainers?.adapter = containersAdapter
-
-            if (platformEntity.failureMedia.size > 0) {
-                acbProblem?.let { setUseButtonStyleBackgroundRed(it) }
-            }
-            acbProblem?.setOnClickListener {
-                navigateMain(R.id.PhotoFailureMediaF, platformEntity.platformId)
-            }
-            if (platformEntity.isServedKGONotEmpty()) {
-                mAcbKGOServed?.let { setUseButtonStyleBackgroundGreen(it) }
-            }
-            mAcbKGOServed?.setOnClickListener {
-                showDialogFillKgoVolume().let { view ->
-                    val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
-                    tietKGOVolumeIn.setText(platformEntity.getServedKGOVolume())
-                    val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
-                    btnSave.setOnClickListener {
-                        val servedKGOVolumeText = tietKGOVolumeIn.text.toString()
-                        if (servedKGOVolumeText.isNullOrBlank()) {
-                            return@setOnClickListener
-                        }
-                        navigateMain(R.id.PhotoKgoServedF, platformEntity.platformId, servedKGOVolumeText)
-                        hideDialog()
-                    }
-                }
-            }
-            if (platformEntity.isRemainingKGONotEmpty()) {
-                acbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
-            }
-
-            acbKGORemaining?.setOnClickListener {
-                showDialogFillKgoVolume().let { view ->
-                    val tietKGOVolumeIn = view.findViewById<TextInputEditText>(R.id.kgo_volume_in)
-                    tietKGOVolumeIn.setText(platformEntity.getRemainingKGOVolume())
-                    val btnSave = view.findViewById<Button>(R.id.btn_alert_kgo__save)
-                    btnSave.setOnClickListener{
-                        val remainingKGOVolumeText = tietKGOVolumeIn.text.toString()
-                        if (remainingKGOVolumeText.isNullOrBlank()) {
-                            return@setOnClickListener
-                        }
-                        navigateMain(R.id.PhotoKgoRemainingF, platformEntity.platformId, remainingKGOVolumeText)
-                        hideDialog()
-                    }
-                }
-            }
-            if (platformEntity.isPickupNotEmpty()) {
-                acsbVolumePickup?.progress = platformEntity.volumePickup!!.toInt()
-                tvVolumePickuptext(platformEntity.volumePickup)
-                acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
-            } else {
-                acsbVolumePickup?.thumb = getThumb(null)
-            }
-            acsbVolumePickup?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
-                private var mProgressAtStartTracking = 0
-                private val SENSITIVITY = 1
-                override fun onProgressChanged(s: SeekBar?, progress: Int, fromUser: Boolean) {
-                    tvVolumePickuptext(progress)
-                    if(progress > 0 && tag != THUMB_ACTIVE){
-                        acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
-                        acsbVolumePickup?.tag = THUMB_ACTIVE
-                    } else if(progress <= 0 && tag != THUMB_INACTIVE) {
-                        acsbVolumePickup?.thumb = getThumb(null)
-                        acsbVolumePickup?.tag = THUMB_INACTIVE
-                    }
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    mProgressAtStartTracking = seekBar!!.progress
-                }
-
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    if(Math.abs(mProgressAtStartTracking - seekBar!!.progress) <= SENSITIVITY){
-                        acsbVolumePickup?.apply {
-                            onClickPickup(this)
-                        }
-                        return
-                    }
-
-                    acsbVolumePickup?.apply {
-                        if (progress > 0 ) {
-                            gotoMakePhotoForPickup(progress.toDouble())
-                        } else {
-                            vm.updateVolumePickup(platformEntity.platformId, null)
-                        }
-                    }
-
-                }
-            })
-        }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun switchInit() {
-        if(vm.getPlatformEntity().isModeServeFix()){
-            srosToGroupByFMode?.visibility = View.GONE
-            return
-        }
         // DISABLING SWIPE MOTION ON SWITCH
-        srosToGroupByFMode?.setOnTouchListener { v, event ->
-            event.actionMasked == MotionEvent.ACTION_MOVE
-        }
-        srosToGroupByFMode?.setOnClickListener {
+//        srosToGroupByFMode?.setOnTouchListener { v, event ->
+//            event.actionMasked == MotionEvent.ACTION_MOVE
+//        }
+        sscToGroupByFMode?.setOnCheckedChangeListener { _, _ ->
             // TODO: !!!
             val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
             configEntity.value = PlatformEntity.Companion.ServeMode.PServeGroupByContainersF
             vm.database.saveConfig(configEntity)
             navigateMain(R.id.PServeByTypesF, vm.getPlatformId())
+        }
+        ////////////////////////////////////////////
+
+        tvPlatformSrpId?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containers.size} конт."
+
+        btnCompleteTask?.setOnClickListener {
+            navigateMain(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
+        }
+
+        actvAddress?.text = "${_PlatformEntity.address}"
+        if (_PlatformEntity.containers.size >= 7 ) {
+            actvAddress?.apply {
+                setOnClickListener { view ->
+                    maxLines = if (maxLines < 3) {
+                        3
+                    } else {
+                        1
+                    }
+                }
+            }
+        } else {
+            actvAddress?.maxLines = 3
+        }
+        mAcbKGOServed?.setOnClickListener {
+            showDialogFillKgoVolume().let { vi ->
+                val tietKGOVolumeIn = vi.findViewById<TextInputEditText>(R.id.kgo_volume_in)
+                tietKGOVolumeIn.setText(_PlatformEntity.getServedKGOVolume())
+                val btnSave = vi.findViewById<Button>(R.id.btn_alert_kgo__save)
+                btnSave.setOnClickListener {
+                    val servedKGOVolumeText = tietKGOVolumeIn.text.toString()
+                    if (servedKGOVolumeText.isNullOrBlank()) {
+                        return@setOnClickListener
+                    }
+                    navigateMain(R.id.PhotoKgoServedF, _PlatformEntity.platformId, servedKGOVolumeText)
+                    hideDialog()
+                }
+            }
+        }
+
+        acbKGORemaining?.setOnClickListener {
+            showDialogFillKgoVolume().let { vi ->
+                val tietKGOVolumeIn = vi.findViewById<TextInputEditText>(R.id.kgo_volume_in)
+                tietKGOVolumeIn.setText(_PlatformEntity.getRemainingKGOVolume())
+                val btnSave = vi.findViewById<Button>(R.id.btn_alert_kgo__save)
+                btnSave.setOnClickListener{
+                    val remainingKGOVolumeText = tietKGOVolumeIn.text.toString()
+                    if (remainingKGOVolumeText.isNullOrBlank()) {
+                        return@setOnClickListener
+                    }
+                    navigateMain(R.id.PhotoKgoRemainingF, _PlatformEntity.platformId, remainingKGOVolumeText)
+                    hideDialog()
+                }
+            }
+        }
+
+        return false //))
+    }
+
+    override fun onBindLayoutState(): Boolean {
+
+        val containers = vm.getContainerS()
+//        todo: !!!!
+        mContainersAdapter?.change(containers)
+
+        if (_PlatformEntity.failureMedia.size > 0) {
+            acbProblem?.let { setUseButtonStyleBackgroundRed(it) }
+        }
+        acbProblem?.setOnClickListener {
+            navigateMain(R.id.PhotoFailureMediaF, _PlatformEntity.platformId)
+        }
+        if (_PlatformEntity.isServedKGONotEmpty()) {
+            mAcbKGOServed?.let { setUseButtonStyleBackgroundGreen(it) }
+        }
+
+        if (_PlatformEntity.isRemainingKGONotEmpty()) {
+            acbKGORemaining?.let { setUseButtonStyleBackgroundGreen(it) }
+        }
+
+
+        if (_PlatformEntity.isPickupNotEmpty()) {
+            acsbVolumePickup?.progress = _PlatformEntity.volumePickup!!.toInt()
+            tvVolumePickuptext(_PlatformEntity.volumePickup)
+            acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
+        } else {
+            acsbVolumePickup?.thumb = getThumb(null)
+        }
+        acsbVolumePickup?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+            private var mProgressAtStartTracking = 0
+            private val SENSITIVITY = 1
+            override fun onProgressChanged(s: SeekBar?, progress: Int, fromUser: Boolean) {
+                tvVolumePickuptext(progress)
+                if(progress > 0 && tag != THUMB_ACTIVE){
+                    acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
+                    acsbVolumePickup?.tag = THUMB_ACTIVE
+                } else if(progress <= 0 && tag != THUMB_INACTIVE) {
+                    acsbVolumePickup?.thumb = getThumb(null)
+                    acsbVolumePickup?.tag = THUMB_INACTIVE
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                mProgressAtStartTracking = seekBar!!.progress
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                if(Math.abs(mProgressAtStartTracking - seekBar!!.progress) <= SENSITIVITY){
+                    acsbVolumePickup?.apply {
+                        onClickPickup(this)
+                    }
+                    return
+                }
+
+                acsbVolumePickup?.apply {
+                    if (progress > 0 ) {
+                        gotoMakePhotoForPickup(progress.toDouble())
+                    } else {
+                        vm.updateVolumePickup(_PlatformEntity.platformId, null)
+                    }
+                }
+
+            }
+        })
+
+        if(vm.getPlatformEntity().isModeServeFix()){
+            sscToGroupByFMode?.visibility = View.GONE
+        }
+        return false
+    }
+
+
+    override fun onNewLiveData(/**platformEntity*/){
+        vm.todoLiveData.observe(viewLifecycleOwner) { platformEntity ->
+            LoG.debug("onBindLayoutState")
+            val result = onBindLayoutState()
+            LoG.trace("onBindLayoutState.result=${result}")
+
         }
     }
 
@@ -324,7 +329,7 @@ class PServeF :
      */
 //
    inner class PServeContainersAdapter(
-        private val containers: List<ContainerEntity>,
+        private var containers: List<ContainerEntity>,
     ) : RecyclerView.Adapter<PServeContainersAdapter.OwnerViewHolder>() {
         // TODO: 22.10.2021  item_container_adapter !!!
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
@@ -399,7 +404,12 @@ class PServeF :
             }
         }
 
-       inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+        fun change(containers: List<ContainerEntity>) {
+            this.containers = containers
+            this.notifyDataSetChanged()
+        }
+
+        inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
 
     }

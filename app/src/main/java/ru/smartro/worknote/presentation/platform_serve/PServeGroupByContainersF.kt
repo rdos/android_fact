@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.andPOintD.SmartROSwitch
+import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.GroupByContainerClientEntity
@@ -27,7 +27,7 @@ class PServeGroupByContainersF : AFragment() {
     private var btnCompleteTask: AppCompatButton? = null
     private var tvContainersProgress: AppCompatTextView? = null
     private var actvAddress: AppCompatTextView? = null
-    private var srosToPserveFMode: SmartROSwitch? = null
+    private var srosToPserveFMode: SmartROSwitchCompat? = null
     private var screenModeLabel: TextView? = null
 
     private val vm: ServePlatformVM by activityViewModels()

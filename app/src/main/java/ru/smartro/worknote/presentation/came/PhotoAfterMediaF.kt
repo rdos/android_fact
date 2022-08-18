@@ -24,9 +24,9 @@ open class PhotoAfterMediaF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        if(vm.platformEntityLiveData.value == null)
+        if(vm.todoLiveData.value == null)
             throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = vm.platformEntityLiveData.value
+        mPlatformEntity = vm.todoLiveData.value
         mMaxPhotoCount = Int.MAX_VALUE
     }
 
