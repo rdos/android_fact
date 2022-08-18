@@ -39,7 +39,7 @@ import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.ui_view.ViewProvider
 import net.cachapa.expandablelayout.ExpandableLayout
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
@@ -57,7 +57,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.WorkOrderEntity
 
-class MapPlatformsF: AFragment() , MapPlatformSBehaviorAdapter.PlatformClickListener,
+class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
 
 

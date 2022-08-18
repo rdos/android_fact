@@ -5,9 +5,9 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 
-class WalkthroughStepBF : AFragment() {
+class WalkthroughStepBF : ANOFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

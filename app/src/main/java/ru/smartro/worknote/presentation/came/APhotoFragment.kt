@@ -27,7 +27,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.realm.RealmList
 import ru.smartro.worknote.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -52,7 +52,7 @@ destination(photoFile)
 //mask
 const val C_PHOTO_D = "photo"
 abstract class APhotoFragment(
-) : AFragment(), OnImageSavedCallback {
+) : ANOFragment(), OnImageSavedCallback {
     private var acetComment: AppCompatEditText? = null
     protected var mAcactvFail: AppCompatAutoCompleteTextView? = null
     private var mMediaPlayer: MediaPlayer? = null
@@ -257,11 +257,6 @@ abstract class APhotoFragment(
 //                requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        //  displayManager.unregisterDisplayListener(displayListener)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

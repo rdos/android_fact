@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.SmartROLinearLayout
 import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog

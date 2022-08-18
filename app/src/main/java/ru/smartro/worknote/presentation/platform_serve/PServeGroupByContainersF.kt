@@ -12,7 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.ConfigName
@@ -21,7 +21,7 @@ import ru.smartro.worknote.work.GroupByContainerTypeClientEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 
-class PServeGroupByContainersF : AFragment() {
+class PServeGroupByContainersF : ANOFragment() {
     private var mBackPressedCnt: Int = 2
 
     private var btnCompleteTask: AppCompatButton? = null

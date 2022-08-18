@@ -2,7 +2,6 @@ package ru.smartro.worknote.presentation.checklist.workorder
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
@@ -11,14 +10,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 
-class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel: StartWorkOrderViewModel by viewModels()
     private var rvAdapter: StartWorkOrderAdapter? = null

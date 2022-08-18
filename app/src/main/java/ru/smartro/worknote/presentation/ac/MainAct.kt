@@ -14,7 +14,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.AppParaMS
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.R
 import ru.smartro.worknote.TAG
 import ru.smartro.worknote.abs.AAct
@@ -40,7 +40,7 @@ class MainAct :
 
     override fun onBackPressed() {
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        (navHostFragment.childFragmentManager.fragments[0] as AFragment).onBackPressed()
+        (navHostFragment.childFragmentManager.fragments[0] as ANOFragment).onBackPressed()
     }
 
 

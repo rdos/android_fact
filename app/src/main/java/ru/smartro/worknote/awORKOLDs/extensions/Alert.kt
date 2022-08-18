@@ -13,7 +13,7 @@ import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.abs.AbstractDialog
 
 private var loadingDialog: AlertDialog? = null
@@ -67,7 +67,7 @@ fun AAct.showDlgPickup(): View {
 
 
 //showDlgPickup!r_dos
-fun AFragment.showDlgPickup(): View {
+fun ANOFragment.showDlgPickup(): View {
     val context = requireActivity() as AAct
     val builder = AlertDialog.Builder(context)
     val inflater = this.layoutInflater
@@ -132,7 +132,7 @@ fun AppCompatActivity.showingProgress(text: String?=null, isEmptyOldText: Boolea
 
 
 
-fun AFragment.showAlertPlatformByPoint(): View {
+fun ANOFragment.showAlertPlatformByPoint(): View {
     val builder = AlertDialog.Builder(getAct())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.act_map__dialog_platform_clicked_dtl__alert_by_point, null)
@@ -141,7 +141,7 @@ fun AFragment.showAlertPlatformByPoint(): View {
     return view
 }
 
-fun AFragment.showDialogFillKgoVolume(): View {
+fun ANOFragment.showDialogFillKgoVolume(): View {
     val context = requireActivity() as AAct
     val builder = AlertDialog.Builder(context)
     val inflater = context.layoutInflater
@@ -153,7 +153,7 @@ fun AFragment.showDialogFillKgoVolume(): View {
 
 
 
-fun AFragment.warningClearNavigator(title: String): View {
+fun ANOFragment.warningClearNavigator(title: String): View {
     val builder = AlertDialog.Builder(getAct())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_clear_navigator, null)

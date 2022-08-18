@@ -18,7 +18,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.utils.ZipManager
@@ -27,7 +27,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 
-class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
+class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
     private val vs: DebugViewModel by viewModels()
     override fun onGetLayout(): Int {
         return R.layout.f_debug
