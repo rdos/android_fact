@@ -12,7 +12,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
+import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.andPOintD.SmartROLinearLayout
 import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.ConfigName
@@ -21,7 +23,7 @@ import ru.smartro.worknote.work.GroupByContainerTypeClientEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 
-class PServeGroupByContainersF : ANOFragment() {
+class PServeGroupByContainersF : AFragment() {
     private var mBackPressedCnt: Int = 2
 
     private var btnCompleteTask: AppCompatButton? = null
@@ -29,6 +31,7 @@ class PServeGroupByContainersF : ANOFragment() {
     private var actvAddress: AppCompatTextView? = null
     private var srosToPserveFMode: SmartROSwitchCompat? = null
     private var screenModeLabel: TextView? = null
+    private var rvMain: RecyclerView? = null
 
     private val vm: ServePlatformVM by activityViewModels()
 
@@ -36,24 +39,75 @@ class PServeGroupByContainersF : ANOFragment() {
         return R.layout.f_pserve_groupby
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if (savedInstanceState == null) {
-            log("savedInstanceState == null")
-        } else {
-            log("savedInstanceState HE null")
-        }
-
+    override fun onInitLayoutView(view: SmartROLinearLayout): Boolean {
         tvContainersProgress = view.findViewById(R.id.actv_f_pserve_groupby__sprid)
         btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = view.findViewById(R.id.tv_platform_serve__address)
         srosToPserveFMode = view.findViewById(R.id.sros_f_pserve_groupby__mode)
         screenModeLabel = view.findViewById(R.id.screen_mode_label)
+        rvMain = view.findViewById(R.id.rv_f_pserve_groupby__main)
+        rvMain?.layoutManager = LinearLayoutManager(getAct())
+        rvMain?.adapter = PServeGroupedByClientsAdapter(listOf())
 
         screenModeLabel?.text = "По типам"
 
-        switchInit()
+        if(vm.getPlatformEntity().isModeServeFix()){
+            srosToPserveFMode?.visibility = View.GONE
+        } else {
+            srosToPserveFMode?.isChecked = true
+            srosToPserveFMode?.setOnCheckedChangeListener { _, _ ->
+                // TODO: !!!
+                val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
+                configEntity.value = PlatformEntity.Companion.ServeMode.PServeF
+                vm.database.saveConfig(configEntity)
+                navigateMain(R.id.PServeF, vm.getPlatformId())
+            }
+        }
+
+        return super.onInitLayoutView(view)
+    }
+
+    override fun onBindLayoutState(): Boolean {
+        val platformEntity = vm.getPlatformEntity()
+        val groupByContainerClientS = vm.getGroupByContainerClientS()
+
+        LoG.debug("CLIENT GROUPS IN FRAG::: ${groupByContainerClientS.joinToString { "client: ${it.client}, containers size: ${it.containers.size}" }}")
+        rvMain?.adapter = PServeGroupedByClientsAdapter(groupByContainerClientS)
+
+        tvContainersProgress?.text = "№${platformEntity.srpId} / ${platformEntity.containers.size} конт."
+
+        btnCompleteTask?.setOnClickListener {
+            navigateMain(R.id.PhotoAfterMediaF, platformEntity.platformId!!)
+        }
+
+        actvAddress?.text = "${platformEntity.address}"
+        if (platformEntity.containers.size >= 7 ) {
+            actvAddress?.apply {
+                setOnClickListener { view ->
+                    maxLines = if (maxLines < 3) {
+                        3
+                    } else {
+                        1
+                    }
+                }
+            }
+        } else {
+            actvAddress?.maxLines = 3
+        }
+        return super.onBindLayoutState()
+    }
+
+    override fun onNewLiveData() {
+        vm.todoLiveData.observe(viewLifecycleOwner) {
+            LoG.debug("onBindLayoutState")
+            val result = onBindLayoutState()
+            LoG.trace("onBindLayoutState.result=${result}")
+        }
+    }
+
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+
 
 //        val adapterCurrentTask = PServeGroupedByClientsAdapter(requireContext(), object : PServeGroupedByClientsAdapter.SimplifyContainerServeListener {
 //            override fun onDecrease(clientName: String, typeName: String) {
@@ -70,11 +124,6 @@ class PServeGroupByContainersF : ANOFragment() {
 //        }
 
 
-        val rvMain = view.findViewById<RecyclerView>(R.id.rv_f_pserve_groupby__main)
-        rvMain.layoutManager = LinearLayoutManager(getAct())
-        val groupByContainerClientS = vm.getGroupByContainerClientS()
-        LoG.debug("CLIENT GROUPS IN FRAG::: ${groupByContainerClientS.joinToString { "client: ${it.client}, containers size: ${it.containers.size}" }}")
-        rvMain.adapter = PServeGroupedByClientsAdapter(groupByContainerClientS)
 //        rvMain.apply {
 //            layoutManager = LinearLayoutManager(requireContext())
 //            adapter = adapterCurrentTask
@@ -92,29 +141,6 @@ class PServeGroupByContainersF : ANOFragment() {
 //            }
 //        }
 
-
-            val platformEntity = vm.getPlatformEntity()
-
-            tvContainersProgress?.text = "№${platformEntity.srpId} / ${platformEntity.containers.size} конт."
-
-            btnCompleteTask?.setOnClickListener {
-                navigateMain(R.id.PhotoAfterMediaF, platformEntity.platformId!!)
-            }
-
-            actvAddress?.text = "${platformEntity.address}"
-            if (platformEntity.containers.size >= 7 ) {
-                actvAddress?.apply {
-                    setOnClickListener { view ->
-                        maxLines = if (maxLines < 3) {
-                            3
-                        } else {
-                            1
-                        }
-                    }
-                }
-            } else {
-                actvAddress?.maxLines = 3
-            }
 
 
 //        if (getAct() is MainAct) {
@@ -138,31 +164,12 @@ class PServeGroupByContainersF : ANOFragment() {
 //                            .removeOnGlobalLayoutListener(this)
 //                    }
 //                })
-    }
-
-    private fun switchInit() {
-        if(vm.getPlatformEntity().isModeServeFix()){
-            srosToPserveFMode?.visibility = View.GONE
-            return
-        }
-        srosToPserveFMode?.isChecked = true
-        // DISABLING SWIPE MOTION ON SWITCH
-        srosToPserveFMode?.setOnTouchListener { v, event ->
-            event.actionMasked == MotionEvent.ACTION_MOVE
-        }
-        srosToPserveFMode?.setOnClickListener {
-            // TODO: !!!
-            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
-            configEntity.value = PlatformEntity.Companion.ServeMode.PServeF
-            vm.database.saveConfig(configEntity)
-            navigateMain(R.id.PServeF, vm.getPlatformId())
-        }
-    }
 
 //    todo: Ох, рано встаёт охрана!
 //    private fun hideSwitch() {
 //        srosToPserveFMode?.visibility = View.GONE
 //    }
+//}
 
     override fun onBackPressed() {
         mBackPressedCnt--
@@ -174,7 +181,6 @@ class PServeGroupByContainersF : ANOFragment() {
             toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
         }
     }
-
 
 
     inner class PServeGroupedByClientsAdapter(
@@ -275,5 +281,4 @@ class PServeGroupByContainersF : ANOFragment() {
             }
         }
     }
-
 }
