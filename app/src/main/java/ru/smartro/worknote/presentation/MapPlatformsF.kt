@@ -618,7 +618,8 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     override fun startPlatformProblem(item: PlatformEntity) {
         hideDialog()
-        navigateMain(R.id.FAStPhotoFailureMediaF, item.platformId)
+        viewModel.setPlatformEntity(item)
+        navigateMain(R.id.PhotoFailureMediaF, item.platformId)
     }
 
     override fun moveCameraPlatform(point: PoinT) {
@@ -645,7 +646,8 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     override fun openFailureFire(item: PlatformEntity) {
-        navigateMain(R.id.FAStPhotoFailureMediaF, item.platformId)
+        viewModel.setPlatformEntity(item)
+        navigateMain(R.id.PhotoFailureMediaF, item.platformId)
     }
 
     fun buildNavigator(checkPoint: Point) {

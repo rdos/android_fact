@@ -24,7 +24,6 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     private var mPlatformId: Int = Inull
 
 
-
     private var mPlatformEntity: PlatformEntity? = null
 
     private val _PlatformLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
@@ -145,7 +144,10 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         set_PlatformLiveData()
     }
 
+
+
     private fun set_PlatformLiveData() {
+        mPlatformEntity = null
         mPlatformEntity = getPlatformEntity()
         _PlatformLiveData.postValue(mPlatformEntity!!)
     }

@@ -8,7 +8,8 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoPickupMediaF : APhotoFragment() {
-    private var mPlatformEntity: PlatformEntity? = null
+        private val mPlatformEntity: PlatformEntity
+        get() =  vm.getPlatformEntity()
     override fun onGetTextLabelFor() = "фото подбора"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -24,9 +25,7 @@ class PhotoPickupMediaF : APhotoFragment() {
 
 
     override fun onBeforeUSE() {
-        if(vm.todoLiveData.value == null)
-            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = vm.todoLiveData.value
+       
 //        mMaxPhotoCount = mPlatformEntity!!.getPickupMediaSize()
     }
 

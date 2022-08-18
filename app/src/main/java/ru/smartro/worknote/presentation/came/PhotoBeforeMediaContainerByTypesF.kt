@@ -10,7 +10,8 @@ import java.io.File
 
 class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
 
-    private var mPlatformEntity: PlatformEntity? = null
+        private val mPlatformEntity: PlatformEntity
+        get() =  vm.getPlatformEntity()
     override fun onGetTextLabelFor() = "фото контейнера до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -25,9 +26,6 @@ class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        if(vm.todoLiveData.value == null)
-            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = vm.todoLiveData.value
         mMaxPhotoCount = Int.MAX_VALUE
     }
 

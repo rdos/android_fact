@@ -18,6 +18,10 @@ const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
 abstract class ANOFragment : Fragment(){
      abstract fun onGetLayout(): Int
 
+    open fun onNewLiveData() {
+
+    }
+
     //todo: ???onCreate
     // TODO: abstract fun onInitLayoutView(view: View): Boolean
     protected open fun onInitLayoutView(view: SmartROLinearLayout): Boolean {
@@ -63,6 +67,12 @@ abstract class ANOFragment : Fragment(){
         val view = inflater.inflate(onGetLayout(), container, false)
         log("onGetLayout.after")
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        LoG.trace("onInitLayoutView")
+//        onCreate()
     }
 
     protected fun navigateBack() {
@@ -145,31 +155,9 @@ abstract class ANOFragment : Fragment(){
         return result
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        LoG.debug("onInitLayoutView")
-        if (view is SmartROLinearLayout) {
-            val result = onInitLayoutView(view) //ой пахнет savedInstanceState
-            LoG.trace("onInitLayoutView.result=${result}")
-        } else {
-            throw Throwable("TODO: onViewCreated.if (view is SmartROLinearLayout) ")
-            LoG.error("onInitLayoutView.result")
-        }
-        onNewLiveData() //todo:r_dos!!!
-        if (savedInstanceState == null) {
-            log("savedInstanceState == null")
-        } else {
-            log("savedInstanceState HE null")
-        }
 
-//        onCreate()
-    }
 
-    open fun onNewLiveData() {
-
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    final override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (getAct() is MainAct) {
             (getAct() as MainAct).onNewfromAFragment(false)

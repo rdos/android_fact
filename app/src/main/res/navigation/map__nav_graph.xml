@@ -187,19 +187,6 @@
             />
     </fragment>
     <fragment
-        android:id="@+id/FAStPhotoFailureMediaF"
-        android:name="ru.smartro.worknote.presentation.came.FAStPhotoFailureMediaF"
-        android:label="FAStPhotoFailureMediaF">
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
         android:id="@+id/DebugFragment"
         android:name="ru.smartro.worknote.presentation.DebugF"
         android:label="DebugFragment" >
