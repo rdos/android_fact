@@ -1096,9 +1096,11 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
 
+    // TODO::RENAME loadContsGroByClientS !!?
     fun loadGroupByContainerClient(platformId: Int): MutableList<GroupByContainerClientEntity>? {
         var result: MutableList<GroupByContainerClientEntity>?  = null
-        val realmResult =getQueryGroupByContainerClient(platformId).findAll()
+        val realmResult = getQueryGroupByContainerClient(platformId).findAll()
+
         LoG.trace("realmResult=${realmResult.count()}")
         if (realmResult.isNotEmpty()) {
             result = p_realm.copyFromRealm(realmResult)
@@ -1107,9 +1109,10 @@ class RealmRepository(private val p_realm: Realm) {
         return result
     }
 
+    // TODO::RENAME loadContsGroByClientNTypeS !!?
     fun loadGroupByContainerTypeClientEntity(platformId: Int, client: String?): MutableList<GroupByContainerTypeClientEntity>? {
         var result: MutableList<GroupByContainerTypeClientEntity>?  = null
-        val realmResult =getQueryGroupByContainerClientType(platformId).equalTo("client", client).findAll()
+        val realmResult = getQueryGroupByContainerClientType(platformId).equalTo("client", client).findAll()
         LoG.trace("realmResult=${realmResult.count()}")
         if (realmResult.isNotEmpty()) {
             result = p_realm.copyFromRealm(realmResult)

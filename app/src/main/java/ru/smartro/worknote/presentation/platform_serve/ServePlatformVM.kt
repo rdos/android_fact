@@ -114,6 +114,38 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         return mGroupByContainerClientEntity!!
     }
 
+    fun incGroupByContainerTypeClientS(typeClientEntity: GroupByContainerTypeClientEntity) {
+        val containers = typeClientEntity.containers
+        var min: Double? = containers.minOf {
+            it.volume ?: -1.0
+        }
+
+        if(min == -1.0) {
+            min = null
+        }
+
+        val container = containers.find { it.volume == min }!!
+        val newVolume = (container.volume ?: 0.0) + 1.0
+        database.updateContainerVolume(typeClientEntity.platformId, container.containerId!!, newVolume)
+        // updatePlatformEntity()
+    }
+
+    fun decGroupByContainerTypeClientS(typeClientEntity: GroupByContainerTypeClientEntity) {
+        val containers = typeClientEntity.containers
+        val max: Double = containers.maxOf {
+            it.volume ?: -1.0
+        }
+
+        if(max == -1.0) {
+            return
+        }
+
+        val container = containers.findLast { it.volume == max }!!
+        val newVolume = container.volume!! - 1.0
+        database.updateContainerVolume(typeClientEntity.platformId, container.containerId!!, newVolume)
+        // updatePlatformEntity()
+    }
+
     // TODO: !!! ))
     fun getGroupByContainerTypeClientS(client: String?): MutableList<GroupByContainerTypeClientEntity> {
         LoG.debug("before, client = ${client}")

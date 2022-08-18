@@ -242,16 +242,17 @@ class PServeGroupByContainersF : AFragment() {
                     val tvContSize = itemView.findViewById<TextView>(R.id.containers_size)
 
                     tvTypeName.text = groupByContainerTypeClientEntity.typeName
-//                    tvCount.text = groupByContainerClientType.containers.count { it.volume != null }.toString()
+                    val sum = groupByContainerTypeClientEntity.getServeCNT()
+                    tvCount.text =  sum.toString()
                     tvContSize.text = groupByContainerTypeClientEntity.getTypeCount()
 
 
                     bDecrease.setOnClickListener {
-//                        vm.incVolume(groupByContainerClientTypeEntity.typeId)
+                        vm.decGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
                     }
 
                     bIncrease.setOnClickListener {
-//                        listener.onIncrease(typeGroup.typeName)
+                        vm.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
                     }
 
                     bAddPhoto.setOnClickListener {

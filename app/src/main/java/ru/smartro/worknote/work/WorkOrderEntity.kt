@@ -831,11 +831,21 @@ open class GroupByContainerTypeClientEntity(
     var typeId: Int = Inull,
     var typeName: String = Snull,
     var containers: RealmList<ContainerEntity> = RealmList(),
+//    var serveCNT: Int = 0
 ) : Serializable, RealmObject() {
     fun getTypeCount(): String {
         val result = containers.size.toString()
         LoG.trace("result=${result}")
         return result
+    }
+
+    fun getServeCNT(): Int {
+        return containers.sumOf {
+            if(it.volume != null)
+                it.volume!!
+            else
+                0.0
+        }.toInt()
     }
 
     // TODO: !!r_dos!!!
