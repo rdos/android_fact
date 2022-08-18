@@ -21,21 +21,24 @@ import ru.smartro.worknote.work.GroupByContainerTypeClientEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 class ServePlatformVM(app: Application) : AViewModel(app) {
-
-    private var mGroupByContainerClientEntity: MutableList<GroupByContainerClientEntity>? = null
-    private var mGroupByContainerTypeClientEntity: MutableList<GroupByContainerTypeClientEntity>? = null
-    private var mPlatformEntity: PlatformEntity? = null
     private var mPlatformId: Int = Inull
+
+
+
+    private var mPlatformEntity: PlatformEntity? = null
+
     private val mPlatformMutableLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
     val platformEntityLiveData: LiveData<PlatformEntity>
         get() = mPlatformMutableLiveData
+    
 
-    val mContainerEntityLiveData: LiveData<PlatformEntity>
-        get() = mPlatformMutableLiveData
+
+    private var mGroupByContainerClientEntity: MutableList<GroupByContainerClientEntity>? = null
+    private var mGroupByContainerTypeClientEntity: MutableList<GroupByContainerTypeClientEntity>? = null
 
     private val _failReasonS: MutableLiveData<List<String>> = MutableLiveData(emptyList())
-    val mFailReasonS: LiveData<List<String>>
-        get() = _failReasonS
+//    val mFailReasonS: LiveData<List<String>>
+//        get() = _failReasonS
 
     fun getPlatformEntity(): PlatformEntity {
         if (mPlatformEntity == null) {
@@ -99,18 +102,20 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         return result
     }
 
-    // TODO: !!! ))
+    // TODO: !??
     fun getGroupByContainerClientS(): MutableList<GroupByContainerClientEntity> {
-        mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
-        LoG.info("mGroupByContainerClientEntity START = ${mGroupByContainerClientEntity}")
         if (mGroupByContainerClientEntity == null) {
-            database.createGroupByContainerEntityS(mPlatformId)
             mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
-            LoG.info("mGroupByContainerClientEntity NULL 1 = ${mGroupByContainerClientEntity}")
-        }
-        if (mGroupByContainerClientEntity == null) {
-            LoG.error("mGroupByContainerClientEntity == null")
-            mGroupByContainerClientEntity = mutableListOf(GroupByContainerClientEntity.createEmpty())
+            LoG.info("mGroupByContainerClientEntity START = ${mGroupByContainerClientEntity}")
+            if (mGroupByContainerClientEntity == null) {
+                database.createGroupByContainerEntityS(mPlatformId)
+                mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
+                LoG.info("mGroupByContainerClientEntity NULL 1 = ${mGroupByContainerClientEntity}")
+            }
+            if (mGroupByContainerClientEntity == null) {
+                LoG.error("mGroupByContainerClientEntity == null")
+                mGroupByContainerClientEntity = mutableListOf(GroupByContainerClientEntity.createEmpty())
+            }
         }
         return mGroupByContainerClientEntity!!
     }
