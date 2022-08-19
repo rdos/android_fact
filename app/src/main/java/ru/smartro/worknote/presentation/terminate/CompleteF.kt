@@ -2,7 +2,6 @@ package ru.smartro.worknote.presentation.terminate
 
 import android.app.Application
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,11 +19,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.BaseViewModel
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -37,7 +36,7 @@ import ru.smartro.worknote.work.net.EarlyCompleteBody
 import kotlin.math.round
 
 
-class CompleteF : AFragment() {
+class CompleteF : ANOFragment() {
 
     private lateinit var mReasonAdapter: ReasonAdapter
     private lateinit var mDatabase: RealmRepository
@@ -348,7 +347,7 @@ class CompleteF : AFragment() {
         }
     }
 
-    open class CompleteViewModel(application: Application) : BaseViewModel(application) {
+    open class CompleteViewModel(app: Application) : AViewModel(app) {
 
         private val _servedCounter: MutableLiveData<Int> = MutableLiveData(0)
         val mServedCounter: LiveData<Int>

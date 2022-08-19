@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -18,13 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.work.Status
 
-class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartVehicleF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
 

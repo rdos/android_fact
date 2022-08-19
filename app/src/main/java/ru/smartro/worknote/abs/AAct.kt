@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
+import ru.smartro.worknote.andPOintD.ANOFragment
 
 import ru.smartro.worknote.presentation.ac.StartAct
 import java.lang.Exception
@@ -16,8 +16,12 @@ import java.lang.Exception
 //        } catch (e: Exception) {
 //            Sentry.captureException(e)
 //        }
-
 abstract class AAct : AppCompatActivity() {
+//abstract class AAct : AppCompatActivity(), IActTooltip {
+//    override fun onNewfromAFragment() {
+//
+//    }
+
     protected fun AppliCation() : App {
         return App.getAppliCation()
     }
@@ -52,7 +56,7 @@ abstract class AAct : AppCompatActivity() {
     public fun onNewGPS() {
         LOGbefore()
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        (navHostFragment.childFragmentManager.fragments[0] as AFragment).onNewGPS()
+        (navHostFragment.childFragmentManager.fragments[0] as ANOFragment).onNewGPS()
         LOGafterLOG()
     }
     // TODO: !r_dos feed(stuff)

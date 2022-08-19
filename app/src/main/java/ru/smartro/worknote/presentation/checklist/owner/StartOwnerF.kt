@@ -1,14 +1,13 @@
 package ru.smartro.worknote.presentation.checklist.owner
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -17,7 +16,7 @@ import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 
-class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartOwnerF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private var srlRefresh: SwipeRefreshLayout? = null
 

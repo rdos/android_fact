@@ -1,10 +1,7 @@
 package ru.smartro.worknote
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,10 +11,6 @@ import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -34,6 +27,7 @@ import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.android.LogcatAppender
@@ -47,21 +41,18 @@ import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.andPOintD.AndRoid
-import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.presentation.ac.MainAct
+import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ac.AirplanemodeIntentService
 import java.io.File
 import java.io.FileOutputStream
@@ -71,6 +62,7 @@ import java.util.concurrent.TimeUnit
 
 
 //INSTANCE
+// TODO: service locator паттерн альтернатива DI
 private var INSTANCE: App? = null
 
 class App : AApp() {
@@ -93,10 +85,6 @@ class App : AApp() {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
-    object ScreenMode {
-        const val EXTENDED = false
-        const val SIMPLIFY = true
-    }
 
     fun gps(): PoinT {
         log("BBBB")
@@ -133,11 +121,21 @@ class App : AApp() {
     }
 
     private var mGPS: PoinT = PoinT()
-
+    private var mSystemUncaughtHandler: Thread.UncaughtExceptionHandler? = null
 
     override fun onCreate() {
         super.onCreate()
         INSTANCE = this
+        mSystemUncaughtHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            LoG.warn("exTHR")
+            LoG.error("exTHR", throwable)
+//            todo: start THRActivity (oops for user)))
+            mSystemUncaughtHandler?.uncaughtException(thread, throwable)
+            throw throwable
+        }
+
+
 
 //        val context = LoggerFactory.getILoggerFactory() as LoggerContext
 //        for (logger in context.loggerList) {
@@ -160,12 +158,7 @@ class App : AApp() {
 
         LoG.info("on App created App.onCreate onAppCreate")
         sentryInit()
-        initRealm()
-        startKoin {
-            androidLogger()
-            androidContext(this@App)
-            modules(listOf(viewModelModule))
-        }
+        RealmInit()
 //        try {    // Add a breadcrumb that will be sent with the next event(s)//            throw Exception("This is a devel.")//        } catch (e: Exception) {
 //            Sentry.captureException(e) //        }                                             //        val objectAnimator: ObjectAnimator = ObjectAnimator.ofFloat( //            mLlcMap, "alpha", 0f
 //        ) //        objectAnimator.setDuration(4000);
@@ -223,10 +216,11 @@ class App : AApp() {
         // setup FileAppender
         val encoder1 = PatternLayoutEncoder()
         encoder1.context = lc
-        encoder1.pattern = "%d{HH:mm:ss.SSS}[%thread]%-5level[%relative] %logger{41}[%line]:%method:: %msg%n"
+        encoder1.pattern = "VT---%d{HH:mm:ss.SSS}[%thread]%-5level[%relative] %logger{41}[%line]:%method:: %msg%n"
         encoder1.start()
         val fileAppender = FileAppender<ILoggingEvent>()
         fileAppender.context = lc
+
         val file = getF("logs", "${MyUtil.currentTime()}.log")
         fileAppender.file = file.absolutePath
         fileAppender.encoder = encoder1
@@ -240,9 +234,11 @@ class App : AApp() {
         // add the newly created appenders to the root logger;
         // qualify Logger to disambiguate from org.slf4j.Logger
         val root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+        root.level = Level.TRACE
         root.addAppender(fileAppender)
         root.addAppender(logcatAppender)
     }
+
 
     inner class MyLocationListener() : LocationListener {
         override fun onProviderEnabled(provider: String) {
@@ -337,7 +333,7 @@ class App : AApp() {
     }
 
 
-    private fun initRealm() {
+    private fun RealmInit() {
         Realm.init(this@App)
         val config = RealmConfiguration.Builder()
         config.allowWritesOnUiThread(true)
@@ -599,6 +595,7 @@ class App : AApp() {
             }
         }
     }
+
 }
 
 const val TIME_OUT = 240000L
@@ -623,7 +620,7 @@ const val Inull = -111
 const val LTIMEnull = 999222333L
 const val Lnull = -111111L
 const val Fnull = 0.0f
-const val Dnull = 0.0
+const val Dnull = -222.0
 const val ErrorsE = "ErrorsE"
 
 typealias DoubleCool = Double
@@ -656,7 +653,7 @@ fun Fragment.toast(text: String? = "") {
 
 }
 
-fun BaseViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
     fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
         var dirPath = App.getAppliCation().dataDir.absolutePath
         if(containerUuid == null) {

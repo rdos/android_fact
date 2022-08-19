@@ -10,18 +10,17 @@ import io.realm.Realm
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
-import org.slf4j.LoggerFactory
 import ru.smartro.worknote.*
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.isNotNull
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.presentation.platform_serve.PServeF
 import java.io.Serializable
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
-
+const val THIS_IS_ERROR = "это ошибка?"
 open class WorkOrderEntity(
     @PrimaryKey
     var id: Int = Inull,
@@ -67,7 +66,7 @@ open class WorkOrderEntity(
         var containersStatusSuccessCnt = 0
         var containersStatusErrorCnt = 0
         for (platform in platforms) {
-            /** статистика для PlatformEntity*/
+            /** статистика для */
             platformsCnt++
             when(platform.getStatusPlatform()) {
                 StatusEnum.NEW -> platformsStatusNewCnt++
@@ -260,12 +259,6 @@ open class KGOEntity(
 
     }
 
-open class ServedContainers(
-    var typeName: String = Snull,
-    var client: String = Snull,
-    var servedCount: Int = Inull
-): Serializable, RealmObject()
-
 open class PlatformEntity(
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
@@ -315,7 +308,7 @@ open class PlatformEntity(
     @SerializedName("finished_at")
     var finishedAt: String? = null,
     @SerializedName("id")
-    var platformId: Int? = null,
+    var platformId: Int = Inull,
     @SerializedName("name")
     var name: String? = null,
     @SerializedName("srp_id")
@@ -332,16 +325,24 @@ open class PlatformEntity(
     var orderTimeAlert: String? = null,
 
     @Expose
-    var servedContainers: RealmList<ServedContainers> = RealmList()
+    var served11Containers:  String = "почему поле уходи???????????????? Expose",
+    var serveModeFixCODENAME: String? = null,
 
 ) : Serializable, RealmObject() {
+
 
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
     fun getStatusPlatform(): String {
-        val filteredContainers = this.containers.filter { el -> el.isActiveToday }
-        val hasUnservedContainers = filteredContainers.any { el -> el.status == StatusEnum.NEW  }
-        val isAllSuccess = filteredContainers.all { el -> el.status == StatusEnum.SUCCESS }
+        val filteredContainers = this.containers.filter {
+                el -> el.isActiveToday
+        }
+        val hasUnservedContainers = filteredContainers.any {
+                el -> el.status == StatusEnum.NEW
+        }
+        val isAllSuccess = filteredContainers.all {
+                el -> el.status == StatusEnum.SUCCESS
+        }
         val isAllError = filteredContainers.all { el -> el.status == StatusEnum.ERROR }
 
         val _beforeMediaSize = if(this.beforeMedia.size == 0) this.beforeMediaSize else this.beforeMedia.size
@@ -351,8 +352,8 @@ open class PlatformEntity(
             isAllError -> StatusEnum.ERROR
             _beforeMediaSize == 0 && _afterMediaSize == 0 -> StatusEnum.NEW
             _beforeMediaSize != 0 && hasUnservedContainers -> StatusEnum.UNFINISHED
-            isAllSuccess -> StatusEnum.SUCCESS
-            filteredContainers.all { el -> el.status != StatusEnum.NEW } -> StatusEnum.PARTIAL_PROBLEMS
+            isAllSuccess && _afterMediaSize > 0 -> StatusEnum.SUCCESS
+            filteredContainers.all { el -> el.status != StatusEnum.NEW } && _afterMediaSize > 0 -> StatusEnum.PARTIAL_PROBLEMS
             else -> {
                 return StatusEnum.UNFINISHED
             }
@@ -490,8 +491,8 @@ open class PlatformEntity(
             val today = getDeviceDateTime()
             val diff: Long = orderEndTime.time - today.time
             val minutes = diff / (1000 * 60)
-            LoG.error( this.orderTimeWarning!!)
-            LoG.error( minutes.toString())
+            LoG.warn( this.orderTimeWarning!!)
+            LoG.warn( minutes.toString())
             if (minutes < 0) {
                 result = true
             }
@@ -631,8 +632,32 @@ open class PlatformEntity(
         }
     }
 
+    fun isModeServeFix(): Boolean {
+        val result = this.serveModeFixCODENAME != null
+        return result
+    }
+    
+    fun isModePServeF(): Boolean {
+        val result = this.serveModeFixCODENAME == ServeMode.PServeF
+        return result
+    }
+
+    fun isModePServeGroupByContainersF(): Boolean {
+        val result = this.serveModeFixCODENAME == ServeMode.PServeGroupByContainersF
+        return result
+    }
+
+
     companion object {
-        
+        // TODO: !!!
+        fun createEmpty(): PlatformEntity {
+            val result = PlatformEntity(platformId = Inull, address = THIS_IS_ERROR)
+            return result
+        }
+        object ServeMode {
+            const val PServeF = "PServeF"
+            const val PServeGroupByContainersF = "PServeGroupByContainersF"
+        }
     }
 
 
@@ -641,7 +666,6 @@ open class PlatformEntity(
 //        return result
 //    }
 }
-
 
 
 open class UnloadEntity(
@@ -657,6 +681,7 @@ enum class ConfigName(val displayName: String) {
     AIRPLANEMODE_CNT("AIRPLANEMODE_CNT"),
     NOINTERNET_CNT("NOINTERNET_CNT"),
     MAPACTDESTROY_CNT("MAPACTDESTROY_CNT"),
+    USER_WORK_SERVE_MODE_CODENAME("USER_WORK_SERVE_MODE_CODENAME"),
 }
 
 open class ConfigEntity(
@@ -779,7 +804,83 @@ open class ContainerEntity(
     fun isBreakdownNotEmpty(): Boolean {
         return getBreakdownMediaSize() > 0
     }
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): ContainerEntity {
+            val result = ContainerEntity(containerId = Inull, client = THIS_IS_ERROR, number = THIS_IS_ERROR)
+            return result
+        }
+    }
 }
+
+// TODO: //ContainerGroupClient
+open class GroupByContainerClientEntity(
+    var platformId: Int = Inull,
+    var client: String? = null ,
+
+    var containers: RealmList<ContainerEntity> = RealmList(),
+) : Serializable, RealmObject() {
+// TODO: //GroBy
+
+    // TODO: !!r_dos!!!
+    fun addClient(container: ContainerEntity) {
+        this.client = container.client
+    }
+
+    fun getClientForUser(): String {
+        // TODO: VT!!!
+        val result = client?:"Клиент не указан"
+        return result
+    }
+
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): GroupByContainerClientEntity {
+            val result = GroupByContainerClientEntity(platformId = Inull, client = THIS_IS_ERROR)
+            return result
+        }
+    }
+}
+// TODO: //GroBy
+open class GroupByContainerTypeClientEntity(
+    // TODO: //GroBy
+    var platformId: Int = Inull,
+    var client: String? = null,
+    var typeId: Int = Inull,
+    var typeName: String = Snull,
+    var containers: RealmList<ContainerEntity> = RealmList(),
+//    var serveCNT: Int = 0
+) : Serializable, RealmObject() {
+    fun getTypeCount(): String {
+        val result = containers.size.toString()
+        LoG.trace("result=${result}")
+        return result
+    }
+
+    fun getServeCNT(): Int {
+        return containers.sumOf {
+            if(it.volume != null)
+                it.volume!!
+            else
+                0.0
+        }.toInt()
+    }
+
+    // TODO: !!r_dos!!!
+    fun addClient(clientName: String) {
+        this.client = clientName
+    }
+
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): GroupByContainerTypeClientEntity {
+            val result = GroupByContainerTypeClientEntity(platformId = Inull, client = THIS_IS_ERROR)
+            return result
+        }
+    }
+}
+
+
 
 open class ImageEntity(
     var image: String? = null,

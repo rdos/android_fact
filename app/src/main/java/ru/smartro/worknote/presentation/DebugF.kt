@@ -4,9 +4,6 @@ import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
@@ -21,8 +18,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.andPOintD.BaseViewModel
+import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.utils.ZipManager
 import java.io.File
@@ -30,7 +27,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 
-class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
+class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
     private val vs: DebugViewModel by viewModels()
     override fun onGetLayout(): Int {
         return R.layout.f_debug
@@ -43,7 +40,7 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
     }
 
     private fun initViews(view: View) {
-        val workOrders = vs.baseDat.findWorkOrders(false)
+        val workOrders = vs.database.findWorkOrders(false)
 //        val containerProgress = workOrders.
 //        val platformProgress = vs.findPlatformProgress()
         var platformCnt = 0
@@ -254,7 +251,7 @@ class DebugF : AFragment(), MediaScannerConnection.OnScanCompletedListener {
         findNavController().popBackStack()
     }
 
-    open class DebugViewModel(application: Application) : BaseViewModel(application)
+    open class DebugViewModel(app: Application) : AViewModel(app)
 
     override fun onScanCompleted(path: String?, uri: Uri?) {
         log("onScanCompleted.path=${path}")

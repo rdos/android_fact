@@ -2,10 +2,6 @@ package ru.smartro.worknote
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
-import org.slf4j.LoggerFactory
-import ru.smartro.worknote.*
-import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
@@ -66,11 +62,6 @@ class AppParaMS {
             it.putString("accessToken", value)
         }
 
-    var lastScreenMode: Boolean
-        get() = sharedPref__env.getBoolean("lastScreenMode", ScreenMode.EXTENDED)
-        set(value) = sharedPref__env.edit {
-            it.putBoolean("lastScreenMode", value)
-        }
 
     var userName: String
         get() = sharedPref__env.getString("userName", Snull)!!
@@ -250,13 +241,13 @@ class AppParaMS {
             it.putString("wayBillNumber", value)
         }
 
-    var isWalkthroughWasShown: Boolean
-        get() = sharedPref__env.getBoolean("isWalkthroughWasShown", false)
+    var isShowTooltipInNextTime: Boolean
+        get() = sharedPref__env.getBoolean("isShownTooltip", true)
         set(value) = sharedPref__env.edit {
-            it.putBoolean("isWalkthroughWasShown", value)
+            it.putBoolean("isShownTooltip", value)
         }
 
-    var walkthroughWasShownCnt: Int
+    var cntTooltipShow: Int
         get() = sharedPref__env.getInt("walkthroughWasShownCnt", 0)
         set(value) = sharedPref__env.edit {
             it.putInt("walkthroughWasShownCnt", value)
