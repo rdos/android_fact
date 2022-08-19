@@ -8,9 +8,10 @@ import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
-class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
+class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
 
-    private var mPlatformEntity: PlatformEntity? = null
+        private val mPlatformEntity: PlatformEntity
+        get() =  vm.getPlatformEntity()
     override fun onGetTextLabelFor() = "фото контейнера до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -25,9 +26,6 @@ class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        if(viewModel.mPlatformEntity.value == null)
-            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = viewModel.mPlatformEntity.value
         mMaxPhotoCount = Int.MAX_VALUE
     }
 
@@ -36,8 +34,8 @@ class PhotoBeforeMediaContainerSimplifyF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PhotoAfterMediaContainerSimplifyF, mPlatformEntity?.platformId)
+        vm.database.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
+        navigateMain(R.id.PServeByTypesF, mPlatformEntity?.platformId)
     }
 
     override fun onSavePhoto() {

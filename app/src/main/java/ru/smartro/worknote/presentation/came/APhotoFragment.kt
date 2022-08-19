@@ -1,7 +1,6 @@
 package ru.smartro.worknote.presentation.came
 
 import android.Manifest
-import android.app.Application
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -28,12 +27,11 @@ import com.bumptech.glide.request.RequestOptions
 import io.realm.RealmList
 import ru.smartro.worknote.*
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.abs.AbsObject
-import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
+import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ImageEntity
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -52,8 +50,9 @@ destination(photoFile)
  */
 
 //mask
+const val C_PHOTO_D = "photo"
 abstract class APhotoFragment(
-) : AFragment(), OnImageSavedCallback {
+) : ANOFragment(), OnImageSavedCallback {
     private var acetComment: AppCompatEditText? = null
     protected var mAcactvFail: AppCompatAutoCompleteTextView? = null
     private var mMediaPlayer: MediaPlayer? = null
@@ -74,7 +73,7 @@ abstract class APhotoFragment(
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 //  todo:!R_dos??  protected val viewModel: PlatformServeSharedViewModel by viewModel()
-    protected val viewModel: PlatformServeSharedViewModel by activityViewModels()
+    protected val vm: ServePlatformVM by activityViewModels()
 
 
     protected open fun onGetTextLabelFor(): String? = null
@@ -146,10 +145,17 @@ abstract class APhotoFragment(
         }
     }
 
-    protected fun getMediaCount(): Int {
-//        val imageS = onGetMediaRealmList()
-//        val result = imageS.size + getOutputFileCount()
-        val result = getOutputFileCount()
+    private fun getMediaCount(): Int {
+        val files = AppliCation().getDFileList(C_PHOTO_D)
+        var result = 0
+        files?.let { itS ->
+            result = itS.size
+            for(f in  itS) {
+                if (f.isDirectory) {
+                    result -= 1
+                }
+            }
+        }
         return result
     }
 
@@ -157,21 +163,22 @@ abstract class APhotoFragment(
         val mediaSize = getMediaCount()
         if (mediaSize >= mMaxPhotoCount) {
             toast("Разрешенное количество фотографий: ${mMaxPhotoCount}")
-        } else {
-            onTakePhoto()
-            val photoFL = createFile(getOutputD(), MyUtil.timeStampInSec().toString())
-            val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFL).build()
+            ibTakePhoto?.isEnabled = true
+            return
+        }
+        onTakePhoto()
+        val photoFL = createFile(getOutputD(), MyUtil.timeStampInSec().toString())
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFL).build()
 
-            mCameraController.takePicture(outputOptions, mCameraExecutor, this)
+        mCameraController.takePicture(outputOptions, mCameraExecutor, this)
 
-            if (paramS().isCameraSoundEnabled) {
-                mMediaPlayer?.start()
-            }
+        if (paramS().isCameraSoundEnabled) {
+            mMediaPlayer?.start()
         }
     }
 
     protected fun dropOutputD() {
-        val basePhotoD = AppliCation().getDPath("photo")
+        val basePhotoD = AppliCation().getDPath(C_PHOTO_D)
         val file = File(basePhotoD)
         file.deleteRecursively()
     }
@@ -187,25 +194,8 @@ abstract class APhotoFragment(
     }
 
     fun getOutputD(): File {
-        val basePhotoD =AppliCation().getDPath("photo")
-        val dirPath = basePhotoD + File.separator  + onGetDirName()
-        val file = File(dirPath)
-        if (!file.exists()) file.mkdirs()
-        return file
-    }
-
-    fun getOutputFileCount(): Int {
-        val files = GalleryPhotoF.getFileList(getOutputD())
-        var result = 0
-        files?.let { itS ->
-            result = itS.size
-            for(f in  itS) {
-                if (f.isDirectory) {
-                    result -= 1
-                }
-            }
-        }
-        return result
+        val basePhotoD = AppliCation().getD(C_PHOTO_D)
+        return basePhotoD
     }
 
 
@@ -269,11 +259,6 @@ abstract class APhotoFragment(
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        //  displayManager.unregisterDisplayListener(displayListener)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getAct().hideProgress()
@@ -302,7 +287,7 @@ abstract class APhotoFragment(
     }
 
     private fun setImageCounter() {
-        val mediaSize = getMediaCount()
+            val mediaSize = getMediaCount()
         mImageCounter?.post{
             mImageCounter?.text = "$mediaSize"
             try {
@@ -423,7 +408,7 @@ abstract class APhotoFragment(
             }
             try {
 //                showingProgress("Сохраняем фото")
-                val photoFileScanner = PhotoFileScanner(getOutputD())
+                val photoFileScanner = PhotoFileScanner(C_PHOTO_D)
                 val imageS = mutableListOf<ImageEntity>()
                 while (photoFileScanner.scan()) {
                     val imageEntity = photoFileScanner.getImageEntity()
@@ -532,7 +517,7 @@ abstract class APhotoFragment(
         log("restorePhotoFileS()after")
     }
 
-    inner class PhotoFileScanner(val p_outputD: File) : AbsObject(TAG, "ImageEntityScanner") {
+    inner class PhotoFileScanner(val Dname: String) : AbsObject(TAG, "ImageEntityScanner") {
         private var mIdx: Int = Inull
         private var mFileS: Array<File>? = null
 
@@ -590,7 +575,7 @@ abstract class APhotoFragment(
 
         private fun init(){
 //            val filter = FilenameFilter { dir, name ->!!!
-            mFileS = GalleryPhotoF.getFileList(p_outputD)
+            mFileS = AppliCation().getDFileList(Dname)
             mIdx = 0
         }
 
@@ -600,11 +585,6 @@ abstract class APhotoFragment(
     }
 }
 
-class PhotoViewModel(application: Application) : BaseViewModel(application) {
-    fun getImageList(platformId: Int, containerId: Int, photoFor: Int): MutableList<ImageEntity> {
-        return baseDat.getImageList(platformId, containerId, photoFor) as MutableList<ImageEntity>
-    }
-}
 /**
  *    val orientationEventListener = object : OrientationEventListener(context) {
 override fun onOrientationChanged(orientation: Int) {

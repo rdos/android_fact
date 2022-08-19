@@ -1,6 +1,7 @@
 package ru.smartro.worknote.andPOintD
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import io.realm.Realm
 import kotlinx.coroutines.CoroutineScope
@@ -12,10 +13,9 @@ import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.NetworkRepository
 import kotlin.coroutines.CoroutineContext
 
-abstract class BaseViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {
-    protected var TAG : String = "--Aaa${this::class.simpleName}"
-    val networkDat = NetworkRepository(application.applicationContext)
-    val baseDat = RealmRepository(Realm.getDefaultInstance())
+abstract class AViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {
+    val networkDat = NetworkRepository(application)
+    val database = RealmRepository(Realm.getDefaultInstance())
     open val params = App.getAppParaMS()
 
     /**

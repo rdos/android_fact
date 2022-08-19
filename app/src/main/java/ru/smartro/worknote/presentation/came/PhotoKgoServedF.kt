@@ -8,7 +8,8 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoKgoServedF : APhotoFragment() {
-    private var mPlatformEntity: PlatformEntity? = null
+        private val mPlatformEntity: PlatformEntity
+        get() =  vm.getPlatformEntity()
     override fun onGetTextLabelFor() = "КГО.забрал"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -24,9 +25,7 @@ class PhotoKgoServedF : APhotoFragment() {
 
 
     override fun onBeforeUSE() {
-        if(viewModel.mPlatformEntity.value == null)
-            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = viewModel.mPlatformEntity.value
+       
     }
 
     override fun onGotoNext(): Boolean {
@@ -35,8 +34,8 @@ class PhotoKgoServedF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val servedKGOVolumeText = getArgumentName()!!
-        viewModel.baseDat.addKgoServed(mPlatformEntity?.platformId!!, imageS)
-        viewModel.updatePlatformKGO(mPlatformEntity?.platformId!!, servedKGOVolumeText, isServedKGO = true)
+        vm.database.addKgoServed(mPlatformEntity?.platformId!!, imageS)
+        vm.updatePlatformKGO(mPlatformEntity?.platformId!!, servedKGOVolumeText, isServedKGO = true)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }

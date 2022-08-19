@@ -6,7 +6,7 @@
     app:startDestination="@id/MapF">
     <fragment
         android:id="@+id/MapF"
-        android:name="ru.smartro.worknote.presentation.MapF"
+        android:name="ru.smartro.worknote.presentation.MapPlatformsF"
         tools:layout="@layout/f_map"
         android:label="MapF" >
         <argument
@@ -21,7 +21,7 @@
     <!--Directions-->
     <dialog
         android:id="@+id/MapActPlatformClickedDtlDialog"
-        android:name="ru.smartro.worknote.presentation.MapFPlatformClickedDtlDialog"
+        android:name="ru.smartro.worknote.presentation.MapPlatformClickedDtlF"
         android:label="MapActPlatformClickedDtlDialog">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -159,38 +159,10 @@
             />
     </fragment>
     <fragment
-        android:id="@+id/PhotoAfterMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoAfterMediaContainerF"
-        tools:layout="@layout/f_aphoto"
-        android:label="PhotoAfterMediaContainerF" >
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
         android:id="@+id/PhotoBeforeMediaContainerSimplifyF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerSimplifyF"
+        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerByTypesF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerSimplifyF" >
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
-        android:id="@+id/PhotoAfterMediaContainerSimplifyF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoAfterMediaContainerSimplifyF"
-        tools:layout="@layout/f_aphoto"
-        android:label="PhotoAfterMediaContainerSimplifyF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -205,62 +177,6 @@
         android:name="ru.smartro.worknote.presentation.came.GalleryPhotoF"
         tools:layout="@layout/media_fragment"
         android:label="GalleryPhotoF" >
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
-        android:id="@+id/PServeF"
-        tools:layout="@layout/f_pserve"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeF"
-        android:label="PServeF">
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
-        android:id="@+id/WalkthroughStepAF"
-        tools:layout="@layout/f_pserve_walkthrough_step_a"
-        android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepAF"
-        android:label="WalkthroughStepAF" >
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
-        android:id="@+id/WalkthroughStepBF"
-        tools:layout="@layout/f_pserve_walkthrough_step_b"
-        android:name="ru.smartro.worknote.presentation.platform_serve.wAlKtHroUgh.WalkthroughStepBF"
-        android:label="WalkthroughStepBF" >
-
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-    <fragment
-        android:id="@+id/FAStPhotoFailureMediaF"
-        android:name="ru.smartro.worknote.presentation.came.FAStPhotoFailureMediaF"
-        android:label="FAStPhotoFailureMediaF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -326,5 +242,51 @@
             app:argType="string"
             />
     </fragment>
+
+    <fragment
+        android:id="@+id/PServeF"
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeF"
+        tools:layout="@layout/f_pserve"
+        android:label="CompleteF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/PServeByTypesF"
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeGroupByContainersF"
+        tools:layout="@layout/f_pserve_groupby"
+        android:label="CompleteF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <dialog
+        android:id="@+id/ContainerServeBottomDialog"
+        tools:layout="@layout/fragment_container_serve"
+        android:name="ru.smartro.worknote.presentation.platform_serve.PServeContainerServeF"
+        android:label="ContainerServeBottomDialog">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            android:defaultValue="-1"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
 
 </navigation>

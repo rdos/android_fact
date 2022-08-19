@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -16,9 +17,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.BaseViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
@@ -26,15 +25,16 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.abs.AAct
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.PlatformEntity
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.Status
 
 
 class StartAct : AAct() {
+//    private var vm: AuthViewModel? = null
     private var mInfoDialog: AlertDialog? = null
-    private val vm: AuthViewModel by viewModel()
-
+    private val vm: AuthViewModel by viewModels()
     private var authLoginEditText: TextInputEditText? = null
     private var authPasswordEditText: TextInputEditText? = null
     private var authAppVersion: TextView? = null
@@ -47,7 +47,7 @@ class StartAct : AAct() {
     // TODO: 27.05.2022 !! !
     private fun gotoNextAct(isHasToken: Boolean = false) {
 //            val isHasTask = true
-        val isHasTask = vm.baseDat.hasWorkOrderInProgress()
+        val isHasTask = vm.database.hasWorkOrderInProgress()
         if (isHasToken && isHasTask) {
             hideDialog()
             hideInfoDialog()
@@ -82,18 +82,18 @@ class StartAct : AAct() {
                     val m30MinutesInSec = 30 * 60
                     if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
                         timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
-                        platforms = vm.baseDat.findPlatforms30min()
+                        platforms = vm.database.findPlatforms30min()
                         log( "SYNCworkER PLATFORMS IN LAST 30 min")
                     }
                     if (platforms.isEmpty()) {
                         timeBeforeRequest = MyUtil.timeStampInSec()
-                        platforms = vm.baseDat.findLastPlatforms()
+                        platforms = vm.database.findLastPlatforms()
                         log("SYNCworkER LAST PLATFORMS")
                     }
                     val noSentPlatformCnt = platforms.size
 
 
-                    val noServedPlatformCnt = vm.baseDat.findPlatformsIsNew().size
+                    val noServedPlatformCnt = vm.database.findPlatformsIsNew().size
                     var dialogString = ""
                     if (noSentPlatformCnt > 0) {
                         dialogString += "Не отправлено ${noSentPlatformCnt} данных, если не взять в работу, данные не будут отправлены на сервер;"
@@ -113,7 +113,7 @@ class StartAct : AAct() {
                             hideDialog()
                             hideInfoDialog()
                             App.getAppParaMS().setAppRestartParams()
-                            vm.baseDat.clearDataBase()
+                            vm.database.clearDataBase()
                             startActivity(Intent(this,  XChecklistAct::class.java))
                             finish()
                         }
@@ -140,6 +140,7 @@ class StartAct : AAct() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        vm = ViewModelProvider(this)[AuthViewModel::class.java]
         AppliCation().stopWorkERS()
         if (paramS().isRestartApp) {
             paramS().AppRestarted()
@@ -164,6 +165,7 @@ class StartAct : AAct() {
         }
         viewInit()
     }
+
 
     private fun viewInit() {
         authEnter?.setOnClickListener {
@@ -282,7 +284,7 @@ class StartAct : AAct() {
         }
     }
 
-    open class AuthViewModel(application: Application) : BaseViewModel(application) {
+    open class AuthViewModel(app: Application) : AViewModel(app) {
 
         fun auth(authModel: AuthBody): LiveData<Resource<AuthResponse>> {
             return networkDat.auth(authModel)

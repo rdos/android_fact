@@ -2,10 +2,6 @@ package ru.smartro.worknote
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
-import org.slf4j.LoggerFactory
-import ru.smartro.worknote.*
-import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
@@ -66,11 +62,6 @@ class AppParaMS {
             it.putString("accessToken", value)
         }
 
-    var lastScreenMode: Boolean
-        get() = sharedPref__env.getBoolean("lastScreenMode", ScreenMode.EXTENDED)
-        set(value) = sharedPref__env.edit {
-            it.putBoolean("lastScreenMode", value)
-        }
 
     var userName: String
         get() = sharedPref__env.getString("userName", Snull)!!

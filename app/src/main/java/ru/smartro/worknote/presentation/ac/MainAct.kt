@@ -1,44 +1,46 @@
 package ru.smartro.worknote.presentation.ac
 
-import android.os.Bundle
-import androidx.activity.viewModels
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.presentation.platform_serve.PlatformServeSharedViewModel
-import ru.smartro.worknote.toast
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.view.*
-import android.widget.TextView
+import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
-import ru.smartro.worknote.*
+import ru.smartro.worknote.AppParaMS
+import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.R
+import ru.smartro.worknote.TAG
+import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
+import ru.smartro.worknote.log
+import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 
 //todo: INDEterminate)
 class MainAct :
     AAct(), IActTooltip {
-    val vm: PlatformServeSharedViewModel by viewModels()
-    val mTooltipHell = MainAct.DialogHelpER(this, TAG)
+    val vm: ServePlatformVM by viewModels()
+//    val mTooltipHell = MainAct.DialogHelpER(this, TAG)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_main)
         supportActionBar?.hide()
 
-        mTooltipHell.setStartId("ll_containers_count", paramS())
+//        mTooltipHell.setStartId("ll_containers_count", paramS())
     }
 
 
     override fun onBackPressed() {
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        (navHostFragment.childFragmentManager.fragments[0] as AFragment).onBackPressed()
+        (navHostFragment.childFragmentManager.fragments[0] as ANOFragment).onBackPressed()
     }
 
 
@@ -59,38 +61,38 @@ class MainAct :
     //todo:::
     override fun onDestroy() {
         super.onDestroy()
-        mTooltipHell.setNextTime(paramS())
+//        mTooltipHell.setNextTime(paramS())
 
     }
 
     final override fun onNewfromAFragment(isFromRecylcer: Boolean) {
 //        super.onNewfromAFragment()
-        if (mTooltipHell.isRecyclerMode) {
-            if (isFromRecylcer) {
-                mTooltipHell.run()
-            }
-        } else {
-            mTooltipHell.run()
-        }
+//        if (mTooltipHell.isRecyclerMode) {
+//            if (isFromRecylcer) {
+//                mTooltipHell.run()
+//            }
+//        } else {
+//            mTooltipHell.run()
+//        }
 
     }
 
     override fun setSpecialProcessingForRecycler(recyclerView: RecyclerView?) {
-        mTooltipHell.isRecyclerMode = true
-        recyclerView?.let {
-            it.viewTreeObserver.addOnGlobalLayoutListener(
-                object : ViewTreeObserver.OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        // At this point the layout is complete and the
-                        // dimensions of recyclerView and any child views
-//                            onNewfromAFragment()
-                        onNewfromAFragment(true)
-                        // are known.
-                        it.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                        mTooltipHell.isRecyclerMode = false
-                    }
-                })
-        }
+//        mTooltipHell.isRecyclerMode = true
+//        recyclerView?.let {
+//            it.viewTreeObserver.addOnGlobalLayoutListener(
+//                object : ViewTreeObserver.OnGlobalLayoutListener {
+//                    override fun onGlobalLayout() {
+//                        // At this point the layout is complete and the
+//                        // dimensions of recyclerView and any child views
+////                            onNewfromAFragment()
+//                        onNewfromAFragment(true)
+//                        // are known.
+//                        it.viewTreeObserver.removeOnGlobalLayoutListener(this)
+//                        mTooltipHell.isRecyclerMode = false
+//                    }
+//                })
+//        }
     }
 //
 
@@ -124,7 +126,7 @@ class MainAct :
             createdDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
             createdDialog.window?.setDimAmount(0.8f); //0 for no dim to 1 for full dim
 
-            val actvDialog = vDialog?.findViewById<TextView>(R.id.actv_dialog)
+            val actvDialog = vDialog?.findViewById<AppCompatTextView>(R.id.actv_dialog)
             actvDialog?.text = tooltipText
 
             createdDialog.setOnDismissListener {
@@ -158,8 +160,8 @@ class MainAct :
             }
         }
         fun setNextId(smartROView: ITooltip) {
-            LOGWork("getWindow(.smartROView.getTooltipNext()=${smartROView.getTooltipNext()}")
-            LOGWork("getWindow(.smartROView.getTooltipType()=${smartROView.getTooltipType()}")
+            log("getWindow(.smartROView.getTooltipNext()=${smartROView.getTooltipNext()}")
+            log("getWindow(.smartROView.getTooltipType()=${smartROView.getTooltipType()}")
             setNextId(smartROView.getTooltipNext())
         }
 

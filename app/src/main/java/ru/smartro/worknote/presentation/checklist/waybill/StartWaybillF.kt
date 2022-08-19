@@ -1,7 +1,6 @@
 package ru.smartro.worknote.presentation.checklist.waybill
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityCompat
@@ -9,7 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
@@ -20,7 +19,7 @@ import ru.smartro.worknote.toast
 import java.text.SimpleDateFormat
 import java.util.*
 
-class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartWaybillF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private var mRvWaybill: RecyclerView? = null
     private var srlRefresh: SwipeRefreshLayout? = null

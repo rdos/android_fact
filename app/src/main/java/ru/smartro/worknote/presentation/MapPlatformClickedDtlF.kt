@@ -1,10 +1,8 @@
 package ru.smartro.worknote.presentation
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,21 +12,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbstractDialog
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.presentation.platform_serve.PServeF
+import ru.smartro.worknote.presentation.platform_serve.PServeGroupByContainersF
 import ru.smartro.worknote.work.PlatformEntity
 import kotlin.math.min
 
-class MapFPlatformClickedDtlDialog(private val _platform: PlatformEntity, private val _point: Point,
-                                   private val listener: MapActBottomBehaviorAdapter.PlatformClickListener
+class MapPlatformClickedDtlF(private val _platform: PlatformEntity, private val _point: Point,
+                             private val listener: MapPlatformSBehaviorAdapter.PlatformClickListener
 ) : AbstractDialog(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
     private val mOnClickListener = this as View.OnClickListener

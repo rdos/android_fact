@@ -12,7 +12,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 
 
-class SmartROSwitch(context: Context, attrs: AttributeSet?) : SwitchCompat(context, attrs), ITooltip {
+class SmartROSwitchCompat(context: Context, attrs: AttributeSet?) : SwitchCompat(context, attrs), ITooltip {
     private var tooltipNext: String? = null
     private var tooltipType = Inull
 

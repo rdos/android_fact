@@ -5,8 +5,11 @@ import android.provider.Settings
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.BuildConfig
+import ru.smartro.worknote.LoG
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
+import ru.smartro.worknote.presentation.came.EXTENSION_WHITELIST
 import java.io.File
+import java.util.*
 
 abstract class AApp : Application() {
     protected val aPPParamS: AppParaMS by lazy {
@@ -40,6 +43,18 @@ abstract class AApp : Application() {
         return File(fl)
     }
 
+    //r_dos что такое Array<out File>? !!
+    fun getDFileList(Dname: String): Array<File> {
+        // Get root directory of media from
+        var result = this.getD(Dname).listFiles { file ->
+            EXTENSION_WHITELIST.contains(file.extension.toUpperCase(Locale.ROOT))
+        }
+        if (result == null) {
+            result = emptyArray()
+        }
+        LoG.info("result=${result.size}")
+        return result
+    }
 
     fun makeD(fl: String) {
         val file = File(fl)

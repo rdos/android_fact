@@ -30,21 +30,17 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.App
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.R
 import java.io.File
-import java.util.*
 
 
 val EXTENSION_WHITELIST = arrayOf("JPG")
 //class GalleryFragment(p_id: Int) internal constructor()
-class GalleryPhotoF : AFragment() {
+class GalleryPhotoF : ANOFragment() {
 
     private lateinit var mediaList: MutableList<File>
-    private val viewModel: PhotoViewModel by viewModel()
-
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
     inner class MediaAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
@@ -56,14 +52,6 @@ class GalleryPhotoF : AFragment() {
         override fun getItemPosition(obj: Any): Int = POSITION_NONE
     }
 
-    fun getOutputD(): File {
-        //todo:!!r_dos
-        val basePhotoD = App.getAppliCation().getDPath("photo")
-        val dirPath = basePhotoD + File.separator  + getArgumentName()
-        val file = File(dirPath)
-        if (!file.exists()) file.mkdirs()
-        return file
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,11 +59,9 @@ class GalleryPhotoF : AFragment() {
         // Mark this as a retain fragment, so the lifecycle does not get restarted on config change
         retainInstance = true
 
-
-
         // Walk through all files in the root directory
         // We reverse the order of the list to present the last photos first
-        mediaList = getFileList(getOutputD())?.sortedDescending()?.toMutableList() ?: mutableListOf()
+        mediaList = AppliCation().getDFileList(C_PHOTO_D).sortedDescending().toMutableList()
     }
 
 
@@ -153,7 +139,7 @@ class GalleryPhotoF : AFragment() {
 //                        viewModel.removeImageEntity(p_platformId, p_containerId, photoFor , imageEntity.md5)
                         mediaList.remove(imageEntity)
                         imageEntity.delete()
-                        createCOSTFile(getOutputD())
+                        createCOSTFile()
                         viewPager.adapter?.notifyDataSetChanged()
                         if (mediaList.size <= 0) {
                             navigateBack()
@@ -175,7 +161,8 @@ class GalleryPhotoF : AFragment() {
         private const val FILE_NAME_KEY = "no_restorePhotoFileS"
         private const val NUM_OF_COUNT = "num_of_count"
 
-        private fun createCOSTFile(outD: File) {
+        private fun createCOSTFile() {
+            val outD = App.getAppliCation().getD(C_PHOTO_D)
             createFile(outD, getCOSTFileName())
         }
         private fun createFile(baseFolder: File, fileName: String) {
@@ -189,16 +176,6 @@ class GalleryPhotoF : AFragment() {
             return COST___EXTENSION + FILE_NAME_KEY
         }
 
-        //r_dos что такое Array<out File>? !!
-        fun getFileList(outD: File): Array<File>? {
-            // Get root directory of media from
-            val rootDirectory = File(outD.absolutePath)
-            val result = rootDirectory.listFiles { file ->
-                EXTENSION_WHITELIST.contains(file.extension.toUpperCase(Locale.ROOT))
-            }
-
-            return result
-        }
 
         fun isCostFileNotExist(outD: File): Boolean {
             val costFL = File(outD, getCOSTFileName())
