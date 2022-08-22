@@ -370,8 +370,12 @@ open class PlatformEntity(
         val isAllError = filteredContainers.all { it.getStatusContainer() == StatusEnum.ERROR  }
 
         val result = when {
+            // todo::: vlad : тупой костыль потому что непонятно
+            (_failureMediaSize != 0 && this.failureReasonId != 0 && _beforeMediaSize == 0 && _afterMediaSize == 0) ||
+            // todo::: vlad : вот так просто должно остаться:  
             isAllError -> StatusEnum.ERROR
-            isAllSuccess && _afterMediaSize != 0 -> StatusEnum.SUCCESS
+
+            _beforeMediaSize != 0 && isAllSuccess && _afterMediaSize != 0 -> StatusEnum.SUCCESS
             _beforeMediaSize != 0 && ! hasUnservedContainers && (_afterMediaSize != 0 || _failureMediaSize != 0) -> StatusEnum.PARTIAL_PROBLEMS
             _beforeMediaSize != 0 && _afterMediaSize == 0 -> StatusEnum.UNFINISHED
             else -> StatusEnum.NEW
