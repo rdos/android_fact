@@ -632,21 +632,19 @@ open class PlatformEntity(
         }
     }
 
-    fun isModeServeFix(): Boolean {
-        val result = this.serveModeFixCODENAME != null
-        return result
+    fun getServeMode(): String? {
+        if(
+            this.containers.any { listOf(0.25, 0.5, 0.75, 1.25).contains(it.volume) } ||
+            this.kgoServed?.volume != null ||
+            this.volumePickup != null
+//            || (this.getFailureMediaSize() != 0 && this.failureReasonId != 0)
+        ) {
+            return ServeMode.PServeF
+        } else if(this.containers.any { it.volume != null && it.volume!! > 1.25 }) {
+            return ServeMode.PServeGroupByContainersF
+        }
+        return null
     }
-    
-    fun isModePServeF(): Boolean {
-        val result = this.serveModeFixCODENAME == ServeMode.PServeF
-        return result
-    }
-
-    fun isModePServeGroupByContainersF(): Boolean {
-        val result = this.serveModeFixCODENAME == ServeMode.PServeGroupByContainersF
-        return result
-    }
-
 
     companion object {
         // TODO: !!!

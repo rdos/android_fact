@@ -34,21 +34,31 @@ class PhotoBeforeMediaF : APhotoFragment() {
     //TODO: r_dos!!!
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         vm.database.addBeforeMedia(mPlatformEntity.platformId, imageS)
-        if (mPlatformEntity.isModeServeFix() == true) {
-            // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
-//            if mPLatformEntity.isServeModeFixPServeF
-            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeF) {
+
+        val platformServeMode = mPlatformEntity.getServeMode()
+        LoG.info("PLATFORM SERVE MODE ::: ${platformServeMode}")
+        if (platformServeMode != null) {
+//            // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
+////            if mPLatformEntity.isServeModeFixPServeF
+//            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeF) {
+//                navigateMain(R.id.PServeF, mPlatformEntity.platformId)
+//                return
+//            }
+//                             //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+////            //            if mPLatformEntity.isModeFixPServeGroupByContainersF
+//            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
+//                navigateMain(R.id.PServeByTypesF, mPlatformEntity.platformId)
+//                return
+//            }
+            if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeF) {
                 navigateMain(R.id.PServeF, mPlatformEntity.platformId)
                 return
-            }
-                             //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
-//            //            if mPLatformEntity.isModeFixPServeGroupByContainersF
-            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-                navigateMain(R.id.PServeByTypesF, mPlatformEntity.platformId)
+            } else {
+                navigateMain(R.id.PServeGroupByContainersF, mPlatformEntity.platformId)
                 return
             }
-
         }
+
         // TODO: !!!
         val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
 
@@ -57,9 +67,10 @@ class PhotoBeforeMediaF : APhotoFragment() {
             return
         }
         if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-            navigateMain(R.id.PServeByTypesF, mPlatformEntity.platformId)
+            navigateMain(R.id.PServeGroupByContainersF, mPlatformEntity.platformId)
             return
         }
+
         navigateMain(R.id.PServeF, mPlatformEntity.platformId)
     }
 

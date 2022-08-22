@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.SmartROLinearLayout
 import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
@@ -99,7 +98,7 @@ class PServeF :
             val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
             configEntity.value = PlatformEntity.Companion.ServeMode.PServeGroupByContainersF
             vm.database.saveConfig(configEntity)
-            navigateMain(R.id.PServeByTypesF, vm.getPlatformId())
+            navigateMain(R.id.PServeGroupByContainersF, vm.getPlatformId())
         }
         ////////////////////////////////////////////
 
@@ -159,6 +158,20 @@ class PServeF :
     }
 
     override fun onBindLayoutState(): Boolean {
+
+        val platformServeMode = _PlatformEntity.getServeMode()
+
+        if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeF){
+            sscToGroupByFMode?.visibility = View.GONE
+        } else {
+            sscToGroupByFMode?.visibility = View.VISIBLE
+        }
+
+//        if(platformServeMode != null) {
+//            if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
+//                navigateMain(R.id.PServeGroupByContainersF)
+//            }
+//        }
 
         val containers = vm.getContainerS()
 //        todo: !!!!
@@ -223,9 +236,6 @@ class PServeF :
             }
         })
 
-        if(vm.getPlatformEntity().isModeServeFix()){
-            sscToGroupByFMode?.visibility = View.GONE
-        }
         return false
     }
 
