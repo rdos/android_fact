@@ -77,14 +77,11 @@ open class WorkOrderEntity(
             /** статистика для ContainerEntity*/
             platform.containers.forEach {
                 containersCnt++
-                if(it.status == StatusEnum.NEW) {
-                    containersStatusNewCnt++
-                }
-                if(it.status == StatusEnum.SUCCESS) {
-                    containersStatusSuccessCnt++
-                }
-                if(it.status == StatusEnum.ERROR) {
-                    containersStatusErrorCnt++
+                val containerStatus = it.getStatusContainer()
+                when(containerStatus) {
+                    StatusEnum.NEW -> containersStatusNewCnt++
+                    StatusEnum.SUCCESS -> containersStatusSuccessCnt++
+                    StatusEnum.ERROR -> containersStatusErrorCnt++
                 }
 
             }
@@ -362,7 +359,7 @@ open class PlatformEntity(
         }
 
         val hasUnservedContainers = filteredContainers.any {
-                el -> el.status == StatusEnum.NEW
+            el -> el.getStatusContainer() == StatusEnum.NEW
         }
 
         val isAllSuccess = filteredContainers.all { it.getStatusContainer() == StatusEnum.SUCCESS }
@@ -370,7 +367,7 @@ open class PlatformEntity(
         val isAllError = filteredContainers.all { it.getStatusContainer() == StatusEnum.ERROR  }
 
         val result = when {
-            // todo::: vlad : тупой костыль потому что непонятно
+            // todo::: vlad : тупой костыль потому что непонятно; "огонёк" приходит с бэка после переавторизации криво
             (_failureMediaSize != 0 && this.failureReasonId != 0 && _beforeMediaSize == 0 && _afterMediaSize == 0) ||
             // todo::: vlad : вот так просто должно остаться:  
             isAllError -> StatusEnum.ERROR
@@ -760,7 +757,7 @@ open class ContainerEntity(
             return StatusEnum.SUCCESS
         }
 
-        if(this.failureReasonId != 0 && this.getFailureMediaSize() != 0) {
+        if(this.failureReasonId != 0 || this.getFailureMediaSize() != 0) {
             return StatusEnum.ERROR
         }
 
@@ -804,7 +801,7 @@ open class ContainerEntity(
         if (!this.isActiveToday && this.volume == null) {
             return Color.GRAY
         }
-        if (this.status == StatusEnum.ERROR) {
+        if (this.getStatusContainer() == StatusEnum.ERROR) {
             return Color.RED
         }
         return ContextCompat.getColor(context, R.color.colorAccent)

@@ -161,7 +161,7 @@ class PServeF :
     override fun onBindLayoutState(): Boolean {
 
         val containers = vm.getContainerS()
-        LoG.info("CONTAINERS ::: ${containers.joinToString { el -> "\nid: ${el.containerId}, status: ${el.status}, volume: ${el.volume}, fRId: ${el.failureReasonId}, fMediaSize: ${el.failureMedia.size}, bRId: ${el.breakdownReasonId}, bMediaSize: ${el.breakdownMedia.size}" }}")
+        LoG.info("CONTAINERS ::: ${containers.joinToString { el -> "\nid: ${el.containerId}, status: ${el.getStatusContainer()}, volume: ${el.volume}, fRId: ${el.failureReasonId}, fMediaSize: ${el.failureMedia.size}, bRId: ${el.breakdownReasonId}, bMediaSize: ${el.breakdownMedia.size}" }}")
 
 //        todo: !!!!
         mContainersAdapter?.change(containers)

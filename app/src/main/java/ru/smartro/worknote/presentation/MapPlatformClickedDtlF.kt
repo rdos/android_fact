@@ -163,10 +163,12 @@ class MapPlatformClickedDtlF(private val _platform: PlatformEntity, private val 
             }
             holder.statusImageView.isVisible = false
 
-            if(container?.status == StatusEnum.SUCCESS) {
+            val containerStatus = container?.getStatusContainer()
+
+            if(containerStatus == StatusEnum.SUCCESS) {
                 holder.statusImageView.isVisible = true
                 holder.statusImageView.setImageResource(R.drawable.ic_check)
-            } else if(container?.status == StatusEnum.ERROR && container.isActiveToday) {
+            } else if(containerStatus == StatusEnum.ERROR && container.isActiveToday) {
                 holder.statusImageView.isVisible = true
                 holder.statusImageView.setImageResource(R.drawable.ic_red_check)
             }
