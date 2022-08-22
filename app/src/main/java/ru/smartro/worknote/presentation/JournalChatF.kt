@@ -71,7 +71,7 @@ class JournalChatF : ANOFragment() {
             val dateFormat = SimpleDateFormat("HH:mm")
             val resultDate: String = dateFormat.format(date)
             val imgBefore = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_before)
-            if (item.beforeMedia.size > 0) {
+            if (item.getBeforeMediaSize() > 0) {
                 Glide.with(imgBefore)
                     .load(MyUtil.base64ToImage(item.beforeMedia[0]?.image))
                     .into(imgBefore)
@@ -80,7 +80,7 @@ class JournalChatF : ANOFragment() {
                 imgBefore.visibility = View.INVISIBLE
                 holder.tv_act_messager__media_before.visibility = View.INVISIBLE
             }
-            if (item.afterMedia.size > 0) {
+            if (item.getAfterMediaSize() > 0) {
                 val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
                 Glide.with(imgAfter)
                     .load(MyUtil.base64ToImage(item.afterMedia[0]?.image))
@@ -91,7 +91,7 @@ class JournalChatF : ANOFragment() {
                 holder.tv_act_messager__media_after.visibility = View.INVISIBLE
             }
 
-            if (item.failureMedia.size > 0) {
+            if (item.getFailureMediaSize() > 0) {
                 val textBefore = holder.tv_act_messager__media_before
                 Glide.with(imgBefore)
                     .load(MyUtil.base64ToImage(item.failureMedia[0]?.image))

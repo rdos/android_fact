@@ -259,7 +259,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/PServeByTypesF"
+        android:id="@+id/PServeGroupByContainersF"
         android:name="ru.smartro.worknote.presentation.platform_serve.PServeGroupByContainersF"
         tools:layout="@layout/f_pserve_groupby"
         android:label="CompleteF">

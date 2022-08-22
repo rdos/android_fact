@@ -50,17 +50,13 @@ class PServeGroupByContainersF : AFragment() {
         rvMain?.adapter = adapter
         screenModeLabel?.text = "По типам"
 
-        if(vm.getPlatformEntity().isModeServeFix()){
-            srosToPserveFMode?.visibility = View.GONE
-        } else {
-            srosToPserveFMode?.isChecked = true
-            srosToPserveFMode?.setOnCheckedChangeListener { _, _ ->
-                // TODO: !!!
-                val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
-                configEntity.value = PlatformEntity.Companion.ServeMode.PServeF
-                vm.database.saveConfig(configEntity)
-                navigateMain(R.id.PServeF, vm.getPlatformId())
-            }
+        srosToPserveFMode?.isChecked = true
+        srosToPserveFMode?.setOnCheckedChangeListener { _, _ ->
+            // TODO: !!!
+            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
+            configEntity.value = PlatformEntity.Companion.ServeMode.PServeF
+            vm.database.saveConfig(configEntity)
+            navigateMain(R.id.PServeF, vm.getPlatformId())
         }
 
         return super.onInitLayoutView(view)
@@ -68,15 +64,9 @@ class PServeGroupByContainersF : AFragment() {
 
     override fun onBindLayoutState(): Boolean {
         val groupByContainerClientS = vm.getGroupByContainerClientS()
+        val platformServeMode = _PlatformEntity.getServeMode()
 
-        LoG.debug("CLIENT GROUPS IN FRAG::: ${groupByContainerClientS.joinToString { "client: ${it.client}, containers size: ${it.containers.size}" }}")
-        val isAnyContainerGroupByServed = groupByContainerClientS.any { clientGroup ->
-            clientGroup.containers.any { container ->
-                container.volume != null && container.volume!! > 1.0
-            }
-        }
-
-        if(isAnyContainerGroupByServed) {
+        if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF){
             srosToPserveFMode?.visibility = View.GONE
         } else {
             srosToPserveFMode?.visibility = View.VISIBLE

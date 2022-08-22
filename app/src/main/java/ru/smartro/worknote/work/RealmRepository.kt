@@ -228,7 +228,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()
             platformEntity?.volumePickup = volumePickup
-            platformEntity?.serveModeFixCODENAME = PlatformEntity.Companion.ServeMode.PServeF
             if (volumePickup == null) {
                 platformEntity?.pickupMedia = RealmList()
             }
@@ -247,9 +246,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             container.volume = volume
-            if(volume == 0.25 || volume == 0.5 || volume == 0.75 || volume == 1.25) {
-                platformEntity.serveModeFixCODENAME = PlatformEntity.Companion.ServeMode.PServeF
-            }
             if (container.status == StatusEnum.NEW) {
                 container.status = StatusEnum.SUCCESS
             }
@@ -418,8 +414,13 @@ class RealmRepository(private val p_realm: Realm) {
 
     fun setEmptyImageEntity(platforms: List<PlatformEntity>) {
         platforms.forEach { platform ->
-            platform.afterMediaSize = platform.afterMedia.size
-            platform.beforeMediaSize = platform.beforeMedia.size
+            platform.afterMediaSavedSize = platform.afterMedia.size
+            platform.beforeMediaSavedSize = platform.beforeMedia.size
+            platform.failureMediaSavedSize = platform.failureMedia.size
+            platform.pickupMediaSavedSize = platform.pickupMedia.size
+            platform.kgoRemainingMediaSavedSize = platform.kgoRemaining?.media?.size ?: 0
+            platform.kgoServedMediaSavedSize = platform.kgoServed?.media?.size ?:0
+
             platform.afterMedia = mEmptyImageEntityList
             platform.beforeMedia = mEmptyImageEntityList
             platform.failureMedia = mEmptyImageEntityList
@@ -762,7 +763,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             if (isServedKGO) {
-                platformEntity.serveModeFixCODENAME = PlatformEntity.Companion.ServeMode.PServeF
                 platformEntity.setServedKGOVolume(kgoVolume)
             } else {
                 platformEntity.setRemainingKGOVolume(kgoVolume)

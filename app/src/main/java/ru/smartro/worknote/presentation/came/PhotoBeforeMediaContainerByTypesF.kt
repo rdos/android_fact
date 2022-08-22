@@ -35,7 +35,7 @@ class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         vm.database.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeByTypesF, mPlatformEntity?.platformId)
+        navigateMain(R.id.PServeGroupByContainersF, mPlatformEntity?.platformId)
     }
 
     override fun onSavePhoto() {
