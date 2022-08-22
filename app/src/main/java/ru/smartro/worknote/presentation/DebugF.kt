@@ -151,6 +151,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
                     toast("похоже Вы разработчик")
                     lastClickTimeSec = MyUtil.timeStampInSec()
                 }
+                acbSendLogs.visibility = View.VISIBLE
                 acbOpenLogs.visibility = View.VISIBLE
                 acbOpenLogs.setOnClickListener {
 //                    openZipFiles()
