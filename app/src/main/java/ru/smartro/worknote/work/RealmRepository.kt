@@ -414,8 +414,13 @@ class RealmRepository(private val p_realm: Realm) {
 
     fun setEmptyImageEntity(platforms: List<PlatformEntity>) {
         platforms.forEach { platform ->
-            platform.afterMediaSize = platform.afterMedia.size
-            platform.beforeMediaSize = platform.beforeMedia.size
+            platform.afterMediaSavedSize = platform.afterMedia.size
+            platform.beforeMediaSavedSize = platform.beforeMedia.size
+            platform.failureMediaSavedSize = platform.failureMedia.size
+            platform.pickupMediaSavedSize = platform.pickupMedia.size
+            platform.kgoRemainingMediaSavedSize = platform.kgoRemaining?.media?.size ?: 0
+            platform.kgoServedMediaSavedSize = platform.kgoServed?.media?.size ?:0
+
             platform.afterMedia = mEmptyImageEntityList
             platform.beforeMedia = mEmptyImageEntityList
             platform.failureMedia = mEmptyImageEntityList
