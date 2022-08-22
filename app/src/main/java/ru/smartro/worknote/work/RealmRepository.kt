@@ -246,7 +246,7 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             container.volume = volume
-            if (container.status == StatusEnum.NEW) {
+            if (container.getStatusContainer() == StatusEnum.NEW) {
                 container.status = StatusEnum.SUCCESS
             }
 
@@ -264,7 +264,7 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", groupByContainerTypeClient.platformId)
                 .findFirst()
             container.volume = newVolume
-            if (container.status == StatusEnum.NEW) {
+            if (container.getStatusContainer() == StatusEnum.NEW) {
                 container.status = StatusEnum.SUCCESS
             }
 
@@ -315,8 +315,9 @@ class RealmRepository(private val p_realm: Realm) {
             platform.failureReasonId = problemId
 
             platform.containers.forEach { container ->
-                if (container.isActiveToday && container.status != StatusEnum.SUCCESS) {
+                if (container.isActiveToday && container.getStatusContainer() != StatusEnum.SUCCESS) {
                     container.status = StatusEnum.ERROR
+                    container.failureReasonId = problemId
                 }
             }
             if (!failureComment.isNullOrEmpty()) {
@@ -381,7 +382,7 @@ class RealmRepository(private val p_realm: Realm) {
                 if (container.volume == null) {
                     if (container.isActiveToday) {
                         container.volume = 1.0
-                        if (container.status == StatusEnum.NEW) {
+                        if (container.getStatusContainer() == StatusEnum.NEW) {
                             container.status = StatusEnum.SUCCESS
                         }
                     }

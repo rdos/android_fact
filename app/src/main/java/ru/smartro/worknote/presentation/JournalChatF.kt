@@ -119,7 +119,7 @@ class JournalChatF : ANOFragment() {
             // search for:
             // failureComment
 
-            val serveStatus = "Обслужено: ${item.containers.filter { it.status != StatusEnum.NEW }.size}/${item.containers.size}\n"
+            val serveStatus = "Обслужено: ${item.containers.filter { it.getStatusContainer() != StatusEnum.NEW }.size}/${item.containers.size}\n"
             val pickupVolume = if(item.volumePickup != null) "Объем Подбора: ${item.volumePickup}\n" else ""
             val networkStatus = getNetworkStatusText(item)
 
