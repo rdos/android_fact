@@ -77,7 +77,7 @@ class PServeContainerServeF : AbstractBottomSheetF() {
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val volume = toPercent(radioButton.text.toString())
             vm.updateContainerVolume(mContainerId, volume)
-            navigateMain(R.id.PhotoFailureMediaContainerF, mContainerId, p_id.toString())
+            navigateMain(R.id.PhotoFailureMediaContainerF, mContainerId, vm.getPlatformId().toString())
         }
         if (containerEntity.isBreakdownNotEmpty()) {
             setUseButtonStyleBackgroundRed(apbBreakdown!!)
@@ -87,14 +87,14 @@ class PServeContainerServeF : AbstractBottomSheetF() {
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val volume = toPercent(radioButton.text.toString())
             vm.updateContainerVolume(mContainerId, volume)
-            navigateMain(R.id.PhotoBreakdownMediaContainerF, mContainerId, p_id.toString())
+            navigateMain(R.id.PhotoBreakdownMediaContainerF, mContainerId, vm.getPlatformId().toString())
         }
 
 //        if (containerEntity.isBreakdownNotEmpty()) {
 //            setUseButtonStyleBackgroundRed(apbBreakdown)
 //        }
         apbBeforeMedia?.setOnClickListener {
-            navigateMain(R.id.PhotoBeforeMediaContainerF, p_id)
+            navigateMain(R.id.PhotoBeforeMediaContainerF, vm.getPlatformId())
             hideDialog()
         }
 
