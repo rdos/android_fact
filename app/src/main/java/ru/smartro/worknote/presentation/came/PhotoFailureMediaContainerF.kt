@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
+import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log
 import ru.smartro.worknote.toast
@@ -64,10 +65,9 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val platformId = getArgumentName()?.toInt()!!
-//        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
-        //        val problemComment = problem_comment.text.toString()
-        vm.database.addFailureMediaContainer(platformId, mContainerEntity?.containerId!!, imageS)
-        vm.database.setStateFailureForContainer(platformId, mContainerEntity?.containerId!!, failText!!, getCommentText())
+        val containerId = mContainerEntity?.containerId!!
+        vm.database.addFailureMediaContainer(platformId, containerId, imageS)
+        vm.updateContainerFailure(platformId, containerId, failText!!, getCommentText())
         navigateMain(R.id.PServeF, platformId)
     }
 

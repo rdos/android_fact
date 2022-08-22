@@ -60,10 +60,11 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val platformId = getArgumentName()?.toInt()!!
+        val containerId = mContainerEntity?.containerId!!
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
         //        val problemComment = problem_comment.text.toString()
-        vm.database.addBreakdownMediaContainer(platformId, mContainerEntity?.containerId!!, imageS)
-        vm.database.setStateBreakdownForContainer(platformId, mContainerEntity?.containerId!!, breakdownText!!, getCommentText())
+        vm.database.addBreakdownMediaContainer(platformId, containerId, imageS)
+        vm.updateContainerBreakDown(platformId, containerId, breakdownText!!, getCommentText())
         navigateMain(R.id.PServeF, platformId)
     }
 

@@ -199,7 +199,6 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
 
 
-
     fun updateContainerVolume( containerId: Int, volume: Double?) {
         database.updateContainerVolume(this.getPlatformId(), containerId, volume)
         set_PlatformLiveData()
@@ -229,61 +228,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun updatePlatformStatusSuccess(platformId: Int) {
         database.updatePlatformStatusSuccess(platformId)
-
-//        fun updatePlatformStatusSuccess(platformId: Int) {
-////        mServedContainers.value?.let {
-////            if (_sortedContainers.value != null ) {
-////                it.forEach { el ->
-////                    val containers = _sortedContainers.value!!.find { sorted -> sorted.client == el.client }!!.typeGroupedContainers.find { typed -> typed.typeName == el.typeName }!!.containersIds
-////                    val newVolume = el.servedCount.toDouble() / containers.size
-////                    containers.forEach { cont ->
-////                        baseDat.updateContainerVolume(platformId, cont, newVolume)
-////                    }
-////                }
-////            }
-////
-////        }
-////        baseDat.updatePlatformStatusSuccess(platformId)
-//        }
     }
-
-
-
-
-
-
-    fun onDecrease(clientName: String, typeName: String) {
-//        val servedContainers = mServedContainers.value!!.toMutableList()
-//        val servedCluster = servedContainers.find { el -> el.client == clientName && el.typeName == typeName }
-//        val newCount = servedCluster!!.servedCount - 1
-//
-//        if(newCount >= 0) {
-//            val clusterIndex = servedContainers.indexOf(servedCluster)
-//            servedContainers[clusterIndex].servedCount = newCount
-//
-//            baseDat.updatePlatformServedContainers(_platformEntity.value!!.platformId!!, servedContainers)
-//            mServedContainers.postValue(servedContainers)
-//        }
-
-    }
-
-    fun onIncrease(clientName: String, typeName: String) {
-//        val servedContainers = mServedContainers.value!!.toMutableList()
-//        val servedCluster = servedContainers.find { el -> el.client == clientName && el.typeName == typeName }
-//        val newCount = servedCluster!!.servedCount + 1
-//
-//        val clusterIndex = servedContainers.indexOf(servedCluster)
-//        servedContainers[clusterIndex].servedCount = newCount
-//
-//        baseDat.updatePlatformServedContainers(_platformEntity.value!!.platformId!!, servedContainers)
-//        mServedContainers.postValue(servedContainers)
-    }
-
-
-
-
-
-
 
 
 
@@ -312,5 +257,15 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
             )
         )
         drivingRouter.requestRoutes(requestPoints, drivingOptions, vehicleOptions, drivingSession)
+    }
+
+    fun updateContainerFailure(platformId: Int, containerId: Int, failText: String, commentText: String) {
+        database.setStateFailureForContainer(platformId, containerId, failText, commentText)
+        set_PlatformLiveData()
+    }
+
+    fun updateContainerBreakDown(platformId: Int, containerId: Int, failText: String, commentText: String) {
+        database.setStateBreakdownForContainer(platformId, containerId, failText, commentText)
+        set_PlatformLiveData()
     }
 }
