@@ -362,9 +362,13 @@ open class PlatformEntity(
             el -> el.getStatusContainer() == StatusEnum.NEW
         }
 
-        val isAllSuccess = filteredContainers.all { it.getStatusContainer() == StatusEnum.SUCCESS }
+        val isAllSuccess = filteredContainers.all {
+            it.getStatusContainer() == StatusEnum.SUCCESS
+        }
 
-        val isAllError = filteredContainers.all { it.getStatusContainer() == StatusEnum.ERROR  }
+        val isAllError = filteredContainers.all { 
+            it.getStatusContainer() == StatusEnum.ERROR
+        }
 
         val result = when {
             // todo::: vlad : тупой костыль потому что непонятно; "огонёк" приходит с бэка после переавторизации криво
@@ -854,8 +858,8 @@ open class GroupByContainerTypeClientEntity(
     // TODO: //GroBy
     var platformId: Int = Inull,
     var client: String? = null,
-    var typeId: Int = Inull,
-    var typeName: String = Snull,
+    var typeId: Int? = null,
+    var typeName: String? = null,
     var containers: RealmList<ContainerEntity> = RealmList(),
 //    var serveCNT: Int = 0
 ) : Serializable, RealmObject() {
