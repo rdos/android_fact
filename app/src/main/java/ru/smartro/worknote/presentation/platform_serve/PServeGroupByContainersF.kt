@@ -221,7 +221,9 @@ class PServeGroupByContainersF : AFragment() {
 
             val rvGroupedContainers = holder.itemView.findViewById<RecyclerView>(R.id.typed_containers)
 
-            holder.tvClient.text = clientGroup.client
+            // TODO:::
+            holder.tvClient.text = clientGroup.client ?: "Клиент не указан"
+
             rvGroupedContainers?.layoutManager = LinearLayoutManager(context)
             val groupByContainerClientTypeS = vm.getGroupByContainerTypeClientS(clientGroup.client)
             LoG.debug("A groupByContainerClientTypeS=${groupByContainerClientTypeS}")
@@ -229,9 +231,7 @@ class PServeGroupByContainersF : AFragment() {
         }
 
         inner class PServeGroupedByContainerClientViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val tvClient: AppCompatTextView by lazy {
-                itemView.findViewById(R.id.client_label)
-            }
+            val tvClient: AppCompatTextView = itemView.findViewById(R.id.client_label)
         }
 
 
@@ -266,7 +266,8 @@ class PServeGroupByContainersF : AFragment() {
                     val bAddPhoto = itemView.findViewById<AppCompatButton>(R.id.button_add_photo)
                     val tvContSize = itemView.findViewById<TextView>(R.id.containers_size)
 
-                    tvTypeName.text = groupByContainerTypeClientEntity.typeName
+                    // TODO:::
+                    tvTypeName.text = groupByContainerTypeClientEntity.typeName ?: "Тип не указан"
                     val sum = groupByContainerTypeClientEntity.getServeCNT()
                     tvCount.text =  sum.toString()
                     tvContSize.text = groupByContainerTypeClientEntity.getTypeCount()

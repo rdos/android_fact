@@ -1178,7 +1178,7 @@ class RealmRepository(private val p_realm: Realm) {
             }
 
             LoG.debug("create:GroupByContainerClientEntity::before")
-            var clientName: String = Snull
+            var clientName: String? = Snull
 
                                                                                     //            val groupByContainerClient = this.loadGroupByContainerClient(platformId)
                                                                                     //            if (groupByContainerClient != null) {
@@ -1198,7 +1198,7 @@ class RealmRepository(private val p_realm: Realm) {
                 groupByContainerClientEntity.containers.add(cont)
 
 //   todo: КТО ГДЕ КОГДА! r_dos??                    realm.insertOrUpdate(groupByContainerClientEntity)
-                clientName = cont.client!!
+                clientName = cont.client
             }
             LoG.debug("create:GroupByContainerClientEntity::after")
 
@@ -1206,7 +1206,7 @@ class RealmRepository(private val p_realm: Realm) {
             LoG.info("groupByContainerClientS.size = ${groupByContainerClientS.size}")
 
             var groupByContainerTypeClientEntity = GroupByContainerTypeClientEntity.createEmpty()//todo:
-            var typeName = Snull
+            var typeName: String? = Snull
             for(groupByContainerClient in groupByContainerClientS){
                 LoG.debug("groupByContainerClient.client = ${groupByContainerClient.client}")
                 for(groupByContainerClientContainer in groupByContainerClient.containers){
@@ -1219,12 +1219,12 @@ class RealmRepository(private val p_realm: Realm) {
                     groupByContainerTypeClientEntity = realm.createObject(GroupByContainerTypeClientEntity::class.java)
                     groupByContainerTypeClientEntity.platformId = platformId
                     groupByContainerTypeClientEntity.addClient(groupByContainerClient.getClientForUser())
-                    groupByContainerTypeClientEntity.typeId = groupByContainerClientContainer.typeId!!
-                    groupByContainerTypeClientEntity.typeName = groupByContainerClientContainer.typeName!!
+                    groupByContainerTypeClientEntity.typeId = groupByContainerClientContainer.typeId
+                    groupByContainerTypeClientEntity.typeName = groupByContainerClientContainer.typeName
                     groupByContainerTypeClientEntity.containers.add(groupByContainerClientContainer)
 
 //   todo: КТО ГДЕ КОГДА! r_dos??                 realm.insertOrUpdate(groupByContainerClientEntity)
-                    typeName = groupByContainerClientContainer.typeName!!
+                    typeName = groupByContainerClientContainer.typeName
                 }
 
             }
