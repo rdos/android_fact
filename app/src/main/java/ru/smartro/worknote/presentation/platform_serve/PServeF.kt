@@ -359,7 +359,11 @@ class PServeF :
         override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
             val container = containers[position]
 
-            holder.itemView.findViewById<TextView>(R.id.choose_title).text = container.number
+            if(container.number == null)
+                holder.itemView.findViewById<TextView>(R.id.choose_title).visibility = View.GONE
+            else
+                holder.itemView.findViewById<TextView>(R.id.choose_title).text = container.number
+
             holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__type_name).text = container.typeName
             // TODO: 25.10.2021 add getString() + format
             holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__constructiveVolume).text = container.constructiveVolume.toStr("м³")
