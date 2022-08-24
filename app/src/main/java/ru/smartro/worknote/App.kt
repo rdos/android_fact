@@ -50,6 +50,7 @@ import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.presentation.ac.MainAct
+import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
@@ -85,6 +86,15 @@ class App : AApp() {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
+
+    fun restartAppAndShareLog() {
+        val mStartActivity = Intent(baseContext, StartAct::class.java)
+        val mPendingIntentId = 123456
+        val mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
+        val mgr = baseContext.getSystemService(ALARM_SERVICE) as AlarmManager
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 5000, mPendingIntent);
+        System.exit(0)
+    }
 
     fun gps(): PoinT {
         log("BBBB")
