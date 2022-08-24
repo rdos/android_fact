@@ -65,7 +65,10 @@ import java.util.concurrent.TimeUnit
 //INSTANCE
 // TODO: service locator паттерн альтернатива DI
 private var INSTANCE: App? = null
-
+const val FN__REALM = "FACT.realm"
+const val D__LOGS = "logs"
+const val D__R_DOS = "r_dos"
+const val D__FILES = "files"
 class App : AApp() {
     companion object {
 //        internal lateinit var INSTANCE: App
@@ -87,12 +90,12 @@ class App : AApp() {
     var LASTact: AAct? = null
 
 
-    fun restartAppAndShareLog() {
+    fun restartApp() {
         val mStartActivity = Intent(baseContext, StartAct::class.java)
-        val mPendingIntentId = 123456
+        val mPendingIntentId = BuildConfig.VERSION_CODE
         val mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
         val mgr = baseContext.getSystemService(ALARM_SERVICE) as AlarmManager
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 5000, mPendingIntent);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 2000, mPendingIntent);
         System.exit(0)
     }
 
@@ -153,7 +156,7 @@ class App : AApp() {
 //            while (index.hasNext()) {
 //                val appender = index.next()
 //                if (appender is FileAppender<*>) {
-//                    val file = getF("logs", "file.log")
+//                    val file = getF(D__LOGS, "file.log")
 //                    (appender as FileAppender<*>).file = "/data/data/ru.smartro.worknote/logs/log.log"
 //                    appender.start()
 //                }
@@ -196,7 +199,7 @@ class App : AApp() {
     }
 
     private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){
-        val logsFilesArray = this.getD("logs").listFiles()
+        val logsFilesArray = this.getD(D__LOGS).listFiles()
 
         if (logsFilesArray != null) {
             val delCount = logsFilesArray.size - maxHistoryFileCount-1
@@ -231,7 +234,7 @@ class App : AApp() {
         val fileAppender = FileAppender<ILoggingEvent>()
         fileAppender.context = lc
 
-        val file = getF("logs", "${MyUtil.currentTime()}.log")
+        val file = getF(D__LOGS, "${MyUtil.currentTime()}.log")
         fileAppender.file = file.absolutePath
         fileAppender.encoder = encoder1
         fileAppender.start()
@@ -347,7 +350,7 @@ class App : AApp() {
         Realm.init(this@App)
         val config = RealmConfiguration.Builder()
         config.allowWritesOnUiThread(true)
-        config.name("FACT.realm")
+        config.name(FN__REALM)
         config.deleteRealmIfMigrationNeeded()
         Realm.setDefaultConfiguration(config.build())
         //gjпох

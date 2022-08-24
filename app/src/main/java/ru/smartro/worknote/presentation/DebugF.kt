@@ -119,6 +119,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
         val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             // Handle the returned Uri
             uri?.let {
+                AppliCation().stopWorkERS()
                 val zipFile = File(it.path!!)
                 log("registerForActivityResult= ${zipFile.absolutePath}")
 //                //Media type da foto selecionada
@@ -129,19 +130,21 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
 //                    arrayOf(zipFile.absolutePath),
 //                    arrayOf(mediaType), this@DebugF
 //                )
-                savefile(uri, "r_dos", "r.zip")
-                val zipF = AppliCation().getF("r_dos", "r.zip")
-                ZipManager.unzip(zipF, AppliCation().getDPath("r_dos"))
-                AppliCation().stopWorkERS()
+                savefile(uri, D__R_DOS, "r.zip")
+                val zipF = AppliCation().getF(D__R_DOS, "r.zip")
+                ZipManager.unzip(zipF, AppliCation().getDPath(D__R_DOS))
 
-                val realmFileNew = AppliCation().getF("r_dos", "FACT.realm")
-                val realmFileOld = AppliCation().getF("files", "FACT.realm")
+
+                val realmFileNew = AppliCation().getF(D__R_DOS, FN__REALM)
+                val realmFileOld = AppliCation().getF(D__FILES, FN__REALM)
                 realmFileNew.copyTo(realmFileOld, overwrite = true)
 
-                val sharedPrefsFileNew = AppliCation().getF("r_dos", "AppParaMS.xml")
+                val sharedPrefsFileNew = AppliCation().getF(D__R_DOS, "AppParaMS.xml")
                 val sharedPrefsFileOld = AppliCation().getF("shared_prefs", "AppParaMS.xml")
-                sharedPrefsFileNew.copyTo(realmFileOld, overwrite = true)
-
+                sharedPrefsFileNew.copyTo(sharedPrefsFileOld, overwrite = true)
+                this@DebugF.requireView().post{
+                    AppliCation().restartApp()
+                }
             }
         }
 
@@ -211,7 +214,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
             zipFiles.addAll(saveJSONFiles)
         }
 
-        val realmFile = AppliCation().getF("files", "FACT.realm")
+        val realmFile = AppliCation().getF(D__FILES, FN__REALM)
         zipFiles.add(realmFile)
 
         val sharedPrefsFiles = AppliCation().getD("shared_prefs").listFiles()
@@ -219,7 +222,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
             zipFiles.addAll(sharedPrefsFiles)
         }
 
-        val logsFiles = AppliCation().getD("logs").listFiles()
+        val logsFiles = AppliCation().getD(D__LOGS).listFiles()
         if (logsFiles != null) {
             zipFiles.addAll(logsFiles)
         }
