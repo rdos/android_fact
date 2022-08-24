@@ -2,22 +2,22 @@ package ru.smartro.worknote.presentation.checklist.workorder
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.checklist.XChecklistAct
+import ru.smartro.worknote.presentation.ac.XChecklistAct
+import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 
-class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel: StartWorkOrderViewModel by viewModels()
     private var rvAdapter: StartWorkOrderAdapter? = null
@@ -138,7 +138,7 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     fun goToNextStep(workOrders: List<WoRKoRDeR_know1>) {
-        val intent = Intent(requireActivity(), MapAct::class.java)
+        val intent = Intent(requireActivity(), MainAct::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
 
         if(workOrders.size == 1) {
@@ -154,7 +154,7 @@ class StartWorkOrderF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mWorkOrderList.removeObservers(viewLifecycleOwner)
         viewModel.mSelectedWorkOrders.removeObservers(viewLifecycleOwner)
     }

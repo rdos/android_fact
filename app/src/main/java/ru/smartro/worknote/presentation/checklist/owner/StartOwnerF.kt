@@ -1,33 +1,32 @@
 package ru.smartro.worknote.presentation.checklist.owner
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
-import ru.smartro.worknote.presentation.checklist.XChecklistAct
+import ru.smartro.worknote.log
+import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 
-class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartOwnerF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private var srlRefresh: SwipeRefreshLayout? = null
 
     override fun onGetLayout(): Int = R.layout.f_start_owner
 
-    private val viewModel: ChecklistViewModel by activityViewModels()
+    private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("TEST :::", "STARTOWNERFRAG :: onViewCreated")
+        log("STARTOWNERFRAG :: onViewCreated")
 
         if (!MyUtil.hasPermissions(requireContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
@@ -57,7 +56,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
                 when (result.status) {
                     Status.SUCCESS -> {
                         val owners = data!!.data.organisations
-                        Log.d("TEST :::", "owners size: ${owners.size}")
+                        log("owners size: ${owners.size}")
                         if (owners.size == 1)
                             goToNextStep(owners[0].id, owners[0].name)
                         else
@@ -94,7 +93,7 @@ class StartOwnerF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mOwnersList.removeObservers(viewLifecycleOwner)
     }
 }

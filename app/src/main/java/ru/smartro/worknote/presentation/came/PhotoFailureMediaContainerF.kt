@@ -1,7 +1,9 @@
 package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
+import ru.smartro.worknote.LoG
 import ru.smartro.worknote.R
+import ru.smartro.worknote.log
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
@@ -12,7 +14,7 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
     private var mContainerEntity: ContainerEntity? = null
     override fun onGetTextForFailHint() = "Причина невывоза контейнера"
     override fun onGetStringList(): List<String>? {
-        mFailReasonS = viewModel.getFailReasonS()
+        mFailReasonS = vm.getFailReasonS()
         if (mFailReasonS == null) {
             toast("Ошибка.todo:::")
             return emptyList()
@@ -38,7 +40,7 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
 
     override fun onBeforeUSE() {
         val containerId = getArgumentID()
-        mContainerEntity = viewModel.baseDat.getContainerEntity(containerId)
+        mContainerEntity = vm.database.getContainerEntity(containerId)
         tvLabelFor(requireView())
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
@@ -63,10 +65,9 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val platformId = getArgumentName()?.toInt()!!
-//        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
-        //        val problemComment = problem_comment.text.toString()
-        viewModel.baseDat.addFailureMediaContainer(platformId, mContainerEntity?.containerId!!, imageS)
-        viewModel.baseDat.setStateFailureForContainer(platformId, mContainerEntity?.containerId!!, failText!!, getCommentText())
+        val containerId = mContainerEntity?.containerId!!
+        vm.database.addFailureMediaContainer(platformId, containerId, imageS)
+        vm.updateContainerFailure(platformId, containerId, failText!!, getCommentText())
         navigateMain(R.id.PServeF, platformId)
     }
 

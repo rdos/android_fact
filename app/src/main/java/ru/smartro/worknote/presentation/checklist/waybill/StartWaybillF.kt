@@ -1,7 +1,6 @@
 package ru.smartro.worknote.presentation.checklist.waybill
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityCompat
@@ -9,25 +8,24 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
-import ru.smartro.worknote.presentation.checklist.ViewState
-import ru.smartro.worknote.presentation.checklist.XChecklistAct
+import ru.smartro.worknote.log
+import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.toast
 import java.text.SimpleDateFormat
 import java.util.*
 
-class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartWaybillF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private var mRvWaybill: RecyclerView? = null
     private var srlRefresh: SwipeRefreshLayout? = null
     private var actvNoData: AppCompatTextView? = null
 
-    private val viewModel: ChecklistViewModel by activityViewModels()
+    private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
 
     override fun onGetLayout(): Int = R.layout.f_start_waybill
 
@@ -72,32 +70,32 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         viewModel.mWayBillsViewState.observe(viewLifecycleOwner) { state ->
-            Log.d("TEST :::", "WAYBILL STATE::: ${state}")
-            if(state !is ViewState.LOADING) {
+            log("WAYBILL STATE::: ${state}")
+            if(state !is XChecklistAct.ViewState.LOADING) {
                 (requireActivity() as XChecklistAct).hideProgressBar()
             }
 
             when(state) {
-                is ViewState.IDLE -> {
+                is XChecklistAct.ViewState.IDLE -> {
                     getWayBillList()
                 }
-                is ViewState.LOADING -> {
+                is XChecklistAct.ViewState.LOADING -> {
                     if(getArgumentName() == null)
                         (requireActivity() as XChecklistAct).showProgressBar()
                     else
                         (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
                     hideNoData()
                 }
-                is ViewState.DATA -> {
+                is XChecklistAct.ViewState.DATA -> {
                     srlRefresh?.isRefreshing = false
                 }
-                is ViewState.ERROR -> {
+                is XChecklistAct.ViewState.ERROR -> {
                     toast(state.msg)
                 }
-                is ViewState.MESSAGE -> {
+                is XChecklistAct.ViewState.MESSAGE -> {
                     toast(state.msg)
                 }
-                is ViewState.REFRESH -> {
+                is XChecklistAct.ViewState.REFRESH -> {
                     hideNoData()
                 }
                 else -> {
@@ -133,13 +131,13 @@ class StartWaybillF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mWayBillList.removeObservers(viewLifecycleOwner)
-        viewModel.mWayBillsViewState.postValue(ViewState.IDLE())
+        viewModel.mWayBillsViewState.postValue(XChecklistAct.ViewState.IDLE())
     }
 
     private fun goToNextStep(wayBillId: Int, wayBillNumber: String) {
-        viewModel.mWayBillsViewState.postValue(ViewState.IDLE())
+        viewModel.mWayBillsViewState.postValue(XChecklistAct.ViewState.IDLE())
         paramS().wayBillId = wayBillId
         paramS().wayBillNumber = wayBillNumber
         navigateMainChecklist(R.id.startWorkOrderF, wayBillId, wayBillNumber)

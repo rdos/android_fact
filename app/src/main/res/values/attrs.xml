@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MyExampleView">
+        <attr name="tooltipNext" format="string" />
+        <attr name="tooltipType" format="enum" >
+            <enum name="ONCLICK" value="0"/>
+            <enum name="ONROOT" value="3"/>
+        </attr>
+    </declare-styleable>
+
+</resources>

@@ -2,16 +2,12 @@ package ru.smartro.worknote
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
-import ru.smartro.worknote.*
-import ru.smartro.worknote.App.ScreenMode
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
 private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE
 class AppParaMS {
-
 
     public var isRestartApp: Boolean = false
     //todo: mEnv? что за ЗАЯЦ/?)
@@ -66,11 +62,6 @@ class AppParaMS {
             it.putString("accessToken", value)
         }
 
-    var lastScreenMode: Boolean
-        get() = sharedPref__env.getBoolean("lastScreenMode", ScreenMode.EXTENDED)
-        set(value) = sharedPref__env.edit {
-            it.putBoolean("lastScreenMode", value)
-        }
 
     var userName: String
         get() = sharedPref__env.getString("userName", Snull)!!
@@ -90,13 +81,13 @@ class AppParaMS {
             return devId
         }
         set(value) {
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.w("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
-            Log.e("deviceId", "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.warn( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
+            LoG.error( "deviceIdset(value)")
         }
 
 //    base = device ОКРУЖЕНИЕ...
@@ -106,7 +97,7 @@ class AppParaMS {
         val currentTimeMS = System.currentTimeMillis()
         val diff = currentTimeMS - (time?:gpsTIME)
         val res =  diff >= 30_000
-        Log.w("AppParaMS", "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
+        LoG.warn( "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
         return res
     }
     fun iSoldGPSdataSaved(): Boolean {
@@ -123,11 +114,11 @@ class AppParaMS {
 //        if (iSoldGPSdataSaved()) {
 //            return res
 //        }
-//        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
-//        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
+//        LoG.error( "if (isLastGPSSaved()) == false")
+//        LoG.warn( "if (isLastGPSSaved()) == false")
 //        Log.i("getSaveGPS", "if (isLastGPSSaved()) == false")
-//        Log.w("getSaveGPS", "if (isLastGPSSaved()) == false")
-//        Log.e("getSaveGPS", "if (isLastGPSSaved()) == false")
+//        LoG.warn( "if (isLastGPSSaved()) == false")
+//        LoG.error( "if (isLastGPSSaved()) == false")
         return res
     }
 
@@ -250,13 +241,13 @@ class AppParaMS {
             it.putString("wayBillNumber", value)
         }
 
-    var isWalkthroughWasShown: Boolean
-        get() = sharedPref__env.getBoolean("isWalkthroughWasShown", false)
+    var isShowTooltipInNextTime: Boolean
+        get() = sharedPref__env.getBoolean("isShownTooltip", true)
         set(value) = sharedPref__env.edit {
-            it.putBoolean("isWalkthroughWasShown", value)
+            it.putBoolean("isShownTooltip", value)
         }
 
-    var walkthroughWasShownCnt: Int
+    var cntTooltipShow: Int
         get() = sharedPref__env.getInt("walkthroughWasShownCnt", 0)
         set(value) = sharedPref__env.edit {
             it.putInt("walkthroughWasShownCnt", value)
@@ -285,6 +276,13 @@ class AppParaMS {
     var isModeLOCATION: Boolean=false
 
     var isModeDEVEL: Boolean = false
+
+    var isDevModeEnableCounter: Int
+        get() = sharedPref__env.getInt("isDevModeEnableCounter", 5)
+        set(value) = sharedPref__env.edit {
+            it.putInt("isDevModeEnableCounter", value)
+        }
+
 
     fun setLogoutParams() {
         token = null

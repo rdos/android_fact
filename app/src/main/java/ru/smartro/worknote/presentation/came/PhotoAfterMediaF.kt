@@ -9,7 +9,19 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 open class PhotoAfterMediaF : APhotoFragment() {
-    private var mPlatformEntity: PlatformEntity? = null
+//    private var mPlatformEntity: PlatformEntity = TODO()
+//        get() =  vm.getPlatformEntity()
+
+//GHПРИКОЛ!!
+
+
+
+    private val mPlatformEntity: PlatformEntity
+        get() =  vm.getPlatformEntity()
+
+
+
+
 //    override fun onGetTextLabelFor() = "фото после обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -24,9 +36,6 @@ open class PhotoAfterMediaF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        if(viewModel.mPlatformEntity.value == null)
-            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = viewModel.mPlatformEntity.value
         mMaxPhotoCount = Int.MAX_VALUE
     }
 
@@ -36,9 +45,9 @@ open class PhotoAfterMediaF : APhotoFragment() {
 
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.baseDat.addAfterMedia(mPlatformEntity?.platformId!!, imageS)
-        viewModel.updatePlatformStatusSuccess(mPlatformEntity?.platformId!!)
-        navigateClose()
+        vm.database.addAfterMedia(mPlatformEntity.platformId, imageS)
+        vm.updatePlatformStatusSuccess(mPlatformEntity.platformId)
+        navigateBack(R.id.MapF)
     }
 
     override fun onSavePhoto() {

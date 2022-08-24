@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.smartro.worknote">
 
+    <!--todo:https://developer.android.com/training/monitoring-device-state/connectivity-status-type-->
+    <!--<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -26,20 +29,13 @@
         android:supportsRtl="true"
         android:allowBackup="false"
         android:theme="@style/AppTheme">
-        <activity android:name="ru.smartro.worknote.work.ui.JournalChatAct" />
-
-        <activity android:name="ru.smartro.worknote.work.ui.DebugAct" />
         <activity  android:exported="false"
-            android:name="ru.smartro.worknote.presentation.platform_serve.PServeAct"
+            android:name="ru.smartro.worknote.presentation.ac.MainAct"
             android:screenOrientation="portrait" />
 
-        <activity  android:exported="false"
-            android:name="ru.smartro.worknote.MapAct"
-            android:screenOrientation="portrait"
-            android:theme="@style/NoToolbar" />
 
         <activity  android:exported="true"
-            android:name=".work.ac.StartAct"
+            android:name="ru.smartro.worknote.presentation.ac.StartAct"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>
@@ -48,18 +44,50 @@
             </intent-filter>
         </activity>
         <activity  android:exported="true"
-            android:name="ru.smartro.worknote.presentation.terminate.TerminateAct"
+            android:name="ru.smartro.worknote.presentation.ac.XChecklistAct"
             android:screenOrientation="portrait"
             >
         </activity>
-        <activity  android:exported="true"
-            android:name="ru.smartro.worknote.presentation.checklist.XChecklistAct"
-            android:screenOrientation="portrait"
-            >
-        </activity>
+
+        <!-- Voice Recognition Samples -->
+        <!--отказ-->
+        <!--<activity android:name=".app.VoiceRecognition" android:label="@string/voice_recognition">-->
+        <!--    <intent-filter>-->
+        <!--        <action android:name="android.intent.action.MAIN" />-->
+        <!--        <category android:name="android.intent.category.SAMPLE_CODE" />-->
+        <!--    </intent-filter>-->
+        <!--</activity>-->
+        <!-- FilterProvider para conseguirmos compartilhar fotos com outros apps -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <receiver android:exported="true"
+            android:enabled="true"
+            android:name=".work.ac.BootBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:directBootAware="true"
+            android:name=".work.ac.BootIntentService"
+            android:enabled="true" />
+        <service
+            android:directBootAware="true"
+            android:name=".work.ac.AirplanemodeIntentService"
+            android:enabled="true" />
+
         <meta-data
             android:name="io.sentry.dsn"
             android:value="https://f52d405267944551b65123facccf3d2c@sentry.soyuz317.ru/17" />
+
     </application>
 
 </manifest>

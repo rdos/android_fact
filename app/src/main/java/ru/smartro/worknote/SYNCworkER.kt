@@ -1,24 +1,20 @@
 package ru.smartro.worknote
 
+//import ru.smartro.worknote.utils.DispatcherInfoMessageTypes
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import io.realm.Realm
-import io.sentry.Sentry
 import kotlinx.coroutines.delay
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
+import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
-import ru.smartro.worknote.work.ac.StartAct
-import java.io.File
-import java.io.FileOutputStream
 
 //private var App.LocationLAT: Double
 //    get() {
@@ -31,6 +27,9 @@ class SYNCworkER(
     p_application: Context,
     params: WorkerParameters
 ) : CoroutineWorker(p_application, params) {
+
+
+
     private val mNetworkRepository = NetworkRepository(applicationContext)
     // TODO: r_dos....кака код))раз
     private fun showWorkERNotification(isForceMode: Boolean = true,
@@ -52,8 +51,8 @@ class SYNCworkER(
     fun db(): RealmRepository {
         val currentThreadId = Thread.currentThread().id
         if (oldThreadId != currentThreadId) {
-            LOGWork("SYNCworkER::db:.currentThreadId=${currentThreadId} ")
-            LOGWork("SYNCworkER::db:.oldThreadId=${oldThreadId} ")
+            log("SYNCworkER::db:.currentThreadId=${currentThreadId} ")
+            log("SYNCworkER::db:.oldThreadId=${oldThreadId} ")
             oldThreadId = currentThreadId
             mDb = RealmRepository(Realm.getDefaultInstance())
             return mDb!!
@@ -68,7 +67,7 @@ class SYNCworkER(
 
     // TODO: r_dos.)))кака код...лох это судьба))два
     override suspend fun doWork(): Result {
-        beforeLOG("doWork")
+        LOGbefore()
         var isFirstRun: Boolean = true
         var isModeSyncOldVal = false
 
@@ -78,32 +77,32 @@ class SYNCworkER(
         try {
             val DELAY_MS: Long =  if (App.getAppParaMS().isModeDEVEL) 11_011 else 30_000
             while (true) {
-                INcyclEStart("while (true)")
+                LOGinCYCLEStart("while (true)")
 
                 if (isModeSyncOldVal != params.isModeSYNChrONize) {
                     isFirstRun = true
                 }
                 isModeSyncOldVal = params.isModeSYNChrONize
                 if (params.isModeSYNChrONize) {
-                    LOGWork( "SYNCworkER RUN")
+                    log( "SYNCworkER RUN")
                     synChrONizationDATA()
                     ping()
                     if (isFirstRun) {
                         showWorkERNotification(true)
                     }
                 } else {
-                    LOGWork("SYNCworkER STOPPED")
+                    log("SYNCworkER STOPPED")
                     if (isFirstRun) {
                         showWorkERNotification(true, contentText = "Служба отправки данных не работает",
                             titleText = "Отправка Данных ПРИОСТАНОВЛЕНА")
                     }
                 }
                 isFirstRun = false
-                INcyclEStop()
+                LOGINcyclEStop()
                 delay(DELAY_MS)
             } //todo: while (true) {
         } catch (eXthr: Throwable) {
-            Log.e(TAG, "eXthr.message", eXthr)
+            LoG.error("", eXthr)
 //            аккуратней::r_dos
             params.isModeSYNChrONize_FoundError = true
             showWorkERROR()
@@ -115,42 +114,43 @@ class SYNCworkER(
     }
 
     private suspend fun ping() {
-        beforeLOG("PING STARTED ::::")
+//        LOGbefore("PING STARTED ::::")
         val pingResponse = mNetworkRepository.ping(PingBody("ping"))
         when (pingResponse.status) {
             Status.SUCCESS -> {
-                Log.d("TEST :::: ", pingResponse.data.toString())
+//                log("PING RESPONSE:")
+//                LoG.error( pingResponse.data.toString())
                 val message = pingResponse.data?.payload?.message
                 if(message != null)
                     (applicationContext as App).showAlertNotification(message)
-                else
-                    Log.e(TAG, "Ping EMPTY MESSAGE ${pingResponse.data}")
+                else {
+//                    LoG.error("Ping EMPTY MESSAGE ${pingResponse.data}")
+                }
             }
-            Status.ERROR -> Log.e(TAG, "Ping ERROR ${pingResponse.msg}")
-            Status.NETWORK -> Log.w(TAG, "Ping NO INTERNET")
+//            Status.ERROR -> LoG.error( "Ping ERROR ${pingResponse.msg}")
+//            Status.NETWORK -> LoG.warn( "Ping NO INTERNET")
         }
 
-        LOGafterLOG()
+//        LOGafterLOG()
     }
 
     private suspend fun synChrONizationDATA() {
-        beforeLOG("synChrONizationDATA")
-        var timeBeforeRequest: Long = MyUtil.timeStampInSec()
+        LOGbefore()
         logSentry("SYNCworkER STARTED")
+        var timeBeforeRequest: Long = MyUtil.timeStampInSec()
         val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
         var platforms: List<PlatformEntity> = emptyList()
-        LOGWork("SYNCworkER::synChrONizationDATA:Thread.currentThread().id()=${Thread.currentThread().id}")
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
             timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
             platforms = db().findPlatforms30min()
-            LOGWork( "SYNCworkER PLATFORMS IN LAST 30 min")
+            log( "SYNCworkER PLATFORMS IN LAST 30 min")
         }
         if (platforms.isEmpty()) {
             timeBeforeRequest = MyUtil.timeStampInSec()
             platforms = db().findLastPlatforms()
-            LOGWork("SYNCworkER LAST PLATFORMS")
+            log("SYNCworkER LAST PLATFORMS")
         }
 
 
@@ -161,20 +161,18 @@ class SYNCworkER(
             gps.PointTimeToLastKnowTime_SRV(),
             platforms)
 
-        Log.d(TAG, "platforms.size=${platforms.size}")
-
-
+        info("platforms.size=${platforms.size}")
 //        saveJSON(synchronizeBody)
         val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
         when (synchronizeResponse.status) {
             Status.SUCCESS -> {
                 if (platforms.isNotEmpty()) {
                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
-                    Log.d("TAGS:::SYNCworkER", Thread.currentThread().getId().toString())
+                    LoG.error( Thread.currentThread().getId().toString())
                     db().updatePlatformNetworkStatus(platforms)
-                    Log.d(TAG, "SYNCworkER SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
+                    info("SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
                 } else {
-                    Log.d(TAG, "SYNCworkER SUCCESS: GPS SENT")
+                    info("SUCCESS: GPS SENT")
                 }
                 val alertMsg = synchronizeResponse.data?.alert
                 if (!alertMsg.isNullOrEmpty()) {
@@ -182,129 +180,74 @@ class SYNCworkER(
 //                    App.getAppliCation().showNotification(alertMsg, "Уведомление")
                 }
             }
-            Status.ERROR -> Log.e(TAG, "SYNCworkER ERROR")
-            Status.NETWORK -> Log.w(TAG, "SYNCworkER NO INTERNET")
+            Status.ERROR -> LoG.error("SYNCworkER ERROR")
+            Status.NETWORK -> {
+                LoG.warn("SYNCworkER NO INTERNET")
+                val configEntity = db().loadConfig(ConfigName.NOINTERNET_CNT)
+                configEntity.cntPlusOne()
+                db().saveConfig(configEntity)
+            }
+            Status.ERROR -> LoG.error( "Status.ERROR")
+            Status.NETWORK -> LoG.warn( "Status.NETWORK==NO INTERNET")
         }
         LOGafterLOG()
-
+        
     }
 
 
+//    protected fun log(valueNameAndValue: String) {
+//        mMethodName?.let {
+//            Log.i(TAGLOG, "${TAGLOG}:${mMethodName}.${valueNameAndValue}")
+//            return@LOGWork
+//        }
+//        Log.i(TAGLOG, "${TAGLOG}:${valueNameAndValue}")
+//    }
+//
+//    protected fun log(valueName: String, value: Int) {
+//        log("${valueName}=$value")
+//    }
 
-    fun saveJSON(synchronizeBody: SynchronizeBody) {
-        val gson = Gson()
-        val bodyInStringFormat = gson.toJson(synchronizeBody)
-        deleteOutputDirectory("ttest", null)
-        val file: File = File(getOutputDirectory("ttest", null), "synchro.json")
-
-        //This point and below is responsible for the write operation
-
-        //This point and below is responsible for the write operation
-        var outputStream: FileOutputStream? = null
-        try {
-
-            file.createNewFile()
-            //second argument of FileOutputStream constructor indicates whether
-            //to append or create new file if one exists
-            outputStream = FileOutputStream(file, true)
-            outputStream.write(bodyInStringFormat.toByteArray())
-            outputStream.flush()
-            outputStream.close()
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    fun deleteOutputDirectory(platformUuid: String, containerUuid: String?) {
-        try {
-            val file = getOutputDirectory(platformUuid, containerUuid)
-            file.deleteRecursively()
-        } catch (e: Exception) {
-//            log.error("deleteOutputDirectory", e)
-        }
-    }
-
-    fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
-        var dirPath = App.getAppliCation().filesDir.absolutePath
-        if(containerUuid == null) {
-            dirPath = dirPath + File.separator + platformUuid
-        } else {
-            dirPath = dirPath + File.separator + platformUuid + File.separator + containerUuid
-        }
-
-        val file = File(dirPath)
-        if (!file.exists()) file.mkdirs()
-        return file
-    }
-
-
-
-
-    protected fun LOGWork(valueNameAndValue: String) {
-        mMethodName?.let {
-            Log.i(TAGLOG, "${TAGLOG}:${mMethodName}.${valueNameAndValue}")
-            return@LOGWork
-        }
-        Log.i(TAGLOG, "${TAGLOG}:${valueNameAndValue}")
-    }
-
-    protected fun LOGWork(valueName: String, value: Int) {
-        LOGWork("${valueName}=$value")
-    }
-
-
-    private var mMethodName: String? = null
-    private val TAG = "SYNCworkER"
-    private val TAGLOG = TAG
     protected fun logSentry(text: String) {
-        Sentry.addBreadcrumb("${TAG} : $text")
-        Log.i(TAG, "text")
+        App.getAppliCation().logSentry(text)
     }
-
-    //SYNCworkER
-    fun beforeLOG(method: String, valueName: String = "") {
-        mMethodName = method
-        Log.w(TAG, ".thread_id=${Thread.currentThread().id}")
-        Log.d(TAGLOG, "${mMethodName}.before")
-    }
-
-    fun INcyclEStart(s: String) {
-        mMethodName?.let {
-            Log.d(TAGLOG, "${mMethodName}.CYCLes.${s}")
-            return@INcyclEStart
-        }
-        Log.d(TAGLOG, "CYCLes.${s}")
-    }
-
-    fun INcyclEStop() {
-        mMethodName?.let {
-            Log.d(TAGLOG, "${mMethodName}.************-_(:;)")
-            return@INcyclEStop
-        }
-        Log.d(TAGLOG, ".************-_(:;)")
-    }
-
-    //SYNCworkER
-    protected fun LOGafterLOG(res: String) {
-        logAfterResult(res.toStr())
-    }
-
-    //    SYNCworkER
-    protected fun LOGafterLOG(res: Boolean? = null) {
-        logAfterResult(res.toStr())
-    }
-
-    private fun logAfterResult(result: String) {
-        result?.let {
-            Log.d(TAGLOG, "${mMethodName}.after result=${result} ")
-            return@logAfterResult
-        }
-        Log.d(TAGLOG, "${mMethodName}.after")
-        mMethodName = null
-    }
-
-
 }
+/**   //SYNCworkER
+
+//    fun INcyclEStart(s: String) {
+//        mMethodName?.let {
+//            log("${mMethodName}.CYCLes.${s}")
+//            return@INcyclEStart
+//        }
+//        log("CYCLes.${s}")
+//    }
+//
+//    fun INcyclEStop() {
+//        mMethodName?.let {
+//            log("${mMethodName}.************-_(:;)")
+//            return@INcyclEStop
+//        }
+//        log(".************-_(:;)")
+//    }
+
+//    //SYNCworkER
+//    protected fun LOGafterLOG(res: String) {
+//        logAfterResult(res.toStr())
+//    }
+//
+//    //    SYNCworkER
+//    protected fun LOGafterLOG(res: Boolean? = null) {
+//        logAfterResult(res.toStr())
+//    }
+
+//    private fun logAfterResult(result: String) {
+//        result?.let {
+//            log("${mMethodName}.after result=${result} ")
+//            return@logAfterResult
+//        }
+//        log("${mMethodName}.after")
+//        mMethodName = null
+//    }
+**/
 
 /**
  *
@@ -344,7 +287,7 @@ Toast.makeText(context, "Alarm running", Toast.LENGTH_SHORT).show();
 public class DeviceBootReceiver extends BroadcastReceiver {
 @Override
 public void onReceive(Context context, Intent intent) {
-if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED") {
 // on device boot compelete, reset the alarm
 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);

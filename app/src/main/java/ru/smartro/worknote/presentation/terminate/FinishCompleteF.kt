@@ -4,11 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import ru.smartro.worknote.AFragment
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.ac.StartAct
+import ru.smartro.worknote.presentation.ac.StartAct
 
-class FinishCompleteF : AFragment() {
+class FinishCompleteF : ANOFragment() {
     companion object {
         fun newInstance(workOrderId: Any? = null): FinishCompleteF {
             val fragment = FinishCompleteF()
@@ -18,7 +18,7 @@ class FinishCompleteF : AFragment() {
     }
 
     override fun onGetLayout(): Int {
-        return R.layout.fragment_successful_complete
+        return R.layout.f_finish_complete
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -2,6 +2,7 @@ package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
+import ru.smartro.worknote.log
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ImageEntity
@@ -12,7 +13,7 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
     private var mContainerEntity: ContainerEntity? = null
     override fun onGetTextForFailHint() = "Причина поломки контейнера"
     override fun onGetStringList(): List<String>? {
-        mBreakDownReasonS = viewModel.baseDat.findAllBreakDown()
+        mBreakDownReasonS = vm.database.findAllBreakDown()
         if (mBreakDownReasonS == null) {
             toast("Ошибка.todo:::")
             return emptyList()
@@ -37,7 +38,7 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
 
     override fun onBeforeUSE() {
         val containerId = getArgumentID()
-        mContainerEntity = viewModel.baseDat.getContainerEntity(containerId)
+        mContainerEntity = vm.database.getContainerEntity(containerId)
         tvLabelFor(requireView())
     }
 
@@ -59,10 +60,11 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val platformId = getArgumentName()?.toInt()!!
+        val containerId = mContainerEntity?.containerId!!
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
         //        val problemComment = problem_comment.text.toString()
-        viewModel.baseDat.addBreakdownMediaContainer(platformId, mContainerEntity?.containerId!!, imageS)
-        viewModel.baseDat.setStateBreakdownForContainer(platformId, mContainerEntity?.containerId!!, breakdownText!!, getCommentText())
+        vm.database.addBreakdownMediaContainer(platformId, containerId, imageS)
+        vm.updateContainerBreakDown(platformId, containerId, breakdownText!!, getCommentText())
         navigateMain(R.id.PServeF, platformId)
     }
 

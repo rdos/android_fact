@@ -8,7 +8,8 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoPickupMediaF : APhotoFragment() {
-    private var mPlatformEntity: PlatformEntity? = null
+        private val mPlatformEntity: PlatformEntity
+        get() =  vm.getPlatformEntity()
     override fun onGetTextLabelFor() = "фото подбора"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -24,9 +25,7 @@ class PhotoPickupMediaF : APhotoFragment() {
 
 
     override fun onBeforeUSE() {
-        if(viewModel.mPlatformEntity.value == null)
-            throw Exception("${this::class.java.simpleName}//onBeforeUse//viewModel.mPlatformEntity.value == null")
-        mPlatformEntity = viewModel.mPlatformEntity.value
+       
 //        mMaxPhotoCount = mPlatformEntity!!.getPickupMediaSize()
     }
 
@@ -36,8 +35,8 @@ class PhotoPickupMediaF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val newVolume = getArgumentName()!!.toDouble()
-        viewModel.baseDat.addPlatformPickupMedia(mPlatformEntity?.platformId!!, imageS)
-        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
+        vm.database.addPlatformPickupMedia(mPlatformEntity?.platformId!!, imageS)
+        vm.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
     }
 
@@ -50,7 +49,7 @@ class PhotoPickupMediaF : APhotoFragment() {
 
     override fun onClickBtnCancel() {
         val newVolume = getArgumentName()!!.toDouble()
-        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
+        vm.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
     }
 

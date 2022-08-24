@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -17,19 +16,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ru.smartro.worknote.AFragment
-import ru.smartro.worknote.PERMISSIONS
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.checklist.ChecklistViewModel
-import ru.smartro.worknote.presentation.checklist.XChecklistAct
-import ru.smartro.worknote.toast
+import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.work.Status
 
-class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartVehicleF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
-    private val viewModel: ChecklistViewModel by activityViewModels()
+    private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
 
     private var etVehicleFilter: EditText? = null
     private var rvAdapter: StartVehicleAdapter? = null
@@ -48,7 +44,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             // TODO::Vlad -- Можно поставить один раз тут и не трогать в последующих фрагах
             acibGoToBack?.visibility = View.VISIBLE
             acibGoToBack?.setOnClickListener {
-                navigateBackChecklist()
+                navigateBack()
             }
             setBarTitle("Автомобиль")
         }
@@ -63,7 +59,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         etVehicleFilter = view.findViewById(R.id.et__f_start_vehicle__filter)
         etVehicleFilter?.addTextChangedListener { text: Editable? ->
             val filterText = text.toString()
-            getAct().logSentry(filterText)
+            logSentry(filterText)
             rvAdapter?.updateList(filterText)
         }
         etVehicleFilter?.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
@@ -115,9 +111,8 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
 
-        Log.d("TEST ::: ${this::class.java.simpleName}",
-                "vm.mLastOwnerId=${viewModel.mLastOwnerId}, " +
-                "getArgumentID(mLastOwnerId)=${getArgumentID()}")
+        log("viewModel.mLastOwnerId=${viewModel.mLastOwnerId}")
+        log("getArgumentID(mLastOwnerId)=${getArgumentID()}")
         if(viewModel.mVehicleList.value == null) {
             if(getArgumentName() == null)
                 (requireActivity() as XChecklistAct).showProgressBar()
@@ -141,7 +136,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
         super.onResume()
         if(etVehicleFilter != null && etVehicleFilter?.text.toString().isNotEmpty()) {
             val filterText = if(etVehicleFilter!!.text != null) etVehicleFilter!!.text.toString() else return
-            getAct().logSentry(filterText)
+            logSentry(filterText)
             Handler(Looper.getMainLooper()).postDelayed({
                 rvAdapter?.updateList(filterText)
             }, 500)
@@ -150,7 +145,7 @@ class StartVehicleF: AFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("TEST :::", "${this::class.java.simpleName} :: ON DESTROY VIEW")
+        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mVehicleList.removeObservers(viewLifecycleOwner)
     }
 
