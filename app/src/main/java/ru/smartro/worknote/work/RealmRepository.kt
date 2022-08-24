@@ -1218,7 +1218,7 @@ class RealmRepository(private val p_realm: Realm) {
                     }
                     groupByContainerTypeClientEntity = realm.createObject(GroupByContainerTypeClientEntity::class.java)
                     groupByContainerTypeClientEntity.platformId = platformId
-                    groupByContainerTypeClientEntity.addClient(groupByContainerClient.getClientForUser())
+                    groupByContainerTypeClientEntity.client = groupByContainerClient.client
                     groupByContainerTypeClientEntity.typeId = groupByContainerClientContainer.typeId
                     groupByContainerTypeClientEntity.typeName = groupByContainerClientContainer.typeName
                     groupByContainerTypeClientEntity.containers.add(groupByContainerClientContainer)

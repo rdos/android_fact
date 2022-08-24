@@ -12,7 +12,7 @@ open class PhotoAfterMediaF : APhotoFragment() {
 //    private var mPlatformEntity: PlatformEntity = TODO()
 //        get() =  vm.getPlatformEntity()
 
-//GHПРИКОЛ!!
+//GHП!РИКОЛ!!
 
 
 
