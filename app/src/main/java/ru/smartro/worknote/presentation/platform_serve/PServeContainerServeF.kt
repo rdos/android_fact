@@ -62,7 +62,10 @@ class PServeContainerServeF : AbstractBottomSheetF() {
             view.findViewById<TextInputEditText>(R.id.comment_et).setText(it.comment)
             volume = it.volume
             setVolume(view, it.volume)
-            view.findViewById<TextView>(R.id.enter_info_tittle).text = "Заполненность конт №${it.number}"
+            if(it.number == null)
+                view.findViewById<TextView>(R.id.enter_info_tittle).text = "Заполненность контейнера"
+            else
+                view.findViewById<TextView>(R.id.enter_info_tittle).text = "Заполненность конт №${it.number}"
         }
         view.findViewById<TextInputEditText>(R.id.comment_et).addTextChangedListener{
             // TODO:

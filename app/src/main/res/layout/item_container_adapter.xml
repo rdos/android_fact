@@ -29,7 +29,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:textColor="@color/black"
-            tools:text="Союз 317" />
+            tools:text="11111" />
 
         <TextView
             android:id="@+id/tv_item_container_adapter__type_name"

@@ -840,8 +840,16 @@ open class GroupByContainerClientEntity(
     }
 
     fun getClientForUser(): String {
-        // TODO: VT!!!
-        val result = client?:"Клиент не указан"
+        // TODO: VT!!!)(
+        var result = "Клиент не указан"
+        if (client == "Клиент не указан") {
+            result = "Клиент не указан (2"
+            return result
+        }
+        if (client == null) {
+            return result
+        }
+        result = client!!
         return result
     }
 
@@ -869,6 +877,20 @@ open class GroupByContainerTypeClientEntity(
         return result
     }
 
+    fun getTypetForUser(): String {
+        // TODO: VT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        var result = "Тип не указан"
+        if (typeName == "Тип не указан") {
+            result = "Тип не указан (2"
+            return result
+        }
+        if (typeName == null) {
+            return result
+        }
+        result = typeName!!
+        return result
+    }
+
     fun getServeCNT(): Int {
         return containers.sumOf {
             if(it.volume != null)
@@ -878,15 +900,10 @@ open class GroupByContainerTypeClientEntity(
         }.toInt()
     }
 
-    // TODO: !!r_dos!!!
-    fun addClient(clientName: String) {
-        this.client = clientName
-    }
-
     companion object {
         // TODO: !!!
         fun createEmpty(): GroupByContainerTypeClientEntity {
-            val result = GroupByContainerTypeClientEntity(platformId = Inull, client = THIS_IS_ERROR)
+            val result = GroupByContainerTypeClientEntity(platformId = Inull, client = THIS_IS_ERROR, typeName = THIS_IS_ERROR)
             return result
         }
     }
