@@ -18,8 +18,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.yandex.mapkit.Animation
@@ -37,6 +39,9 @@ import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.ui_view.ViewProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.cachapa.expandablelayout.ExpandableLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
@@ -243,6 +248,17 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         AppliCation().startWorkER()
         AppliCation().startLocationService()
 //        setDevelMode()
+
+        // TODO::
+        val lottie = view.findViewById<LottieAnimationView>(R.id.lottie)
+        lottie.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                for(i in 10..100){
+                    lottie.progress = i.toFloat() / 100
+                    delay(100)
+                }
+            }
+        }
     }
 
     override fun onBackPressed() {
