@@ -1206,8 +1206,8 @@ class RealmRepository(private val p_realm: Realm) {
             LoG.info("groupByContainerClientS.size = ${groupByContainerClientS.size}")
 
             var groupByContainerTypeClientEntity = GroupByContainerTypeClientEntity.createEmpty()//todo:
-            var typeName: String? = Snull
             for(groupByContainerClient in groupByContainerClientS){
+                var typeName: String? = Snull
                 LoG.debug("groupByContainerClient.client = ${groupByContainerClient.client}")
                 for(groupByContainerClientContainer in groupByContainerClient.containers){
                     if (typeName == groupByContainerClientContainer.typeName) {
