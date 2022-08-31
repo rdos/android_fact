@@ -317,6 +317,7 @@ open class PlatformEntity(
     @SerializedName("finished_at")
     var finishedAt: String? = null,
     @SerializedName("id")
+//    @PrimaryKey
     var platformId: Int = Inull,
     @SerializedName("name")
     var name: String? = null,
@@ -732,6 +733,7 @@ open class ContainerEntity(
 /*    @SerializedName("breakdown_reason_id")
     var breakdownReasonId: Int? = null,*/
     @SerializedName("id")
+//    @PrimaryKey
     var containerId: Int? = null,
     @SerializedName("constructive_volume")
     var constructiveVolume: Double? = null,
