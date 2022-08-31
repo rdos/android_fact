@@ -251,7 +251,7 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     ////// CopyPaste Grow = расти!
-    fun setGroByContainerTypeClientVolume(groupByContainerTypeClient: GroupByContainerTypeClientEntity, containerId: Int, newVolume: Double) {
+    fun setContainerGROUPClientTypeVolume(groupByContainerTypeClient: ContainerGROUPClientTypeEntity, containerId: Int, newVolume: Double) {
         p_realm.executeTransaction { realm ->
             val container = realm.where(ContainerEntity::class.java)
                 .equalTo("containerId", containerId)
@@ -1069,13 +1069,13 @@ class RealmRepository(private val p_realm: Realm) {
             .equalTo("isWorkOrderComplete", false)
     }
 
-    private fun getQueryGroupByContainerClient(platformId: Int): RealmQuery<GroupByContainerClientEntity> {
-        return p_realm.where(GroupByContainerClientEntity::class.java).equalTo("platformId", platformId)
+    private fun getQueryGroupByContainerClient(platformId: Int): RealmQuery<ContainerGROUPClientEntity> {
+        return p_realm.where(ContainerGROUPClientEntity::class.java).equalTo("platformId", platformId)
     }
 
 
-    private fun getQueryGroupByContainerClientType(platformId: Int): RealmQuery<GroupByContainerTypeClientEntity> {
-        return p_realm.where(GroupByContainerTypeClientEntity::class.java).equalTo("platformId", platformId)
+    private fun getQueryGroupByContainerClientType(platformId: Int): RealmQuery<ContainerGROUPClientTypeEntity> {
+        return p_realm.where(ContainerGROUPClientTypeEntity::class.java).equalTo("platformId", platformId)
     }
 
     private fun getQueryWorkOrder(isForceMode: Boolean = false): RealmQuery<WorkOrderEntity> {
@@ -1110,8 +1110,8 @@ class RealmRepository(private val p_realm: Realm) {
 
 
     // TODO::RENAME loadContsGroByClientS !!?
-    fun loadGroupByContainerClient(platformId: Int): MutableList<GroupByContainerClientEntity>? {
-        var result: MutableList<GroupByContainerClientEntity>?  = null
+    fun loadGroupByContainerClient(platformId: Int): MutableList<ContainerGROUPClientEntity>? {
+        var result: MutableList<ContainerGROUPClientEntity>?  = null
         val realmResult = getQueryGroupByContainerClient(platformId).findAll()
 
         LoG.trace("realmResult=${realmResult.count()}")
@@ -1122,9 +1122,17 @@ class RealmRepository(private val p_realm: Realm) {
         return result
     }
 
+    fun loadContainerGROUPClientTypeEntity(platformId: Int, typeId: Int, client: String?): ContainerGROUPClientTypeEntity {
+        val realmResult = getQueryGroupByContainerClientType(platformId)
+            .equalTo("client", client)
+            .equalTo("typeId", typeId)
+            .findFirst()!!
+        return p_realm.copyFromRealm(realmResult)
+    }
+
     // TODO::RENAME loadContsGroByClientNTypeS !!?
-    fun loadGroupByContainerTypeClientEntity(platformId: Int, client: String?): MutableList<GroupByContainerTypeClientEntity>? {
-        var result: MutableList<GroupByContainerTypeClientEntity>?  = null
+    fun loadContainerGROUPClientTypeEntityS(platformId: Int, client: String?): MutableList<ContainerGROUPClientTypeEntity>? {
+        var result: MutableList<ContainerGROUPClientTypeEntity>?  = null
         val realmResult = getQueryGroupByContainerClientType(platformId).equalTo("client", client).findAll()
         LoG.trace("realmResult=${realmResult.count()}")
         if (realmResult.isNotEmpty()) {
@@ -1172,17 +1180,17 @@ class RealmRepository(private val p_realm: Realm) {
                                                                                     //
                                                                                     //            }
 //                                                                              todo: WTF????????????????????????
-            var groupByContainerClientEntity = GroupByContainerClientEntity.createEmpty()//todo:R_dos!!!
+            var containerGROUPClientEntity = ContainerGROUPClientEntity.createEmpty()//todo:R_dos!!!
             for(cont in containerS) {
                 if (clientName == cont.client) {
-                    groupByContainerClientEntity.containers.add(cont)
+                    containerGROUPClientEntity.containers.add(cont)
                     continue
                 }
-                groupByContainerClientEntity = realm.createObject(GroupByContainerClientEntity::class.java)
-                groupByContainerClientEntity.platformId = platformId
-                groupByContainerClientEntity.addClient(cont)
+                containerGROUPClientEntity = realm.createObject(ContainerGROUPClientEntity::class.java)
+                containerGROUPClientEntity.platformId = platformId
+                containerGROUPClientEntity.addClient(cont)
 
-                groupByContainerClientEntity.containers.add(cont)
+                containerGROUPClientEntity.containers.add(cont)
 
 //   todo: КТО ГДЕ КОГДА! r_dos??                    realm.insertOrUpdate(groupByContainerClientEntity)
                 clientName = cont.client
@@ -1192,7 +1200,7 @@ class RealmRepository(private val p_realm: Realm) {
             val groupByContainerClientS = getQueryGroupByContainerClient(platformId).findAll()
             LoG.info("groupByContainerClientS.size = ${groupByContainerClientS.size}")
 
-            var groupByContainerTypeClientEntity = GroupByContainerTypeClientEntity.createEmpty()//todo:
+            var containerGROUPClientTypeEntity = ContainerGROUPClientTypeEntity.createEmpty()//todo:
             for(groupByContainerClient in groupByContainerClientS){
                 var typeName: String? = Snull
                 LoG.debug("groupByContainerClient.client = ${groupByContainerClient.client}")
@@ -1200,15 +1208,15 @@ class RealmRepository(private val p_realm: Realm) {
                     if (typeName == groupByContainerClientContainer.typeName) {
                         LoG.debug("typeName=${typeName}")
                         LoG.debug("groupByContainerTypeClientEntity.containers.add")
-                        groupByContainerTypeClientEntity.containers.add(groupByContainerClientContainer)
+                        containerGROUPClientTypeEntity.containers.add(groupByContainerClientContainer)
                         continue
                     }
-                    groupByContainerTypeClientEntity = realm.createObject(GroupByContainerTypeClientEntity::class.java)
-                    groupByContainerTypeClientEntity.platformId = platformId
-                    groupByContainerTypeClientEntity.client = groupByContainerClient.client
-                    groupByContainerTypeClientEntity.typeId = groupByContainerClientContainer.typeId
-                    groupByContainerTypeClientEntity.typeName = groupByContainerClientContainer.typeName
-                    groupByContainerTypeClientEntity.containers.add(groupByContainerClientContainer)
+                    containerGROUPClientTypeEntity = realm.createObject(ContainerGROUPClientTypeEntity::class.java)
+                    containerGROUPClientTypeEntity.platformId = platformId
+                    containerGROUPClientTypeEntity.client = groupByContainerClient.client
+                    containerGROUPClientTypeEntity.typeId = groupByContainerClientContainer.typeId
+                    containerGROUPClientTypeEntity.typeName = groupByContainerClientContainer.typeName
+                    containerGROUPClientTypeEntity.containers.add(groupByContainerClientContainer)
 
 //   todo: КТО ГДЕ КОГДА! r_dos??                 realm.insertOrUpdate(groupByContainerClientEntity)
                     typeName = groupByContainerClientContainer.typeName

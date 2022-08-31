@@ -14,14 +14,14 @@ import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.andPOintD.SmartROLinearLayout
 import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
 import ru.smartro.worknote.work.ConfigName
-import ru.smartro.worknote.work.GroupByContainerClientEntity
-import ru.smartro.worknote.work.GroupByContainerTypeClientEntity
+import ru.smartro.worknote.work.ContainerGROUPClientEntity
+import ru.smartro.worknote.work.ContainerGROUPClientTypeEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 
 class PServeGroupByContainersF : AFragment() {
 
-    private var adapter: PServeGroupedByClientsAdapter? = null
+    private var adapter: PServeGROUPClientsAdapter? = null
     private var mBackPressedCnt: Int = 2
     private val _PlatformEntity: PlatformEntity
         get() = vm.getPlatformEntity()
@@ -46,7 +46,7 @@ class PServeGroupByContainersF : AFragment() {
         screenModeLabel = view.findViewById(R.id.screen_mode_label)
         rvMain = view.findViewById(R.id.rv_f_pserve_groupby__main)
         rvMain?.layoutManager = LinearLayoutManager(getAct())
-        adapter = PServeGroupedByClientsAdapter(listOf())
+        adapter = PServeGROUPClientsAdapter(listOf())
         rvMain?.adapter = adapter
         screenModeLabel?.text = "По типам"
 
@@ -183,9 +183,9 @@ class PServeGroupByContainersF : AFragment() {
     }
 
 
-    inner class PServeGroupedByClientsAdapter(
-        private var groupByContainerClientS: List<GroupByContainerClientEntity>
-    ) : RecyclerView.Adapter<PServeGroupedByClientsAdapter.PServeGroupedByContainerClientViewHolder>() {
+    inner class PServeGROUPClientsAdapter(
+        private var groupByContainerClientS: List<ContainerGROUPClientEntity>
+    ) : RecyclerView.Adapter<PServeGROUPClientsAdapter.PServeGroupedByContainerClientViewHolder>() {
 /** следOK
         init {
             groupByContainerClientS.observe(viewLifecycleOwner) { groupByContainerClientEntity ->
@@ -194,7 +194,7 @@ class PServeGroupByContainersF : AFragment() {
         }
         */
 
-        fun change(groupByContainerClientS: MutableList<GroupByContainerClientEntity>) {
+        fun change(groupByContainerClientS: MutableList<ContainerGROUPClientEntity>) {
             this.groupByContainerClientS = groupByContainerClientS
             notifyDataSetChanged()
         }
@@ -237,7 +237,7 @@ class PServeGroupByContainersF : AFragment() {
 
 
         inner class PServeGroupedByContainerClientTypesAdapter(
-            private val groupByContainerClientTypeS: List<GroupByContainerTypeClientEntity>
+            private val groupByContainerClientTypeS: List<ContainerGROUPClientTypeEntity>
         ) : RecyclerView.Adapter<PServeGroupedByContainerClientTypesAdapter.PServeGroupedByContainerClientTypeViewHolder>() {
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PServeGroupedByContainerClientTypeViewHolder {
@@ -257,7 +257,7 @@ class PServeGroupByContainersF : AFragment() {
 
 
             inner class PServeGroupedByContainerClientTypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-                fun bind(groupByContainerTypeClientEntity: GroupByContainerTypeClientEntity) {
+                fun bind(containerGROUPClientTypeEntity: ContainerGROUPClientTypeEntity) {
 
                     val tvTypeName = itemView.findViewById<TextView>(R.id.container_type)
                     val bDecrease = itemView.findViewById<AppCompatButton>(R.id.button_decrease_cont)
@@ -267,23 +267,22 @@ class PServeGroupByContainersF : AFragment() {
                     val tvContSize = itemView.findViewById<TextView>(R.id.containers_size)
 
                     // TODO:::
-                    tvTypeName.text = groupByContainerTypeClientEntity.getTypetForUser()
-                    val sum = groupByContainerTypeClientEntity.getServeCNT()
+                    tvTypeName.text = containerGROUPClientTypeEntity.getTypetForUser()
+                    val sum = containerGROUPClientTypeEntity.getServeCNT()
                     tvCount.text =  sum.toString()
-                    tvContSize.text = groupByContainerTypeClientEntity.getTypeCount()
+                    tvContSize.text = containerGROUPClientTypeEntity.getTypeCount()
 
 
                     bDecrease.setOnClickListener {
-                        vm.decGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
+                        vm.decGroupByContainerTypeClientS(containerGROUPClientTypeEntity)
                     }
 
                     bIncrease.setOnClickListener {
-                        vm.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
+                        vm.incGroupByContainerTypeClientS(containerGROUPClientTypeEntity)
                     }
 
                     bAddPhoto.setOnClickListener {
-                        vm.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
-                       navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, vm.getPlatformId())
+                       navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, containerGROUPClientTypeEntity.typeId, containerGROUPClientTypeEntity.client)
                     }
                 }
             }

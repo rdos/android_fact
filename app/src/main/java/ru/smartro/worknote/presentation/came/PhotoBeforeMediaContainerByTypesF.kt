@@ -34,8 +34,13 @@ class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        vm.database.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeGroupByContainersF, mPlatformEntity?.platformId)
+        val typeId = getArgumentID()
+        val client = getArgumentName()
+        val platformId = vm.getPlatformId()
+        val groupByContainerTypeClientEntity = vm.database.loadContainerGROUPClientTypeEntity(platformId, typeId, client)
+        vm.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
+        vm.database.addBeforeMediaSimplifyServe(platformId, imageS)
+        navigateMain(R.id.PServeGroupByContainersF, platformId)
     }
 
     override fun onSavePhoto() {

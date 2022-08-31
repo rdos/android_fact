@@ -825,7 +825,7 @@ open class ContainerEntity(
 }
 
 // TODO: //ContainerGroupClient
-open class GroupByContainerClientEntity(
+open class ContainerGROUPClientEntity(
     var platformId: Int = Inull,
     var client: String? = null ,
 
@@ -854,14 +854,14 @@ open class GroupByContainerClientEntity(
 
     companion object {
         // TODO: !!!
-        fun createEmpty(): GroupByContainerClientEntity {
-            val result = GroupByContainerClientEntity(platformId = Inull, client = THIS_IS_ERROR)
+        fun createEmpty(): ContainerGROUPClientEntity {
+            val result = ContainerGROUPClientEntity(platformId = Inull, client = THIS_IS_ERROR)
             return result
         }
     }
 }
 // TODO: //GroBy
-open class GroupByContainerTypeClientEntity(
+open class ContainerGROUPClientTypeEntity(
     // TODO: //GroBy
     var platformId: Int = Inull,
     var client: String? = null,
@@ -901,8 +901,8 @@ open class GroupByContainerTypeClientEntity(
 
     companion object {
         // TODO: !!!
-        fun createEmpty(): GroupByContainerTypeClientEntity {
-            val result = GroupByContainerTypeClientEntity(platformId = Inull, client = THIS_IS_ERROR, typeName = THIS_IS_ERROR)
+        fun createEmpty(): ContainerGROUPClientTypeEntity {
+            val result = ContainerGROUPClientTypeEntity(platformId = Inull, client = THIS_IS_ERROR, typeName = THIS_IS_ERROR)
             return result
         }
     }
