@@ -78,6 +78,7 @@ open class WorkOrderEntity(
             platform.containers.forEach {
                 containersCnt++
                 val containerStatus = it.getStatusContainer()
+                LoG.info("containerStatus=${containerStatus}")
                 when(containerStatus) {
                     StatusEnum.NEW -> containersStatusNewCnt++
                     StatusEnum.SUCCESS -> containersStatusSuccessCnt++
@@ -353,22 +354,19 @@ open class PlatformEntity(
         val _afterMediaSize = this.getAfterMediaSize()
         val _failureMediaSize = this.getFailureMediaSize()
 
-        val filteredContainers = this.containers!!.filter {
+        val filteredContainers = this.containers.filter {
                 el -> el.isActiveToday
         }
 
-        val isAllError = filteredContainers.all {
+        val isAllErrorContainers = filteredContainers.all {
             it.getStatusContainer() == StatusEnum.ERROR
         }
 
-        if(isAllError)
+        if(isAllErrorContainers || _failureMediaSize > 0)
             return StatusEnum.ERROR
 
-        val isAllSuccess = filteredContainers.all {
-            it.getStatusContainer() == StatusEnum.SUCCESS
-        }
 
-        if(isAllSuccess && _afterMediaSize != 0)
+        if(_afterMediaSize != 0)
             return StatusEnum.SUCCESS
 
         val hasUnservedContainers = filteredContainers.any {
@@ -758,6 +756,9 @@ open class ContainerEntity(
             return StatusEnum.ERROR
         }
         if(this.volume != null) {
+            return StatusEnum.SUCCESS
+        }
+        if (!this.isActiveToday) {
             return StatusEnum.SUCCESS
         }
 

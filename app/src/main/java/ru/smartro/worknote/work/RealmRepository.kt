@@ -246,10 +246,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             container.volume = volume
-            if (container.getStatusContainer() == StatusEnum.NEW) {
-                container.status = StatusEnum.SUCCESS
-            }
-
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -264,10 +260,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", groupByContainerTypeClient.platformId)
                 .findFirst()
             container.volume = newVolume
-            if (container.getStatusContainer() == StatusEnum.NEW) {
-                container.status = StatusEnum.SUCCESS
-            }
-
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -315,8 +307,7 @@ class RealmRepository(private val p_realm: Realm) {
             platform.failureReasonId = problemId
 
             platform.containers.forEach { container ->
-                if (container.isActiveToday && container.getStatusContainer() != StatusEnum.SUCCESS) {
-                    container.status = StatusEnum.ERROR
+                if (container.getStatusContainer() != StatusEnum.SUCCESS) {
                     container.failureReasonId = problemId
                 }
             }
@@ -344,7 +335,6 @@ class RealmRepository(private val p_realm: Realm) {
             if (!comment.isNullOrEmpty()) {
                 containerEntity.comment = comment
             }
-            containerEntity.status = StatusEnum.ERROR
             val workOrder = getQueryWorkOrder().equalTo("id", platform.workOrderId)
                 .findFirst()
             workOrder?.calcInfoStatistics()
@@ -382,9 +372,6 @@ class RealmRepository(private val p_realm: Realm) {
                 if (container.volume == null) {
                     if (container.isActiveToday) {
                         container.volume = 1.0
-                        if (container.getStatusContainer() == StatusEnum.NEW) {
-                            container.status = StatusEnum.SUCCESS
-                        }
                     }
 
                 }
