@@ -349,39 +349,39 @@ open class PlatformEntity(
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
     fun getStatusPlatform(): String {
-
-        val _beforeMediaSize = getBeforeMediaSize()
-        val _afterMediaSize = getAfterMediaSize()
+        val _beforeMediaSize = this.getBeforeMediaSize()
+        val _afterMediaSize = this.getAfterMediaSize()
         val _failureMediaSize = this.getFailureMediaSize()
 
-        val filteredContainers = this.containers.filter {
+        val filteredContainers = this.containers!!.filter {
                 el -> el.isActiveToday
         }
 
-        val hasUnservedContainers = filteredContainers.any {
-            el -> el.getStatusContainer() == StatusEnum.NEW
+        val isAllError = filteredContainers.all {
+            it.getStatusContainer() == StatusEnum.ERROR
         }
+
+        if(isAllError)
+            return StatusEnum.ERROR
 
         val isAllSuccess = filteredContainers.all {
             it.getStatusContainer() == StatusEnum.SUCCESS
         }
 
-        val isAllError = filteredContainers.all { 
-            it.getStatusContainer() == StatusEnum.ERROR
+        if(isAllSuccess && _afterMediaSize != 0)
+            return StatusEnum.SUCCESS
+
+        val hasUnservedContainers = filteredContainers.any {
+                el -> el.getStatusContainer() == StatusEnum.NEW
         }
 
-        val result = when {
-            // todo::: vlad : тупой костыль потому что непонятно; "огонёк" приходит с бэка после переавторизации криво
-            (_failureMediaSize != 0 && this.failureReasonId != 0 && _beforeMediaSize == 0 && _afterMediaSize == 0) ||
-            // todo::: vlad : вот так просто должно остаться:  
-            isAllError -> StatusEnum.ERROR
+        if(!hasUnservedContainers && _afterMediaSize != 0)
+            return StatusEnum.PARTIAL_PROBLEMS
 
-            _beforeMediaSize != 0 && isAllSuccess && _afterMediaSize != 0 -> StatusEnum.SUCCESS
-            _beforeMediaSize != 0 && ! hasUnservedContainers && (_afterMediaSize != 0 || _failureMediaSize != 0) -> StatusEnum.PARTIAL_PROBLEMS
-            _beforeMediaSize != 0 && _afterMediaSize == 0 -> StatusEnum.UNFINISHED
-            else -> StatusEnum.NEW
-        }
-        return result
+        if(hasUnservedContainers && _beforeMediaSize != 0)
+            return StatusEnum.UNFINISHED
+
+        return StatusEnum.NEW
     }
 
     private fun isNewPlatform(): Boolean {
@@ -754,12 +754,13 @@ open class ContainerEntity(
 ) : Serializable, RealmObject() {
 
     fun getStatusContainer(): String {
-        if (this.getFailureMediaSize() > 0) {
+        if (this.failureReasonId != 0) {
             return StatusEnum.ERROR
         }
         if(this.volume != null) {
             return StatusEnum.SUCCESS
         }
+
         return StatusEnum.NEW
     }
 

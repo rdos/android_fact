@@ -100,7 +100,7 @@
             android:layout_weight="1"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_container_adapter" />
+            tools:listitem="@layout/f_pserve__rv_item" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

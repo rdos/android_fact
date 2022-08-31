@@ -21,6 +21,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.executor.GlideExecutor.UncaughtThrowableStrategy.LOG
 import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
@@ -30,6 +31,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
+import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
@@ -340,15 +342,15 @@ class PServeF :
      * **************************************VIEW MODEL
      */
 //
-   inner class PServeContainersAdapter(
+    inner class PServeContainersAdapter(
         private var containers: List<ContainerEntity>,
     ) : RecyclerView.Adapter<PServeContainersAdapter.OwnerViewHolder>() {
+
         // TODO: 22.10.2021  item_container_adapter !!!
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OwnerViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_container_adapter, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.f_pserve__rv_item, parent, false)
             return OwnerViewHolder(view)
         }
-
 
         override fun getItemCount(): Int {
             LoG.debug("${containers.size}")
@@ -358,44 +360,53 @@ class PServeF :
         override fun onBindViewHolder(holder: OwnerViewHolder, position: Int) {
             val container = containers[position]
 
-            if(container.number == null)
-                holder.itemView.findViewById<TextView>(R.id.choose_title).visibility = View.GONE
-            else
-                holder.itemView.findViewById<TextView>(R.id.choose_title).text = container.number
-
-            holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__type_name).text = container.typeName
-            // TODO: 25.10.2021 add getString() + format
-            holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__constructiveVolume).text = container.constructiveVolume.toStr("м³")
             holder.itemView.setOnClickListener {
-                LoG.debug("CONTAINER::: id: ${container.containerId}, isActive: ${container.isActiveToday}, volume: ${container.volume}")
                 if(container.isActiveToday || container.volume != null) {
                     navigateMain(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
-//                    return@setOnClickListener // не работал
                 } else {
                     showTakeInactiveContainerAlert(getAct()) {
                         navigateMain(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
                     }
                 }
-                LoG.info("onBindViewHolder: true")
             }
-            val tvVolume = holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__volume)
-            tvVolume.text =  "${container.getVolumeInPercent()}%"
-            //2&
-            tvVolume.setTextColor(container.getVolumePercentColor(holder.itemView.context))
+
+            if(container.number == null)
+                holder.actvContainerNumber.visibility = View.GONE
+            else
+                holder.actvContainerNumber.text = container.number
+
+            val containerTypeName: String =
+                if(container.typeName == null || container.typeName!!.trim().isEmpty()) {
+                    "Тип не указан"
+                } else {
+                    container.typeName!!
+                }
+
+            holder.actvTypeName.text = containerTypeName
+
+            holder.actvConstructiveVolume.text = container.constructiveVolume.toStr("м³")
+
+            holder.actvVolume.text =  "${container.getVolumeInPercent()}%"
 
             if(!container.isActiveToday && container.volume == null) {
-                holder.itemView.findViewById<TextView>(R.id.choose_title).setTextColor(ContextCompat.getColor(getAct(), R.color.light_gray))
-                holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__type_name).setTextColor(ContextCompat.getColor(getAct(), R.color.light_gray))
-                holder.itemView.findViewById<TextView>(R.id.tv_item_container_adapter__constructiveVolume).setTextColor(ContextCompat.getColor(getAct(), R.color.light_gray))
-                tvVolume.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.light_gray))
+                holder.actvContainerNumber.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.light_gray))
+                holder.actvTypeName.setTextColor(ContextCompat.getColor(getAct(), R.color.light_gray))
+                holder.actvConstructiveVolume.setTextColor(ContextCompat.getColor(getAct(), R.color.light_gray))
+                holder.actvVolume.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.light_gray))
+                return
             }
 
-            if (container.isFailureNotEmpty()) {
-                holder.itemView.findViewById<CardView>(R.id.choose_cardview).setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red_cool))
+            val containerStatus = container.getStatusContainer()
+
+            if(containerStatus == StatusEnum.ERROR) {
+                holder.actvVolume.setTextColor(Color.RED)
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red_cool))
+                return
             }
 
-            if(container.volume != null && !container.isFailureNotEmpty()) {
-                holder.itemView.findViewById<CardView>(R.id.choose_cardview).setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.green_cool))
+            if(containerStatus == StatusEnum.SUCCESS) {
+                holder.actvVolume.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorAccent))
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.green_cool))
             }
         }
 
@@ -416,7 +427,7 @@ class PServeF :
                 alertDiaLoG.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 alertDiaLoG.show()
             } catch (e: Exception) {
-                LoG.error( e.stackTraceToString())
+                LoG.error(e.stackTraceToString())
             }
         }
 
@@ -425,9 +436,12 @@ class PServeF :
             this.notifyDataSetChanged()
         }
 
-        inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-
+        inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val actvVolume = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__volume)
+            val actvContainerNumber = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__container_number)
+            val actvTypeName = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__type_name)
+            val actvConstructiveVolume = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__constructiveVolume)
+        }
     }
     interface ContainerPointClickListener {
         fun startContainerService(item: ContainerEntity)

@@ -20,8 +20,8 @@
         android:paddingTop="@dimen/margin_min"
         android:paddingBottom="@dimen/margin_min">
 
-        <TextView
-            android:id="@+id/choose_title"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/actv__f_pserve__rv_item__container_number"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -31,8 +31,8 @@
             android:textColor="@color/black"
             tools:text="11111" />
 
-        <TextView
-            android:id="@+id/tv_item_container_adapter__type_name"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/actv__f_pserve__rv_item__type_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -42,8 +42,8 @@
             android:textColor="@color/black"
             tools:text="Тип контейнера" />
 
-        <TextView
-            android:id="@+id/tv_item_container_adapter__constructiveVolume"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/actv__f_pserve__rv_item__constructiveVolume"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.4"
@@ -53,11 +53,12 @@
             android:textColor="@color/black"
             tools:text="Объём" />
 
-        <TextView
-            android:id="@+id/tv_item_container_adapter__volume"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/actv__f_pserve__rv_item__volume"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="@color/black"
             />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
