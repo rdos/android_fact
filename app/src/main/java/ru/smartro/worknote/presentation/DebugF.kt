@@ -28,6 +28,7 @@ import java.io.InputStream
 
 
 class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
+    private var acbSendLogs: AppCompatButton? = null
     private val vs: DebugViewModel by viewModels()
     override fun onGetLayout(): Int {
         return R.layout.f_debug
@@ -104,11 +105,22 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
         acibGotoBack.setOnClickListener {
             findNavController().popBackStack()
         }
-        val acbSendLogs =  view.findViewById<AppCompatButton>(R.id.acb__f_debug__send_logs)
-        acbSendLogs.setOnClickListener {
-            AppliCation().stopWorkERS()
-            shareDevInformation()
-            AppliCation().startWorkER()
+        acbSendLogs =  view.findViewById<AppCompatButton>(R.id.acb__f_debug__send_logs)
+        acbSendLogs?.setOnClickListener {
+//            SR-5236
+//            Добавить на debug-экран возможность отправить "дебаг информацию для разработчиков"
+            acbSendLogs?.isEnabled = false
+            try {
+                AppliCation().stopWorkERS()
+                shareDevInformation()
+            }
+            catch (ex: Exception) {
+                LoG.error("acbSendLogs", ex)
+            }
+            finally {
+
+            }
+
         }
         val acbOpenLogs =  view.findViewById<AppCompatButton>(R.id.acb__f_debug__open_logs)
 
@@ -154,7 +166,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
                     toast("похоже Вы разработчик")
                     lastClickTimeSec = MyUtil.timeStampInSec()
                 }
-                acbSendLogs.visibility = View.VISIBLE
+                acbSendLogs?.visibility = View.VISIBLE
                 acbOpenLogs.visibility = View.VISIBLE
                 acbOpenLogs.setOnClickListener {
 //                    openZipFiles()
@@ -211,11 +223,11 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
         val zipFiles = mutableListOf<File>()
         val saveJSONFiles = AppliCation().getD("saveJSON").listFiles()
         if (saveJSONFiles != null) {
-            zipFiles.addAll(saveJSONFiles)
+//            zipFiles.addAll(saveJSONFiles)
         }
 
         val realmFile = AppliCation().getF(D__FILES, FN__REALM)
-        zipFiles.add(realmFile)
+//        zipFiles.add(realmFile)
 
         val sharedPrefsFiles = AppliCation().getD("shared_prefs").listFiles()
         if (sharedPrefsFiles != null) {
@@ -279,5 +291,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
         //Abrindo modal de opções de compartilhamento
 
         startActivity(Intent.createChooser(intent, "Помогите нам стать лучше"))
+        acbSendLogs?.isEnabled = true
+        AppliCation().startWorkER()
     }
 }
