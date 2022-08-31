@@ -33,7 +33,10 @@
             android:name="ru.smartro.worknote.presentation.ac.MainAct"
             android:screenOrientation="portrait" />
 
-
+        <!--
+        <category android:name="android.intent.category.HOME"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        -->
         <activity  android:exported="true"
             android:name="ru.smartro.worknote.presentation.ac.StartAct"
             android:screenOrientation="portrait"
