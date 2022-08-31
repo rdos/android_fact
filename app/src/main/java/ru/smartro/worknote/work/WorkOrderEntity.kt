@@ -722,7 +722,7 @@ open class ContainerEntity(
     // TODO:::
     var failureMediaSavedSize: Int = 0,
     @SerializedName("failure_reason_id")
-    var failureReasonId: Int? = null,
+    var failureReasonId: Int = 0,
     @SerializedName("breakdown_media")
     var breakdownMedia: RealmList<ImageEntity> = RealmList(),
     // TODO:::
@@ -754,15 +754,12 @@ open class ContainerEntity(
 ) : Serializable, RealmObject() {
 
     fun getStatusContainer(): String {
-        // TODO::: Vlad: с бэка приходит failureReasonId = 0, а не null ((
-        if(this.volume != null && this.failureReasonId == 0 && this.getFailureMediaSize() == 0) {
-            return StatusEnum.SUCCESS
-        }
-
-        if(this.failureReasonId != 0 || this.getFailureMediaSize() != 0) {
+        if (this.getFailureMediaSize() > 0) {
             return StatusEnum.ERROR
         }
-
+        if(this.volume != null) {
+            return StatusEnum.SUCCESS
+        }
         return StatusEnum.NEW
     }
 
