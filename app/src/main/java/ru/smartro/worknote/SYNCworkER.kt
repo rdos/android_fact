@@ -9,12 +9,15 @@ import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import io.realm.Realm
 import kotlinx.coroutines.delay
+import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
+import java.io.File
+import java.io.FileOutputStream
 
 //private var App.LocationLAT: Double
 //    get() {
@@ -162,7 +165,9 @@ class SYNCworkER(
             platforms)
 
         info("platforms.size=${platforms.size}")
-//        saveJSON(synchronizeBody)
+        val gson = Gson()
+        val bodyInStringFormat = gson.toJson(synchronizeBody)
+        saveJSON(bodyInStringFormat, "postSynchro")
         val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
         when (synchronizeResponse.status) {
             Status.SUCCESS -> {
@@ -206,6 +211,40 @@ class SYNCworkER(
 //    protected fun log(valueName: String, value: Int) {
 //        log("${valueName}=$value")
 //    }
+
+
+    fun saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+        fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
+            var dirPath = App.getAppliCation().dataDir.absolutePath
+            if(containerUuid == null) {
+                dirPath = dirPath + File.separator + platformUuid
+            } else {
+                dirPath = dirPath + File.separator + platformUuid + File.separator + containerUuid
+            }
+
+            val file = File(dirPath)
+            if (!file.exists()) file.mkdirs()
+            return file
+        }
+        val file: File = File(getOutputDirectory("saveJSON", null), "${p_jsonName}.json")
+
+        //This point and below is responsible for the write operation
+
+        //This point and below is responsible for the write operation
+        var outputStream: FileOutputStream? = null
+        try {
+
+            file.createNewFile()
+            //second argument of FileOutputStream constructor indicates whether
+            //to append or create new file if one exists
+            outputStream = FileOutputStream(file, true)
+            outputStream.write(bodyInStringFormat.toByteArray())
+            outputStream.flush()
+            outputStream.close()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
 
     protected fun logSentry(text: String) {
         App.getAppliCation().logSentry(text)

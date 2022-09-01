@@ -15,7 +15,6 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import java.io.Serializable
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -334,7 +333,9 @@ open class PlatformEntity(
     @SerializedName("order_alert_time")
     var orderTimeAlert: String? = null,
 
-    @Expose
+
+    @SerializedName("served11Containers")
+    @Expose(serialize = false)
     var served11Containers:  String = "почему поле уходи???????????????? Expose",
     var serveModeFixCODENAME: String? = null,
 

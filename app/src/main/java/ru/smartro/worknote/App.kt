@@ -54,7 +54,7 @@ import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.work.ac.AirplanemodeIntentService
+import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat

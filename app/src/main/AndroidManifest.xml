@@ -73,18 +73,18 @@
 
         <receiver android:exported="true"
             android:enabled="true"
-            android:name=".work.ac.BootBroadcastReceiver">
+            android:name=".presentation.ac.BootBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <service
             android:directBootAware="true"
-            android:name=".work.ac.BootIntentService"
+            android:name=".presentation.ac.BootIntentService"
             android:enabled="true" />
         <service
             android:directBootAware="true"
-            android:name=".work.ac.AirplanemodeIntentService"
+            android:name=".presentation.ac.AirplanemodeIntentService"
             android:enabled="true" />
 
         <meta-data

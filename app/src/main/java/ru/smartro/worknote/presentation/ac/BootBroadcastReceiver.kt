@@ -1,11 +1,10 @@
-package ru.smartro.worknote.work.ac
+package ru.smartro.worknote.presentation.ac
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.os.UserManagerCompat
-import ru.smartro.worknote.App
 
 class BootBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
