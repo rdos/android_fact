@@ -40,6 +40,7 @@ import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
@@ -69,7 +70,9 @@ const val FN__REALM_VERSION = 1L
 const val D__LOGS = "logs"
 const val D__R_DOS = "r_dos"
 const val D__FILES = "files"
+
 class App : AApp() {
+
     companion object {
 //        internal lateinit var INSTANCE: App
 //            private set
@@ -89,6 +92,12 @@ class App : AApp() {
     private var mDB: RealmRepository? = null
     var LASTact: AAct? = null
 
+    val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        applicationScope.cancel()
+    }
 
     fun restartApp() {
         val mStartActivity = Intent(baseContext, StartAct::class.java)
@@ -188,7 +197,13 @@ class App : AApp() {
 
         LOG.info("DEBUG::: Current Realm Schema Version : ${Realm.getDefaultInstance().version}")
 
+        applicationScope.launch {
+            getNetwork().sendAppStartUp()
+        }
+
         registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
+
+
 
 // todo: https://developer.android.com/training/monitoring-device-state/connectivity-status-type
 //        val networkRequest = NetworkRequest.Builder()

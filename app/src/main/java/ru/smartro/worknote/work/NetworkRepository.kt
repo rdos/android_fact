@@ -1,15 +1,14 @@
 package ru.smartro.worknote.work
 
 import android.content.Context
+import android.os.Build
 import androidx.lifecycle.liveData
 import com.google.gson.Gson
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
-import ru.smartro.worknote.App
-import ru.smartro.worknote.LOG
-import ru.smartro.worknote.TIME_OUT
+import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
@@ -33,7 +32,6 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedRespo
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
-import ru.smartro.worknote.log
 
 
 class NetworkRepository(private val context: Context) {
@@ -329,7 +327,7 @@ class NetworkRepository(private val context: Context) {
                     Resource.success(response.body())
                 }
                 else -> {
-                    THR.BadRequestRPC(response)
+                    THR.BadRequestPing(response)
                     Resource.error("Ошибка ${response.code()}", null)
                 }
             }
@@ -339,6 +337,40 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
+
+    suspend fun sendAppStartUp(): Resource<AppStartUpResponse> {
+        val appStartUpBody = AppStartUpBody(
+            deviceId = App.getAppliCation().getDeviceId(),
+            appVersion = BuildConfig.VERSION_NAME
+        )
+
+        appStartUpBody.os = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Build.VERSION.CODENAME
+        } else {
+            Build.VERSION.SDK_INT.toString()
+        }
+
+        val rpcBody = RPCBody("app_startup", appStartUpBody)
+
+        LOG.info("RPCBODY: ${rpcBody}")
+
+        return try {
+            val response = RetrofitClient(context).testApiService().sendAppStartUp(rpcBody)
+            LOG.info("RESPONSE.isSuccessful: ${response.isSuccessful}, responseBody: ${response.body()}")
+            when {
+                response.isSuccessful -> {
+                    Resource.success(response.body()?.payload)
+                }
+                else -> {
+                    THR.BadRequestAppStartUp(response)
+                    Resource.error("Ошибка ${response.code()}", null)
+                }
+            }
+        } catch (ex: Exception) {
+//            LoG.error( ex)
+            Resource.network("Проблемы с подключением интернета", null)
+        }
+    }
 
 }
 
@@ -474,8 +506,17 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
         }
 
     }
-    class BadRequestRPC(response: Response<PingBody>) : THR(response.code()) {
+
+    class BadRequestPing(response: Response<PingBody>) : THR(response.code()) {
         
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
+    class BadRequestAppStartUp(response: Response<RPCBody<AppStartUpResponse>>) : THR(response.code()) {
+
         init {
             sentToSentry(response)
         }
