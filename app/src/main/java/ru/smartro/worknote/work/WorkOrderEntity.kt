@@ -227,7 +227,9 @@ open class StartEntity(
     ) : Serializable, RealmObject()
 
 open class KGOEntity(
+    @Expose
     var volume: Double? = null,
+    @Expose
     var media: RealmList<ImageEntity> = RealmList()
     ): Serializable, RealmObject() {
         fun isEmpty(): Boolean {
@@ -259,84 +261,105 @@ open class KGOEntity(
     }
 
 open class PlatformEntity(
+    @Expose
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,
+    @Expose
     @SerializedName("address")
     var address: String? = null,
+    @Expose
     @SerializedName("after_media")
     var afterMedia: RealmList<ImageEntity> = RealmList(),
     // TODO:::
     var afterMediaSavedSize: Int = 0,
+    @Expose
     @SerializedName("before_media")
     var beforeMedia: RealmList<ImageEntity> = RealmList(),
     // TODO:::
     var beforeMediaSavedSize: Int = 0,
+    @Expose
     @SerializedName("beginned_at")
     var beginnedAt: String? = null,
+    @Expose
     @SerializedName("updateAt")
     var updateAt: Long = 0,
+    @Expose
     @SerializedName("status")
     var status: String? = null,
+    @Expose
     @SerializedName("network_status")
     var networkStatus: Boolean = false,
+    @Expose
     @SerializedName("failure_comment")
     var failureComment: String? = null,
+    @Expose
     @SerializedName("containers")
     var containers: RealmList<ContainerEntity> = RealmList(),
+    @Expose
     @SerializedName("coords")
     var coordSOriginal: RealmList<Double> = RealmList(),
     var coordLat: Double = Dnull,
     var coordLong: Double = Dnull,
+    @Expose
+    @SerializedName("failure_reason_id")
+    var failureReasonId: Int? = null,
+    @Expose
     @SerializedName("failure_media")
     var failureMedia: RealmList<ImageEntity> = RealmList(),
     // TODO:::
     var failureMediaSavedSize: Int = 0,
-
+    @Expose
     @SerializedName("kgo_remaining")
     var kgoRemaining: KGOEntity? = null,
     // TODO:::
     var kgoRemainingMediaSavedSize: Int = 0,
-
+    @Expose
     @SerializedName("kgo_served")
     var kgoServed: KGOEntity? = null,
     // TODO:::
     var kgoServedMediaSavedSize: Int = 0,
-
+    @Expose
     @SerializedName("pickup_volume")
     var volumePickup: Double? = null,
+    @Expose
     @SerializedName("pickup_media")
     var pickupMedia: RealmList<ImageEntity> = RealmList(),
     // TODO:::
     var pickupMediaSavedSize: Int = 0,
-    @SerializedName("failure_reason_id")
-    var failureReasonId: Int? = null,
 /*    @SerializedName("breakdown_reason_id")
     var breakdownReasonId: Int? = null,*/
+    @Expose
     @SerializedName("finished_at")
     var finishedAt: String? = null,
+    @Expose
     @SerializedName("id")
 //    @PrimaryKey
     var platformId: Int = Inull,
+    @Expose
     @SerializedName("name")
     var name: String? = null,
+    @Expose
     @SerializedName("srp_id")
     var srpId: Int? = null,
+    @Expose
     @SerializedName("icon")
     var icon: String? = null,
+    @Expose
     @SerializedName("order_start_time")
     var orderTimeStart: String? = null,
+    @Expose
     @SerializedName("order_end_time")
     var orderTimeEnd: String? = null,
+    @Expose
     @SerializedName("order_warning_time")
     var orderTimeWarning: String? = null,
+    @Expose
     @SerializedName("order_alert_time")
     var orderTimeAlert: String? = null,
 
-
-    @SerializedName("served11Containers")
-    @Expose(serialize = false)
     var served11Containers:  String = "почему поле уходи???????????????? Expose",
+    @Expose
     var serveModeFixCODENAME: String? = null,
 
 ) : Serializable, RealmObject() {
@@ -714,46 +737,61 @@ open class ConfigEntity(
 }
 
 open class ContainerEntity(
+    @Expose
     var workOrderId: Int = Inull,
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,
+    @Expose
     @SerializedName("client")
     var client: String? = null,
+    @Expose
     @SerializedName("contacts")
     var contacts: String? = null,
+    @Expose
     @SerializedName("failure_media")
     var failureMedia: RealmList<ImageEntity> = RealmList(),
     // TODO:::
     var failureMediaSavedSize: Int = 0,
+    @Expose
     @SerializedName("failure_reason_id")
-    var failureReasonId: Int = 0,
+    var failureReasonId: Int? = null,
+    @Expose
     @SerializedName("breakdown_media")
     var breakdownMedia: RealmList<ImageEntity> = RealmList(),
     // TODO:::
     var breakdownMediaSavedSize: Int = 0,
+    @Expose
     @SerializedName("breakdown_reason_id")
     var breakdownReasonId: Int? = null,
+    @Expose
     @SerializedName("breakdown_comment")
     var breakdownComment: String? = null,
-/*    @SerializedName("breakdown_reason_id")
-    var breakdownReasonId: Int? = null,*/
+    @Expose
     @SerializedName("id")
 //    @PrimaryKey
     var containerId: Int? = null,
+    @Expose
     @SerializedName("constructive_volume")
     var constructiveVolume: Double? = null,
+    @Expose
     @SerializedName("type_name")
     var typeName: String? = null,
+    @Expose
     @SerializedName("is_active_today")
     var isActiveToday: Boolean = false,
+    @Expose
     @SerializedName("number")
     var number: String? = null,
+    @Expose
     @SerializedName("status")
     var status: String? = null,
+    @Expose
     @SerializedName("type_id")
     var typeId: Int? = null,
+    @Expose
     @SerializedName("volume")
     var volume: Double? = null,
+    @Expose
     @SerializedName("comment")
     var comment: String? = null,
 ) : Serializable, RealmObject() {
@@ -918,10 +956,15 @@ open class ContainerGROUPClientTypeEntity(
 
 
 open class ImageEntity(
+    @Expose
     var image: String? = null,
+    @Expose
     var date: Long? = null,
+    @Expose
     var coords: RealmList<Double> = RealmList(),
+    @Expose
     var accuracy: String? = null,
+    @Expose
     var lastKnownLocationTime: Long? =null,
 ) : Serializable, RealmObject() {
 

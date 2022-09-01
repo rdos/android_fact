@@ -1,16 +1,19 @@
 package ru.smartro.worknote.work
 
+//import ru.smartro.worknote.awORKOLDs.service.network.exception.THR
+
 import android.content.Context
 import android.os.Build
 import androidx.lifecycle.liveData
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
 import ru.smartro.worknote.*
+import ru.smartro.worknote.awORKOLDs.PostExample
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
-import ru.smartro.worknote.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.network.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
@@ -18,9 +21,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.work.net.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
-//import ru.smartro.worknote.awORKOLDs.service.network.exception.THR
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
@@ -32,6 +33,10 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedRespo
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
+import ru.smartro.worknote.work.net.CancelWayReasonEntity
+import ru.smartro.worknote.work.net.EarlyCompleteBody
+import java.io.File
+import java.io.FileOutputStream
 
 
 class NetworkRepository(private val context: Context) {
@@ -257,23 +262,84 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
+    fun saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+        fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
+            var dirPath = App.getAppliCation().dataDir.absolutePath
+            if(containerUuid == null) {
+                dirPath = dirPath + File.separator + platformUuid
+            } else {
+                dirPath = dirPath + File.separator + platformUuid + File.separator + containerUuid
+            }
+
+            val file = File(dirPath)
+            if (!file.exists()) file.mkdirs()
+            return file
+        }
+        val file: File = File(getOutputDirectory("saveJSON", null), "${p_jsonName}.json")
+        try {
+            file.delete()
+        } catch (ex: Exception) {
+            LOG.error("file.delete()", ex)
+        }
+
+        //This point and below is responsible for the write operation
+
+        //This point and below is responsible for the write operation
+        var outputStream: FileOutputStream? = null
+        try {
+
+            file.createNewFile()
+            //second argument of FileOutputStream constructor indicates whether
+            //to append or create new file if one exists
+            outputStream = FileOutputStream(file, true)
+            outputStream.write(bodyInStringFormat.toByteArray())
+            outputStream.flush()
+            outputStream.close()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
     suspend fun postSynchro(body: SynchronizeBody): Resource<SynchronizeResponse> {
         LOG.info( "synchronizeData.before")
-        return try {
-            val response = RetrofitClient(context).apiService(true).postSynchro(body)
-            when {
-                response.isSuccessful -> {
-                    Resource.success(response.body())
-                }
-                else -> {
-                    THR.BadRequestPOSTsynchro(response)
-                    Resource.error("Ошибка ${response.code()}", null)
-                }
+
+        val builder = GsonBuilder()
+        builder.excludeFieldsWithoutExposeAnnotation()
+        val gson = builder.create()
+        val bodyInStringFormat = gson.toJson(body)
+        saveJSON(bodyInStringFormat, "postSynchro2")
+
+        var result: Resource<SynchronizeResponse> = Resource.success(null)
+
+        try {
+            val example = PostExample()
+            val URL = BuildConfig.URL__SMARTRO + "fact/synchro"
+            val response = example.post(URL, bodyInStringFormat)
+            val str = "${response.body!!.string()}"
+            LOG.info("str=${str}}")
+            if (response.isSuccessful) {
+                val synchronizeResponse = gson.fromJson(str, SynchronizeResponse::class.java)
+                result = Resource.success(synchronizeResponse)
+            } else {
+                THR.BadRequestPOSTsynchroOKHTTP(response)
+                result = Resource.error("Ошибка ${response.code}", null)
             }
+
+//            val response2 = RetrofitClient(context).apiService(true).postSynchro(body)
+//            if (response2.isSuccessful) {
+////                val synchronizeResponse = gson.fromJson(response2.body(), SynchronizeResponse::class.java)
+//                Resource.success(response2)
+//            } else {
+//                THR.BadRequestPOSTsynchro(response2)
+//                Resource.error("Ошибка ${response2.code()}", null)
+//            }
+
         } catch (ex: Exception) {
             LOG.error("postSynchro", ex)
-            Resource.network("Проблемы с подключением интернета", null)
+            result = Resource.network("Проблемы с подключением интернета", null)
         }
+        LOG.info("postSynchro.result=${result.status}")
+        return result
     }
 
     fun sendLastPlatforms(body: SynchronizeBody) = liveData(Dispatchers.IO, TIME_OUT) {
@@ -412,6 +478,19 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
         }
     }
 
+    fun sentToSentryOKHTTP(response: okhttp3.Response){
+        if (response.isSuccessful) {
+            val urlName = response.request.url.encodedPath
+            Sentry.setTag("url_name", urlName)
+            Sentry.setTag("http_code", response.code.toString())
+            Sentry.setTag("url_host_name", response.request.url.host)
+
+            Sentry.setTag("user", App.getAppParaMS().userName)
+            // TODO: replace  BadRequestException for post  @POST("synchro")
+//        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
+            Sentry.captureException(this)
+        }
+    }
 
     class BadRequestLogin(response: Response<AuthResponse>) : THR(response.code()) {
         //        override val message = 70.0
@@ -509,13 +588,22 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
 
     }
 
+    class BadRequestPOSTsynchroOKHTTP(response: okhttp3.Response) : THR(response.code) {
+
+        init {
+            sentToSentryOKHTTP(response)
+        }
+
+    }
+
     class BadRequestPing(response: Response<PingBody>) : THR(response.code()) {
-        
         init {
             sentToSentry(response)
         }
 
     }
+
+
 
     class BadRequestAppStartUp(response: Response<RPCBody<AppStartUpResponse>>) : THR(response.code()) {
 

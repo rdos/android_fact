@@ -218,7 +218,7 @@ class SYNCworkER(
         when (synchronizeResponse.status) {
             Status.SUCCESS -> {
                 if (platforms.isNotEmpty()) {
-                   App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
+                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
                     LOG.error( Thread.currentThread().getId().toString())
                     db().updatePlatformNetworkStatus(platforms)
                     info("SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
@@ -276,6 +276,12 @@ class SYNCworkER(
         val file: File = File(getOutputDirectory("saveJSON", null), "${p_jsonName}.json")
 
         //This point and below is responsible for the write operation
+
+        try {
+            file.delete()
+        } catch (ex: Exception) {
+            LOG.error("file.delete()", ex)
+        }
 
         //This point and below is responsible for the write operation
         var outputStream: FileOutputStream? = null

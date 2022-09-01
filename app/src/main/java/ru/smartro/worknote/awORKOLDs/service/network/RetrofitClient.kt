@@ -1,6 +1,7 @@
 package ru.smartro.worknote.awORKOLDs.service.network
 
 import android.content.Context
+import com.google.gson.GsonBuilder
 import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -12,6 +13,7 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
 import java.util.concurrent.TimeUnit
+import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 
 class RetrofitClient(context: Context) {
     
@@ -31,7 +33,7 @@ class RetrofitClient(context: Context) {
     }
 
     private var httpLoggingInterceptor = run {
-        val httpLoggingInterceptor1 = HttpLoggingInterceptor { message -> LOG.error( message) }
+        val httpLoggingInterceptor1 = HttpLoggingInterceptor { message -> LOG.warn( message) }
         httpLoggingInterceptor1.apply {
             httpLoggingInterceptor1.level = HttpLoggingInterceptor.Level.BODY
         }
@@ -40,7 +42,7 @@ class RetrofitClient(context: Context) {
     private val client =
         OkHttpClient().newBuilder()
             .addInterceptor(authInterceptor)
-            .addInterceptor(httpLoggingInterceptor)
+//            .addInterceptor(httpLoggingInterceptor)
             .addInterceptor(SentryOkHttpInterceptor())
 //            .authenticator(TokenAuthenticator(context))
             .connectTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
@@ -56,46 +58,14 @@ class RetrofitClient(context: Context) {
             .build()
 
     fun testApiService(): ApiService {
-        return when (BuildConfig.BUILD_TYPE) {
-            "debugProd", "release" -> {
-                retrofit("https://wn-api.smartro.ru/api/").create(ApiService::class.java)
-            }
-            "debugRC" -> {
-                retrofit("https://worknote-back.rc.smartro.ru/api/").create(ApiService::class.java)
-            }
-            else -> {
-                retrofit("https://worknote-back.stage.smartro.ru/api/").create(ApiService::class.java)
-            }
-        }
+        return retrofit(BuildConfig.URL__SMARTRO).create(ApiService::class.java)
     }
 
     fun apiService(isWorkNote: Boolean): ApiService {
         // переключатель для разных API
-        when (BuildConfig.BUILD_TYPE) {
-            "debugProd" -> {
-                return if (isWorkNote)
-                    retrofit("https://wn-api.smartro.ru/api/fact/").create(ApiService::class.java)
-                else
-                    retrofit("https://auth.smartro.ru/api/").create(ApiService::class.java)
-            }
-            "release" -> {
-                return if (isWorkNote)
-                    retrofit("https://wn-api.smartro.ru/api/fact/").create(ApiService::class.java)
-                else
-                    retrofit("https://auth.smartro.ru/api/").create(ApiService::class.java)
-            }
-            "debugRC" -> {
-                return if (isWorkNote)
-                    retrofit("https://worknote-back.rc.smartro.ru/api/fact/").create(ApiService::class.java)
-                else
-                    retrofit("https://auth.rc.smartro.ru/api/").create(ApiService::class.java)
-            }
-            else -> {
-                return if (isWorkNote)
-                    retrofit("https://worknote-back.stage.smartro.ru/api/fact/").create(ApiService::class.java)
-                else
-                    retrofit("https://auth.stage.smartro.ru/api/").create(ApiService::class.java)
-            }
-        }
+        return if (isWorkNote)
+            retrofit(BuildConfig.URL__SMARTRO + "fact/").create(ApiService::class.java)
+        else
+            retrofit(BuildConfig.URL__AUTH).create(ApiService::class.java)
     }
 }

@@ -40,6 +40,7 @@ android {
         }
 
         setProperty("archivesBaseName", "Fact-" + defaultConfig.versionName + "-")
+        "https://wn-api.smartro.ru/api/fact/"
     }
 
     compileOptions {
@@ -69,6 +70,8 @@ android {
             resValue "string", "app_name", "Fact.STAGE"
             signingConfig signingConfigs.release
             debuggable true
+            buildConfigField "String", "URL__SMARTRO", "\"https://worknote-back.stage.smartro.ru/api/\""
+            buildConfigField "String", "URL__AUTH", "\"https://auth.stage.smartro.ru/api/\""
         }
 
         release {
@@ -80,6 +83,8 @@ android {
             // the Android Gradle plugin. To learn more, go to the section about
             // R8 configuration files.
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "URL__SMARTRO", "\"https://wn-api.smartro.ru/api/\""
+            buildConfigField "String", "URL__AUTH", "\"https://auth.smartro.ru/api/\""
         }
 
         debugRC {
@@ -88,11 +93,15 @@ android {
             resValue "string", "app_name", "Fact.RC"
             signingConfig signingConfigs.release
             debuggable true
+            buildConfigField "String", "URL__SMARTRO", "\"https://worknote-back.rc.smartro.ru/api/\""
+            buildConfigField "String", "URL__AUTH", "\"https://auth.rc.smartro.ru/api/\""
         }
         debugProd {
             signingConfig signingConfigs.release
             resValue "string", "app_name", "Fact"
             debuggable true
+            buildConfigField "String", "URL__SMARTRO", "\"https://wn-api.smartro.ru/api/\""
+            buildConfigField "String", "URL__AUTH", "\"https://auth.smartro.ru/api/\""
         }
     }
 
@@ -123,7 +132,8 @@ dependencies {
 //    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
 
     //Okhttp3
-    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+    implementation "com.squareup.okhttp3:okhttp:5.0.0-alpha.2"
+//    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
 
     //Kotlin Coroutines
