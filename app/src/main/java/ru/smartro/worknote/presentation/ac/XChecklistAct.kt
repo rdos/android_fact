@@ -13,7 +13,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
@@ -122,7 +122,7 @@ class XChecklistAct: AAct() {
 
         fun getOwnersList() {
             viewModelScope.launch {
-                LoG.info( "getOwners")
+                LOG.info( "getOwners")
                 val response = networkDat.getOwners()
                 try {
                     when {
@@ -146,7 +146,7 @@ class XChecklistAct: AAct() {
 
         fun getVehicleList(organisationId: Int) {
             viewModelScope.launch {
-                LoG.info( "getVehicle.before")
+                LOG.info( "getVehicle.before")
                 try {
                     val response = networkDat.getVehicle(organisationId)
                     log("getVehicle.after ${response.body().toString()}")
@@ -215,7 +215,7 @@ class XChecklistAct: AAct() {
 
         fun getWorkOrderList(orgId: Int, wayBillId: Int) {
             viewModelScope.launch {
-                LoG.info( "getWorkOder.before")
+                LOG.info( "getWorkOder.before")
                 try {
                     val response = networkDat.getWorkOrder(orgId, wayBillId)
                     mSelectedWorkOrders.postValue(mutableListOf())

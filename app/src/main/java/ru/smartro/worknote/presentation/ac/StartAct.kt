@@ -270,7 +270,7 @@ class StartAct : AAct() {
 //            window.attributes = wlp
             mInfoDialog?.show()
         } catch (ex: Exception) {
-            LoG.error("createInfoDialog", ex)
+            LOG.error("createInfoDialog", ex)
         }
         return view
     }

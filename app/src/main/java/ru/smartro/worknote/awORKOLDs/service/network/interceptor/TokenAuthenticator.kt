@@ -5,13 +5,13 @@ import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.LOG
 
 
 class TokenAuthenticator(val context: Context) : Authenticator {
     
     override fun authenticate(route: Route?, response: Response): Request? {
-        LoG.warn( "authenticate")
+        LOG.warn( "authenticate")
         //todo: add senrty exception
 //        MyUtil.logout(context)
 //        val realm = Realm.getDefaultInstance()

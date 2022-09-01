@@ -13,7 +13,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AbstractBottomSheetF
 import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_ID
@@ -148,7 +148,7 @@ class PServeContainerServeF : AbstractBottomSheetF() {
             prevRadioButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val newVolume = toPercent(radioButton.text.toString())
-            LoG.debug("newVolume=${newVolume}")
+            LOG.debug("newVolume=${newVolume}")
             this.volume = newVolume
             vm.updateContainerVolume(mContainerId, this.volume)
             when (radioButton.isChecked) {

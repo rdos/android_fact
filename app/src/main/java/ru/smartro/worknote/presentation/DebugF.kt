@@ -115,7 +115,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
                 shareDevInformation()
             }
             catch (ex: Exception) {
-                LoG.error("acbSendLogs", ex)
+                LOG.error("acbSendLogs", ex)
             }
             finally {
 

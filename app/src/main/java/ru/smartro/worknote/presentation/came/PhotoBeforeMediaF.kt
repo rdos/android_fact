@@ -36,7 +36,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
         vm.database.addBeforeMedia(mPlatformEntity.platformId, imageS)
 
         val platformServeMode = mPlatformEntity.getServeMode()
-        LoG.info("PLATFORM SERVE MODE ::: ${platformServeMode}")
+        LOG.info("PLATFORM SERVE MODE ::: ${platformServeMode}")
         if (platformServeMode != null) {
 //            // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
 ////            if mPLatformEntity.isServeModeFixPServeF

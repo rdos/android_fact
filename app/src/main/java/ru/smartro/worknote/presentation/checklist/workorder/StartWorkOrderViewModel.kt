@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.log
 import ru.smartro.worknote.saveJSON
@@ -28,7 +28,7 @@ class StartWorkOrderViewModel(app: Application) : AViewModel(app) {
 
     fun getWorkOrderList(orgId: Int, wayBillId: Int) {
         viewModelScope.launch {
-            LoG.info( "getWorkOder.before")
+            LOG.info( "getWorkOder.before")
             try {
                 val response = networkDat.getWorkOrder(orgId, wayBillId)
                 mSelectedWorkOrders.postValue(mutableListOf())

@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.andPOintD.SmartROLinearLayout
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.presentation.ac.MainAct
@@ -25,13 +24,13 @@ abstract class ANOFragment : Fragment(){
     //todo: ???onCreate
     // TODO: abstract fun onInitLayoutView(view: View): Boolean
     protected open fun onInitLayoutView(view: SmartROLinearLayout): Boolean {
-        LoG.warn(" LoG.todo()")
+        LOG.warn(" LoG.todo()")
         return true
     }
 
     // TODO:  abstract fun onBindLayoutState(): Boolean
     protected open fun onBindLayoutState(): Boolean {
-        LoG.warn(" LoG.todo()")
+        LOG.warn(" LoG.todo()")
         return false
     }
 
@@ -71,7 +70,7 @@ abstract class ANOFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        LoG.trace("onInitLayoutView")
+        LOG.trace("onInitLayoutView")
 //        onCreate()
     }
 
@@ -89,18 +88,18 @@ abstract class ANOFragment : Fragment(){
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
         navController.popBackStack(navFragmentId, false)
-       LoG.trace("navigateBack.after")
+       LOG.trace("navigateBack.after")
     }
 
 
     protected fun navigateClose() {
         log("navigateClose.before")
         getAct().finish()
-       LoG.trace("navigateClose.after")
+       LOG.trace("navigateClose.after")
     }
 
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
-       LoG.trace("navigateMain.before")
+       LOG.trace("navigateMain.before")
         log("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
@@ -144,14 +143,14 @@ abstract class ANOFragment : Fragment(){
     protected fun getArgumentID(): Int {
         log("getArgumentID.before")
         val result = requireArguments().getInt(ARGUMENT_NAME___PARAM_ID, Inull)
-       LoG.info("getArgumentID .result = ${result}")
+       LOG.info("getArgumentID .result = ${result}")
         return result
     }
 
     protected fun getArgumentName(): String? {
         log("getArgumentName.before")
         val result = requireArguments().getString(ARGUMENT_NAME___PARAM_NAME)
-       LoG.info("getArgumentName .result = ${result}")
+       LOG.info("getArgumentName .result = ${result}")
         return result
     }
 
@@ -175,7 +174,7 @@ abstract class ANOFragment : Fragment(){
     }
 
     open fun onNewGPS() {
-       LoG.warn("onNewGPS")
+       LOG.warn("onNewGPS")
 
     }
     //    companion object {

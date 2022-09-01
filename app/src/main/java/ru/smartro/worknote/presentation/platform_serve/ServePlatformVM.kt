@@ -13,7 +13,7 @@ import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.ContainerGROUPClientEntity
@@ -42,7 +42,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     fun getPlatformEntity(): PlatformEntity {
         if (mPlatformEntity == null) {
             mPlatformEntity = database.getPlatformEntity(mPlatformId)
-            LoG.trace("result=${mPlatformEntity?.platformId}")
+            LOG.trace("result=${mPlatformEntity?.platformId}")
         }
         return mPlatformEntity!!
     }
@@ -53,10 +53,10 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
             if (App.getAppliCation().isDevelMode()) {
                 throw Exception()
             } else {
-                LoG.debug(" if (result != mPlatformId)")
-                LoG.error(" if (result != mPlatformId)")
-                LoG.warn(" if (result != mPlatformId)")
-                LoG.info(" if (result != mPlatformId)")
+                LOG.debug(" if (result != mPlatformId)")
+                LOG.error(" if (result != mPlatformId)")
+                LOG.warn(" if (result != mPlatformId)")
+                LOG.info(" if (result != mPlatformId)")
             }
         }
         return mPlatformId
@@ -65,19 +65,19 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     // TODO: !!!
     fun setPlatformEntity(platformEntity: PlatformEntity) {
-        LoG.debug("before.mPlatformId=${mPlatformId}")
-        LoG.debug("before.platformEntity.platformId=${platformEntity.platformId}")
+        LOG.debug("before.mPlatformId=${mPlatformId}")
+        LOG.debug("before.platformEntity.platformId=${platformEntity.platformId}")
 
 //        mPlatformEntity = platformEntity
         if (mPlatformId == platformEntity.platformId) {
-            LoG.warn("mPlatformId == platformEntity.platformId")
+            LOG.warn("mPlatformId == platformEntity.platformId")
             return
         }
         mPlatformId = platformEntity.platformId
         mPlatformEntity = null
         mContainerGROUPClientEntity = null
         mContainerGROUPClientTypeEntity = null
-        LoG.trace("after.mPlatformId=${mPlatformId}")
+        LOG.trace("after.mPlatformId=${mPlatformId}")
     }
 
     fun getContainerS(): List<ContainerEntity> {
@@ -86,18 +86,18 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         result = result.sortedBy {
             it.isActiveToday == false
         }
-        LoG.trace("result=${result.count()}")
+        LOG.trace("result=${result.count()}")
         return result
     }
 
     fun getContainer(containerId: Int): ContainerEntity {
-        LoG.trace("containerId=${containerId}")
+        LOG.trace("containerId=${containerId}")
         var result =  this.getPlatformEntity().containers.find { it.containerId == containerId}
         if (result == null) {
            result = ContainerEntity.createEmpty()
         }
-        LoG.trace("result.isFailureNotEmpty() = ${result.isFailureNotEmpty()}")
-        LoG.debug("result = ${result.containerId}")
+        LOG.trace("result.isFailureNotEmpty() = ${result.isFailureNotEmpty()}")
+        LOG.debug("result = ${result.containerId}")
         return result
     }
 
@@ -106,14 +106,14 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         // todo:: !!!!
 //        if (mGroupByContainerClientEntity == null) {
             mContainerGROUPClientEntity = database.loadGroupByContainerClient(mPlatformId)
-            LoG.info("mGroupByContainerClientEntity START = ${mContainerGROUPClientEntity}")
+            LOG.info("mGroupByContainerClientEntity START = ${mContainerGROUPClientEntity}")
             if (mContainerGROUPClientEntity == null) {
                 database.createGroupByContainerEntityS(mPlatformId)
                 mContainerGROUPClientEntity = database.loadGroupByContainerClient(mPlatformId)
-                LoG.info("mGroupByContainerClientEntity NULL 1 = ${mContainerGROUPClientEntity}")
+                LOG.info("mGroupByContainerClientEntity NULL 1 = ${mContainerGROUPClientEntity}")
             }
             if (mContainerGROUPClientEntity == null) {
-                LoG.error("mGroupByContainerClientEntity == null")
+                LOG.error("mGroupByContainerClientEntity == null")
                 mContainerGROUPClientEntity = mutableListOf(ContainerGROUPClientEntity.createEmpty())
             }
 //        }
@@ -170,7 +170,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     // TODO: !!! ))
     fun getGroupByContainerTypeClientS(client: String?): MutableList<ContainerGROUPClientTypeEntity> {
-        LoG.debug("before, client = ${client}")
+        LOG.debug("before, client = ${client}")
         // TODO: !!!
 //        if (mGroupByContainerTypeClientEntity == null) {
             mContainerGROUPClientTypeEntity = database.loadContainerGROUPClientTypeEntityS(mPlatformId, client)
@@ -179,11 +179,11 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
                 mContainerGROUPClientTypeEntity = database.loadContainerGROUPClientTypeEntityS(mPlatformId, client)
             }
             if (mContainerGROUPClientTypeEntity == null) {
-                LoG.error("mGroupByContainerClientTypeEntity == null")
+                LOG.error("mGroupByContainerClientTypeEntity == null")
                 mContainerGROUPClientTypeEntity = mutableListOf(ContainerGROUPClientTypeEntity.createEmpty())
             }
 //        }
-        LoG.debug("mGroupByContainerClientTypeEntity = ${mContainerGROUPClientTypeEntity!!.size}")
+        LOG.debug("mGroupByContainerClientTypeEntity = ${mContainerGROUPClientTypeEntity!!.size}")
         return mContainerGROUPClientTypeEntity!!
     }
 

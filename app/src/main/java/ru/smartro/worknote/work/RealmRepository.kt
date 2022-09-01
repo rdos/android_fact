@@ -453,11 +453,11 @@ class RealmRepository(private val p_realm: Realm) {
         if (platformByCoord.size == 1) {
             res = platformByCoord[0]?.let { p_realm.copyFromRealm(it) }
             if (res != null) {
-                LoG.warn( "res.address=${res.address} ")
+                LOG.warn( "res.address=${res.address} ")
             }
         }
         if (res == null) {
-            LoG.warn( "platformByCoord.count=${platformByCoord.size} ")
+            LOG.warn( "platformByCoord.count=${platformByCoord.size} ")
         }
         return res
     }
@@ -928,12 +928,12 @@ class RealmRepository(private val p_realm: Realm) {
             val platform = platformS[idx]
             val xLat: Double = platform.coordLat + stepLat
             val yLong: Double = platform.coordLong + stepLong
-            LoG.warn( "changePlatformSCoordinate.platform.coordLat= ${platform.coordLat}.old")
-            LoG.warn( "changePlatformSCoordinate.platform.coordLong= ${platform.coordLong}.old")
+            LOG.warn( "changePlatformSCoordinate.platform.coordLat= ${platform.coordLat}.old")
+            LOG.warn( "changePlatformSCoordinate.platform.coordLong= ${platform.coordLong}.old")
             platform.coordLat = xLat
             platform.coordLong = yLong
-            LoG.warn( "changePlatformSCoordinate.platform.coordLat= ${platform.coordLat}.new")
-            LoG.warn( "changePlatformSCoordinate.platform.coordLong= ${platform.coordLong}.new")
+            LOG.warn( "changePlatformSCoordinate.platform.coordLat= ${platform.coordLat}.new")
+            LOG.warn( "changePlatformSCoordinate.platform.coordLong= ${platform.coordLong}.new")
             stepLat += LAT1M * koef
             stepLong += LONG1M * koef
         }
@@ -983,13 +983,13 @@ class RealmRepository(private val p_realm: Realm) {
                 }
 
     fun setWorkOrderIsShowForUser(workOrderS: List<WorkOrderEntity>) {
-        LoG.info( "setWorkOrderIsShowForUser.before")
+        LOG.info( "setWorkOrderIsShowForUser.before")
         p_realm.executeTransaction { realm ->
             for (workorder in workOrderS) {
                 todo_know1(workorder.id, workorder.isShowForUser)
             }
         }
-        LoG.warn( "setWorkOrderIsShowForUser.after")
+        LOG.warn( "setWorkOrderIsShowForUser.after")
 }
 
     fun setNextProcessDate(workOrder: WorkOrderEntity) {
@@ -1056,7 +1056,7 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("isWorkOrderProgress", true)
                 .equalTo("isWorkOrderComplete", false)
         }
-        LoG.trace("platformId=${platformId}")
+        LOG.trace("platformId=${platformId}")
         if (platformId == null) {
             return result
         }
@@ -1114,11 +1114,11 @@ class RealmRepository(private val p_realm: Realm) {
         var result: MutableList<ContainerGROUPClientEntity>?  = null
         val realmResult = getQueryGroupByContainerClient(platformId).findAll()
 
-        LoG.trace("realmResult=${realmResult.count()}")
+        LOG.trace("realmResult=${realmResult.count()}")
         if (realmResult.isNotEmpty()) {
             result = p_realm.copyFromRealm(realmResult)
         }
-        LoG.trace("result=${result?.count()}")
+        LOG.trace("result=${result?.count()}")
         return result
     }
 
@@ -1134,11 +1134,11 @@ class RealmRepository(private val p_realm: Realm) {
     fun loadContainerGROUPClientTypeEntityS(platformId: Int, client: String?): MutableList<ContainerGROUPClientTypeEntity>? {
         var result: MutableList<ContainerGROUPClientTypeEntity>?  = null
         val realmResult = getQueryGroupByContainerClientType(platformId).equalTo("client", client).findAll()
-        LoG.trace("realmResult=${realmResult.count()}")
+        LOG.trace("realmResult=${realmResult.count()}")
         if (realmResult.isNotEmpty()) {
             result = p_realm.copyFromRealm(realmResult)
         }
-        LoG.trace("result=${result?.count()}")
+        LOG.trace("result=${result?.count()}")
         return result
     }
 
@@ -1150,29 +1150,29 @@ class RealmRepository(private val p_realm: Realm) {
 //            return
 //        }
 
-        LoG.trace("platformId=${platformId}")
+        LOG.trace("platformId=${platformId}")
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform(platformId = platformId).findFirst()
 
             if (platformEntity == null) {
-                LoG.error("platformEntity == null")
+                LOG.error("platformEntity == null")
                 return@executeTransaction
             }
             val containerS = platformEntity.containers.filterTo(RealmList(), { it.isActiveToday })
             if (containerS.isEmpty()) {
-                LoG.error("containerSSorted.isEmpty()")
+                LOG.error("containerSSorted.isEmpty()")
                 return@executeTransaction
             }
-            LoG.debug("containerS.count = ${containerS.count()}")
+            LOG.debug("containerS.count = ${containerS.count()}")
             for(container in containerS) {
-                LoG.warn("containerSBeforeSortWith::cont.number=${container.number}" + "cont.client=${container.client}" + "cont.typeName=${container.typeName}")
+                LOG.warn("containerSBeforeSortWith::cont.number=${container.number}" + "cont.client=${container.client}" + "cont.typeName=${container.typeName}")
             }
             containerS.sortWith(compareBy({ it.client }, { it.typeName }))
             for(container in containerS) {
-                LoG.trace("containerSAfterSortWith::cont.number=${container.number}" + "cont.client=${container.client}" + "cont.typeName=${container.typeName}")
+                LOG.trace("containerSAfterSortWith::cont.number=${container.number}" + "cont.client=${container.client}" + "cont.typeName=${container.typeName}")
             }
 
-            LoG.debug("create:GroupByContainerClientEntity::before")
+            LOG.debug("create:GroupByContainerClientEntity::before")
             var clientName: String? = Snull
 
                                                                                     //            val groupByContainerClient = this.loadGroupByContainerClient(platformId)
@@ -1195,19 +1195,19 @@ class RealmRepository(private val p_realm: Realm) {
 //   todo: КТО ГДЕ КОГДА! r_dos??                    realm.insertOrUpdate(groupByContainerClientEntity)
                 clientName = cont.client
             }
-            LoG.debug("create:GroupByContainerClientEntity::after")
+            LOG.debug("create:GroupByContainerClientEntity::after")
 
             val groupByContainerClientS = getQueryGroupByContainerClient(platformId).findAll()
-            LoG.info("groupByContainerClientS.size = ${groupByContainerClientS.size}")
+            LOG.info("groupByContainerClientS.size = ${groupByContainerClientS.size}")
 
             var containerGROUPClientTypeEntity = ContainerGROUPClientTypeEntity.createEmpty()//todo:
             for(groupByContainerClient in groupByContainerClientS){
                 var typeName: String? = Snull
-                LoG.debug("groupByContainerClient.client = ${groupByContainerClient.client}")
+                LOG.debug("groupByContainerClient.client = ${groupByContainerClient.client}")
                 for(groupByContainerClientContainer in groupByContainerClient.containers){
                     if (typeName == groupByContainerClientContainer.typeName) {
-                        LoG.debug("typeName=${typeName}")
-                        LoG.debug("groupByContainerTypeClientEntity.containers.add")
+                        LOG.debug("typeName=${typeName}")
+                        LOG.debug("groupByContainerTypeClientEntity.containers.add")
                         containerGROUPClientTypeEntity.containers.add(groupByContainerClientContainer)
                         continue
                     }

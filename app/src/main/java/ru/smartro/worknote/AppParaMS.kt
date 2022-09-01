@@ -81,13 +81,13 @@ class AppParaMS {
             return devId
         }
         set(value) {
-            LoG.error( "deviceIdset(value)")
-            LoG.error( "deviceIdset(value)")
-            LoG.error( "deviceIdset(value)")
-            LoG.warn( "deviceIdset(value)")
-            LoG.error( "deviceIdset(value)")
-            LoG.error( "deviceIdset(value)")
-            LoG.error( "deviceIdset(value)")
+            LOG.error( "deviceIdset(value)")
+            LOG.error( "deviceIdset(value)")
+            LOG.error( "deviceIdset(value)")
+            LOG.warn( "deviceIdset(value)")
+            LOG.error( "deviceIdset(value)")
+            LOG.error( "deviceIdset(value)")
+            LOG.error( "deviceIdset(value)")
         }
 
 //    base = device ОКРУЖЕНИЕ...
@@ -97,7 +97,7 @@ class AppParaMS {
         val currentTimeMS = System.currentTimeMillis()
         val diff = currentTimeMS - (time?:gpsTIME)
         val res =  diff >= 30_000
-        LoG.warn( "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
+        LOG.warn( "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
         return res
     }
     fun iSoldGPSdataSaved(): Boolean {

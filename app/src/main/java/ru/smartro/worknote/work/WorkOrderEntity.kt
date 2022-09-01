@@ -77,7 +77,7 @@ open class WorkOrderEntity(
             platform.containers.forEach {
                 containersCnt++
                 val containerStatus = it.getStatusContainer()
-                LoG.info("containerStatus=${containerStatus}")
+                LOG.info("containerStatus=${containerStatus}")
                 when(containerStatus) {
                     StatusEnum.NEW -> containersStatusNewCnt++
                     StatusEnum.SUCCESS -> containersStatusSuccessCnt++
@@ -128,7 +128,7 @@ open class WorkOrderEntity(
 //                    volumeReal = it.volume
 //                    LoG.error("mapContainers.volumeReal = ${volumeReal}")
 //                }
-                LoG.info("CONTAINER MAP::: id ${it.id} status ${it.status} failureMedia ${it.failureMedia.size} failureReason ${it.failureReasonId}")
+                LOG.info("CONTAINER MAP::: id ${it.id} status ${it.status} failureMedia ${it.failureMedia.size} failureReason ${it.failureReasonId}")
 
                 ContainerEntity(
                     workOrderId = workorderId,
@@ -150,7 +150,7 @@ open class WorkOrderEntity(
 
         private fun mapPlatforms(data: List<Platform_know1>, workorderId: Int): RealmList<PlatformEntity> {
             val result = data.mapTo(RealmList()) {
-                LoG.info("PLATFORM MAP::: failureMediaSize ${it.failureMedia.size} failureReason ${it.failureReasonId}")
+                LOG.info("PLATFORM MAP::: failureMediaSize ${it.failureMedia.size} failureReason ${it.failureReasonId}")
                 val platform = PlatformEntity(
                     workOrderId = workorderId,
                     address = it.address,
@@ -213,7 +213,7 @@ open class WorkOrderEntity(
                     res.add(workOrder)
                 }
             } catch (eXthr: Exception) {
-                LoG.error("eXthr", eXthr)
+                LOG.error("eXthr", eXthr)
             }
             return res
         }
@@ -514,8 +514,8 @@ open class PlatformEntity(
             val today = getDeviceDateTime()
             val diff: Long = orderEndTime.time - today.time
             val minutes = diff / (1000 * 60)
-            LoG.warn( this.orderTimeWarning!!)
-            LoG.warn( minutes.toString())
+            LOG.warn( this.orderTimeWarning!!)
+            LOG.warn( minutes.toString())
             if (minutes < 0) {
                 result = true
             }
@@ -608,7 +608,7 @@ open class PlatformEntity(
         try {
             kgoVolumeDouble = kgoVolume.toDouble()
         } catch (ex: Exception) {
-            LoG.error("setServedKGOVolume", ex)
+            LOG.error("setServedKGOVolume", ex)
         }
         this.kgoServed?.let{
             it.volume = kgoVolumeDouble
@@ -621,7 +621,7 @@ open class PlatformEntity(
         try {
             kgoVolumeDouble = kgoVolume.toDouble()
         } catch (ex: Exception) {
-            LoG.error("ex", ex)
+            LOG.error("ex", ex)
         }
         this.kgoRemaining?.let{
             it.volume = kgoVolumeDouble
@@ -680,7 +680,8 @@ enum class ConfigName(val displayName: String) {
 
 open class ConfigEntity(
     @PrimaryKey private var name: String = Snull,
-    var value: String = Snull
+    var value: String = Snull,
+    var isShowForUser: Boolean = false
 ) : RealmObject() {
 
     fun toLong(): Long {
@@ -875,7 +876,7 @@ open class ContainerGROUPClientTypeEntity(
 ) : Serializable, RealmObject() {
     fun getTypeCount(): String {
         val result = containers.size.toString()
-        LoG.trace("result=${result}")
+        LOG.trace("result=${result}")
         return result
     }
 

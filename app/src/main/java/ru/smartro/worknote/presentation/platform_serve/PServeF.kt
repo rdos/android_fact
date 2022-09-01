@@ -17,11 +17,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.engine.executor.GlideExecutor.UncaughtThrowableStrategy.LOG
 import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
@@ -245,9 +243,9 @@ class PServeF :
 
     override fun onNewLiveData(/**platformEntity*/){
         vm.todoLiveData.observe(viewLifecycleOwner) { platformEntity ->
-            LoG.debug("onBindLayoutState")
+            LOG.debug("onBindLayoutState")
             val result = onBindLayoutState()
-            LoG.trace("onBindLayoutState.result=${result}")
+            LOG.trace("onBindLayoutState.result=${result}")
 
         }
     }
@@ -353,7 +351,7 @@ class PServeF :
         }
 
         override fun getItemCount(): Int {
-            LoG.debug("${containers.size}")
+            LOG.debug("${containers.size}")
             return containers.size
         }
 
@@ -427,7 +425,7 @@ class PServeF :
                 alertDiaLoG.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 alertDiaLoG.show()
             } catch (e: Exception) {
-                LoG.error(e.stackTraceToString())
+                LOG.error(e.stackTraceToString())
             }
         }
 

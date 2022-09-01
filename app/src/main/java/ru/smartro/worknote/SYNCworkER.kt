@@ -105,7 +105,7 @@ class SYNCworkER(
                 delay(DELAY_MS)
             } //todo: while (true) {
         } catch (eXthr: Throwable) {
-            LoG.error("", eXthr)
+            LOG.error("", eXthr)
 //            аккуратней::r_dos
             params.isModeSYNChrONize_FoundError = true
             showWorkERROR()
@@ -135,6 +135,10 @@ class SYNCworkER(
         }
 
 //        LOGafterLOG()
+    }
+
+    private suspend fun startupData() {
+
     }
 
     private suspend fun synChrONizationDATA() {
@@ -173,7 +177,7 @@ class SYNCworkER(
             Status.SUCCESS -> {
                 if (platforms.isNotEmpty()) {
                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
-                    LoG.error( Thread.currentThread().getId().toString())
+                    LOG.error( Thread.currentThread().getId().toString())
                     db().updatePlatformNetworkStatus(platforms)
                     info("SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
                 } else {
@@ -185,15 +189,15 @@ class SYNCworkER(
 //                    App.getAppliCation().showNotification(alertMsg, "Уведомление")
                 }
             }
-            Status.ERROR -> LoG.error("SYNCworkER ERROR")
+            Status.ERROR -> LOG.error("SYNCworkER ERROR")
             Status.NETWORK -> {
-                LoG.warn("SYNCworkER NO INTERNET")
+                LOG.warn("SYNCworkER NO INTERNET")
                 val configEntity = db().loadConfig(ConfigName.NOINTERNET_CNT)
                 configEntity.cntPlusOne()
                 db().saveConfig(configEntity)
             }
-            Status.ERROR -> LoG.error( "Status.ERROR")
-            Status.NETWORK -> LoG.warn( "Status.NETWORK==NO INTERNET")
+            Status.ERROR -> LOG.error( "Status.ERROR")
+            Status.NETWORK -> LOG.warn( "Status.NETWORK==NO INTERNET")
         }
         LOGafterLOG()
         

@@ -185,12 +185,12 @@ abstract class APhotoFragment(
 
     override fun onDetach() {
         super.onDetach()
-        LoG.warn( "onDetach")
+        LOG.warn( "onDetach")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LoG.info( "onDestroy")
+        LOG.info( "onDestroy")
     }
 
     fun getOutputD(): File {
@@ -204,7 +204,7 @@ abstract class APhotoFragment(
         val imageUri = outputFileResults.savedUri!!
 
         log("Photo capture succeeded: $imageUri path: ${imageUri.path}")
-        LoG.error( "Current thread: ${Thread.currentThread().id}")
+        LOG.error( "Current thread: ${Thread.currentThread().id}")
         setImageCounter()
         setGalleryThumbnail(imageUri)
 
@@ -230,19 +230,19 @@ abstract class APhotoFragment(
             outputStream.use { it ->
                 it.write(byteArray)
             }
-            LoG.warn( Thread.currentThread().name)
+            LOG.warn( Thread.currentThread().name)
 
 
             onSavePhoto()
         } catch (ex: Exception) {
-            LoG.error("onImageSaved", ex)
+            LOG.error("onImageSaved", ex)
             toast(TOAST_TEXT)
         }
     }
 
     override fun onError(exception: ImageCaptureException) {
         toast(TOAST_TEXT)
-        LoG.error("onError", exception)
+        LOG.error("onError", exception)
     }
 
 
@@ -281,8 +281,8 @@ abstract class APhotoFragment(
             }
         } catch (ex: Exception) {
             logSentry("setGalleryThumbnail и try{}catch")
-            LoG.info( "setGalleryThumbnail и try{}catch")
-            LoG.error("setGalleryThumbnail", ex)
+            LOG.info( "setGalleryThumbnail и try{}catch")
+            LOG.error("setGalleryThumbnail", ex)
         }
     }
 
@@ -321,8 +321,8 @@ abstract class APhotoFragment(
 
             } catch (ex: Exception) {
                 logSentry("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
-                LoG.info("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
-                LoG.error("setImageCounter", ex)
+                LOG.info("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
+                LOG.error("setImageCounter", ex)
             }
 
         }
@@ -437,7 +437,7 @@ abstract class APhotoFragment(
                         takePhoto()
                     } catch (ex: Exception) {
                         toast("Извините, произошла ошибка \n повторите, пожалуйста, попытку")
-                        LoG.error("ibTakePhoto?.setOnClickListener", ex)
+                        LOG.error("ibTakePhoto?.setOnClickListener", ex)
                         ibTakePhoto?.isEnabled = true
                     }
 
@@ -456,7 +456,7 @@ abstract class APhotoFragment(
                 toast("Извините, но на вашем устройстве \n отсутсвует камера")
             }
 
-            LoG.error( Thread.currentThread().name)
+            LOG.error( Thread.currentThread().name)
         }, ContextCompat.getMainExecutor(requireContext()))
 
 
@@ -522,9 +522,9 @@ abstract class APhotoFragment(
         private var mFileS: Array<File>? = null
 
         fun scan(): Boolean {
-            LoG.warn( "scan().before")
+            LOG.warn( "scan().before")
             if (mFileS == null) {
-                LoG.error( "scan(false).after mFileS == null")
+                LOG.error( "scan(false).after mFileS == null")
                 return false
             }
             if (mIdx > mFileS!!.size - 1) {
@@ -537,8 +537,8 @@ abstract class APhotoFragment(
                     log("scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
                     return false
                 }
-                LoG.warn( "onAfterUSE")
-                LoG.error( "onAfterUSE")
+                LOG.warn( "onAfterUSE")
+                LOG.error( "onAfterUSE")
                 log("onAfterUSE")
             }
 
@@ -554,9 +554,9 @@ abstract class APhotoFragment(
                 resource.compress(Bitmap.CompressFormat.WEBP, 90, baos)
             }
             val b: ByteArray = baos.toByteArray()
-            LoG.warn( "b.size=${b.size}")
+            LOG.warn( "b.size=${b.size}")
             val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
-            LoG.warn( "imageBase64=${imageBase64.length}")
+            LOG.warn( "imageBase64=${imageBase64.length}")
             val gps = App.getAppliCation().gps()
             val imageEntity = gps.inImageEntity(imageBase64)
 

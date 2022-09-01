@@ -99,9 +99,9 @@ class PServeGroupByContainersF : AFragment() {
 
     override fun onNewLiveData() {
         vm.todoLiveData.observe(viewLifecycleOwner) {
-            LoG.debug("onBindLayoutState")
+            LOG.debug("onBindLayoutState")
             val result = onBindLayoutState()
-            LoG.trace("onBindLayoutState.result=${result}")
+            LOG.trace("onBindLayoutState.result=${result}")
         }
     }
 
@@ -211,13 +211,13 @@ class PServeGroupByContainersF : AFragment() {
         }
  */
         override fun getItemCount(): Int {
-            LoG.debug("GET ITEM COUNT PSERVE GROUPED ::: ${groupByContainerClientS.size}")
+            LOG.debug("GET ITEM COUNT PSERVE GROUPED ::: ${groupByContainerClientS.size}")
             return groupByContainerClientS.size
         }
 
         override fun onBindViewHolder(holder: PServeGroupedByContainerClientViewHolder, position: Int) {
             val clientGroup = groupByContainerClientS[position]
-            LoG.debug("clientGroup = ${clientGroup} name: ${clientGroup.client}")
+            LOG.debug("clientGroup = ${clientGroup} name: ${clientGroup.client}")
 
             val rvGroupedContainers = holder.itemView.findViewById<RecyclerView>(R.id.typed_containers)
 
@@ -226,7 +226,7 @@ class PServeGroupByContainersF : AFragment() {
 
             rvGroupedContainers?.layoutManager = LinearLayoutManager(context)
             val groupByContainerClientTypeS = vm.getGroupByContainerTypeClientS(clientGroup.client)
-            LoG.debug("A groupByContainerClientTypeS=${groupByContainerClientTypeS}")
+            LOG.debug("A groupByContainerClientTypeS=${groupByContainerClientTypeS}")
             rvGroupedContainers?.adapter = PServeGroupedByContainerClientTypesAdapter(groupByContainerClientTypeS)
         }
 

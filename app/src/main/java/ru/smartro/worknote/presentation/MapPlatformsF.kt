@@ -239,10 +239,10 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
 
         }
-        LoG.warn("r_dos/onStart.before")
+        LOG.warn("r_dos/onStart.before")
         mMapMyYandex.onStart()
         MapKitFactory.getInstance().onStart()
-        LoG.warn("r_dos/onStart.after")
+        LOG.warn("r_dos/onStart.after")
         //todo:  R_dos!!! modeSyNChrON_off(false)
         paramS().isModeSYNChrONize = true
         AppliCation().startWorkER()
@@ -287,13 +287,13 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     private fun onRefreshData() {
-        LoG.warn("onRefreshData.init")
+        LOG.warn("onRefreshData.init")
         mWorkOrderS = getActualWorkOrderS(true)
         mPlatformS = getActualPlatformS(true)
         val platformSWithQueryText = onRefreshBottomBehavior(mPlatformS!!)
         onRefreshMap(platformSWithQueryText)
         setInfoData()
-        LoG.warn("onRefreshData.end")
+        LOG.warn("onRefreshData.end")
     }
 
     private fun setInfoData() {
@@ -370,7 +370,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     private fun saveFailReason() {
-        LoG.info("saveFailReason.before")
+        LOG.info("saveFailReason.before")
         viewModel.networkDat.getFailReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
@@ -548,7 +548,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
             window.attributes = wlp
         } catch (ex: Exception) {
-            LoG.error("createInfoDialog", ex)
+            LOG.error("createInfoDialog", ex)
         }
         mInfoDialog = result
         mInfoDialog?.show()
@@ -559,7 +559,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             mInfoDialog?.dismiss()
         } catch (ex: Exception) {
             // TODO: 02.11.2021
-            LoG.error("hideInfoDialog", ex)
+            LOG.error("hideInfoDialog", ex)
         }
     }
 
@@ -680,7 +680,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             }
             moveCameraTo(AppliCation().gps())
         } catch (ex: Exception) {
-            LoG.error("buildNavigator", ex)
+            LOG.error("buildNavigator", ex)
             toast(getString(R.string.error_build_way))
         }
 
@@ -792,7 +792,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         try {
             mMapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
         } catch (ex: Exception) {
-            LoG.error("onRefreshMap", ex)
+            LOG.error("onRefreshMap", ex)
             // TODO: :)!!!
             mMapObjectCollection = null
         }
@@ -818,7 +818,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             toast("Платформа не найдена")
             return false
         }
-        LoG.warn("onMapObjectTap")
+        LOG.warn("onMapObjectTap")
         val platformClickedDtlDialog = MapPlatformClickedDtlF(clickedPlatform, coord, this)
         platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
 
@@ -911,9 +911,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     override fun onResume() {
         super.onResume()
-        LoG.error("r_dos/onResume.before")
+        LOG.error("r_dos/onResume.before")
         onRefreshData()
-        LoG.error("r_dos/onResume.after")
+        LOG.error("r_dos/onResume.after")
     }
 
     override fun onStop() {

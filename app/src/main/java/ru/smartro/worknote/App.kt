@@ -35,8 +35,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.FileAppender
 import com.yandex.mapkit.MapKitFactory
-import io.realm.Realm
-import io.realm.RealmConfiguration
+import io.realm.*
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
@@ -66,6 +65,7 @@ import java.util.concurrent.TimeUnit
 // TODO: service locator паттерн альтернатива DI
 private var INSTANCE: App? = null
 const val FN__REALM = "FACT.realm"
+const val FN__REALM_VERSION = 1L
 const val D__LOGS = "logs"
 const val D__R_DOS = "r_dos"
 const val D__FILES = "files"
@@ -141,8 +141,8 @@ class App : AApp() {
         INSTANCE = this
         mSystemUncaughtHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            LoG.warn("exTHR")
-            LoG.error("exTHR", throwable)
+            LOG.warn("exTHR")
+            LOG.error("exTHR", throwable)
 //            todo: start THRActivity (oops for user)))
             mSystemUncaughtHandler?.uncaughtException(thread, throwable)
             throw throwable
@@ -169,7 +169,7 @@ class App : AApp() {
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
 
-        LoG.info("on App created App.onCreate onAppCreate")
+        LOG.info("on App created App.onCreate onAppCreate")
         sentryInit()
         RealmInit()
 //        try {    // Add a breadcrumb that will be sent with the next event(s)//            throw Exception("This is a devel.")//        } catch (e: Exception) {
@@ -185,6 +185,8 @@ class App : AApp() {
         val configEntity = getDB().loadConfig(ConfigName.RUNAPP_CNT)
         configEntity.cntPlusOne()
         getDB().saveConfig(configEntity)
+
+        LOG.info("DEBUG::: Current Realm Schema Version : ${Realm.getDefaultInstance().version}")
 
         registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
 
@@ -740,7 +742,7 @@ fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 
 
 val Any.TAG: String
     get() = "${this::class.simpleName}"
-val Any.LoG: org.slf4j.Logger
+val Any.LOG: org.slf4j.Logger
     get() = LoggerFactory.getLogger(TAG)
 
 
@@ -754,7 +756,7 @@ fun Any.LOGbefore(valueName: String? = Snull) {
 }
 
 fun Any.LOGafterLOG(result: String? = Snull) {
-    LoG.trace(":After")
+    LOG.trace(":After")
 }
 //
 //    protected fun LOGafterLOG(res: Boolean? = null) {
@@ -762,11 +764,11 @@ fun Any.LOGafterLOG(result: String? = Snull) {
 //    }
 
 fun Any.log(valueNameAndValue: String) {
-    LoG.debug(valueNameAndValue)
+    LOG.debug(valueNameAndValue)
 }
 
 fun Any.info(valueNameAndValue: String) {
-    LoG.info(valueNameAndValue)
+    LOG.info(valueNameAndValue)
 }
 //
 //    protected fun log(valueName: String, value: Int) {

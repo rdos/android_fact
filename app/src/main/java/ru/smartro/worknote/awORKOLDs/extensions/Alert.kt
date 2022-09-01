@@ -9,7 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import org.slf4j.LoggerFactory
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.AAct
@@ -94,13 +94,13 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
 
 fun AppCompatActivity.hideProgress() {
     try {
-        LoG.warn( "hideProgress")
+        LOG.warn( "hideProgress")
         if (loadingDialog?.isShowing == true) {
             loadingDialog?.dismiss()
         }
     } catch (ex: Exception) {
         // TODO: 02.11.2021
-        LoG.error("hideProgress", ex)
+        LOG.error("hideProgress", ex)
     }
 }
 

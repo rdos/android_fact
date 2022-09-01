@@ -2,11 +2,9 @@ package ru.smartro.worknote.log
 
 import android.app.Application
 import android.provider.Settings
-import org.slf4j.LoggerFactory
 import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.BuildConfig
-import ru.smartro.worknote.LoG
-import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.presentation.came.EXTENSION_WHITELIST
 import java.io.File
 import java.util.*
@@ -52,7 +50,7 @@ abstract class AApp : Application() {
         if (result == null) {
             result = emptyArray()
         }
-        LoG.info("result=${result.size}")
+        LOG.info("result=${result.size}")
         return result
     }
 
