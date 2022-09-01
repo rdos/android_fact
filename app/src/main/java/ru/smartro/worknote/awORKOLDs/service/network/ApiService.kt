@@ -23,10 +23,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedRespo
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
-import ru.smartro.worknote.work.AppStartUpBody
-import ru.smartro.worknote.work.AppStartUpResponse
-import ru.smartro.worknote.work.RPCBody
-import ru.smartro.worknote.work.WorkOrderResponse_know1
+import ru.smartro.worknote.work.*
 
 interface ApiService {
 
@@ -76,6 +73,9 @@ interface ApiService {
 
     @POST("rpc")
     suspend fun sendAppStartUp(@Body rpcBody: RPCBody<AppStartUpBody>): Response<RPCBody<AppStartUpResponse>>
+
+    @POST("rpc")
+    suspend fun sendAppEvent(@Body rpcBody: RPCBody<AppEventBody>): Response<RPCBody<AppEventResponse>>
 
     // NEXT STEP
 //    @POST("rpc")

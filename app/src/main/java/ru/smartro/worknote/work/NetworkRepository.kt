@@ -372,6 +372,8 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
+    suspend fun sendAppEvent(rpcBody: RPCBody<AppEventBody>) = RetrofitClient(context).testApiService().sendAppEvent(rpcBody)
+
 }
 
 data class Resource<out T>(val status: Status, val data: T?, val msg: String?) {
@@ -522,6 +524,15 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
         }
 
     }
+
+    class BadRequestAppEvent(response: Response<RPCBody<AppEventResponse>>) : THR(response.code()) {
+
+        init {
+            sentToSentry(response)
+        }
+
+    }
+
 //    BadRequestSynchro__o_id__w_id
     class BadRequestSynchro__o_id__w_id(response: Response<WorkOrderResponse_know1>) : THR(response.code()) {
 

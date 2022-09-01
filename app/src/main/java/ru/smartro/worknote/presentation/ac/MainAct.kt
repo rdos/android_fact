@@ -13,16 +13,14 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
-import ru.smartro.worknote.AppParaMS
+import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
-import ru.smartro.worknote.R
-import ru.smartro.worknote.TAG
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
-import ru.smartro.worknote.log
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
+import ru.smartro.worknote.work.ConfigName
 
 //todo: INDEterminate)
 class MainAct :
@@ -56,6 +54,16 @@ class MainAct :
     override fun getvgRootAct(): ViewGroup {
         val vgRootAct = (this.window.decorView.rootView   as ViewGroup)
         return vgRootAct
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LOG.info(":::MAIN_ACT_ON_PAUSE:::")
+        AppliCation().getDB().apply {
+            val config = loadConfig(ConfigName.SWIPE_CNT)
+            config.cntPlusOne()
+            saveConfig(config)
+        }
     }
 
     //todo:::

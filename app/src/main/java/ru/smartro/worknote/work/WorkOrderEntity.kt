@@ -672,6 +672,7 @@ enum class ConfigName(val displayName: String) {
     BOOT_CNT("BOOT_CNT"),
     Snull(ru.smartro.worknote.Snull),
     RUNAPP_CNT("RUNAPP_CNT"),
+    SWIPE_CNT("SWIPE_CNT"),
     AIRPLANEMODE_CNT("AIRPLANEMODE_CNT"),
     NOINTERNET_CNT("NOINTERNET_CNT"),
     MAPACTDESTROY_CNT("MAPACTDESTROY_CNT"),
@@ -681,6 +682,7 @@ enum class ConfigName(val displayName: String) {
 open class ConfigEntity(
     @PrimaryKey private var name: String = Snull,
     var value: String = Snull,
+    // true = готов к отправке, false = уже отправлен
     var isShowForUser: Boolean = false
 ) : RealmObject() {
 
@@ -693,6 +695,7 @@ open class ConfigEntity(
             this.value = "0"
         }
         this.value = (this.toLong() + 1).toString()
+        this.isShowForUser = true
     }
 
 //    @Required

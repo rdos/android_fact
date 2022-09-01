@@ -1098,6 +1098,11 @@ class RealmRepository(private val p_realm: Realm) {
         return result
     }
 
+    fun getConfigEntriesUnsend(): List<ConfigEntity> {
+        val result = p_realm.where(ConfigEntity::class.java).equalTo("isShowForUser", true).findAll()
+        return p_realm.copyFromRealm(result)
+    }
+
     fun saveConfig(configEntity: ConfigEntity) {
         p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(configEntity)

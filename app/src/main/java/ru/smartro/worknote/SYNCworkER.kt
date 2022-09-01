@@ -4,6 +4,7 @@ package ru.smartro.worknote
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
@@ -88,6 +89,7 @@ class SYNCworkER(
                 isModeSyncOldVal = params.isModeSYNChrONize
                 if (params.isModeSYNChrONize) {
                     log( "SYNCworkER RUN")
+                    sendEventData()
                     synChrONizationDATA()
                     ping()
                     if (isFirstRun) {
@@ -137,8 +139,48 @@ class SYNCworkER(
 //        LOGafterLOG()
     }
 
-    private suspend fun startupData() {
+    private suspend fun sendEventData() {
+        val configEntries = db().getConfigEntriesUnsend()
+        if(configEntries.isEmpty())
+            return
 
+        for(entry in configEntries) {
+            val event: String = when(entry.configName.displayName) {
+                "BOOT_CNT" -> "reboot"
+                "SWIPE_CNT" -> "swipe"
+                // TODO: ЧИТ, НЕМА AIRPLANE_OFF
+                "AIRPLANEMODE_CNT" -> "airplane_on"
+                "NOINTERNET_CNT" -> "lost_connection"
+                else -> continue
+            }
+
+            val appEventBody = AppEventBody(
+                deviceId = App.getAppliCation().getDeviceId(),
+                event
+            )
+
+            val rpcBody = RPCBody("app_event", appEventBody)
+
+            LOG.info("RPCBODY: ${rpcBody}")
+
+            try {
+                val response = mNetworkRepository.sendAppEvent(rpcBody)
+                LOG.info("RESPONSE.isSuccessful: ${response.isSuccessful}, responseBody: ${response.body()}, responseCode: ${response.code()}")
+                when {
+                    response.isSuccessful -> {
+                        entry.isShowForUser = false
+                        LOG.debug("entry === { event: ${entry.configName.displayName}, isShowForUser: ${entry.isShowForUser}}")
+                        db().saveConfig(entry)
+                    }
+                    else -> {
+                        THR.BadRequestAppEvent(response)
+                    }
+                }
+            } catch (ex: Exception) {
+                Toast.makeText(applicationContext, "Проблемы с подключением интернета,\nпопробуйте ещё раз", Toast.LENGTH_LONG).show()
+            }
+
+        }
     }
 
     private suspend fun synChrONizationDATA() {
@@ -196,9 +238,10 @@ class SYNCworkER(
                 configEntity.cntPlusOne()
                 db().saveConfig(configEntity)
             }
-            Status.ERROR -> LOG.error( "Status.ERROR")
-            Status.NETWORK -> LOG.warn( "Status.NETWORK==NO INTERNET")
+            Status.ERROR -> LOG.error("Status.ERROR")
+            Status.NETWORK -> LOG.warn("Status.NETWORK==NO INTERNET")
         }
+
         LOGafterLOG()
         
     }
