@@ -13,7 +13,7 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
     private var mContainerEntity: ContainerEntity? = null
     override fun onGetTextForFailHint() = "Причина поломки контейнера"
     override fun onGetStringList(): List<String>? {
-        mBreakDownReasonS = vm.database.findAllBreakDown()
+        mBreakDownReasonS = viewModel.database.findAllBreakDown()
         if (mBreakDownReasonS == null) {
             toast("Ошибка.todo:::")
             return emptyList()
@@ -38,7 +38,7 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
 
     override fun onBeforeUSE() {
         val containerId = getArgumentID()
-        mContainerEntity = vm.database.getContainerEntity(containerId)
+        mContainerEntity = viewModel.database.getContainerEntity(containerId)
         tvLabelFor(requireView())
     }
 
@@ -63,8 +63,8 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
         val containerId = mContainerEntity?.containerId!!
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
         //        val problemComment = problem_comment.text.toString()
-        vm.database.addBreakdownMediaContainer(platformId, containerId, imageS)
-        vm.updateContainerBreakDown(platformId, containerId, breakdownText!!, getCommentText())
+        viewModel.database.addBreakdownMediaContainer(platformId, containerId, imageS)
+        viewModel.updateContainerBreakDown(platformId, containerId, breakdownText!!, getCommentText())
         navigateMain(R.id.PServeF, platformId)
     }
 

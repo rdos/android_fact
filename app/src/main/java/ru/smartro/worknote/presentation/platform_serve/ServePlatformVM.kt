@@ -15,10 +15,7 @@ import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.AViewModel
-import ru.smartro.worknote.work.ContainerEntity
-import ru.smartro.worknote.work.ContainerGROUPClientEntity
-import ru.smartro.worknote.work.ContainerGROUPClientTypeEntity
-import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.*
 
 class ServePlatformVM(app: Application) : AViewModel(app) {
     private var mPlatformId: Int = Inull
@@ -226,8 +223,8 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         set_PlatformLiveData()
     }
 
-    fun updatePlatformStatusSuccess(platformId: Int) {
-        database.updatePlatformStatusSuccess(platformId)
+    fun updatePlatformStatusSuccess() {
+        database.updatePlatformStatusSuccess(this.getPlatformId())
     }
 
 
@@ -266,6 +263,21 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun updateContainerBreakDown(platformId: Int, containerId: Int, failText: String, commentText: String) {
         database.setStateBreakdownForContainer(platformId, containerId, failText, commentText)
+        set_PlatformLiveData()
+    }
+
+    fun addBeforeMedia(imageS: List<ImageEntity>) {
+        database.addBeforeMedia(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+    }
+
+    fun addAfterMedia(imageS: List<ImageEntity>) {
+        database.addAfterMedia(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+    }
+
+    fun addBeforeMediaComntainerByTypes(imageS: List<ImageEntity>) {
+        database.addBeforeMediaComntainerByTypes(this.getPlatformId(), imageS)
         set_PlatformLiveData()
     }
 }

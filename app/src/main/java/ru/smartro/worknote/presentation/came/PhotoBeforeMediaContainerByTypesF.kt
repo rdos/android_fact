@@ -11,7 +11,7 @@ import java.io.File
 class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
 
         private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+        get() =  viewModel.getPlatformEntity()
     override fun onGetTextLabelFor() = "фото контейнера до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -36,10 +36,10 @@ class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val typeId = getArgumentID()
         val client = getArgumentName()
-        val platformId = vm.getPlatformId()
-        val groupByContainerTypeClientEntity = vm.database.loadContainerGROUPClientTypeEntity(platformId, typeId, client)
-        vm.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
-        vm.database.addBeforeMediaSimplifyServe(platformId, imageS)
+        val platformId = viewModel.getPlatformId()
+        val groupByContainerTypeClientEntity = viewModel.database.loadContainerGROUPClientTypeEntity(platformId, typeId, client)
+        viewModel.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
+        viewModel.addBeforeMediaComntainerByTypes(imageS)
         navigateMain(R.id.PServeGroupByContainersF, platformId)
     }
 

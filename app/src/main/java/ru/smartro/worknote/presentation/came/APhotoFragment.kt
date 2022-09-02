@@ -73,7 +73,7 @@ abstract class APhotoFragment(
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 //  todo:!R_dos??  protected val viewModel: PlatformServeSharedViewModel by viewModel()
-    protected val vm: ServePlatformVM by activityViewModels()
+    protected val viewModel: ServePlatformVM by activityViewModels()
 
 
     protected open fun onGetTextLabelFor(): String? = null

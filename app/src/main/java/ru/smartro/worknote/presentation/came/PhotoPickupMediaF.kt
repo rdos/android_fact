@@ -8,8 +8,8 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
 
 class PhotoPickupMediaF : APhotoFragment() {
-        private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+    private val mPlatformEntity: PlatformEntity
+        get() =  viewModel.getPlatformEntity()
     override fun onGetTextLabelFor() = "фото подбора"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -35,8 +35,8 @@ class PhotoPickupMediaF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val newVolume = getArgumentName()!!.toDouble()
-        vm.database.addPlatformPickupMedia(mPlatformEntity?.platformId!!, imageS)
-        vm.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
+        viewModel.database.addPlatformPickupMedia(mPlatformEntity?.platformId!!, imageS)
+        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
     }
 
@@ -49,7 +49,7 @@ class PhotoPickupMediaF : APhotoFragment() {
 
     override fun onClickBtnCancel() {
         val newVolume = getArgumentName()!!.toDouble()
-        vm.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
+        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
     }
 

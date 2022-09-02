@@ -17,7 +17,7 @@ open class PhotoAfterMediaF : APhotoFragment() {
 
 
     private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+        get() =  viewModel.getPlatformEntity()
 
 
 
@@ -45,8 +45,8 @@ open class PhotoAfterMediaF : APhotoFragment() {
 
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        vm.database.addAfterMedia(mPlatformEntity.platformId, imageS)
-        vm.updatePlatformStatusSuccess(mPlatformEntity.platformId)
+        viewModel.addAfterMedia(imageS)
+        viewModel.updatePlatformStatusSuccess()
         navigateBack(R.id.MapF)
     }
 

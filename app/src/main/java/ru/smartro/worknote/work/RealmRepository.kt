@@ -702,7 +702,7 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun addBeforeMediaSimplifyServe(platformId: Int, imageS: List<ImageEntity>) {
+    fun addBeforeMediaComntainerByTypes(platformId: Int, imageS: List<ImageEntity>) {
         addBeforeMedia(platformId, imageS)
     }
 

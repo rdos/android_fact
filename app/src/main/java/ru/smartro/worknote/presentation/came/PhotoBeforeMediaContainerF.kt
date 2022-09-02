@@ -10,7 +10,7 @@ import java.io.File
 class PhotoBeforeMediaContainerF : APhotoFragment() {
 
         private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+        get() =  viewModel.getPlatformEntity()
 
     override fun onGetTextLabelFor() = "контейнер: фото до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
@@ -35,7 +35,7 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        vm.database.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
+        viewModel.database.addBeforeMediaComntainerByTypes(mPlatformEntity?.platformId!!, imageS)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }

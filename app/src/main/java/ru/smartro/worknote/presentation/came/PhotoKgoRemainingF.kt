@@ -9,7 +9,7 @@ import java.io.File
 
 class PhotoKgoRemainingF : APhotoFragment() {
         private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+        get() =  viewModel.getPlatformEntity()
     override fun onGetTextLabelFor() = "КГО.заказать борт"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -33,8 +33,8 @@ class PhotoKgoRemainingF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val remainingKGOVolumeText = getArgumentName()!!
-        vm.database.addPlatformKgoRemaining(mPlatformEntity?.platformId!!, imageS)
-        vm.updatePlatformKGO(mPlatformEntity?.platformId!!, remainingKGOVolumeText, isServedKGO = false)
+        viewModel.database.addPlatformKgoRemaining(mPlatformEntity?.platformId!!, imageS)
+        viewModel.updatePlatformKGO(mPlatformEntity?.platformId!!, remainingKGOVolumeText, isServedKGO = false)
         navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }

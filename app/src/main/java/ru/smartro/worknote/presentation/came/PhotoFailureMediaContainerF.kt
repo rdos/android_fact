@@ -13,7 +13,7 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
     private var mContainerEntity: ContainerEntity? = null
     override fun onGetTextForFailHint() = "Причина невывоза контейнера"
     override fun onGetStringList(): List<String>? {
-        mFailReasonS = vm.getFailReasonS()
+        mFailReasonS = viewModel.getFailReasonS()
         if (mFailReasonS == null) {
             toast("Ошибка.todo:::")
             return emptyList()
@@ -39,7 +39,7 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
 
     override fun onBeforeUSE() {
         val containerId = getArgumentID()
-        mContainerEntity = vm.database.getContainerEntity(containerId)
+        mContainerEntity = viewModel.database.getContainerEntity(containerId)
         tvLabelFor(requireView())
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
@@ -65,8 +65,8 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val platformId = getArgumentName()?.toInt()!!
         val containerId = mContainerEntity?.containerId!!
-        vm.database.addFailureMediaContainer(platformId, containerId, imageS)
-        vm.updateContainerFailure(platformId, containerId, failText!!, getCommentText())
+        viewModel.database.addFailureMediaContainer(platformId, containerId, imageS)
+        viewModel.updateContainerFailure(platformId, containerId, failText!!, getCommentText())
         navigateMain(R.id.PServeF, platformId)
     }
 

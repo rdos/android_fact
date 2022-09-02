@@ -9,7 +9,7 @@ import java.io.File
 
 class PhotoBeforeMediaF : APhotoFragment() {
         private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+        get() =  viewModel.getPlatformEntity()
 //    override fun onGetTextLabelFor() = "фото до обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         if (mPlatformEntity == null) {
@@ -33,7 +33,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
 
     //TODO: r_dos!!!
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        vm.database.addBeforeMedia(mPlatformEntity.platformId, imageS)
+        viewModel.addBeforeMedia(imageS)
 
         val platformServeMode = mPlatformEntity.getServeMode()
         LOG.info("PLATFORM SERVE MODE ::: ${platformServeMode}")
@@ -60,7 +60,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
         }
 
         // TODO: !!!
-        val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
+        val configEntity = viewModel.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
 
         if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeF) {
             navigateMain(R.id.PServeF, mPlatformEntity.platformId)

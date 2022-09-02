@@ -12,11 +12,11 @@ open class PhotoFailureMediaF : APhotoFragment() {
 
     private var mFailReasonS: List<String>? = null
     private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+        get() =  viewModel.getPlatformEntity()
 
     override fun onGetTextForFailHint() = "Причина невывоза КП"
     override fun onGetStringList(): List<String>? {
-        mFailReasonS = vm.getFailReasonS()
+        mFailReasonS = viewModel.getFailReasonS()
         if (mFailReasonS == null) {
             toast("Ошибка.todo:::")
             return emptyList()
@@ -69,10 +69,10 @@ open class PhotoFailureMediaF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
-        vm.database.addFailureMediaPlatform(mPlatformEntity?.platformId!!, imageS)
+        viewModel.database.addFailureMediaPlatform(mPlatformEntity?.platformId!!, imageS)
 //        val problemComment = problem_comment.text.toString()
 
-        vm.database.setStateFailureForPlatform(mPlatformEntity?.platformId!!, failText!!, getCommentText())
+        viewModel.database.setStateFailureForPlatform(mPlatformEntity?.platformId!!, failText!!, getCommentText())
         navigateBack(R.id.MapF)
     }
 
