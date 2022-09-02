@@ -33,6 +33,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ImageEntity
+import ru.smartro.worknote.work.MD5
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
@@ -563,6 +564,7 @@ abstract class APhotoFragment(
             imageEntity.date = imageFile.name.substring(0, imageFile.name.length - 4).toLong()
 //        imageEntity.isNoLimitPhoto = true
 //        onGetImage
+            imageEntity.md5 = MD5.calculateMD5(imageFile)!!
             return imageEntity
         }
 

@@ -974,7 +974,10 @@ open class ImageEntity(
     var accuracy: String? = null,
     @Expose
     var lastKnownLocationTime: Long? =null,
+    @Expose
+    var md5: String = Snull
 ) : Serializable, RealmObject() {
+
 
 }
 

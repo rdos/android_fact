@@ -4,6 +4,7 @@ import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
+import ru.smartro.worknote.work.MD5
 
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
