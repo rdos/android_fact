@@ -15,8 +15,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
@@ -51,6 +53,9 @@ class StartAct : AAct() {
         if (isHasToken && isHasTask) {
             hideDialog()
             hideInfoDialog()
+            vm.viewModelScope.launch {
+                App.getAppliCation().getNetwork().sendAppStartUp()
+            }
             startActivity(Intent(this, MainAct::class.java))
             finish()
             return

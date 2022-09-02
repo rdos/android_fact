@@ -193,13 +193,10 @@ class App : AApp() {
 
         val configEntity = getDB().loadConfig(ConfigName.RUNAPP_CNT)
         configEntity.cntPlusOne()
+        configEntity.setShowForUser()
         getDB().saveConfig(configEntity)
 
         LOG.info("DEBUG::: Current Realm Schema Version : ${Realm.getDefaultInstance().version}")
-
-        applicationScope.launch {
-            getNetwork().sendAppStartUp()
-        }
 
         registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
 

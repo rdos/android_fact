@@ -21,6 +21,7 @@ class AirplanemodeIntentService() : IntentService("AirplanemodeIntentService") {
         Log.w("AirplanemodeIntentService", "onHandleIntent")
         val configEntity = db.loadConfig(ConfigName.AIRPLANEMODE_CNT)
         configEntity.cntPlusOne()
+        configEntity.setShowForUser()
         db.saveConfig(configEntity)
         db.close()
 //        TODO("Not yet implemented")

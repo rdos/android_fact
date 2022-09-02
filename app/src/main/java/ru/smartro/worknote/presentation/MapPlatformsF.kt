@@ -926,6 +926,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         MapKitFactory.getInstance().onStop()
         val configEntity = viewModel.database.loadConfig(ConfigName.MAPACTDESTROY_CNT)
         configEntity.cntPlusOne()
+        configEntity.setShowForUser()
         viewModel.database.saveConfig(configEntity)
         viewModel.database.close()
     }

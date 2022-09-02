@@ -89,8 +89,8 @@ class SYNCworkER(
                 isModeSyncOldVal = params.isModeSYNChrONize
                 if (params.isModeSYNChrONize) {
                     log( "SYNCworkER RUN")
-                    sendEventData()
                     synChrONizationDATA()
+                    sendEventData()
                     ping()
                     if (isFirstRun) {
                         showWorkERNotification(true)
@@ -168,8 +168,8 @@ class SYNCworkER(
                 LOG.info("RESPONSE.isSuccessful: ${response.isSuccessful}, responseBody: ${response.body()}, responseCode: ${response.code()}")
                 when {
                     response.isSuccessful -> {
-                        entry.isShowForUser = false
-                        LOG.debug("entry === { event: ${entry.configName.displayName}, isShowForUser: ${entry.isShowForUser}}")
+                        entry.cleanShowForUser()
+                        LOG.debug("entry === { event: ${entry.configName.displayName}}")
                         db().saveConfig(entry)
                     }
                     else -> {
@@ -236,6 +236,7 @@ class SYNCworkER(
                 LOG.warn("SYNCworkER NO INTERNET")
                 val configEntity = db().loadConfig(ConfigName.NOINTERNET_CNT)
                 configEntity.cntPlusOne()
+                configEntity.setShowForUser()
                 db().saveConfig(configEntity)
             }
             Status.ERROR -> LOG.error("Status.ERROR")

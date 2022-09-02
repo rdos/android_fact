@@ -511,9 +511,7 @@ class RealmRepository(private val p_realm: Realm) {
         p_realm.executeTransaction {
             list.forEach {
                 val platform = _getPlatformEntity_know0(it.platformId!!)
-                if (platform.getStatusPlatform() != StatusEnum.NEW && !platform.networkStatus!!) {
-                    platform.networkStatus = true
-                }
+                platform.networkStatus = true
             }
         }
     }

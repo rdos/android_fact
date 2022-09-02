@@ -62,6 +62,7 @@ class MainAct :
         AppliCation().getDB().apply {
             val config = loadConfig(ConfigName.SWIPE_CNT)
             config.cntPlusOne()
+            config.setShowForUser()
             saveConfig(config)
         }
     }

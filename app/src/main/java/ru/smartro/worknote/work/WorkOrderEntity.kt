@@ -706,11 +706,20 @@ open class ConfigEntity(
     @PrimaryKey private var name: String = Snull,
     var value: String = Snull,
     // true = готов к отправке, false = уже отправлен
-    var isShowForUser: Boolean = false
+    private var isShowForUser: Boolean = false
 ) : RealmObject() {
 
     fun toLong(): Long {
         return this.value.toLong()
+    }
+
+    fun setShowForUser() {
+        this.isShowForUser = true
+    }
+
+    fun cleanShowForUser() {
+        LOG.info("before")
+        this.isShowForUser = false
     }
 
     fun cntPlusOne() {
@@ -718,7 +727,6 @@ open class ConfigEntity(
             this.value = "0"
         }
         this.value = (this.toLong() + 1).toString()
-        this.isShowForUser = true
     }
 
 //    @Required
