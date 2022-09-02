@@ -148,7 +148,7 @@ class SYNCworkER(
             val event: String = when(entry.configName.displayName) {
                 "BOOT_CNT" -> "reboot"
                 "SWIPE_CNT" -> "swipe"
-                // TODO: ЧИТ, НЕМА AIRPLANE_OFF
+                // TODO: ЧИТ,  AIRPLANE_OFF
                 "AIRPLANEMODE_CNT" -> "airplane_on"
                 "NOINTERNET_CNT" -> "lost_connection"
                 else -> continue
