@@ -25,6 +25,7 @@ import ru.smartro.worknote.work.ConfigName
 //todo: INDEterminate)
 class MainAct :
     AAct(), IActTooltip {
+    var onResumeHappened = false
     val vm: ServePlatformVM by viewModels()
 //    val mTooltipHell = MainAct.DialogHelpER(this, TAG)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,14 +57,21 @@ class MainAct :
         return vgRootAct
     }
 
+    override fun onResume() {
+        super.onResume()
+        onResumeHappened = true
+    }
+
     override fun onPause() {
         super.onPause()
-        LOG.info(":::MAIN_ACT_ON_PAUSE:::")
-        AppliCation().getDB().apply {
-            val config = loadConfig(ConfigName.SWIPE_CNT)
-            config.cntPlusOne()
-            config.setShowForUser()
-            saveConfig(config)
+        if(onResumeHappened) {
+            LOG.info("onResumeHappened")
+            AppliCation().getDB().apply {
+                val config = loadConfig(ConfigName.SWIPE_CNT)
+                config.cntPlusOne()
+                config.setShowForUser()
+                saveConfig(config)
+            }
         }
     }
 
