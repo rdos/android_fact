@@ -23,7 +23,7 @@ abstract class AApp : Application() {
     }
 
     fun getDeviceId(): String {
-//        log("${Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)}")
+//        LOG.debug("${Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)}")
         try {
             return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         } catch (ex: Throwable) {

@@ -119,7 +119,7 @@ abstract class APhotoFragment(
     //    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        log("onViewCreated")
+        LOG.debug("onViewCreated")
         mMediaPlayer = MediaPlayer.create(requireContext(), R.raw.camera_sound)
         view.findViewById<AppCompatTextView>(R.id.label_for).visibility = View.GONE
         mPreviewView = view.findViewById(R.id.view_finder)
@@ -204,7 +204,7 @@ abstract class APhotoFragment(
     override fun onImageSaved(outputFileResults: OutputFileResults) {
         val imageUri = outputFileResults.savedUri!!
 
-        log("Photo capture succeeded: $imageUri path: ${imageUri.path}")
+        LOG.debug("Photo capture succeeded: $imageUri path: ${imageUri.path}")
         LOG.error( "Current thread: ${Thread.currentThread().id}")
         setImageCounter()
         setGalleryThumbnail(imageUri)
@@ -338,7 +338,7 @@ abstract class APhotoFragment(
 
     private fun enableFlash() {
         val isEnableTorch = paramS().isTorchEnabled
-        log("enableFlash:isEnableTorch= ${isEnableTorch}")
+        LOG.debug("enableFlash:isEnableTorch= ${isEnableTorch}")
         mCameraController.enableTorch(isEnableTorch)
         mActbPhotoFlash?.isChecked = isEnableTorch
     }
@@ -361,7 +361,7 @@ abstract class APhotoFragment(
 
 
     private fun initViews(view: View) {
-        log("initViews")
+        LOG.debug("initViews")
 
         mImageCounter = view.findViewById(R.id.image_counter)
         acbCancel = view.findViewById(R.id.acb_f_aphoto__cancel)
@@ -426,7 +426,7 @@ abstract class APhotoFragment(
         ibTakePhoto = view.findViewById(R.id.ib_f_aphoto__takephoto)
         mActbPhotoFlash = view.findViewById<AppCompatToggleButton>(R.id.photo_flash)
         mCameraController.initializationFuture.addListener({
-            log("initializationFuture")
+            LOG.debug("initializationFuture")
             if (hasBackCamera()) {
                 if (hasFlashUnit()) {
                     enableFlash()
@@ -445,7 +445,7 @@ abstract class APhotoFragment(
                 }
                 mActbPhotoFlash?.setOnClickListener {
                     paramS().isTorchEnabled = mActbPhotoFlash!!.isChecked
-                    log("mActbPhotoFlash:setOnClickListener paramS().isTorchEnabled=${paramS().isTorchEnabled}")
+                    LOG.debug("mActbPhotoFlash:setOnClickListener paramS().isTorchEnabled=${paramS().isTorchEnabled}")
                     if (hasFlashUnit()) {
                         enableFlash()
                     } else {
@@ -503,9 +503,9 @@ abstract class APhotoFragment(
 
     }
     private fun restorePhotoFileS(imageS: RealmList<ImageEntity>) {
-        log("restorePhotoFileS(imageS.size=${imageS.size}) before")
+        LOG.debug("restorePhotoFileS(imageS.size=${imageS.size}) before")
         for (imageEntity in imageS) {
-            log("restorePhotoFileS(/):for(imageEntity in imageS).imageEntityID=${imageEntity.date}")
+            LOG.debug("restorePhotoFileS(/):for(imageEntity in imageS).imageEntityID=${imageEntity.date}")
             val imageInBase64 = imageEntity.image!!.replace("data:image/png;base64,", "")
             val byteArray: ByteArray =
                 Base64.decode(imageInBase64, Base64.DEFAULT)
@@ -515,7 +515,7 @@ abstract class APhotoFragment(
                 it.write(byteArray)
             }
         }
-        log("restorePhotoFileS()after")
+        LOG.debug("restorePhotoFileS()after")
     }
 
     inner class PhotoFileScanner(val Dname: String) : AbsObject(TAG, "ImageEntityScanner") {
@@ -529,21 +529,21 @@ abstract class APhotoFragment(
                 return false
             }
             if (mIdx > mFileS!!.size - 1) {
-                log("scan(false).after mIdx > mFileS!!.size")
+                LOG.debug("scan(false).after mIdx > mFileS!!.size")
                 return false
             }
             while (mFileS!![mIdx].isDirectory) {
                 mIdx++
                 if (mIdx > mFileS!!.size - 1) {
-                    log("scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
+                    LOG.debug("scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
                     return false
                 }
                 LOG.warn( "onAfterUSE")
                 LOG.error( "onAfterUSE")
-                log("onAfterUSE")
+                LOG.debug("onAfterUSE")
             }
 
-            log("scan(true).after ")
+            LOG.debug("scan(true).after ")
             return true
         }
 
@@ -644,7 +644,7 @@ orientationEventListener.enable()
 //                // Compute average luminance for the image
 //                val luma = pixels.average()
 //                // Log the new luma value
-//                log("Average luminosity: $luma")
+//                LOG.debug("Average luminosity: $luma")
 //                // Update timestamp of last analyzed frame
 //                lastAnalyzedTimestamp = currentTimestamp
 //            }

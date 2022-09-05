@@ -133,7 +133,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
             uri?.let {
                 AppliCation().stopWorkERS()
                 val zipFile = File(it.path!!)
-                log("registerForActivityResult= ${zipFile.absolutePath}")
+                LOG.debug("registerForActivityResult= ${zipFile.absolutePath}")
 //                //Media type da foto selecionada
 //                val mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(zipFile.extension)
 ////
@@ -270,8 +270,8 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener {
     open class DebugViewModel(app: Application) : AViewModel(app)
 
     override fun onScanCompleted(path: String?, uri: Uri?) {
-        log("onScanCompleted.path=${path}")
-        log("onScanCompleted.uri=${uri}")
+        LOG.debug("onScanCompleted.path=${path}")
+        LOG.debug("onScanCompleted.uri=${uri}")
         val mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("zip")
 
         val intent = Intent()

@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.log
+import ru.smartro.worknote.LOG
 
 abstract class AbstractDialog : DialogFragment() {
 
@@ -14,6 +14,6 @@ abstract class AbstractDialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        log("onViewCreated")
+        LOG.debug("onViewCreated")
     }
 }

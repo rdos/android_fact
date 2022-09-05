@@ -176,7 +176,7 @@ fun ANOFragment.warningClearNavigator(title: String): View {
 //                view.title_tv.text = title
 //                builder.setView(view)
 //                builder.setCancelable(false)
-//                showCustomDialog(builder)
+//                showCustomDiaLOG.debug(builder)
 //                return view
 //            }
 //
@@ -186,7 +186,7 @@ fun ANOFragment.warningClearNavigator(title: String): View {
 //                val view = inflater.inflate(R.layout.alert_successful_complete, null)
 //                builder.setView(view)
 //                builder.setCancelable(false)
-//                showCustomDialog(builder)
+//                showCustomDiaLOG.debug(builder)
 //                return view
 //            }
 //
@@ -196,7 +196,7 @@ fun ANOFragment.warningClearNavigator(title: String): View {
 //                val inflater = this.layoutInflater
 //                val view = inflater.inflate(R.layout.dialog_fill_kgo, null)
 //                builder.setView(view)
-//                showCustomDialog(builder)
+//                showCustomDiaLOG.debug(builder)
 //                return view
 //            }
 //
@@ -210,7 +210,7 @@ fun ANOFragment.warningClearNavigator(title: String): View {
 //                view.title_tv.text = title
 //                builder.setView(view)
 //                builder.setCancelable(false)
-//                showCustomDialog(builder)
+//                showCustomDiaLOG.debug(builder)
 //                return view
 //            }
 

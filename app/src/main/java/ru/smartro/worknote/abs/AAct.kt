@@ -54,10 +54,10 @@ abstract class AAct : AppCompatActivity() {
 
     //todo !r_dos onNEW-_Service(Srv) 
     public fun onNewGPS() {
-        LOGbefore()
+        LOG.debug("before")
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         (navHostFragment.childFragmentManager.fragments[0] as ANOFragment).onNewGPS()
-        LOGafterLOG()
+        LOG.debug("after")
     }
     // TODO: !r_dos feed(stuff)
 
@@ -81,7 +81,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        log("onCreate")
+        LOG.debug("onCreate")
     }
 
 
@@ -89,7 +89,7 @@ abstract class AAct : AppCompatActivity() {
     fun getPutExtraParam_ID(): Int {
         val res = intent.getIntExtra(PUT_EXTRA_PARAM_ID, Inull)
         if (res == Inull) {
-            log("res == Inull")
+            LOG.debug("res == Inull")
         }
         return res
     }
@@ -98,37 +98,37 @@ abstract class AAct : AppCompatActivity() {
     fun getPutExtraParam_NAME(): String {
         var res = intent.getStringExtra(PUT_EXTRA_PARAM_NAME)
         if (res.isNullOrEmpty()) {
-            log("resres.isNullOrEmpty()")
+            LOG.debug("resres.isNullOrEmpty()")
             res = Snull
         }
         return res
     }
 
     override fun onPause() {
+        LOG.debug("before")
         super.onPause()
-        log("onPause")
     }
 
     override fun onResume() {
         super.onResume()
         AppliCation().LASTact = this
-        log("onResume")
+        LOG.debug("before")
     }
 
     override fun onStart() {
         super.onStart()
-        log("onStart")
+        LOG.debug("before")
     }
 
     override fun onStop() {
         super.onStop()
-        log("onStop")
+        LOG.debug("before")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         AppliCation().LASTact = null
-        log("onDestroy")
+        LOG.debug("before")
 
     }
 

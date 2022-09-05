@@ -24,7 +24,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
-import ru.smartro.worknote.log
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.saveJSON
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.THR
@@ -149,7 +149,7 @@ class XChecklistAct: AAct() {
                 LOG.info( "getVehicle.before")
                 try {
                     val response = networkDat.getVehicle(organisationId)
-                    log("getVehicle.after ${response.body().toString()}")
+                    LOG.debug("getVehicle.after ${response.body().toString()}")
                     when {
                         response.isSuccessful -> {
                             mLastOwnerId = organisationId
@@ -161,7 +161,7 @@ class XChecklistAct: AAct() {
                         else -> {
                             THR.BadRequestVehicle(response)
                             val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                            log("getVehicle.after errorResponse=${errorResponse}")
+                            LOG.debug("getVehicle.after errorResponse=${errorResponse}")
                             _vehicleList.postValue(Resource.error("Ошибка ${response.code()}", null))
                         }
                     }
@@ -195,15 +195,15 @@ class XChecklistAct: AAct() {
                             val gson = Gson()
                             val bodyInStringFormat = gson.toJson(response.body())
                             saveJSON(bodyInStringFormat, "getWayList")
-                            log("getWayList.after ${response.body().toString()}")
+                            LOG.debug("getWayList.after ${response.body().toString()}")
                             mWayBillsViewState.postValue(ViewState.DATA())
-                            log("waybills:::: ${response.body()?.data}")
+                            LOG.debug("waybills:::: ${response.body()?.data}")
                             _wayBillList.postValue(response.body()?.data)
                         }
                         else -> {
                             THR.BadRequestWaybill(response)
                             val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                            log("getWayList.after errorResponse=${errorResponse}")
+                            LOG.debug("getWayList.after errorResponse=${errorResponse}")
                             mWayBillsViewState.postValue(ViewState.ERROR("Ошибка ${response.code()}"))
                         }
                     }
@@ -219,7 +219,7 @@ class XChecklistAct: AAct() {
                 try {
                     val response = networkDat.getWorkOrder(orgId, wayBillId)
                     mSelectedWorkOrders.postValue(mutableListOf())
-                    log("getWorkOder.after ${response.body().toString()}")
+                    LOG.debug("getWorkOder.after ${response.body().toString()}")
                     when {
                         response.isSuccessful -> {
                             mLastOwnerId = orgId

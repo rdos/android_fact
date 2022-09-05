@@ -1,8 +1,9 @@
 package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.log
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
@@ -32,7 +33,7 @@ open class PhotoFailureMediaF : APhotoFragment() {
 
     override fun onSavePhoto() {
 //        TODO("Not yet implemented")
-        log(":P:onSavePhoto")
+        LOG.debug(":P:onSavePhoto")
     }
 
     override fun onClickBtnCancel() {

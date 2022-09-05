@@ -52,7 +52,7 @@ class StartAct : AAct() {
         val isHasTask = vm.database.hasWorkOrderInProgress()
         if (isHasToken && isHasTask) {
             hideDialog()
-            hideInfoDialog()
+            hideInfoDiaLOG()
             vm.viewModelScope.launch {
                 App.getAppliCation().getNetwork().sendAppStartUp()
             }
@@ -66,17 +66,17 @@ class StartAct : AAct() {
             val inflater = LayoutInflater.from(this)
             val dialogView = inflater.inflate(R.layout.dialog___act_start, null)
             MyUtil.hideKeyboard(this)
-            createInfoDialog(dialogView).let {
+            createInfoDiaLOG(dialogView).let {
                 val btnOk = dialogView.findViewById<Button>(R.id.dialog___act_start_point__ok)
                 btnOk.setOnClickListener {
                     hideDialog()
-                    hideInfoDialog()
+                    hideInfoDiaLOG()
                     startActivity(Intent(this, MainAct::class.java))
                     finish()
                 }
                 val btnCancel = dialogView.findViewById<Button>(R.id.dialog___act_start_point__ie)
                 btnCancel.setOnClickListener {
-                    hideInfoDialog()
+                    hideInfoDiaLOG()
                     showingProgress()
                     //ниже "супер код"
                     //todo: copy-past from SYNCworkER
@@ -88,12 +88,12 @@ class StartAct : AAct() {
                     if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
                         timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
                         platforms = vm.database.findPlatforms30min()
-                        log( "SYNCworkER PLATFORMS IN LAST 30 min")
+                        LOG.debug( "SYNCworkER PLATFORMS IN LAST 30 min")
                     }
                     if (platforms.isEmpty()) {
                         timeBeforeRequest = MyUtil.timeStampInSec()
                         platforms = vm.database.findLastPlatforms()
-                        log("SYNCworkER LAST PLATFORMS")
+                        LOG.debug("SYNCworkER LAST PLATFORMS")
                     }
                     val noSentPlatformCnt = platforms.size
 
@@ -111,12 +111,12 @@ class StartAct : AAct() {
                     //todo: ))))))))))))))))))))))))))))))))))))))))))))))))))))
                     val dialogView2 = inflater.inflate(R.layout.dialog___act_start, null)
                     dialogView2.findViewById<AppCompatTextView>(R.id.dialog___act_start__dialog_string).text = dialogString
-                    createInfoDialog(dialogView2).let {
+                    createInfoDiaLOG(dialogView2).let {
                         val btnOk2 = dialogView2.findViewById<Button>(R.id.dialog___act_start_point__ie)
                         btnOk2.text = "Да, стереть и выйти"
                         btnOk2.setOnClickListener {
                             hideDialog()
-                            hideInfoDialog()
+                            hideInfoDiaLOG()
                             App.getAppParaMS().setAppRestartParams()
                             vm.database.clearDataBase()
                             startActivity(Intent(this,  XChecklistAct::class.java))
@@ -126,7 +126,7 @@ class StartAct : AAct() {
                         btnCancel2.text = "Вернуться в задание"
                         btnCancel2.setOnClickListener {
                             hideDialog()
-                            hideInfoDialog()
+                            hideInfoDiaLOG()
                             startActivity(Intent(this, MainAct::class.java))
                             finish()
                         }
@@ -136,7 +136,7 @@ class StartAct : AAct() {
             }
         } else {
             hideDialog()
-            hideInfoDialog()
+            hideInfoDiaLOG()
             startActivity(Intent(this,  XChecklistAct::class.java))
             finish()
         }
@@ -257,10 +257,10 @@ class StartAct : AAct() {
         }
     }
 
-    private fun hideInfoDialog() {
+    private fun hideInfoDiaLOG() {
         mInfoDialog?.hide()
     }
-    private fun createInfoDialog(view: View): View {
+    private fun createInfoDiaLOG(view: View): View {
 //        val dlg = AlertDialog.Builder(this, R.style.Theme_Inventory_Dialog)
         val builder = AlertDialog.Builder(this)
 
@@ -280,10 +280,10 @@ class StartAct : AAct() {
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         val isHasToken = paramS().token.isShowForUser()
-        log("isHasToken=${isHasToken}")
+        LOG.debug("isHasToken=${isHasToken}")
         if (isHasToken) {
             gotoNextAct(isHasToken = true)
         }

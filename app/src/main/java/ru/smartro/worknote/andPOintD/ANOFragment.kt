@@ -38,7 +38,7 @@ abstract class ANOFragment : Fragment(){
     fun getAct() = requireActivity() as AAct
     protected fun showingProgress(text: String? = null, isEmptyOldText: Boolean=false){
         //todo:ActAbstract
-        log("FRAG NAME: ${this::class.java.simpleName}")
+        LOG.debug("FRAG NAME: ${this::class.java.simpleName}")
         getAct().showingProgress(text, isEmptyOldText)
     }
 
@@ -62,9 +62,9 @@ abstract class ANOFragment : Fragment(){
 //        try {
 //          это провал!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //        }
-        log("onGetLayout.before")
+        LOG.debug("onGetLayout.before")
         val view = inflater.inflate(onGetLayout(), container, false)
-        log("onGetLayout.after")
+        LOG.debug("onGetLayout.after")
         return view
     }
 
@@ -75,16 +75,16 @@ abstract class ANOFragment : Fragment(){
     }
 
     protected fun navigateBack() {
-        LOGbefore()
+        LOG.debug("before")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
         navController.navigateUp()
-        LOGafterLOG()
+        LOG.debug("after")
     }
 
     protected fun navigateBack(navFragmentId: Int) {
-        log("navigateBack.before")
-        log("navigateBack .navFragmentId=${navFragmentId}")
+        LOG.debug("navigateBack.before")
+        LOG.debug("navigateBack .navFragmentId=${navFragmentId}")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
         navController.popBackStack(navFragmentId, false)
@@ -93,14 +93,14 @@ abstract class ANOFragment : Fragment(){
 
 
     protected fun navigateClose() {
-        log("navigateClose.before")
+        LOG.debug("navigateClose.before")
         getAct().finish()
        LOG.trace("navigateClose.after")
     }
 
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
        LOG.trace("navigateMain.before")
-        log("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
+        LOG.debug("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
 
@@ -141,14 +141,14 @@ abstract class ANOFragment : Fragment(){
 
 
     protected fun getArgumentID(): Int {
-        log("getArgumentID.before")
+        LOG.debug("getArgumentID.before")
         val result = requireArguments().getInt(ARGUMENT_NAME___PARAM_ID, Inull)
        LOG.info("getArgumentID .result = ${result}")
         return result
     }
 
     protected fun getArgumentName(): String? {
-        log("getArgumentName.before")
+        LOG.debug("getArgumentName.before")
         val result = requireArguments().getString(ARGUMENT_NAME___PARAM_NAME)
        LOG.info("getArgumentName .result = ${result}")
         return result
@@ -165,12 +165,12 @@ abstract class ANOFragment : Fragment(){
 
     override fun onDestroyView() {
         super.onDestroyView()
-        log("onDestroyView")
+        LOG.debug("onDestroyView")
         //  displayManager.unregisterDisplayListener(displayListener)
     }
 
     open fun onBackPressed() {
-        log("onBackPressed")
+        LOG.debug("onBackPressed")
     }
 
     open fun onNewGPS() {

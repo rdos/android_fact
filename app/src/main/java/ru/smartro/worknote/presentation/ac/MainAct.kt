@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
@@ -25,7 +24,6 @@ import ru.smartro.worknote.work.ConfigName
 //todo: INDEterminate)
 class MainAct :
     AAct(), IActTooltip {
-    var onResumeHappened = false
     val vm: ServePlatformVM by viewModels()
 //    val mTooltipHell = MainAct.DialogHelpER(this, TAG)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,22 +55,20 @@ class MainAct :
         return vgRootAct
     }
 
-    override fun onResume() {
-        super.onResume()
-        onResumeHappened = true
-    }
 
     override fun onPause() {
         super.onPause()
-        if(onResumeHappened) {
-            LOG.info("onResumeHappened")
-            AppliCation().getDB().apply {
-                val config = loadConfig(ConfigName.SWIPE_CNT)
-                config.cntPlusOne()
-                config.setShowForUser()
-                saveConfig(config)
-            }
+        LOG.info("onResumeHappened")
+        AppliCation().getDB().apply {
+            val config = loadConfig(ConfigName.SWIPE_CNT)
+            config.cntPlusOne()
+            config.setShowForUser()
+            saveConfig(config)
         }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
     }
 
     //todo:::
@@ -177,8 +173,8 @@ class MainAct :
             }
         }
         fun setNextId(smartROView: ITooltip) {
-            log("getWindow(.smartROView.getTooltipNext()=${smartROView.getTooltipNext()}")
-            log("getWindow(.smartROView.getTooltipType()=${smartROView.getTooltipType()}")
+            LOG.debug("getWindow(.smartROView.getTooltipNext()=${smartROView.getTooltipNext()}")
+            LOG.debug("getWindow(.smartROView.getTooltipType()=${smartROView.getTooltipType()}")
             setNextId(smartROView.getTooltipNext())
         }
 

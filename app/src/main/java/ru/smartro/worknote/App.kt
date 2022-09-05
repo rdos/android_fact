@@ -109,7 +109,7 @@ class App : AApp() {
     }
 
     fun gps(): PoinT {
-        log("BBBB")
+        LOG.debug("BBBB")
         var gps_enabled = false
         var network_enabled = false
         val lm = AndRoid.getService()
@@ -173,7 +173,7 @@ class App : AApp() {
 //        }
 
         logbackInit()
-        log("AAAAAAAAAAAA")
+        LOG.debug("AAAAAAAAAAAA")
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
@@ -269,36 +269,36 @@ class App : AApp() {
 
     inner class MyLocationListener() : LocationListener {
         override fun onProviderEnabled(provider: String) {
-            LOGbefore("onProviderEnabled")
-            log("provider=${provider}")
-            LOGafterLOG()
+            LOG.debug("onProviderEnabled")
+            LOG.debug("provider=${provider}")
+            LOG.debug("after")
         }
 
         override fun onProviderDisabled(provider: String) {
-            LOGbefore("onProviderDisabled")
-            log("provider=${provider}")
-            LOGafterLOG()
+            LOG.debug("onProviderDisabled")
+            LOG.debug("provider=${provider}")
+            LOG.debug("after")
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            LOGbefore("onProviderStatusChanged")
-            log("provider=${provider}, status=${status}")
-            LOGafterLOG()
+            LOG.debug("onProviderStatusChanged")
+            LOG.debug("provider=${provider}, status=${status}")
+            LOG.debug("after")
         }
 
         override fun onLocationChanged(location: Location) {
-            LOGbefore("onLocationChanged")
+            LOG.debug("onLocationChanged")
 
             val LocationACCURACY = FloatCool("LocationACCURACY", this@App)
             LocationACCURACY.setDATAing(location.accuracy)
 
 
             val LocationLAT = location.latitude
-            log("LocationLAT=${LocationLAT}")
+            LOG.debug("LocationLAT=${LocationLAT}")
             val LocationLONG = location.longitude
-            log("LocationLONG=${LocationLONG}")
+            LOG.debug("LocationLONG=${LocationLONG}")
             val LocationTIME = location.time
-            log("LocationTIME=${LocationTIME}")
+            LOG.debug("LocationTIME=${LocationTIME}")
 
             var yandexLAT: Double? = null
             var yandexLONG: Double? = null
@@ -330,18 +330,18 @@ class App : AApp() {
                         }
                     } catch (ex: Exception) {
                         logSentry("Exception!!! LASTact?.onNEWfromGPSSrv()")
-                        log("Exception!!! LASTact?.onNEWfromGPSSrv()")
+                        LOG.debug("Exception!!! LASTact?.onNEWfromGPSSrv()")
                     }
 //                }
             }
-            LOGafterLOG()
+            LOG.debug("after")
         }
 
     }
 
     override fun onTerminate() {
         super.onTerminate()
-        LOGbefore("onTerminate")
+        LOG.debug("onTerminate")
     }
     //Реплику: gjпох
     public fun getDB(): RealmRepository {
@@ -374,7 +374,7 @@ class App : AApp() {
     fun showNotification(pendingIntent: PendingIntent, contentText: String, title: String) {
         val notificationManager = NotificationManagerCompat.from(this)
         if (notificationManager.notificationChannels.size <= 0) {
-            log("showNotification.textContent={$contentText}")
+            LOG.debug("showNotification.textContent={$contentText}")
             showNotificationForce(pendingIntent, contentText, title)
         } else {
 //            logSentry("showNotification. notificationManager.notificationChannels.size = ${notificationManager.notificationChannels.size}")
@@ -383,11 +383,11 @@ class App : AApp() {
 
     fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
-        log("${text}")
+        LOG.debug("${text}")
     }
 
     fun showAlertNotification(message: String) {
-        log("showAlertNotification.textContent={$message}")
+        LOG.debug("showAlertNotification.textContent={$message}")
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID__MAP_ACT)
 
         val customView = RemoteViews(packageName, R.layout.notification_alert).apply {
@@ -418,7 +418,7 @@ class App : AApp() {
                               actionName: String? = null,
                               notifyId: Int = 1,
                               channelId: String = NOTIFICATION_CHANNEL_ID__DEFAULT){
-        log("showNotificationForce.textContent={$textContent}")
+        LOG.debug("showNotificationForce.textContent={$textContent}")
 
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channelId)
 
@@ -449,7 +449,7 @@ class App : AApp() {
             builder.setOngoing(true)
         }
         val notification: Notification = builder.build()
-        log("notifyId=${notifyId}")
+        LOG.debug("notifyId=${notifyId}")
         createNotificationChannel(channelId).notify(notifyId, notification)
     }
 
@@ -475,20 +475,20 @@ class App : AApp() {
     }
 
     fun cancelNotification(id: Int? = 1) {
-        log("cancelNotification.before")
+        LOG.debug("cancelNotification.before")
         val notificationManager = NotificationManagerCompat.from(this)
         if (id == null) {
             notificationManager.cancelAll()
-            log("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
+            LOG.debug("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
             return
         }
         notificationManager.cancel(id)
-        log("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
+        LOG.debug("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
     }
 
 
     fun startLocationService(isForceMode: Boolean=false) {
-        LOGbefore("runLocationService")
+        LOG.debug("runLocationService")
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -497,14 +497,14 @@ class App : AApp() {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            log("ActivityCompat.checkSelfPermission = true")
+            LOG.debug("ActivityCompat.checkSelfPermission = true")
             return
         }
 
 
         if(!isForceMode && getAppParaMS().isModeLOCATION) {
-            log("getAppParaMS().isModeLOCATION=true")
-            LOGafterLOG()
+            LOG.debug("getAppParaMS().isModeLOCATION=true")
+            LOG.debug("after")
             return
         }
 //todo:        getAp
@@ -527,15 +527,15 @@ class App : AApp() {
 //      .subscribeForLocationUpdates(0.0, 500, 0.0, true, FilteringMode.OFF, null)
 
         getAppParaMS().isModeLOCATION = true
-        LOGafterLOG()
+        LOG.debug("after")
     }
 
 
     fun startWorkER() {
-        LOGbefore("runSyncWorkER")
+        LOG.debug("runSyncWorkER")
         if(getAppParaMS().isModeWorkER) {
-            log("getAppParaMS().isModeWorkER=true")
-            LOGafterLOG()
+            LOG.debug("getAppParaMS().isModeWorkER=true")
+            LOG.debug("after")
             return
         }
 //todo:        getAppParaMS().isModeWorkER = true
@@ -543,13 +543,13 @@ class App : AApp() {
 
         val uploadDataWorkManager = PeriodicWorkRequestBuilder<SYNCworkER>(1, TimeUnit.MINUTES).build()
 //        uploadDataWorkManager.id = UUID
-        log("uploadDataWorkManager.id = ${uploadDataWorkManager.id}")
+        LOG.debug("uploadDataWorkManager.id = ${uploadDataWorkManager.id}")
         val operation =  WorkManager.getInstance(getAppliCation())
             .enqueueUniquePeriodicWork("SYNCworkER", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
 
         // TODO: THIS!!! after(isModeWorkER)
 
-        LOGafterLOG()
+        LOG.debug("after")
     }
 
     fun stopWorkERS() {
@@ -613,7 +613,7 @@ class App : AApp() {
                 if (intent?.action == Intent.ACTION_AIRPLANE_MODE_CHANGED) {
                     val isAirplaneModeEnabled = intent.getBooleanExtra("state", false)
 //                    textView.text = isAirplaneModeEnabled.toString()
-                    log("isAirplaneModeEnabled=${isAirplaneModeEnabled}")
+                    LOG.debug("isAirplaneModeEnabled=${isAirplaneModeEnabled}")
                     if (isAirplaneModeEnabled) {
                         val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
                         context.startService(serviceIntent)
@@ -762,43 +762,24 @@ fun Any.getLogger(): org.slf4j.Logger {
    return LoggerFactory.getLogger( "${this::class.simpleName}")
 }
 
-fun Any.LOGbefore(valueName: String? = Snull) {
-//todo:???        AppliCation().LOGbefore(valueName)
-    log(":Before")
-}
 
-fun Any.LOGafterLOG(result: String? = Snull) {
-    LOG.trace(":After")
-}
 //
-//    protected fun LOGafterLOG(res: Boolean? = null) {
-//        logAfterResult(res.toStr())
-//    }
-
-fun Any.log(valueNameAndValue: String) {
-    LOG.debug(valueNameAndValue)
-}
-
-fun Any.info(valueNameAndValue: String) {
-    LOG.info(valueNameAndValue)
-}
-//
-//    protected fun log(valueName: String, value: Int) {
-//        log("${valueName}=$value\"")
+//    protected fun LOG.debug(valueName: String, value: Int) {
+//        LOG.debug("${valueName}=$value\"")
 //    }
 
 fun  Any.LOGinCYCLEStart(s: String) {
 //        mMethodName?.let {
-//            log("${mMethodName}.CYCLes.${s}")
+//            LOG.debug("${mMethodName}.CYCLes.${s}")
 //            return@INcyclEStart
 //        }
-    log("CYCLes.${s}")
+    LOG.debug("CYCLes.${s}")
 }
 
 fun  Any.LOGINcyclEStop() {
 //        mMethodName?.let {
-//            log("${mMethodName}.************-_(:;)")
+//            LOG.debug("${mMethodName}.************-_(:;)")
 //            return@INcyclEStop
 //        }
-    log(".************-_(:;)")
+    LOG.debug(".************-_(:;)")
 }

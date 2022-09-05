@@ -5,7 +5,6 @@ import android.view.View
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.SmartROLinearLayout
-import ru.smartro.worknote.log
 
 
 abstract class AFragment : ANOFragment(){
@@ -21,9 +20,9 @@ abstract class AFragment : ANOFragment(){
         }
         onNewLiveData() //todo:r_dos!!!
         if (savedInstanceState == null) {
-            log("savedInstanceState == null")
+            LOG.debug("savedInstanceState == null")
         } else {
-            log("savedInstanceState HE null")
+            LOG.debug("savedInstanceState HE null")
         }
 
 //        onCreate()

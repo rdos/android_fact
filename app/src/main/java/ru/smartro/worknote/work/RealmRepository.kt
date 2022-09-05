@@ -177,15 +177,15 @@ class RealmRepository(private val p_realm: Realm) {
     // TODO: 26.10.2021 oopS errorS "${entities.size}"
     //  так надо чтобы возможно поймать плавающую ошибку :(
     fun insertFailReason(entities: List<FailReasonEntity>) {
-        log("insertFailReason.before ${entities.size}")
+        LOG.debug("insertFailReason.before ${entities.size}")
         p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }
-        log("insertFailReason.after")
+        LOG.debug("insertFailReason.after")
     }
 
     fun insertCancelWayReason(entities: List<CancelWayReasonEntity>) {
-        log("insertCancelWayReason.before  ${entities.size}")
+        LOG.debug("insertCancelWayReason.before  ${entities.size}")
         p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }
@@ -330,7 +330,7 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("containerId", containerId)
                 .findFirst()!!
             val problemId = findFailReasonByValue(realm, problem).id
-            log("FIND CONTAINER NUMBER ${containerId}  problem: ${problemId}")
+            LOG.debug("FIND CONTAINER NUMBER ${containerId}  problem: ${problemId}")
             containerEntity.failureReasonId = problemId
             if (!comment.isNullOrEmpty()) {
                 containerEntity.comment = comment
@@ -351,7 +351,7 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("containerId", containerId)
                 .findFirst()!!
             val problemId = findBreakdownByValue(realm, problem).id
-            log("FIND CONTAINER NUMBER ${containerId} problem: ${problem} problemid: ${problemId}")
+            LOG.debug("FIND CONTAINER NUMBER ${containerId} problem: ${problem} problemid: ${problemId}")
             containerEntity.breakdownReasonId = problemId
             if (!comment.isNullOrEmpty()) {
                 containerEntity.comment = comment
@@ -533,7 +533,7 @@ class RealmRepository(private val p_realm: Realm) {
     fun findContainersVolume(workOrderId: Int): Double {
         var totalKgoVolume = 0.0
         var totalContainersVolume = 0.0
-        log("findContainersVolume.before")
+        LOG.debug("findContainersVolume.before")
 
 
         val allContainers = p_realm.copyFromRealm(
@@ -541,16 +541,16 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("workOrderId", workOrderId)
                 .findAll()
         )
-        log("findContainersVolume.totalContainersVolume=${totalContainersVolume}")
+        LOG.debug("findContainersVolume.totalContainersVolume=${totalContainersVolume}")
         allContainers.forEach { container ->
             container.volume?.let{
                 val filledVolume = container.constructiveVolume!! * (container.convertVolumeToPercent() / 100)
-                log("findContainersVolume.filledVolume=${filledVolume}")
+                LOG.debug("findContainersVolume.filledVolume=${filledVolume}")
                 totalContainersVolume += filledVolume
-                log("findContainersVolume.totalContainersVolume=${totalContainersVolume}")
+                LOG.debug("findContainersVolume.totalContainersVolume=${totalContainersVolume}")
             }
         }
-        log("findContainersVolume.totalContainersVolume=${totalContainersVolume}")
+        LOG.debug("findContainersVolume.totalContainersVolume=${totalContainersVolume}")
 
         val allPlatforms = p_realm.copyFromRealm(
             getQueryPlatform()
@@ -568,12 +568,12 @@ class RealmRepository(private val p_realm: Realm) {
                 totalKgoVolume += it
             } //код всегда показывает, где(когда) Люди ошиблись
         }
-        log("findContainersVolume.totalKgoVolume=${totalKgoVolume}")
+        LOG.debug("findContainersVolume.totalKgoVolume=${totalKgoVolume}")
 
         val result = totalContainersVolume + totalKgoVolume
-        log("findContainersVolume.result=${result}")
+        LOG.debug("findContainersVolume.result=${result}")
         val resultRound = round(result * 100) / 100
-        log("findContainersVolume.resultRound=${resultRound}")
+        LOG.debug("findContainersVolume.resultRound=${resultRound}")
         return resultRound
     }
 
@@ -1041,7 +1041,7 @@ class RealmRepository(private val p_realm: Realm) {
                 res = false
             }
         }
-        log("hasWorkOrderInProgress.${res}")
+        LOG.debug("hasWorkOrderInProgress.${res}")
         return res
     }
 

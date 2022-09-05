@@ -9,7 +9,7 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_NAME
-import ru.smartro.worknote.log
+import ru.smartro.worknote.LOG
 
 abstract class AbstractBottomSheetF : BottomSheetDialogFragment() {
     
@@ -26,7 +26,7 @@ abstract class AbstractBottomSheetF : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        log("onViewCreated")
+        LOG.debug("onViewCreated")
 
     }
 
