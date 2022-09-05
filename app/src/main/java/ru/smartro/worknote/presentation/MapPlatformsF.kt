@@ -252,12 +252,8 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         // TODO::
         val lottie = view.findViewById<LottieAnimationView>(R.id.lottie)
         lottie.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                for(i in 10..100){
-                    lottie.progress = i.toFloat() / 100
-                    delay(100)
-                }
-            }
+//            lottie.playAnimation()
+            lottie.progress = 0.5f
         }
     }
 
