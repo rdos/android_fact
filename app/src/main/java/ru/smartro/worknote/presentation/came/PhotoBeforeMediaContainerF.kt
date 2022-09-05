@@ -9,8 +9,8 @@ import java.io.File
 
 class PhotoBeforeMediaContainerF : APhotoFragment() {
 
-        private val mPlatformEntity: PlatformEntity
-        get() =  viewModel.getPlatformEntity()
+    private val mPlatformEntity: PlatformEntity
+        get() = viewModel.getPlatformEntity()
 
     override fun onGetTextLabelFor() = "контейнер: фото до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {

@@ -21,7 +21,6 @@ class BootIntentService() : IntentService("BootIntentService") {
         Log.w("BootIntentService", "onHandleIntent")
         val configEntity = db.loadConfig(ConfigName.BOOT_CNT)
         configEntity.cntPlusOne()
-        configEntity.setShowForUser()
         db.saveConfig(configEntity)
         db.close()
 //        TODO("Not yet implemented")

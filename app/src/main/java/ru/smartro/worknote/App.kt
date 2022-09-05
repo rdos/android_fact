@@ -193,7 +193,6 @@ class App : AApp() {
 
         val configEntity = getDB().loadConfig(ConfigName.RUNAPP_CNT)
         configEntity.cntPlusOne()
-        configEntity.setShowForUser()
         getDB().saveConfig(configEntity)
 
         LOG.info("DEBUG::: Current Realm Schema Version : ${Realm.getDefaultInstance().version}")
@@ -612,12 +611,10 @@ class App : AApp() {
             override fun onReceive(context: Context, intent: Intent?) {
                 if (intent?.action == Intent.ACTION_AIRPLANE_MODE_CHANGED) {
                     val isAirplaneModeEnabled = intent.getBooleanExtra("state", false)
-//                    textView.text = isAirplaneModeEnabled.toString()
                     LOG.debug("isAirplaneModeEnabled=${isAirplaneModeEnabled}")
-                    if (isAirplaneModeEnabled) {
-                        val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
-                        context.startService(serviceIntent)
-                    }
+                    val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
+                    serviceIntent.putExtra("isAirplaneModeEnabled", isAirplaneModeEnabled)
+                    context.startService(serviceIntent)
                 }
             }
         }

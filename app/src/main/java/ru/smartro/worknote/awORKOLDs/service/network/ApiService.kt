@@ -74,9 +74,6 @@ interface ApiService {
     @POST("rpc")
     suspend fun sendAppStartUp(@Body rpcBody: RPCBody<AppStartUpBody>): Response<RPCBody<AppStartUpResponse>>
 
-    @POST("rpc")
-    suspend fun sendAppEvent(@Body rpcBody: RPCBody<AppEventBody>): Response<RPCBody<AppEventResponse>>
-
     // NEXT STEP
 //    @POST("rpc")
 //    suspend fun sendAppEvent(@Body rpcBody: RPCBody<AppEventBody>): Response<RPCBody<AppEventResponse>>

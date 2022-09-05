@@ -58,11 +58,10 @@ class MainAct :
 
     override fun onPause() {
         super.onPause()
-        LOG.info("onResumeHappened")
         AppliCation().getDB().apply {
+            LOG.info("SWIPE")
             val config = loadConfig(ConfigName.SWIPE_CNT)
             config.cntPlusOne()
-            config.setShowForUser()
             saveConfig(config)
         }
     }

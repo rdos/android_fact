@@ -90,7 +90,6 @@ class SYNCworkER(
                 if (params.isModeSYNChrONize) {
                     LOG.debug( "SYNCworkER RUN")
                     synChrONizationDATA()
-                    sendEventData()
                     ping()
                     if (isFirstRun) {
                         showWorkERNotification(true)
@@ -137,50 +136,6 @@ class SYNCworkER(
         }
 
 //        LOGafterLOG.debug()
-    }
-
-    private suspend fun sendEventData() {
-        val configEntries = db().getConfigEntriesUnsend()
-        if(configEntries.isEmpty())
-            return
-
-        for(entry in configEntries) {
-            val event: String = when(entry.configName.displayName) {
-                "BOOT_CNT" -> "reboot"
-                "SWIPE_CNT" -> "swipe"
-                // TODO: ЧИТ, НЕМА AIRPLANE_OFF
-                "AIRPLANEMODE_CNT" -> "airplane_on"
-                "NOINTERNET_CNT" -> "lost_connection"
-                else -> continue
-            }
-
-            val appEventBody = AppEventBody(
-                deviceId = App.getAppliCation().getDeviceId(),
-                event
-            )
-
-            val rpcBody = RPCBody("app_event", appEventBody)
-
-            LOG.info("RPCBODY: ${rpcBody}")
-
-            try {
-                val response = mNetworkRepository.sendAppEvent(rpcBody)
-                LOG.info("RESPONSE.isSuccessful: ${response.isSuccessful}, responseBody: ${response.body()}, responseCode: ${response.code()}")
-                when {
-                    response.isSuccessful -> {
-                        entry.cleanShowForUser()
-                        LOG.debug("entry === { event: ${entry.configName.displayName}}")
-                        db().saveConfig(entry)
-                    }
-                    else -> {
-                        THR.BadRequestAppEvent(response)
-                    }
-                }
-            } catch (ex: Exception) {
-                Toast.makeText(applicationContext, "Проблемы с подключением интернета,\nпопробуйте ещё раз", Toast.LENGTH_LONG).show()
-            }
-
-        }
     }
 
     private suspend fun synChrONizationDATA() {
@@ -236,7 +191,6 @@ class SYNCworkER(
                 LOG.warn("SYNCworkER NO INTERNET")
                 val configEntity = db().loadConfig(ConfigName.NOINTERNET_CNT)
                 configEntity.cntPlusOne()
-                configEntity.setShowForUser()
                 db().saveConfig(configEntity)
             }
             Status.ERROR -> LOG.error("Status.ERROR")

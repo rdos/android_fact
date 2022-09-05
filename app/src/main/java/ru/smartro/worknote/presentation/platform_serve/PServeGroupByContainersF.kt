@@ -211,7 +211,6 @@ class PServeGroupByContainersF : AFragment() {
         }
  */
         override fun getItemCount(): Int {
-            LOG.debug("GET ITEM COUNT PSERVE GROUPED ::: ${groupByContainerClientS.size}")
             return groupByContainerClientS.size
         }
 

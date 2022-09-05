@@ -58,7 +58,6 @@ class PServeF :
     private var sscToGroupByFMode: SmartROSwitchCompat? = null
     private var actvScreenLabel: AppCompatTextView? = null
 
-    private var plId: Int? = null
     private val vm: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {

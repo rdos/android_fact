@@ -260,9 +260,18 @@ open class KGOEntity(
 
     }
 
+open class AppEventEntity(
+    @Expose
+    var event: String = Snull,
+    @Expose
+    var counter: String = Snull
+): Serializable, RealmObject()
+
 open class PlatformEntity(
     @Expose
     var workOrderId: Int = Inull,
+    @Expose
+    var events: RealmList<AppEventEntity> = RealmList(),
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,
     @Expose
@@ -696,30 +705,21 @@ enum class ConfigName(val displayName: String) {
     Snull(ru.smartro.worknote.Snull),
     RUNAPP_CNT("RUNAPP_CNT"),
     SWIPE_CNT("SWIPE_CNT"),
-    AIRPLANEMODE_CNT("AIRPLANEMODE_CNT"),
+    AIRPLANE_MODE_ON_CNT("AIRPLANE_MODE_ON_CNT"),
+    AIRPLANE_MODE_OFF_CNT("AIRPLANE_MODE_OFF_CNT"),
     NOINTERNET_CNT("NOINTERNET_CNT"),
     MAPACTDESTROY_CNT("MAPACTDESTROY_CNT"),
     USER_WORK_SERVE_MODE_CODENAME("USER_WORK_SERVE_MODE_CODENAME"),
 }
 
 open class ConfigEntity(
-    @PrimaryKey private var name: String = Snull,
+    @PrimaryKey
+    private var name: String = Snull,
     var value: String = Snull,
-    // true = готов к отправке, false = уже отправлен
-    private var isShowForUser: Boolean = false
 ) : RealmObject() {
 
     fun toLong(): Long {
         return this.value.toLong()
-    }
-
-    fun setShowForUser() {
-        this.isShowForUser = true
-    }
-
-    fun cleanShowForUser() {
-        LOG.info("before")
-        this.isShowForUser = false
     }
 
     fun cntPlusOne() {

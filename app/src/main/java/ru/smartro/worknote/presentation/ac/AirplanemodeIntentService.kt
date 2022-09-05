@@ -4,6 +4,7 @@ import android.app.IntentService
 import android.content.Intent
 import android.util.Log
 import io.realm.Realm
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.ConfigName
 
@@ -19,9 +20,13 @@ class AirplanemodeIntentService() : IntentService("AirplanemodeIntentService") {
     @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
         Log.w("AirplanemodeIntentService", "onHandleIntent")
-        val configEntity = db.loadConfig(ConfigName.AIRPLANEMODE_CNT)
+        val isAirplaneModeEnabled = intent?.getBooleanExtra("isAirplaneModeEnabled", false) ?: return
+        LOG.warn("AirplaneService: isAirplaneModeEnabled = ${isAirplaneModeEnabled}")
+        val configEntity = if(isAirplaneModeEnabled)
+            db.loadConfig(ConfigName.AIRPLANE_MODE_ON_CNT)
+        else
+            db.loadConfig(ConfigName.AIRPLANE_MODE_OFF_CNT)
         configEntity.cntPlusOne()
-        configEntity.setShowForUser()
         db.saveConfig(configEntity)
         db.close()
 //        TODO("Not yet implemented")

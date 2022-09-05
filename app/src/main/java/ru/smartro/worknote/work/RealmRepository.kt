@@ -510,7 +510,9 @@ class RealmRepository(private val p_realm: Realm) {
     fun updatePlatformNetworkStatus(list: List<PlatformEntity>) {
         p_realm.executeTransaction {
             list.forEach {
-                val platform = _getPlatformEntity_know0(it.platformId!!)
+                val platform = getQueryPlatform()
+                    .equalTo("platformId", it.platformId)
+                    .findFirst()!!
                 platform.networkStatus = true
             }
         }
@@ -583,9 +585,22 @@ class RealmRepository(private val p_realm: Realm) {
 
     //todo: private fun _getPlatformEntity
     fun _getPlatformEntity_know0(platformId: Int): PlatformEntity {
-        val res = getQueryPlatform()
-            .equalTo("platformId", platformId)
-            .findFirst()!!
+        var res = PlatformEntity(name="findPlatformEntity.platformId==Inull")
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+
+            if(platform == null)
+                return@executeTransaction
+
+            val configEntities = realm.copyFromRealm(realm.where(ConfigEntity::class.java).findAll()).toMutableList()
+            platform.events = RealmList()
+            platform.events.addAll(configEntities.map { el ->
+                AppEventEntity(event = el.configName.displayName, counter = el.value)
+            })
+            res = platform
+        }
         return res
     }
 
@@ -595,7 +610,10 @@ class RealmRepository(private val p_realm: Realm) {
             return PlatformEntity(name="findPlatformEntity.platformId==Inull")
         }
         val res = _getPlatformEntity_know0(platformId)
-        result = p_realm.copyFromRealm(res)
+        result = if(res.isValid)
+            p_realm.copyFromRealm(res)
+        else
+            res
         return result
     }
 
@@ -1094,11 +1112,6 @@ class RealmRepository(private val p_realm: Realm) {
             result = p_realm.copyFromRealm(configEntity)
         }
         return result
-    }
-
-    fun getConfigEntriesUnsend(): List<ConfigEntity> {
-        val result = p_realm.where(ConfigEntity::class.java).equalTo("isShowForUser", true).findAll()
-        return p_realm.copyFromRealm(result)
     }
 
     fun saveConfig(configEntity: ConfigEntity) {

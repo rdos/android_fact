@@ -403,7 +403,6 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-
     suspend fun sendAppStartUp(): Resource<AppStartUpResponse> {
         val appStartUpBody = AppStartUpBody(
             deviceId = App.getAppliCation().getDeviceId(),
@@ -437,8 +436,6 @@ class NetworkRepository(private val context: Context) {
             Resource.network("Проблемы с подключением интернета", null)
         }
     }
-
-    suspend fun sendAppEvent(rpcBody: RPCBody<AppEventBody>) = RetrofitClient(context).testApiService().sendAppEvent(rpcBody)
 
 }
 
@@ -606,14 +603,6 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
 
 
     class BadRequestAppStartUp(response: Response<RPCBody<AppStartUpResponse>>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
-
-    class BadRequestAppEvent(response: Response<RPCBody<AppEventResponse>>) : THR(response.code()) {
 
         init {
             sentToSentry(response)

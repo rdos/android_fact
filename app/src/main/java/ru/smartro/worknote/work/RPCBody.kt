@@ -34,19 +34,3 @@ data class CreatedAtBody(
     @SerializedName("timezone")
     val timeZone: String = Snull
 )
-
-data class AppEventBody(
-    @SerializedName("device_id")
-    val deviceId: String = Snull,
-    val event: String = Snull
-)
-
-data class AppEventResponse(
-    @SerializedName("user_id")
-    val userId: String = Snull,
-    @SerializedName("device_id")
-    val deviceId: Int = Inull,
-    @SerializedName("created_at")
-    val createdAt: CreatedAtBody = CreatedAtBody(),
-    val event: String = Snull
-)
