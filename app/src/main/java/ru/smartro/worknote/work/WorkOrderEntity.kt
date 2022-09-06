@@ -74,7 +74,7 @@ open class WorkOrderEntity(
                 StatusEnum.PARTIAL_PROBLEMS -> platformsStatusPartialProblemsCnt++
             }
             /** статистика для ContainerEntity*/
-            platform.containers.forEach {
+            platform.containerS!!.forEach {
                 containersCnt++
                 val containerStatus = it.getStatusContainer()
                 LOG.info("containerStatus=${containerStatus}")
@@ -157,7 +157,7 @@ open class WorkOrderEntity(
                     afterMedia = mapMedia(it.afterMedia),
                     beforeMedia = mapMedia(it.beforeMedia),
                     beginnedAt = it.beginnedAt,
-                    containers = mapContainers(it.coNTaiNeRKnow1s, workorderId),
+                    containerS = mapContainers(it.coNTaiNeRKnow1s, workorderId),
                     coordSOriginal = RealmList(it.coords[0], it.coords[1]),
                     coordLat = it.coords[0],
                     coordLong = it.coords[1],
@@ -269,82 +269,22 @@ open class AppEventEntity(
 
 open class PlatformEntity(
     @Expose
-    var workOrderId: Int = Inull,
-    @Expose
-    var events: RealmList<AppEventEntity> = RealmList(),
-    var isWorkOrderProgress: Boolean = false,
-    var isWorkOrderComplete: Boolean = false,
+    @SerializedName("id")
+    var platformId: Int = Inull,
     @Expose
     @SerializedName("address")
     var address: String? = null,
-    @Expose
-    @SerializedName("after_media")
-    var afterMedia: RealmList<ImageEntity> = RealmList(),
-    // TODO:::
-    var afterMediaSavedSize: Int = 0,
-    @Expose
-    @SerializedName("before_media")
-    var beforeMedia: RealmList<ImageEntity> = RealmList(),
-    // TODO:::
-    var beforeMediaSavedSize: Int = 0,
-    @Expose
-    @SerializedName("beginned_at")
-    var beginnedAt: String? = null,
-    @Expose
-    @SerializedName("updateAt")
-    var updateAt: Long = 0,
-    @Expose
-    @SerializedName("status")
-    var status: String? = null,
-    @Expose
-    @SerializedName("network_status")
-    var networkStatus: Boolean = false,
-    @Expose
-    @SerializedName("failure_comment")
-    var failureComment: String? = null,
+
     @Expose
     @SerializedName("containers")
-    var containers: RealmList<ContainerEntity> = RealmList(),
+    var containerS: RealmList<ContainerEntity> = RealmList(),
     @Expose
     @SerializedName("coords")
     var coordSOriginal: RealmList<Double> = RealmList(),
+
     var coordLat: Double = Dnull,
     var coordLong: Double = Dnull,
-    @Expose
-    @SerializedName("failure_reason_id")
-    var failureReasonId: Int? = null,
-    @Expose
-    @SerializedName("failure_media")
-    var failureMedia: RealmList<ImageEntity> = RealmList(),
-    // TODO:::
-    var failureMediaSavedSize: Int = 0,
-    @Expose
-    @SerializedName("kgo_remaining")
-    var kgoRemaining: KGOEntity? = null,
-    // TODO:::
-    var kgoRemainingMediaSavedSize: Int = 0,
-    @Expose
-    @SerializedName("kgo_served")
-    var kgoServed: KGOEntity? = null,
-    // TODO:::
-    var kgoServedMediaSavedSize: Int = 0,
-    @Expose
-    @SerializedName("pickup_volume")
-    var volumePickup: Double? = null,
-    @Expose
-    @SerializedName("pickup_media")
-    var pickupMedia: RealmList<ImageEntity> = RealmList(),
-    // TODO:::
-    var pickupMediaSavedSize: Int = 0,
-/*    @SerializedName("breakdown_reason_id")
-    var breakdownReasonId: Int? = null,*/
-    @Expose
-    @SerializedName("finished_at")
-    var finishedAt: String? = null,
-    @Expose
-    @SerializedName("id")
-//    @PrimaryKey
-    var platformId: Int = Inull,
+
     @Expose
     @SerializedName("name")
     var name: String? = null,
@@ -354,6 +294,9 @@ open class PlatformEntity(
     @Expose
     @SerializedName("icon")
     var icon: String? = null,
+    @Expose
+    @SerializedName("pickup_volume")
+    var volumePickup: Double? = null,
     @Expose
     @SerializedName("order_start_time")
     var orderTimeStart: String? = null,
@@ -367,9 +310,64 @@ open class PlatformEntity(
     @SerializedName("order_alert_time")
     var orderTimeAlert: String? = null,
 
-    var served11Containers:  String = "почему поле уходи???????????????? Expose",
     @Expose
-    var serveModeFixCODENAME: String? = null,
+    @SerializedName("failure_reason_id")
+    var failureReasonId: Int = 0,
+    @Expose
+    @SerializedName("failure_comment")
+    var failureComment: String? = null,
+
+    @Expose
+    @SerializedName("status")
+    var status: String? = Snull,
+    @Expose
+    @SerializedName("beginned_at")
+    var beginnedAt: String? = null,
+    @Expose
+    @SerializedName("updateAt")
+    var updateAt: Long = 0,
+    @Expose
+    @SerializedName("network_status")
+    var networkStatus: Boolean = false,
+    @Expose
+    @SerializedName("finished_at")
+    var finishedAt: String? = null,
+    @Expose
+    // TODO: Нам так приходит это поле же?..
+    @SerializedName("workOrderId")
+    var workOrderId: Int = Inull,
+
+    @Expose
+    var events: RealmList<AppEventEntity> = RealmList(),
+
+    var isWorkOrderProgress: Boolean = false,
+    var isWorkOrderComplete: Boolean = false,
+
+    @Expose
+    @SerializedName("after_media")
+    var afterMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
+    @SerializedName("before_media")
+    var beforeMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
+    @SerializedName("pickup_media")
+    var pickupMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
+    @SerializedName("failure_media")
+    var failureMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
+    @SerializedName("kgo_remaining")
+    var kgoRemaining: KGOEntity? = null,
+    @Expose
+    @SerializedName("kgo_served")
+    var kgoServed: KGOEntity? = null,
+
+    var beforeMediaSavedSize: Int = 0,
+    var afterMediaSavedSize: Int = 0,
+    var failureMediaSavedSize: Int = 0,
+    var pickupMediaSavedSize: Int = 0,
+    var kgoRemainingMediaSavedSize: Int = 0,
+    var kgoServedMediaSavedSize: Int = 0
 
 ) : Serializable, RealmObject() {
 
@@ -380,7 +378,6 @@ open class PlatformEntity(
     fun getRemainingKGOMediaSize() = if(this.kgoRemaining?.media?.isNotEmpty() == true) this.kgoRemaining!!.media.size else this.kgoRemainingMediaSavedSize
     fun getServedKGOMediaSize() = if(this.kgoServed?.media?.isNotEmpty() == true) this.kgoServed!!.media.size else this.kgoServedMediaSavedSize
 
-
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
     fun getStatusPlatform(): String {
@@ -388,7 +385,7 @@ open class PlatformEntity(
         val _afterMediaSize = this.getAfterMediaSize()
         val _failureMediaSize = this.getFailureMediaSize()
 
-        val filteredContainers = this.containers.filter {
+        val filteredContainers = this.containerS.filter {
                 el -> el.isActiveToday
         }
 
@@ -496,7 +493,7 @@ open class PlatformEntity(
 
     fun getContactsInfo(): String {
         var result = ""
-        this.containers.forEach{ containerEntity ->
+        this.containerS.forEach{ containerEntity ->
             if (!containerEntity.client.isNullOrEmpty()) {
                 result += containerEntity.client + " "
             }
@@ -622,16 +619,12 @@ open class PlatformEntity(
 
     fun addServerKGOMedia(imageS: List<ImageEntity>) {
         initServedKGOEntity()
-        this.kgoServed?.let{
-            it.media.addAll(imageS)
-        }
+        this.kgoServed?.media?.addAll(imageS)
     }
 
     fun addRemainingKGOMedia(imageS: List<ImageEntity>) {
         initRemainingKGOEntity()
-        this.kgoRemaining?.let{
-            it.media.addAll(imageS)
-        }
+        this.kgoRemaining?.media?.addAll(imageS)
     }
 
     fun setServedKGOVolume(kgoVolume: String) {
@@ -662,13 +655,13 @@ open class PlatformEntity(
 
     fun getServeMode(): String? {
         if(
-            this.containers.any { listOf(0.25, 0.5, 0.75, 1.25).contains(it.volume) } ||
+            this.containerS.any { listOf(0.25, 0.5, 0.75, 1.25).contains(it.volume) } ||
             this.kgoServed?.volume != null ||
             this.volumePickup != null
             || (this.getFailureMediaSize() != 0 && this.failureReasonId != 0)
         ) {
             return ServeMode.PServeF
-        } else if(this.containers.any { it.volume != null && it.volume!! > 1.25 }) {
+        } else if(this.containerS.any { it.volume != null && it.volume!! > 1.25 }) {
             return ServeMode.PServeGroupByContainersF
         }
         return null
@@ -746,9 +739,20 @@ open class ConfigEntity(
 
 open class ContainerEntity(
     @Expose
-    var workOrderId: Int = Inull,
-    var isWorkOrderProgress: Boolean = false,
-    var isWorkOrderComplete: Boolean = false,
+    @SerializedName("id")
+    var containerId: Int = Inull,
+    @Expose
+    @SerializedName("number")
+    var number: String? = null,
+    @Expose
+    @SerializedName("volume")
+    var volume: Double? = null,
+    @Expose
+    @SerializedName("is_active_today")
+    var isActiveToday: Boolean = false,
+    @Expose
+    @SerializedName("status")
+    var status: String? = null,
     @Expose
     @SerializedName("client")
     var client: String? = null,
@@ -756,53 +760,40 @@ open class ContainerEntity(
     @SerializedName("contacts")
     var contacts: String? = null,
     @Expose
-    @SerializedName("failure_media")
-    var failureMedia: RealmList<ImageEntity> = RealmList(),
-    // TODO:::
-    var failureMediaSavedSize: Int = 0,
+    @SerializedName("type_id")
+    var typeId: Int? = null,
     @Expose
-    @SerializedName("failure_reason_id")
-    var failureReasonId: Int? = null,
-    @Expose
-    @SerializedName("breakdown_media")
-    var breakdownMedia: RealmList<ImageEntity> = RealmList(),
-    // TODO:::
-    var breakdownMediaSavedSize: Int = 0,
-    @Expose
-    @SerializedName("breakdown_reason_id")
-    var breakdownReasonId: Int? = null,
-    @Expose
-    @SerializedName("breakdown_comment")
-    var breakdownComment: String? = null,
-    @Expose
-    @SerializedName("id")
-//    @PrimaryKey
-    var containerId: Int? = null,
+    @SerializedName("type_name") var typeName: String? = null,
     @Expose
     @SerializedName("constructive_volume")
     var constructiveVolume: Double? = null,
     @Expose
-    @SerializedName("type_name")
-    var typeName: String? = null,
+    @SerializedName("failure_reason_id")
+    var failureReasonId: Int = 0,
     @Expose
-    @SerializedName("is_active_today")
-    var isActiveToday: Boolean = false,
-    @Expose
-    @SerializedName("number")
-    var number: String? = null,
-    @Expose
-    @SerializedName("status")
-    var status: String? = null,
-    @Expose
-    @SerializedName("type_id")
-    var typeId: Int? = null,
-    @Expose
-    @SerializedName("volume")
-    var volume: Double? = null,
+    @SerializedName("breakdown_reason_id")
+    var breakdownReasonId: Int? = null,
     @Expose
     @SerializedName("comment")
     var comment: String? = null,
-) : Serializable, RealmObject() {
+    @Expose
+    var workOrderId: Int = Inull,
+    @Expose
+    var platformId: Int = Inull,
+    var isWorkOrderProgress: Boolean = false,
+    var isWorkOrderComplete: Boolean = false,
+    @Expose
+    @SerializedName("failure_media")
+    var failureMedia: RealmList<ImageEntity> = RealmList(),
+    var failureMediaSavedSize: Int = 0,
+    @Expose
+    @SerializedName("breakdown_media") var breakdownMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
+    @SerializedName("breakdown_comment")
+    var breakdownComment: String? = null,
+    var breakdownMediaSavedSize: Int = 0,
+
+    ) : Serializable, RealmObject() {
 
     fun getStatusContainer(): String {
         if (this.failureReasonId != 0) {

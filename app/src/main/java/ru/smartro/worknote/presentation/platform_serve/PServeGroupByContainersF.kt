@@ -74,14 +74,14 @@ class PServeGroupByContainersF : AFragment() {
         
         adapter?.change(groupByContainerClientS)
 
-        tvContainersProgress?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containers.size} конт."
+        tvContainersProgress?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
 
         btnCompleteTask?.setOnClickListener {
             navigateMain(R.id.PhotoAfterMediaF, _PlatformEntity.platformId!!)
         }
 
         actvAddress?.text = "${_PlatformEntity.address}"
-        if (_PlatformEntity.containers.size >= 7 ) {
+        if (_PlatformEntity.containerS.size >= 7 ) {
             actvAddress?.apply {
                 setOnClickListener { view ->
                     maxLines = if (maxLines < 3) {

@@ -38,13 +38,13 @@ class MapPlatformClickedDtlF(private val _platform: PlatformEntity, private val 
         LOG.warn( "R_dos")
         mCurrentActivity = requireActivity() as MainAct
 
-        val spanCount = min(_platform.containers.size, 10)
+        val spanCount = min(_platform.containerS.size, 10)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_dialog_platform_clicked_dtl)
         recyclerView.layoutManager = GridLayoutManager(context, spanCount)
         recyclerView.adapter = PlatformClickedDtlAdapter(_platform)
 
         val tvContainersCnt = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__containers_cnt)
-        tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containers.size)
+        tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containerS.size)
 
 
         val isServeAgain = _platform.getStatusPlatform() != StatusEnum.NEW
@@ -133,11 +133,11 @@ class MapPlatformClickedDtlF(private val _platform: PlatformEntity, private val 
         }
 
         override fun getItemCount(): Int {
-            return _platform.containers.size
+            return _platform.containerS.size
         }
 
         override fun onBindViewHolder(holder: PlatformClickedDtlHolder, position: Int) {
-            val container = _platform.containers[position]
+            val container = _platform.containerS[position]
 //            holder.tv_title.text = container!!.number
             if(container?.isActiveToday == true)
                 holder.platformImageView.setImageResource(_platform.getIconFromStatus())

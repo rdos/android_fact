@@ -78,7 +78,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
     fun getContainerS(): List<ContainerEntity> {
-        var result =  this.getPlatformEntity().containers.toList()
+        var result =  this.getPlatformEntity().containerS.toList()
 
         result = result.sortedBy {
             it.isActiveToday == false
@@ -89,7 +89,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun getContainer(containerId: Int): ContainerEntity {
         LOG.trace("containerId=${containerId}")
-        var result =  this.getPlatformEntity().containers.find { it.containerId == containerId}
+        var result =  this.getPlatformEntity().containerS.find { it.containerId == containerId}
         if (result == null) {
            result = ContainerEntity.createEmpty()
         }

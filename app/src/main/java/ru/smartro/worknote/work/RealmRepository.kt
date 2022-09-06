@@ -306,7 +306,7 @@ class RealmRepository(private val p_realm: Realm) {
             val problemId = findFailReasonByValue(realm, problem).id
             platform.failureReasonId = problemId
 
-            platform.containers.forEach { container ->
+            platform.containerS.forEach { container ->
                 if (container.getStatusContainer() != StatusEnum.SUCCESS) {
                     container.failureReasonId = problemId
                 }
@@ -368,7 +368,7 @@ class RealmRepository(private val p_realm: Realm) {
             val platform = getQueryPlatform().equalTo("platformId", platformId)
                 .findFirst()!!
 
-            platform.containers.forEach { container ->
+            platform.containerS.forEach { container ->
                 if (container.volume == null) {
                     if (container.isActiveToday) {
                         container.volume = 1.0
@@ -415,7 +415,7 @@ class RealmRepository(private val p_realm: Realm) {
             platform.pickupMedia = mEmptyImageEntityList
             platform.kgoRemaining?.media = mEmptyImageEntityList
             platform.kgoServed?.media = mEmptyImageEntityList
-            platform.containers.forEach { container ->
+            platform.containerS.forEach { container ->
                 container.failureMedia = mEmptyImageEntityList
                 container.breakdownMedia = mEmptyImageEntityList
             }
@@ -529,7 +529,7 @@ class RealmRepository(private val p_realm: Realm) {
         val platform = p_realm.where(PlatformEntity::class.java)
             .equalTo("platformId", platformId)
             .findFirst()!!
-        return p_realm.copyFromRealm(platform.containers.sort("isActiveToday", Sort.DESCENDING))
+        return p_realm.copyFromRealm(platform.containerS.sort("isActiveToday", Sort.DESCENDING))
     }
 
     fun findContainersVolume(workOrderId: Int): Double {
@@ -1020,7 +1020,7 @@ class RealmRepository(private val p_realm: Realm) {
             workOrder.progress_at = MyUtil.currentTime()
             for (platform in workOrder.platforms) {
                 platform.isWorkOrderProgress = true
-                for (container in platform.containers) {
+                for (container in platform.containerS) {
                     container.isWorkOrderProgress = true
                 }
             }
@@ -1037,7 +1037,7 @@ class RealmRepository(private val p_realm: Realm) {
             workOrder.progress_at = null
             for (platform in workOrder.platforms) {
                 platform.isWorkOrderComplete = true
-                for (container in platform.containers) {
+                for (container in platform.containerS) {
                     container.isWorkOrderComplete = true
                 }
             }
@@ -1174,7 +1174,7 @@ class RealmRepository(private val p_realm: Realm) {
                 LOG.error("platformEntity == null")
                 return@executeTransaction
             }
-            val containerS = platformEntity.containers.filterTo(RealmList(), { it.isActiveToday })
+            val containerS = platformEntity.containerS.filterTo(RealmList(), { it.isActiveToday })
             if (containerS.isEmpty()) {
                 LOG.error("containerSSorted.isEmpty()")
                 return@executeTransaction

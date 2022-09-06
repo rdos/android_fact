@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
@@ -39,9 +38,6 @@ import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.ui_view.ViewProvider
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.cachapa.expandablelayout.ExpandableLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
@@ -1170,8 +1166,8 @@ class MapPlatformSBehaviorAdapter(
 
 
         holder.itemView.findViewById<TextView>(R.id.map_behavior_scrp_id).text = item.srpId.toString()
-        val containerString: String = holder.itemView.context.resources.getQuantityString(R.plurals.container_count, item.containers.size)
-        holder.itemView.findViewById<TextView>(R.id.map_behavior_container_count).text = "${item.containers.size} $containerString"
+        val containerString: String = holder.itemView.context.resources.getQuantityString(R.plurals.container_count, item.containerS.size)
+        holder.itemView.findViewById<TextView>(R.id.map_behavior_container_count).text = "${item.containerS.size} $containerString"
 
         holder.itemView.findViewById<TextView>(R.id.map_behavior_coordinate).setOnClickListener {
             listener.moveCameraPlatform(PoinT(item.coordLat, item.coordLong))
