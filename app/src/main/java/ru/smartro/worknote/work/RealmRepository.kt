@@ -18,9 +18,25 @@ class RealmRepository(private val p_realm: Realm) {
     // TODO: ][3
     private val mEmptyImageEntityList = RealmList<ImageEntity>()
 
-    fun insertWorkorder(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
-        val workOrderS = WorkOrderEntity.map(woRKoRDeRknow1List)
-        insUpdWorkOrders(workOrderS, true)
+    fun insUpdWorkOrderS(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
+        p_realm.executeTransaction { realm ->
+            val workOrderS = WorkOrderEntity.map(woRKoRDeRknow1List, this)
+            for (workOrder in workOrderS) {
+                workOrder.calcInfoStatistics()
+                realm.insertOrUpdate(workOrder)
+            }
+            val platformS = getQueryPlatform(true).findAll()
+            for (platform in platformS) {
+                var platformSForChange = _getPlatformSForChange(platform, platformS)
+                //todo: count(-ом) ограничить? не зациклиться ли?)
+                while (platformSForChange.size > 1) {
+                    _changePlatformSCoordinate(platformSForChange)
+                    platformSForChange = _getPlatformSForChange(platform, platformS)
+                }
+            }
+            realm.insertOrUpdate(platformS)
+        }
+//        return workOrder
     }
 
     fun <T:RealmObject> RealmResults<T>.asLiveData() = LiveRealmData<T>(this)
@@ -82,13 +98,7 @@ class RealmRepository(private val p_realm: Realm) {
             } else {
                 workOrderS = getQueryWorkOrder().findAll()
             }
-
-            if(workOrderS.isNotEmpty()){
-                res = realm.copyFromRealm(workOrderS)
-                res.forEach { workOrderEntity ->
-                    setEmptyImageEntity(workOrderEntity.platforms)
-                }
-            }
+            res = realm.copyFromRealm(workOrderS)
         }
         return res
     }
@@ -103,14 +113,7 @@ class RealmRepository(private val p_realm: Realm) {
             } else {
                 workOrderS =getQueryWorkOrder(true).equalTo("id", workOrderId).findAll()
             }
-
-            if(workOrderS.isNotEmpty()){
-                res = realm.copyFromRealm(workOrderS)
-                res.forEach { workOrderEntity ->
-                    setEmptyImageEntity(workOrderEntity.platforms)
-                }
-            }
-
+            res = realm.copyFromRealm(workOrderS)
         }
         return res
     }
@@ -400,27 +403,6 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun setEmptyImageEntity(platforms: List<PlatformEntity>) {
-        platforms.forEach { platform ->
-            platform.afterMediaSavedSize = platform.afterMedia.size
-            platform.beforeMediaSavedSize = platform.beforeMedia.size
-            platform.failureMediaSavedSize = platform.failureMedia.size
-            platform.pickupMediaSavedSize = platform.pickupMedia.size
-            platform.kgoRemainingMediaSavedSize = platform.kgoRemaining?.media?.size ?: 0
-            platform.kgoServedMediaSavedSize = platform.kgoServed?.media?.size ?:0
-
-            platform.afterMedia = mEmptyImageEntityList
-            platform.beforeMedia = mEmptyImageEntityList
-            platform.failureMedia = mEmptyImageEntityList
-            platform.pickupMedia = mEmptyImageEntityList
-            platform.kgoRemaining?.media = mEmptyImageEntityList
-            platform.kgoServed?.media = mEmptyImageEntityList
-            platform.containerS.forEach { container ->
-                container.failureMedia = mEmptyImageEntityList
-                container.breakdownMedia = mEmptyImageEntityList
-            }
-        }
-    }
 
     // TODO: copy-past см. PoinT.kt
     fun findPlatformByCoord(coordLat: Double, coordLong: Double, accuracy: Float): PlatformEntity? {
@@ -690,13 +672,10 @@ class RealmRepository(private val p_realm: Realm) {
     fun loadPlatformMediaEntity(platformEntity: PlatformEntity): PlatformMediaEntity {
         var result = getQueryPlatformMedia(platformEntity).findFirst()
         if (result == null) {
-            result = p_realm.createObject(PlatformMediaEntity::class.java)
-            val platform = getQueryPlatform()
-                .equalTo("platformId", platformEntity.platformId)
-                .findFirst()
-            result!!.platformEntity = platform
+            result = p_realm.createObject(PlatformMediaEntity::class.java,  platformEntity.platformId)
+            result.workOrderId = platformEntity.workOrderId
         }
-        return result
+        return result!!
     }
 
     fun getContainerMediaEntity(containerEntity: ContainerEntity): ContainerMediaEntity {
@@ -711,18 +690,18 @@ class RealmRepository(private val p_realm: Realm) {
     fun loadContainerMediaEntity(containerEntity: ContainerEntity): ContainerMediaEntity {
         var result = getQueryContainerMedia(containerEntity).findFirst()
         if (result == null) {
-            result = p_realm.createObject(ContainerMediaEntity::class.java)
+            result = p_realm.createObject(ContainerMediaEntity::class.java, containerEntity.containerId)
 //            val platform = getQueryPlatform()
 //                .equalTo("platformId", platformEntity.platformId)
 //                .findFirst()
 //            result!!.platformEntity = platform
-            val container = getQueryContainer()
-                .equalTo("containerId", containerEntity.containerId)
-                .findFirst()
-            result!!.containerEntity = container
-
+//            val container = getQueryContainer()
+//                .equalTo("containerId", containerEntity.containerId)
+//                .findFirst()
+            result.platformId = containerEntity.platformId
+            result.workOrderId = containerEntity.workOrderId
         }
-        return result
+        return result!!
     }
 
     fun addKgoServed(platformId: Int, imageS: List<ImageEntity>) {
@@ -1002,27 +981,6 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    private fun insUpdWorkOrders(workOrderS: RealmList<WorkOrderEntity>, isInfoChange: Boolean = true) {
-        p_realm.executeTransaction { realm ->
-            for (workOrder in workOrderS) {
-                if (isInfoChange) {
-                    workOrder.calcInfoStatistics()
-                }
-                realm.insertOrUpdate(workOrder)
-            }
-            val platformS = getQueryPlatform(true).findAll()
-            for (platform in platformS) {
-                var platformSForChange = _getPlatformSForChange(platform, platformS)
-                //todo: count(-ом) ограничить? не зациклиться ли?)
-                while (platformSForChange.size > 1) {
-                    _changePlatformSCoordinate(platformSForChange)
-                    platformSForChange = _getPlatformSForChange(platform, platformS)
-                }
-            }
-            realm.insertOrUpdate(platformS)
-        }
-//        return workOrder
-    }
 
     private fun _getPlatformSForChange(platform: PlatformEntity, platformS: RealmResults<PlatformEntity>): List<PlatformEntity> {
         val platformSForChange = platformS.filter {
@@ -1111,11 +1069,11 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     private fun getQueryPlatformMedia(platformEntity: PlatformEntity): RealmQuery<PlatformMediaEntity> {
-        return p_realm.where(PlatformMediaEntity::class.java).equalTo("platformEntity.platformId", platformEntity.platformId)
+        return p_realm.where(PlatformMediaEntity::class.java).equalTo("platformId", platformEntity.platformId)
     }
 
     private fun getQueryContainerMedia(containerEntity: ContainerEntity): RealmQuery<ContainerMediaEntity> {
-        return p_realm.where(ContainerMediaEntity::class.java).equalTo("containerEntity.containerId", containerEntity.containerId)
+        return p_realm.where(ContainerMediaEntity::class.java).equalTo("containerId", containerEntity.containerId)
     }
 
     private fun getQueryPlatform(isForceMode: Boolean = false, platformId: Int? = null): RealmQuery<PlatformEntity> {

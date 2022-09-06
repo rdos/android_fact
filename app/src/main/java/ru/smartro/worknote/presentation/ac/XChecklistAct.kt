@@ -24,7 +24,6 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
-import ru.smartro.worknote.LOG
 import ru.smartro.worknote.saveJSON
 import ru.smartro.worknote.work.Resource
 import ru.smartro.worknote.work.THR
@@ -237,13 +236,5 @@ class XChecklistAct: AAct() {
             }
         }
 
-        fun insertWorkOrders(workOrders: List<WoRKoRDeR_know1>) {
-            database.clearDataBase()
-            database.insertWorkorder(workOrders)
-        }
-
-        fun clearWorkOrderList() {
-            _workOrderList.postValue(null)
-        }
     }
 }

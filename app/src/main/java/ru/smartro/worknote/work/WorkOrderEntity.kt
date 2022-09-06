@@ -110,51 +110,24 @@ open class WorkOrderEntity(
 
     companion object {
         
-        private fun mapMedia(data: List<String>): RealmList<ImageEntity> {
+        fun mapMedia(data: List<String>): RealmList<ImageEntity> {
+            var idx = 0L
             return data.mapTo(RealmList()) {
+                idx++
                 ImageEntity(
-                    image = it, date = 0,
+                    image = it, date = idx,
                     coords = RealmList()
                 )
             }
         }
 
-        // TODO: 29.10.2021 ! it.volume = 0.0 ??Error возраст.
-        private fun mapContainers(list: List<CoNTaiNeR_know1>, workorderId: Int): RealmList<ContainerEntity> {
-            return list.mapTo(RealmList()) {
-//                var volumeReal : Double? = null
-//                if (it.volume >  0) {
-//                    LoG.error("mapContainers.it.volume >  0")
-//                    volumeReal = it.volume
-//                    LoG.error("mapContainers.volumeReal = ${volumeReal}")
-//                }
-                LOG.info("CONTAINER MAP::: id ${it.id} status ${it.status} failureMedia ${it.failureMedia.size} failureReason ${it.failureReasonId}")
 
-                ContainerEntity(
-                    workOrderId = workorderId,
-                    client = it.client,
-                    contacts = it.contacts,
-                    failureMedia = mapMedia(it.failureMedia),
-                    failureReasonId = it.failureReasonId,
-                    containerId = it.id,
-                    isActiveToday = it.isActiveToday,/* breakdownReasonId = it.breakdownReasonId,*/
-                    number = it.number,
-                    status = it.status,
-                    typeId = it.typeId,
-                    constructiveVolume = it.constructiveVolume,
-                    typeName = it.typeName,
-                    volume = it.volume
-                )
-            }
-        }
-
-        private fun mapPlatforms(data: List<Platform_know1>, workorderId: Int): RealmList<PlatformEntity> {
+        private fun mapPlatforms(data: List<Platform_know1>, workorderId: Int, database: RealmRepository): RealmList<PlatformEntity> {
             val result = data.mapTo(RealmList()) {
                 LOG.info("PLATFORM MAP::: failureMediaSize ${it.failureMedia.size} failureReason ${it.failureReasonId}")
-                val platform = PlatformEntity(
+                val platformEntity = PlatformEntity(
                     platformId = it.id,
                     address = it.address,
-                    containerS = mapContainers(it.coNTaiNeRKnow1s, workorderId),
                     coordSOriginal = RealmList(it.coords[0], it.coords[1]),
                     coordLat = it.coords[0],
                     coordLong = it.coords[1],
@@ -176,16 +149,42 @@ open class WorkOrderEntity(
                     // events
                     // isWorkOrderProgress
                     // isWorkOrderComplete
-                    afterMedia = mapMedia(it.afterMedia),
-                    beforeMedia = mapMedia(it.beforeMedia),
                     // pickupMedia
-                    failureMedia = mapMedia(it.failureMedia),
                     /** volumeKGO = null,*/
-                    kgoRemaining = KGOEntity().copyKGOEntity(it.kgo_remaining),
-                    kgoServed = KGOEntity().copyKGOEntity(it.kgo_served)
                 )
-                platform.networkStatus = platform.isNotNewPlatform()
-                platform
+                platformEntity.containerS = platformEntity.mapContainers(it.coNTaiNeRKnow1s, database)
+
+                val platformMediaEntity = database.loadPlatformMediaEntity(platformEntity)
+                val afterMedia = mapMedia(it.afterMedia)
+                platformEntity.addAfterMedia(afterMedia)
+                platformMediaEntity.afterMedia.addAll(afterMedia)
+                val beforeMedia = mapMedia(it.beforeMedia)
+                platformEntity.addAfterMedia(beforeMedia)
+                platformMediaEntity.beforeMedia.addAll(beforeMedia)
+                val failureMedia = mapMedia(it.failureMedia)
+                platformEntity.addFailureMedia(failureMedia)
+                platformMediaEntity.failureMedia.addAll(failureMedia)
+
+                it.kgo_served?.let {
+                    platformEntity.setServedKGOVolume(it.volume.toStr())
+                    it.media?.let {
+                        val kgoServedMedia = mapMedia(it)
+                        platformEntity.addServerKGOMedia(kgoServedMedia)
+                        platformMediaEntity.kgoServedMedia.addAll(kgoServedMedia)
+                    }
+                }
+
+                it.kgo_remaining?.let {
+                    platformEntity.setRemainingKGOVolume(it.volume.toStr())
+                    it.media?.let {
+                        val kgoRemainingMedia = mapMedia(it)
+                        platformEntity.addRemainingKGOMedia(kgoRemainingMedia)
+                        platformMediaEntity.kgoRemainingMedia.addAll(kgoRemainingMedia)
+                    }
+                }
+
+                platformEntity.networkStatus = platformEntity.isNotNewPlatform()
+                platformEntity
             }
             return result
         }
@@ -203,25 +202,26 @@ open class WorkOrderEntity(
         }
 
         /**public inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.mapTo(destination: C, transform: (T) -> R): C {        */
-        fun map(woRKoRDeRknow1List: List<WoRKoRDeR_know1>): RealmList<WorkOrderEntity> {
+        fun map(woRKoRDeRknow1List: List<WoRKoRDeR_know1>, database: RealmRepository): RealmList<WorkOrderEntity> {
             val res = RealmList<WorkOrderEntity>()
-            try {
                 for (woRKoRDeRknow1 in woRKoRDeRknow1List) {
-                    val workOrder = WorkOrderEntity(
-                        id = woRKoRDeRknow1.id,
-                        start_at = MyUtil.currentTime(),
-                        name = woRKoRDeRknow1.name,
-                        waste_type_id = woRKoRDeRknow1.waste_type?.id,
-                        waste_type_name = woRKoRDeRknow1.waste_type?.name,
-                        waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
-                        platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id),
-                        start = mapStart(woRKoRDeRknow1.STaRTknow1)
-                    )
-                    res.add(workOrder)
+                    try {
+                        val workOrder = WorkOrderEntity(
+                            id = woRKoRDeRknow1.id,
+                            start_at = MyUtil.currentTime(),
+                            name = woRKoRDeRknow1.name,
+                            waste_type_id = woRKoRDeRknow1.waste_type?.id,
+                            waste_type_name = woRKoRDeRknow1.waste_type?.name,
+                            waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
+                            platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id, database),
+                            start = mapStart(woRKoRDeRknow1.STaRTknow1)
+                        )
+                        res.add(workOrder)
+                    } catch (eXthr: Exception) {
+                        LOG.error("eXthr", eXthr)
+                    }
                 }
-            } catch (eXthr: Exception) {
-                LOG.error("eXthr", eXthr)
-            }
+            LOG.debug("res=${res.size}")
             return res
         }
     }
@@ -248,23 +248,6 @@ open class KGOEntity(
             return !isEmpty()
         }
 
-        fun copyKGOEntity(kgoentityKnow100: KGOEntity_know100?): KGOEntity? {
-            fun mapMedia(data: List<String>): RealmList<ImageEntity> {
-                return data.mapTo(RealmList()) { ImageEntity(image = it, date = 0,
-                    coords = RealmList())}
-            }
-            var result: KGOEntity? = null
-            kgoentityKnow100?.let {
-                this.volume = kgoentityKnow100.volume
-                kgoentityKnow100.media?.let {
-                    this.media = mapMedia(kgoentityKnow100.media!!)
-                }
-
-                result = this
-            }
-            return result
-        }
-
     }
 
 open class AppEventEntity(
@@ -275,13 +258,16 @@ open class AppEventEntity(
 ): Serializable, RealmObject()
 
 open class PlatformMediaEntity(
-    var platformEntity: PlatformEntity? = null,
+//    var platformEntity: PlatformEntity? = null,
+    @PrimaryKey
+    var platformId: Int = Inull,
     var beforeMedia: RealmList<ImageEntity> = RealmList(),
     var kgoServedMedia: RealmList<ImageEntity> = RealmList(),
     var kgoRemainingMedia: RealmList<ImageEntity> = RealmList(),
     var pickupMedia: RealmList<ImageEntity> = RealmList(),
     var failureMedia: RealmList<ImageEntity> = RealmList(),
     var afterMedia: RealmList<ImageEntity> = RealmList(),
+    var workOrderId: Int = Inull,
     var dev_info: String? = null
 ): Serializable, RealmObject() {
 
@@ -289,9 +275,9 @@ open class PlatformMediaEntity(
         return beforeMedia.size
     }
 
-    fun getPlatform(): PlatformEntity {
-        return this.platformEntity!!
-    }
+//    fun getPlatform(): PlatformEntity {
+//        return this.platformEntity!!
+//    }
 
     companion object {
         // TODO: !!!
@@ -398,21 +384,14 @@ open class PlatformEntity(
     @SerializedName("kgo_served")
     var kgoServed: KGOEntity? = null,
 
-    var beforeMediaSavedSize: Int = 0,
-    var afterMediaSavedSize: Int = 0,
-    var failureMediaSavedSize: Int = 0,
-    var pickupMediaSavedSize: Int = 0,
-    var kgoRemainingMediaSavedSize: Int = 0,
-    var kgoServedMediaSavedSize: Int = 0
-
 ) : Serializable, RealmObject() {
 
-    fun getBeforeMediaSize() = if(this.beforeMedia.isNotEmpty()) this.beforeMedia.size else this.beforeMediaSavedSize
-    fun getAfterMediaSize() = if(this.afterMedia.isNotEmpty()) this.afterMedia.size else this.afterMediaSavedSize
-    fun getFailureMediaSize() = if(this.failureMedia.isNotEmpty()) this.failureMedia.size else this.failureMediaSavedSize
-    fun getPickupMediaSize() = if(this.pickupMedia.isNotEmpty()) this.pickupMedia.size else this.pickupMediaSavedSize
-    fun getRemainingKGOMediaSize() = if(this.kgoRemaining?.media?.isNotEmpty() == true) this.kgoRemaining!!.media.size else this.kgoRemainingMediaSavedSize
-    fun getServedKGOMediaSize() = if(this.kgoServed?.media?.isNotEmpty() == true) this.kgoServed!!.media.size else this.kgoServedMediaSavedSize
+    fun getBeforeMediaSize() = this.beforeMedia.size
+    fun getAfterMediaSize() = afterMedia.size
+    fun getFailureMediaSize() = this.failureMedia.size
+    fun getPickupMediaSize() = this.pickupMedia.size
+    fun getRemainingKGOMediaSize() = this.kgoRemaining!!.media.size
+    fun getServedKGOMediaSize() = this.kgoServed!!.media.size
 
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
@@ -744,6 +723,41 @@ open class PlatformEntity(
         }
     }
 
+    // TODO: 29.10.2021 ! it.volume = 0.0 ??Error возраст.
+    fun mapContainers(containerSRV: List<CoNTaiNeR_know1>, database: RealmRepository): RealmList<ContainerEntity> {
+        val result = containerSRV.mapTo(RealmList()) {
+            LOG.trace("containerSRV.id=${it.id}")
+            val containerEntity = ContainerEntity(
+                containerId = it.id,
+                platformId = this.platformId,
+                number = it.number,
+                volume = it.volume,
+                isActiveToday = it.isActiveToday,
+                status = it.status,
+                client = it.client,
+                contacts = it.contacts,
+                typeId = it.typeId,
+                typeName = it.typeName,
+                constructiveVolume = it.constructiveVolume,
+                failureReasonId = it.failureReasonId,
+//                breakdownReasonId = ,
+//                comment
+                failureMedia = WorkOrderEntity.mapMedia(it.failureMedia),
+//                breakdownMedia
+//                breakdownComment
+                workOrderId = this.workOrderId
+            )
+            val containerMediaEntity = database.loadContainerMediaEntity(containerEntity)
+            val failureMedia = WorkOrderEntity.mapMedia(it.failureMedia)
+            containerEntity.addFailureMedia(afterMedia)
+            containerMediaEntity.failureMedia.addAll(failureMedia)
+
+            containerEntity
+        }
+        LOG.debug("result=${result.size}")
+        return result
+    }
+
     companion object {
         // TODO: !!!
         fun createEmpty(): PlatformEntity {
@@ -815,10 +829,14 @@ open class ConfigEntity(
 }
 
 open class ContainerMediaEntity(
-    var platformEntity: PlatformEntity? = null,
-    var containerEntity: ContainerEntity? = null,
+//    var platformEntity: PlatformEntity? = null,
+//    var containerEntity: ContainerEntity? = null,
+    @PrimaryKey
+    var containerId: Int = Inull,
+    var platformId: Int = Inull,
     var breakdownMedia: RealmList<ImageEntity> = RealmList(),
     var failureMedia: RealmList<ImageEntity> = RealmList(),
+    var workOrderId: Int = Inull,
     var dev_info: String? = null
 ): Serializable, RealmObject() {
 
@@ -830,9 +848,9 @@ open class ContainerMediaEntity(
         return this.failureMedia.size
     }
 
-    fun getPlatform(): PlatformEntity {
-        return this.platformEntity!!
-    }
+//    fun getPlatform(): PlatformEntity {
+//        return this.platformEntity!!
+//    }
 
     companion object {
         // TODO: !!!
@@ -848,6 +866,8 @@ open class ContainerEntity(
     @SerializedName("id")
     @PrimaryKey
     var containerId: Int = Inull,
+    var platformId: Int = Inull,
+//    var platformEntity: PlatformEntity? = null,
     @Expose
     @SerializedName("number")
     var number: String? = null,
@@ -870,7 +890,8 @@ open class ContainerEntity(
     @SerializedName("type_id")
     var typeId: Int? = null,
     @Expose
-    @SerializedName("type_name") var typeName: String? = null,
+    @SerializedName("type_name")
+    var typeName: String? = null,
     @Expose
     @SerializedName("constructive_volume")
     var constructiveVolume: Double? = null,
@@ -884,22 +905,17 @@ open class ContainerEntity(
     @SerializedName("comment")
     var comment: String? = null,
     @Expose
-    var workOrderId: Int = Inull,
-    @Expose
-    var platformId: Int = Inull,
-    var isWorkOrderProgress: Boolean = false,
-    var isWorkOrderComplete: Boolean = false,
-    @Expose
     @SerializedName("failure_media")
     var failureMedia: RealmList<ImageEntity> = RealmList(),
-    var failureMediaSavedSize: Int = 0,
     @Expose
-    @SerializedName("breakdown_media") var breakdownMedia: RealmList<ImageEntity> = RealmList(),
+    @SerializedName("breakdown_media")
+    var breakdownMedia: RealmList<ImageEntity> = RealmList(),
     @Expose
     @SerializedName("breakdown_comment")
     var breakdownComment: String? = null,
-    var breakdownMediaSavedSize: Int = 0,
-
+    var isWorkOrderProgress: Boolean = false,
+    var isWorkOrderComplete: Boolean = false,
+    var workOrderId: Int = Inull
     ) : Serializable, RealmObject() {
 
     fun getStatusContainer(): String {
@@ -918,18 +934,22 @@ open class ContainerEntity(
 
     private fun getFailureMediaSize(): Int {
         var res = 0
-        if (this.failureReasonId != null ) {
-            res = if(this.failureMedia.isNotEmpty()) this.failureMedia.size else this.failureMediaSavedSize
+        if (this.failureReasonId <= 0) {
+            return res
         }
+        res = this.failureMedia.size
+
         return res
     }
 
 
     private fun getBreakdownMediaSize(): Int {
         var res = 0
-        if (this.breakdownReasonId != null ) {
-            res = if(this.breakdownMedia.isNotEmpty()) this.breakdownMedia.size else this.breakdownMediaSavedSize
+        if (this.breakdownReasonId == null ) {
+            return res
         }
+        res = this.breakdownMedia.size
+
         return res
     }
 
@@ -1075,7 +1095,6 @@ open class ContainerGROUPClientTypeEntity(
         }
     }
 }
-
 
 
 open class ImageEntity(

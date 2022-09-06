@@ -52,6 +52,6 @@ class StartWorkOrderViewModel(app: Application) : AViewModel(app) {
 
     fun insertWorkOrders(workOrders: List<WoRKoRDeR_know1>) {
         database.clearDataBase()
-        database.insertWorkorder(workOrders)
+        database.insUpdWorkOrderS(workOrders)
     }
 }

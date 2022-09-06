@@ -31,8 +31,8 @@ class PhotoBeforeMediaF : APhotoFragment() {
     //TODO: r_dos!!!
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.addBeforeMedia(imageS)
-
-        val platformServeMode = mPlatformMediaEntity.getPlatform().getServeMode()
+        val platformEntity = viewModel.getPlatformEntity()
+        val platformServeMode = platformEntity.getServeMode()
         LOG.info("PLATFORM SERVE MODE ::: ${platformServeMode}")
         if (platformServeMode != null) {
 //            // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
