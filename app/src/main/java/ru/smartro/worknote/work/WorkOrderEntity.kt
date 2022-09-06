@@ -152,30 +152,37 @@ open class WorkOrderEntity(
             val result = data.mapTo(RealmList()) {
                 LOG.info("PLATFORM MAP::: failureMediaSize ${it.failureMedia.size} failureReason ${it.failureReasonId}")
                 val platform = PlatformEntity(
-                    workOrderId = workorderId,
+                    platformId = it.id,
                     address = it.address,
-                    afterMedia = mapMedia(it.afterMedia),
-                    beforeMedia = mapMedia(it.beforeMedia),
-                    beginnedAt = it.beginnedAt,
                     containerS = mapContainers(it.coNTaiNeRKnow1s, workorderId),
                     coordSOriginal = RealmList(it.coords[0], it.coords[1]),
                     coordLat = it.coords[0],
                     coordLong = it.coords[1],
-                    failureMedia = mapMedia(it.failureMedia),
-                    failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
-                    finishedAt = it.finishedAt,
-                    platformId = it.id,
                     name = it.name,
-                    updateAt = 0,
                     srpId = it.srpId,
-                    status = it.status, //!r_dos
-                    /** volumeKGO = null,*/ icon = it.icon,
-                    orderTimeEnd = it.orderEndTime,
+                    icon = it.icon,
+                    // volumePickup
                     orderTimeStart = it.orderStartTime,
-                    orderTimeAlert = it.orderAlertTime,
+                    orderTimeEnd = it.orderEndTime,
                     orderTimeWarning = it.orderWarningTime,
-                    kgoServed = KGOEntity().copyKGOEntity(it.kgo_served),
-                    kgoRemaining = KGOEntity().copyKGOEntity(it.kgo_remaining)
+                    orderTimeAlert = it.orderAlertTime,
+                    failureReasonId = it.failureReasonId, /*breakdownReasonId = it.breakdownReasonId,*/
+                    // failureComment
+                    status = it.status, //!r_dos
+                    beginnedAt = it.beginnedAt,
+                    updateAt = 0,
+                    finishedAt = it.finishedAt,
+                    workOrderId = workorderId,
+                    // events
+                    // isWorkOrderProgress
+                    // isWorkOrderComplete
+                    afterMedia = mapMedia(it.afterMedia),
+                    beforeMedia = mapMedia(it.beforeMedia),
+                    // pickupMedia
+                    failureMedia = mapMedia(it.failureMedia),
+                    /** volumeKGO = null,*/
+                    kgoRemaining = KGOEntity().copyKGOEntity(it.kgo_remaining),
+                    kgoServed = KGOEntity().copyKGOEntity(it.kgo_served)
                 )
                 platform.networkStatus = platform.isNotNewPlatform()
                 platform
