@@ -478,12 +478,12 @@ class RealmRepository(private val p_realm: Realm) {
 
     fun findPlatforms30min(): List<PlatformEntity> {
         refreshRealm_know0()
-        val TIME_30MIN_MS = 30 * 60 * 1000
+        val TIME_30MIN_SEC = 30 * 60
         //todo: -1 секунда
         val lastSynchroTime = App.getAppParaMS().lastSynchroTimeInSec - 1L
         return p_realm.copyFromRealm(p_realm.where(PlatformEntity::class.java)
             .greaterThan("updateAt", lastSynchroTime)
-            .lessThanOrEqualTo("updateAt", lastSynchroTime + TIME_30MIN_MS)
+            .lessThanOrEqualTo("updateAt", lastSynchroTime + TIME_30MIN_SEC)
             .findAll())
     }
 

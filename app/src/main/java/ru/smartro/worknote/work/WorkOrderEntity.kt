@@ -764,6 +764,34 @@ open class PlatformEntity(
             val result = PlatformEntity(platformId = Inull, address = THIS_IS_ERROR)
             return result
         }
+
+        fun toSRV(platforms: List<PlatformEntity>, db: RealmRepository): List<PlatformEntity> {
+            for(platform in platforms) {
+                LOG.debug("platform.platformId=${platform.platformId}")
+                val platformMediaEntity = db.loadPlatformMediaEntity(platform)
+
+                platform.beforeMedia = platformMediaEntity.beforeMedia
+                platform.kgoServed?.let {
+                    it.media = platformMediaEntity.kgoServedMedia
+                }
+                platform.kgoRemaining?.let {
+                    it.media = platformMediaEntity.kgoRemainingMedia
+                }
+                platform.failureMedia = platformMediaEntity.failureMedia
+                platform.pickupMedia = platformMediaEntity.pickupMedia
+                platform.afterMedia = platformMediaEntity.afterMedia
+
+                for (container in platform.containerS) {
+                    LOG.debug("container.containerId=${container.containerId}")
+                    val containerMediaEntity = db.loadContainerMediaEntity(container)
+                    container.failureMedia = containerMediaEntity.failureMedia
+                    container.breakdownMedia = containerMediaEntity.breakdownMedia
+                }
+            }
+
+            return platforms
+        }
+
         object ServeMode {
             const val PServeF = "PServeF"
             const val PServeGroupByContainersF = "PServeGroupByContainersF"

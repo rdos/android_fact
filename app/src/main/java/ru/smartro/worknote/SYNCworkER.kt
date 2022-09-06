@@ -163,7 +163,8 @@ class SYNCworkER(
             gps.PointTOBaseData(),
             AppParaMS().deviceId,
             gps.PointTimeToLastKnowTime_SRV(),
-            platforms)
+            PlatformEntity.toSRV(platforms, db()))
+
 
         LOG.info("platforms.size=${platforms.size}")
         val gson = Gson()
