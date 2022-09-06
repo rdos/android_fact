@@ -5,18 +5,15 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 class PhotoBeforeMediaF : APhotoFragment() {
-        private val mPlatformEntity: PlatformEntity
-        get() =  viewModel.getPlatformEntity()
+    private val mPlatformMediaEntity: PlatformMediaEntity
+        get() =  viewModel.getPlatformMediaEntity()
 //    override fun onGetTextLabelFor() = "фото до обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mPlatformEntity == null) {
-            toast("Ошибка.todo:::")
-            return RealmList<ImageEntity>()
-        }
-        return mPlatformEntity!!.beforeMedia
+        return mPlatformMediaEntity.beforeMedia
     }
 
     override fun onGetDirName(): String {
@@ -35,7 +32,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.addBeforeMedia(imageS)
 
-        val platformServeMode = mPlatformEntity.getServeMode()
+        val platformServeMode = mPlatformMediaEntity.getPlatform().getServeMode()
         LOG.info("PLATFORM SERVE MODE ::: ${platformServeMode}")
         if (platformServeMode != null) {
 //            // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
@@ -51,10 +48,10 @@ class PhotoBeforeMediaF : APhotoFragment() {
 //                return
 //            }
             if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeF) {
-                navigateMain(R.id.PServeF, mPlatformEntity.platformId)
+                navigateMain(R.id.PServeF, viewModel.getPlatformId())
                 return
             } else {
-                navigateMain(R.id.PServeGroupByContainersF, mPlatformEntity.platformId)
+                navigateMain(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
                 return
             }
         }
@@ -63,15 +60,15 @@ class PhotoBeforeMediaF : APhotoFragment() {
         val configEntity = viewModel.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
 
         if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeF) {
-            navigateMain(R.id.PServeF, mPlatformEntity.platformId)
+            navigateMain(R.id.PServeF, viewModel.getPlatformId())
             return
         }
         if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-            navigateMain(R.id.PServeGroupByContainersF, mPlatformEntity.platformId)
+            navigateMain(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
             return
         }
 
-        navigateMain(R.id.PServeF, mPlatformEntity.platformId)
+        navigateMain(R.id.PServeF, viewModel.getPlatformId())
     }
 
     override fun onSavePhoto() {

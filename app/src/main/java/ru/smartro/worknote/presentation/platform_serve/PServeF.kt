@@ -229,7 +229,7 @@ class PServeF :
                     if (progress > 0 ) {
                         gotoMakePhotoForPickup(progress.toDouble())
                     } else {
-                        vm.updateVolumePickup(_PlatformEntity.platformId, null)
+                        vm.updateVolumePickup(null)
                     }
                 }
 

@@ -22,11 +22,11 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
 
     private var mPlatformEntity: PlatformEntity? = null
+    private var mPlatformMediaEntity: PlatformMediaEntity? = null
 
     private val _PlatformLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
     val todoLiveData: LiveData<PlatformEntity>
         get() = _PlatformLiveData
-    
 
 
     private var mContainerGROUPClientEntity: MutableList<ContainerGROUPClientEntity>? = null
@@ -42,6 +42,14 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
             LOG.trace("result=${mPlatformEntity?.platformId}")
         }
         return mPlatformEntity!!
+    }
+
+    fun getPlatformMediaEntity(): PlatformMediaEntity {
+        if (mPlatformMediaEntity == null) {
+            mPlatformMediaEntity = database.getPlatformMediaEntity(getPlatformEntity())
+            LOG.trace("result.getBeforeMediaSize=${mPlatformMediaEntity!!.getBeforeMediaSize()}")
+        }
+        return mPlatformMediaEntity!!
     }
 
     fun getPlatformId(): Int {
@@ -72,6 +80,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         }
         mPlatformId = platformEntity.platformId
         mPlatformEntity = null
+        mPlatformMediaEntity = null
         mContainerGROUPClientEntity = null
         mContainerGROUPClientTypeEntity = null
         LOG.trace("after.mPlatformId=${mPlatformId}")
@@ -97,6 +106,12 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         LOG.debug("result = ${result.containerId}")
         return result
     }
+
+    fun getContainerMediaEntity(containerId: Int): ContainerMediaEntity {
+        val result = database.getContainerMediaEntity(getContainer(containerId))
+        return result
+    }
+
 
     // TODO: !??
     fun getGroupByContainerClientS(): MutableList<ContainerGROUPClientEntity> {
@@ -196,7 +211,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
 
 
-    fun updateContainerVolume( containerId: Int, volume: Double?) {
+    fun updateContainerVolume(containerId: Int, volume: Double?) {
         database.updateContainerVolume(this.getPlatformId(), containerId, volume)
         set_PlatformLiveData()
 //        getContainerEntity(containerId)
@@ -213,13 +228,13 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 //        getPlatformEntity(mPlatformEntityLiveData.value!!.platformId!!)
     }
 
-    fun updateVolumePickup(platformId: Int, volume: Double?) {
-        database.updateVolumePickup(platformId, volume)
+    fun updateVolumePickup(volume: Double?) {
+        database.updateVolumePickup(this.getPlatformId(), volume)
         set_PlatformLiveData()
     }
 
-    fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
-        database.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
+    fun updatePlatformKGO(kgoVolume: String, isServedKGO: Boolean) {
+        database.updatePlatformKGO(this.getPlatformId(), kgoVolume, isServedKGO)
         set_PlatformLiveData()
     }
 
@@ -256,13 +271,13 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         drivingRouter.requestRoutes(requestPoints, drivingOptions, vehicleOptions, drivingSession)
     }
 
-    fun updateContainerFailure(platformId: Int, containerId: Int, failText: String, commentText: String) {
-        database.setStateFailureForContainer(platformId, containerId, failText, commentText)
+    fun updateContainerFailure(containerId: Int, failText: String, commentText: String) {
+        database.setStateFailureForContainer(this.getPlatformId(), containerId, failText, commentText)
         set_PlatformLiveData()
     }
 
-    fun updateContainerBreakDown(platformId: Int, containerId: Int, failText: String, commentText: String) {
-        database.setStateBreakdownForContainer(platformId, containerId, failText, commentText)
+    fun updateContainerBreakDown(containerId: Int, failText: String, commentText: String) {
+        database.setStateBreakdownForContainer(this.getPlatformId(), containerId, failText, commentText)
         set_PlatformLiveData()
     }
 
@@ -278,6 +293,16 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun addBeforeMediaComntainerByTypes(imageS: List<ImageEntity>) {
         database.addBeforeMediaComntainerByTypes(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+    }
+
+    fun addFailureMediaContainer(containerId: Int, imageS: List<ImageEntity>) {
+        database.addFailureMediaContainer(this.getPlatformId(), containerId, imageS)
+        set_PlatformLiveData()
+    }
+
+    fun addBreakdownMediaContainer(containerId: Int, imageS: List<ImageEntity>) {
+        database.addBreakdownMediaContainer(this.getPlatformId(), containerId, imageS)
         set_PlatformLiveData()
     }
 }

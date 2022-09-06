@@ -5,18 +5,15 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 class PhotoKgoServedF : APhotoFragment() {
-        private val mPlatformEntity: PlatformEntity
-        get() =  viewModel.getPlatformEntity()
+    private val mPlatformMediaEntity: PlatformMediaEntity
+        get() =  viewModel.getPlatformMediaEntity()
     override fun onGetTextLabelFor() = "КГО.забрал"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mPlatformEntity == null) {
-            toast("Ошибка.todo:::")
-            return RealmList<ImageEntity>()
-        }
-        return mPlatformEntity!!.kgoServed!!.media
+        return mPlatformMediaEntity.kgoServedMedia
     }
 
     override fun onGetDirName(): String {
@@ -34,9 +31,9 @@ class PhotoKgoServedF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val servedKGOVolumeText = getArgumentName()!!
-        viewModel.database.addKgoServed(mPlatformEntity?.platformId!!, imageS)
-        viewModel.updatePlatformKGO(mPlatformEntity?.platformId!!, servedKGOVolumeText, isServedKGO = true)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        viewModel.database.addKgoServed(viewModel.getPlatformId(), imageS)
+        viewModel.updatePlatformKGO(servedKGOVolumeText, isServedKGO = true)
+        navigateMain(R.id.PServeF, viewModel.getPlatformId())
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 

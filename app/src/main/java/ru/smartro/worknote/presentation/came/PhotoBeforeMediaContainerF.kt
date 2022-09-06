@@ -5,20 +5,17 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 class PhotoBeforeMediaContainerF : APhotoFragment() {
 
-    private val mPlatformEntity: PlatformEntity
-        get() = viewModel.getPlatformEntity()
+    private val mPlatformMediaEntity: PlatformMediaEntity
+        get() = viewModel.getPlatformMediaEntity()
 
     override fun onGetTextLabelFor() = "контейнер: фото до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mPlatformEntity == null) {
-            toast("Ошибка.todo:::")
-            return RealmList<ImageEntity>()
-        }
-        return mPlatformEntity!!.beforeMedia
+        return mPlatformMediaEntity.beforeMedia
     }
 
     override fun onGetDirName(): String {
@@ -26,7 +23,6 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-       
         mMaxPhotoCount = Int.MAX_VALUE
     }
 
@@ -35,16 +31,15 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        viewModel.database.addBeforeMediaComntainerByTypes(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId!!)
-//        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
+        viewModel.addBeforeMediaComntainerByTypes(imageS)
+        navigateMain(R.id.PServeF, viewModel.getPlatformId())
     }
 
     override fun onGetIsVisibleBtnCancel() = false
     override fun onClickBtnCancel() {}
 
     override fun onSavePhoto() {
-//        TODO("Not yet implemented")
+
     }
 
     override fun onBackPressed() {

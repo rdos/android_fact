@@ -1,31 +1,29 @@
 package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
+import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 class PhotoPickupMediaF : APhotoFragment() {
-    private val mPlatformEntity: PlatformEntity
-        get() =  viewModel.getPlatformEntity()
+    private var newVolume: Double = Dnull
+    private val mPlatformMediaEntity: PlatformMediaEntity
+        get() =  viewModel.getPlatformMediaEntity()
     override fun onGetTextLabelFor() = "фото подбора"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mPlatformEntity == null) {
-            toast("Ошибка.todo:::")
-            return RealmList<ImageEntity>()
-        }
-        return mPlatformEntity!!.pickupMedia
+        return mPlatformMediaEntity.pickupMedia
     }
 
     override fun onGetDirName(): String {
         return getArgumentID().toString() + File.separator + "pickupMedia"
     }
 
-
     override fun onBeforeUSE() {
-       
+        newVolume = getArgumentName()!!.toDouble()
 //        mMaxPhotoCount = mPlatformEntity!!.getPickupMediaSize()
     }
 
@@ -34,10 +32,10 @@ class PhotoPickupMediaF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        val newVolume = getArgumentName()!!.toDouble()
-        viewModel.database.addPlatformPickupMedia(mPlatformEntity?.platformId!!, imageS)
-        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+
+        viewModel.database.addPlatformPickupMedia(viewModel.getPlatformId(), imageS)
+        viewModel.updateVolumePickup(newVolume)
+        navigateMain(R.id.PServeF, viewModel.getPlatformId())
     }
 
     override fun onSavePhoto() {
@@ -48,9 +46,8 @@ class PhotoPickupMediaF : APhotoFragment() {
     override fun onGetIsVisibleBtnCancel() = true
 
     override fun onClickBtnCancel() {
-        val newVolume = getArgumentName()!!.toDouble()
-        viewModel.updateVolumePickup(mPlatformEntity?.platformId!!, newVolume)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        viewModel.updateVolumePickup(newVolume)
+        navigateMain(R.id.PServeF, viewModel.getPlatformId())
     }
 
 

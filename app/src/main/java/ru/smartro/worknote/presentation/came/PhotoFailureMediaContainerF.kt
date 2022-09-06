@@ -5,12 +5,19 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ContainerEntity
+import ru.smartro.worknote.work.ContainerMediaEntity
 import ru.smartro.worknote.work.ImageEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 class PhotoFailureMediaContainerF : APhotoFragment() {
     private var mFailReasonS: List<String>? = null
-    private var mContainerEntity: ContainerEntity? = null
+    private val mContainerId: Int
+    get() = getArgumentID()
+    private val mContainerMediaEntity: ContainerMediaEntity
+    get() {
+        return viewModel.getContainerMediaEntity(mContainerId)
+    }
     override fun onGetTextForFailHint() = "Причина невывоза контейнера"
     override fun onGetStringList(): List<String>? {
         mFailReasonS = viewModel.getFailReasonS()
@@ -24,11 +31,7 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
     override fun onGetIsVisibleComment(): Boolean = true
 
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mContainerEntity == null) {
-            toast("Ошибка.todo:::")
-            return RealmList<ImageEntity>()
-        }
-        return mContainerEntity!!.failureMedia
+        return mContainerMediaEntity.failureMedia
     }
 
     override fun onGetDirName(): String {
@@ -38,8 +41,6 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
     }
 
     override fun onBeforeUSE() {
-        val containerId = getArgumentID()
-        mContainerEntity = viewModel.database.getContainerEntity(containerId)
         tvLabelFor(requireView())
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
@@ -63,11 +64,9 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        val platformId = getArgumentName()?.toInt()!!
-        val containerId = mContainerEntity?.containerId!!
-        viewModel.database.addFailureMediaContainer(platformId, containerId, imageS)
-        viewModel.updateContainerFailure(platformId, containerId, failText!!, getCommentText())
-        navigateMain(R.id.PServeF, platformId)
+        viewModel.addFailureMediaContainer(mContainerId, imageS)
+        viewModel.updateContainerFailure(mContainerId, failText!!, getCommentText())
+        navigateMain(R.id.PServeF, viewModel.getPlatformId())
     }
 
     override fun onGetIsVisibleBtnCancel() = false

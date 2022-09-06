@@ -52,7 +52,7 @@ class StartAct : AAct() {
         val isHasTask = vm.database.hasWorkOrderInProgress()
         if (isHasToken && isHasTask) {
             hideDialog()
-            hideInfoDiaLOG()
+            hideInfoDialog()
             vm.viewModelScope.launch {
                 App.getAppliCation().getNetwork().sendAppStartUp()
             }
@@ -66,17 +66,17 @@ class StartAct : AAct() {
             val inflater = LayoutInflater.from(this)
             val dialogView = inflater.inflate(R.layout.dialog___act_start, null)
             MyUtil.hideKeyboard(this)
-            createInfoDiaLOG(dialogView).let {
+            createInfoDialog(dialogView).let {
                 val btnOk = dialogView.findViewById<Button>(R.id.dialog___act_start_point__ok)
                 btnOk.setOnClickListener {
                     hideDialog()
-                    hideInfoDiaLOG()
+                    hideInfoDialog()
                     startActivity(Intent(this, MainAct::class.java))
                     finish()
                 }
                 val btnCancel = dialogView.findViewById<Button>(R.id.dialog___act_start_point__ie)
                 btnCancel.setOnClickListener {
-                    hideInfoDiaLOG()
+                    hideInfoDialog()
                     showingProgress()
                     //ниже "супер код"
                     //todo: copy-past from SYNCworkER
@@ -111,12 +111,12 @@ class StartAct : AAct() {
                     //todo: ))))))))))))))))))))))))))))))))))))))))))))))))))))
                     val dialogView2 = inflater.inflate(R.layout.dialog___act_start, null)
                     dialogView2.findViewById<AppCompatTextView>(R.id.dialog___act_start__dialog_string).text = dialogString
-                    createInfoDiaLOG(dialogView2).let {
+                    createInfoDialog(dialogView2).let {
                         val btnOk2 = dialogView2.findViewById<Button>(R.id.dialog___act_start_point__ie)
                         btnOk2.text = "Да, стереть и выйти"
                         btnOk2.setOnClickListener {
                             hideDialog()
-                            hideInfoDiaLOG()
+                            hideInfoDialog()
                             App.getAppParaMS().setAppRestartParams()
                             vm.database.clearDataBase()
                             startActivity(Intent(this,  XChecklistAct::class.java))
@@ -126,7 +126,7 @@ class StartAct : AAct() {
                         btnCancel2.text = "Вернуться в задание"
                         btnCancel2.setOnClickListener {
                             hideDialog()
-                            hideInfoDiaLOG()
+                            hideInfoDialog()
                             startActivity(Intent(this, MainAct::class.java))
                             finish()
                         }
@@ -136,7 +136,7 @@ class StartAct : AAct() {
             }
         } else {
             hideDialog()
-            hideInfoDiaLOG()
+            hideInfoDialog()
             startActivity(Intent(this,  XChecklistAct::class.java))
             finish()
         }
@@ -257,10 +257,10 @@ class StartAct : AAct() {
         }
     }
 
-    private fun hideInfoDiaLOG() {
+    private fun hideInfoDialog() {
         mInfoDialog?.hide()
     }
-    private fun createInfoDiaLOG(view: View): View {
+    private fun createInfoDialog(view: View): View {
 //        val dlg = AlertDialog.Builder(this, R.style.Theme_Inventory_Dialog)
         val builder = AlertDialog.Builder(this)
 

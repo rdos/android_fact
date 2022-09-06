@@ -7,29 +7,18 @@ import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.MD5
 
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 open class PhotoAfterMediaF : APhotoFragment() {
 //    private var mPlatformEntity: PlatformEntity = TODO()
 //        get() =  vm.getPlatformEntity()
-
 //GHП!РИКОЛ!!
-
-
-
-    private val mPlatformEntity: PlatformEntity
-        get() =  viewModel.getPlatformEntity()
-
-
-
-
+    private val mPlatformMediaEntity: PlatformMediaEntity
+        get() =  viewModel.getPlatformMediaEntity()
 //    override fun onGetTextLabelFor() = "фото после обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mPlatformEntity == null) {
-            toast("Ошибка.todo:::")
-            return RealmList<ImageEntity>()
-        }
-        return mPlatformEntity!!.afterMedia
+        return mPlatformMediaEntity.afterMedia
     }
 
     override fun onGetDirName(): String {
@@ -52,7 +41,7 @@ open class PhotoAfterMediaF : APhotoFragment() {
     }
 
     override fun onSavePhoto() {
-//        TODO("Not yet implemented")
+
     }
 
 
