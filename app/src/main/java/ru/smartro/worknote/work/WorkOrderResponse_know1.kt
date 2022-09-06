@@ -93,7 +93,7 @@ data class Platform_know1(
     val id: Int,
     @SerializedName("name")
     val name: String? = null,
-    @SerializedName("updateAt")
+    @SerializedName("update_at")
     var updateAt: Long,
     @SerializedName("srp_id")
     val srpId: Int,

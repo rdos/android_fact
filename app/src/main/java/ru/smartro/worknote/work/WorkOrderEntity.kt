@@ -143,7 +143,7 @@ open class WorkOrderEntity(
                     // failureComment
                     status = it.status, //!r_dos
                     beginnedAt = it.beginnedAt,
-                    updateAt = 0,
+                    updateAt = it.updateAt,
                     finishedAt = it.finishedAt,
                     workOrderId = workorderId,
                     // events
@@ -346,7 +346,7 @@ open class PlatformEntity(
     @SerializedName("beginned_at")
     var beginnedAt: String? = null,
     @Expose
-    @SerializedName("updateAt")
+    @SerializedName("update_at")
     var updateAt: Long = 0,
     @Expose
     @SerializedName("network_status")
