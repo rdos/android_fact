@@ -1012,7 +1012,7 @@ class RealmRepository(private val p_realm: Realm) {
                 ConfigName.NOINTERNET_CNT,
                 ConfigName.BOOT_CNT,
                 ConfigName.RUNAPP_CNT ,
-                ConfigName.SWIPE_CNT -> result.isEvent = true
+                ConfigName.SWIPE_CNT -> result.isAppEvent = true
                 else -> {}
             }
         } else {

@@ -853,7 +853,7 @@ open class ConfigEntity(
     @PrimaryKey
     private var name: String = Snull,
     var value: String = Snull,
-    var isEvent: Boolean = false
+    var isAppEvent: Boolean = false
 ) : RealmObject() {
 
     fun toLong(): Long {
