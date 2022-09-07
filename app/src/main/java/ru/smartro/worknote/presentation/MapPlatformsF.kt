@@ -321,8 +321,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             /**@kotlin.internal.InlineOnly
             public inline fun <T> compareByDescending(crossinline selector: (T) -> Comparable<*>?): Comparator<T> =
             Comparator { a, b -> compareValuesBy(b, a, selector) }*/
-            newPlatformS.sortWith(compareBy { (it.updateAt) })
-            newPlatformS.sortWith(compareBy { (it.finishedAt) })
+            newPlatformS.sortWith(compareBy { it.updateAt })
 
             mPlatformS = newPlatformS
 //            mPlatformS = vs.baseDat.findPlatforms(getWorkOrderSFilter())
