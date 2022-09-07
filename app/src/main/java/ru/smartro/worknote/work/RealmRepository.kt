@@ -581,7 +581,7 @@ class RealmRepository(private val p_realm: Realm) {
             if(platform == null)
                 return@executeTransaction
 
-            val configEntities = realm.copyFromRealm(realm.where(ConfigEntity::class.java).findAll()).toMutableList()
+            val configEntities = realm.copyFromRealm(realm.where(ConfigEntity::class.java).equalTo("isEvent", true).findAll()).toMutableList()
             platform.events = RealmList()
             platform.events.addAll(configEntities.map { el ->
                 AppEventEntity(event = el.configName.displayName, counter = el.value)
@@ -1004,8 +1004,17 @@ class RealmRepository(private val p_realm: Realm) {
         val result: ConfigEntity
         val configEntity = p_realm.where(ConfigEntity::class.java).equalTo("name", name.displayName.uppercase()).findFirst()
         if (configEntity == null) {
-           result = ConfigEntity()
-           result.configName = name
+            result = ConfigEntity()
+            result.configName = name
+            when(name) {
+                ConfigName.AIRPLANE_MODE_ON_CNT,
+                ConfigName.AIRPLANE_MODE_OFF_CNT,
+                ConfigName.NOINTERNET_CNT,
+                ConfigName.BOOT_CNT,
+                ConfigName.RUNAPP_CNT ,
+                ConfigName.SWIPE_CNT -> result.isEvent = true
+                else -> {}
+            }
         } else {
             result = p_realm.copyFromRealm(configEntity)
         }
