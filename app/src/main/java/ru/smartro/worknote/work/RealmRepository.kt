@@ -730,8 +730,8 @@ class RealmRepository(private val p_realm: Realm) {
                 .findFirst()
             platformEntity!!.addRemainingKGOMedia(imageS)
             val platformMediaEntity = loadPlatformMediaEntity(platformEntity)
-            platformMediaEntity.kgoServedMedia = mEmptyImageEntityList
-            platformMediaEntity.kgoServedMedia.addAll(imageS)
+            platformMediaEntity.kgoRemainingMedia = mEmptyImageEntityList
+            platformMediaEntity.kgoRemainingMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
