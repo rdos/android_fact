@@ -166,9 +166,9 @@ class SYNCworkER(
 
 
         LOG.info("platforms.size=${platforms.size}")
-        val gson = Gson()
-        val bodyInStringFormat = gson.toJson(synchronizeBody)
-        saveJSON(bodyInStringFormat, "postSynchro")
+//        val gson = Gson()
+//        val bodyInStringFormat = gson.toJson(synchronizeBody)
+//        saveJSON(bodyInStringFormat, "postSynchro")
         val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
         when (synchronizeResponse.status) {
             Status.SUCCESS -> {
