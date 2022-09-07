@@ -354,8 +354,8 @@ open class PlatformEntity(
     @Expose
     @SerializedName("finished_at")
     var finishedAt: String? = null,
-    @Expose
     // TODO: Нам так приходит это поле же?..
+    @Expose
     @SerializedName("workOrderId")
     var workOrderId: Int = Inull,
 
@@ -420,19 +420,24 @@ open class PlatformEntity(
                 el -> el.isActiveToday
         }
 
-        val isAllErrorContainers = filteredContainers.all {
-            it.getStatusContainer() == StatusEnum.ERROR
+        val containerStatuses = filteredContainers.map { it.getStatusContainer() }
+
+        val isAllErrorContainers = containerStatuses.all {
+            it == StatusEnum.ERROR
         }
 
         if(isAllErrorContainers || _failureMediaSize > 0)
             return StatusEnum.ERROR
 
+        val isAllSuccessContainers = containerStatuses.all {
+            it == StatusEnum.SUCCESS
+        }
 
-        if(_afterMediaSize != 0)
+        if(isAllSuccessContainers && _afterMediaSize != 0)
             return StatusEnum.SUCCESS
 
-        val hasUnservedContainers = filteredContainers.any {
-                el -> el.getStatusContainer() == StatusEnum.NEW
+        val hasUnservedContainers = containerStatuses.any {
+            it == StatusEnum.NEW
         }
 
         if(!hasUnservedContainers && _afterMediaSize != 0)
@@ -694,16 +699,21 @@ open class PlatformEntity(
     }
 
     fun getServeMode(): String? {
-        if(
-            this.containerS.any { listOf(0.25, 0.5, 0.75, 1.25).contains(it.volume) } ||
-            this.kgoServed?.volume != null ||
-            this.volumePickup != null
-            || (this.getFailureMediaSize() != 0 && this.failureReasonId != 0)
-        ) {
+        val hasAnyContainerNonIntegerVolume = this.containerS.any {
+            listOf(0.25, 0.5, 0.75, 1.25).contains(it.volume)
+        }
+        val isKgoServed = this.kgoServed?.volume != null
+        val isPickedUp = this.volumePickup != null
+        val isContainerError = this.getFailureMediaSize() != 0 || this.failureReasonId != 0
+
+        if(hasAnyContainerNonIntegerVolume || isKgoServed || isPickedUp || isContainerError) {
             return ServeMode.PServeF
-        } else if(this.containerS.any { it.volume != null && it.volume!! > 1.25 }) {
+        }
+
+        if(this.containerS.any { it.volume != null && it.volume!! > 1.25 }) {
             return ServeMode.PServeGroupByContainersF
         }
+
         return null
     }
 
@@ -1171,5 +1181,3 @@ open class ImageEntity(
         }
     }
 }
-
-
