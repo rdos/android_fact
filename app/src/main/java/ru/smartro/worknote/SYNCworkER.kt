@@ -106,7 +106,7 @@ class SYNCworkER(
                 delay(DELAY_MS)
             } //todo: while (true) {
         } catch (eXthr: Throwable) {
-            LOG.error("", eXthr)
+            LOG.error("eXthr", eXthr)
 //            аккуратней::r_dos
             params.isModeSYNChrONize_FoundError = true
             showWorkERROR()
@@ -157,13 +157,12 @@ class SYNCworkER(
             LOG.debug("SYNCworkER LAST PLATFORMS")
         }
 
-
         val gps = App.getAppliCation().gps()
         val synchronizeBody = SynchronizeBody(App.getAppParaMS().wayBillId,
             gps.PointTOBaseData(),
             AppParaMS().deviceId,
             gps.PointTimeToLastKnowTime_SRV(),
-            PlatformEntity.toSRV(platforms, db()))
+        PlatformEntity.toSRV(platforms, db()))
 
 
         LOG.info("platforms.size=${platforms.size}")

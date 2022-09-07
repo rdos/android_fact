@@ -166,7 +166,9 @@ open class WorkOrderEntity(
                 platformMediaEntity.failureMedia.addAll(failureMedia)
 
                 it.kgo_served?.let {
-                    platformEntity.setServedKGOVolume(it.volume.toStr())
+                    it.volume?.let {
+                        platformEntity.setServedKGOVolume(it.toStr())
+                    }
                     it.media?.let {
                         val kgoServedMedia = mapMedia(it)
                         platformEntity.addServerKGOMedia(kgoServedMedia)
@@ -175,7 +177,9 @@ open class WorkOrderEntity(
                 }
 
                 it.kgo_remaining?.let {
-                    platformEntity.setRemainingKGOVolume(it.volume.toStr())
+                    it.volume?.let {
+                        platformEntity.setRemainingKGOVolume(it.toStr())
+                    }
                     it.media?.let {
                         val kgoRemainingMedia = mapMedia(it)
                         platformEntity.addRemainingKGOMedia(kgoRemainingMedia)
@@ -260,12 +264,19 @@ open class AppEventEntity(
 open class PlatformMediaEntity(
 //    var platformEntity: PlatformEntity? = null,
     @PrimaryKey
+    @Expose
     var platformId: Int = Inull,
+    @Expose
     var beforeMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
     var kgoServedMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
     var kgoRemainingMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
     var pickupMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
     var failureMedia: RealmList<ImageEntity> = RealmList(),
+    @Expose
     var afterMedia: RealmList<ImageEntity> = RealmList(),
     var workOrderId: Int = Inull,
     var dev_info: String? = null
@@ -390,8 +401,24 @@ open class PlatformEntity(
     fun getAfterMediaSize() = afterMedia.size
     fun getFailureMediaSize() = this.failureMedia.size
     fun getPickupMediaSize() = this.pickupMedia.size
-    fun getRemainingKGOMediaSize() = this.kgoRemaining!!.media.size
-    fun getServedKGOMediaSize() = this.kgoServed!!.media.size
+    fun getRemainingKGOMediaSize(): Int {
+        var result = 0
+        if (this.kgoRemaining == null) {
+            LOG.trace("this.kgoRemaining == null, result=${result}")
+            return result
+        }
+        result = this.kgoRemaining!!.media.size
+        return result
+    }
+    fun getServedKGOMediaSize(): Int {
+        var result = 0
+        if (this.kgoServed == null) {
+            LOG.trace("this.kgoRemaining == null, result=${result}")
+            return result
+        }
+        result = this.kgoServed!!.media.size
+        return result
+    }
 
     fun isTypoMiB(): Boolean = this.icon == "Bath"
 
@@ -768,8 +795,7 @@ open class PlatformEntity(
         fun toSRV(platforms: List<PlatformEntity>, db: RealmRepository): List<PlatformEntity> {
             for(platform in platforms) {
                 LOG.debug("platform.platformId=${platform.platformId}")
-                val platformMediaEntity = db.loadPlatformMediaEntity(platform)
-
+                val platformMediaEntity = db.getPlatformMediaEntity(platform)
                 platform.beforeMedia = platformMediaEntity.beforeMedia
                 platform.kgoServed?.let {
                     it.media = platformMediaEntity.kgoServedMedia
@@ -783,7 +809,7 @@ open class PlatformEntity(
 
                 for (container in platform.containerS) {
                     LOG.debug("container.containerId=${container.containerId}")
-                    val containerMediaEntity = db.loadContainerMediaEntity(container)
+                    val containerMediaEntity = db.getContainerMediaEntity(container)
                     container.failureMedia = containerMediaEntity.failureMedia
                     container.breakdownMedia = containerMediaEntity.breakdownMedia
                 }

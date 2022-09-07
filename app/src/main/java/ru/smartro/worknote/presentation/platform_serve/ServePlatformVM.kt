@@ -153,6 +153,8 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     private fun set_PlatformLiveData() {
         mPlatformEntity = null
         mPlatformEntity = getPlatformEntity()
+        mPlatformMediaEntity = null
+        mPlatformMediaEntity = getPlatformMediaEntity()
         _PlatformLiveData.postValue(mPlatformEntity!!)
     }
 
