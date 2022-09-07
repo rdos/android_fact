@@ -34,6 +34,11 @@ class RealmRepository(private val p_realm: Realm) {
                     platformSForChange = _getPlatformSForChange(platform, platformS)
                 }
             }
+            for (platform in platformS) {
+                for (container in platform.containerS) {
+                    container.platformEntity = platform
+                }
+            }
             realm.insertOrUpdate(platformS)
         }
 //        return workOrder

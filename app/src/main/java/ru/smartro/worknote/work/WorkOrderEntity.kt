@@ -262,21 +262,13 @@ open class AppEventEntity(
 ): Serializable, RealmObject()
 
 open class PlatformMediaEntity(
-//    var platformEntity: PlatformEntity? = null,
     @PrimaryKey
-    @Expose
     var platformId: Int = Inull,
-    @Expose
     var beforeMedia: RealmList<ImageEntity> = RealmList(),
-    @Expose
     var kgoServedMedia: RealmList<ImageEntity> = RealmList(),
-    @Expose
     var kgoRemainingMedia: RealmList<ImageEntity> = RealmList(),
-    @Expose
     var pickupMedia: RealmList<ImageEntity> = RealmList(),
-    @Expose
     var failureMedia: RealmList<ImageEntity> = RealmList(),
-    @Expose
     var afterMedia: RealmList<ImageEntity> = RealmList(),
     var workOrderId: Int = Inull,
     var dev_info: String? = null
@@ -286,9 +278,6 @@ open class PlatformMediaEntity(
         return beforeMedia.size
     }
 
-//    fun getPlatform(): PlatformEntity {
-//        return this.platformEntity!!
-//    }
 
     companion object {
         // TODO: !!!
@@ -921,7 +910,7 @@ open class ContainerEntity(
     @PrimaryKey
     var containerId: Int = Inull,
     var platformId: Int = Inull,
-//    var platformEntity: PlatformEntity? = null,
+    var platformEntity: PlatformEntity? = null,
     @Expose
     @SerializedName("number")
     var number: String? = null,
