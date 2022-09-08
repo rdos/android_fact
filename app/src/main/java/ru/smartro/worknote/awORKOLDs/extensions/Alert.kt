@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.LOG
@@ -151,6 +152,22 @@ fun ANOFragment.showDialogFillKgoVolume(): View {
     return view
 }
 
+fun ANOFragment.showNeedCleanupAlert(onDismiss: () -> Unit): View {
+    val context = requireActivity() as AAct
+    val builder = AlertDialog.Builder(context)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.f_pserve__alert_dialog_spring_cleaning, null)
+    builder.setView(view)
+    builder.setCancelable(false)
+    mCustomDialog = builder.create()
+    view.findViewById<AppCompatButton>(R.id.acb__alert_dialog_spring_cleaning__accept).setOnClickListener {
+        mCustomDialog?.dismiss()
+        onDismiss()
+    }
+    mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    mCustomDialog?.show()
+    return view
+}
 
 
 fun ANOFragment.warningClearNavigator(title: String): View {

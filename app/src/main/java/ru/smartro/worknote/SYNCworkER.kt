@@ -149,7 +149,7 @@ class SYNCworkER(
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
             timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
             platforms = db().findPlatforms30min()
-            LOG.debug( "SYNCworkER PLATFORMS IN LAST 30 min")
+            LOG.debug("SYNCworkER PLATFORMS IN LAST 30 min")
         }
         if (platforms.isEmpty()) {
             timeBeforeRequest = MyUtil.timeStampInSec()

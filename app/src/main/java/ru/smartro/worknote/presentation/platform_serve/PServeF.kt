@@ -1,5 +1,7 @@
 package ru.smartro.worknote.presentation.platform_serve
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
@@ -17,6 +19,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +31,7 @@ import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
+import ru.smartro.worknote.awORKOLDs.extensions.showNeedCleanupAlert
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.work.ConfigName
@@ -51,7 +55,7 @@ class PServeF :
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
     private var acsbVolumePickup: SeekBar? = null
-
+    private var clHeaderWrapper: ConstraintLayout? = null
     private var btnCompleteTask: AppCompatButton? = null
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
@@ -66,7 +70,7 @@ class PServeF :
 
     override fun onInitLayoutView(sview: SmartROLinearLayout): Boolean {
         tvPlatformSrpId = sview.findViewById(R.id.tv_f_pserve__sprid)
-
+        clHeaderWrapper = sview.findViewById(R.id.cl__f_pserve__header_wrapper)
         btnCompleteTask = sview.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
         sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
@@ -235,6 +239,31 @@ class PServeF :
 
             }
         })
+
+        if(_PlatformEntity.needCleanup) {
+            if(_PlatformEntity.needCleanupWasShown == false &&
+                _PlatformEntity.getStatusPlatform() == StatusEnum.UNFINISHED) {
+                showNeedCleanupAlert {
+                    view?.apply {
+                        val colorFrom = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+                        val colorTo = ContextCompat.getColor(requireContext(), R.color.purple_light)
+                        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+                        colorAnimation.startDelay = 200
+                        colorAnimation.duration = 800
+                        colorAnimation.addUpdateListener { animator ->
+                            val colorValue = animator.animatedValue as Int
+                            clHeaderWrapper?.setBackgroundColor(colorValue)
+                            btnCompleteTask?.setBackgroundColor(colorValue)
+                        }
+                        colorAnimation.start()
+                    }
+                }
+            } else {
+                val colorTo = ContextCompat.getColor(requireContext(), R.color.purple_light)
+                clHeaderWrapper?.setBackgroundColor(colorTo)
+                btnCompleteTask?.setBackgroundColor(colorTo)
+            }
+        }
 
         return false
     }
