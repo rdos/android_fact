@@ -581,7 +581,7 @@ class RealmRepository(private val p_realm: Realm) {
             if(platform == null)
                 return@executeTransaction
 
-            val configEntities = realm.copyFromRealm(realm.where(ConfigEntity::class.java).equalTo("isEvent", true).findAll()).toMutableList()
+            val configEntities = realm.copyFromRealm(realm.where(ConfigEntity::class.java).equalTo("isAppEvent", true).findAll()).toMutableList()
             platform.events = RealmList()
             platform.events.addAll(configEntities.map { el ->
                 AppEventEntity(event = el.configName.displayName, counter = el.value)
