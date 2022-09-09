@@ -346,7 +346,7 @@ open class PlatformEntity(
     @SerializedName("beginned_at")
     var beginnedAt: String? = null,
     @Expose
-    @SerializedName("update_at")
+    @SerializedName("updated_at")
     var updateAt: Long = 0,
     @Expose
     @SerializedName("network_status")
@@ -699,14 +699,15 @@ open class PlatformEntity(
     }
 
     fun getServeMode(): String? {
-        val hasAnyContainerNonIntegerVolume = this.containerS.any {
-            listOf(0.25, 0.5, 0.75, 1.25).contains(it.volume)
+        val nonIntegerVolumes = listOf(0.25, 0.5, 0.75, 1.25)
+        val hasContainerFailureOrNonIntegerVolume = this.containerS.any {
+            it.failureReasonId != 0 || nonIntegerVolumes.contains(it.volume)
         }
+        val isPlatformError = this.getFailureMediaSize() != 0 || this.failureReasonId != 0
         val isKgoServed = this.kgoServed?.volume != null
         val isPickedUp = this.volumePickup != null
-        val isContainerError = this.getFailureMediaSize() != 0 || this.failureReasonId != 0
 
-        if(hasAnyContainerNonIntegerVolume || isKgoServed || isPickedUp || isContainerError) {
+        if(hasContainerFailureOrNonIntegerVolume || isPlatformError || isKgoServed || isPickedUp ) {
             return ServeMode.PServeF
         }
 

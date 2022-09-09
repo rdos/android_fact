@@ -315,7 +315,7 @@ class RealmRepository(private val p_realm: Realm) {
             platform.failureReasonId = failureReasonId
 
             platform.containerS.forEach { container ->
-                if (container.getStatusContainer() != StatusEnum.SUCCESS) {
+                if (container.getStatusContainer() == StatusEnum.NEW) {
                     container.failureReasonId = failureReasonId
                 }
             }
