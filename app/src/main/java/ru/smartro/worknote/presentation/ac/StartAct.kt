@@ -56,7 +56,7 @@ class StartAct : AAct() {
             vm.viewModelScope.launch {
                 App.getAppliCation().getNetwork().sendAppStartUp()
             }
-            startActivity(Intent(this, MainAct::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
         }

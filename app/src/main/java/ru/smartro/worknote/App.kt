@@ -11,10 +11,7 @@ import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.StrictMode
+import android.os.*
 import android.os.StrictMode.ThreadPolicy
 import android.widget.RemoteViews
 import android.widget.Toast
@@ -35,12 +32,16 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.FileAppender
 import com.yandex.mapkit.MapKitFactory
-import io.realm.*
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
@@ -49,12 +50,12 @@ import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -118,9 +119,16 @@ class App : AApp() {
         var net_loc: Location? = null
         var gps_loc: Location? = null
         var finalLoc: Location? = null
+        try {
+            if (gps_enabled) {
+                gps_loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            }
+            if (network_enabled) {
+                net_loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            }
+        } catch (ex: Exception) {
 
-        if (gps_enabled) gps_loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        if (network_enabled) net_loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        }
 
         if (gps_loc == null && net_loc == null) {
             return getAppParaMS().getSaveGPS()
@@ -369,6 +377,12 @@ class App : AApp() {
         //gjпох
     }
 
+    fun startVibrateService() {
+        val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        // Vibrate for 500 milliseconds
+        val ve = VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE)
+        v.vibrate(ve)
+    }
 
     fun showNotification(pendingIntent: PendingIntent, contentText: String, title: String) {
         val notificationManager = NotificationManagerCompat.from(this)
@@ -626,16 +640,22 @@ const val TIME_OUT = 240000L
 private const val NOTIFICATION_CHANNEL_ID__DEFAULT = "FACT_CH_ID"
 const val NOTIFICATION_CHANNEL_ID__MAP_ACT = "FACT_APP_CH_ID"
 
+//DownloadManager
+//WorkManager
 
+//AlarmManager
 val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
+//    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
     Manifest.permission.WRITE_EXTERNAL_STORAGE,
     Manifest.permission.READ_EXTERNAL_STORAGE,
     Manifest.permission.READ_PHONE_STATE,
     Manifest.permission.LOCATION_HARDWARE,
     Manifest.permission.ACCESS_NETWORK_STATE,
     Manifest.permission.CAMERA,
-    Manifest.permission.SYSTEM_ALERT_WINDOW
+    Manifest.permission.SYSTEM_ALERT_WINDOW,
+    Manifest.permission.RECORD_AUDIO
+
 )
 
 //todo:const val A_SLEEP_TIME_1MIN__MS = 60000L
