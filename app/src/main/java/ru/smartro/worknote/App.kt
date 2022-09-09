@@ -754,6 +754,13 @@ val Any.TAG: String
 val Any.LOG: org.slf4j.Logger
     get() = LoggerFactory.getLogger(TAG)
 
+fun org.slf4j.Logger.todo(text: String? = null) {
+    this.trace("TODO")
+    this.info("TODO")
+    this.debug("TODO:${text}")
+    this.warn("TODO")
+    this.error("TODO")
+}
 
 fun Any.getLogger(): org.slf4j.Logger {
    return LoggerFactory.getLogger( "${this::class.simpleName}")

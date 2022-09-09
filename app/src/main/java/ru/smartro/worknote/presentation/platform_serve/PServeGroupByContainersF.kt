@@ -175,7 +175,7 @@ class PServeGroupByContainersF : AFragment() {
         mBackPressedCnt--
         if (mBackPressedCnt <= 0) {
             vm.updatePlatformStatusUnfinished()
-            navigateBack(R.id.MapF)
+            navigateBack(R.id.MapPlatformsF)
             toast("Вы не завершили обслуживание КП.")
         } else {
             toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")

@@ -251,6 +251,11 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //            lottie.playAnimation()
             lottie.progress = 0.5f
         }
+
+        LOG.todo("r_dos/onResume.before")
+        LOG.error("r_dos/onResume.before")
+        onRefreshData()
+        LOG.error("r_dos/onResume.after")
     }
 
     override fun onBackPressed() {
@@ -280,9 +285,10 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private fun onRefreshData() {
         LOG.warn("onRefreshData.init")
-        mWorkOrderS = getActualWorkOrderS(true)
-        mPlatformS = getActualPlatformS(true)
-        val platformSWithQueryText = onRefreshBottomBehavior(mPlatformS!!)
+//        mWorkOrderS = getActualWorkOrderS(true)
+//        mPlatformS = getActualPlatformS(true)
+        val platformS = getActualPlatformS(true)
+        val platformSWithQueryText = onRefreshBottomBehavior(platformS)
         onRefreshMap(platformSWithQueryText)
         setInfoData()
         LOG.warn("onRefreshData.end")
@@ -895,21 +901,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
      */
 
-
-    override fun onStart() {
-        super.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        LOG.error("r_dos/onResume.before")
-        onRefreshData()
-        LOG.error("r_dos/onResume.after")
-    }
-
-    override fun onStop() {
-        super.onStop()
-    }
 
     override fun onDestroy() {
         super.onDestroy()

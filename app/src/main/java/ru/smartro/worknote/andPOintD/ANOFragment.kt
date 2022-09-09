@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
@@ -15,7 +16,8 @@ import ru.smartro.worknote.presentation.ac.MainAct
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
 abstract class ANOFragment : Fragment(){
-     abstract fun onGetLayout(): Int
+    abstract fun onGetLayout(): Int
+
 
     open fun onNewLiveData() {
 
@@ -26,6 +28,16 @@ abstract class ANOFragment : Fragment(){
     protected open fun onInitLayoutView(view: SmartROLinearLayout): Boolean {
         LOG.warn(" LoG.todo()")
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LOG.debug("before")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        LOG.debug("before")
     }
 
     // TODO:  abstract fun onBindLayoutState(): Boolean
@@ -71,6 +83,7 @@ abstract class ANOFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         LOG.trace("onInitLayoutView")
+        LOG.trace("onViewCreated")
 //        onCreate()
     }
 
@@ -103,14 +116,15 @@ abstract class ANOFragment : Fragment(){
         LOG.debug("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
-
+//        val navOptions = NavOptions.Builder().setPopUpTo(navFragmentId, true).build()
         if (argumentId == null) {
             // TODO: !~r_dos
 //            navController.popBackStack(navFragmentId, true)
-            navController.navigate(navFragmentId)
+            navController.navigate(navFragmentId, null)
             return
         }
         val argSBundle = getArgSBundle(argumentId, argumentName)
+
         navController.navigate(navFragmentId, argSBundle)
     }
 
@@ -141,16 +155,14 @@ abstract class ANOFragment : Fragment(){
 
 
     protected fun getArgumentID(): Int {
-        LOG.debug("getArgumentID.before")
         val result = requireArguments().getInt(ARGUMENT_NAME___PARAM_ID, Inull)
-       LOG.info("getArgumentID .result = ${result}")
+        LOG.info("getArgumentID .result = ${result}")
         return result
     }
 
     protected fun getArgumentName(): String? {
-        LOG.debug("getArgumentName.before")
         val result = requireArguments().getString(ARGUMENT_NAME___PARAM_NAME)
-       LOG.info("getArgumentName .result = ${result}")
+        LOG.info("getArgumentName .result = ${result}")
         return result
     }
 
@@ -175,7 +187,11 @@ abstract class ANOFragment : Fragment(){
 
     open fun onNewGPS() {
        LOG.warn("onNewGPS")
+    }
 
+    override fun onResume() {
+        LOG.info("onResume")
+        super.onResume()
     }
     //    companion object {
                                     //        private const val TAG = "CameraXBasic"

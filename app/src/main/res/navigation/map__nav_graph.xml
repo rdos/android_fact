@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_map"
-    app:startDestination="@id/MapF">
+    app:startDestination="@id/MapPlatformsF">
     <fragment
-        android:id="@+id/MapF"
+        android:id="@+id/MapPlatformsF"
         android:name="ru.smartro.worknote.presentation.MapPlatformsF"
         tools:layout="@layout/f_map"
-        android:label="MapF" >
+        android:label="MapPlatformsF" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"

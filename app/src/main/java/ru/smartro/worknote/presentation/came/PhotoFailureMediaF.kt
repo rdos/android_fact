@@ -72,7 +72,7 @@ open class PhotoFailureMediaF : APhotoFragment() {
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.database.addFailureMediaPlatform(viewModel.getPlatformId(), imageS)
         viewModel.database.setStateFailureForPlatform(viewModel.getPlatformId(), failText!!, getCommentText())
-        navigateBack(R.id.MapF)
+        navigateBack(R.id.MapPlatformsF)
     }
 
 

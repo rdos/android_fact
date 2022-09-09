@@ -87,7 +87,7 @@ class CompleteF : ANOFragment() {
                 if(mDatabase.hasWorkOrderInProgress() == false) {
                     finishTask_know()
                 } else {
-                    navigateBack(R.id.MapF)
+                    navigateBack(R.id.MapPlatformsF)
                 }
             }
         }

@@ -37,7 +37,7 @@ open class PhotoAfterMediaF : APhotoFragment() {
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.addAfterMedia(imageS)
         viewModel.updatePlatformStatusSuccess()
-        navigateBack(R.id.MapF)
+        navigateBack(R.id.MapPlatformsF)
     }
 
     override fun onSavePhoto() {
