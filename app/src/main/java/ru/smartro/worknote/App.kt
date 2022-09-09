@@ -782,6 +782,7 @@ fun org.slf4j.Logger.todo(text: String? = null) {
     this.error("TODO")
 }
 
+
 fun Any.getLogger(): org.slf4j.Logger {
    return LoggerFactory.getLogger( "${this::class.simpleName}")
 }

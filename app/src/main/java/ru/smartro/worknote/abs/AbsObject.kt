@@ -2,22 +2,23 @@ package ru.smartro.worknote.abs
 
 import android.util.Log
 import ru.smartro.worknote.App
+import ru.smartro.worknote.LOG
+import ru.smartro.worknote.TAG
 
-abstract class AbsObject(tagName: String?, val valueName: String?) {
-    protected var TAGObject : String = tagName?:valueName?: "${this::class.simpleName}"
+abstract class AbsObject(val valueName: String?=null) {
 
 
     protected fun LOGWork(value: String) {
         val method =  App.getMethodMan()
         method?.let {
             valueName?.let {
-                Log.i(TAGObject, "${method}.${valueName}=${value}")
+                LOG.info("${method}.${valueName}=${value}")
                 return@LOGWork
             }
-            Log.i(TAGObject, "${method}.valueName=${value}")
+            LOG.info("${method}.valueName=${value}")
             return@LOGWork
         }
-        Log.i(TAGObject, "${TAGObject}:.valueName=${value}")
+        LOG.info("${TAG}:.valueName=${value}")
     }
 
 }

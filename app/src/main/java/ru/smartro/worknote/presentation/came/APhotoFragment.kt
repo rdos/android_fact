@@ -521,7 +521,7 @@ abstract class APhotoFragment(
         LOG.debug("restorePhotoFileS()after")
     }
 
-    inner class PhotoFileScanner(val Dname: String) : AbsObject(TAG, "ImageEntityScanner") {
+    inner class PhotoFileScanner(val Dname: String) : AbsObject("PhotoFileScanner") {
         private var mIdx: Int = Inull
         private var mFileS: Array<File>? = null
 

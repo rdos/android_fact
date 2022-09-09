@@ -35,8 +35,7 @@ import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 
-class PServeF :
-    AFragment(){
+class PServeF : AFragment(){
 
     private var mContainersAdapter: PServeContainersAdapter? = null
     private val _PlatformEntity: PlatformEntity

@@ -113,7 +113,7 @@ class MainAct :
     }
 //
 
-    class DialogHelpER(val actTooltip: IActTooltip, val p_TAG: String, val p_valim: String="TooltipHelpER") : AbsObject(p_TAG, p_valim) {
+    class DialogHelpER(val actTooltip: IActTooltip, val p_valim: String="TooltipHelpER") : AbsObject(p_valim) {
         var isRecyclerMode: Boolean = false
         private var mTooltipNextId: String? = null
         private var vDialog: View? = null
@@ -194,7 +194,7 @@ class MainAct :
         }
     }
 
-    class ViewScaner(val _DialogHelper: DialogHelpER, val isFromRecylcer: Boolean) : AbsObject(_DialogHelper.p_TAG, "${_DialogHelper.p_valim}:ViewScaner") {
+    class ViewScaner(val _DialogHelper: DialogHelpER, val isFromRecylcer: Boolean) : AbsObject("${_DialogHelper.p_valim}:ViewScaner") {
         var mStopScan: Boolean = false
         var mSaveObj: View? = null
         var mSaveIndex: Int? = null
