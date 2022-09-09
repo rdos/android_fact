@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
@@ -18,6 +19,7 @@ import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ConfigName
 
@@ -30,7 +32,6 @@ class MainAct :
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_main)
         supportActionBar?.hide()
-
 //        mTooltipHell.setStartId("ll_containers_count", paramS())
     }
 
@@ -68,6 +69,10 @@ class MainAct :
 
     override fun onRestart() {
         super.onRestart()
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     //todo:::

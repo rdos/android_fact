@@ -67,13 +67,14 @@ class JournalChatF : ANOFragment() {
         }
 
         override fun bind(item: PlatformEntity, holder: JournalChatHolder) {
+            val platformMediaEntity = viewModel.database.getPlatformMediaEntity(item)
             val date = Date(item.updateAt * 1000L)
             val dateFormat = SimpleDateFormat("HH:mm")
             val resultDate: String = dateFormat.format(date)
             val imgBefore = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_before)
             if (item.getBeforeMediaSize() > 0) {
                 Glide.with(imgBefore)
-                    .load(MyUtil.base64ToImage(item.beforeMedia[0]?.image))
+                    .load(MyUtil.base64ToImage(platformMediaEntity.beforeMedia[0]?.image))
                     .into(imgBefore)
                 holder.tv_act_messager__media_before.text = "Фото до:"
             } else {
@@ -83,7 +84,7 @@ class JournalChatF : ANOFragment() {
             if (item.getAfterMediaSize() > 0) {
                 val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
                 Glide.with(imgAfter)
-                    .load(MyUtil.base64ToImage(item.afterMedia[0]?.image))
+                    .load(MyUtil.base64ToImage(platformMediaEntity.afterMedia[0]?.image))
                     .into(imgAfter)
                 holder.tv_act_messager__media_after.text = "Фото после:"
             } else {
@@ -94,7 +95,7 @@ class JournalChatF : ANOFragment() {
             if (item.getFailureMediaSize() > 0) {
                 val textBefore = holder.tv_act_messager__media_before
                 Glide.with(imgBefore)
-                    .load(MyUtil.base64ToImage(item.failureMedia[0]?.image))
+                    .load(MyUtil.base64ToImage(platformMediaEntity.failureMedia[0]?.image))
                     .into(imgBefore)
                 textBefore.text = "Фото невывоза:"
                 textBefore.visibility = View.VISIBLE

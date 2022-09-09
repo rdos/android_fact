@@ -24,7 +24,6 @@ class StartOwnerF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        LOG.debug("STARTOWNERFRAG :: onViewCreated")
 
         if (!MyUtil.hasPermissions(requireContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)

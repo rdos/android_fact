@@ -221,7 +221,10 @@ abstract class APhotoFragment(
                     val matrix = Matrix()
                     matrix.postRotate(90f)
                     val scaledBitmap = Bitmap.createScaledBitmap(resource, resource.width, resource.height, true)
+
                     bitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
+                } else {
+                    bitmap = resource
                 }
 
             }
