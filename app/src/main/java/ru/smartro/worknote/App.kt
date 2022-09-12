@@ -77,6 +77,7 @@ class App : AApp() {
     companion object {
 //        internal lateinit var INSTANCE: App
 //            private set
+        @JvmStatic
         fun getAppliCation(): App = INSTANCE!!
 
         fun getAppParaMS(): AppParaMS = getAppliCation().aPPParamS

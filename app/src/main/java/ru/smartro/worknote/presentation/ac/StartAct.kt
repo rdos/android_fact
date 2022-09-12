@@ -284,9 +284,11 @@ class StartAct : AAct() {
         super.onResume()
         val isHasToken = paramS().token.isShowForUser()
         LOG.debug("isHasToken=${isHasToken}")
-        if (isHasToken) {
-            gotoNextAct(isHasToken = true)
-        }
+//        if (isHasToken) {
+//            gotoNextAct(isHasToken = true)
+//        }
+
+        startActivity(Intent(this, MainActivity::class.java))
     }
 
     open class AuthViewModel(app: Application) : AViewModel(app) {

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/acet__f_pserve__voice_message_view__message_input"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:hint="Комментарий к площадке"
+        android:padding="10dp"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actv__f_pserve__voice_message_view__swipe_left_hint"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Проведите влево для отмены"
+        android:textSize="12sp"
+        android:layout_gravity="start|center"
+        app:layout_anchorGravity="start|center"
+        app:layout_anchor="@id/aciv__f_pserve__voice_message_view__record_button"
+        android:layout_marginStart="10dp"/>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llc__f_pserve__voice_message_view__record_info"
+        android:layout_width="wrap_content" android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_gravity="start|center"
+        >
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:paddingStart="10dp"
+            android:background="@color/white"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="32dp" android:layout_height="32dp"
+                android:src="@drawable/ic_euro_blue"
+                android:layout_gravity="end|center"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/actv__f_pserve__voice_message_view__record_time"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="0:00"
+                android:layout_marginStart="10dp"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="20dp" android:layout_height="match_parent"
+            android:background="@drawable/test_background"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/aciv__f_pserve__voice_message_view__record_button"
+        android:layout_width="42dp" android:layout_height="42dp"
+        android:src="@drawable/ic_euro_blue"
+        android:layout_gravity="end|center"/>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
