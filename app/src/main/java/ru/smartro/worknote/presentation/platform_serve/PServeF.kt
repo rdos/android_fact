@@ -21,8 +21,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import ru.smartro.worknote.*
+import ru.smartro.worknote.LOG
+import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.andPOintD.SmartROButton
 import ru.smartro.worknote.andPOintD.SmartROLinearLayout
 import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
@@ -30,13 +32,18 @@ import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.VoiceComment
+import java.io.File
+import java.nio.file.Files
 
 
-class PServeF : AFragment(){
+class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
+    private var robVoiceCommentStart: SmartROButton? = null
     private var mContainersAdapter: PServeContainersAdapter? = null
     private val _PlatformEntity: PlatformEntity
         get() = vm.getPlatformEntity()
@@ -51,9 +58,9 @@ class PServeF : AFragment(){
     private var acbProblem: AppCompatButton? = null
     private var acsbVolumePickup: SeekBar? = null
 
-    private var btnCompleteTask: AppCompatButton? = null
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
+
     private var sscToGroupByFMode: SmartROSwitchCompat? = null
     private var actvScreenLabel: AppCompatTextView? = null
 
@@ -66,7 +73,8 @@ class PServeF : AFragment(){
     override fun onInitLayoutView(sview: SmartROLinearLayout): Boolean {
         tvPlatformSrpId = sview.findViewById(R.id.tv_f_pserve__sprid)
 
-        btnCompleteTask = sview.findViewById(R.id.acb_activity_platform_serve__complete)
+        val btnCompleteTask = sview.findViewById<SmartROButton>(R.id.acb_activity_platform_serve__complete)
+
         actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
         sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
         actvScreenLabel = sview.findViewById(R.id.screen_mode_label)
@@ -152,7 +160,26 @@ class PServeF : AFragment(){
             }
         }
 
+        robVoiceCommentStart = sview.findViewById<SmartROButton>(R.id.rob_activity_platform_serve__voicecomment_start)
+        robVoiceCommentStart?.setOnClickListener {
+            mVoiceComment = VoiceComment(this)
+        }
+        val robVoiceCommentStop = sview.findViewById<SmartROButton>(R.id.rob_activity_platform_serve__voicecomment_stop)
+        robVoiceCommentStop.setOnClickListener {
+            mVoiceComment?.stop()
+        }
+        val robVoiceCommentEnd = sview.findViewById<SmartROButton>(R.id.rob_activity_platform_serve__voicecomment_end)
+        robVoiceCommentEnd.setOnClickListener {
+            mVoiceComment?.end()
+        }
         return false //))
+    }
+
+    private var mVoiceComment: VoiceComment ?= null
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mVoiceComment?.stop()
     }
 
     override fun onBindLayoutState(): Boolean {
@@ -247,7 +274,6 @@ class PServeF : AFragment(){
 
         }
     }
-
 
     private fun onClickPickup(acsbVolumePickup: SeekBar) {
         acsbVolumePickup.isEnabled = false
@@ -442,6 +468,32 @@ class PServeF : AFragment(){
     interface ContainerPointClickListener {
         fun startContainerService(item: ContainerEntity)
     }
+
+    override fun onStartVoiceComment() {
+        robVoiceCommentStart?.text = "запись пошла"
+    }
+
+    override fun onStopVoiceComment() {
+        robVoiceCommentStart?.text = "добавить голосовое сообщение"
+    }
+
+//    override fun onCancelVoiceComment() {
+//
+//    }
+    override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
+//        TODO("Not yet implemented")
+        robVoiceCommentStart?.text = "запись идёт${volume} ${timeInMS}"
+    }
+
+    override fun onVoiceCommentSave(soundF: File) {
+        val byteArray = Files.readAllBytes(soundF.toPath())
+
+        val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
+        platformVoiceCommentEntity.voiceByteArray = byteArray
+        vm.addVoiceComment(platformVoiceCommentEntity)
+//            vm.save
+    }
+
 
     /********************************************************************************************************************
      ********************************************************************************************************************

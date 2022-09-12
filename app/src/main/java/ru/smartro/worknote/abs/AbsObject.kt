@@ -5,6 +5,7 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TAG
 
+//todo:!!? this is interface
 abstract class AbsObject(val valueName: String?=null) {
 
 
@@ -21,4 +22,7 @@ abstract class AbsObject(val valueName: String?=null) {
         LOG.info("${TAG}:.valueName=${value}")
     }
 
+    interface ABS{
+        fun yes()
+    }
 }

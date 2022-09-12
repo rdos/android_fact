@@ -149,7 +149,7 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
- <ru.smartro.worknote.andPOintD.SmartROButton
+    <ru.smartro.worknote.andPOintD.SmartROButton
         android:id="@+id/acb_activity_platform_serve__complete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -161,4 +161,38 @@
         android:text="Завершить"
         android:tooltipText="Какой-то текст про кнопку Завершить"
         android:textColor="@color/white" />
+
+    <!--анекдот))-->
+    <!--Я не причина , я этажом ниже."-->
+    <ru.smartro.worknote.andPOintD.SmartROButton
+        android:id="@+id/rob_activity_platform_serve__voicecomment_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_2"
+        android:layout_marginBottom="@dimen/margin_2"
+        android:background="@drawable/bg_button_red_problem"
+        android:text="Добавить Голосовое Сообщение"
+        android:textColor="@color/white" />
+
+    <ru.smartro.worknote.andPOintD.SmartROButton
+        android:id="@+id/rob_activity_platform_serve__voicecomment_stop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_2"
+        android:layout_marginBottom="@dimen/margin_2"
+        android:background="@drawable/bg_button_red_problem"
+        android:text="Запись, Вам Сказали Отмена"
+        android:textColor="@color/white" />
+
+
+    <ru.smartro.worknote.andPOintD.SmartROButton
+        android:id="@+id/rob_activity_platform_serve__voicecomment_end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_2"
+        android:layout_marginBottom="@dimen/margin_2"
+        android:background="@drawable/bg_button_red_problem"
+        android:text="Запись, Вам Сказали Стоп"
+        android:textColor="@color/white" />
+
 </ru.smartro.worknote.andPOintD.SmartROLinearLayout>

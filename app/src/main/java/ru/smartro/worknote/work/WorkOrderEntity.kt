@@ -261,6 +261,27 @@ open class AppEventEntity(
     var counter: String = Snull
 ): Serializable, RealmObject()
 
+open class PlatformVoiceCommentEntity(
+    @PrimaryKey
+    var platformId: Int = Inull,
+    @Expose
+    @SerializedName("byte_array")
+    var voiceByteArray: ByteArray? = null,
+    var platformEntity: PlatformEntity? = null,
+    var workOrderEntity: WorkOrderEntity? = null,
+    var updateAd: String? = null,  //todo:))это компромис между updated_at и update_at
+    var createAd: String = MyUtil.currentTime(),
+    var dev_info: String? = null
+): Serializable, RealmObject() {
+
+    companion object {
+        fun createEmpty(): PlatformVoiceCommentEntity {
+            val result = PlatformVoiceCommentEntity(dev_info=THIS_IS_ERROR)
+            return result
+        }
+    }
+}
+
 open class PlatformMediaEntity(
     @PrimaryKey
     var platformId: Int = Inull,
@@ -338,6 +359,9 @@ open class PlatformEntity(
     @Expose
     @SerializedName("failure_comment")
     var failureComment: String? = null,
+    @Expose
+    @SerializedName("voice_comment")
+    var platformVoiceCommentEntity: PlatformVoiceCommentEntity? = null,
 
     @Expose
     @SerializedName("status")
