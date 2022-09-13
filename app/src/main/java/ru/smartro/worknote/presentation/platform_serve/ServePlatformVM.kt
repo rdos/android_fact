@@ -52,6 +52,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         return mPlatformMediaEntity!!
     }
 
+
     fun getPlatformId(): Int {
         val result = getPlatformEntity().platformId
         if (result != mPlatformId) {
@@ -64,6 +65,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
                 LOG.info(" if (result != mPlatformId)")
             }
         }
+        LOG.trace("result=${result}")
         return mPlatformId
     }
 
@@ -289,8 +291,10 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
     fun addAfterMedia(imageS: List<ImageEntity>) {
+        LOG.debug("before.imageS=${imageS.size}")
         database.addAfterMedia(this.getPlatformId(), imageS)
         set_PlatformLiveData()
+        LOG.debug("after.imageS=${imageS.size}")
     }
 
     fun addBeforeMediaComntainerByTypes(imageS: List<ImageEntity>) {
