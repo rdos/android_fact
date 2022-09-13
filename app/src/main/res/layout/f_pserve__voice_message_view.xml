@@ -1,65 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/white"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/acet__f_pserve__voice_message_view__message_input"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:hint="Комментарий к площадке"
-        android:padding="10dp"/>
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/actv__f_pserve__voice_message_view__swipe_left_hint"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Проведите влево для отмены"
         android:textSize="12sp"
-        android:layout_gravity="start|center"
-        app:layout_anchorGravity="start|center"
-        app:layout_anchor="@id/aciv__f_pserve__voice_message_view__record_button"
-        android:layout_marginStart="10dp"/>
+        android:layout_marginEnd="28dp"
+        app:layout_constraintBottom_toBottomOf="@id/aciv__f_pserve__voice_message_view__record_button"
+        app:layout_constraintEnd_toStartOf="@+id/aciv__f_pserve__voice_message_view__record_button"
+        app:layout_constraintTop_toTopOf="@+id/aciv__f_pserve__voice_message_view__record_button" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/aciv__f_pserve__voice_message_view__lock_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="52dp"
+        android:src="@drawable/ic_euro_green"
+        app:layout_constraintBottom_toTopOf="@id/aciv__f_pserve__voice_message_view__record_button"
+        app:layout_constraintEnd_toEndOf="@id/aciv__f_pserve__voice_message_view__record_button"
+        app:layout_constraintStart_toStartOf="@id/aciv__f_pserve__voice_message_view__record_button" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/llc__f_pserve__voice_message_view__record_info"
-        android:layout_width="wrap_content" android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_gravity="start|center"
-        >
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal">
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:paddingVertical="10dp"
-            android:paddingStart="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@color/white"
-            android:gravity="center">
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            android:paddingStart="10dp">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="32dp" android:layout_height="32dp"
-                android:src="@drawable/ic_euro_blue"
-                android:layout_gravity="end|center"/>
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_euro_blue" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/actv__f_pserve__voice_message_view__record_time"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="0:00"
-                android:layout_marginStart="10dp"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="0:00" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View
-            android:layout_width="20dp" android:layout_height="match_parent"
-            android:background="@drawable/test_background"/>
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/test_background" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/aciv__f_pserve__voice_message_view__record_button"
-        android:layout_width="42dp" android:layout_height="42dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:src="@drawable/ic_euro_blue"
-        android:layout_gravity="end|center"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
