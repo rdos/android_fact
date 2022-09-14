@@ -21,7 +21,6 @@ import ru.smartro.worknote.R;
 
 public class VoiceMessageView extends CoordinatorLayout {
 
-
     enum VoiceMessageViewState {
         IDLE,
         RECORDING,
@@ -40,8 +39,8 @@ public class VoiceMessageView extends CoordinatorLayout {
     Vibrator vibrator;
     VibrationEffect vibrationEffect = VibrationEffect.createOneShot(100, 128);
 
-    final private float DRAG_EDGE_LEFT = -150f;
-    final private float DRAG_EDGE_TOP = -120f;
+    private float DRAG_EDGE_LEFT;
+    private float DRAG_EDGE_TOP;
 
     private AppCompatEditText messageInput;
     private LinearLayoutCompat recordInfo;
@@ -56,7 +55,7 @@ public class VoiceMessageView extends CoordinatorLayout {
 
     private float recordButtonX1, recordButtonY1, recordButtonX2, recordButtonY2;
 
-    private float x1, y1, x2, y2, dx, dy;
+    private float dx, dy;
 
     public VoiceMessageView(Context context) {
         this(context,null);
@@ -110,6 +109,9 @@ public class VoiceMessageView extends CoordinatorLayout {
             swipeLeftHint.setVisibility(View.VISIBLE);
             lockButton.setVisibility(View.VISIBLE);
 
+            DRAG_EDGE_LEFT = -(recordButton.getWidth() * 3.5f);
+            DRAG_EDGE_TOP = -(recordButton.getWidth() * 2);
+
             currentState = VoiceMessageViewState.RECORDING;
             return false;
         });
@@ -117,12 +119,6 @@ public class VoiceMessageView extends CoordinatorLayout {
         recordButton.setOnTouchListener((v, event) -> {
 
             switch(event.getAction()) {
-
-                case MotionEvent.ACTION_DOWN:
-                    x1 = event.getX();
-                    y1 = event.getY();
-                    Log.d("test :::", "INIT: x1: " + x1 + "; y1: " + y1);
-                    return false;
 
                 case MotionEvent.ACTION_UP:
                     recordButton.animate().scaleX(1f).scaleY(1f).translationX(0).translationY(0).setDuration(200).start();
@@ -135,31 +131,14 @@ public class VoiceMessageView extends CoordinatorLayout {
 
                 case MotionEvent.ACTION_MOVE:
                     if(currentState == VoiceMessageViewState.RECORDING) {
-                        x2 = event.getX();
-                        y2 = event.getY();
-                        dx = x2 - x1;
-                        dy = y2 - y1;
-
-                        if(dx > -30f && dy > -30f) {
-                            return false;
-                        }
 
                         float rawX = event.getRawX();
                         float rawY = event.getRawY();
 
-                        Log.d("test :::", "event X: " + x2);
-                        Log.d("test :::", "event Y: " + y2);
-                        Log.d("test :::", "event raw X: " + rawX);
-                        Log.d("test :::", "event raw Y: " + rawY);
-                        Log.d("test :::", "recordButton X: " + recordButton.getX());
-                        Log.d("test :::", "recordButton Y: " + recordButton.getY());
-
                         if(movement == MovementEnum.NONE) {
-                            // left
                             if(rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < recordButtonX1) {
                                 movement = MovementEnum.LEFT;
                             }
-                            // top
                             else if (rawX > recordButtonX1 && rawX < recordButtonX2 && rawY < recordButtonY1) {
                                 movement = MovementEnum.TOP;
                             }
@@ -167,72 +146,57 @@ public class VoiceMessageView extends CoordinatorLayout {
 
                         if(movement == MovementEnum.LEFT) {
                             Log.d("TEST :::", "left");
-                            recordButton.setTranslationX(rawX - recordButtonX1);
-                            recordButton.setTranslationY(0);
+
+                            dx = rawX - recordButtonX1;
+                            Log.d("TEST :::", "" + dx);
+                            if(dx < 10f) {
+                                recordButton.setTranslationX(dx);
+                            }
+
+                            if(dx < DRAG_EDGE_LEFT) {
+                                Log.d("TEST :::", "SWIPED LEFT");
+                                vibrator.vibrate(vibrationEffect);
+                                currentState = VoiceMessageViewState.LOCK;
+                                MotionEvent cancelEvent = MotionEvent.obtain(event);
+                                cancelEvent.setAction(MotionEvent.ACTION_UP);
+                                recordButton.dispatchTouchEvent(cancelEvent);
+                                return false;
+                            }
 
                             if (rawX > recordButtonX1 && rawX < recordButtonX2 && rawY < recordButtonY1) {
                                 movement = MovementEnum.TOP;
+                                recordButton.setTranslationX(0);
                             }
+
+                            return false;
                         }
+
                         if(movement == MovementEnum.TOP) {
                             Log.d("TEST :::", "top");
-                            recordButton.setTranslationY(rawY - recordButtonY1);
-                            recordButton.setTranslationX(0);
+
+                            dy = rawY - recordButtonY1;
+                            Log.d("TEST :::", "" + dy);
+                            if(dy < 10f) {
+                                recordButton.setTranslationY(dy);
+                            }
+
+                            if(dy < DRAG_EDGE_TOP) {
+                                Log.d("TEST :::", "SWIPED TOP");
+                                vibrator.vibrate(vibrationEffect);
+                                currentState = VoiceMessageViewState.LOCK;
+                                MotionEvent cancelEvent = MotionEvent.obtain(event);
+                                cancelEvent.setAction(MotionEvent.ACTION_UP);
+                                recordButton.dispatchTouchEvent(cancelEvent);
+                                return false;
+                            }
 
                             if(rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < recordButtonX1) {
                                 movement = MovementEnum.LEFT;
+                                recordButton.setTranslationY(0);
                             }
+
+                            return false;
                         }
-
-
-//                        if(movement == MovementEnum.LEFT) {
-//                            lockButton.setVisibility(INVISIBLE);
-//
-//                            if(dx > -30f) {
-//                                Log.d("TEST :::", "SET MOVEMENT: NONE (FROM LEFT)");
-//                                movement = MovementEnum.NONE;
-//                                lockButton.setVisibility(VISIBLE);
-//                                recordButton.animate().translationX(0).start();
-//                                return false;
-//                                // TODO
-//                            }
-//
-//                            if(dx < DRAG_EDGE_LEFT) {
-//                                Log.d("TEST :::", "SWIPED LEFT");
-//                                vibrator.vibrate(vibrationEffect);
-//                                currentState = VoiceMessageViewState.LOCK;
-//                                MotionEvent cancelEvent = MotionEvent.obtain(event);
-//                                cancelEvent.setAction(MotionEvent.ACTION_UP);
-//                                recordButton.dispatchTouchEvent(cancelEvent);
-//                                return false;
-//                            }
-//
-//                            recordButton.setTranslationX(dx);
-//                        }
-//
-//                        if(movement == MovementEnum.TOP) {
-//                            swipeLeftHint.setVisibility(INVISIBLE);
-//                            if(dy > -30f) {
-//                                Log.d("TEST :::", "SET MOVEMENT: NONE (FROM TOP)");
-//                                movement = MovementEnum.NONE;
-//                                swipeLeftHint.setVisibility(VISIBLE);
-//                                recordButton.animate().translationY(0).start();
-//                                return false;
-//                                // TODO
-//                            } else {
-//                                if(dy < DRAG_EDGE_TOP) {
-//                                    Log.d("TEST :::", "SWIPED TOP");
-//                                    vibrator.vibrate(vibrationEffect);
-//                                    currentState = VoiceMessageViewState.LOCK;
-//                                    MotionEvent cancelEvent = MotionEvent.obtain(event);
-//                                    cancelEvent.setAction(MotionEvent.ACTION_UP);
-//                                    recordButton.dispatchTouchEvent(cancelEvent);
-//                                    return false;
-//                                }
-//                            }
-//
-//                            recordButton.setTranslationY(dy);
-//                        }
 
                     }
                     return false;

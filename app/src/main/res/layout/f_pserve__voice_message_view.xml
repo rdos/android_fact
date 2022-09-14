@@ -14,28 +14,46 @@
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/llc__f_pserve__voice_message_view__record_info" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/actv__f_pserve__voice_message_view__swipe_left_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Проведите влево для отмены"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            app:layout_anchor="@id/aciv__f_pserve__voice_message_view__record_button"
+            android:layout_gravity="start|center"
+            app:layout_anchorGravity="start|center"
         />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/actv__f_pserve__voice_message_view__swipe_left_hint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Проведите влево для отмены"
-        android:textSize="12sp"
-        android:layout_marginEnd="28dp"
-        app:layout_constraintBottom_toBottomOf="@id/aciv__f_pserve__voice_message_view__record_button"
-        app:layout_constraintEnd_toStartOf="@+id/aciv__f_pserve__voice_message_view__record_button"
-        app:layout_constraintTop_toTopOf="@+id/aciv__f_pserve__voice_message_view__record_button" />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/aciv__f_pserve__voice_message_view__lock_button"
+            android:layout_width="32dp"
+            android:layout_height="112dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_euro_green"
+            app:layout_anchor="@id/aciv__f_pserve__voice_message_view__record_button"
+            app:layout_anchorGravity="top|center"
+            android:layout_gravity="bottom|center"
+            />
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/aciv__f_pserve__voice_message_view__lock_button"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginBottom="52dp"
-        android:src="@drawable/ic_euro_green"
-        app:layout_constraintBottom_toTopOf="@id/aciv__f_pserve__voice_message_view__record_button"
-        app:layout_constraintEnd_toEndOf="@id/aciv__f_pserve__voice_message_view__record_button"
-        app:layout_constraintStart_toStartOf="@id/aciv__f_pserve__voice_message_view__record_button" />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/aciv__f_pserve__voice_message_view__record_button"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/ic_euro_blue" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/llc__f_pserve__voice_message_view__record_info"
@@ -73,14 +91,6 @@
             android:background="@drawable/test_background" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/aciv__f_pserve__voice_message_view__record_button"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:src="@drawable/ic_euro_blue"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

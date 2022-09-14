@@ -44,10 +44,6 @@
             android:name="ru.smartro.worknote.presentation.ac.StartAct"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity  android:exported="true"
             android:name="ru.smartro.worknote.presentation.ac.XChecklistAct"
@@ -58,6 +54,10 @@
             android:name="ru.smartro.worknote.presentation.ac.MainActivity"
             android:screenOrientation="portrait"
             >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <!-- Voice Recognition Samples -->
         <!--отказ-->
