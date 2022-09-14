@@ -154,18 +154,36 @@ public class VoiceMessageView extends CoordinatorLayout {
                         Log.d("test :::", "recordButton X: " + recordButton.getX());
                         Log.d("test :::", "recordButton Y: " + recordButton.getY());
 
-                        // left
-                        if(rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < recordButtonX1) {
+                        if(movement == MovementEnum.NONE) {
+                            // left
+                            if(rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < recordButtonX1) {
+                                movement = MovementEnum.LEFT;
+                            }
+                            // top
+                            else if (rawX > recordButtonX1 && rawX < recordButtonX2 && rawY < recordButtonY1) {
+                                movement = MovementEnum.TOP;
+                            }
+                        }
+
+                        if(movement == MovementEnum.LEFT) {
                             Log.d("TEST :::", "left");
-                            recordButton.setTranslationX(dx);
+                            recordButton.setTranslationX(rawX - recordButtonX1);
                             recordButton.setTranslationY(0);
+
+                            if (rawX > recordButtonX1 && rawX < recordButtonX2 && rawY < recordButtonY1) {
+                                movement = MovementEnum.TOP;
+                            }
                         }
-                        // top
-                        else if (rawX > recordButtonX1 && rawX < recordButtonX2 && rawY < recordButtonY1) {
+                        if(movement == MovementEnum.TOP) {
                             Log.d("TEST :::", "top");
-                            recordButton.setTranslationY(dy);
+                            recordButton.setTranslationY(rawY - recordButtonY1);
                             recordButton.setTranslationX(0);
+
+                            if(rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < recordButtonX1) {
+                                movement = MovementEnum.LEFT;
+                            }
                         }
+
 
 //                        if(movement == MovementEnum.LEFT) {
 //                            lockButton.setVisibility(INVISIBLE);
