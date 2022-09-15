@@ -77,7 +77,7 @@ public class VoiceMessageView extends CoordinatorLayout {
         messageInput = findViewById(R.id.acet__f_pserve__voice_message_view__message_input);
         recordInfo = findViewById(R.id.llc__f_pserve__voice_message_view__record_info);
         recordTime = findViewById(R.id.actv__f_pserve__voice_message_view__record_time);
-        lockButton = findViewById(R.id.aciv__f_pserve__voice_message_view__lock_button);
+//        lockButton = findViewById(R.id.aciv__f_pserve__voice_message_view__lock_button);
         recordButton = findViewById(R.id.aciv__f_pserve__voice_message_view__record_button);
         swipeLeftHint = findViewById(R.id.actv__f_pserve__voice_message_view__swipe_left_hint);
 

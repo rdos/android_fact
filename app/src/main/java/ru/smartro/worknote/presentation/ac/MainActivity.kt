@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         swipeBtnEnabled.setSlidingButtonBackground(ContextCompat.getDrawable(this, R.drawable.shape_rounded2))
 
         swipeBtnEnabled.setOnStateChangeListener { active ->
-            Toast.makeText(this@MainActivity, "State: " + active, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@MainActivity, "State: $active", Toast.LENGTH_SHORT).show()
             if (active) App.getAppliCation().startVibrateService()
             if (active) {
                 swipeBtnEnabled.setButtonBackground(ContextCompat.getDrawable(this@MainActivity, R.drawable.shape_button))
