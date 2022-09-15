@@ -20,6 +20,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.executor.GlideExecutor.UncaughtThrowableStrategy.LOG
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.yandex.mapkit.Animation
@@ -243,6 +244,10 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         AppliCation().startWorkER()
         AppliCation().startLocationService()
 //        setDevelMode()
+
+        viewModel.todoLiveData.observe(viewLifecycleOwner) {
+            moveCameraTo(PoinT(it.coordLat, it.coordLong))
+        }
     }
 
     override fun onBackPressed() {
@@ -601,14 +606,15 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     override fun startPlatformService(item: PlatformEntity) {
-        viewModel.setPlatformEntity(item)
         if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
+            viewModel.setPlatformEntity(item)
             navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
         } else {
             showAlertPlatformByPoint().let { view ->
                 val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
                 btnOk.setOnClickListener {
                     hideDialog()
+                    viewModel.setPlatformEntity(item)
                     navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
                 }
             }

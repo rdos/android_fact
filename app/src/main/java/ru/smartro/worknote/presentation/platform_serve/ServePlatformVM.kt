@@ -74,7 +74,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
             return
         }
         mPlatformId = platformEntity.platformId
-        mPlatformEntity = null
+        set_PlatformLiveData()
         mGroupByContainerClientEntity = null
         mGroupByContainerTypeClientEntity = null
         LoG.trace("after.mPlatformId=${mPlatformId}")
