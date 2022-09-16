@@ -5,14 +5,15 @@ import android.content.Context
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.airbnb.lottie.LottieAnimationView
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
@@ -34,9 +35,13 @@ class VoiceCommentView @JvmOverloads constructor(
     private var recordInfo: LinearLayoutCompat? = null
     private var recordTime: AppCompatTextView? = null
     private var recordButton: AppCompatImageView? = null
+    private var lockWrapper: RelativeLayout? = null
+    private var lockBackground: View? = null
     private var lockButton: LottieAnimationView? = null
     private var swipeLeftHint: AppCompatTextView? = null
-    private var messageInputHint: String? = null
+    private var recordButtonWrapper: CoordinatorLayout? = null
+    private var buttonStop: AppCompatImageView? = null
+    private var buttonCancel: AppCompatTextView? = null
 
     private var movement = MovementEnum.NONE
     private var currentState = VoiceCommentState.IDLE
@@ -53,22 +58,54 @@ class VoiceCommentView @JvmOverloads constructor(
     private var dx = 0f
     private var dy = 0f
 
+    var listener: VoiceCommentViewEvents? = null
+
+    fun setTime(time: String) {
+        recordTime?.text = time
+    }
+
+    private fun initState() {
+        recordButtonWrapper?.visibility = VISIBLE
+        recordInfo?.visibility = INVISIBLE
+        swipeLeftHint?.visibility = INVISIBLE
+        lockWrapper?.visibility = INVISIBLE
+        messageInput?.visibility = VISIBLE
+        buttonStop?.visibility = GONE
+        buttonCancel?.visibility = GONE
+    }
+
     init {
-        inflate(getContext(), R.layout.f_pserve__voice_message_view, this)
+        inflate(getContext(), R.layout.f_pserve__voice_comment__input, this)
 
         vibrator = getContext().applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         messageInput = findViewById(R.id.acet__f_pserve__voice_message_view__message_input)
         recordInfo = findViewById(R.id.llc__f_pserve__voice_message_view__record_info)
         recordTime = findViewById(R.id.actv__f_pserve__voice_message_view__record_time)
         lockButton = findViewById(R.id.lottie_lock)
+        lockWrapper = findViewById(R.id.lock_wrapper)
+        lockBackground = findViewById<View?>(R.id.lock_background).apply {
+            pivotX = 0.5f
+            pivotY = 0f
+        }
         recordButton = findViewById(R.id.aciv__f_pserve__voice_message_view__record_button)
         swipeLeftHint = findViewById(R.id.actv__f_pserve__voice_message_view__swipe_left_hint)
+        recordButtonWrapper = findViewById(R.id.record_button_wrapper)
+        buttonStop = findViewById(R.id.button_stop)
+        buttonCancel = findViewById(R.id.button_cancel)
 
-        messageInputHint = messageInput?.hint.toString()
+        initState()
 
-        recordInfo?.visibility = INVISIBLE
-        swipeLeftHint?.visibility = INVISIBLE
-        lockButton?.visibility = INVISIBLE
+        buttonStop?.setOnClickListener {
+            listener?.onStop()
+            vibrator!!.vibrate(vibrationEffect)
+            initState()
+        }
+
+        buttonCancel?.setOnClickListener {
+            listener?.onCancel()
+            vibrator!!.vibrate(vibrationEffect)
+            initState()
+        }
 
         recordButton?.setOnTouchListener { _: View?, event: MotionEvent ->
             when (event.action) {
@@ -102,6 +139,7 @@ class VoiceCommentView @JvmOverloads constructor(
                     lockButton?.progress = 0f
                     lockButton?.scaleY = 1f
                     lockButton?.scaleX = 1f
+                    lockBackground?.scaleY = 1f
 
                     vibrator?.vibrate(vibrationEffect)
 
@@ -109,7 +147,7 @@ class VoiceCommentView @JvmOverloads constructor(
                     messageInput?.visibility = INVISIBLE
                     swipeLeftHint?.visibility = VISIBLE
                     swipeLeftHint?.visibility = VISIBLE
-                    lockButton?.visibility = VISIBLE
+                    lockWrapper?.visibility = VISIBLE
 
                     val params = swipeLeftHint!!.layoutParams as MarginLayoutParams
                     val marginRight = (recordButton?.width ?: 0) / 2
@@ -118,6 +156,10 @@ class VoiceCommentView @JvmOverloads constructor(
                     swipeLeftHint!!.layoutParams = params
 
                     currentState = VoiceCommentState.RECORDING
+
+                    // TODO::: DELAY?
+                    listener?.onStart()
+
                     return@setOnTouchListener true
                 }
                 
@@ -129,38 +171,39 @@ class VoiceCommentView @JvmOverloads constructor(
 
                         if (movement == MovementEnum.NONE) {
                             if (rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < recordButtonX1) {
-                                lockButton?.visibility = INVISIBLE
+                                lockWrapper?.visibility = INVISIBLE
                                 swipeLeftHint?.visibility = VISIBLE
                                 recordButton?.translationX = 0f
                                 movement = MovementEnum.HORIZONTAL
                             } else if (rawX > recordButtonX1 && rawX < recordButtonX2 && rawY < recordButtonY1) {
-                                lockButton?.visibility = VISIBLE
+                                lockWrapper?.visibility = VISIBLE
                                 swipeLeftHint?.visibility = INVISIBLE
                                 recordButton?.translationY = 0f
                                 lockButton?.progress = 0f
                                 lockButton?.scaleY = 1f
                                 lockButton?.scaleX = 1f
+                                lockBackground?.scaleY = 1f
+
                                 movement = MovementEnum.VERTICAL
                             }
                         }
                         
                         if (movement == MovementEnum.HORIZONTAL) {
-                            
-                            Log.d("TEST :::", "left")
                             dx = rawX - recordButtonX1
-                            Log.d("TEST :::", dx.toString())
                             
                             if (dx < 10f) {
                                 recordButton?.translationX = dx
                             }
                             
                             if (dx < DRAG_EDGE_LEFT) {
-                                Log.d("TEST :::", "SWIPED LEFT")
+                                currentState = VoiceCommentState.CANCEL
+
                                 vibrator!!.vibrate(vibrationEffect)
-                                currentState = VoiceCommentState.LOCK
+
                                 val cancelEvent = MotionEvent.obtain(event)
                                 cancelEvent.action = MotionEvent.ACTION_UP
                                 recordButton?.dispatchTouchEvent(cancelEvent)
+
                                 return@setOnTouchListener false
                             }
                             
@@ -172,38 +215,40 @@ class VoiceCommentView @JvmOverloads constructor(
                         }
                         
                         if (movement == MovementEnum.VERTICAL) {
-                            
-                            Log.d("TEST :::", "top")
                             dy = rawY - recordButtonY1
-                            Log.d("TEST :::", dy.toString())
                             
                             if (dy < 10f) {
                                 recordButton?.translationY = dy
                             }
 
                             if(dy < -60f) {
-                                lockButton?.apply {
-                                    val diff = ((rawY + 40) - lockButtonY1) / lockDistance
-                                    val scale = 2 - diff
-                                    scaleX = scale
-                                    scaleY = scale
-                                    progress = 1 - diff
-                                }
+                                val diff = (lockDistance - (rawY - lockButtonY1)) / lockDistance
+                                val scale = 1 + diff
+
+                                lockButton?.scaleX = scale
+                                lockButton?.scaleY = scale
+                                lockButton?.progress = diff
+
+                                lockBackground?.scaleY = 1 - diff
                             }
                             
                             if (dy < DRAG_EDGE_TOP) {
-                                Log.d("TEST :::", "SWIPED TOP")
-                                vibrator!!.vibrate(vibrationEffect)
+                                listener?.onLock()
                                 currentState = VoiceCommentState.LOCK
-                                val cancelEvent = MotionEvent.obtain(event)
-                                cancelEvent.action = MotionEvent.ACTION_UP
-                                recordButton?.dispatchTouchEvent(cancelEvent)
+
+                                vibrator!!.vibrate(vibrationEffect)
+
+                                recordButtonWrapper?.visibility = INVISIBLE
+                                buttonStop?.visibility = VISIBLE
+                                buttonCancel?.visibility = VISIBLE
+
                                 return@setOnTouchListener false
                             }
                             
                             if (rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < recordButtonX1) {
                                 movement = MovementEnum.NONE
                             }
+
                             return@setOnTouchListener false
                         }
                     }
@@ -221,24 +266,42 @@ class VoiceCommentView @JvmOverloads constructor(
 
                     movement = MovementEnum.NONE
 
-                    recordInfo?.visibility = INVISIBLE
-                    swipeLeftHint?.visibility = INVISIBLE
-                    messageInput?.visibility = VISIBLE
-                    lockButton?.visibility = INVISIBLE
+                    if(currentState == VoiceCommentState.CANCEL) {
+                        // animate trashcan
+                        // and then ->
+                        listener?.onCancel()
+                        currentState = VoiceCommentState.IDLE
+
+                        initState()
+                        return@setOnTouchListener false
+                    }
+
+                    if(currentState == VoiceCommentState.RECORDING) {
+                        listener?.onStop()
+                        currentState = VoiceCommentState.IDLE
+
+                        initState()
+                    }
 
                     return@setOnTouchListener false
                 }
             }
-            
             false
         }
     }
 
     enum class VoiceCommentState {
-        IDLE, RECORDING, LOCK
+        IDLE, RECORDING, LOCK, CANCEL
     }
 
     enum class MovementEnum {
         HORIZONTAL, VERTICAL, NONE
+    }
+
+    interface VoiceCommentViewEvents {
+        fun onStart()
+        fun onStop()
+        fun onCancel()
+        fun onLock()
     }
 }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
+    android:padding="8dp"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/trash"
+        android:layout_width="28dp" android:layout_height="28dp"
+        android:src="@drawable/ic_trashcan"
+        android:layout_marginEnd="8dp"
+        />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_voice_comment_content"
+        android:gravity="center">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/play"
+            android:layout_width="28dp" android:layout_height="28dp"
+            app:lottie_rawRes="@raw/play"
+            android:layout_marginEnd="6dp"
+            />
+
+        <com.masoudss.lib.WaveformSeekBar
+            android:id="@+id/waveform"
+            android:layout_width="0dp" android:layout_height="28dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="12dp"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        tools:text="0:00"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

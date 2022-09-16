@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:id="@+id/main_view"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:paddingHorizontal="8dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:id="@+id/input_wrapper"
@@ -23,28 +23,40 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_transparent"
             android:hint="Комментарий к площадке"
-            android:padding="10dp" />
+            android:paddingStart="14dp"
+            android:paddingEnd="10dp"
+            android:paddingVertical="10dp"/>
 
     </RelativeLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
+        android:id="@+id/record_button_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottie_lock"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="130dp"
-            android:background="@drawable/bg_lock"
+        <RelativeLayout
+            android:id="@+id/lock_wrapper"
+            android:layout_width="42dp" android:layout_height="162dp"
             android:layout_gravity="top|center"
             app:layout_anchor="@+id/aciv__f_pserve__voice_message_view__record_button"
-            app:layout_anchorGravity="top|center"
-            app:lottie_rawRes="@raw/lock" />
+            app:layout_anchorGravity="top|center">
+
+            <View
+                android:id="@+id/lock_background"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:background="@drawable/bg_lock" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottie_lock"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_centerHorizontal="true"
+                app:lottie_rawRes="@raw/lock" />
+
+        </RelativeLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/actv__f_pserve__voice_message_view__swipe_left_hint"
@@ -109,7 +121,22 @@
             android:layout_height="match_parent"
             android:background="@drawable/test_background" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/button_cancel"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="ОТМЕНА"
+            android:textStyle="bold"
+            android:layout_marginStart="12dp"
+            android:padding="8dp"
+            android:layout_gravity="center"/>
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/button_stop"
+        android:layout_width="48dp" android:layout_height="48dp"
+        android:src="@drawable/ic_stop_voice_comment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
+</androidx.constraintlayout.widget.ConstraintLayout>
