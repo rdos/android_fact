@@ -15,8 +15,10 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.airbnb.lottie.LottieAnimationView
+import com.yandex.runtime.i18n.TimeFormat
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
+import java.time.format.DateTimeFormatter
 
 @SuppressLint("ClickableViewAccessibility")
 class CommentInputView @JvmOverloads constructor(
@@ -60,8 +62,12 @@ class CommentInputView @JvmOverloads constructor(
 
     var listener: CommentInputEvents? = null
 
-    fun setTime(time: String) {
-        recordTime?.text = time
+    fun setTime(timeInMS: Long) {
+        val minutes = timeInMS / 60_000
+        val seconds = (timeInMS - (minutes * 60_000)) / 1000
+        val minutesShowForUser = if(minutes < 10) "0${minutes}" else minutes.toString()
+        val secondsShowForUser = if(seconds < 10) "0${seconds}" else seconds.toString()
+        recordTime?.text = "${minutesShowForUser}:${secondsShowForUser}"
     }
 
     private fun initState() {

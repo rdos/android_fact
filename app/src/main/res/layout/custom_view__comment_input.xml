@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_transparent"
             android:hint="Комментарий к площадке"
+            android:maxLines="1"
             android:paddingStart="14dp"
             android:paddingEnd="10dp"
             android:paddingVertical="10dp"/>

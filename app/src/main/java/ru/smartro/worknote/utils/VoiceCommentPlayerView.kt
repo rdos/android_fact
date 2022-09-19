@@ -1,19 +1,32 @@
 package ru.smartro.worknote.utils
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.media.MediaPlayer
 import android.net.Uri
+import android.os.CountDownTimer
+import android.os.Handler
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.net.toUri
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.airbnb.lottie.LottieAnimationView
 import com.masoudss.lib.WaveformSeekBar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import java.io.File
+import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 @SuppressLint("ClickableViewAccessibility")
 class VoiceCommentPlayerView @JvmOverloads constructor(
@@ -23,46 +36,68 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
 ): LinearLayoutCompat(context, attrs, defStyleAttrs) {
 
     private val ANIMATION_SPEED = 1.5f
+    private var mediaPlayer: MediaPlayer? = null
 
+    private var service: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
     private var vibrator: Vibrator? = null
-    private var vibrationEffect = VibrationEffect.createOneShot(100, 128)
+    private var vibrationEffect = VibrationEffect.createOneShot(200, 162)
+
+    private var timer = Timer()
 
     private var recordTime: AppCompatTextView? = null
     private var playButton: LottieAnimationView? = null
     private var trashButton: AppCompatImageView? = null
     private var waveformSeekBar: WaveformSeekBar? = null
 
-    private var state = VoiceCommentContentState.IDLE
+    private var state = VoiceCommentPlayerState.IDLE
 
     var listener: VoiceCommentPlayerEvents? = null
 
-    fun setTime(time: String) {
-        recordTime?.text = time
+    private var countDownTimer: CountDownTimer? = null
+
+    fun setTime(timeInMS: Long) {
+        val minutes = timeInMS / 60_000
+        val seconds = (timeInMS - (minutes * 60_000)) / 1000
+        val minutesShowForUser = if(minutes < 10) "0${minutes}" else minutes.toString()
+        val secondsShowForUser = if(seconds < 10) "0${seconds}" else seconds.toString()
+        recordTime?.text = "${minutesShowForUser}:${secondsShowForUser}"
     }
 
-    fun setAudio(uriString: String) {
-        waveformSeekBar?.setSampleFrom(uriString)
-    }
-
-    fun setAudio(resource: Int) {
+    fun setAudio(context: Context, resource: Int) {
         waveformSeekBar?.setSampleFrom(resource)
+        mediaPlayer = MediaPlayer.create(context, resource)
+        initMediaPlayer()
     }
 
-    fun setAudio(file: File) {
+    fun setAudio(context: Context, file: File) {
         waveformSeekBar?.setSampleFrom(file)
+        mediaPlayer = MediaPlayer.create(context, file.toUri())
+        initMediaPlayer()
     }
 
-    fun setAudio(uri: Uri) {
+    fun setAudio(context: Context, uri: Uri) {
         waveformSeekBar?.setSampleFrom(uri)
+        mediaPlayer = MediaPlayer.create(context, uri)
+        initMediaPlayer()
     }
 
-    fun stop() {
+    private fun initMediaPlayer() {
+        setTime(mediaPlayer?.duration?.toLong() ?: 0)
+        mediaPlayer?.setOnPreparedListener { LOG.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") }
+        mediaPlayer?.setOnCompletionListener {
+            stop()
+        }
+    }
+
+    private fun stop() {
         LOG.debug("STOP")
         vibrator?.vibrate(vibrationEffect)
+        timer.cancel()
+        setTime(mediaPlayer?.duration?.toLong() ?: 0)
         playButton?.pauseAnimation()
         playButton?.progress = 0f
         waveformSeekBar?.progress = 0f
-        state = VoiceCommentContentState.IDLE
+        state = VoiceCommentPlayerState.IDLE
     }
 
     init {
@@ -77,34 +112,57 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
         waveformSeekBar = findViewById(R.id.wsb__voice_comment_player__waveform)
 
         playButton?.setOnClickListener {
-            if(state == VoiceCommentContentState.PLAY) {
+            // PAUSE
+            if(state == VoiceCommentPlayerState.PLAY) {
                 listener?.onPause()
+                mediaPlayer?.pause()
                 playButton?.speed = -ANIMATION_SPEED
                 playButton?.playAnimation()
-                state = VoiceCommentContentState.PAUSE
+                state = VoiceCommentPlayerState.PAUSE
                 return@setOnClickListener
             }
-            if(state == VoiceCommentContentState.IDLE) {
+            // START
+            if(state == VoiceCommentPlayerState.IDLE) {
                 listener?.onStart()
             }
-            if(state == VoiceCommentContentState.PAUSE) {
+            // RESUME
+            if(state == VoiceCommentPlayerState.PAUSE) {
                 listener?.onResume()
             }
+            mediaPlayer?.start()
+
+            val duration = mediaPlayer?.duration ?: 1000
+            countDownTimer = object : CountDownTimer(duration.toLong() + 500, 50) {
+                override fun onTick(millisUntilFinished: Long) {
+                    val currentPos = mediaPlayer?.currentPosition ?: 0
+                    LOG.debug("${currentPos} / ${duration} = ${currentPos / duration.toFloat()} ALEEEEEEEE")
+                    waveformSeekBar?.progress = ((currentPos / duration.toFloat()) * 105)
+                }
+
+                override fun onFinish() {
+
+                }
+            }
+
+            countDownTimer?.start()
+
             playButton?.speed = ANIMATION_SPEED
             playButton?.playAnimation()
-            state = VoiceCommentContentState.PLAY
+            state = VoiceCommentPlayerState.PLAY
         }
 
         trashButton?.setOnClickListener {
             listener?.onDelete()
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
             playButton?.speed = 1f
             playButton?.progress = 0f
-            state = VoiceCommentContentState.IDLE
+            state = VoiceCommentPlayerState.IDLE
         }
 
     }
 
-    enum class VoiceCommentContentState {
+    enum class VoiceCommentPlayerState {
         IDLE,
         PLAY,
         PAUSE
