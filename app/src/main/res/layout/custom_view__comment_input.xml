@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
-        android:id="@+id/input_wrapper"
+        android:id="@+id/rl__comment_input__input_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="58dp"
@@ -18,7 +18,7 @@
         >
 
         <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/acet__f_pserve__voice_message_view__message_input"
+            android:id="@+id/acet__comment_input__message_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_transparent"
@@ -30,26 +30,26 @@
     </RelativeLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/record_button_wrapper"
+        android:id="@+id/cl__comment_input__record_button_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <RelativeLayout
-            android:id="@+id/lock_wrapper"
+            android:id="@+id/rl__comment_input__lock_button_wrapper"
             android:layout_width="42dp" android:layout_height="162dp"
             android:layout_gravity="top|center"
-            app:layout_anchor="@+id/aciv__f_pserve__voice_message_view__record_button"
+            app:layout_anchor="@+id/aciv__comment_input__record_button"
             app:layout_anchorGravity="top|center">
 
             <View
-                android:id="@+id/lock_background"
+                android:id="@+id/v__comment_input__lock_button_background"
                 android:layout_width="match_parent" android:layout_height="match_parent"
                 android:background="@drawable/bg_lock" />
 
             <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/lottie_lock"
+                android:id="@+id/lav__comment_input__lock_animated_icon"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginTop="8dp"
@@ -59,7 +59,7 @@
         </RelativeLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/actv__f_pserve__voice_message_view__swipe_left_hint"
+            android:id="@+id/actv__comment_input__swipe_left_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center"
@@ -67,11 +67,11 @@
             android:paddingEnd="12dp"
             android:textSize="12sp"
             android:textStyle="bold"
-            app:layout_anchor="@id/aciv__f_pserve__voice_message_view__record_button"
+            app:layout_anchor="@id/aciv__comment_input__record_button"
             app:layout_anchorGravity="start|center" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/aciv__f_pserve__voice_message_view__record_button"
+            android:id="@+id/aciv__comment_input__record_button"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_gravity="bottom|end"
@@ -81,12 +81,12 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/llc__f_pserve__voice_message_view__record_info"
+        android:id="@+id/llc__comment_input__record_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/input_wrapper"
+        app:layout_constraintTop_toTopOf="@id/rl__comment_input__input_wrapper"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -96,7 +96,7 @@
             android:gravity="center">
 
             <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/lottie_recording"
+                android:id="@+id/lav__comment_input__recording_animated_icon"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:layout_marginStart="6dp"
@@ -105,7 +105,7 @@
                 app:lottie_rawRes="@raw/recording"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/actv__f_pserve__voice_message_view__record_time"
+                android:id="@+id/actv__comment_input__record_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -122,7 +122,7 @@
             android:background="@drawable/test_background" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/button_cancel"
+            android:id="@+id/actv__comment_input__cancel_button"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="ОТМЕНА"
             android:textStyle="bold"
@@ -133,7 +133,7 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/button_stop"
+        android:id="@+id/aciv__comment_input__stop_button"
         android:layout_width="48dp" android:layout_height="48dp"
         android:src="@drawable/ic_stop_voice_comment"
         app:layout_constraintEnd_toEndOf="parent"

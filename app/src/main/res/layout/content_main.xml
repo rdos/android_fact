@@ -108,12 +108,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <ru.smartro.worknote.utils.VoiceCommentContentView
+    <ru.smartro.worknote.utils.VoiceCommentPlayerView
         android:id="@+id/voice_message_content"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-    <ru.smartro.worknote.utils.VoiceCommentView
+    <ru.smartro.worknote.utils.CommentInputView
         android:id="@+id/voice_message_view"
         android:layout_marginTop="100dp"
         android:layout_width="match_parent" android:layout_height="wrap_content"/>

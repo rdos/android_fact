@@ -19,7 +19,7 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 
 @SuppressLint("ClickableViewAccessibility")
-class VoiceCommentView @JvmOverloads constructor(
+class CommentInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttrs: Int = 0
@@ -53,12 +53,12 @@ class VoiceCommentView @JvmOverloads constructor(
 
     private var lockButtonY1 = 0f
 
-    private var lockDistance = 0f
+    private var lockButtonDistance = 0f
 
     private var dx = 0f
     private var dy = 0f
 
-    var listener: VoiceCommentViewEvents? = null
+    var listener: CommentInputEvents? = null
 
     fun setTime(time: String) {
         recordTime?.text = time
@@ -75,23 +75,24 @@ class VoiceCommentView @JvmOverloads constructor(
     }
 
     init {
-        inflate(getContext(), R.layout.f_pserve__voice_comment__input, this)
+        inflate(getContext(), R.layout.custom_view__comment_input, this)
 
         vibrator = getContext().applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        messageInput = findViewById(R.id.acet__f_pserve__voice_message_view__message_input)
-        recordInfo = findViewById(R.id.llc__f_pserve__voice_message_view__record_info)
-        recordTime = findViewById(R.id.actv__f_pserve__voice_message_view__record_time)
-        lockButton = findViewById(R.id.lottie_lock)
-        lockWrapper = findViewById(R.id.lock_wrapper)
-        lockBackground = findViewById<View?>(R.id.lock_background).apply {
+
+        messageInput = findViewById(R.id.acet__comment_input__message_input)
+        recordInfo = findViewById(R.id.llc__comment_input__record_info)
+        recordTime = findViewById(R.id.actv__comment_input__record_time)
+        lockButton = findViewById(R.id.lav__comment_input__lock_animated_icon)
+        lockWrapper = findViewById(R.id.rl__comment_input__lock_button_wrapper)
+        lockBackground = findViewById<View?>(R.id.v__comment_input__lock_button_background).apply {
             pivotX = 0.5f
             pivotY = 0f
         }
-        recordButton = findViewById(R.id.aciv__f_pserve__voice_message_view__record_button)
-        swipeLeftHint = findViewById(R.id.actv__f_pserve__voice_message_view__swipe_left_hint)
-        recordButtonWrapper = findViewById(R.id.record_button_wrapper)
-        buttonStop = findViewById(R.id.button_stop)
-        buttonCancel = findViewById(R.id.button_cancel)
+        recordButton = findViewById(R.id.aciv__comment_input__record_button)
+        swipeLeftHint = findViewById(R.id.actv__comment_input__swipe_left_hint)
+        recordButtonWrapper = findViewById(R.id.cl__comment_input__record_button_wrapper)
+        buttonStop = findViewById(R.id.aciv__comment_input__stop_button)
+        buttonCancel = findViewById(R.id.actv__comment_input__cancel_button)
 
         initState()
 
@@ -126,7 +127,7 @@ class VoiceCommentView @JvmOverloads constructor(
                     lockButton?.getLocationOnScreen(location)
                     lockButtonY1 = location[1].toFloat()
 
-                    lockDistance = recordButtonY1 - lockButtonY1
+                    lockButtonDistance = recordButtonY1 - lockButtonY1
 
                     swipeLeftHint?.translationX = 0f
                     swipeLeftHint?.translationY = 0f
@@ -151,7 +152,6 @@ class VoiceCommentView @JvmOverloads constructor(
 
                     val params = swipeLeftHint!!.layoutParams as MarginLayoutParams
                     val marginRight = (recordButton?.width ?: 0) / 2
-                    LOG.debug("MARGIN RIGHT: $marginRight")
                     params.setMargins(0, 0, marginRight, 0)
                     swipeLeftHint!!.layoutParams = params
 
@@ -222,7 +222,7 @@ class VoiceCommentView @JvmOverloads constructor(
                             }
 
                             if(dy < -60f) {
-                                val diff = (lockDistance - (rawY - lockButtonY1)) / lockDistance
+                                val diff = (lockButtonDistance - (rawY - lockButtonY1)) / lockButtonDistance
                                 val scale = 1 + diff
 
                                 lockButton?.scaleX = scale
@@ -298,7 +298,7 @@ class VoiceCommentView @JvmOverloads constructor(
         HORIZONTAL, VERTICAL, NONE
     }
 
-    interface VoiceCommentViewEvents {
+    interface CommentInputEvents {
         fun onStart()
         fun onStop()
         fun onCancel()

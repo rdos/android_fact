@@ -10,7 +10,7 @@
     android:gravity="center">
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/trash"
+        android:id="@+id/aciv__voice_comment_player__remove_button"
         android:layout_width="28dp" android:layout_height="28dp"
         android:src="@drawable/ic_trashcan"
         android:layout_marginEnd="8dp"
@@ -26,22 +26,32 @@
         android:gravity="center">
 
         <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/play"
-            android:layout_width="28dp" android:layout_height="28dp"
+            android:id="@+id/lav__voice_comment_player__play_button"
+            android:layout_width="40dp" android:layout_height="40dp"
             app:lottie_rawRes="@raw/play"
             android:layout_marginEnd="6dp"
             />
 
         <com.masoudss.lib.WaveformSeekBar
-            android:id="@+id/waveform"
-            android:layout_width="0dp" android:layout_height="28dp"
+            android:id="@+id/wsb__voice_comment_player__waveform"
+            android:layout_width="0dp" android:layout_height="32dp"
             android:layout_weight="1"
-            android:layout_marginEnd="12dp"/>
+            android:layout_marginEnd="12dp"
+            app:wave_gap="2dp"
+            app:wave_max_progress="100"
+            app:wave_corner_radius="1dp"
+            app:wave_min_height="4dp"
+            app:wave_gravity="center"
+            app:wave_background_color="@color/white"
+            app:wave_progress_color="@color/blue_cool"
+            app:wave_width="2dp"
+
+            />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/time"
+        android:id="@+id/actv__voice_comment_player__time"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         tools:text="0:00"
         android:textStyle="bold"

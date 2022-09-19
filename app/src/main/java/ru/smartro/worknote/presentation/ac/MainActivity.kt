@@ -9,8 +9,8 @@ import androidx.core.content.ContextCompat
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.utils.VoiceCommentContentView
-import ru.smartro.worknote.utils.VoiceCommentView
+import ru.smartro.worknote.utils.VoiceCommentPlayerView
+import ru.smartro.worknote.utils.CommentInputView
 import ru.smartro.worknote.work.swipebtn.SwipeButton
 
 class MainActivity : AppCompatActivity() {
@@ -32,30 +32,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val voiceCommentPlayer = findViewById<VoiceCommentPlayerView>(R.id.voice_message_content)
+
+        val commentInput = findViewById<CommentInputView>(R.id.voice_message_view)
+
 //        swipeBtnDisabled.setDisabledStateNotAnimated()
 //        swipeBtnEnabled.setEnabledStateNotAnimated()
         val swipeNoState  = findViewById<SwipeButton>(R.id.swipeNoState)
         swipeNoState.setOnActiveListener { Toast.makeText(this@MainActivity, "Active!", Toast.LENGTH_SHORT).show() }
+
         val  toggleBtn  = findViewById<AppCompatButton>(R.id.toggleBtn)
         toggleBtn.setOnClickListener {
             if (!swipeBtnEnabled.isActive) {
                 swipeBtnEnabled.toggleState()
                 swipeBtnEnabled.isActive
             }
+            if(voiceCommentPlayer?.visibility == View.VISIBLE) {
+                voiceCommentPlayer.stop()
+            }
         }
 
-        val contentView =
-            findViewById<VoiceCommentContentView>(R.id.voice_message_content)
-
-        findViewById<VoiceCommentView>(R.id.voice_message_view).apply {
-            listener = object : VoiceCommentView.VoiceCommentViewEvents {
+        commentInput.apply {
+            listener = object : CommentInputView.CommentInputEvents {
                 override fun onStart() {
                     LOG.debug("onStart!!!")
                 }
 
                 override fun onStop() {
                     LOG.debug("onStop!!!")
-                    contentView.visibility = View.VISIBLE
+                    voiceCommentPlayer.visibility = View.VISIBLE
                 }
 
                 override fun onCancel() {
@@ -68,8 +73,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        contentView.apply {
-            listener = object : VoiceCommentContentView.VoiceCommentContentViewEvents {
+        voiceCommentPlayer.apply {
+            listener = object : VoiceCommentPlayerView.VoiceCommentPlayerEvents {
                 override fun onStart() {
                     LOG.debug("VoiceCommentContent: onStart")
                 }
@@ -80,10 +85,6 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onResume() {
                     LOG.debug("VoiceCommentContent: onResume")
-                }
-
-                override fun onStop() {
-                    LOG.debug("VoiceCommentContent: onStop")
                 }
 
                 override fun onDelete() {
