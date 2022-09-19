@@ -119,7 +119,7 @@
         <View
             android:layout_width="20dp"
             android:layout_height="match_parent"
-            android:background="@drawable/test_background" />
+            android:background="@drawable/bg_white_gradient_transparent" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/actv__comment_input__cancel_button"
