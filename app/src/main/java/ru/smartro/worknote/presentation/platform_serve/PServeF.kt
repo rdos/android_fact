@@ -263,13 +263,15 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
             }
         })
 
-        if(AppliCation().checkF("sound", "${_PlatformEntity.platformId}.wav")) {
+        if(_PlatformEntity.platformVoiceCommentEntity != null) {
             LOG.debug("TEST!!!! FILE EXISTS")
             vcpvCommentPlayer?.visibility = View.VISIBLE
-            vcpvCommentPlayer?.setAudio(requireContext(), AppliCation().getF("sound", "${_PlatformEntity.platformId}.wav"))
+            vcpvCommentPlayer?.setAudio(requireContext(), AppliCation().getF("sound", "y10.wav").apply {
+                writeBytes(_PlatformEntity.platformVoiceCommentEntity!!.voiceByteArray!!)
+            })
         }
 
-        voiceCommentHandler = VoiceComment(_PlatformEntity.platformId, object : VoiceComment.IVoiceComment {
+        voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
             override fun onStartVoiceComment() {
 
             }
@@ -284,6 +286,11 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
             override fun onVoiceCommentSave(soundF: File) {
                 vcpvCommentPlayer?.visibility = View.VISIBLE
+                val byteArray = Files.readAllBytes(soundF.toPath())
+
+                val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
+                platformVoiceCommentEntity.voiceByteArray = byteArray
+                vm.addVoiceComment(platformVoiceCommentEntity)
                 vcpvCommentPlayer?.setAudio(requireContext(), soundF)
             }
 
@@ -561,11 +568,6 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
     }
 
     override fun onVoiceCommentSave(soundF: File) {
-        val byteArray = Files.readAllBytes(soundF.toPath())
-
-        val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
-        platformVoiceCommentEntity.voiceByteArray = byteArray
-        vm.addVoiceComment(platformVoiceCommentEntity)
 //            vm.save
     }
 

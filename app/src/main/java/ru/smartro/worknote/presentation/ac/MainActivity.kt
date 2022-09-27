@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         val voiceCommentPlayer = findViewById<VoiceCommentPlayerView>(R.id.voice_message_content)
         val commentInput = findViewById<CommentInputView>(R.id.voice_message_view)
-        val voiceCommentHandler = VoiceComment(123, object : VoiceComment.IVoiceComment {
+        val voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
             override fun onStartVoiceComment() {
 
             }

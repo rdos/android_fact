@@ -6,7 +6,7 @@ import ru.smartro.worknote.LOG
 import java.io.File
 
 //class VoiceComment(private val p_callback: IVoiceComment) : AbsObject() {
-class VoiceComment(private val platformId: Int, private val p_callback: IVoiceComment) : CountDownTimer(SEC30_IN_MS, INTERVAL_IN_MS) {
+class VoiceComment(private val p_callback: IVoiceComment) : CountDownTimer(SEC30_IN_MS, INTERVAL_IN_MS) {
     private var mRecordMan: RecordMan? = null
 
     fun startRecording() {
@@ -50,7 +50,7 @@ class VoiceComment(private val platformId: Int, private val p_callback: IVoiceCo
     }
 
     private fun getSoundF(): File {
-        return App.getAppliCation().getF("sound", "${platformId}.wav")
+        return App.getAppliCation().getF("sound", "y10.wav")
     }
 
     companion object {
