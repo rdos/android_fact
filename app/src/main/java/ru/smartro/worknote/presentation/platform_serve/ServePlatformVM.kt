@@ -330,4 +330,13 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         database.addVoiceComment(platformVoiceCommentEntity)
         set_PlatformLiveData()
     }
+
+    fun removeVoiceComment(platformVoiceCommentEntity: PlatformVoiceCommentEntity) {
+        if (platformVoiceCommentEntity.voiceByteArray == null) {
+            LOG.error("platformVoiceCommentEntity.voiceByteArray == null")
+            return
+        }
+        database.removeVoiceComment(platformVoiceCommentEntity)
+        set_PlatformLiveData()
+    }
 }

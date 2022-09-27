@@ -663,6 +663,20 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun removeVoiceComment(platformVoiceCommentEntity: PlatformVoiceCommentEntity) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformVoiceCommentEntity.platformId)
+                .findFirst()
+
+            platformEntity!!.platformVoiceCommentEntity!!.deleteFromRealm()
+            platformEntity.platformVoiceCommentEntity = null
+
+
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
     fun addBeforeMedia(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()

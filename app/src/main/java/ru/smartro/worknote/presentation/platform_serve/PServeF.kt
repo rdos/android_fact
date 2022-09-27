@@ -46,7 +46,7 @@ import java.io.File
 import java.nio.file.Files
 
 
-class PServeF : AFragment(), VoiceComment.IVoiceComment {
+class PServeF : AFragment() {
 
     private var robVoiceCommentStart: SmartROButton? = null
     private var mContainersAdapter: PServeContainersAdapter? = null
@@ -337,8 +337,9 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
                 override fun onDelete() {
                     LOG.debug("onDelete")
+                    val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
+                    vm.removeVoiceComment(platformVoiceCommentEntity)
                     this@apply.visibility = View.GONE
-                    // TODO::: Remove file??
                 }
 
             }
@@ -550,27 +551,6 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
     interface ContainerPointClickListener {
         fun startContainerService(item: ContainerEntity)
     }
-
-    override fun onStartVoiceComment() {
-        robVoiceCommentStart?.text = "запись пошла"
-    }
-
-    override fun onStopVoiceComment() {
-        robVoiceCommentStart?.text = "добавить голосовое сообщение"
-    }
-
-//    override fun onCancelVoiceComment() {
-//
-//    }
-    override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
-//        TODO("Not yet implemented")
-        robVoiceCommentStart?.text = "запись идёт${volume} ${timeInMS}"
-    }
-
-    override fun onVoiceCommentSave(soundF: File) {
-//            vm.save
-    }
-
 
     /********************************************************************************************************************
      ********************************************************************************************************************
