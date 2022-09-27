@@ -3,6 +3,7 @@
     android:id="@+id/main_view"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:paddingHorizontal="8dp"
+    android:background="@drawable/bg_transparent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -37,39 +38,63 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!--<RelativeLayout-->
+        <!--    android:id="@+id/rl__comment_input__lock_button_wrapper"-->
+        <!--    android:layout_width="42dp" android:layout_height="162dp"-->
+        <!--    android:layout_gravity="top|center"-->
+        <!--    app:layout_anchor="@+id/aciv__comment_input__record_button"-->
+        <!--    app:layout_anchorGravity="top|center">-->
+
+        <!--    <View-->
+        <!--        android:id="@+id/v__comment_input__lock_button_background"-->
+        <!--        android:layout_width="match_parent" android:layout_height="match_parent"-->
+        <!--        android:background="@drawable/bg_lock" />-->
+
+        <!--    <com.airbnb.lottie.LottieAnimationView-->
+        <!--        android:id="@+id/lav__comment_input__lock_animated_icon"-->
+        <!--        android:layout_width="32dp"-->
+        <!--        android:layout_height="32dp"-->
+        <!--        android:layout_marginTop="8dp"-->
+        <!--        android:layout_centerHorizontal="true"-->
+        <!--        app:lottie_rawRes="@raw/lock" />-->
+
+        <!--</RelativeLayout>-->
+
         <RelativeLayout
-            android:id="@+id/rl__comment_input__lock_button_wrapper"
-            android:layout_width="42dp" android:layout_height="162dp"
-            android:layout_gravity="top|center"
-            app:layout_anchor="@+id/aciv__comment_input__record_button"
-            app:layout_anchorGravity="top|center">
+            android:id="@+id/rl__comment_input__path_cancel"
+            android:layout_width="240dp" android:layout_height="32dp"
+            android:layout_gravity="end|center"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/bg_cancel"
+            >
 
-            <View
-                android:id="@+id/v__comment_input__lock_button_background"
-                android:layout_width="match_parent" android:layout_height="match_parent"
-                android:background="@drawable/bg_lock" />
-
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/lav__comment_input__lock_animated_icon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_centerHorizontal="true"
-                app:lottie_rawRes="@raw/lock" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="4dp"
+                android:src="@drawable/ic_trashcan"
+                />
 
         </RelativeLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/actv__comment_input__swipe_left_hint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center"
-            android:text="Проведите влево для отмены"
-            android:paddingEnd="12dp"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_anchor="@id/aciv__comment_input__record_button"
-            app:layout_anchorGravity="start|center" />
+        <RelativeLayout
+            android:id="@+id/rl__comment_input__path_lock"
+            android:layout_width="120dp" android:layout_height="32dp"
+            android:layout_gravity="end|center"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/bg_lock"
+            >
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="4dp"
+                android:src="@drawable/ic_lock"
+                />
+
+        </RelativeLayout>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/aciv__comment_input__record_button"

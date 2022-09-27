@@ -19,6 +19,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -48,7 +51,6 @@ import java.nio.file.Files
 
 class PServeF : AFragment() {
 
-    private var robVoiceCommentStart: SmartROButton? = null
     private var mContainersAdapter: PServeContainersAdapter? = null
     private val _PlatformEntity: PlatformEntity
         get() = vm.getPlatformEntity()
@@ -62,6 +64,7 @@ class PServeF : AFragment() {
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
     private var acsbVolumePickup: SeekBar? = null
+    private var rvContainers: RecyclerView? = null
 
     private var vcpvCommentPlayer: VoiceCommentPlayerView? = null
     private var civCommentInput: CommentInputView? = null
@@ -88,12 +91,8 @@ class PServeF : AFragment() {
         sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
         actvScreenLabel = sview.findViewById(R.id.screen_mode_label)
 
-        vcpvCommentPlayer = sview.findViewById(R.id.vcpv__f_pserve__comment_player)
-        vcpvCommentPlayer?.visibility = View.GONE
-        civCommentInput = sview.findViewById(R.id.civ__f_pserve__comment_input)
-
         tvVolumePickup = sview.findViewById(R.id.et_act_platformserve__volumepickup)
-        val rvContainers = sview.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
+        rvContainers = sview.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
             recycledViewPool.setMaxRecycledViews(0, 0)
         }
         mContainersAdapter = PServeContainersAdapter(emptyList())
@@ -105,6 +104,12 @@ class PServeF : AFragment() {
         acsbVolumePickup = sview.findViewById(R.id.acsb_activity_platform_serve__seekbar)
 
         actvScreenLabel?.text = "Списком"
+
+        civCommentInput = sview.findViewById(R.id.civ__f_pserve__comment_input)
+
+        vcpvCommentPlayer = sview.findViewById(R.id.vcpv__f_pserve__comment_player)
+        vcpvCommentPlayer?.visibility = View.INVISIBLE
+
 
         /////////////////////////////////////////////
 
@@ -339,7 +344,7 @@ class PServeF : AFragment() {
                     LOG.debug("onDelete")
                     val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
                     vm.removeVoiceComment(platformVoiceCommentEntity)
-                    this@apply.visibility = View.GONE
+                    vcpvCommentPlayer?.visibility = View.INVISIBLE
                 }
 
             }
