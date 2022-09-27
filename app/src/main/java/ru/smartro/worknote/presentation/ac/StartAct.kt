@@ -288,7 +288,7 @@ class StartAct : AAct() {
 //            gotoNextAct(isHasToken = true)
 //        }
 
-        startActivity(Intent(this, MainActivity::class.java))
+//        startActivity(Intent(this, MainActivity::class.java))
     }
 
     open class AuthViewModel(app: Application) : AViewModel(app) {

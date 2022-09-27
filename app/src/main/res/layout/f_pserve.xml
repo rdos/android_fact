@@ -106,46 +106,76 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
+            <ru.smartro.worknote.utils.VoiceCommentPlayerView
+                android:id="@+id/vcpv__f_pserve__comment_player"
+                app:layout_constraintBottom_toBottomOf="@+id/civ__f_pserve__comment_input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/acb_activity_platform_serve__problem"
-                android:layout_width="110dp"
-                android:layout_height="39dp"
-                android:background="@drawable/bg_button_red__default"
-                android:layout_margin="5dp"
-                android:text="@string/problem_on_point"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+            <ru.smartro.worknote.utils.CommentInputView
+                android:id="@+id/civ__f_pserve__comment_input"
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/actions_wrapper"
+                />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/acb_activity_platform_serve__kgo_served"
-                android:layout_width="110dp"
-                android:layout_height="39dp"
-                android:layout_margin="5dp"
-                android:background="@drawable/bg_button_green__default"
-                android:text="КГО"
-                android:textColor="@color/black"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/actions_wrapper"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/apb_activity_platform_serve__kgo_remaining"
-                app:layout_constraintStart_toEndOf="@id/acb_activity_platform_serve__problem"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp"
+                android:gravity="center">
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/apb_activity_platform_serve__kgo_remaining"
-                android:layout_width="110dp"
-                android:layout_height="39dp"
-                android:layout_margin="5dp"
-                android:textSize="13sp"
-                android:background="@drawable/bg_button_green__default"
-                android:text="Заказать борт"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/acb_activity_platform_serve__problem"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="35dp"
+                    android:padding="4dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:textSize="11sp"
+                    android:background="@drawable/bg_button_red__default"
+                    android:text="@string/problem_on_point"
+                    android:textColor="@color/black"
+                    />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/acb_activity_platform_serve__kgo_served"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="35dp"
+                    android:padding="4dp"
+                    android:textSize="13sp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="@drawable/bg_button_green__default"
+                    android:text="КГО"
+                    android:textColor="@color/black"
+                    />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/apb_activity_platform_serve__kgo_remaining"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="35dp"
+                    android:padding="4dp"
+                    android:textSize="13sp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="@drawable/bg_button_green__default"
+                    android:text="Заказать борт"
+                    android:textColor="@color/black"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <include layout="@layout/act_platformserve__pickup"/>
+        <include
+            android:id="@+id/pickup_wrapper"
+            layout="@layout/act_platformserve__pickup"
+
+            />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -160,39 +190,6 @@
         android:background="@drawable/bg_button"
         android:text="Завершить"
         android:tooltipText="Какой-то текст про кнопку Завершить"
-        android:textColor="@color/white" />
-
-    <!--анекдот))-->
-    <!--Я не причина , я этажом ниже."-->
-    <ru.smartro.worknote.andPOintD.SmartROButton
-        android:id="@+id/rob_activity_platform_serve__voicecomment_start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_2"
-        android:layout_marginBottom="@dimen/margin_2"
-        android:background="@drawable/bg_button_red_problem"
-        android:text="Добавить Голосовое Сообщение"
-        android:textColor="@color/white" />
-
-    <ru.smartro.worknote.andPOintD.SmartROButton
-        android:id="@+id/rob_activity_platform_serve__voicecomment_stop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_2"
-        android:layout_marginBottom="@dimen/margin_2"
-        android:background="@drawable/bg_button_red_problem"
-        android:text="Запись, Вам Сказали Отмена"
-        android:textColor="@color/white" />
-
-
-    <ru.smartro.worknote.andPOintD.SmartROButton
-        android:id="@+id/rob_activity_platform_serve__voicecomment_end"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_2"
-        android:layout_marginBottom="@dimen/margin_2"
-        android:background="@drawable/bg_button_red_problem"
-        android:text="Запись, Вам Сказали Стоп"
         android:textColor="@color/white" />
 
 </ru.smartro.worknote.andPOintD.SmartROLinearLayout>

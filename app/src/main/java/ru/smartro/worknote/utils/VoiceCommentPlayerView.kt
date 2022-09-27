@@ -64,18 +64,21 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
     }
 
     fun setAudio(context: Context, resource: Int) {
+        waveformSeekBar?.progress = 0f
         waveformSeekBar?.setSampleFrom(resource)
         mediaPlayer = MediaPlayer.create(context, resource)
         initMediaPlayer()
     }
 
     fun setAudio(context: Context, file: File) {
+        waveformSeekBar?.progress = 0f
         waveformSeekBar?.setSampleFrom(file)
         mediaPlayer = MediaPlayer.create(context, file.toUri())
         initMediaPlayer()
     }
 
     fun setAudio(context: Context, uri: Uri) {
+        waveformSeekBar?.progress = 0f
         waveformSeekBar?.setSampleFrom(uri)
         mediaPlayer = MediaPlayer.create(context, uri)
         initMediaPlayer()
@@ -83,7 +86,6 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
 
     private fun initMediaPlayer() {
         setTime(mediaPlayer?.duration?.toLong() ?: 0)
-        mediaPlayer?.setOnPreparedListener { LOG.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") }
         mediaPlayer?.setOnCompletionListener {
             stop()
         }
@@ -135,7 +137,6 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
             countDownTimer = object : CountDownTimer(duration.toLong() + 500, 50) {
                 override fun onTick(millisUntilFinished: Long) {
                     val currentPos = mediaPlayer?.currentPosition ?: 0
-                    LOG.debug("${currentPos} / ${duration} = ${currentPos / duration.toFloat()} ALEEEEEEEE")
                     waveformSeekBar?.progress = ((currentPos / duration.toFloat()) * 105)
                 }
 

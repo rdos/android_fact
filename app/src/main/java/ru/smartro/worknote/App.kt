@@ -181,7 +181,6 @@ class App : AApp() {
 //        }
 
         logbackInit()
-        LOG.debug("AAAAAAAAAAAA")
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()

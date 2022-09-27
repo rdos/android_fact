@@ -1,7 +1,9 @@
 package ru.smartro.worknote.presentation.platform_serve
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -17,6 +19,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +36,8 @@ import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
+import ru.smartro.worknote.utils.CommentInputView
+import ru.smartro.worknote.utils.VoiceCommentPlayerView
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
@@ -58,6 +63,10 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
     private var acbProblem: AppCompatButton? = null
     private var acsbVolumePickup: SeekBar? = null
 
+    private var vcpvCommentPlayer: VoiceCommentPlayerView? = null
+    private var civCommentInput: CommentInputView? = null
+    private var voiceCommentHandler: VoiceComment? = null
+
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
 
@@ -78,6 +87,10 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
         actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
         sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
         actvScreenLabel = sview.findViewById(R.id.screen_mode_label)
+
+        vcpvCommentPlayer = sview.findViewById(R.id.vcpv__f_pserve__comment_player)
+        vcpvCommentPlayer?.visibility = View.GONE
+        civCommentInput = sview.findViewById(R.id.civ__f_pserve__comment_input)
 
         tvVolumePickup = sview.findViewById(R.id.et_act_platformserve__volumepickup)
         val rvContainers = sview.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
@@ -160,18 +173,6 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
             }
         }
 
-        robVoiceCommentStart = sview.findViewById<SmartROButton>(R.id.rob_activity_platform_serve__voicecomment_start)
-        robVoiceCommentStart?.setOnClickListener {
-            mVoiceComment = VoiceComment(this)
-        }
-        val robVoiceCommentStop = sview.findViewById<SmartROButton>(R.id.rob_activity_platform_serve__voicecomment_stop)
-        robVoiceCommentStop.setOnClickListener {
-            mVoiceComment?.stop()
-        }
-        val robVoiceCommentEnd = sview.findViewById<SmartROButton>(R.id.rob_activity_platform_serve__voicecomment_end)
-        robVoiceCommentEnd.setOnClickListener {
-            mVoiceComment?.end()
-        }
         return false //))
     }
 
@@ -261,6 +262,80 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
             }
         })
+
+        if(AppliCation().checkF("sound", "${_PlatformEntity.platformId}.wav")) {
+            LOG.debug("TEST!!!! FILE EXISTS")
+            vcpvCommentPlayer?.visibility = View.VISIBLE
+            vcpvCommentPlayer?.setAudio(requireContext(), AppliCation().getF("sound", "${_PlatformEntity.platformId}.wav"))
+        }
+
+        voiceCommentHandler = VoiceComment(_PlatformEntity.platformId, object : VoiceComment.IVoiceComment {
+            override fun onStartVoiceComment() {
+
+            }
+
+            override fun onStopVoiceComment() {
+
+            }
+
+            override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
+                civCommentInput?.setTime(timeInMS)
+            }
+
+            override fun onVoiceCommentSave(soundF: File) {
+                vcpvCommentPlayer?.visibility = View.VISIBLE
+                vcpvCommentPlayer?.setAudio(requireContext(), soundF)
+            }
+
+        })
+
+        civCommentInput?.apply {
+            listener = object : CommentInputView.CommentInputEvents {
+                override fun onStart() {
+                    if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.RECORD_AUDIO), 101)
+                    } else {
+                        voiceCommentHandler?.startRecording()
+                    }
+                }
+
+                override fun onStop() {
+                    voiceCommentHandler?.end()
+                }
+
+                override fun onCancel() {
+                    voiceCommentHandler?.stop()
+                }
+
+                override fun onLock() {
+                    LOG.debug("onLock!!!")
+                    // TODO::: INCREASE ALLOWED RECORD TIME
+                }
+            }
+        }
+
+        vcpvCommentPlayer?.apply {
+            listener = object : VoiceCommentPlayerView.VoiceCommentPlayerEvents {
+                override fun onStart() {
+                    LOG.debug("onStart")
+                }
+
+                override fun onPause() {
+                    LOG.debug("onPause")
+                }
+
+                override fun onResume() {
+                    LOG.debug("onResume")
+                }
+
+                override fun onDelete() {
+                    LOG.debug("onDelete")
+                    this@apply.visibility = View.GONE
+                    // TODO::: Remove file??
+                }
+
+            }
+        }
 
         return false
     }
