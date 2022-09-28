@@ -162,7 +162,8 @@ class SYNCworkER(
             gps.PointTOBaseData(),
             AppParaMS().deviceId,
             gps.PointTimeToLastKnowTime_SRV(),
-        PlatformEntity.toSRV(platforms, db()))
+            PlatformEntity.toSRV(platforms, db())
+        )
 
 
         LOG.info("platforms.size=${platforms.size}")

@@ -359,9 +359,12 @@ open class PlatformEntity(
     @Expose
     @SerializedName("failure_comment")
     var failureComment: String? = null,
-    @Expose
+
     @SerializedName("voice_comment")
     var platformVoiceCommentEntity: PlatformVoiceCommentEntity? = null,
+
+    @Expose
+    var voiceComment: String? = null,
 
     @Expose
     @SerializedName("status")
@@ -830,6 +833,12 @@ open class PlatformEntity(
                 platform.failureMedia = platformMediaEntity.failureMedia
                 platform.pickupMedia = platformMediaEntity.pickupMedia
                 platform.afterMedia = platformMediaEntity.afterMedia
+
+                if(platform.platformVoiceCommentEntity != null) {
+                    val baseSF = Base64.getEncoder().encodeToString(platform.platformVoiceCommentEntity!!.voiceByteArray)
+                    LOG.debug("TEST: bytearray to (${platform.platformVoiceCommentEntity!!.voiceByteArray!!.size}) BASE64 (${baseSF.toByteArray().size}): ${baseSF}")
+                    platform.voiceComment = baseSF
+                }
 
                 for (container in platform.containerS) {
                     LOG.debug("container.containerId=${container.containerId}")
