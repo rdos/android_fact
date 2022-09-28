@@ -88,7 +88,6 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/content_wrapper"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -102,85 +101,74 @@
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/f_pserve__rv_item" />
-
-        <ru.smartro.worknote.utils.VoiceCommentPlayerView
-            android:id="@+id/vcpv__f_pserve__comment_player"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            />
-
-        <ru.smartro.worknote.utils.CommentInputView
-            android:id="@+id/civ__f_pserve__comment_input"
-            android:layout_marginBottom="8dp"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            />
-
-        <!--<View-->
-        <!--    android:id="@+id/vcpv__f_pserve__comment_player"-->
-        <!--    app:layout_constraintBottom_toBottomOf="@+id/civ__f_pserve__comment_input"-->
-        <!--    app:layout_constraintStart_toStartOf="parent"-->
-        <!--    app:layout_constraintTop_toTopOf="@+id/civ__f_pserve__comment_input"-->
-        <!--    android:background="@color/dark_orange"-->
-        <!--    android:layout_width="match_parent" android:layout_height="42dp"-->
-        <!--    />-->
-
-        <!--<View-->
-        <!--    android:id="@+id/civ__f_pserve__comment_input"-->
-        <!--    android:layout_width="match_parent" android:layout_height="139dp"-->
-        <!--    app:layout_constraintBottom_toTopOf="@id/actions_wrapper"/>-->
-
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/actions_wrapper"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="4dp"
-            android:gravity="center">
+            android:background="@drawable/bg_action_buttons"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/acb_activity_platform_serve__problem"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="35dp"
-                android:padding="4dp"
-                android:layout_marginHorizontal="8dp"
-                android:textSize="11sp"
-                android:background="@drawable/bg_button_red__default"
-                android:text="@string/problem_on_point"
-                android:textColor="@color/black"
+            <ru.smartro.worknote.utils.VoiceCommentPlayerView
+                android:id="@+id/vcpv__f_pserve__comment_player"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
                 />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/acb_activity_platform_serve__kgo_served"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="35dp"
-                android:padding="4dp"
-                android:textSize="13sp"
-                android:layout_marginHorizontal="8dp"
-                android:background="@drawable/bg_button_green__default"
-                android:text="КГО"
-                android:textColor="@color/black"
+            <ru.smartro.worknote.utils.CommentInputView
+                android:id="@+id/civ__f_pserve__comment_input"
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
                 />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/apb_activity_platform_serve__kgo_remaining"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="35dp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:padding="4dp"
-                android:textSize="13sp"
-                android:layout_marginHorizontal="8dp"
-                android:background="@drawable/bg_button_green__default"
-                android:text="Заказать борт"
-                android:textColor="@color/black"
+                android:gravity="center">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/acb_activity_platform_serve__problem"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="35dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:textSize="11sp"
+                    android:background="@drawable/bg_button_red__default"
+                    android:text="@string/problem_on_point"
+                    android:textColor="@color/black"
+                    />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/acb_activity_platform_serve__kgo_served"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="35dp"
+                    android:textSize="13sp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="@drawable/bg_button_green__default"
+                    android:text="КГО"
+                    android:textColor="@color/black"
+                    />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/apb_activity_platform_serve__kgo_remaining"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="35dp"
+                    android:textSize="13sp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="@drawable/bg_button_green__default"
+                    android:text="Заказать борт"
+                    android:textColor="@color/black"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <include
+                android:id="@+id/pickup_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/act_platformserve__pickup"
                 />
         </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <include
-            android:id="@+id/pickup_wrapper"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/act_platformserve__pickup"
-            />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

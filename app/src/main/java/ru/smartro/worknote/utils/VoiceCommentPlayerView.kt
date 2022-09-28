@@ -1,12 +1,9 @@
 package ru.smartro.worknote.utils
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.CountDownTimer
-import android.os.Handler
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.AttributeSet
@@ -14,19 +11,13 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.net.toUri
-import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.airbnb.lottie.LottieAnimationView
+import com.masoudss.lib.SeekBarOnProgressChanged
 import com.masoudss.lib.WaveformSeekBar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import java.io.File
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 
 @SuppressLint("ClickableViewAccessibility")
 class VoiceCommentPlayerView @JvmOverloads constructor(
@@ -35,10 +26,9 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
     defStyleAttrs: Int = 0
 ): LinearLayoutCompat(context, attrs, defStyleAttrs) {
 
-    private val ANIMATION_SPEED = 1.5f
+    private val ANIMATION_SPEED = 2.2f
     private var mediaPlayer: MediaPlayer? = null
 
-    private var service: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
     private var vibrator: Vibrator? = null
     private var vibrationEffect = VibrationEffect.createOneShot(200, 162)
 
@@ -63,24 +53,10 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
         recordTime?.text = "${minutesShowForUser}:${secondsShowForUser}"
     }
 
-    fun setAudio(context: Context, resource: Int) {
-        waveformSeekBar?.progress = 0f
-        waveformSeekBar?.setSampleFrom(resource)
-        mediaPlayer = MediaPlayer.create(context, resource)
-        initMediaPlayer()
-    }
-
     fun setAudio(context: Context, file: File) {
         waveformSeekBar?.progress = 0f
         waveformSeekBar?.setSampleFrom(file)
         mediaPlayer = MediaPlayer.create(context, file.toUri())
-        initMediaPlayer()
-    }
-
-    fun setAudio(context: Context, uri: Uri) {
-        waveformSeekBar?.progress = 0f
-        waveformSeekBar?.setSampleFrom(uri)
-        mediaPlayer = MediaPlayer.create(context, uri)
         initMediaPlayer()
     }
 
@@ -113,6 +89,24 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
         trashButton = findViewById(R.id.aciv__voice_comment_player__remove_button)
         waveformSeekBar = findViewById(R.id.wsb__voice_comment_player__waveform)
 
+        waveformSeekBar?.onProgressChanged = object : SeekBarOnProgressChanged {
+            override fun onProgressChanged(waveformSeekBar: WaveformSeekBar, progress: Float, fromUser: Boolean) {
+                if(fromUser) {
+                    val duration = mediaPlayer?.duration ?: 0
+                    val currentMS = (duration * progress) / 100
+                    countDownTimer?.cancel()
+                    if(mediaPlayer?.isPlaying == true) {
+                        mediaPlayer?.pause()
+                        mediaPlayer?.seekTo(currentMS.toInt())
+                        mediaPlayer?.start()
+                        getTimer().start()
+                    } else {
+                        mediaPlayer?.seekTo(currentMS.toInt())
+                    }
+                }
+            }
+        }
+
         playButton?.setOnClickListener {
             // PAUSE
             if(state == VoiceCommentPlayerState.PLAY) {
@@ -133,19 +127,7 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
             }
             mediaPlayer?.start()
 
-            val duration = mediaPlayer?.duration ?: 1000
-            countDownTimer = object : CountDownTimer(duration.toLong() + 500, 50) {
-                override fun onTick(millisUntilFinished: Long) {
-                    val currentPos = mediaPlayer?.currentPosition ?: 0
-                    waveformSeekBar?.progress = ((currentPos / duration.toFloat()) * 105)
-                }
-
-                override fun onFinish() {
-
-                }
-            }
-
-            countDownTimer?.start()
+            getTimer().start()
 
             playButton?.speed = ANIMATION_SPEED
             playButton?.playAnimation()
@@ -161,6 +143,33 @@ class VoiceCommentPlayerView @JvmOverloads constructor(
             state = VoiceCommentPlayerState.IDLE
         }
 
+    }
+
+    private fun getTimer(): CountDownTimer {
+        if(countDownTimer != null) {
+            countDownTimer?.cancel()
+        }
+
+        val duration = mediaPlayer?.duration ?: 1000
+
+        countDownTimer = object : CountDownTimer(duration.toLong() + 500, 50) {
+            override fun onTick(millisUntilFinished: Long) {
+                val currentPos = mediaPlayer?.currentPosition ?: 0
+                waveformSeekBar?.progress = ((currentPos / duration.toFloat()) * 105)
+            }
+
+            override fun onFinish() {
+
+            }
+        }
+        return countDownTimer!!
+    }
+
+    fun release() {
+        countDownTimer?.cancel()
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     enum class VoiceCommentPlayerState {

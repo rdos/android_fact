@@ -68,7 +68,30 @@ class PServeF : AFragment() {
 
     private var vcpvCommentPlayer: VoiceCommentPlayerView? = null
     private var civCommentInput: CommentInputView? = null
-    private var voiceCommentHandler: VoiceComment? = null
+    private var voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
+
+        override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
+            civCommentInput?.setTime(timeInMS)
+        }
+
+        override fun onVoiceCommentSave(soundF: File) {
+            if(civCommentInput?.currentState == CommentInputView.VoiceCommentState.RECORDING ||
+                civCommentInput?.currentState == CommentInputView.VoiceCommentState.LOCK) {
+                civCommentInput?.setIdle()
+            }
+
+            vcpvCommentPlayer?.visibility = View.VISIBLE
+            val byteArray = Files.readAllBytes(soundF.toPath())
+            val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
+            platformVoiceCommentEntity.voiceByteArray = byteArray
+            vm.addVoiceComment(platformVoiceCommentEntity)
+            vcpvCommentPlayer?.setAudio(requireContext(), soundF)
+        }
+
+        override fun onStartVoiceComment() {}
+
+        override fun onStopVoiceComment() {}
+    })
 
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
@@ -108,7 +131,7 @@ class PServeF : AFragment() {
         civCommentInput = sview.findViewById(R.id.civ__f_pserve__comment_input)
 
         vcpvCommentPlayer = sview.findViewById(R.id.vcpv__f_pserve__comment_player)
-        vcpvCommentPlayer?.visibility = View.INVISIBLE
+        vcpvCommentPlayer?.visibility = View.GONE
 
 
         /////////////////////////////////////////////
@@ -181,11 +204,10 @@ class PServeF : AFragment() {
         return false //))
     }
 
-    private var mVoiceComment: VoiceComment ?= null
-
     override fun onDestroyView() {
         super.onDestroyView()
-        mVoiceComment?.stop()
+        voiceCommentHandler.release()
+        vcpvCommentPlayer?.release()
     }
 
     override fun onBindLayoutState(): Boolean {
@@ -276,31 +298,6 @@ class PServeF : AFragment() {
             })
         }
 
-        voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
-            override fun onStartVoiceComment() {
-
-            }
-
-            override fun onStopVoiceComment() {
-
-            }
-
-            override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
-                civCommentInput?.setTime(timeInMS)
-            }
-
-            override fun onVoiceCommentSave(soundF: File) {
-                vcpvCommentPlayer?.visibility = View.VISIBLE
-                val byteArray = Files.readAllBytes(soundF.toPath())
-
-                val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
-                platformVoiceCommentEntity.voiceByteArray = byteArray
-                vm.addVoiceComment(platformVoiceCommentEntity)
-                vcpvCommentPlayer?.setAudio(requireContext(), soundF)
-            }
-
-        })
-
         civCommentInput?.apply {
             listener = object : CommentInputView.CommentInputEvents {
                 override fun onStart() {
@@ -344,7 +341,8 @@ class PServeF : AFragment() {
                     LOG.debug("onDelete")
                     val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
                     vm.removeVoiceComment(platformVoiceCommentEntity)
-                    vcpvCommentPlayer?.visibility = View.INVISIBLE
+                    vcpvCommentPlayer?.release()
+                    vcpvCommentPlayer?.visibility = View.GONE
                 }
 
             }
@@ -352,7 +350,6 @@ class PServeF : AFragment() {
 
         return false
     }
-
 
     override fun onNewLiveData(/**platformEntity*/){
         vm.todoLiveData.observe(viewLifecycleOwner) { platformEntity ->

@@ -29,14 +29,20 @@ class RecordMan(private val p_outputF: File) {
     }
 
     fun stop() {
-        if (mAudioRecorder == null) {
-            LOG.trace("if (audioRecorder == null) {")
-            return
+        try {
+            if (mAudioRecorder == null) {
+                LOG.trace("if (audioRecorder == null) {")
+                return
+            }
+            mAudioRecorder?.stop()
+            mAudioRecorder?.release()
+            mAudioRecorder = null
+            LOG.debug("after")
+        } catch(e: Exception) {
+            LOG.error(e.stackTraceToString())
+            mAudioRecorder?.release()
+            mAudioRecorder = null
         }
-        mAudioRecorder?.stop()
-        mAudioRecorder?.release()
-        mAudioRecorder = null
-        LOG.debug("after")
     }
 
     fun isAudioRecording(): Boolean {

@@ -7,18 +7,14 @@ import android.os.Vibrator
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import com.airbnb.lottie.LottieAnimationView
-import com.yandex.runtime.i18n.TimeFormat
-import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import java.time.format.DateTimeFormatter
 
 @SuppressLint("ClickableViewAccessibility")
 class CommentInputView @JvmOverloads constructor(
@@ -27,10 +23,9 @@ class CommentInputView @JvmOverloads constructor(
     defStyleAttrs: Int = 0
 ): ConstraintLayout(context, attrs, defStyleAttrs) {
 
+    var currentState = VoiceCommentState.IDLE
+
     private var isLockReady: Boolean = false
-        set(value) {
-            LOG.debug("IS LOCK SET ${value}")
-        }
 
     private var vibrator: Vibrator? = null
     private var vibrationEffect = VibrationEffect.createOneShot(100, 128)
@@ -42,7 +37,7 @@ class CommentInputView @JvmOverloads constructor(
     private var recordInfo: LinearLayoutCompat? = null
     private var recordTime: AppCompatTextView? = null
     private var recordButton: AppCompatImageView? = null
-    private var recordButtonWrapper: CoordinatorLayout? = null
+    private var recordButtonWrapper: FrameLayout? = null
     private var buttonStop: AppCompatImageView? = null
     private var buttonCancel: AppCompatTextView? = null
 
@@ -50,7 +45,6 @@ class CommentInputView @JvmOverloads constructor(
     private var rlPathLock: RelativeLayout? = null
 
     private var movement = MovementEnum.NONE
-    private var currentState = VoiceCommentState.IDLE
 
     private var recordButtonX1 = 0f
     private var recordButtonY1 = 0f
@@ -81,6 +75,14 @@ class CommentInputView @JvmOverloads constructor(
         rlPathLock?.visibility = View.INVISIBLE
     }
 
+    fun setIdle() {
+        setTime(0)
+        currentState = VoiceCommentState.IDLE
+        movement = MovementEnum.NONE
+        isLockReady = false
+        initState()
+    }
+
     init {
         inflate(getContext(), R.layout.custom_view__comment_input, this)
 
@@ -101,6 +103,7 @@ class CommentInputView @JvmOverloads constructor(
 
         buttonStop?.setOnClickListener {
             listener?.onStop()
+            isLockReady = false
             vibrator!!.vibrate(vibrationEffect)
             initState()
         }
@@ -111,9 +114,9 @@ class CommentInputView @JvmOverloads constructor(
             initState()
         }
 
-        recordButton?.setOnTouchListener { _: View?, event: MotionEvent ->
-            when (event.action) {
+        recordButton?.setOnTouchListener { view: View?, event: MotionEvent ->
 
+            when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     // Corners of button has the same size
                     val recordButtonSize = recordButton?.width ?: 0
@@ -145,20 +148,16 @@ class CommentInputView @JvmOverloads constructor(
                     DRAG_EDGE_LOCK = location[0].toFloat()
 
                     currentState = VoiceCommentState.RECORDING
-
-                    // TODO::: DELAY?
                     listener?.onStart()
 
                     return@setOnTouchListener true
                 }
-                
+
                 MotionEvent.ACTION_MOVE -> {
                     if (currentState == VoiceCommentState.RECORDING) {
-                        
+
                         val rawX = event.rawX
                         val rawY = event.rawY
-
-                        LOG.debug("RAW X: ${rawX}, DRAG_CANCEL: ${DRAG_EDGE_CANCEL}, DRAG_LOCK: ${DRAG_EDGE_LOCK}")
 
                         if (movement == MovementEnum.NONE) {
                             if (rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < recordButtonX1) {
@@ -166,23 +165,23 @@ class CommentInputView @JvmOverloads constructor(
                                 movement = MovementEnum.HORIZONTAL
                             }
                         }
-                        
+
                         if (movement == MovementEnum.HORIZONTAL) {
                             dx = rawX - recordButtonX1
-                            
+
                             if (dx < 10f) {
                                 recordButton?.translationX = dx
                             }
 
-                            if ((rawX > (DRAG_EDGE_LOCK - 15f) && rawX <= DRAG_EDGE_LOCK)) {
-                                if(!isLockReady) {
-                                    isLockReady = true
-                                    vibrator!!.vibrate(vibrationEffect)
-                                }
-                            } else if(isLockReady) {
+                            if ((rawX > (DRAG_EDGE_LOCK - 30f) && rawX <= DRAG_EDGE_LOCK) && !isLockReady) {
+                                isLockReady = true
+                                vibrator!!.vibrate(vibrationEffect)
+                            }
+
+                            if((rawX < (DRAG_EDGE_LOCK - 60f) || rawX > (DRAG_EDGE_LOCK + 30f)) && isLockReady) {
                                 isLockReady = false
                             }
-                            
+
                             if (rawX < DRAG_EDGE_CANCEL) {
                                 currentState = VoiceCommentState.CANCEL
 
@@ -194,11 +193,11 @@ class CommentInputView @JvmOverloads constructor(
 
                                 return@setOnTouchListener false
                             }
-                            
+
                             if (rawX > recordButtonX1 && rawX < recordButtonX2 && rawY < recordButtonY1) {
                                 movement = MovementEnum.NONE
                             }
-                            
+
                             return@setOnTouchListener false
                         }
                     }
@@ -206,6 +205,15 @@ class CommentInputView @JvmOverloads constructor(
                 }
 
                 MotionEvent.ACTION_UP -> {
+                    if(isLockReady) {
+                        listener?.onLock()
+                        currentState = VoiceCommentState.LOCK
+
+                        recordButtonWrapper?.visibility = INVISIBLE
+                        buttonStop?.visibility = VISIBLE
+                        buttonCancel?.visibility = VISIBLE
+                    }
+
                     recordButton?.apply {
                         animate()
                             .setDuration(200)

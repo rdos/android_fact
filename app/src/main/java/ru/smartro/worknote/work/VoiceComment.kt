@@ -1,17 +1,23 @@
 package ru.smartro.worknote.work
 
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
+import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import java.io.File
 
 //class VoiceComment(private val p_callback: IVoiceComment) : AbsObject() {
 class VoiceComment(private val p_callback: IVoiceComment) : CountDownTimer(SEC30_IN_MS, INTERVAL_IN_MS) {
+
     private var mRecordMan: RecordMan? = null
+    private var startTimestamp: Long = 0
 
     fun startRecording() {
         super.start()
         getRecordM().start()
+        startTimestamp = MyUtil.timeStampInMS()
         LOG.debug("onStartVoiceComment")
         p_callback.onStartVoiceComment()
         LOG.debug("onStartVoiceComment.after")
@@ -19,16 +25,35 @@ class VoiceComment(private val p_callback: IVoiceComment) : CountDownTimer(SEC30
     }
 
     fun stop() {
-        stopRecording()
-//        p_callback.onCancelVoiceComment()
+        val diff = MyUtil.timeStampInMS() - startTimestamp
+        if(getRecordM().isAudioRecording())
+        if(diff > 1500) {
+            stopRecording()
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed({
+                stopRecording()
+            }, 1000)
+        }
         LOG.debug("after")
     }
 
     fun end() {
-        stopRecording()
-        LOG.debug("onVoiceCommentSave")
-        p_callback.onVoiceCommentSave(getSoundF())
-        LOG.debug("onVoiceCommentSave.after")
+        val diff = MyUtil.timeStampInMS() - startTimestamp
+        if(diff > 1500) {
+            stopRecording()
+            LOG.debug("onVoiceCommentSave")
+            p_callback.onVoiceCommentSave(getSoundF())
+            LOG.debug("onVoiceCommentSave.after")
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed({
+                stopRecording()
+                if(diff > 1000) {
+                    LOG.debug("onVoiceCommentSave")
+                    p_callback.onVoiceCommentSave(getSoundF())
+                    LOG.debug("onVoiceCommentSave.after")
+                }
+            }, 1000)
+        }
     }
 
     private fun stopRecording() {
@@ -70,6 +95,11 @@ class VoiceComment(private val p_callback: IVoiceComment) : CountDownTimer(SEC30
     override fun onFinish() {
         end()
         LOG.debug("after")
+    }
+
+    fun release() {
+        getRecordM().stop()
+        super.cancel()
     }
 
     interface IVoiceComment {
