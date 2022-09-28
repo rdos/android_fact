@@ -615,6 +615,26 @@ class App : AApp() {
                     val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
                     serviceIntent.putExtra("isAirplaneModeEnabled", isAirplaneModeEnabled)
                     context.startService(serviceIntent)
+
+                    val channelId = NOTIFICATION_CHANNEL_ID__DEFAULT
+                    if(isAirplaneModeEnabled) {
+                        val builder: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, channelId)
+
+                        builder.setSmallIcon(R.drawable.ic_container)
+                            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_container))
+                            .setContentTitle("Оповещение")
+                            .setContentText("На Вашем устройстве включен режим \"В самолёте\".")
+                            .setStyle(NotificationCompat.BigTextStyle().bigText("На Вашем устройстве включен режим \"В самолёте\". Ваш прогресс фиксируется вне зависимости от наличия интернета, однако данное действие будет зафиксировано."))
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setShowWhen(true)
+                            .setDefaults(NotificationCompat.DEFAULT_ALL)
+                            .setOngoing(true)
+
+                        val notification: Notification = builder.build()
+                        createNotificationChannel(channelId).notify(12345, notification)
+                    } else {
+                        createNotificationChannel(channelId).cancel(12345)
+                    }
                 }
             }
         }
