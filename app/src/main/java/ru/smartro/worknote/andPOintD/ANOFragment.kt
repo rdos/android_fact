@@ -74,9 +74,9 @@ abstract class ANOFragment : Fragment(){
 //        try {
 //          это провал!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //        }
-        LOG.debug("onGetLayout.before")
+        LOG.debug("onGetLayout()")
         val view = inflater.inflate(onGetLayout(), container, false)
-        LOG.debug("onGetLayout.after")
+        LOG.debug("onGetLayout().after")
         return view
     }
 
@@ -190,7 +190,7 @@ abstract class ANOFragment : Fragment(){
     }
 
     override fun onResume() {
-        LOG.info("onResume")
+        LOG.info("before")
         super.onResume()
     }
     //    companion object {

@@ -21,6 +21,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
+import com.bumptech.glide.load.engine.executor.GlideExecutor.UncaughtThrowableStrategy.LOG
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.yandex.mapkit.Animation
@@ -251,11 +252,10 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //            lottie.playAnimation()
             lottie.progress = 0.5f
         }
-
-        LOG.todo("r_dos/onResume.before")
-        LOG.error("r_dos/onResume.before")
+        viewModel.todoLiveData.observe(viewLifecycleOwner) {
+            moveCameraTo(PoinT(it.coordLat, it.coordLong))
+	}
         onRefreshData()
-        LOG.error("r_dos/onResume.after")
     }
 
     override fun onBackPressed() {
@@ -284,14 +284,20 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     private fun onRefreshData() {
-        LOG.warn("onRefreshData.init")
+        LOG.warn("before")
 //        mWorkOrderS = getActualWorkOrderS(true)
 //        mPlatformS = getActualPlatformS(true)
+        LOG.trace("getActualPlatformS.init")
         val platformS = getActualPlatformS(true)
+        LOG.trace("getActualPlatformS.end")
+        LOG.trace("onRefreshBottomBehavior.init")
         val platformSWithQueryText = onRefreshBottomBehavior(platformS)
+        LOG.trace("onRefreshBottomBehavior.end")
+        LOG.trace("onRefreshMap.init")
         onRefreshMap(platformSWithQueryText)
+        LOG.trace("onRefreshMap.end")
         setInfoData()
-        LOG.warn("onRefreshData.end")
+        LOG.warn("after")
     }
 
     private fun setInfoData() {
@@ -614,14 +620,15 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     override fun startPlatformService(item: PlatformEntity) {
-        viewModel.setPlatformEntity(item)
         if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
+            viewModel.setPlatformEntity(item)
             navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
         } else {
             showAlertPlatformByPoint().let { view ->
                 val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
                 btnOk.setOnClickListener {
                     hideDialog()
+                    viewModel.setPlatformEntity(item)
                     navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
                 }
             }
@@ -795,12 +802,16 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
 
         mMapObjectCollection?.removeTapListener(this)
+        LOG.trace("for (platform in platformS) {.init")
         for (platform in platformS) {
+            LOG.trace("getIconViewProvider.init")
             val iconProvider = getIconViewProvider(getAct(), platform)
+            LOG.trace("getIconViewProvider.end")
             val pointYandex = Point(platform.coordLat, platform.coordLong)
             mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
 
         }
+        LOG.trace("for (platform in platformS) {.end")
         mMapObjectCollection?.addTapListener(this)
     }
 
@@ -873,18 +884,19 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     /** РИСУЕМ МАШИНКУ, нормальную ic_truck_icon.png*/
     override fun onObjectAdded(userLocationView: UserLocationView) {
+        LOG.debug("before")
         userLocationView.accuracyCircle.isVisible = true
 //        userLocationLayer.setObjectListener(this)
     }
 
     override fun onObjectRemoved(p0: UserLocationView) {
 //        TODO("Not yet implemented")
-        LOG.debug("onObjectRemoved")
+        LOG.debug("before")
     }
 
     override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) {
 //        TODO("Not yet implemented")
-        LOG.debug("onObjectUpdated")
+        LOG.debug("before")
 
     }
 

@@ -606,8 +606,8 @@ open class PlatformEntity(
             val today = getDeviceDateTime()
             val diff: Long = orderEndTime.time - today.time
             val minutes = diff / (1000 * 60)
-            LOG.warn( this.orderTimeWarning!!)
-            LOG.warn( minutes.toString())
+            LOG.warn(this.orderTimeWarning!!)
+            LOG.warn(minutes.toString())
             if (minutes < 0) {
                 result = true
             }

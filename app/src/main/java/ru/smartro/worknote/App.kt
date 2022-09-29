@@ -187,7 +187,7 @@ class App : AApp() {
 
         LOG.info("on App created App.onCreate onAppCreate")
         sentryInit()
-        RealmInit()
+        realmInit()
 //        try {    // Add a breadcrumb that will be sent with the next event(s)//            throw Exception("This is a devel.")//        } catch (e: Exception) {
 //            Sentry.captureException(e) //        }                                             //        val objectAnimator: ObjectAnimator = ObjectAnimator.ofFloat( //            mLlcMap, "alpha", 0f
 //        ) //        objectAnimator.setDuration(4000);
@@ -366,7 +366,7 @@ class App : AApp() {
     }
 
 
-    private fun RealmInit() {
+    private fun realmInit() {
         Realm.init(this@App)
         val config = RealmConfiguration.Builder()
         config.allowWritesOnUiThread(true)

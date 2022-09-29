@@ -885,6 +885,7 @@ class RealmRepository(private val p_realm: Realm) {
 
 
     private fun setEntityUpdateAt(entity: PlatformEntity?) {
+        LOG.debug("before")
         entity?.updateAt = MyUtil.timeStampInSec()
     }
 

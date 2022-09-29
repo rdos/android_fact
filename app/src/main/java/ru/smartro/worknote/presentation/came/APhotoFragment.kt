@@ -418,7 +418,9 @@ abstract class APhotoFragment(
                     val imageEntity = photoFileScanner.getImageEntity()
                     imageS.add(imageEntity)
                 }
+                LOG.debug("onAfterUSE")
                 onAfterUSE(imageS)
+                LOG.info("onAfterUSE.after")
                 dropOutputD()
             } finally {
 //                hideProgress()
