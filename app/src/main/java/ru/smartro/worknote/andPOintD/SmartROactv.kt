@@ -5,14 +5,14 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.SwitchCompat
+import androidx.appcompat.widget.AppCompatTextView
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.Lnull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 
 
-class SmartROSwitchCompat(context: Context, attrs: AttributeSet?) : SwitchCompat(context, attrs), ITooltip {
+class SmartROactv(context: Context, attrs: AttributeSet?) : AppCompatTextView(context, attrs), ITooltip {
     private var tooltipNext: String? = null
     private var tooltipType = Inull
 

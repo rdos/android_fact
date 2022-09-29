@@ -1,4 +1,4 @@
-package ru.smartro.worknote.utils
+package ru.smartro.worknote.andPOintD
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -20,7 +20,7 @@ import java.io.File
 import java.util.*
 
 @SuppressLint("ClickableViewAccessibility")
-class VoiceCommentPlayerView @JvmOverloads constructor(
+class SmartROviewVoicePlayer constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttrs: Int = 0

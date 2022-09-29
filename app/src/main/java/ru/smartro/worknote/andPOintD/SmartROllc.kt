@@ -13,7 +13,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 
 
-class SmartROLinearLayout(context: Context, attrs: AttributeSet?) : LinearLayoutCompat(context, attrs), ITooltip {
+class SmartROllc(context: Context, attrs: AttributeSet?) : LinearLayoutCompat(context, attrs), ITooltip {
     private var tooltipNext: String? = null
     private var tooltipType = Inull
 

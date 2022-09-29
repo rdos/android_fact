@@ -19,9 +19,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -30,17 +27,17 @@ import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.andPOintD.SmartROButton
-import ru.smartro.worknote.andPOintD.SmartROLinearLayout
-import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
+import ru.smartro.worknote.andPOintD.SmartROacb
+import ru.smartro.worknote.andPOintD.SmartROllc
+import ru.smartro.worknote.andPOintD.SmartROsc
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.utils.CommentInputView
-import ru.smartro.worknote.utils.VoiceCommentPlayerView
+import ru.smartro.worknote.andPOintD.SmartROviewVoiceWhatsUp
+import ru.smartro.worknote.andPOintD.SmartROviewVoicePlayer
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
@@ -66,8 +63,8 @@ class PServeF : AFragment() {
     private var acsbVolumePickup: SeekBar? = null
     private var rvContainers: RecyclerView? = null
 
-    private var vcpvCommentPlayer: VoiceCommentPlayerView? = null
-    private var civCommentInput: CommentInputView? = null
+    private var vcpvCommentPlayer: SmartROviewVoicePlayer? = null
+    private var civCommentInput: SmartROviewVoiceWhatsUp? = null
     private var voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
 
         override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
@@ -75,8 +72,8 @@ class PServeF : AFragment() {
         }
 
         override fun onVoiceCommentSave(soundF: File) {
-            if(civCommentInput?.currentState == CommentInputView.VoiceCommentState.RECORDING ||
-                civCommentInput?.currentState == CommentInputView.VoiceCommentState.LOCK) {
+            if(civCommentInput?.currentState == SmartROviewVoiceWhatsUp.VoiceCommentState.RECORDING ||
+                civCommentInput?.currentState == SmartROviewVoiceWhatsUp.VoiceCommentState.LOCK) {
                 civCommentInput?.setIdle()
             }
 
@@ -96,7 +93,7 @@ class PServeF : AFragment() {
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
 
-    private var sscToGroupByFMode: SmartROSwitchCompat? = null
+    private var sscToGroupByFMode: SmartROsc? = null
     private var actvScreenLabel: AppCompatTextView? = null
 
     private val vm: ServePlatformVM by activityViewModels()
@@ -105,10 +102,10 @@ class PServeF : AFragment() {
         return R.layout.f_pserve
     }
 
-    override fun onInitLayoutView(sview: SmartROLinearLayout): Boolean {
+    override fun onInitLayoutView(sview: SmartROllc): Boolean {
         tvPlatformSrpId = sview.findViewById(R.id.tv_f_pserve__sprid)
 
-        val btnCompleteTask = sview.findViewById<SmartROButton>(R.id.acb_activity_platform_serve__complete)
+        val btnCompleteTask = sview.findViewById<SmartROacb>(R.id.acb_activity_platform_serve__complete)
 
         actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
         sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
@@ -299,7 +296,7 @@ class PServeF : AFragment() {
         }
 
         civCommentInput?.apply {
-            listener = object : CommentInputView.CommentInputEvents {
+            listener = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
                 override fun onStart() {
                     if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.RECORD_AUDIO), 101)
@@ -324,7 +321,7 @@ class PServeF : AFragment() {
         }
 
         vcpvCommentPlayer?.apply {
-            listener = object : VoiceCommentPlayerView.VoiceCommentPlayerEvents {
+            listener = object : SmartROviewVoicePlayer.VoiceCommentPlayerEvents {
                 override fun onStart() {
                     LOG.debug("onStart")
                 }

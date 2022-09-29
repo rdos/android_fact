@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
@@ -25,7 +24,7 @@ abstract class ANOFragment : Fragment(){
 
     //todo: ???onCreate
     // TODO: abstract fun onInitLayoutView(view: View): Boolean
-    protected open fun onInitLayoutView(view: SmartROLinearLayout): Boolean {
+    protected open fun onInitLayoutView(view: SmartROllc): Boolean {
         LOG.warn(" LoG.todo()")
         return true
     }

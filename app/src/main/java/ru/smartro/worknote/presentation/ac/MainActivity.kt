@@ -3,7 +3,6 @@ package ru.smartro.worknote.presentation.ac
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.speech.tts.Voice
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,10 +11,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.PERMISSIONS
 import ru.smartro.worknote.R
-import ru.smartro.worknote.utils.VoiceCommentPlayerView
-import ru.smartro.worknote.utils.CommentInputView
+import ru.smartro.worknote.andPOintD.SmartROviewVoicePlayer
+import ru.smartro.worknote.andPOintD.SmartROviewVoiceWhatsUp
 import ru.smartro.worknote.work.VoiceComment
 import ru.smartro.worknote.work.swipebtn.SwipeButton
 import java.io.File
@@ -49,8 +47,8 @@ class MainActivity : AppCompatActivity() {
         val swipeNoState  = findViewById<SwipeButton>(R.id.swipeNoState)
         swipeNoState.setOnActiveListener { Toast.makeText(this@MainActivity, "Active!", Toast.LENGTH_SHORT).show() }
 
-        val voiceCommentPlayer = findViewById<VoiceCommentPlayerView>(R.id.voice_message_content)
-        val commentInput = findViewById<CommentInputView>(R.id.voice_message_view)
+        val voiceCommentPlayer = findViewById<SmartROviewVoicePlayer>(R.id.voice_message_content)
+        val commentInput = findViewById<SmartROviewVoiceWhatsUp>(R.id.voice_message_view)
         val voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
             override fun onStartVoiceComment() {
 
@@ -79,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         commentInput.apply {
-            listener = object : CommentInputView.CommentInputEvents {
+            listener = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
                 override fun onStart() {
                     if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.RECORD_AUDIO), 101)
@@ -104,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         voiceCommentPlayer.apply {
-            listener = object : VoiceCommentPlayerView.VoiceCommentPlayerEvents {
+            listener = object : SmartROviewVoicePlayer.VoiceCommentPlayerEvents {
                 override fun onStart() {
                     LOG.debug("onStart")
                 }
