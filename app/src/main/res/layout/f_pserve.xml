@@ -115,14 +115,13 @@
 
             <ru.smartro.worknote.utils.CommentInputView
                 android:id="@+id/civ__f_pserve__comment_input"
-                android:layout_marginBottom="8dp"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="4dp"
+                android:paddingBottom="8dp"
                 android:gravity="center">
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -131,9 +130,11 @@
                     android:layout_weight="1"
                     android:layout_height="35dp"
                     android:layout_marginHorizontal="8dp"
-                    android:textSize="11sp"
+                    android:textSize="13sp"
                     android:background="@drawable/bg_button_red__default"
                     android:text="@string/problem_on_point"
+                    android:stateListAnimator="@null"
+                    android:gravity="center"
                     android:textColor="@color/black"
                     />
 
@@ -144,6 +145,7 @@
                     android:layout_height="35dp"
                     android:textSize="13sp"
                     android:layout_marginHorizontal="8dp"
+                    android:stateListAnimator="@null"
                     android:background="@drawable/bg_button_green__default"
                     android:text="КГО"
                     android:textColor="@color/black"
@@ -156,8 +158,10 @@
                     android:layout_height="35dp"
                     android:textSize="13sp"
                     android:layout_marginHorizontal="8dp"
+                    android:stateListAnimator="@null"
                     android:background="@drawable/bg_button_green__default"
                     android:text="Заказать борт"
+                    android:gravity="center"
                     android:textColor="@color/black"
                     />
             </androidx.appcompat.widget.LinearLayoutCompat>
