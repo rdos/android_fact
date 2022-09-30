@@ -104,14 +104,22 @@ abstract class AAct : AppCompatActivity() {
         return res
     }
 
+    private fun clearReferences() {
+        val currentAct = (applicationContext as App).getCurrentAct()
+        if(this == currentAct) {
+            (applicationContext as App).setCurrentAct(null)
+        }
+    }
+
     override fun onPause() {
         LOG.debug("before")
+        clearReferences()
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        AppliCation().LASTact = this
+        (applicationContext as App).setCurrentAct(this)
         LOG.debug("before")
     }
 
@@ -127,7 +135,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        AppliCation().LASTact = null
+        clearReferences()
         LOG.debug("before")
 
     }
