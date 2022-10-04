@@ -596,6 +596,12 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             MyUtil.hideKeyboard(getAct())
         }
         val acetFilterAddress = view.findViewById<AppCompatEditText>(R.id.acet__f_map__bottom_behavior__filter)
+        acetFilterAddress.setOnFocusChangeListener { v, hasFocus ->
+            if(hasFocus) {
+                LOG.debug("EXPANDED!!")
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
         acetFilterAddress.removeTextChangedListener(null)
         acetFilterAddress.addTextChangedListener { newText ->
             mAdapterBottomBehavior?.let { mapBottom ->
