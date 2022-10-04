@@ -1,7 +1,12 @@
 package ru.smartro.worknote.presentation.ac
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -10,23 +15,51 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
-import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.AppParaMS
+import ru.smartro.worknote.LOG
+import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbsObject
+import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
-import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.awORKOLDs.extensions.WarningType
+import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ConfigName
 
 //todo: INDEterminate)
 class MainAct :
     AAct(), IActTooltip {
+
     val vm: ServePlatformVM by viewModels()
+    private var mIsDlgShown = false
+
+    private val mGpsStateReceiver by lazy { getGpsStateBroadcastReceiver() }
+
+    private fun getGpsStateBroadcastReceiver(): BroadcastReceiver {
+        return object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent?) {
+                if(intent?.action == LocationManager.PROVIDERS_CHANGED_ACTION) {
+                    val locationManager = context.getSystemService(LOCATION_SERVICE) as LocationManager
+                    val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                    val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+                    LOG.debug("IS GPS ENABLED = ${isGpsEnabled}, IS NETWORK ENABLED = ${isNetworkEnabled}")
+
+                    if ((isGpsEnabled || isNetworkEnabled) == false && !mIsDlgShown) {
+                        mIsDlgShown = true
+                        showDlgWarning(WarningType.GPS_OFF) {
+                            mIsDlgShown = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 //    val mTooltipHell = MainAct.DialogHelpER(this, TAG)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +67,6 @@ class MainAct :
         supportActionBar?.hide()
 //        mTooltipHell.setStartId("ll_containers_count", paramS())
     }
-
 
     override fun onBackPressed() {
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
@@ -59,6 +91,7 @@ class MainAct :
 
     override fun onPause() {
         super.onPause()
+        unregisterReceiver(mGpsStateReceiver)
         AppliCation().getDB().apply {
             LOG.info("SWIPE")
             val config = loadConfig(ConfigName.SWIPE_CNT)
@@ -73,6 +106,9 @@ class MainAct :
 
     override fun onResume() {
         super.onResume()
+        val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
+        filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
+        registerReceiver(mGpsStateReceiver, filter)
     }
 
     //todo:::

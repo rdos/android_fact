@@ -29,7 +29,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -265,7 +264,7 @@ class App : AApp() {
 
         LOG.info("DEBUG::: Current Realm Schema Version : ${Realm.getDefaultInstance().version}")
 
-        registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
+        registerReceiver(mAirplaneModeStateReceiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
     }
 
     private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){
@@ -661,7 +660,7 @@ class App : AApp() {
         }
         return App.getAppParaMS().isModeDEVEL
     }
-    private val receiver by lazy { getAirplaneModeBroadcastReceiver() }
+    private val mAirplaneModeStateReceiver by lazy { getAirplaneModeBroadcastReceiver() }
 
     private fun getAirplaneModeBroadcastReceiver(): BroadcastReceiver {
         return object : BroadcastReceiver() {
@@ -673,7 +672,7 @@ class App : AApp() {
                     serviceIntent.putExtra("isAirplaneModeEnabled", isAirplaneModeEnabled)
                     context.startService(serviceIntent)
 
-                    if(isAirplaneModeEnabled) {
+                    if (isAirplaneModeEnabled) {
                         mCurrentAct?.showDlgWarning(WarningType.AIRPLANE_MODE)
                     }
                 }
