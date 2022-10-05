@@ -65,6 +65,15 @@ fun AAct.showDlgPickup(): View {
     return view
 }
 
+//showDlgPickup!r_dos
+fun AAct.showDlgLogout(): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.act_xchecklist__dialog_logout, null)
+    builder.setView(view)
+    showCustomDialog(builder)
+    return view
+}
 
 //showDlgPickup!r_dos
 fun ANOFragment.showDlgPickup(): View {
