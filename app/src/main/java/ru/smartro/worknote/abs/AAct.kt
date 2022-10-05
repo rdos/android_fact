@@ -105,9 +105,11 @@ abstract class AAct : AppCompatActivity() {
     }
 
     private fun clearReferences() {
-        val currentAct = (applicationContext as App).getCurrentAct()
-        if(this == currentAct) {
-            (applicationContext as App).setCurrentAct(null)
+        LOG.debug("before")
+        val currentAct = App.getAppliCation().getCurrentAct()
+        if (this == currentAct) {
+            LOG.debug("if (this == currentAct) {")
+            App.getAppliCation().setCurrentAct(null)
         }
     }
 
