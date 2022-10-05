@@ -68,7 +68,7 @@ fun AAct.showDlgPickup(): View {
     return view
 }
 
-fun AAct.showDlgWarning(warningType: WarningType, onDismiss: (() -> Unit)? = null): View {
+fun AAct.showDlgWarning(warningType: WarningType): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.dialog_warning, null)
@@ -80,8 +80,6 @@ fun AAct.showDlgWarning(warningType: WarningType, onDismiss: (() -> Unit)? = nul
     }
     view.findViewById<AppCompatButton>(R.id.acb__dialog_warning__ok)?.setOnClickListener {
         warningDialog?.dismiss()
-        if(onDismiss != null)
-            onDismiss()
     }
     builder.setView(view)
     warningDialog = builder.create()
