@@ -72,8 +72,8 @@ class PServeF : AFragment() {
         }
 
         override fun onVoiceCommentSave(soundF: File) {
-            if(civCommentInput?.currentState == SmartROviewVoiceWhatsUp.VoiceCommentState.RECORDING ||
-                civCommentInput?.currentState == SmartROviewVoiceWhatsUp.VoiceCommentState.LOCK) {
+            if(civCommentInput?.mCurrentState == SmartROviewVoiceWhatsUp.VoiceCommentState.RECORDING ||
+                civCommentInput?.mCurrentState == SmartROviewVoiceWhatsUp.VoiceCommentState.LOCK) {
                 civCommentInput?.setIdle()
             }
 
@@ -296,7 +296,7 @@ class PServeF : AFragment() {
         }
 
         civCommentInput?.apply {
-            listener = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
+            mCallBack = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
                 override fun onStart() {
                     if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.RECORD_AUDIO), 101)

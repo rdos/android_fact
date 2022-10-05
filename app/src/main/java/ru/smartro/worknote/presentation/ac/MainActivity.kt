@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         commentInput.apply {
-            listener = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
+            mCallBack = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
                 override fun onStart() {
                     if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.RECORD_AUDIO), 101)

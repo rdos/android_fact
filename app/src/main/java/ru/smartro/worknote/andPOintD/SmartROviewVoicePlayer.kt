@@ -20,11 +20,12 @@ import java.io.File
 import java.util.*
 
 @SuppressLint("ClickableViewAccessibility")
-class SmartROviewVoicePlayer constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttrs: Int = 0
-): LinearLayoutCompat(context, attrs, defStyleAttrs) {
+class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAttrs: Int)  : LinearLayoutCompat(context, attrs, defStyleAttrs) {
+    constructor(context: Context) : this(context, null)
+
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+
+
 
     private val ANIMATION_SPEED = 2.2f
     private var mediaPlayer: MediaPlayer? = null
