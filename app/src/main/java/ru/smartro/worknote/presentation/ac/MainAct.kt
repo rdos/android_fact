@@ -49,12 +49,13 @@ class MainAct :
 
                     LOG.debug("IS GPS ENABLED = ${isGpsEnabled}, IS NETWORK ENABLED = ${isNetworkEnabled}")
 
-                    if ((isGpsEnabled || isNetworkEnabled) == false && !mIsDlgShown) {
-                        mIsDlgShown = true
-                        showDlgWarning(WarningType.GPS_OFF) {
-                            mIsDlgShown = false
-                        }
+                    val dialogShouldShow = (isGpsEnabled || isNetworkEnabled) == false
+
+                    if(dialogShouldShow && mIsDlgShown != dialogShouldShow) {
+                        showDlgWarning(WarningType.GPS_OFF)
                     }
+
+                    mIsDlgShown = dialogShouldShow
                 }
             }
         }
