@@ -80,10 +80,6 @@
         </receiver>
         <service
             android:directBootAware="true"
-            android:name=".presentation.ac.BootIntentService"
-            android:enabled="true" />
-        <service
-            android:directBootAware="true"
             android:name=".presentation.ac.AirplanemodeIntentService"
             android:enabled="true" />
 
