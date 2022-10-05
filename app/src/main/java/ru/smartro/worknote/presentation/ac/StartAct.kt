@@ -46,6 +46,34 @@ class StartAct : AAct() {
     private var authPasswordOut: TextInputLayout? = null
     private var authDebugInfo: AppCompatTextView? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+//        vm = ViewModelProvider(this)[AuthViewModel::class.java]
+        AppliCation().stopWorkERS()
+        if (paramS().isRestartApp) {
+            paramS().AppRestarted()
+        }
+        setContentView(R.layout.act_start)
+        actionBar?.title = "Вход в Систему"
+
+        authLoginEditText = findViewById(R.id.auth_login)
+        authPasswordEditText = findViewById(R.id.auth_password)
+        authLoginEditText = findViewById(R.id.auth_login)
+        authPasswordEditText = findViewById(R.id.auth_password)
+        authAppVersion = findViewById(R.id.auth_appversion)
+        authRootView = findViewById(R.id.cl_act_start)
+        authEnter = findViewById(R.id.auth_enter)
+        authLoginOut = findViewById(R.id.login_login_out)
+        authPasswordOut = findViewById(R.id.auth_password_out)
+        authDebugInfo = findViewById(R.id.actv_activity_auth__it_test_version)
+
+        authAppVersion?.text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+        authRootView?.setOnClickListener {
+            MyUtil.hideKeyboard(this)
+        }
+        viewInit()
+    }
+
     // TODO: 27.05.2022 !! !
     private fun gotoNextAct(isHasToken: Boolean = false) {
 //            val isHasTask = true
@@ -143,33 +171,7 @@ class StartAct : AAct() {
 
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        vm = ViewModelProvider(this)[AuthViewModel::class.java]
-        AppliCation().stopWorkERS()
-        if (paramS().isRestartApp) {
-            paramS().AppRestarted()
-        }
-        setContentView(R.layout.act_start)
-        actionBar?.title = "Вход в Систему"
 
-        authLoginEditText = findViewById(R.id.auth_login)
-        authPasswordEditText = findViewById(R.id.auth_password)
-        authLoginEditText = findViewById(R.id.auth_login)
-        authPasswordEditText = findViewById(R.id.auth_password)
-        authAppVersion = findViewById(R.id.auth_appversion)
-        authRootView = findViewById(R.id.cl_act_start)
-        authEnter = findViewById(R.id.auth_enter)
-        authLoginOut = findViewById(R.id.login_login_out)
-        authPasswordOut = findViewById(R.id.auth_password_out)
-        authDebugInfo = findViewById(R.id.actv_activity_auth__it_test_version)
-
-        authAppVersion?.text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-        authRootView?.setOnClickListener {
-            MyUtil.hideKeyboard(this)
-        }
-        viewInit()
-    }
 
 
     private fun viewInit() {
