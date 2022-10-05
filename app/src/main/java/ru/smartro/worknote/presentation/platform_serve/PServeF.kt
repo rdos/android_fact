@@ -243,13 +243,15 @@ class PServeF : AFragment() {
         }
 
 
+        tvVolumePickuptext(_PlatformEntity.volumePickup)
+
         if (_PlatformEntity.isPickupNotEmpty()) {
             acsbVolumePickup?.progress = _PlatformEntity.volumePickup!!.toInt()
-            tvVolumePickuptext(_PlatformEntity.volumePickup)
             acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
         } else {
             acsbVolumePickup?.thumb = getThumb(null)
         }
+
         acsbVolumePickup?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             private var mProgressAtStartTracking = 0
             private val SENSITIVITY = 1

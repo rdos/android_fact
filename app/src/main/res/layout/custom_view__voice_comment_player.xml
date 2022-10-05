@@ -10,7 +10,7 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/aciv__voice_comment_player__remove_button"
-        android:layout_width="28dp" android:layout_height="28dp"
+        android:layout_width="24dp" android:layout_height="24dp"
         android:src="@drawable/ic_trashcan"
         android:layout_marginEnd="8dp"
         />
@@ -26,14 +26,14 @@
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lav__voice_comment_player__play_button"
-            android:layout_width="36dp" android:layout_height="36dp"
+            android:layout_width="28dp" android:layout_height="28dp"
             app:lottie_rawRes="@raw/play"
             android:layout_marginEnd="6dp"
             />
 
         <com.masoudss.lib.WaveformSeekBar
             android:id="@+id/wsb__voice_comment_player__waveform"
-            android:layout_width="0dp" android:layout_height="32dp"
+            android:layout_width="0dp" android:layout_height="24dp"
             android:layout_weight="1"
             android:layout_marginEnd="12dp"
             app:wave_gap="2dp"
