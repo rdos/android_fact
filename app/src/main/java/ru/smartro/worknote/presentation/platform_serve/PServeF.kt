@@ -72,10 +72,7 @@ class PServeF : AFragment() {
         }
 
         override fun onVoiceCommentSave(soundF: File) {
-            if(civCommentInput?.mCurrentState == SmartROviewVoiceWhatsUp.VoiceCommentState.RECORDING ||
-                civCommentInput?.mCurrentState == SmartROviewVoiceWhatsUp.VoiceCommentState.LOCK) {
-                civCommentInput?.setIdle()
-            }
+//            civCommentInput?.setIdle()
 
             vcpvCommentPlayer?.visibility = View.VISIBLE
             val byteArray = Files.readAllBytes(soundF.toPath())
@@ -298,28 +295,28 @@ class PServeF : AFragment() {
         }
 
         civCommentInput?.apply {
-            mCallBack = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
-                override fun onStart() {
-                    if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.RECORD_AUDIO), 101)
-                    } else {
-                        voiceCommentHandler?.startRecording()
-                    }
-                }
-
-                override fun onStop() {
-                    voiceCommentHandler?.end()
-                }
-
-                override fun onCancel() {
-                    voiceCommentHandler?.stop()
-                }
-
-                override fun onLock() {
-                    LOG.debug("onLock!!!")
-                    // TODO::: INCREASE ALLOWED RECORD TIME
-                }
-            }
+//            mCallBack = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
+//                override fun onStart() {
+//                    if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+//                        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.RECORD_AUDIO), 101)
+//                    } else {
+//                        voiceCommentHandler?.startRecording()
+//                    }
+//                }
+//
+//                override fun onStop() {
+//                    voiceCommentHandler?.end()
+//                }
+//
+//                override fun onCancel() {
+//                    voiceCommentHandler?.stop()
+//                }
+//
+//                override fun onLock() {
+//                    LOG.debug("onLock!!!")
+//                    // TODO::: INCREASE ALLOWED RECORD TIME
+//                }
+//            }
         }
 
         vcpvCommentPlayer?.apply {

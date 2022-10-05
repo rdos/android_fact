@@ -1,6 +1,11 @@
 package ru.smartro.worknote.andPOintD
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -11,21 +16,18 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.MotionEventCompat
-import com.yandex.runtime.view.internal.TouchEvent
-import ru.smartro.worknote.App
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 
 class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttrs: Int = 0
-): ConstraintLayout(context, attrs, defStyleAttrs), View.OnTouchListener {
+): ConstraintLayout(context, attrs, defStyleAttrs) {
 
-    private var mCurrentEvent: MotionEvent? = null
-    private var mCurrentState: Int? = null
+//    var currentState = VoiceCommentState.IDLE
 
-    private var mIsLockReady: Boolean = false
+    private var isLockReady: Boolean = false
 
     private var DRAG_EDGE_LOCK = 0f
     private var DRAG_EDGE_CANCEL = 0f
@@ -33,32 +35,14 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     private var messageInput: AppCompatEditText? = null
     private var recordInfo: LinearLayoutCompat? = null
     private var recordTime: AppCompatTextView? = null
-    private var acivRecStart: AppCompatImageView? = null
+    private var recordButton: AppCompatImageView? = null
     private var recordButtonWrapper: FrameLayout? = null
     private var buttonStop: AppCompatImageView? = null
     private var buttonCancel: AppCompatTextView? = null
-
     private var rlPathCancel: RelativeLayout? = null
     private var rlPathLock: RelativeLayout? = null
 
-    private var movement = MovementEnum.NONE
-
-    private var XRecButtonStart__Save = 0f
-    private var recordButtonY1 = 0f
-    private var XRecordButtonEnd = 0f
-    private var recordButtonY2 = 0f
-
-
-    private var dx = 0f
-    private var dy = 0f
-
-    //todo: on
-    var mCallBack: CommentInputEvents? = null
-
-    fun setIdle() {
-        mCurrentState = VoiceCommentState.IDLE
-        setViewState(mCurrentState)
-    }
+    var listener: CommentInputEvents? = null
 
     fun setTime(timeInMS: Long) {
         val minutes = timeInMS / 60_000
@@ -68,10 +52,20 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
         recordTime?.text = "${minutesShowForUser}:${secondsShowForUser}"
     }
 
+    private fun initState() {
+        recordButtonWrapper?.visibility = VISIBLE
+        messageInput?.visibility = VISIBLE
+
+        recordInfo?.visibility = INVISIBLE
+        rlPathCancel?.visibility = INVISIBLE
+        rlPathLock?.visibility = INVISIBLE
+
+        buttonStop?.visibility = GONE
+        buttonCancel?.visibility = GONE
+    }
 
     init {
         inflate(getContext(), R.layout.custom_view__comment_input, this)
-
 
         rlPathCancel = findViewById(R.id.rl__comment_input__path_cancel)
         rlPathLock = findViewById(R.id.rl__comment_input__path_lock)
@@ -79,298 +73,348 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
         messageInput = findViewById(R.id.acet__comment_input__message_input)
         recordInfo = findViewById(R.id.llc__comment_input__record_info)
         recordTime = findViewById(R.id.actv__comment_input__record_time)
-        acivRecStart = findViewById(R.id.aciv__comment_input__rec_start)
-
+        recordButton = findViewById(R.id.aciv__comment_input__rec_start)
         recordButtonWrapper = findViewById(R.id.cl__comment_input__record_button_wrapper)
         buttonStop = findViewById(R.id.aciv__comment_input__stop_button)
         buttonCancel = findViewById(R.id.actv__comment_input__cancel_button)
 
-        initViewsss()
+        initState()
 
-        buttonStop?.setOnClickListener {
-            mCallBack?.onStop()
-            mIsLockReady = false
-            App.getAppliCation().startVibrateService()
-            cleanState()
-        }
-
-        buttonCancel?.setOnClickListener {
-            mCurrentState = VoiceCommentState.CANCEL
-            setViewState(mCurrentState)
-        }
-
-        acivRecStart?.setOnTouchListener(this)
-    }
-
-    enum class VoiceCommentState {
-        IDLE, RECORDING, LOCK, CANCEL
-    }
-
-    enum class MovementEnum {
-        NONE, HORIZONTAL
+        val movableView = MovableViewBuilder()
+            .setTargetView(recordButton!!)
+            .setMovementRules(MovableViewBuilder.MovementRule.LEFT)
+            .setDelay(200)
+            .onStart {
+                LOG.debug("MOVABLE ON START")
+                recordButton?.animate()?.scaleX(1.6f)?.scaleY(1.6f)?.setDuration(200)?.start()
+            }
+            .onMoveHorizontally { view, absoluteX ->
+                LOG.debug("MOVABLE ON MOVE HORIZONTALLY: ${absoluteX}")
+            }
+            .onStop {
+                LOG.debug("MOVABLE ON STOP")
+                recordButton?.animate()?.scaleX(1f)?.scaleY(1f)?.start()
+            }
+            .build()
     }
 
     interface CommentInputEvents {
         fun onStart()
         fun onStop()
-        //onResume()
         fun onCancel()
         fun onLock()
     }
 
-    class UtilsAcivRecStart(private val p_view: View) {
-        init {
+//    override fun onTouch(v: View?, event: MotionEvent): Boolean {
+//        when (event.action) {
+//            MotionEvent.ACTION_DOWN -> {
+//                // Corners of button has the same size
+//                val recordButtonSize = recordButton?.width ?: 0
+//                val location = IntArray(2)
+//                recordButton?.getLocationOnScreen(location)
+//                recordButtonX1 = location[0].toFloat()
+//                recordButtonX2 = recordButtonX1 + recordButtonSize
+//                recordButtonY1 = location[1].toFloat()
+//                recordButtonY2 = recordButtonY1 + recordButtonSize
+//
+//                rlPathCancel?.visibility = View.VISIBLE
+//                rlPathLock?.visibility = View.VISIBLE
+//
+//                recordButton?.translationY = 0f
+//                recordButton?.apply {
+//                    translationX = 0f
+//                    animate().scaleX(1.8f).scaleY(1.8f).setDuration(200).start()
+//                }
+//
+//                vibrator?.vibrate(vibrationEffect)
+//
+//                recordInfo?.visibility = VISIBLE
+//                messageInput?.visibility = INVISIBLE
+//
+//                rlPathCancel?.getLocationOnScreen(location)
+//                DRAG_EDGE_CANCEL = location[0].toFloat()
+//
+//                rlPathLock?.getLocationOnScreen(location)
+//                DRAG_EDGE_LOCK = location[0].toFloat()
+//
+//                currentState = VoiceCommentState.RECORDING
+//                listener?.onStart()
+//
+//                return true
+//            }
+//
+//            MotionEvent.ACTION_MOVE -> {
+//                if (currentState == VoiceCommentState.RECORDING) {
+//
+//                    val rawX = event.rawX
+//                    val rawY = event.rawY
+//
+//                    if (movement == MovementEnum.NONE) {
+//                        if (rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < recordButtonX1) {
+//                            recordButton?.translationX = 0f
+//                            movement = MovementEnum.HORIZONTAL
+//                        }
+//                    }
+//
+//                    if (movement == MovementEnum.HORIZONTAL) {
+//                        dx = rawX - recordButtonX1
+//
+//                        if (dx < 10f) {
+//                            recordButton?.translationX = dx
+//                        }
+//
+//                        if ((rawX > (DRAG_EDGE_LOCK - 30f) && rawX <= DRAG_EDGE_LOCK) && !isLockReady) {
+//                            isLockReady = true
+//                            vibrator!!.vibrate(vibrationEffect)
+//                        }
+//
+//                        if((rawX < (DRAG_EDGE_LOCK - 60f) || rawX > (DRAG_EDGE_LOCK + 30f)) && isLockReady) {
+//                            isLockReady = false
+//                        }
+//
+//                        if (rawX < DRAG_EDGE_CANCEL) {
+//                            currentState = VoiceCommentState.CANCEL
+//
+//                            vibrator!!.vibrate(vibrationEffect)
+//
+//                            val cancelEvent = MotionEvent.obtain(event)
+//                            cancelEvent.action = MotionEvent.ACTION_UP
+//                            recordButton?.dispatchTouchEvent(cancelEvent)
+//
+//                            return false
+//                        }
+//
+//                        if (rawX > recordButtonX1 && rawX < recordButtonX2 && rawY < recordButtonY1) {
+//                            movement = MovementEnum.NONE
+//                        }
+//
+//                        return false
+//                    }
+//                }
+//                return false
+//            }
+//
+//            MotionEvent.ACTION_UP -> {
+//                if(isLockReady) {
+//                    listener?.onLock()
+//                    currentState = VoiceCommentState.LOCK
+//
+//                    recordButtonWrapper?.visibility = INVISIBLE
+//                    buttonStop?.visibility = VISIBLE
+//                    buttonCancel?.visibility = VISIBLE
+//                }
+//
+//                recordButton?.apply {
+//                    animate()
+//                        .setDuration(200)
+//                        .scaleX(1f).scaleY(1f)
+//                        .translationX(0f).translationY(0f)
+//                        .start()
+//                }
+//
+//                movement = MovementEnum.NONE
+//
+//                rlPathCancel?.visibility = View.INVISIBLE
+//                rlPathLock?.visibility = View.INVISIBLE
+//
+//                if(currentState == VoiceCommentState.CANCEL) {
+//                    // animate trashcan
+//                    // and then ->
+//                    listener?.onCancel()
+//                    currentState = VoiceCommentState.IDLE
+//
+//                    initState()
+//                    return false
+//                }
+//
+//                if(currentState == VoiceCommentState.RECORDING) {
+//                    listener?.onStop()
+//                    currentState = VoiceCommentState.IDLE
+//
+//                    initState()
+//                }
+//
+//                return false
+//            }
+//        }
+//        return false
+//    }
+}
 
-        }
-        private var mLocationOnScreen: IntArray? = null
-
-        private fun getLocationOnScreenForView(): IntArray {
-            if (mLocationOnScreen == null) {
-                mLocationOnScreen = IntArray(2)
-                p_view.getLocationOnScreen(mLocationOnScreen)
-            }
-            return mLocationOnScreen!!
-        }
-
-        fun getX(): Float {
-            val locationOnScreen = getLocationOnScreenForView()
-            // TODO: )) LOG
-            return locationOnScreen[0].toFloat()
-        }
-
-        fun getYAsFloat(): Float {
-            val locationOnScreen = getLocationOnScreenForView()
-            // TODO: )) LOG
-            return locationOnScreen[1].toFloat()
-        }
+class MovableView(
+    val targetView: View,
+    private var mOnStop: ((view: View) -> Unit)? = null
+) {
+    fun stopMovement() {
+        mOnStop?.invoke(targetView)
     }
-    override fun onTouch(v: View?, event: MotionEvent): Boolean {
-        val result = false
-        mCurrentEvent = event
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
+}
 
-                // Corners of button has the same size
-                val sizeAcivRecStart = acivRecStart?.width ?: 0
+class MovableViewBuilder {
 
-                val extAcivRecStart = UtilsAcivRecStart(acivRecStart!!)
-                XRecButtonStart__Save = extAcivRecStart.getX()
+    private var mTargetView: View? = null
 
-                XRecordButtonEnd = XRecButtonStart__Save + sizeAcivRecStart
-                recordButtonY1 = extAcivRecStart.getYAsFloat()
-                recordButtonY2 = recordButtonY1 + sizeAcivRecStart
+    private var mOnStart: ((view: View) -> Unit)? = null
+    private var mOnMoveLeft: ((view: View, absoluteX: Float) -> Unit)? = null
+    private var mOnMoveRight: ((view: View, absoluteX: Float) -> Unit)? = null
+    private var mOnMoveHorizontally: ((view: View, absoluteX: Float) -> Unit)? = null
+    private var mOnMoveTop: ((view: View, absoluteX: Float) -> Unit)? = null
+    private var mOnMoveBottom: ((view: View, absoluteX: Float) -> Unit)? = null
+    private var mOnMoveVertically: ((view: View, absoluteX: Float) -> Unit)? = null
+    private var mOnStop: ((view: View) -> Unit)? = null
 
-                acivRecStart?.translationY = 0f
-                acivRecStart?.apply {
-                    translationX = 0f
-                    animate().scaleX(1.8f).scaleY(1.8f).setDuration(200).start()
+    private var mDelay: Long? = null
+
+    private var mIsRuleLeftInitialized: Boolean = false
+    private var mIsRuleTopInitialized: Boolean = false
+    private var mIsRuleRightInitialized: Boolean = false
+    private var mIsRuleBottomInitialized: Boolean = false
+
+    private val mVerticalEdges = mutableListOf<EdgeSetting>()
+
+    private var mIsReadyForMove = false
+
+    fun setTargetView(targetView: View): MovableViewBuilder {
+        mTargetView = targetView
+        return this
+    }
+
+    fun setDelay(delay: Long): MovableViewBuilder {
+        mDelay = delay
+        return this
+    }
+
+    fun setMovementRules(vararg rules: MovementRule): MovableViewBuilder {
+        if(rules.contains(MovementRule.LEFT)) {
+            mIsRuleLeftInitialized = true
+        }
+        if(rules.contains(MovementRule.TOP)) {
+            mIsRuleTopInitialized = true
+        }
+        if(rules.contains(MovementRule.BOTTOM)) {
+            mIsRuleBottomInitialized = true
+        }
+        if(rules.contains(MovementRule.RIGHT)) {
+            mIsRuleRightInitialized = true
+        }
+        return this
+    }
+
+    fun onStart(callback: (view: View) -> Unit): MovableViewBuilder {
+        mOnStart = callback
+        return this
+    }
+
+    fun onMoveHorizontally(callback: (view: View, absoluteX: Float) -> Unit): MovableViewBuilder {
+        mOnMoveHorizontally = callback
+        return this
+    }
+
+    fun onStop(callback: (view: View) -> Unit): MovableViewBuilder {
+        mOnStop = callback
+        return this
+    }
+
+    private fun start() {
+        mIsReadyForMove = true
+        mOnStart?.invoke(mTargetView!!)
+    }
+
+    private fun stop() {
+        mIsReadyForMove = false
+        mTargetView?.animate()?.translationX(0f)?.translationY(0f)?.start()
+        mOnStop?.invoke(mTargetView!!)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun build(): MovableView {
+        if(mTargetView == null)
+            throw Exception("Target View was not initialized")
+
+        var viewXStart: Int? = null
+//            var viewXEnd: Int
+
+        mTargetView!!.setOnTouchListener { _, event ->
+            when(event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    mTargetView?.isPressed = true
+                    var viewUtil = ViewUtil(mTargetView!!)
+                    viewXStart = viewUtil.getXStart()
+//                        viewXEnd = viewUtil.getXEnd()
+
+                    if(mDelay != null) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            if(mTargetView?.isPressed == true) {
+                                start()
+                            }
+                        }, mDelay!!)
+                    } else {
+                        start()
+                    }
+
+                    true
                 }
 
-                App.getAppliCation().startVibrateService()
+                MotionEvent.ACTION_MOVE -> {
+                    if(mIsReadyForMove) {
+                        val rawX = event.rawX
+                        var dx: Float
 
-                val extAcivRecCancel = UtilsAcivRecStart(rlPathCancel!!)
-                DRAG_EDGE_CANCEL = extAcivRecCancel.getX()
+                        if(mIsRuleLeftInitialized) {
+                            dx = rawX - (viewXStart ?: 0)
 
-                DRAG_EDGE_LOCK = extAcivRecCancel.getYAsFloat()
-
-                mCurrentState = VoiceCommentState.RECORDING
-                setViewState(mCurrentState)
-
-                return true
-            }
-
-            MotionEvent.ACTION_MOVE -> {
-                return setViewState(mCurrentState)
-            }
-
-            MotionEvent.ACTION_UP -> {
-                blablablaTODO()
-                setNextState()
-                return result
-            }
-        }
-        return result
-    }
-
-
-    private fun cleanState() {
-        recordButtonWrapper?.visibility = VISIBLE
-        recordInfo?.visibility = VISIBLE
-        messageInput?.visibility = VISIBLE
-        buttonStop?.visibility = VISIBLE
-        buttonCancel?.visibility = VISIBLE
-        rlPathCancel?.visibility = VISIBLE
-        rlPathLock?.visibility = VISIBLE
-    }
-
-    private fun stopStateInit(){
-        cleanState()
-        initViewsss()
-    }
-
-    private fun cancelStateInit(){
-        cleanState()
-        initViewsss()
-    }
-
-    private fun startStateInit(){
-        cleanState()
-    }
-
-    private fun lockStateInit(){
-        cleanState()
-        recordButtonWrapper?.visibility = INVISIBLE
-        buttonStop?.visibility = VISIBLE
-        buttonCancel?.visibility = VISIBLE
-    }
-
-    private fun recordStateInit(){
-        cleanState()
-        recordInfo?.visibility = VISIBLE
-        messageInput?.visibility = INVISIBLE
-        rlPathCancel?.visibility = View.VISIBLE
-        rlPathLock?.visibility = View.VISIBLE
-    }
-
-    private fun idleStateInit(){
-        cleanState()
-        initViewsss()
-    }
-
-    private fun initViewsss() {
-        recordButtonWrapper?.visibility = VISIBLE
-        recordInfo?.visibility = INVISIBLE
-        messageInput?.visibility = VISIBLE
-        buttonStop?.visibility = GONE
-        buttonCancel?.visibility = GONE
-        rlPathCancel?.visibility = INVISIBLE
-        rlPathLock?.visibility = INVISIBLE
-    }
-
-
-    private fun blablablaTODO(){
-        rlPathCancel?.visibility = View.INVISIBLE
-        rlPathLock?.visibility = View.INVISIBLE
-
-        acivRecStart?.apply {
-            animate()
-                .setDuration(200)
-                .scaleX(1f).scaleY(1f)
-                .translationX(0f).translationY(0f)
-                .start()
-        }
-
-        movement = MovementEnum.NONE
-    }
-
-
-    private fun setNextState() {
-        val stateNext = getNextState()
-        setViewState(stateNext)
-    }
-
-    private fun getNextState(): VoiceCommentState {
-        if (mCurrentState == null) {
-            mCurrentState = VoiceCommentState.IDLE
-        }
-        if (mCurrentEvent!!.action == MotionEvent.ACTION_UP) {
-            if(mIsLockReady) {
-                mCurrentState = VoiceCommentState.LOCK
-                return setViewState(mCurrentState)
-            }
-            if(mCurrentState == VoiceCommentState.CANCEL) {
-                mCurrentState = VoiceCommentState.IDLE
-                return setViewState(mCurrentState)
-            }
-            if(mCurrentState == VoiceCommentState.RECORDING) {
-                mCurrentState = VoiceCommentState.IDLE
-                return setViewState(mCurrentState)
-            }
-
-        }
-
-
-
-        return mCurrentState
-
-    }
-
-    private fun setViewState(state: VoiceCommentState): Boolean {
-        if(state == VoiceCommentState.IDLE) {
-            setTime(0)
-            movement = MovementEnum.NONE
-            mIsLockReady = false
-            idleStateInit()
-        }
-
-
-        if(state == VoiceCommentState.CANCEL) {
-            // animate trashcan
-            // and then ->
-            mCallBack?.onCancel()
-            App.getAppliCation().startVibrateService()
-            cancelStateInit()
-            return false
-        }
-
-        if( state == VoiceCommentState.LOCK) {
-            mCallBack?.onLock()
-            lockStateInit()
-
-        }
-
-        if (state == VoiceCommentState.RECORDING) {
-            if (mCurrentEvent == null) {
-                return false
-            }
-            recordStateInit()
-            mCallBack?.onStart()
-            val rawX = mCurrentEvent?.rawX!!
-            val rawY = mCurrentEvent?.rawY!!
-
-            if (movement == MovementEnum.NONE) {
-                if (rawY > recordButtonY1 && rawY < recordButtonY2 && rawX < XRecButtonStart__Save) {
-                    acivRecStart?.translationX = 0f
-                    movement = MovementEnum.HORIZONTAL
-                }
-            }
-
-            if (movement == MovementEnum.HORIZONTAL) {
-                dx = rawX - XRecButtonStart__Save
-
-                if (dx < 10f) {
-                    acivRecStart?.translationX = dx
+                            if (dx < 10f) {
+                                mTargetView?.translationX = dx
+                                mOnMoveHorizontally?.invoke(mTargetView!!, rawX)
+                            }
+                        }
+                    }
+                    true
                 }
 
-                if ((rawX > (DRAG_EDGE_LOCK - 30f) && rawX <= DRAG_EDGE_LOCK) && !mIsLockReady) {
-                    mIsLockReady = true
-                    App.getAppliCation().startVibrateService()
+                MotionEvent.ACTION_UP -> {
+                    mTargetView?.isPressed = false
+                    if(mIsReadyForMove) {
+                        stop()
+                    }
+                    false
                 }
 
-                if((rawX < (DRAG_EDGE_LOCK - 60f) || rawX > (DRAG_EDGE_LOCK + 30f)) && mIsLockReady) {
-                    mIsLockReady = false
-                }
-
-                if (rawX < DRAG_EDGE_CANCEL) {
-                    mCurrentState = VoiceCommentState.CANCEL
-
-                    App.getAppliCation().startVibrateService()
-
-                    val cancelEvent = MotionEvent.obtain(mCurrentEvent)
-                    cancelEvent.action = MotionEvent.ACTION_UP
-                    acivRecStart?.dispatchTouchEvent(cancelEvent)
-
-                    return false
-                }
-
-                if (rawX > XRecButtonStart__Save && rawX < XRecordButtonEnd && rawY < recordButtonY1) {
-                    movement = MovementEnum.NONE
-                }
-
-                return false
+                else -> false
             }
         }
-        return false
+
+        return MovableView(mTargetView!!, mOnStop)
     }
 
+    data class EdgeSetting (
+        val edge: Int,
+        val isDeadly: Boolean = false,
+        val expandTo: Int? = null
+    )
+
+    enum class MovementRule {
+        LEFT, TOP, RIGHT, BOTTOM
+    }
+}
+
+class ViewUtil(val targetView: View) {
+    private var mLocation: IntArray? = null
+
+    private fun getLocationOnScreen(): IntArray {
+        if(mLocation != null) {
+            return mLocation!!
+        }
+        mLocation = IntArray(2)
+        targetView.getLocationOnScreen(mLocation)
+        return mLocation!!
+    }
+
+    fun getXStart(): Int {
+        return getLocationOnScreen()[0]
+    }
+
+    fun getXEnd(): Int {
+        return getXStart() + targetView.width
+    }
 }

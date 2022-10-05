@@ -77,28 +77,28 @@ class MainActivity : AppCompatActivity() {
         }
 
         commentInput.apply {
-            mCallBack = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
-                override fun onStart() {
-                    if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.RECORD_AUDIO), 101)
-                    } else {
-                        voiceCommentHandler.startRecording()
-                    }
-                }
-
-                override fun onStop() {
-                    voiceCommentHandler.end()
-                }
-
-                override fun onCancel() {
-                    voiceCommentHandler.stop()
-                }
-
-                override fun onLock() {
-                    LOG.debug("onLock!!!")
-                    // TODO::: INCREASE ALLOWED RECORD TIME
-                }
-            }
+//            mCallBack = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
+//                override fun onStart() {
+//                    if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+//                        ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.RECORD_AUDIO), 101)
+//                    } else {
+//                        voiceCommentHandler.startRecording()
+//                    }
+//                }
+//
+//                override fun onStop() {
+//                    voiceCommentHandler.end()
+//                }
+//
+//                override fun onCancel() {
+//                    voiceCommentHandler.stop()
+//                }
+//
+//                override fun onLock() {
+//                    LOG.debug("onLock!!!")
+//                    // TODO::: INCREASE ALLOWED RECORD TIME
+//                }
+//            }
         }
 
         voiceCommentPlayer.apply {

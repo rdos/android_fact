@@ -25,8 +25,6 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
-
-
     private val ANIMATION_SPEED = 2.2f
     private var mediaPlayer: MediaPlayer? = null
 
@@ -126,6 +124,7 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
             if(state == VoiceCommentPlayerState.PAUSE) {
                 listener?.onResume()
             }
+
             mediaPlayer?.start()
 
             getTimer().start()
