@@ -87,6 +87,9 @@ fun AAct.showDlgWarning(warningType: WarningType): View {
         WarningType.AIRPLANE_MODE -> getString(R.string.warning_airplane_mode)
         WarningType.CONNECTION_LOST -> getString(R.string.warning_connection_lost)
         WarningType.GPS_OFF -> getString(R.string.warning_gps_off)
+        WarningType.CAR_LOCKED -> getString(R.string.car_locked)
+        WarningType.FUEL_LOCKED -> getString(R.string.fuel_locked)
+        WarningType.PHOTO_LOCKED -> getString(R.string.photo_locked)
     }
     view.findViewById<AppCompatButton>(R.id.acb__dialog_warning__ok)?.setOnClickListener {
         warningDialog?.dismiss()
@@ -98,10 +101,13 @@ fun AAct.showDlgWarning(warningType: WarningType): View {
     return view
 }
 
-enum class WarningType(val type: Int) {
-    AIRPLANE_MODE(413),
-    CONNECTION_LOST(609),
-    GPS_OFF(855)
+enum class WarningType {
+    AIRPLANE_MODE,
+    CONNECTION_LOST,
+    GPS_OFF,
+    CAR_LOCKED,
+    FUEL_LOCKED,
+    PHOTO_LOCKED,
 }
 
 //showDlgPickup!r_dos

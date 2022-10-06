@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.*
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -44,10 +45,7 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.awORKOLDs.extensions.showAlertPlatformByPoint
-import ru.smartro.worknote.awORKOLDs.extensions.showDlgLogout
-import ru.smartro.worknote.awORKOLDs.extensions.warningClearNavigator
+import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -75,6 +73,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mMapMyYandex: MapView
 
+    private lateinit var carFullStatusButton: FrameLayout
+    private lateinit var fuelStatusButton: FrameLayout
+    private lateinit var photoStatusButton: FrameLayout
 
     private val viewModel: ServePlatformVM by activityViewModels()
 
@@ -180,16 +181,12 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
         setInfoData()
 
-
-//        val acbLogout = view.findViewById<AppCompatButton>(R.id.acb_f_map__logout)
-//        acbLogout.setOnClickListener {
-//            getAct().logout()
-//        }
-
-//        val fabDebug = view.findViewById<FloatingActionButton>(R.id.fab_f_map__debug)
-//        fabDebug.setOnClickListener {
-//            navigateMain(R.id.DebugFragment, null)
-//        }
+        carFullStatusButton = view.findViewById(R.id.fl__f_map__car)
+        carFullStatusButton.setOnClickListener { getAct().showDlgWarning(WarningType.CAR_LOCKED) }
+        fuelStatusButton = view.findViewById(R.id.fl__f_map__fuel)
+        fuelStatusButton.setOnClickListener { getAct().showDlgWarning(WarningType.FUEL_LOCKED) }
+        photoStatusButton = view.findViewById(R.id.fl__f_map__photo)
+        photoStatusButton.setOnClickListener { getAct().showDlgWarning(WarningType.PHOTO_LOCKED) }
 
         initBottomBehavior(view)
 
