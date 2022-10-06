@@ -15,108 +15,118 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+        <FrameLayout
+            android:id="@+id/fl__f_map__car"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/bg_button_yellow__locked"
+            android:padding="8dp"
+
+            app:layout_constraintBottom_toBottomOf="@+id/acb_f_map__info"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/fl__f_map__fuel"
+            app:layout_constraintTop_toTopOf="@+id/acb_f_map__info">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="52dp" android:layout_height="22dp"
+                android:src="@drawable/ic_car_full_status_locked" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/fl__f_map__fuel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_red__locked"
+            android:padding="8dp"
+            android:layout_marginStart="16dp"
+
+            app:layout_constraintStart_toEndOf="@id/fl__f_map__car"
+            app:layout_constraintTop_toTopOf="@+id/acb_f_map__info"
+            app:layout_constraintEnd_toStartOf="@+id/fl__f_map__photo"
+            app:layout_constraintBottom_toBottomOf="@+id/acb_f_map__info"
+            >
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="52dp" android:layout_height="22dp"
+                android:src="@drawable/ic_fuel_locked" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/fl__f_map__photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_blue__locked"
+            android:padding="8dp"
+            android:layout_marginStart="16dp"
+
+            app:layout_constraintBottom_toBottomOf="@+id/acb_f_map__info"
+            app:layout_constraintStart_toEndOf="@id/fl__f_map__fuel"
+            app:layout_constraintTop_toTopOf="@+id/acb_f_map__info">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="52dp" android:layout_height="22dp"
+                android:src="@drawable/ic_photo_locked" />
+        </FrameLayout>
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/acb_f_map__info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+
+            android:background="@drawable/bg_chip"
+
             android:layout_margin="@dimen/margin_default"
-            android:background="@drawable/bg_button"
+
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:textColor="@color/white"
             android:text="Info 5/0"
-            />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/acb_f_map__logout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_margin="@dimen/margin_default"
-            android:paddingHorizontal="8dp"
-            android:background="@drawable/bg_button"
-            android:textColor="@color/white"
-            android:text="Выйти"
-            />
 
-        <!--<include layout="@layout/act_map__workorder_info"/>-->
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="22dp"
+            />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_f_map__goto_my_gps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_default"
-            android:layout_marginBottom="72dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:src="@drawable/ic_geo"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_f_map__debug"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_default"
             android:layout_marginBottom="72dp"
             android:backgroundTint="@color/colorPrimary"
-            android:src="@drawable/ic_bug"
+            android:src="@drawable/ic_geo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/acib__f_map__navigator_toggle"
-            android:layout_width="43dp"
-            android:layout_height="43dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginStart="@dimen/margin_default"
-            android:layout_marginEnd="@dimen/margin_default"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/bg_circle_button"
             android:src="@drawable/ic_route_off"
             android:visibility="gone"
             tools:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@id/fab_f_map__goto_my_gps"
-            app:layout_constraintEnd_toEndOf="@id/fab_f_map__goto_my_gps"
-            app:layout_constraintStart_toStartOf="@id/fab_f_map__goto_my_gps"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="72dp"
             />
 
-        <!--<androidx.appcompat.widget.AppCompatImageButton-->
-        <!--    android:id="@+id/btn_to_nearest"-->
-        <!--    android:layout_width="43dp"-->
-        <!--    android:layout_height="43dp"-->
-        <!--    android:layout_marginStart="@dimen/margin_default"-->
-        <!--    android:layout_marginEnd="@dimen/margin_default"-->
-        <!--    android:layout_marginBottom="8dp"-->
-        <!--    android:background="@drawable/bg_circle_button"-->
-        <!--    android:src="@drawable/ic_euro_blue"-->
-        <!--    app:layout_constraintBottom_toTopOf="@id/navigator_toggle_fab"-->
-        <!--    app:layout_constraintEnd_toEndOf="@id/fab_f_map__goto_my_gps"-->
-        <!--    app:layout_constraintStart_toStartOf="@id/fab_f_map__goto_my_gps" />-->
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottie"
-            android:layout_width="100dp" android:layout_height="55dp"
-            android:layout_margin="@dimen/margin_default"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/acb_f_map__logout"
-            app:layout_constraintEnd_toStartOf="@id/acb_f_map__info"
-            app:lottie_rawRes="@raw/test"/>
-        <!--<androidx.appcompat.widget.AppCompatTextView-->
-        <!--    android:id="@+id/lottie_proc_id"-->
-        <!--    android:layout_width="wrap_content" android:layout_height="wrap_content"-->
-        <!--    app:layout_constraintStart_toEndOf="@id/acb_f_map__logout"-->
-        <!--    app:layout_constraintEnd_toStartOf="@id/acb_f_map__info"-->
-        <!--    app:layout_constraintTop_toBottomOf="@id/lottie"-->
-        <!--    />-->
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/goto_log__f_map__apib"
-            android:layout_width="43dp"
-            android:layout_height="43dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/bg_circle_button"
+            android:background="@drawable/bg_button_green__default"
             android:src="@drawable/ic_taskline"
-            app:layout_constraintBottom_toTopOf="@id/fab_f_map__debug"
-            app:layout_constraintEnd_toEndOf="@id/fab_f_map__debug"
-            app:layout_constraintStart_toStartOf="@id/fab_f_map__debug" />
+            app:layout_constraintBottom_toTopOf="@id/fab_f_map__goto_my_gps"
+            app:layout_constraintEnd_toEndOf="@id/fab_f_map__goto_my_gps"
+            app:layout_constraintStart_toStartOf="@id/fab_f_map__goto_my_gps" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
