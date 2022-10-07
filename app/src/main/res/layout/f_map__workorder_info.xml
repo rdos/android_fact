@@ -36,7 +36,7 @@
             android:layout_marginStart="@dimen/margin_max"
             android:layout_marginEnd="@dimen/margin_max"
             android:layout_marginBottom="@dimen/margin_max"
-            android:background="@drawable/bg_button_interactiveй"
+            android:background="@drawable/bg_button_interactive"
             android:text="id/acb_f_map__workorder_info__gotocomplete"
             android:textColor="@color/white" />
 
