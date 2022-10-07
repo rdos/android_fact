@@ -40,6 +40,9 @@ import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.ui_view.ViewProvider
 import net.cachapa.expandablelayout.ExpandableLayout
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Response
 import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.BaseAdapter
@@ -54,15 +57,14 @@ import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.utils.getActivityProperly
-import ru.smartro.worknote.work.ConfigName
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.Status
-import ru.smartro.worknote.work.WorkOrderEntity
+import ru.smartro.worknote.work.*
+import java.io.IOException
 
 class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickListener,
-    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener {
+    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener, Callback {
 
 
+    private var mTimeBeforeInSec: Long = Lnull
     private var acibNavigatorToggle: AppCompatImageButton? = null
     private var clMapBehavior: ConstraintLayout? = null
     private var mAcbGotoComplete: AppCompatButton? = null
@@ -444,21 +446,21 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private fun getNextPlatformToSend(next: (nextSentPlatforms: List<PlatformEntity>, timeBefore: Long) -> Any) {
         var nextSentPlatforms: List<PlatformEntity> = emptyList()
-        var timeBeforeInSec: Long = MyUtil.timeStampInSec()
+        mTimeBeforeInSec = MyUtil.timeStampInSec()
         val lastSynchroTimeInSec = paramS().lastSynchroTimeInSec
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
-            timeBeforeInSec = lastSynchroTimeInSec + m30MinutesInSec
+            mTimeBeforeInSec = lastSynchroTimeInSec + m30MinutesInSec
             nextSentPlatforms = viewModel.database.findPlatforms30min()
             LOG.debug("SYNCworkER PLATFORMS IN LAST 30 min")
-            next(nextSentPlatforms, timeBeforeInSec)
+            next(nextSentPlatforms, mTimeBeforeInSec)
         }
         if (nextSentPlatforms.isEmpty()) {
-            timeBeforeInSec = MyUtil.timeStampInSec()
+            mTimeBeforeInSec = MyUtil.timeStampInSec()
             nextSentPlatforms = viewModel.database.findLastPlatforms()
             LOG.debug("SYNCworkER LAST PLATFORMS")
-            next(nextSentPlatforms, timeBeforeInSec)
+            next(nextSentPlatforms, mTimeBeforeInSec)
         }
 
     }
@@ -479,25 +481,10 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
                     gps.PointTOBaseData(),
                     deviceId,
                     gps.PointTimeToLastKnowTime_SRV(),
-                    nextSentPlatforms
+                    PlatformEntity.toSRV(nextSentPlatforms, viewModel.database)
                 )
-
-                viewModel.networkDat.sendLastPlatforms(synchronizeBody)
-                    .observe(getAct()) { result ->
-                        hideProgress()
-                        when (result.status) {
-                            Status.SUCCESS -> {
-                                paramS().lastSynchroTimeInSec = timeBeforeInSec
-                                gotoSynchronize()
-                            }
-                            Status.ERROR -> {
-                                toast(result.msg)
-                            }
-                            Status.NETWORK -> {
-                                toast("Проблемы с интернетом")
-                            }
-                        }
-                    }
+                viewModel.networkDat.sendLastPlatforms(synchronizeBody, this)
+                Any()
             }
 
         } else {
@@ -508,7 +495,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         LOG.debug("gotoComplete::synChrONizationDATA:Thread.currentThread().id()=${Thread.currentThread().id}")
 
     }
-
 
     private fun completeWorkOrders() {
         hideInfoDiaLOG()
@@ -681,7 +667,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         navigateMain(R.id.PhotoFailureMediaF, item.platformId)
     }
 
-    fun buildNavigator(checkPoint: Point) {
+    private fun buildNavigator(checkPoint: Point) {
         try {
 //            getMapObjCollection().clear()
             clearMapObjectsDrive()
@@ -1052,6 +1038,21 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //        this as InertiaMoveListener
     }
 
+    override fun onFailure(call: Call, e: IOException) {
+        toast("Проблемы с интернетом")
+        hideProgress()
+    }
+
+    override fun onResponse(call: Call, response: Response) {
+        if(response.isSuccessful) {
+            view?.post{
+                paramS().lastSynchroTimeInSec = mTimeBeforeInSec
+                gotoSynchronize()
+            }
+        } else {
+            THR.BadRequestPOSTsynchroOKHTTP(response)
+        }
+    }
 
 
 }
