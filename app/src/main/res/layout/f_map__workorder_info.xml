@@ -29,8 +29,9 @@
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:padding="8dp"
-                android:background="@drawable/bg_chip_action_red"
-                android:src="@drawable/ic_logout_gray" />
+                android:background="@drawable/bg_chip_action_gray"
+                android:src="@drawable/ic_logout_gray"
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
@@ -50,7 +51,7 @@
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:padding="8dp"
-                android:background="@drawable/bg_chip_action"
+                android:background="@drawable/bg_chip_action_gray"
                 android:src="@drawable/ic_bug_gray" />
 
         </RelativeLayout>

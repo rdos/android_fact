@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -28,7 +29,7 @@
             app:layout_constraintEnd_toStartOf="@id/fl__f_map__fuel"
             app:layout_constraintTop_toTopOf="@+id/acb_f_map__info">
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="52dp" android:layout_height="22dp"
+                android:layout_width="48dp" android:layout_height="20dp"
                 android:src="@drawable/ic_car_full_status_locked" />
         </FrameLayout>
 
@@ -38,7 +39,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_button_red__locked"
             android:padding="8dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
 
             app:layout_constraintStart_toEndOf="@id/fl__f_map__car"
             app:layout_constraintTop_toTopOf="@+id/acb_f_map__info"
@@ -47,7 +48,7 @@
             >
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="52dp" android:layout_height="22dp"
+                android:layout_width="48dp" android:layout_height="20dp"
                 android:src="@drawable/ic_fuel_locked" />
         </FrameLayout>
 
@@ -57,14 +58,14 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_button_blue__locked"
             android:padding="8dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
 
             app:layout_constraintBottom_toBottomOf="@+id/acb_f_map__info"
             app:layout_constraintStart_toEndOf="@id/fl__f_map__fuel"
             app:layout_constraintTop_toTopOf="@+id/acb_f_map__info">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="52dp" android:layout_height="22dp"
+                android:layout_width="48dp" android:layout_height="20dp"
                 android:src="@drawable/ic_photo_locked" />
         </FrameLayout>
 
