@@ -96,7 +96,7 @@ class AppParaMS {
     private fun isTimeForSaveData(time: Long?=null): Boolean {
         val currentTimeMS = System.currentTimeMillis()
         val diff = currentTimeMS - (time?:gpsTIME)
-        val res =  diff >= 30_000
+        val res =  diff >= 5_000
         LOG.warn( "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
         return res
     }

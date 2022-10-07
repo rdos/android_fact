@@ -245,16 +245,21 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         AppliCation().startWorkER()
         AppliCation().startLocationService()
 //        setDevelMode()
-
-        // TODO::
-        val lottie = view.findViewById<LottieAnimationView>(R.id.lottie)
-        lottie.setOnClickListener {
-//            lottie.playAnimation()
-            lottie.progress = 0.5f
-        }
+                    //         TODO::
+                    //        val lottie = view.findViewById<LottieAnimationView>(R.id.lottie)
+                    //        lottie.setOnClickListener {
+                    ////            lottie.playAnimation()
+                    //            lottie.progress = 0.5f
+                    //        }
+//        setDevelMode()
         viewModel.todoLiveData.observe(viewLifecycleOwner) {
+            if (it.coordLat == Dnull) {
+                // TODO: !!факТ)
+                return@observe
+            }
             moveCameraTo(PoinT(it.coordLat, it.coordLong))
-	}
+        }
+//        setDevelMode()
         onRefreshData()
     }
 
@@ -697,6 +702,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     private fun moveCameraTo(pont: PoinT) {
+        LOG.debug("before pont.latitude=${pont.latitude} pont.long=${pont.longitude}")
         mMapMyYandex.map.move(
             CameraPosition(pont, 15.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null
