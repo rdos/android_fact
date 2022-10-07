@@ -1,9 +1,7 @@
 package ru.smartro.worknote.presentation.platform_serve
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -19,7 +17,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -63,23 +60,23 @@ class PServeF : AFragment() {
     private var acsbVolumePickup: SeekBar? = null
     private var rvContainers: RecyclerView? = null
 
-    private var vcpvCommentPlayer: SmartROviewVoicePlayer? = null
-    private var civCommentInput: SmartROviewVoiceWhatsUp? = null
+    private var srvVoicePlayer: SmartROviewVoicePlayer? = null
+    private var srvVoiceWhatsUp: SmartROviewVoiceWhatsUp? = null
     private var voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
 
         override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
-            civCommentInput?.setTime(timeInMS)
+            srvVoiceWhatsUp?.setTime(timeInMS)
         }
 
         override fun onVoiceCommentSave(soundF: File) {
 //            civCommentInput?.setIdle()
 
-            vcpvCommentPlayer?.visibility = View.VISIBLE
+            srvVoicePlayer?.visibility = View.VISIBLE
             val byteArray = Files.readAllBytes(soundF.toPath())
             val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
             platformVoiceCommentEntity.voiceByteArray = byteArray
             vm.addVoiceComment(platformVoiceCommentEntity)
-            vcpvCommentPlayer?.setAudio(requireContext(), soundF)
+            srvVoicePlayer?.setAudio(requireContext(), soundF)
         }
 
         override fun onStartVoiceComment() {}
@@ -122,10 +119,10 @@ class PServeF : AFragment() {
 
         actvScreenLabel?.text = "Списком"
 
-        civCommentInput = sview.findViewById(R.id.civ__f_pserve__comment_input)
+        srvVoiceWhatsUp = sview.findViewById(R.id.civ__f_pserve__comment_input)
 
-        vcpvCommentPlayer = sview.findViewById(R.id.vcpv__f_pserve__comment_player)
-        vcpvCommentPlayer?.visibility = View.GONE
+        srvVoicePlayer = sview.findViewById(R.id.vcpv__f_pserve__comment_player)
+        srvVoicePlayer?.visibility = View.GONE
 
 
         /////////////////////////////////////////////
@@ -201,7 +198,7 @@ class PServeF : AFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         voiceCommentHandler.release()
-        vcpvCommentPlayer?.release()
+        srvVoicePlayer?.release()
     }
 
     override fun onBindLayoutState(): Boolean {
@@ -288,13 +285,13 @@ class PServeF : AFragment() {
 
         if(_PlatformEntity.platformVoiceCommentEntity != null) {
             LOG.debug("TEST!!!! FILE EXISTS")
-            vcpvCommentPlayer?.visibility = View.VISIBLE
-            vcpvCommentPlayer?.setAudio(requireContext(), AppliCation().getF("sound", "y10.wav").apply {
+            srvVoicePlayer?.visibility = View.VISIBLE
+            srvVoicePlayer?.setAudio(requireContext(), AppliCation().getF("sound", "y10.wav").apply {
                 writeBytes(_PlatformEntity.platformVoiceCommentEntity!!.voiceByteArray!!)
             })
         }
 
-        civCommentInput?.apply {
+        srvVoiceWhatsUp?.apply {
 //            mCallBack = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
 //                override fun onStart() {
 //                    if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -319,7 +316,7 @@ class PServeF : AFragment() {
 //            }
         }
 
-        vcpvCommentPlayer?.apply {
+        srvVoicePlayer?.apply {
             listener = object : SmartROviewVoicePlayer.VoiceCommentPlayerEvents {
                 override fun onStart() {
                     LOG.debug("onStart")
@@ -337,8 +334,8 @@ class PServeF : AFragment() {
                     LOG.debug("onDelete")
                     val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
                     vm.removeVoiceComment(platformVoiceCommentEntity)
-                    vcpvCommentPlayer?.release()
-                    vcpvCommentPlayer?.visibility = View.GONE
+                    srvVoicePlayer?.release()
+                    srvVoicePlayer?.visibility = View.GONE
                 }
 
             }
