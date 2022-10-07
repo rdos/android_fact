@@ -23,13 +23,13 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     defStyleAttrs: Int = 0
 ): ConstraintLayout(context, attrs, defStyleAttrs) {
 
-    private var messageInput: AppCompatEditText? = null
-    private var recordInfo: LinearLayoutCompat? = null
-    private var recordTime: AppCompatTextView? = null
-    private var recordButton: AppCompatImageView? = null
-    private var recordButtonWrapper: FrameLayout? = null
-    private var buttonStop: AppCompatImageView? = null
-    private var buttonCancel: AppCompatTextView? = null
+    private var acetMessageInput: AppCompatEditText? = null
+    private var llcRecordInfo: LinearLayoutCompat? = null
+    private var actvRecordTime: AppCompatTextView? = null
+    private var acivRecordButton: AppCompatImageView? = null
+    private var flRecordButtonWrapper: FrameLayout? = null
+    private var acivButtonStop: AppCompatImageView? = null
+    private var actvButtonCancel: AppCompatTextView? = null
     private var rlPathCancel: RelativeLayout? = null
     private var rlPathLock: RelativeLayout? = null
 
@@ -45,34 +45,34 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
 
         rlPathCancel = findViewById(R.id.rl__comment_input__path_cancel)
         rlPathLock = findViewById(R.id.rl__comment_input__path_lock)
-        messageInput = findViewById(R.id.acet__comment_input__message_input)
-        recordInfo = findViewById(R.id.llc__comment_input__record_info)
-        recordTime = findViewById(R.id.actv__comment_input__record_time)
-        recordButton = findViewById(R.id.aciv__comment_input__rec_start)
-        recordButtonWrapper = findViewById(R.id.cl__comment_input__record_button_wrapper)
-        buttonStop = findViewById(R.id.aciv__comment_input__stop_button)
-        buttonCancel = findViewById(R.id.actv__comment_input__cancel_button)
+        acetMessageInput = findViewById(R.id.acet__comment_input__message_input)
+        llcRecordInfo = findViewById(R.id.llc__comment_input__record_info)
+        actvRecordTime = findViewById(R.id.actv__comment_input__record_time)
+        acivRecordButton = findViewById(R.id.aciv__comment_input__rec_start)
+        flRecordButtonWrapper = findViewById(R.id.cl__comment_input__record_button_wrapper)
+        acivButtonStop = findViewById(R.id.aciv__comment_input__stop_button)
+        actvButtonCancel = findViewById(R.id.actv__comment_input__cancel_button)
 
         initialState()
 
-        buttonStop?.setOnClickListener {
+        acivButtonStop?.setOnClickListener {
             // TODO: onStop()
             initialState()
         }
 
-        buttonCancel?.setOnClickListener {
+        actvButtonCancel?.setOnClickListener {
             // TODO: onCancel()
             initialState()
         }
 
         movableView = MovableViewBuilder()
-            .setTargetView(recordButton!!)
+            .setTargetView(acivRecordButton!!)
             .setMovementRules(MovableViewBuilder.MovementRule.LEFT)
             .setDelay(200)
             .onStart {
                 LOG.debug("MOVABLE ON START")
                 recordingState()
-                recordButton?.animate()?.scaleX(1.6f)?.scaleY(1.6f)?.setDuration(200)?.start()
+                acivRecordButton?.animate()?.scaleX(1.6f)?.scaleY(1.6f)?.setDuration(200)?.start()
             }
             .onMoveHorizontally { view, absoluteX ->
                 LOG.debug("MOVABLE ON MOVE HORIZONTALLY: ${absoluteX}")
@@ -93,7 +93,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
             }
             .onStop {
                 LOG.debug("MOVABLE ON STOP")
-                recordButton?.animate()?.scaleX(1f)?.scaleY(1f)?.setDuration(200)?.start()
+                acivRecordButton?.animate()?.scaleX(1f)?.scaleY(1f)?.setDuration(200)?.start()
                 if(mIsLockReady) {
                     lockState()
                 } else {
@@ -108,7 +108,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
         val seconds = (timeInMS - (minutes * 60_000)) / 1000
         val minutesShowForUser = if(minutes < 10) "0${minutes}" else minutes.toString()
         val secondsShowForUser = if(seconds < 10) "0${seconds}" else seconds.toString()
-        recordTime?.text = "${minutesShowForUser}:${secondsShowForUser}"
+        actvRecordTime?.text = "${minutesShowForUser}:${secondsShowForUser}"
     }
 
     fun stop() {
@@ -116,39 +116,39 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     }
 
     private fun initialState() {
-        recordButtonWrapper?.visibility = VISIBLE
-        messageInput?.visibility = VISIBLE
+        flRecordButtonWrapper?.visibility = VISIBLE
+        acetMessageInput?.visibility = VISIBLE
 
-        recordInfo?.visibility = INVISIBLE
+        llcRecordInfo?.visibility = INVISIBLE
         rlPathCancel?.visibility = INVISIBLE
         rlPathLock?.visibility = INVISIBLE
 
-        buttonStop?.visibility = GONE
-        buttonCancel?.visibility = GONE
+        acivButtonStop?.visibility = GONE
+        actvButtonCancel?.visibility = GONE
     }
 
     private fun recordingState() {
-        recordButtonWrapper?.visibility = VISIBLE
-        messageInput?.visibility = INVISIBLE
+        flRecordButtonWrapper?.visibility = VISIBLE
+        acetMessageInput?.visibility = INVISIBLE
 
-        recordInfo?.visibility = VISIBLE
+        llcRecordInfo?.visibility = VISIBLE
         rlPathCancel?.visibility = VISIBLE
         rlPathLock?.visibility = VISIBLE
 
-        buttonStop?.visibility = GONE
-        buttonCancel?.visibility = GONE
+        acivButtonStop?.visibility = GONE
+        actvButtonCancel?.visibility = GONE
     }
 
     private fun lockState() {
-        recordButtonWrapper?.visibility = INVISIBLE
-        messageInput?.visibility = INVISIBLE
+        flRecordButtonWrapper?.visibility = INVISIBLE
+        acetMessageInput?.visibility = INVISIBLE
 
-        recordInfo?.visibility = VISIBLE
+        llcRecordInfo?.visibility = VISIBLE
         rlPathCancel?.visibility = INVISIBLE
         rlPathLock?.visibility = INVISIBLE
 
-        buttonStop?.visibility = VISIBLE
-        buttonCancel?.visibility = VISIBLE
+        acivButtonStop?.visibility = VISIBLE
+        actvButtonCancel?.visibility = VISIBLE
     }
 
 }
