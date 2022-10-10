@@ -54,15 +54,15 @@ class StartAct : AAct() {
             paramS().AppRestarted()
         }
         setContentView(R.layout.act_start)
-        actionBar?.title = "Вход в Систему"
+        supportActionBar?.hide()
 
         authLoginEditText = findViewById(R.id.auth_login)
         authPasswordEditText = findViewById(R.id.auth_password)
         authLoginEditText = findViewById(R.id.auth_login)
         authPasswordEditText = findViewById(R.id.auth_password)
-        authAppVersion = findViewById(R.id.auth_appversion)
+        authAppVersion = findViewById(R.id.actv_act_start__appversion)
         authRootView = findViewById(R.id.cl_act_start)
-        authEnter = findViewById(R.id.auth_enter)
+        authEnter = findViewById(R.id.acb_login)
         authLoginOut = findViewById(R.id.login_login_out)
         authPasswordOut = findViewById(R.id.auth_password_out)
         authDebugInfo = findViewById(R.id.actv_activity_auth__it_test_version)
