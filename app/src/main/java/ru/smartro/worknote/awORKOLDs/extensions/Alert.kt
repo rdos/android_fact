@@ -7,8 +7,11 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import org.slf4j.LoggerFactory
+import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
@@ -73,6 +76,31 @@ fun AAct.showDlgLogout(): View {
     builder.setView(view)
     showCustomDialog(builder)
     return view
+}
+fun AAct.showDlgWarning(warningType: WarningType): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.dialog_warning, null)
+    var warningDialog: AlertDialog? = null
+    view.findViewById<AppCompatTextView>(R.id.actv__dialog_warning__description).text = when(warningType) {
+        WarningType.AIRPLANE_MODE -> getString(R.string.warning_airplane_mode)
+        WarningType.CONNECTION_LOST -> getString(R.string.warning_connection_lost)
+        WarningType.GPS_OFF -> getString(R.string.warning_gps_off)
+    }
+    view.findViewById<AppCompatButton>(R.id.acb__dialog_warning__ok)?.setOnClickListener {
+        warningDialog?.dismiss()
+    }
+    builder.setView(view)
+    warningDialog = builder.create()
+    warningDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    warningDialog.show()
+    return view
+}
+
+enum class WarningType(val type: Int) {
+    AIRPLANE_MODE(413),
+    CONNECTION_LOST(609),
+    GPS_OFF(855)
 }
 
 //showDlgPickup!r_dos
