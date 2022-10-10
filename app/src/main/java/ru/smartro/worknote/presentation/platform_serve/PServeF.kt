@@ -63,7 +63,6 @@ class PServeF : AFragment() {
     private var srvVoicePlayer: SmartROviewVoicePlayer? = null
     private var srvVoiceWhatsUp: SmartROviewVoiceWhatsUp? = null
     private var voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
-
         override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
             srvVoiceWhatsUp?.setTime(timeInMS)
         }
@@ -81,7 +80,9 @@ class PServeF : AFragment() {
 
         override fun onStartVoiceComment() {}
 
-        override fun onStopVoiceComment() {}
+        override fun onStopVoiceComment() {
+            srvVoiceWhatsUp?.stop()
+        }
     })
 
     private var tvPlatformSrpId: TextView? = null
@@ -119,15 +120,24 @@ class PServeF : AFragment() {
 
         actvScreenLabel?.text = "Списком"
 
-        srvVoiceWhatsUp = sview.findViewById(R.id.civ__f_pserve__comment_input)
-
         srvVoicePlayer = sview.findViewById(R.id.vcpv__f_pserve__comment_player)
         srvVoicePlayer?.visibility = View.GONE
 
+        srvVoiceWhatsUp = sview.findViewById(R.id.civ__f_pserve__comment_input)
 
-        /////////////////////////////////////////////
+        srvVoiceWhatsUp?.mOnStart = {
+            voiceCommentHandler.startRecording()
+        }
 
-        // DISABLING SWIPE MOTION ON SWITCH
+        srvVoiceWhatsUp?.mOnStop = {
+            voiceCommentHandler.stopRecord()
+        }
+
+        srvVoiceWhatsUp?.mOnCancel ={
+            voiceCommentHandler.cancelRecord()
+        }
+
+          // DISABLING SWIPE MOTION ON SWITCH
 //        srosToGroupByFMode?.setOnTouchListener { v, event ->
 //            event.actionMasked == MotionEvent.ACTION_MOVE
 //        }

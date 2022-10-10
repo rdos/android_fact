@@ -2,6 +2,7 @@ package ru.smartro.worknote.andPOintD
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.metrics.Event
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
@@ -15,6 +16,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import ru.smartro.worknote.LOG
+import ru.smartro.worknote.LOGINcyclEStop
 import ru.smartro.worknote.R
 
 class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
@@ -39,6 +41,12 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     private val rlPathLockX: Int by lazy { ViewUtil(rlPathLock!!).getXStart() }
 
     private var mIsLockReady = false
+    private var mIsCancel = false
+
+    var mOnStart: (() -> Unit)? = null
+    var mOnLock: (() -> Unit)? = null
+    var mOnStop: (() -> Unit)? = null
+    var mOnCancel: (() -> Unit)? = null
 
     init {
         inflate(getContext(), R.layout.custom_view__comment_input, this)
@@ -56,13 +64,11 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
         initialState()
 
         acivButtonStop?.setOnClickListener {
-            // TODO: onStop()
-            initialState()
+
         }
 
         actvButtonCancel?.setOnClickListener {
-            // TODO: onCancel()
-            initialState()
+
         }
 
         movableView = MovableViewBuilder()
@@ -73,6 +79,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                 LOG.debug("MOVABLE ON START")
                 recordingState()
                 acivRecordButton?.animate()?.scaleX(1.6f)?.scaleY(1.6f)?.setDuration(200)?.start()
+
             }
             .onMoveHorizontally { view, absoluteX ->
                 LOG.debug("MOVABLE ON MOVE HORIZONTALLY: ${absoluteX}")
@@ -88,6 +95,8 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
 
                 if(absoluteX < rlPathCancelX) {
                     LOG.debug("CANCEL")
+                    mIsCancel = true
+
                     movableView?.stopMovement()
                 }
             }
@@ -95,9 +104,18 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                 LOG.debug("MOVABLE ON STOP")
                 acivRecordButton?.animate()?.scaleX(1f)?.scaleY(1f)?.setDuration(200)?.start()
                 if(mIsLockReady) {
+                    mIsLockReady = false
                     lockState()
+                    mOnLock?.invoke()
+
+                } else if(mIsCancel) {
+                    mIsCancel = false
+                    initialState()
+                    mOnCancel?.invoke()
+
                 } else {
                     initialState()
+                    mOnStop?.invoke()
                 }
             }
             .build()
@@ -112,7 +130,9 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     }
 
     fun stop() {
-
+        setTime(0)
+        movableView?.stopMovement()
+        initialState()
     }
 
     private fun initialState() {
@@ -150,15 +170,14 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
         acivButtonStop?.visibility = VISIBLE
         actvButtonCancel?.visibility = VISIBLE
     }
-
 }
 
 class MovableView(
     val targetView: View,
-    private var mOnStop: (() -> Unit)? = null
+    private var onStop: (() -> Unit)
 ) {
     fun stopMovement() {
-        mOnStop?.invoke()
+        onStop()
     }
 }
 
@@ -232,17 +251,10 @@ class MovableViewBuilder {
         mOnStart?.invoke(mTargetView!!)
     }
 
-    @SuppressLint("Recycle")
-    private fun cancel() {
-        val actionUpEvent = MotionEvent.obtain(mCurrentMotionEvent)
-        actionUpEvent.action = MotionEvent.ACTION_UP
-        mTargetView?.dispatchTouchEvent(actionUpEvent)
-    }
-
     private fun stop() {
         mIsReadyForMove = false
+        mTargetView?.isPressed = false
         mTargetView?.animate()?.translationX(0f)?.translationY(0f)?.start()
-        mOnStop?.invoke(mTargetView!!)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -296,6 +308,7 @@ class MovableViewBuilder {
                     mTargetView?.isPressed = false
                     if(mIsReadyForMove) {
                         stop()
+                        mOnStop?.invoke(mTargetView!!)
                     }
                     false
                 }
@@ -304,7 +317,7 @@ class MovableViewBuilder {
             }
         }
 
-        return MovableView(mTargetView!!, ::cancel)
+        return MovableView(mTargetView!!, ::stop)
     }
 
     enum class MovementRule {

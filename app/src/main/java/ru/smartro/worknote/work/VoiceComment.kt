@@ -24,7 +24,7 @@ class VoiceComment(private val p_callback: IVoiceComment) : CountDownTimer(SEC30
 
     }
 
-    fun stop() {
+    fun cancelRecord() {
         val diff = MyUtil.timeStampInMS() - startTimestamp
         if(getRecordM().isAudioRecording())
         if(diff > 1500) {
@@ -34,10 +34,9 @@ class VoiceComment(private val p_callback: IVoiceComment) : CountDownTimer(SEC30
                 stopRecording()
             }, 1000)
         }
-        LOG.debug("after")
     }
 
-    fun end() {
+    fun stopRecord() {
         val diff = MyUtil.timeStampInMS() - startTimestamp
         if(diff > 1500) {
             stopRecording()
@@ -93,7 +92,7 @@ class VoiceComment(private val p_callback: IVoiceComment) : CountDownTimer(SEC30
     }
 
     override fun onFinish() {
-        end()
+        stopRecord()
         LOG.debug("after")
     }
 
