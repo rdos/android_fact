@@ -101,27 +101,6 @@ fun AAct.showDlgWarning(warningType: WarningType): View {
     return view
 }
 
-enum class WarningType(val type: Int) {
-    AIRPLANE_MODE(413),
-    CONNECTION_LOST(609),
-    GPS_OFF(855)
-}
-=========
-//showDlgPickup!r_dos
-fun AAct.showDlgLogout(): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.act_xchecklist__dialog_logout, null)
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
->>>>>>>>> Temporary merge branch 2
-enum class WarningType(val type: Int) {
-    AIRPLANE_MODE(413),
-    CONNECTION_LOST(609),
-    GPS_OFF(855)
-}
 enum class WarningType {
     AIRPLANE_MODE,
     CONNECTION_LOST,
