@@ -43,7 +43,7 @@ import java.io.File
 import java.nio.file.Files
 
 
-class PServeF : AFragment() {
+class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
     private var mContainersAdapter: PServeContainersAdapter? = null
     private val _PlatformEntity: PlatformEntity
@@ -62,28 +62,7 @@ class PServeF : AFragment() {
 
     private var srvVoicePlayer: SmartROviewVoicePlayer? = null
     private var srvVoiceWhatsUp: SmartROviewVoiceWhatsUp? = null
-    private var voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
-        override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
-            srvVoiceWhatsUp?.setTime(timeInMS)
-        }
-
-        override fun onVoiceCommentSave(soundF: File) {
-//            civCommentInput?.setIdle()
-
-            srvVoicePlayer?.visibility = View.VISIBLE
-            val byteArray = Files.readAllBytes(soundF.toPath())
-            val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
-            platformVoiceCommentEntity.voiceByteArray = byteArray
-            vm.addVoiceComment(platformVoiceCommentEntity)
-            srvVoicePlayer?.setAudio(requireContext(), soundF)
-        }
-
-        override fun onStartVoiceComment() {}
-
-        override fun onStopVoiceComment() {
-            srvVoiceWhatsUp?.stop()
-        }
-    })
+    private var mVoiceComment: VoiceComment? = null
 
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
@@ -120,21 +99,21 @@ class PServeF : AFragment() {
 
         actvScreenLabel?.text = "Списком"
 
-        srvVoicePlayer = sview.findViewById(R.id.vcpv__f_pserve__comment_player)
+        srvVoicePlayer = sview.findViewById(R.id.srvv__f_pserve__voice_player)
         srvVoicePlayer?.visibility = View.GONE
 
-        srvVoiceWhatsUp = sview.findViewById(R.id.civ__f_pserve__comment_input)
+        srvVoiceWhatsUp = sview.findViewById(R.id.srv__f_pserve__comment_input)
 
         srvVoiceWhatsUp?.mOnStart = {
-            voiceCommentHandler.startRecording()
+            mVoiceComment = VoiceComment(this)
         }
 
-        srvVoiceWhatsUp?.mOnStop = {
-            voiceCommentHandler.stopRecord()
+        srvVoiceWhatsUp?.mOnEnd = {
+            mVoiceComment?.end()
         }
 
-        srvVoiceWhatsUp?.mOnCancel ={
-            voiceCommentHandler.cancelRecord()
+        srvVoiceWhatsUp?.mOnStop ={
+            mVoiceComment?.stop()
         }
 
           // DISABLING SWIPE MOTION ON SWITCH
@@ -207,8 +186,8 @@ class PServeF : AFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        voiceCommentHandler.release()
         srvVoicePlayer?.release()
+        mVoiceComment?.stop()
     }
 
     override fun onBindLayoutState(): Boolean {
@@ -329,19 +308,19 @@ class PServeF : AFragment() {
         srvVoicePlayer?.apply {
             listener = object : SmartROviewVoicePlayer.VoiceCommentPlayerEvents {
                 override fun onStart() {
-                    LOG.debug("onStart")
+                    LOG.debug("before")
                 }
 
                 override fun onPause() {
-                    LOG.debug("onPause")
+                    LOG.debug("before")
                 }
 
                 override fun onResume() {
-                    LOG.debug("onResume")
+                    LOG.debug("before")
                 }
 
                 override fun onDelete() {
-                    LOG.debug("onDelete")
+                    LOG.debug("before")
                     val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
                     vm.removeVoiceComment(platformVoiceCommentEntity)
                     srvVoicePlayer?.release()
@@ -553,8 +532,32 @@ class PServeF : AFragment() {
             val actvConstructiveVolume = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__constructiveVolume)
         }
     }
+
     interface ContainerPointClickListener {
         fun startContainerService(item: ContainerEntity)
+    }
+
+    override fun onStartVoiceComment() {
+        srvVoiceWhatsUp?.start()
+    }
+
+    override fun onStopVoiceComment() {
+        srvVoiceWhatsUp?.stop()
+    }
+
+    override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long, interValInMS: Long){
+        srvVoiceWhatsUp?.setVolumeEffect(volume, interValInMS)
+        srvVoiceWhatsUp?.setTime(timeInMS)
+    }
+
+    override fun onVoiceCommentSave(soundF: File) {
+        //            civCommentInput?.setIdle()
+        srvVoicePlayer?.visibility = View.VISIBLE
+        val byteArray = Files.readAllBytes(soundF.toPath())
+        val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
+        platformVoiceCommentEntity.voiceByteArray = byteArray
+        vm.addVoiceComment(platformVoiceCommentEntity)
+        srvVoicePlayer?.setAudio(requireContext(), soundF)
     }
 
     /********************************************************************************************************************

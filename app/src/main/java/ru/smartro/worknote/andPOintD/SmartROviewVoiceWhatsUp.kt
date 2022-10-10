@@ -2,12 +2,12 @@ package ru.smartro.worknote.andPOintD
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.media.metrics.Event
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatEditText
@@ -15,9 +15,10 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.airbnb.lottie.LottieAnimationView
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.LOGINcyclEStop
 import ru.smartro.worknote.R
+import kotlin.math.min
 
 class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     context: Context,
@@ -25,6 +26,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     defStyleAttrs: Int = 0
 ): ConstraintLayout(context, attrs, defStyleAttrs) {
 
+    private var lavMicrophone: LottieAnimationView? = null
     private var acetMessageInput: AppCompatEditText? = null
     private var llcRecordInfo: LinearLayoutCompat? = null
     private var actvRecordTime: AppCompatTextView? = null
@@ -40,17 +42,20 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     private val rlPathCancelX: Int by lazy { ViewUtil(rlPathCancel!!).getXStart() }
     private val rlPathLockX: Int by lazy { ViewUtil(rlPathLock!!).getXStart() }
 
+
+        //todo: мне кажется
     private var mIsLockReady = false
-    private var mIsCancel = false
+    private var mIsStop = false
 
     var mOnStart: (() -> Unit)? = null
     var mOnLock: (() -> Unit)? = null
+    var mOnEnd: (() -> Unit)? = null
     var mOnStop: (() -> Unit)? = null
-    var mOnCancel: (() -> Unit)? = null
 
     init {
         inflate(getContext(), R.layout.custom_view__comment_input, this)
 
+        lavMicrophone = findViewById<LottieAnimationView>(R.id.lav__comment_input__recording_animated_icon)
         rlPathCancel = findViewById(R.id.rl__comment_input__path_cancel)
         rlPathLock = findViewById(R.id.rl__comment_input__path_lock)
         acetMessageInput = findViewById(R.id.acet__comment_input__message_input)
@@ -64,11 +69,11 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
         initialState()
 
         acivButtonStop?.setOnClickListener {
-
+            mOnEnd?.invoke()
         }
 
         actvButtonCancel?.setOnClickListener {
-
+            mOnStop?.invoke()
         }
 
         movableView = MovableViewBuilder()
@@ -77,9 +82,8 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
             .setDelay(200)
             .onStart {
                 LOG.debug("MOVABLE ON START")
-                recordingState()
-                acivRecordButton?.animate()?.scaleX(1.6f)?.scaleY(1.6f)?.setDuration(200)?.start()
-
+                mOnStart?.invoke()
+                acivRecordButton!!.animate()?.scaleX(1.6f)?.scaleY(1.6f)?.setDuration(200)?.start()
             }
             .onMoveHorizontally { view, absoluteX ->
                 LOG.debug("MOVABLE ON MOVE HORIZONTALLY: ${absoluteX}")
@@ -94,30 +98,30 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                 }
 
                 if(absoluteX < rlPathCancelX) {
-                    LOG.debug("CANCEL")
-                    mIsCancel = true
+                    LOG.debug("stop")
+                    mIsStop = true
 
                     movableView?.stopMovement()
                 }
             }
             .onStop {
                 LOG.debug("MOVABLE ON STOP")
+                acivRecordButton?.animate()?.translationX(0f)?.translationY(0f)?.start()
                 acivRecordButton?.animate()?.scaleX(1f)?.scaleY(1f)?.setDuration(200)?.start()
                 if(mIsLockReady) {
-                    mIsLockReady = false
                     lockState()
                     mOnLock?.invoke()
-
-                } else if(mIsCancel) {
-                    mIsCancel = false
-                    initialState()
-                    mOnCancel?.invoke()
-
-                } else {
+                    return@onStop
+                }
+                if(mIsStop) {
                     initialState()
                     mOnStop?.invoke()
+                    return@onStop
                 }
+                initialState()
+                mOnEnd?.invoke()
             }
+
             .build()
     }
 
@@ -130,12 +134,15 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     }
 
     fun stop() {
-        setTime(0)
-        movableView?.stopMovement()
+//        movableView?.stopMovement()
         initialState()
     }
 
+
     private fun initialState() {
+        mIsStop = false
+        mIsLockReady = false
+        setTime(0)
         flRecordButtonWrapper?.visibility = VISIBLE
         acetMessageInput?.visibility = VISIBLE
 
@@ -160,6 +167,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     }
 
     private fun lockState() {
+        mIsLockReady = false
         flRecordButtonWrapper?.visibility = INVISIBLE
         acetMessageInput?.visibility = INVISIBLE
 
@@ -169,6 +177,22 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
 
         acivButtonStop?.visibility = VISIBLE
         actvButtonCancel?.visibility = VISIBLE
+    }
+
+    fun start() {
+        recordingState()
+    }
+    private val MAX_RECORD_AMPLITUDE = 32768.0
+    private val interpolator = OvershootInterpolator()
+    fun setVolumeEffect(volume: Int, interValInMS: Long) {
+
+        val scale = min(11.0, volume / MAX_RECORD_AMPLITUDE + 1.0).toFloat()
+        LOG.debug("Scale = $scale")
+            lavMicrophone!!.animate()
+                    .scaleX(scale)
+                    .scaleY(scale)
+                    .setInterpolator(interpolator)
+                    .duration = interValInMS
     }
 }
 
@@ -194,7 +218,7 @@ class MovableViewBuilder {
     private var mOnMoveVertically: ((view: View, absoluteX: Float) -> Unit)? = null
     private var mOnStop: ((view: View) -> Unit)? = null
 
-    private var mDelay: Long? = null
+    private var mDelay: Long = 0
 
     private var mIsRuleLeftInitialized: Boolean = false
     private var mIsRuleTopInitialized: Boolean = false
@@ -248,41 +272,42 @@ class MovableViewBuilder {
 
     private fun start() {
         mIsReadyForMove = true
-        mOnStart?.invoke(mTargetView!!)
+        mOnStart?.invoke(getTargetView())
     }
 
     private fun stop() {
         mIsReadyForMove = false
-        mTargetView?.isPressed = false
-        mTargetView?.animate()?.translationX(0f)?.translationY(0f)?.start()
+        getTargetView().isPressed = false
+        mOnStop?.invoke(getTargetView())
+    }
+
+    private fun getTargetView(): View {
+        if(mTargetView == null)
+            throw Exception("Target View was not initialized")
+        return mTargetView!!
     }
 
     @SuppressLint("ClickableViewAccessibility")
     fun build(): MovableView {
-        if(mTargetView == null)
-            throw Exception("Target View was not initialized")
 
         var viewXStart: Int? = null
 //            var viewXEnd: Int
 
-        mTargetView!!.setOnTouchListener { _, event ->
+        getTargetView().setOnTouchListener { _, event ->
             mCurrentMotionEvent = event
             when(event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    mTargetView?.isPressed = true
-                    var viewUtil = ViewUtil(mTargetView!!)
+                    getTargetView().isPressed = true
+
+                    val viewUtil = ViewUtil(getTargetView())
                     viewXStart = viewUtil.getXStart()
 //                        viewXEnd = viewUtil.getXEnd()
 
-                    if(mDelay != null) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            if(mTargetView?.isPressed == true) {
-                                start()
-                            }
-                        }, mDelay!!)
-                    } else {
-                        start()
-                    }
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if(getTargetView().isPressed) {
+                            this.start()
+                        }
+                    }, mDelay)
 
                     true
                 }
@@ -296,8 +321,9 @@ class MovableViewBuilder {
                             dx = rawX - (viewXStart ?: 0)
 
                             if (dx < 10f) {
-                                mTargetView?.translationX = dx
-                                mOnMoveHorizontally?.invoke(mTargetView!!, rawX)
+                                getTargetView().translationX = dx
+
+                                mOnMoveHorizontally?.invoke(getTargetView(), rawX)
                             }
                         }
                     }
@@ -305,10 +331,10 @@ class MovableViewBuilder {
                 }
 
                 MotionEvent.ACTION_UP -> {
-                    mTargetView?.isPressed = false
+                    getTargetView().isPressed = false
                     if(mIsReadyForMove) {
                         stop()
-                        mOnStop?.invoke(mTargetView!!)
+                        // TODO: должно быть так//                        mOnStop.invoke(mTargetView!!)
                     }
                     false
                 }
@@ -317,7 +343,7 @@ class MovableViewBuilder {
             }
         }
 
-        return MovableView(mTargetView!!, ::stop)
+        return MovableView(getTargetView(), ::stop)
     }
 
     enum class MovementRule {
@@ -326,15 +352,15 @@ class MovableViewBuilder {
 }
 
 class ViewUtil(val targetView: View) {
-    private var mLocation: IntArray? = null
+    private var mLocationOnScreen: IntArray? = null
 
     private fun getLocationOnScreen(): IntArray {
-        if(mLocation != null) {
-            return mLocation!!
+        if(mLocationOnScreen != null) {
+            return mLocationOnScreen!!
         }
-        mLocation = IntArray(2)
-        targetView.getLocationOnScreen(mLocation)
-        return mLocation!!
+        mLocationOnScreen = IntArray(2)
+        targetView.getLocationOnScreen(mLocationOnScreen)
+        return mLocationOnScreen!!
     }
 
     fun getXStart(): Int {

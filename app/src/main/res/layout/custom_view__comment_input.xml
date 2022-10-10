@@ -24,10 +24,10 @@
             android:background="@drawable/bg_transparent"
             android:hint="Комментарий к площадке"
             android:maxLines="1"
-            android:textSize="14sp"
             android:paddingVertical="6dp"
             android:paddingStart="12dp"
-            android:paddingEnd="12dp" />
+            android:paddingEnd="12dp"
+            android:textSize="14sp" />
 
         <RelativeLayout
             android:id="@+id/rl__comment_input__path_cancel"
