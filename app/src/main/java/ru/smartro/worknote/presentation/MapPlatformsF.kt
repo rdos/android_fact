@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.*
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -47,9 +48,7 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.awORKOLDs.extensions.showAlertPlatformByPoint
-import ru.smartro.worknote.awORKOLDs.extensions.warningClearNavigator
+import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -76,6 +75,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mMapMyYandex: MapView
 
+    private lateinit var carFullStatusButton: FrameLayout
+    private lateinit var fuelStatusButton: FrameLayout
+    private lateinit var photoStatusButton: FrameLayout
 
     private val viewModel: ServePlatformVM by activityViewModels()
 
@@ -181,11 +183,12 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
         setInfoData()
 
-
-        val acbLogout = view.findViewById<AppCompatButton>(R.id.acb_f_map__logout)
-        acbLogout.setOnClickListener {
-            getAct().logout()
-        }
+        carFullStatusButton = view.findViewById(R.id.fl__f_map__car)
+        carFullStatusButton.setOnClickListener { getAct().showDlgWarning(WarningType.CAR_LOCKED) }
+        fuelStatusButton = view.findViewById(R.id.fl__f_map__fuel)
+        fuelStatusButton.setOnClickListener { getAct().showDlgWarning(WarningType.FUEL_LOCKED) }
+        photoStatusButton = view.findViewById(R.id.fl__f_map__photo)
+        photoStatusButton.setOnClickListener { getAct().showDlgWarning(WarningType.PHOTO_LOCKED) }
 
         initBottomBehavior(view)
 
@@ -207,12 +210,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             }
         }
 
-        val fabDebug = view.findViewById<FloatingActionButton>(R.id.fab_f_map__debug)
-        fabDebug.setOnClickListener {
-            navigateMain(R.id.DebugFragment, null)
-//            startActivity(Intent(getAct(), DebugAct::class.java))
-        }
-
         acibNavigatorToggle = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__navigator_toggle)
         acibNavigatorToggle?.setOnClickListener {
             drivingModeState = false
@@ -223,7 +220,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         val acibGotoLogActMapAPIB = view.findViewById<AppCompatImageButton>(R.id.goto_log__f_map__apib)
         acibGotoLogActMapAPIB.setOnClickListener {
             navigateMain(R.id.JournalChatFragment, null)
-            //            startActivity(Intent(getAct(), JournalChatAct::class.java))
         }
 
         mDrivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
@@ -254,6 +250,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
                     //            lottie.progress = 0.5f
                     //        }
 //        setDevelMode()
+
         viewModel.todoLiveData.observe(viewLifecycleOwner) {
             if (it.coordLat == Dnull) {
                 // TODO: !!факТ)
@@ -512,6 +509,28 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         val inflater = LayoutInflater.from(getAct())
         val view = inflater.inflate(R.layout.f_map__workorder_info, null)
         // TODO:
+
+        val logoutButton = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__workorder_info__logout)
+        logoutButton.setOnClickListener {
+            getAct().showDlgLogout().let { view ->
+                val btnYes = view.findViewById<AppCompatButton>(R.id.acb__act_xchecklist__dialog_logout__yes)
+                val btnNo = view.findViewById<AppCompatButton>(R.id.acb__act_xchecklist__dialog_logout__no)
+                btnYes.setOnClickListener {
+                    result.dismiss()
+                    getAct().logout()
+                }
+                btnNo.setOnClickListener {
+                    hideDialog()
+                }
+            }
+        }
+
+        val debugButton = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__workorder_info__debug)
+        debugButton.setOnClickListener {
+            navigateMain(R.id.DebugFragment, null)
+            result.dismiss()
+        }
+
         val workOrderS = getActualWorkOrderS(true, isFilterMode = false)
 //            var infoText = "**Статистика**\n"
         val rvInfo = view.findViewById<RecyclerView>(R.id.rv_f_map__workorder_info)
