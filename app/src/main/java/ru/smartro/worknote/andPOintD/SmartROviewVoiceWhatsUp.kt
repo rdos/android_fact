@@ -15,7 +15,9 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import ch.qos.logback.classic.turbo.MDCValueLevelPair
 import com.airbnb.lottie.LottieAnimationView
+import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import kotlin.math.min
@@ -37,11 +39,10 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     private var rlPathCancel: RelativeLayout? = null
     private var rlPathLock: RelativeLayout? = null
 
-    private var movableView: MovableView? = null
-
     private val rlPathCancelX: Int by lazy { ViewUtil(rlPathCancel!!).getXStart() }
     private val rlPathLockX: Int by lazy { ViewUtil(rlPathLock!!).getXStart() }
 
+    private var movableViewBuilder: MovableViewBuilder? = null
 
         //todo: мне кажется
     private var mIsLockReady = false
@@ -76,11 +77,11 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
             mOnStop?.invoke()
         }
 
-        movableView = MovableViewBuilder()
+        movableViewBuilder = MovableViewBuilder()
             .setTargetView(acivRecordButton!!)
             .setMovementRules(MovableViewBuilder.MovementRule.LEFT)
             .setDelay(200)
-            .onStart {
+            .onMoveStart {
                 LOG.debug("MOVABLE ON START")
                 mOnStart?.invoke()
                 acivRecordButton!!.animate()?.scaleX(1.6f)?.scaleY(1.6f)?.setDuration(200)?.start()
@@ -90,6 +91,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                 if(!mIsLockReady && absoluteX > (rlPathLockX - 30f) && absoluteX < (rlPathLockX + 30f)) {
                     LOG.debug("LOCK")
                     mIsLockReady = true
+                    App.getAppliCation().startVibrateServiceHaptic()
                 }
 
                 if(mIsLockReady && absoluteX < (rlPathLockX - 50f) || absoluteX > (rlPathLockX + 50f)) {
@@ -101,28 +103,27 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                     LOG.debug("stop")
                     mIsStop = true
 
-                    movableView?.stopMovement()
+                    movableViewBuilder?.stopMove()
                 }
             }
-            .onStop {
+            .onMoveEnd {
                 LOG.debug("MOVABLE ON STOP")
                 acivRecordButton?.animate()?.translationX(0f)?.translationY(0f)?.start()
                 acivRecordButton?.animate()?.scaleX(1f)?.scaleY(1f)?.setDuration(200)?.start()
                 if(mIsLockReady) {
                     lockState()
                     mOnLock?.invoke()
-                    return@onStop
+                    return@onMoveEnd
                 }
                 if(mIsStop) {
                     initialState()
                     mOnStop?.invoke()
-                    return@onStop
+                    return@onMoveEnd
                 }
                 initialState()
                 mOnEnd?.invoke()
             }
-
-            .build()
+        movableViewBuilder?.apply()
     }
 
     fun setTime(timeInMS: Long) {
@@ -196,27 +197,19 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     }
 }
 
-class MovableView(
-    val targetView: View,
-    private var onStop: (() -> Unit)
-) {
-    fun stopMovement() {
-        onStop()
-    }
-}
-
 class MovableViewBuilder {
-
     private var mTargetView: View? = null
 
-    private var mOnStart: ((view: View) -> Unit)? = null
-    private var mOnMoveLeft: ((view: View, absoluteX: Float) -> Unit)? = null
-    private var mOnMoveRight: ((view: View, absoluteX: Float) -> Unit)? = null
+    private var mOnMoveStart: ((view: View) -> Unit)? = null
     private var mOnMoveHorizontally: ((view: View, absoluteX: Float) -> Unit)? = null
-    private var mOnMoveTop: ((view: View, absoluteX: Float) -> Unit)? = null
-    private var mOnMoveBottom: ((view: View, absoluteX: Float) -> Unit)? = null
-    private var mOnMoveVertically: ((view: View, absoluteX: Float) -> Unit)? = null
-    private var mOnStop: ((view: View) -> Unit)? = null
+    private var mOnMoveEnd: ((view: View) -> Unit)? = null
+
+    // TODO:: VT : TO BE CONTINUED)
+//    private var mOnMoveLeft: ((view: View, absoluteX: Float) -> Unit)? = null
+//    private var mOnMoveRight: ((view: View, absoluteX: Float) -> Unit)? = null
+//    private var mOnMoveTop: ((view: View, absoluteX: Float) -> Unit)? = null
+//    private var mOnMoveBottom: ((view: View, absoluteX: Float) -> Unit)? = null
+//    private var mOnMoveVertically: ((view: View, absoluteX: Float) -> Unit)? = null
 
     private var mDelay: Long = 0
 
@@ -255,8 +248,8 @@ class MovableViewBuilder {
         return this
     }
 
-    fun onStart(callback: (view: View) -> Unit): MovableViewBuilder {
-        mOnStart = callback
+    fun onMoveStart(callback: (view: View) -> Unit): MovableViewBuilder {
+        mOnMoveStart = callback
         return this
     }
 
@@ -265,20 +258,20 @@ class MovableViewBuilder {
         return this
     }
 
-    fun onStop(callback: (view: View) -> Unit): MovableViewBuilder {
-        mOnStop = callback
+    fun onMoveEnd(callback: (view: View) -> Unit): MovableViewBuilder {
+        mOnMoveEnd = callback
         return this
     }
 
-    private fun start() {
+    private fun startMove() {
         mIsReadyForMove = true
-        mOnStart?.invoke(getTargetView())
+        mOnMoveStart?.invoke(getTargetView())
     }
 
-    private fun stop() {
+    fun stopMove() {
         mIsReadyForMove = false
         getTargetView().isPressed = false
-        mOnStop?.invoke(getTargetView())
+        mOnMoveEnd?.invoke(getTargetView())
     }
 
     private fun getTargetView(): View {
@@ -288,7 +281,7 @@ class MovableViewBuilder {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    fun build(): MovableView {
+    fun apply() {
 
         var viewXStart: Int? = null
 //            var viewXEnd: Int
@@ -305,7 +298,7 @@ class MovableViewBuilder {
 
                     Handler(Looper.getMainLooper()).postDelayed({
                         if(getTargetView().isPressed) {
-                            this.start()
+                            this.startMove()
                         }
                     }, mDelay)
 
@@ -333,8 +326,8 @@ class MovableViewBuilder {
                 MotionEvent.ACTION_UP -> {
                     getTargetView().isPressed = false
                     if(mIsReadyForMove) {
-                        stop()
-                        // TODO: должно быть так//                        mOnStop.invoke(mTargetView!!)
+                        stopMove()
+                        // TODO: должно быть так//  mOnStop.invoke(mTargetView!!)
                     }
                     false
                 }
@@ -342,8 +335,6 @@ class MovableViewBuilder {
                 else -> false
             }
         }
-
-        return MovableView(getTargetView(), ::stop)
     }
 
     enum class MovementRule {
@@ -369,5 +360,13 @@ class ViewUtil(val targetView: View) {
 
     fun getXEnd(): Int {
         return getXStart() + targetView.width
+    }
+
+    fun getYStart(): Int {
+        return getLocationOnScreen()[1]
+    }
+
+    fun getYEnd(): Int {
+        return getYStart() + targetView.height
     }
 }

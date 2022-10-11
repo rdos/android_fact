@@ -4,9 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.CountDownTimer
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.util.AttributeSet
+import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -14,6 +13,7 @@ import androidx.core.net.toUri
 import com.airbnb.lottie.LottieAnimationView
 import com.masoudss.lib.SeekBarOnProgressChanged
 import com.masoudss.lib.WaveformSeekBar
+import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import java.io.File
@@ -27,9 +27,6 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
 
     private val ANIMATION_SPEED = 2.2f
     private var mediaPlayer: MediaPlayer? = null
-
-    private var vibrator: Vibrator? = null
-    private var vibrationEffect = VibrationEffect.createOneShot(200, 162)
 
     private var timer = Timer()
 
@@ -68,7 +65,7 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
 
     private fun stop() {
         LOG.debug("STOP")
-        vibrator?.vibrate(vibrationEffect)
+        App.getAppliCation().startVibrateService()
         timer.cancel()
         setTime(mediaPlayer?.duration?.toLong() ?: 0)
         playButton?.pauseAnimation()
@@ -79,8 +76,6 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
 
     init {
         inflate(getContext(), R.layout.custom_view__voice_comment_player, this)
-
-        vibrator = getContext().applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         recordTime = findViewById(R.id.actv__voice_comment_player__time)
         playButton = findViewById(R.id.lav__voice_comment_player__play_button)
@@ -97,10 +92,12 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
                     if(mediaPlayer?.isPlaying == true) {
                         mediaPlayer?.pause()
                         mediaPlayer?.seekTo(currentMS.toInt())
+                        setTime(currentMS.toLong())
                         mediaPlayer?.start()
                         getTimer().start()
                     } else {
                         mediaPlayer?.seekTo(currentMS.toInt())
+                        setTime(currentMS.toLong())
                     }
                 }
             }
@@ -109,20 +106,11 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
         playButton?.setOnClickListener {
             // PAUSE
             if(state == VoiceCommentPlayerState.PLAY) {
-                listener?.onPause()
                 mediaPlayer?.pause()
                 playButton?.speed = -ANIMATION_SPEED
                 playButton?.playAnimation()
                 state = VoiceCommentPlayerState.PAUSE
                 return@setOnClickListener
-            }
-            // START
-            if(state == VoiceCommentPlayerState.IDLE) {
-                listener?.onStart()
-            }
-            // RESUME
-            if(state == VoiceCommentPlayerState.PAUSE) {
-                listener?.onResume()
             }
 
             mediaPlayer?.start()
@@ -134,13 +122,35 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
             state = VoiceCommentPlayerState.PLAY
         }
 
-        trashButton?.setOnClickListener {
-            listener?.onDelete()
-            mediaPlayer?.stop()
-            mediaPlayer?.release()
-            playButton?.speed = 1f
-            playButton?.progress = 0f
-            state = VoiceCommentPlayerState.IDLE
+        trashButton?.setOnTouchListener { v, event ->
+            when(event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    trashButton?.setImageResource(R.drawable.ic_trashcan_red)
+                }
+                MotionEvent.ACTION_UP -> {
+                    trashButton?.setImageResource(R.drawable.ic_trashcan)
+
+                    val trashButtonUtil = ViewUtil(trashButton!!)
+                    val trashButtonXStart = trashButtonUtil.getXStart()
+                    val trashButtonXEnd = trashButtonUtil.getXEnd()
+                    val trashButtonYStart = trashButtonUtil.getYStart()
+                    val trashButtonYEnd = trashButtonUtil.getYEnd()
+                    // Если палец подняли над иконкой - произвести нажатие
+                    if(
+                        event.rawX >= trashButtonXStart && event.rawX <= trashButtonXEnd &&
+                        event.rawY >= trashButtonYStart && event.rawY <= trashButtonYEnd
+                    ) {
+                        App.getAppliCation().startVibrateServiceHaptic()
+                        listener?.onClickDelete()
+                        mediaPlayer?.stop()
+                        mediaPlayer?.release()
+                        playButton?.speed = 1f
+                        playButton?.progress = 0f
+                        state = VoiceCommentPlayerState.IDLE
+                    }
+                }
+            }
+            false
         }
 
     }
@@ -156,6 +166,7 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
             override fun onTick(millisUntilFinished: Long) {
                 val currentPos = mediaPlayer?.currentPosition ?: 0
                 waveformSeekBar?.progress = ((currentPos / duration.toFloat()) * 105)
+                setTime(currentPos.toLong())
             }
 
             override fun onFinish() {
@@ -179,9 +190,6 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
     }
 
     interface VoiceCommentPlayerEvents {
-        fun onStart()
-        fun onPause()
-        fun onResume()
-        fun onDelete()
+        fun onClickDelete()
     }
 }

@@ -49,24 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         val voiceCommentPlayer = findViewById<SmartROviewVoicePlayer>(R.id.voice_message_content)
         val commentInput = findViewById<SmartROviewVoiceWhatsUp>(R.id.voice_message_view)
-        val voiceCommentHandler = VoiceComment(object : VoiceComment.IVoiceComment {
-            override fun onStartVoiceComment() {
 
-            }
-
-            override fun onStopVoiceComment() {
-
-            }
-
-            override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long) {
-                commentInput.setTime(timeInMS)
-            }
-
-            override fun onVoiceCommentSave(soundF: File) {
-                voiceCommentPlayer?.visibility = View.VISIBLE
-                voiceCommentPlayer?.setAudio(this@MainActivity, soundF)
-            }
-        })
 
         val  toggleBtn  = findViewById<AppCompatButton>(R.id.toggleBtn)
         toggleBtn.setOnClickListener {
@@ -103,19 +86,8 @@ class MainActivity : AppCompatActivity() {
 
         voiceCommentPlayer.apply {
             listener = object : SmartROviewVoicePlayer.VoiceCommentPlayerEvents {
-                override fun onStart() {
-                    LOG.debug("onStart")
-                }
 
-                override fun onPause() {
-                    LOG.debug("onPause")
-                }
-
-                override fun onResume() {
-                    LOG.debug("onResume")
-                }
-
-                override fun onDelete() {
+                override fun onClickDelete() {
                     LOG.debug("onDelete")
                     this@apply.visibility = View.GONE
                     // TODO::: Remove file??

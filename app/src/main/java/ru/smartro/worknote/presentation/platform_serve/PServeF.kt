@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
+import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
@@ -116,10 +117,6 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
             mVoiceComment?.stop()
         }
 
-          // DISABLING SWIPE MOTION ON SWITCH
-//        srosToGroupByFMode?.setOnTouchListener { v, event ->
-//            event.actionMasked == MotionEvent.ACTION_MOVE
-//        }
         sscToGroupByFMode?.setOnCheckedChangeListener { _, _ ->
             // TODO: !!!
             val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
@@ -127,7 +124,6 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
             vm.database.saveConfig(configEntity)
             navigateMain(R.id.PServeGroupByContainersF, vm.getPlatformId())
         }
-        ////////////////////////////////////////////
 
         tvPlatformSrpId?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
 
@@ -199,12 +195,6 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
         } else {
             sscToGroupByFMode?.visibility = View.VISIBLE
         }
-
-//        if(platformServeMode != null) {
-//            if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-//                navigateMain(R.id.PServeGroupByContainersF)
-//            }
-//        }
 
         val containers = vm.getContainerS()
 
@@ -280,53 +270,15 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
             })
         }
 
-        srvVoiceWhatsUp?.apply {
-//            mCallBack = object : SmartROviewVoiceWhatsUp.CommentInputEvents {
-//                override fun onStart() {
-//                    if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-//                        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.RECORD_AUDIO), 101)
-//                    } else {
-//                        voiceCommentHandler?.startRecording()
-//                    }
-//                }
-//
-//                override fun onStop() {
-//                    voiceCommentHandler?.end()
-//                }
-//
-//                override fun onCancel() {
-//                    voiceCommentHandler?.stop()
-//                }
-//
-//                override fun onLock() {
-//                    LOG.debug("onLock!!!")
-//                    // TODO::: INCREASE ALLOWED RECORD TIME
-//                }
-//            }
-        }
-
         srvVoicePlayer?.apply {
             listener = object : SmartROviewVoicePlayer.VoiceCommentPlayerEvents {
-                override fun onStart() {
-                    LOG.debug("before")
-                }
-
-                override fun onPause() {
-                    LOG.debug("before")
-                }
-
-                override fun onResume() {
-                    LOG.debug("before")
-                }
-
-                override fun onDelete() {
+                override fun onClickDelete() {
                     LOG.debug("before")
                     val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
                     vm.removeVoiceComment(platformVoiceCommentEntity)
                     srvVoicePlayer?.release()
                     srvVoicePlayer?.visibility = View.GONE
                 }
-
             }
         }
 
@@ -539,10 +491,12 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
     override fun onStartVoiceComment() {
         srvVoiceWhatsUp?.start()
+        App.getAppliCation().startVibrateService()
     }
 
     override fun onStopVoiceComment() {
         srvVoiceWhatsUp?.stop()
+        App.getAppliCation().startVibrateService()
     }
 
     override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long, interValInMS: Long){
@@ -557,7 +511,7 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
         val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
         platformVoiceCommentEntity.voiceByteArray = byteArray
         vm.addVoiceComment(platformVoiceCommentEntity)
-        srvVoicePlayer?.setAudio(requireContext(), soundF)
+        requireContext()
     }
 
     /********************************************************************************************************************

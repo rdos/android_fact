@@ -15,6 +15,7 @@ import android.os.*
 import android.os.StrictMode.ThreadPolicy
 import android.widget.RemoteViews
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
@@ -376,12 +377,25 @@ class App : AApp() {
         //gjпох
     }
 
-    fun startVibrateService() {
+    fun startVibrateService(ms: Long = 80, amplitude: Int = 80) {
         val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
         // Vibrate for 500 milliseconds
         //private var vibrationEffect = VibrationEffect.createOneShot(100, 128)
-        val ve = VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
+        val ve = VibrationEffect.createOneShot(ms, amplitude)
         v.vibrate(ve)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun startVibrateServicePredefined(predefined: Int) {
+        val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        v.vibrate(VibrationEffect.createPredefined(predefined))
+    }
+
+    fun startVibrateServiceHaptic() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            startVibrateServicePredefined(VibrationEffect.EFFECT_HEAVY_CLICK)
+        else
+            startVibrateService()
     }
 
     fun showNotification(pendingIntent: PendingIntent, contentText: String, title: String) {

@@ -12,6 +12,8 @@
         android:id="@+id/aciv__voice_comment_player__remove_button"
         android:layout_width="24dp" android:layout_height="24dp"
         android:src="@drawable/ic_trashcan"
+        android:focusable="true"
+        android:clickable="true"
         android:layout_marginEnd="8dp"
         />
 
