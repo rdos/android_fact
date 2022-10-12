@@ -377,7 +377,7 @@ class App : AApp() {
         //gjпох
     }
 
-    fun startVibrateService(ms: Long = 80, amplitude: Int = 80) {
+    fun startVibrateService(ms: Long = 80, amplitude: Int = 160) {
         val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
         // Vibrate for 500 milliseconds
         //private var vibrationEffect = VibrationEffect.createOneShot(100, 128)
