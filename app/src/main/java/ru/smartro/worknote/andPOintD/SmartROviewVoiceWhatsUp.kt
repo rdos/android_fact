@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -15,7 +16,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
-import ch.qos.logback.classic.turbo.MDCValueLevelPair
+import androidx.core.widget.addTextChangedListener
 import com.airbnb.lottie.LottieAnimationView
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
@@ -48,15 +49,25 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     private var mIsLockReady = false
     private var mIsStop = false
 
-    var mOnStart: (() -> Unit)? = null
-    var mOnLock: (() -> Unit)? = null
-    var mOnEnd: (() -> Unit)? = null
-    var mOnStop: (() -> Unit)? = null
+    var mOnStartRecording: (() -> Unit)? = null
+    var mOnLockRecording: (() -> Unit)? = null
+    // stop)
+    var mOnEndRecording: (() -> Unit)? = null
+    // cancel))
+    var mOnStopRecording: (() -> Unit)? = null
+
+    var mOnTextCommentChange: ((newText: String) -> Unit)? = null
+
+    fun setTextComment(comment: String?) {
+        if(comment != null) {
+            acetMessageInput?.setText(comment)
+        }
+    }
 
     init {
         inflate(getContext(), R.layout.custom_view__comment_input, this)
 
-        lavMicrophone = findViewById<LottieAnimationView>(R.id.lav__comment_input__recording_animated_icon)
+        lavMicrophone = findViewById(R.id.lav__comment_input__recording_animated_icon)
         rlPathCancel = findViewById(R.id.rl__comment_input__path_cancel)
         rlPathLock = findViewById(R.id.rl__comment_input__path_lock)
         acetMessageInput = findViewById(R.id.acet__comment_input__message_input)
@@ -67,14 +78,18 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
         acivButtonStop = findViewById(R.id.aciv__comment_input__stop_button)
         actvButtonCancel = findViewById(R.id.actv__comment_input__cancel_button)
 
+        acetMessageInput?.addTextChangedListener {
+            mOnTextCommentChange?.invoke(it?.toString() ?: "")
+        }
+
         initialState()
 
         acivButtonStop?.setOnClickListener {
-            mOnEnd?.invoke()
+            mOnEndRecording?.invoke()
         }
 
         actvButtonCancel?.setOnClickListener {
-            mOnStop?.invoke()
+            mOnStopRecording?.invoke()
         }
 
         movableViewBuilder = MovableViewBuilder()
@@ -83,7 +98,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
             .setDelay(200)
             .onMoveStart {
                 LOG.debug("MOVABLE ON START")
-                mOnStart?.invoke()
+                mOnStartRecording?.invoke()
                 acivRecordButton!!.animate()?.scaleX(1.6f)?.scaleY(1.6f)?.setDuration(200)?.start()
             }
             .onMoveHorizontally { view, absoluteX ->
@@ -112,16 +127,16 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                 acivRecordButton?.animate()?.scaleX(1f)?.scaleY(1f)?.setDuration(200)?.start()
                 if(mIsLockReady) {
                     lockState()
-                    mOnLock?.invoke()
+                    mOnLockRecording?.invoke()
                     return@onMoveEnd
                 }
                 if(mIsStop) {
                     initialState()
-                    mOnStop?.invoke()
+                    mOnStopRecording?.invoke()
                     return@onMoveEnd
                 }
                 initialState()
-                mOnEnd?.invoke()
+                mOnEndRecording?.invoke()
             }
         movableViewBuilder?.apply()
     }

@@ -105,16 +105,20 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
         srvVoiceWhatsUp = sview.findViewById(R.id.srv__f_pserve__comment_input)
 
-        srvVoiceWhatsUp?.mOnStart = {
+        srvVoiceWhatsUp?.mOnStartRecording = {
             mVoiceComment = VoiceComment(this)
         }
 
-        srvVoiceWhatsUp?.mOnEnd = {
+        srvVoiceWhatsUp?.mOnEndRecording = {
             mVoiceComment?.end()
         }
 
-        srvVoiceWhatsUp?.mOnStop ={
+        srvVoiceWhatsUp?.mOnStopRecording = {
             mVoiceComment?.stop()
+        }
+
+        srvVoiceWhatsUp?.mOnTextCommentChange = { newText ->
+            vm.updatePlatformComment(newText)
         }
 
         sscToGroupByFMode?.setOnCheckedChangeListener { _, _ ->
@@ -197,6 +201,8 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
         }
 
         val containers = vm.getContainerS()
+
+        srvVoiceWhatsUp?.setTextComment(_PlatformEntity.comment)
 
 //        todo: !!!!
         mContainersAdapter?.change(containers)

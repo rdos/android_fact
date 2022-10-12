@@ -234,6 +234,10 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 //        getPlatformEntity(platformId)
     }
 
+    fun updatePlatformComment(comment: String) {
+        database.updatePlatformComment(this.getPlatformId(), comment)
+    }
+
     fun updateContainerComment(containerId: Int, comment: String?) {
         database.updateContainerComment(this.getPlatformId(), containerId, comment)
 //        set_PlatformLiveData()

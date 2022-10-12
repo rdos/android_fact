@@ -371,6 +371,16 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun updatePlatformComment(platformId: Int, comment: String) {
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            platform.comment = comment
+            setEntityUpdateAt(platform)
+        }
+    }
+
     fun updatePlatformStatusSuccess(platformId: Int) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform().equalTo("platformId", platformId)

@@ -102,6 +102,10 @@ abstract class APhotoFragment(
         return false
     }
 
+    protected fun setCommentText(comment: String) {
+        acetComment?.setText(comment)
+    }
+
     protected fun getCommentText(): String {
         return acetComment?.text.toString()
     }

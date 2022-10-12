@@ -367,6 +367,9 @@ open class PlatformEntity(
     var voiceComment: String? = null,
 
     @Expose
+    var comment: String? = null,
+
+    @Expose
     @SerializedName("status")
     var status: String? = Snull,
     @Expose

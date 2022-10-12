@@ -13,11 +13,11 @@ import java.io.File
 class PhotoFailureMediaContainerF : APhotoFragment() {
     private var mFailReasonS: List<String>? = null
     private val mContainerId: Int
-    get() = getArgumentID()
+        get() = getArgumentID()
     private val mContainerMediaEntity: ContainerMediaEntity
-    get() {
-        return viewModel.getContainerMediaEntity(mContainerId)
-    }
+        get() {
+            return viewModel.getContainerMediaEntity(mContainerId)
+        }
     override fun onGetTextForFailHint() = "Причина невывоза контейнера"
     override fun onGetStringList(): List<String>? {
         mFailReasonS = viewModel.getFailReasonS()
@@ -42,9 +42,6 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
 
     override fun onBeforeUSE() {
         tvLabelFor(requireView())
-//        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
-//            mPlatformEntity = it
-//        }
     }
 
     override fun onSavePhoto() {
