@@ -1,12 +1,23 @@
 package ru.smartro.worknote.presentation.ac
 
+import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.core.os.UserManagerCompat
+import io.realm.Realm
+import ru.smartro.worknote.work.ConfigName
+import ru.smartro.worknote.work.RealmRepository
 
 class BootBroadcastReceiver : BroadcastReceiver() {
+
+    private val db: RealmRepository by lazy {
+        RealmRepository(Realm.getDefaultInstance())
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         val bootCompleted: Boolean
         val action = intent.action
@@ -15,9 +26,12 @@ class BootBroadcastReceiver : BroadcastReceiver() {
         if (!bootCompleted) {
             return
         }
-
-        val serviceIntent = Intent(context, BootIntentService::class.java)
-        context.startService(serviceIntent)
+        Log.w(TAG, "onReceive")
+        val configEntity = db.loadConfig(ConfigName.BOOT_CNT)
+        configEntity.cntPlusOne()
+        db.saveConfig(configEntity)
+        db.close()
+//        TODO("Not yet implemented")
     }
 
     companion object {

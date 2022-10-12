@@ -11,7 +11,14 @@ import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.*
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.widget.RemoteViews
 import android.widget.Toast
@@ -22,6 +29,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -49,6 +57,8 @@ import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.andPOintD.AndRoid
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
+import ru.smartro.worknote.awORKOLDs.extensions.WarningType
+import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
@@ -60,8 +70,8 @@ import ru.smartro.worknote.work.RealmRepository
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashSet
 
 
 //INSTANCE
@@ -73,7 +83,62 @@ const val D__LOGS = "logs"
 const val D__R_DOS = "r_dos"
 const val D__FILES = "files"
 
+class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
+    private var mNetworkCallback: ConnectivityManager.NetworkCallback? = null
+    private val cm = context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
+    private val validNetworks: MutableSet<Network> = HashSet()
+
+    private fun checkValidNetworks() {
+        postValue(validNetworks.size > 0)
+    }
+
+    override fun onActive() {
+        mNetworkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                val networkCapabilities = cm.getNetworkCapabilities(network)
+                val isInternet = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                if(isInternet == true) {
+                    LOG.debug("ADDING")
+                    validNetworks.add(network)
+                }
+                checkValidNetworks()
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                validNetworks.remove(network)
+                checkValidNetworks()
+            }
+        }
+
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .build()
+
+        if(mNetworkCallback != null)
+            cm.registerNetworkCallback(networkRequest, mNetworkCallback!!)
+    }
+
+    override fun onInactive() {
+        if(mNetworkCallback != null)
+            cm.unregisterNetworkCallback(mNetworkCallback!!)
+    }
+}
+
 class App : AApp() {
+
+    private var mCurrentAct: AAct? = null
+    private lateinit var connectionLiveData: ConnectionLiveData
+
+    fun setCurrentAct(aAct: AAct?) {
+        mCurrentAct = aAct
+    }
+
+    fun getCurrentAct(): AAct? {
+        return mCurrentAct
+    }
 
     companion object {
 //        internal lateinit var INSTANCE: App
@@ -92,7 +157,6 @@ class App : AApp() {
 
     private var mNetworkDat: NetworkRepository? = null
     private var mDB: RealmRepository? = null
-    var LASTact: AAct? = null
 
     val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -166,7 +230,12 @@ class App : AApp() {
             throw throwable
         }
 
-
+        connectionLiveData = ConnectionLiveData(applicationContext)
+        connectionLiveData.observeForever {
+            if(it == false) {
+                mCurrentAct?.showDlgWarning(WarningType.CONNECTION_LOST)
+            }
+        }
 
 //        val context = LoggerFactory.getILoggerFactory() as LoggerContext
 //        for (logger in context.loggerList) {
@@ -205,18 +274,7 @@ class App : AApp() {
 
         LOG.info("DEBUG::: Current Realm Schema Version : ${Realm.getDefaultInstance().version}")
 
-        registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
-
-
-
-// todo: https://developer.android.com/training/monitoring-device-state/connectivity-status-type
-//        val networkRequest = NetworkRequest.Builder()
-//            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-//            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-//            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-//            .build()
-//        val connectivityManager = getSystemService(ConnectivityManager::class.java) as ConnectivityManager
-//        connectivityManager.requestNetwork(networkRequest, networkCallback)
+        registerReceiver(mAirplaneModeStateReceiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
     }
 
     private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){
@@ -332,12 +390,12 @@ class App : AApp() {
 //                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
                     getAppParaMS().saveLastGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY.LET)
                     try {
-                        if (LASTact is MainAct) {
-                            LASTact?.onNewGPS()
+                        if (mCurrentAct is MainAct) {
+                            mCurrentAct?.onNewGPS()
                         }
                     } catch (ex: Exception) {
-                        logSentry("Exception!!! LASTact?.onNEWfromGPSSrv()")
-                        LOG.debug("Exception!!! LASTact?.onNEWfromGPSSrv()")
+                        logSentry("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
+                        LOG.debug("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
                     }
 //                }
             }
@@ -632,7 +690,7 @@ class App : AApp() {
         }
         return App.getAppParaMS().isModeDEVEL
     }
-    private val receiver by lazy { getAirplaneModeBroadcastReceiver() }
+    private val mAirplaneModeStateReceiver by lazy { getAirplaneModeBroadcastReceiver() }
 
     private fun getAirplaneModeBroadcastReceiver(): BroadcastReceiver {
         return object : BroadcastReceiver() {
@@ -643,11 +701,14 @@ class App : AApp() {
                     val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
                     serviceIntent.putExtra("isAirplaneModeEnabled", isAirplaneModeEnabled)
                     context.startService(serviceIntent)
+
+                    if (isAirplaneModeEnabled) {
+                        mCurrentAct?.showDlgWarning(WarningType.AIRPLANE_MODE)
+                    }
                 }
             }
         }
     }
-
 }
 
 const val TIME_OUT = 240000L
@@ -657,7 +718,7 @@ const val NOTIFICATION_CHANNEL_ID__MAP_ACT = "FACT_APP_CH_ID"
 //DownloadManager
 //WorkManager
 
-//AlarmManager
+//AlarmMan
 val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
 //    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
@@ -704,9 +765,11 @@ fun Any.getDeviceDateTime(): Date {
 
 fun Fragment.toast(text: String? = "") {
     try {
-        Toast.makeText(this.context, text, Toast.LENGTH_SHORT).show()
-    } catch (e: Exception) {
-
+        this.view?.post{
+            Toast.makeText(this.context, text, Toast.LENGTH_SHORT).show()
+        }
+    } catch (ex: Exception) {
+        LOG.error("eXthr", ex)
     }
 
 }

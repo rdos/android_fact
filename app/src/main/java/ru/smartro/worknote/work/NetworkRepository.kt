@@ -4,14 +4,20 @@ package ru.smartro.worknote.work
 
 import android.content.Context
 import android.os.Build
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
 import androidx.lifecycle.liveData
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.realm.Realm
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
+import okhttp3.Callback
 import retrofit2.Response
-import ru.smartro.worknote.*
+import ru.smartro.worknote.App
+import ru.smartro.worknote.BuildConfig
+import ru.smartro.worknote.LOG
+import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.PostExample
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
@@ -300,6 +306,21 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
+    fun sendLastPlatforms(body: SynchronizeBody, callBack: Callback) {
+        LOG.info( "sendLastPlatforms.before")
+
+        val builder = GsonBuilder()
+        builder.excludeFieldsWithoutExposeAnnotation()
+        val gson = builder.create()
+        val bodyInStringFormat = gson.toJson(body)
+        saveJSON(bodyInStringFormat, "sendLastPlatforms")
+        
+        val example = PostExample()
+        val URL = BuildConfig.URL__SMARTRO + "fact/synchro"
+        example.post(URL, bodyInStringFormat, callBack)
+    }
+
+
     suspend fun postSynchro(body: SynchronizeBody): Resource<SynchronizeResponse> {
         LOG.info( "synchronizeData.before")
 
@@ -340,27 +361,6 @@ class NetworkRepository(private val context: Context) {
         }
         LOG.info("postSynchro.result=${result.status}")
         return result
-    }
-
-    fun sendLastPlatforms(body: SynchronizeBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info( "sendLastPlatforms.before")
-
-        try {
-            val response = RetrofitClient(context).apiService(true).postSynchro(body)
-            LOG.debug("sendLastPlatforms.after ${response.body().toString()}")
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestPOSTsynchro(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
     }
 
     suspend fun getOwners() = RetrofitClient(context).apiService(false).getOwners()
