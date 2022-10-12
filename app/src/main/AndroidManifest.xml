@@ -54,11 +54,6 @@
             android:screenOrientation="portrait"
             >
         </activity>
-        <activity  android:exported="true"
-            android:name="ru.smartro.worknote.presentation.ac.MainActivity"
-            android:screenOrientation="portrait"
-            >
-        </activity>
         <!-- Voice Recognition Samples -->
         <!--отказ-->
         <!--<activity android:name=".app.VoiceRecognition" android:label="@string/voice_recognition">-->

@@ -1,10 +1,9 @@
-package ru.smartro.worknote.andPOintD
+package ru.smartro.worknote.andPOintD.swipebtn
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -22,7 +21,7 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import kotlin.math.min
-
+//todo: ::: https://github.com/ebanx/swipe-button.git
 class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -65,18 +64,18 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     }
 
     init {
-        inflate(getContext(), R.layout.custom_view__comment_input, this)
+        inflate(getContext(), R.layout.smartro_view_voicewhatsup, this)
 
-        lavMicrophone = findViewById(R.id.lav__comment_input__recording_animated_icon)
-        rlPathCancel = findViewById(R.id.rl__comment_input__path_cancel)
-        rlPathLock = findViewById(R.id.rl__comment_input__path_lock)
-        acetMessageInput = findViewById(R.id.acet__comment_input__message_input)
-        llcRecordInfo = findViewById(R.id.llc__comment_input__record_info)
-        actvRecordTime = findViewById(R.id.actv__comment_input__record_time)
-        acivRecordButton = findViewById(R.id.aciv__comment_input__rec_start)
-        flRecordButtonWrapper = findViewById(R.id.cl__comment_input__record_button_wrapper)
-        acivButtonStop = findViewById(R.id.aciv__comment_input__stop_button)
-        actvButtonCancel = findViewById(R.id.actv__comment_input__cancel_button)
+        lavMicrophone = findViewById(R.id.lav_sview_voicewhatsup_recording_animated_icon)
+        rlPathCancel = findViewById(R.id.rl_sview_voicewhatsup_path_cancel)
+        rlPathLock = findViewById(R.id.rl_sview_voicewhatsup_path_lock)
+        acetMessageInput = findViewById(R.id.acet_sview_voicewhatsup_message_input)
+        llcRecordInfo = findViewById(R.id.llc_sview_voicewhatsup_record_info)
+        actvRecordTime = findViewById(R.id.actv_sview_voicewhatsup_record_time)
+        acivRecordButton = findViewById(R.id.aciv_sview_voicewhatsup_rec_start)
+        flRecordButtonWrapper = findViewById(R.id.cl_sview_voicewhatsup_record_button_wrapper)
+        acivButtonStop = findViewById(R.id.aciv_sview_voicewhatsup_stop_button)
+        actvButtonCancel = findViewById(R.id.actv_sview_voicewhatsup_cancel_button)
 
         acetMessageInput?.addTextChangedListener {
             mOnTextCommentChange?.invoke(it?.toString() ?: "")

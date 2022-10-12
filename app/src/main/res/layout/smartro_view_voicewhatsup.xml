@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--//название из-за future(;)-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_view"
     android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -8,7 +9,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
-        android:id="@+id/rl__comment_input__input_wrapper"
+        android:id="@+id/rl_sview_voicewhatsup_input_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="52dp"
@@ -18,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/acet__comment_input__message_input"
+            android:id="@+id/acet_sview_voicewhatsup_message_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_transparent"
@@ -30,7 +31,7 @@
             android:textSize="14sp" />
 
         <RelativeLayout
-            android:id="@+id/rl__comment_input__path_cancel"
+            android:id="@+id/rl_sview_voicewhatsup_path_cancel"
             android:layout_width="140dp" android:layout_height="24dp"
             android:layout_gravity="end|center"
             android:layout_centerVertical="true"
@@ -51,7 +52,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/rl__comment_input__path_lock"
+            android:id="@+id/rl_sview_voicewhatsup_path_lock"
             android:layout_width="50dp" android:layout_height="24dp"
             android:layout_gravity="end|center"
             android:layout_centerVertical="true"
@@ -70,7 +71,7 @@
     </RelativeLayout>
 
     <FrameLayout
-        android:id="@+id/cl__comment_input__record_button_wrapper"
+        android:id="@+id/cl_sview_voicewhatsup_record_button_wrapper"
         android:layout_width="match_parent"
         android:layout_height="68dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +79,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/aciv__comment_input__rec_start"
+            android:id="@+id/aciv_sview_voicewhatsup_rec_start"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_gravity="center|end"
@@ -88,13 +89,13 @@
     </FrameLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/llc__comment_input__record_info"
+        android:id="@+id/llc_sview_voicewhatsup_record_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="@id/rl__comment_input__input_wrapper"
+        app:layout_constraintBottom_toBottomOf="@id/rl_sview_voicewhatsup_input_wrapper"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/rl__comment_input__input_wrapper"
+        app:layout_constraintTop_toTopOf="@id/rl_sview_voicewhatsup_input_wrapper"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -104,16 +105,16 @@
             android:gravity="center">
 
             <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/lav__comment_input__recording_animated_icon"
+                android:id="@+id/lav_sview_voicewhatsup_recording_animated_icon"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:layout_marginStart="6dp"
                 app:lottie_autoPlay="true"
                 app:lottie_loop="true"
-                app:lottie_rawRes="@raw/recording"/>
+                app:lottie_rawRes="@raw/sview_voicewhatsup__recording"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/actv__comment_input__record_time"
+                android:id="@+id/actv_sview_voicewhatsup_record_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -125,7 +126,7 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/actv__comment_input__cancel_button"
+            android:id="@+id/actv_sview_voicewhatsup_cancel_button"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="ОТМЕНА"
             android:textStyle="bold"
@@ -136,7 +137,7 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/aciv__comment_input__stop_button"
+        android:id="@+id/aciv_sview_voicewhatsup_stop_button"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:src="@drawable/ic_stop_voice_comment"

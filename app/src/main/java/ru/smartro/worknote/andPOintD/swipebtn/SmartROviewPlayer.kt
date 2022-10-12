@@ -1,4 +1,4 @@
-package ru.smartro.worknote.andPOintD
+package ru.smartro.worknote.andPOintD.swipebtn
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -20,7 +20,9 @@ import java.io.File
 import java.util.*
 
 @SuppressLint("ClickableViewAccessibility")
-class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAttrs: Int)  : LinearLayoutCompat(context, attrs, defStyleAttrs) {
+//название из-за future(;)
+//todo: ::: https://github.com/ebanx/swipe-button.git
+class SmartROviewPlayer(context: Context, attrs: AttributeSet?, defStyleAttrs: Int)  : LinearLayoutCompat(context, attrs, defStyleAttrs) {
     constructor(context: Context) : this(context, null)
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -75,13 +77,13 @@ class SmartROviewVoicePlayer(context: Context, attrs: AttributeSet?, defStyleAtt
     }
 
     init {
-        inflate(getContext(), R.layout.custom_view__voice_comment_player, this)
+        inflate(getContext(), R.layout.sview_player, this)
 
-        recordTime = findViewById(R.id.actv__voice_comment_player__time)
-        playButton = findViewById(R.id.lav__voice_comment_player__play_button)
+        recordTime = findViewById(R.id.actv__sview_player__time)
+        playButton = findViewById(R.id.lav__sview_player__play_button)
         playButton?.setMaxProgress(0.5f)
-        trashButton = findViewById(R.id.aciv__voice_comment_player__remove_button)
-        waveformSeekBar = findViewById(R.id.wsb__voice_comment_player__waveform)
+        trashButton = findViewById(R.id.aciv__sview_player__remove_button)
+        waveformSeekBar = findViewById(R.id.wsb__sview_player__waveform)
 
         waveformSeekBar?.onProgressChanged = object : SeekBarOnProgressChanged {
             override fun onProgressChanged(waveformSeekBar: WaveformSeekBar, progress: Float, fromUser: Boolean) {

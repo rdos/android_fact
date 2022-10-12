@@ -15,10 +15,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.StrictMode
+import android.os.*
 import android.os.StrictMode.ThreadPolicy
 import android.widget.RemoteViews
 import android.widget.Toast
@@ -70,6 +67,7 @@ import ru.smartro.worknote.work.RealmRepository
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashSet
 
@@ -437,13 +435,13 @@ class App : AApp() {
 
     fun startVibrateService(ms: Long = 80, amplitude: Int = 160) {
         val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+
         // Vibrate for 500 milliseconds
         //private var vibrationEffect = VibrationEffect.createOneShot(100, 128)
         val ve = VibrationEffect.createOneShot(ms, amplitude)
         v.vibrate(ve)
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     fun startVibrateServicePredefined(predefined: Int) {
         val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
         v.vibrate(VibrationEffect.createPredefined(predefined))

@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.swipebtn;
+package ru.smartro.worknote.andPOintD.swipebtn;
 
 public interface OnActiveListener {
     void onActive();

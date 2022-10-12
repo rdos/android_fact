@@ -12,4 +12,4 @@ public interface Interactor {
     void execute();
 }
 
-// * Created ru.smartro.worknote.work.swipebtn.SwipeButton on 12/13/15.
+// * Created ru.smartro.worknote.andPOintD.swipebtn.SwipeButton on 12/13/15.

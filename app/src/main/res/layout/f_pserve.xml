@@ -107,13 +107,13 @@
             android:background="@drawable/bg_action_buttons"
             android:orientation="vertical">
 
-            <ru.smartro.worknote.andPOintD.SmartROviewVoicePlayer
+            <ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPlayer
                 android:id="@+id/srvv__f_pserve__voice_player"
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 />
 
-            <ru.smartro.worknote.andPOintD.SmartROviewVoiceWhatsUp
+            <ru.smartro.worknote.andPOintD.swipebtn.SmartROviewVoiceWhatsUp
                 android:id="@+id/srv__f_pserve__comment_input"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 />

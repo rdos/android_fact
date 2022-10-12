@@ -34,8 +34,8 @@ import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.andPOintD.SmartROviewVoiceWhatsUp
-import ru.smartro.worknote.andPOintD.SmartROviewVoicePlayer
+import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewVoiceWhatsUp
+import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPlayer
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
@@ -61,7 +61,7 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
     private var acsbVolumePickup: SeekBar? = null
     private var rvContainers: RecyclerView? = null
 
-    private var srvVoicePlayer: SmartROviewVoicePlayer? = null
+    private var srvVoicePlayer: SmartROviewPlayer? = null
     private var srvVoiceWhatsUp: SmartROviewVoiceWhatsUp? = null
     private var mVoiceComment: VoiceComment? = null
 
@@ -277,7 +277,7 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
         }
 
         srvVoicePlayer?.apply {
-            listener = object : SmartROviewVoicePlayer.VoiceCommentPlayerEvents {
+            listener = object : SmartROviewPlayer.VoiceCommentPlayerEvents {
                 override fun onClickDelete() {
                     LOG.debug("before")
                     val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()

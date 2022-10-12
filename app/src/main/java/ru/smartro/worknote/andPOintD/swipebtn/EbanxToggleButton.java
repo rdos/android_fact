@@ -1,4 +1,4 @@
-package ru.smartro.worknote.work.swipebtn;
+package ru.smartro.worknote.andPOintD.swipebtn;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
