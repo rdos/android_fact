@@ -21,22 +21,30 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
-import ru.smartro.worknote.*
+import ru.smartro.worknote.App
+import ru.smartro.worknote.LOG
+import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.andPOintD.SmartROLinearLayout
-import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
+import ru.smartro.worknote.andPOintD.SmartROacb
+import ru.smartro.worknote.andPOintD.SmartROllc
+import ru.smartro.worknote.andPOintD.SmartROsc
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.toast
+import ru.smartro.worknote.andPOintD.SmartROviewVoiceWhatsUp
+import ru.smartro.worknote.andPOintD.SmartROviewVoicePlayer
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ContainerEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.VoiceComment
+import java.io.File
+import java.nio.file.Files
 
 
-class PServeF :
-    AFragment(){
+class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
     private var mContainersAdapter: PServeContainersAdapter? = null
     private val _PlatformEntity: PlatformEntity
@@ -51,11 +59,16 @@ class PServeF :
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
     private var acsbVolumePickup: SeekBar? = null
+    private var rvContainers: RecyclerView? = null
 
-    private var btnCompleteTask: AppCompatButton? = null
+    private var srvVoicePlayer: SmartROviewVoicePlayer? = null
+    private var srvVoiceWhatsUp: SmartROviewVoiceWhatsUp? = null
+    private var mVoiceComment: VoiceComment? = null
+
     private var tvPlatformSrpId: TextView? = null
     private var actvAddress: AppCompatTextView? = null
-    private var sscToGroupByFMode: SmartROSwitchCompat? = null
+
+    private var sscToGroupByFMode: SmartROsc? = null
     private var actvScreenLabel: AppCompatTextView? = null
 
     private val vm: ServePlatformVM by activityViewModels()
@@ -64,16 +77,17 @@ class PServeF :
         return R.layout.f_pserve
     }
 
-    override fun onInitLayoutView(sview: SmartROLinearLayout): Boolean {
+    override fun onInitLayoutView(sview: SmartROllc): Boolean {
         tvPlatformSrpId = sview.findViewById(R.id.tv_f_pserve__sprid)
 
-        btnCompleteTask = sview.findViewById(R.id.acb_activity_platform_serve__complete)
+        val btnCompleteTask = sview.findViewById<SmartROacb>(R.id.acb_activity_platform_serve__complete)
+
         actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
         sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
         actvScreenLabel = sview.findViewById(R.id.screen_mode_label)
 
         tvVolumePickup = sview.findViewById(R.id.et_act_platformserve__volumepickup)
-        val rvContainers = sview.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
+        rvContainers = sview.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
             recycledViewPool.setMaxRecycledViews(0, 0)
         }
         mContainersAdapter = PServeContainersAdapter(emptyList())
@@ -86,12 +100,27 @@ class PServeF :
 
         actvScreenLabel?.text = "Списком"
 
-        /////////////////////////////////////////////
+        srvVoicePlayer = sview.findViewById(R.id.srvv__f_pserve__voice_player)
+        srvVoicePlayer?.visibility = View.GONE
 
-        // DISABLING SWIPE MOTION ON SWITCH
-//        srosToGroupByFMode?.setOnTouchListener { v, event ->
-//            event.actionMasked == MotionEvent.ACTION_MOVE
-//        }
+        srvVoiceWhatsUp = sview.findViewById(R.id.srv__f_pserve__comment_input)
+
+        srvVoiceWhatsUp?.mOnStartRecording = {
+            mVoiceComment = VoiceComment(this)
+        }
+
+        srvVoiceWhatsUp?.mOnEndRecording = {
+            mVoiceComment?.end()
+        }
+
+        srvVoiceWhatsUp?.mOnStopRecording = {
+            mVoiceComment?.stop()
+        }
+
+        srvVoiceWhatsUp?.mOnTextCommentChange = { newText ->
+            vm.updatePlatformComment(newText)
+        }
+
         sscToGroupByFMode?.setOnCheckedChangeListener { _, _ ->
             // TODO: !!!
             val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
@@ -99,7 +128,6 @@ class PServeF :
             vm.database.saveConfig(configEntity)
             navigateMain(R.id.PServeGroupByContainersF, vm.getPlatformId())
         }
-        ////////////////////////////////////////////
 
         tvPlatformSrpId?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
 
@@ -156,6 +184,12 @@ class PServeF :
         return false //))
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        srvVoicePlayer?.release()
+        mVoiceComment?.stop()
+    }
+
     override fun onBindLayoutState(): Boolean {
 
         val platformServeMode = _PlatformEntity.getServeMode()
@@ -166,13 +200,9 @@ class PServeF :
             sscToGroupByFMode?.visibility = View.VISIBLE
         }
 
-//        if(platformServeMode != null) {
-//            if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-//                navigateMain(R.id.PServeGroupByContainersF)
-//            }
-//        }
-
         val containers = vm.getContainerS()
+
+        srvVoiceWhatsUp?.setTextComment(_PlatformEntity.comment)
 
 //        todo: !!!!
         mContainersAdapter?.change(containers)
@@ -192,13 +222,15 @@ class PServeF :
         }
 
 
+        tvVolumePickuptext(_PlatformEntity.volumePickup)
+
         if (_PlatformEntity.isPickupNotEmpty()) {
             acsbVolumePickup?.progress = _PlatformEntity.volumePickup!!.toInt()
-            tvVolumePickuptext(_PlatformEntity.volumePickup)
             acsbVolumePickup?.thumb = getThumb(R.drawable.bg_button_green__usebutton)
         } else {
             acsbVolumePickup?.thumb = getThumb(null)
         }
+
         acsbVolumePickup?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             private var mProgressAtStartTracking = 0
             private val SENSITIVITY = 1
@@ -236,9 +268,28 @@ class PServeF :
             }
         })
 
+        if(_PlatformEntity.platformVoiceCommentEntity != null) {
+            LOG.debug("TEST!!!! FILE EXISTS")
+            srvVoicePlayer?.visibility = View.VISIBLE
+            srvVoicePlayer?.setAudio(requireContext(), AppliCation().getF("sound", "y10.wav").apply {
+                writeBytes(_PlatformEntity.platformVoiceCommentEntity!!.voiceByteArray!!)
+            })
+        }
+
+        srvVoicePlayer?.apply {
+            listener = object : SmartROviewVoicePlayer.VoiceCommentPlayerEvents {
+                override fun onClickDelete() {
+                    LOG.debug("before")
+                    val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
+                    vm.removeVoiceComment(platformVoiceCommentEntity)
+                    srvVoicePlayer?.release()
+                    srvVoicePlayer?.visibility = View.GONE
+                }
+            }
+        }
+
         return false
     }
-
 
     override fun onNewLiveData(/**platformEntity*/){
         vm.todoLiveData.observe(viewLifecycleOwner) { platformEntity ->
@@ -248,7 +299,6 @@ class PServeF :
 
         }
     }
-
 
     private fun onClickPickup(acsbVolumePickup: SeekBar) {
         acsbVolumePickup.isEnabled = false
@@ -440,8 +490,34 @@ class PServeF :
             val actvConstructiveVolume = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__constructiveVolume)
         }
     }
+
     interface ContainerPointClickListener {
         fun startContainerService(item: ContainerEntity)
+    }
+
+    override fun onStartVoiceComment() {
+        srvVoiceWhatsUp?.start()
+        App.getAppliCation().startVibrateService()
+    }
+
+    override fun onStopVoiceComment() {
+        srvVoiceWhatsUp?.stop()
+        App.getAppliCation().startVibrateService()
+    }
+
+    override fun onVoiceCommentShowForUser(volume: Int, timeInMS: Long, interValInMS: Long){
+        srvVoiceWhatsUp?.setVolumeEffect(volume, interValInMS)
+        srvVoiceWhatsUp?.setTime(timeInMS)
+    }
+
+    override fun onVoiceCommentSave(soundF: File) {
+        //            civCommentInput?.setIdle()
+        srvVoicePlayer?.visibility = View.VISIBLE
+        val byteArray = Files.readAllBytes(soundF.toPath())
+        val platformVoiceCommentEntity = vm.getPlatformVoiceCommentEntity()
+        platformVoiceCommentEntity.voiceByteArray = byteArray
+        vm.addVoiceComment(platformVoiceCommentEntity)
+        requireContext()
     }
 
     /********************************************************************************************************************

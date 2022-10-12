@@ -53,6 +53,9 @@ open class PhotoFailureMediaF : APhotoFragment() {
     override fun onBeforeUSE() {
        
         tvLabelFor(requireView())
+        val failureComment = viewModel.getPlatformEntity().failureComment
+        if(failureComment != null)
+            setCommentText(failureComment)
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
 //        }

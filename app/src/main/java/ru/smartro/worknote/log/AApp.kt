@@ -67,4 +67,11 @@ abstract class AApp : Application() {
         return file
     }
 
+    fun checkF(Dname: String, Fname: String): Boolean {
+        val fl = getDPath(Dname)
+        makeD(fl)
+        val file = File(fl, Fname)
+        return file.exists()
+    }
+
 }

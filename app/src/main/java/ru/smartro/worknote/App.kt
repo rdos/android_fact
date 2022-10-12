@@ -22,6 +22,7 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.widget.RemoteViews
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
@@ -40,12 +41,16 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.FileAppender
 import com.yandex.mapkit.MapKitFactory
-import io.realm.*
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
@@ -56,16 +61,15 @@ import ru.smartro.worknote.awORKOLDs.extensions.WarningType
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashSet
 
@@ -180,9 +184,16 @@ class App : AApp() {
         var net_loc: Location? = null
         var gps_loc: Location? = null
         var finalLoc: Location? = null
+        try {
+            if (gps_enabled) {
+                gps_loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            }
+            if (network_enabled) {
+                net_loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            }
+        } catch (ex: Exception) {
 
-        if (gps_enabled) gps_loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        if (network_enabled) net_loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        }
 
         if (gps_loc == null && net_loc == null) {
             return getAppParaMS().getSaveGPS()
@@ -240,7 +251,6 @@ class App : AApp() {
 //        }
 
         logbackInit()
-        LOG.debug("AAAAAAAAAAAA")
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
@@ -425,6 +435,26 @@ class App : AApp() {
         //gjпох
     }
 
+    fun startVibrateService(ms: Long = 80, amplitude: Int = 160) {
+        val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        // Vibrate for 500 milliseconds
+        //private var vibrationEffect = VibrationEffect.createOneShot(100, 128)
+        val ve = VibrationEffect.createOneShot(ms, amplitude)
+        v.vibrate(ve)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun startVibrateServicePredefined(predefined: Int) {
+        val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        v.vibrate(VibrationEffect.createPredefined(predefined))
+    }
+
+    fun startVibrateServiceHaptic() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            startVibrateServicePredefined(VibrationEffect.EFFECT_HEAVY_CLICK)
+        else
+            startVibrateService()
+    }
 
     fun showNotification(pendingIntent: PendingIntent, contentText: String, title: String) {
         val notificationManager = NotificationManagerCompat.from(this)
@@ -684,15 +714,23 @@ class App : AApp() {
 const val TIME_OUT = 240000L
 private const val NOTIFICATION_CHANNEL_ID__DEFAULT = "FACT_CH_ID"
 const val NOTIFICATION_CHANNEL_ID__MAP_ACT = "FACT_APP_CH_ID"
+
+//DownloadManager
+//WorkManager
+
+//AlarmMan
 val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
+//    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
     Manifest.permission.WRITE_EXTERNAL_STORAGE,
     Manifest.permission.READ_EXTERNAL_STORAGE,
     Manifest.permission.READ_PHONE_STATE,
     Manifest.permission.LOCATION_HARDWARE,
     Manifest.permission.ACCESS_NETWORK_STATE,
     Manifest.permission.CAMERA,
-    Manifest.permission.SYSTEM_ALERT_WINDOW
+    Manifest.permission.SYSTEM_ALERT_WINDOW,
+    Manifest.permission.RECORD_AUDIO
+
 )
 
 //todo:const val A_SLEEP_TIME_1MIN__MS = 60000L
@@ -820,6 +858,7 @@ fun org.slf4j.Logger.todo(text: String? = null) {
     this.warn("TODO")
     this.error("TODO")
 }
+
 
 fun Any.getLogger(): org.slf4j.Logger {
    return LoggerFactory.getLogger( "${this::class.simpleName}")

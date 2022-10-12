@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_view"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:paddingHorizontal="8dp"
+    android:background="@drawable/bg_transparent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:id="@+id/rl__comment_input__input_wrapper"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="52dp"
+        android:background="@drawable/bg_voice_comment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/acet__comment_input__message_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_transparent"
+            android:hint="Комментарий к площадке"
+            android:maxLines="1"
+            android:paddingVertical="6dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textSize="14sp" />
+
+        <RelativeLayout
+            android:id="@+id/rl__comment_input__path_cancel"
+            android:layout_width="140dp" android:layout_height="24dp"
+            android:layout_gravity="end|center"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/bg_cancel">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:src="@drawable/ic_trashcan_white" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl__comment_input__path_lock"
+            android:layout_width="50dp" android:layout_height="24dp"
+            android:layout_gravity="end|center"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/bg_lock">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="18dp" android:layout_height="18dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="4dp"
+                android:src="@drawable/ic_lock" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/cl__comment_input__record_button_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/aciv__comment_input__rec_start"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center|end"
+            android:layout_marginEnd="5dp"
+            android:src="@drawable/ic_microphone_button" />
+
+    </FrameLayout>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llc__comment_input__record_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="@id/rl__comment_input__input_wrapper"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rl__comment_input__input_wrapper"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:background="@drawable/bg_record_info"
+            android:gravity="center">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lav__comment_input__recording_animated_icon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginStart="6dp"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/recording"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/actv__comment_input__record_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="12dp"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="0:00" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/actv__comment_input__cancel_button"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="ОТМЕНА"
+            android:textStyle="bold"
+            android:layout_marginStart="12dp"
+            android:padding="8dp"
+            android:layout_gravity="center"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/aciv__comment_input__stop_button"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_stop_voice_comment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

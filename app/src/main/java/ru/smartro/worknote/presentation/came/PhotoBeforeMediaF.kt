@@ -41,7 +41,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
 //                navigateMain(R.id.PServeF, mPlatformEntity.platformId)
 //                return
 //            }
-//                             //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+//                             //todo: линию не заметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 ////            //            if mPLatformEntity.isModeFixPServeGroupByContainersF
 //            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
 //                navigateMain(R.id.PServeByTypesF, mPlatformEntity.platformId)

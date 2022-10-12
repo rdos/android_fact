@@ -23,6 +23,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     private var mPlatformEntity: PlatformEntity? = null
     private var mPlatformMediaEntity: PlatformMediaEntity? = null
+    private var mPlatformVoiceCommentEntity: PlatformVoiceCommentEntity? = null
 
     private val _PlatformLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
     val todoLiveData: LiveData<PlatformEntity>
@@ -52,6 +53,13 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         return mPlatformMediaEntity!!
     }
 
+    fun getPlatformVoiceCommentEntity(): PlatformVoiceCommentEntity {
+        if (mPlatformVoiceCommentEntity == null) {
+            mPlatformVoiceCommentEntity = database.getPlatformVoiceCommentEntity(getPlatformEntity())
+            LOG.trace("result.getBeforeMediaSize=${mPlatformMediaEntity!!.getBeforeMediaSize()}")
+        }
+        return mPlatformVoiceCommentEntity!!
+    }
 
     fun getPlatformId(): Int {
         val result = getPlatformEntity().platformId
@@ -150,14 +158,18 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         set_PlatformLiveData()
     }
 
-
-
+//todo:~r_dos
     private fun set_PlatformLiveData() {
         mPlatformEntity = null
         mPlatformEntity = getPlatformEntity()
+
         mPlatformMediaEntity = null
         mPlatformMediaEntity = getPlatformMediaEntity()
-        _PlatformLiveData.postValue(mPlatformEntity!!)
+
+        mPlatformVoiceCommentEntity = null
+        getPlatformVoiceCommentEntity()
+
+    _PlatformLiveData.postValue(mPlatformEntity!!)
     }
 
     fun decGroupByContainerTypeClientS(typeClientEntity: ContainerGROUPClientTypeEntity) {
@@ -220,6 +232,10 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         set_PlatformLiveData()
 //        getContainerEntity(containerId)
 //        getPlatformEntity(platformId)
+    }
+
+    fun updatePlatformComment(comment: String) {
+        database.updatePlatformComment(this.getPlatformId(), comment)
     }
 
     fun updateContainerComment(containerId: Int, comment: String?) {
@@ -309,6 +325,25 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
     fun addBreakdownMediaContainer(containerId: Int, imageS: List<ImageEntity>) {
         database.addBreakdownMediaContainer(this.getPlatformId(), containerId, imageS)
+        set_PlatformLiveData()
+    }
+
+
+    fun addVoiceComment(platformVoiceCommentEntity: PlatformVoiceCommentEntity) {
+        if (platformVoiceCommentEntity.voiceByteArray == null) {
+            LOG.error("platformVoiceCommentEntity.voiceByteArray == null")
+            return
+        }
+        database.addVoiceComment(platformVoiceCommentEntity)
+        set_PlatformLiveData()
+    }
+
+    fun removeVoiceComment(platformVoiceCommentEntity: PlatformVoiceCommentEntity) {
+        if (platformVoiceCommentEntity.voiceByteArray == null) {
+            LOG.error("platformVoiceCommentEntity.voiceByteArray == null")
+            return
+        }
+        database.removeVoiceComment(platformVoiceCommentEntity)
         set_PlatformLiveData()
     }
 }

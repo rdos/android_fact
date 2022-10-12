@@ -371,6 +371,16 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun updatePlatformComment(platformId: Int, comment: String) {
+        p_realm.executeTransaction { realm ->
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()!!
+            platform.comment = comment
+            setEntityUpdateAt(platform)
+        }
+    }
+
     fun updatePlatformStatusSuccess(platformId: Int) {
         p_realm.executeTransaction { realm ->
             val platform = getQueryPlatform().equalTo("platformId", platformId)
@@ -649,6 +659,34 @@ class RealmRepository(private val p_realm: Realm) {
         return filteredList
     }
 
+    fun addVoiceComment(platformVoiceCommentEntity: PlatformVoiceCommentEntity) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformVoiceCommentEntity.platformId)
+                .findFirst()
+
+            val platformVoiceComment = loadPlatformVoiceCommentEntity(platformEntity!!)
+            platformVoiceComment.voiceByteArray = platformVoiceCommentEntity.voiceByteArray
+            platformVoiceComment.updateAd = MyUtil.currentTime()
+            platformEntity.platformVoiceCommentEntity = platformVoiceComment
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun removeVoiceComment(platformVoiceCommentEntity: PlatformVoiceCommentEntity) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformVoiceCommentEntity.platformId)
+                .findFirst()
+
+            platformEntity!!.platformVoiceCommentEntity!!.deleteFromRealm()
+            platformEntity.platformVoiceCommentEntity = null
+
+
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
     fun addBeforeMedia(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
@@ -663,6 +701,26 @@ class RealmRepository(private val p_realm: Realm) {
             platformMediaEntity.beforeMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
+    }
+
+    fun getPlatformVoiceCommentEntity(platformEntity: PlatformEntity): PlatformVoiceCommentEntity {
+        var result: PlatformVoiceCommentEntity = PlatformVoiceCommentEntity.createEmpty()
+        p_realm.executeTransaction { realm ->
+            val platformVoiceCommentEntity = loadPlatformVoiceCommentEntity(platformEntity)
+            result = realm.copyFromRealm(platformVoiceCommentEntity)
+        }
+        return result
+    }
+    private fun loadPlatformVoiceCommentEntity(platformEntity: PlatformEntity): PlatformVoiceCommentEntity {
+        var result = getQueryPlatformVoiceComment(platformEntity).findFirst()
+        if (result == null) {
+            result = p_realm.createObject(PlatformVoiceCommentEntity::class.java,  platformEntity.platformId)
+            val platform = getQueryPlatform()
+                .equalTo("platformId", platformEntity.platformId)
+                .findFirst()
+            result.platformEntity = platform
+        }
+        return result!!
     }
 
     fun getPlatformMediaEntity(platformEntity: PlatformEntity): PlatformMediaEntity {
@@ -958,6 +1016,10 @@ class RealmRepository(private val p_realm: Realm) {
         return p_realm.where(PlatformMediaEntity::class.java).equalTo("platformId", platformEntity.platformId)
     }
 
+    private fun getQueryPlatformVoiceComment(platformEntity: PlatformEntity): RealmQuery<PlatformVoiceCommentEntity> {
+        return p_realm.where(PlatformVoiceCommentEntity::class.java).equalTo("platformId", platformEntity.platformId)
+    }
+
     private fun getQueryContainerMedia(containerEntity: ContainerEntity): RealmQuery<ContainerMediaEntity> {
         return p_realm.where(ContainerMediaEntity::class.java).equalTo("containerId", containerEntity.containerId)
     }
@@ -1162,4 +1224,5 @@ class RealmRepository(private val p_realm: Realm) {
         result = true
         return result
     }
+
 }

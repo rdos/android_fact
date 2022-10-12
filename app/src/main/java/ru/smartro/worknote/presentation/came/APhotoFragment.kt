@@ -102,6 +102,10 @@ abstract class APhotoFragment(
         return false
     }
 
+    protected fun setCommentText(comment: String) {
+        acetComment?.setText(comment)
+    }
+
     protected fun getCommentText(): String {
         return acetComment?.text.toString()
     }
@@ -523,7 +527,7 @@ abstract class APhotoFragment(
         LOG.debug("restorePhotoFileS()after")
     }
 
-    inner class PhotoFileScanner(val Dname: String) : AbsObject(TAG, "ImageEntityScanner") {
+    inner class PhotoFileScanner(val Dname: String) : AbsObject("PhotoFileScanner") {
         private var mIdx: Int = Inull
         private var mFileS: Array<File>? = null
 

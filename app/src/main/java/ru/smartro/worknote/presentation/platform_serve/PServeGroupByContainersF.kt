@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AFragment
-import ru.smartro.worknote.andPOintD.SmartROLinearLayout
-import ru.smartro.worknote.andPOintD.SmartROSwitchCompat
+import ru.smartro.worknote.andPOintD.SmartROllc
+import ru.smartro.worknote.andPOintD.SmartROsc
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ContainerGROUPClientEntity
 import ru.smartro.worknote.work.ContainerGROUPClientTypeEntity
@@ -28,7 +28,7 @@ class PServeGroupByContainersF : AFragment() {
     private var btnCompleteTask: AppCompatButton? = null
     private var tvContainersProgress: AppCompatTextView? = null
     private var actvAddress: AppCompatTextView? = null
-    private var srosToPserveFMode: SmartROSwitchCompat? = null
+    private var srosToPserveFMode: SmartROsc? = null
     private var screenModeLabel: TextView? = null
     private var rvMain: RecyclerView? = null
 
@@ -38,7 +38,7 @@ class PServeGroupByContainersF : AFragment() {
         return R.layout.f_pserve_groupby
     }
 
-    override fun onInitLayoutView(view: SmartROLinearLayout): Boolean {
+    override fun onInitLayoutView(view: SmartROllc): Boolean {
         tvContainersProgress = view.findViewById(R.id.actv_f_pserve_groupby__sprid)
         btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = view.findViewById(R.id.tv_platform_serve__address)
