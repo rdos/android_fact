@@ -27,10 +27,9 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/aciv_act_start__logo"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_width="140dp" android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_default"
         android:src="@drawable/ic_logo"
-        app:layout_constraintEnd_toStartOf="@+id/actv_act_start__copyright"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

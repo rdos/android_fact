@@ -723,6 +723,15 @@ class RealmRepository(private val p_realm: Realm) {
         return result!!
     }
 
+    fun getRegions(): List<RegionEntity> {
+        var regions = listOf<RegionEntity>()
+        p_realm.executeTransaction { realm ->
+            val rawResponse = realm.where(RegionEntity::class.java).isNotNull("showName").findAll()
+            regions = realm.copyFromRealm(rawResponse)
+        }
+        return regions
+    }
+
     fun getPlatformMediaEntity(platformEntity: PlatformEntity): PlatformMediaEntity {
         var result: PlatformMediaEntity = PlatformMediaEntity.createEmpty()
         p_realm.executeTransaction { realm ->

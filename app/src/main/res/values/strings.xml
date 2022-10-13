@@ -61,6 +61,16 @@
         <item quantity="many">контейнеров</item>
         <item quantity="other">контейнер(ов)</item>
     </plurals>
+
+    <plurals name="region_count">
+        <item quantity="zero">регион</item>
+        <item quantity="one">регион</item>
+        <item quantity="two">региона</item>
+        <item quantity="few">региона</item>
+        <item quantity="many">регионов</item>
+        <item quantity="other">регион(ов)</item>
+    </plurals>
+
     <string name="title_activity_test">TestActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

@@ -309,6 +309,26 @@ open class PlatformMediaEntity(
     }
 }
 
+open class RegionEntity(
+    @Expose
+    @SerializedName("id")
+    @PrimaryKey
+    var id: Int = Inull,
+    @Expose
+    var name: String = Snull,
+    @Expose
+    var showName: String? = null,
+    @Expose
+    var size: String = Snull,
+    @Expose
+    var cities: RealmList<String> = RealmList()
+) : Serializable, RealmObject()  {
+
+    fun showForUser(): String {
+        return showName ?: name
+    }
+}
+
 open class PlatformEntity(
     @Expose
     @SerializedName("id")

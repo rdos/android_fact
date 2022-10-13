@@ -64,6 +64,8 @@ import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
+import ru.smartro.worknote.work.RegionEntity
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -429,6 +431,23 @@ class App : AApp() {
         config.allowWritesOnUiThread(true)
         config.name(FN__REALM)
         config.deleteRealmIfMigrationNeeded()
+
+        config.initialData {
+            LOG.debug("::: INITIAL before")
+
+            try {
+                val jsonInputStream = applicationContext.resources.openRawResource(R.raw.regions)
+
+                it.createAllFromJson(RegionEntity::class.java, jsonInputStream)
+                it.commitTransaction()
+
+            } catch(e : Exception) {
+                LOG.error("::: INITIAL EXCEPTION: ${e.stackTraceToString()}")
+            }
+
+            LOG.debug("::: INITIAL after")
+        }
+
         Realm.setDefaultConfiguration(config.build())
         //gjпох
     }
