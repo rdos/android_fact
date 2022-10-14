@@ -267,7 +267,6 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
-
         val configEntity = getDB().loadConfig(ConfigName.RUNAPP_CNT)
         configEntity.cntPlusOne()
         getDB().saveConfig(configEntity)
@@ -439,8 +438,6 @@ class App : AApp() {
                 val jsonInputStream = applicationContext.resources.openRawResource(R.raw.regions)
 
                 it.createAllFromJson(RegionEntity::class.java, jsonInputStream)
-                it.commitTransaction()
-
             } catch(e : Exception) {
                 LOG.error("::: INITIAL EXCEPTION: ${e.stackTraceToString()}")
             }
@@ -782,8 +779,10 @@ fun Any.getDeviceDateTime(): Date {
 
 fun Fragment.toast(text: String? = "") {
     try {
-        this.view?.post{
-            Toast.makeText(this.context, text, Toast.LENGTH_SHORT).show()
+        if(this.context != null && this.view != null) {
+            this.requireView().post{
+                Toast.makeText(this.context, text, Toast.LENGTH_SHORT).show()
+            }
         }
     } catch (ex: Exception) {
         LOG.error("eXthr", ex)

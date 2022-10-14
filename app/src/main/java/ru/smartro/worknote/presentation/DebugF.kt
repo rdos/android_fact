@@ -13,11 +13,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,6 +27,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.offline_cache.RegionListUpdatesListener
 import com.yandex.mapkit.offline_cache.RegionListener
 import com.yandex.mapkit.offline_cache.RegionState
 import ru.smartro.worknote.*
@@ -38,7 +41,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 
-class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, RegionListener {
+class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, RegionListener, RegionListUpdatesListener {
 
     private var acbSendLogs: AppCompatButton? = null
     private val vm: DebugViewModel by viewModels()
@@ -47,41 +50,73 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
     private var acibToggleRegionList: AppCompatImageButton? = null
     private var rvRegionList: RecyclerView? = null
     private var adapter: RegionListAdapter? = null
+    private var llcRegionListWrapper: LinearLayoutCompat? = null
+    private var acbClearMapCache: AppCompatButton? = null
 
     override fun onGetLayout(): Int {
         return R.layout.f_debug
     }
 
+    fun initMapKitOfflineCacheManager() {
+        MapKitFactory.getInstance().offlineCacheManager.allowUseCellularNetwork(true)
+        MapKitFactory.getInstance().offlineCacheManager.addRegionListUpdatesListener(this)
+        MapKitFactory.getInstance().offlineCacheManager.addRegionListener(this)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        MapKitFactory.getInstance().offlineCacheManager.removeRegionListUpdatesListener(this)
+        MapKitFactory.getInstance().offlineCacheManager.removeRegionListener(this)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getAct().supportActionBar?.hide()
+        initMapKitOfflineCacheManager()
+
         initViews(view)
 
         vm.getRegions()
 
-        vm.regionsList.observe(viewLifecycleOwner) {
-            if(it != null) {
-                adapter?.regionS = it
+        vm.regionsList.observe(viewLifecycleOwner) { regionS ->
+            if(regionS != null) {
+                LOG.debug("Regions ::: ${regionS}")
+                adapter?.regionS = regionS
+
+                regionS.forEach { region ->
+                    val state = MapKitFactory.getInstance().offlineCacheManager.getState(region.id)
+                    LOG.debug("::: state: ${state}")
+                    adapter?.updateItemState(region.id, state)
+                }
             }
         }
 
-        MapKitFactory.getInstance().offlineCacheManager.addRegionListener(this)
     }
 
     private fun initViews(view: View) {
+        llcRegionListWrapper = view.findViewById(R.id.llc__f_debug__regions_list_wrapper)
+        llcRegionListWrapper?.visibility = View.GONE
+
+        acbClearMapCache = view.findViewById(R.id.acb__f_debug__clear_map_cache)
+        acbClearMapCache?.setOnClickListener {
+            MapKitFactory.getInstance().offlineCacheManager.clear {
+                toast("Кэш очищен")
+            }
+        }
+
         actvRegionCounter = view.findViewById(R.id.actv__f_debug__cached_regions_count)
         setRegionCount()
 
-        acibToggleRegionList = view.findViewById(R.id.acib__f_debug__toggle_regions_list)
-        acibToggleRegionList?.setOnClickListener {
-            if(rvRegionList?.visibility == View.VISIBLE)
-                rvRegionList?.visibility = View.VISIBLE
-            else
-                rvRegionList?.visibility = View.GONE
-        }
-
         rvRegionList = view.findViewById(R.id.rv__f_debug__regions)
         rvRegionList?.layoutManager = LinearLayoutManager(requireContext())
+
+        acibToggleRegionList = view.findViewById(R.id.acib__f_debug__toggle_regions_list)
+        acibToggleRegionList?.setOnClickListener {
+            if(llcRegionListWrapper?.visibility == View.VISIBLE)
+                llcRegionListWrapper?.visibility = View.GONE
+            else
+                llcRegionListWrapper?.visibility = View.VISIBLE
+        }
 
         adapter = RegionListAdapter()
         rvRegionList?.adapter = adapter!!
@@ -345,12 +380,13 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
 
     override fun onRegionStateChanged(regionId: Int) {
         val state = MapKitFactory.getInstance().offlineCacheManager.getState(regionId)
-        LOG.debug("::: Region State: ${state}")
+        LOG.debug("::: Region ${regionId} State: ${state}")
         adapter?.updateItemState(regionId, state)
     }
 
     override fun onRegionProgress(regionId: Int) {
         val progress = MapKitFactory.getInstance().offlineCacheManager.getProgress(regionId)
+        LOG.debug("::: Region ${regionId} progress: ${progress}")
         adapter?.updateItemProgress(regionId, progress)
     }
 
@@ -358,6 +394,9 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
         RecyclerView.Adapter<RegionListAdapter.RegionHolder>() {
 
         var regionS: List<RegionEntity> = listOf()
+            set(value) {
+                field = value
+            }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RegionHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.f_debug__regions_item, parent, false)
@@ -384,7 +423,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
             if(index == -1)
                 return
 
-            notifyItemChanged(index, listOf(state))
+            notifyItemChanged(index, state)
         }
 
         fun updateItemProgress(regionId: Int, progress: Float) {
@@ -392,30 +431,36 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
             if(index == -1)
                 return
 
-            notifyItemChanged(index, listOf(progress))
+            notifyItemChanged(index, progress)
         }
 
         override fun onBindViewHolder(holder: RegionHolder, position: Int, payloads: MutableList<Any>) {
-            super.onBindViewHolder(holder, position, payloads)
             val region = regionS[position]
+            LOG.debug("::: ${region.name} payload: ${payloads.size}")
+
             holder.setRegionName(region.showForUser())
             holder.actvDownloadButton.setOnClickListener {
+                LOG.debug("Region Download Clicked: ${region.id}")
                 MapKitFactory.getInstance().offlineCacheManager.startDownload(region.id)
             }
 
-            try {
+            if(payloads.size > 0) {
                 when(payloads[0]) {
                     is RegionState -> {
+                        LOG.debug("Payloads!!!: ${payloads[0] as RegionState}")
                         holder.setState(payloads[0] as RegionState)
                     }
                     is Float -> {
+                        LOG.debug("Progress !!!!!!!")
                         holder.setProgress(payloads[0] as Float)
                     }
+                    else -> {
+                        LOG.debug("ELSE !!!!!!!")
+                    }
                 }
-            } catch(e: Exception) {
-                LOG.error(e.stackTraceToString())
+            } else {
+                LOG.debug("Payloads!!! size 0")
             }
-
         }
 
         inner class RegionHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -433,6 +478,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
             }
 
             fun setState(state: RegionState = RegionState.AVAILABLE) {
+                LOG.debug("${state}")
                 actvDownloadButton.visibility = if(state == RegionState.AVAILABLE) View.VISIBLE else View.GONE
                 actvDownloadProgress.visibility = if(state == RegionState.DOWNLOADING) View.VISIBLE else View.GONE
                 acivRegionSavedIcon.visibility = if(state == RegionState.COMPLETED) View.VISIBLE else View.GONE
@@ -447,5 +493,10 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
         override fun onBindViewHolder(holder: RegionHolder, position: Int) {
 //            TODO("Not yet implemented")
         }
+    }
+
+    override fun onListUpdated() {
+        val regions = MapKitFactory.getInstance().offlineCacheManager.regions()
+        LOG.debug("size: ${regions.size}, ids: [${regions.joinToString { it.id.toString() }}]")
     }
 }

@@ -172,7 +172,12 @@ class RealmRepository(private val p_realm: Realm) {
 
     fun clearDataBase() {
         p_realm.executeTransaction { realm ->
-            realm.deleteAll()
+            val realmConfiguration = realm.configuration
+            for (clazz in realmConfiguration.realmObjectClasses) {
+                if (clazz != RegionEntity::class.java) {
+                    realm.delete(clazz)
+                }
+            }
         }
     }
 

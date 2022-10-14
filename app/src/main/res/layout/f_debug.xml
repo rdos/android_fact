@@ -75,6 +75,7 @@
                     android:layout_width="32dp" android:layout_height="32dp"
                     android:layout_alignParentEnd="true"
                     android:background="@null"
+                    android:foreground="?attr/selectableItemBackground"
                     android:src="@drawable/ic_arrow_top"
                     android:scaleType="fitXY"
                     android:adjustViewBounds="true"
@@ -83,11 +84,29 @@
 
             </RelativeLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv__f_debug__regions"
-                tools:listitem="@layout/f_debug__regions_item"
-                tools:itemCount="16"
-                android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llc__f_debug__regions_list_wrapper"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv__f_debug__regions"
+                    tools:listitem="@layout/f_debug__regions_item"
+                    tools:itemCount="4"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/acb__f_debug__clear_map_cache"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip_action_red"
+                    android:paddingHorizontal="24dp"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:layout_marginTop="8dp"
+                    android:text="Очистить кэш"
+                    />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
