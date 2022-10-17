@@ -70,6 +70,14 @@
         <item quantity="many">регионов</item>
         <item quantity="other">регион(ов)</item>
     </plurals>
+    <plurals name="region_downloaded">
+        <item quantity="zero">Скачан</item>
+        <item quantity="one">Скачан</item>
+        <item quantity="two">Скачано</item>
+        <item quantity="few">Скачано</item>
+        <item quantity="many">Скачано</item>
+        <item quantity="other">Скачан(о)</item>
+    </plurals>
 
     <string name="title_activity_test">TestActivity</string>
     <string name="prompt_email">Email</string>

@@ -6,6 +6,7 @@ import android.graphics.Color
 import androidx.core.content.ContextCompat
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.yandex.mapkit.offline_cache.RegionState
 import io.realm.Realm
 import io.realm.RealmList
 import io.realm.RealmObject

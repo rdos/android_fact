@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
@@ -24,12 +23,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.offline_cache.RegionListUpdatesListener
-import com.yandex.mapkit.offline_cache.RegionListener
-import com.yandex.mapkit.offline_cache.RegionState
+import com.yandex.mapkit.offline_cache.*
 import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.AViewModel
@@ -81,16 +79,22 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
         vm.regionsList.observe(viewLifecycleOwner) { regionS ->
             if(regionS != null) {
                 LOG.debug("Regions ::: ${regionS}")
-                adapter?.regionS = regionS
-
-                regionS.forEach { region ->
-                    val state = MapKitFactory.getInstance().offlineCacheManager.getState(region.id)
-                    LOG.debug("::: state: ${state}")
-                    adapter?.updateItemState(region.id, state)
+                val mappedRegionS = mutableListOf<RegionDto>()
+                var downloadedCounter = 0
+                for(region in vm.regionsList.value!!) {
+                    val _state = MapKitFactory.getInstance().offlineCacheManager.getState(region.id)
+                    when(_state) {
+                        RegionState.COMPLETED, RegionState.NEED_UPDATE, RegionState.OUTDATED -> {
+                            LOG.debug("::: Region FOR 1 ${region.id} State: ${_state}")
+                            ++downloadedCounter
+                        }
+                    }
+                    mappedRegionS.add(RegionDto(region.id, region.showForUser(), region.size, _state))
                 }
+                setRegionCount(downloadedCounter)
+                adapter?.regionS = mappedRegionS
             }
         }
-
     }
 
     private fun initViews(view: View) {
@@ -108,7 +112,10 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
         setRegionCount()
 
         rvRegionList = view.findViewById(R.id.rv__f_debug__regions)
-        rvRegionList?.layoutManager = LinearLayoutManager(requireContext())
+        val layoutManager = LinearLayoutManager(requireContext())
+        rvRegionList?.layoutManager = layoutManager
+        val dividerItemDecoration = DividerItemDecoration(requireContext(), layoutManager.orientation)
+        rvRegionList?.addItemDecoration(dividerItemDecoration)
 
         acibToggleRegionList = view.findViewById(R.id.acib__f_debug__toggle_regions_list)
         acibToggleRegionList?.setOnClickListener {
@@ -270,7 +277,7 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
     }
 
     private fun setRegionCount(count: Int = 0) {
-        actvRegionCounter?.text = "Скачано ${count} ${resources.getQuantityString(R.plurals.region_count, count)}"
+        actvRegionCounter?.text = "${resources.getQuantityString(R.plurals.region_downloaded, count)} ${count} ${resources.getQuantityString(R.plurals.region_count, count)}"
     }
 
     fun savefile(sourceuri: Uri, dirName: String, fileName: String) {
@@ -380,8 +387,22 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
 
     override fun onRegionStateChanged(regionId: Int) {
         val state = MapKitFactory.getInstance().offlineCacheManager.getState(regionId)
-        LOG.debug("::: Region ${regionId} State: ${state}")
+        LOG.debug("::: Region changed: ${regionId} State: ${state}")
         adapter?.updateItemState(regionId, state)
+
+        if(vm.regionsList.value != null) {
+            var downloadedCounter = 0
+            for(region in vm.regionsList.value!!) {
+                val _state = MapKitFactory.getInstance().offlineCacheManager.getState(region.id)
+                when(_state) {
+                    RegionState.COMPLETED, RegionState.NEED_UPDATE, RegionState.OUTDATED -> {
+                        LOG.debug("::: Region FOR 2 ${region.id} State: ${_state}")
+                        ++downloadedCounter
+                    }
+                }
+            }
+            setRegionCount(downloadedCounter)
+        }
     }
 
     override fun onRegionProgress(regionId: Int) {
@@ -393,9 +414,10 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
     inner class RegionListAdapter() :
         RecyclerView.Adapter<RegionListAdapter.RegionHolder>() {
 
-        var regionS: List<RegionEntity> = listOf()
+        var regionS: List<RegionDto> = listOf()
             set(value) {
                 field = value
+                notifyDataSetChanged()
             }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RegionHolder {
@@ -438,20 +460,34 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
             val region = regionS[position]
             LOG.debug("::: ${region.name} payload: ${payloads.size}")
 
-            holder.setRegionName(region.showForUser())
-            holder.actvDownloadButton.setOnClickListener {
-                LOG.debug("Region Download Clicked: ${region.id}")
+            holder.setRegionName(region.name)
+
+            holder.actvDownload.setOnClickListener {
+                LOG.debug("Region Start Download Clicked: ${region.id}")
+                App.getAppliCation().startVibrateServiceHaptic()
                 MapKitFactory.getInstance().offlineCacheManager.startDownload(region.id)
+            }
+
+            holder.actvStopDownload.setOnClickListener {
+                LOG.debug("Region Stop Download Clicked: ${region.id}")
+                App.getAppliCation().startVibrateServiceHaptic()
+                MapKitFactory.getInstance().offlineCacheManager.stopDownload(region.id)
+            }
+
+            holder.actvDropRegion.setOnClickListener {
+                LOG.debug("Region Drop Clicked: ${region.id}")
+                App.getAppliCation().startVibrateServiceHaptic()
+                MapKitFactory.getInstance().offlineCacheManager.drop(region.id)
             }
 
             if(payloads.size > 0) {
                 when(payloads[0]) {
                     is RegionState -> {
-                        LOG.debug("Payloads!!!: ${payloads[0] as RegionState}")
+                        LOG.debug("Payload is State: ${payloads[0]}")
                         holder.setState(payloads[0] as RegionState)
                     }
                     is Float -> {
-                        LOG.debug("Progress !!!!!!!")
+                        LOG.debug("Payload is Progress: ${payloads[0]}")
                         holder.setProgress(payloads[0] as Float)
                     }
                     else -> {
@@ -460,18 +496,18 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
                 }
             } else {
                 LOG.debug("Payloads!!! size 0")
+                LOG.debug("REGION STATE::: ${region.state}")
+                holder.setState(region.state!!)
             }
         }
 
         inner class RegionHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             val actvRegionName: AppCompatTextView = itemView.findViewById(R.id.actv__f_debug__regions_item__name)
-            val actvDownloadButton: AppCompatImageButton = itemView.findViewById(R.id.acib__f_debug__regions_item__download_button)
+            val actvDownload: AppCompatImageButton = itemView.findViewById(R.id.acib__f_debug__regions_item__download_button)
             val actvDownloadProgress: AppCompatTextView = itemView.findViewById(R.id.actv__f_debug__regions_item__download_progress)
-            val acivRegionSavedIcon: AppCompatImageView = itemView.findViewById(R.id.aciv__f_debug__regions_item__saved)
-
-            init {
-                setState()
-            }
+            val acivRegionCompleted: AppCompatImageView = itemView.findViewById(R.id.aciv__f_debug__regions_item__completed)
+            val actvStopDownload: AppCompatImageButton = itemView.findViewById(R.id.acib__f_debug__regions_item__stop_download)
+            val actvDropRegion: AppCompatImageButton = itemView.findViewById(R.id.acib__f_debug__regions_item__drop_region)
 
             fun setRegionName(name: String) {
                 actvRegionName.text = name
@@ -479,9 +515,11 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
 
             fun setState(state: RegionState = RegionState.AVAILABLE) {
                 LOG.debug("${state}")
-                actvDownloadButton.visibility = if(state == RegionState.AVAILABLE) View.VISIBLE else View.GONE
+                actvDownload.visibility = if(state == RegionState.AVAILABLE) View.VISIBLE else View.GONE
                 actvDownloadProgress.visibility = if(state == RegionState.DOWNLOADING) View.VISIBLE else View.GONE
-                acivRegionSavedIcon.visibility = if(state == RegionState.COMPLETED) View.VISIBLE else View.GONE
+                actvStopDownload.visibility = if(state == RegionState.DOWNLOADING) View.VISIBLE else View.GONE
+                acivRegionCompleted.visibility = if(state == RegionState.COMPLETED) View.VISIBLE else View.GONE
+                actvDropRegion.visibility = if(state == RegionState.COMPLETED) View.VISIBLE else View.GONE
             }
 
             fun setProgress(rawProgress: Float) {
@@ -497,6 +535,13 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
 
     override fun onListUpdated() {
         val regions = MapKitFactory.getInstance().offlineCacheManager.regions()
-        LOG.debug("size: ${regions.size}, ids: [${regions.joinToString { it.id.toString() }}]")
+        LOG.debug("::: size: ${regions.size}, ids: [${regions.joinToString { it.id.toString() }}]")
     }
 }
+
+data class RegionDto(
+    var id: Int = Inull,
+    var name: String = Snull,
+    var size: String = Snull,
+    var state: RegionState? = null
+)
