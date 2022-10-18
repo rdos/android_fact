@@ -24,5 +24,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_bunker_red"
         android:layout_gravity="center"
+        android:padding="4dp"
+        android:background="@drawable/bg_active_circle"
         />
 </androidx.appcompat.widget.LinearLayoutCompat >

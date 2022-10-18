@@ -258,11 +258,13 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //        setDevelMode()
 
         viewModel.todoLiveData.observe(viewLifecycleOwner) {
+            LOG.debug("::: HELLO TODO LIVEDATA")
             if (it.coordLat == Dnull) {
                 // TODO: !!факТ)
                 return@observe
             }
             moveCameraTo(PoinT(it.coordLat, it.coordLong))
+
         }
 //        setDevelMode()
         onRefreshData()
@@ -832,7 +834,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             LOG.trace("getIconViewProvider.end")
             val pointYandex = Point(platform.coordLat, platform.coordLong)
             mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
-
         }
         LOG.trace("for (platform in platformS) {.end")
         mMapObjectCollection?.addTapListener(this)
