@@ -68,6 +68,27 @@ fun AAct.showDlgPickup(): View {
     return view
 }
 
+fun ANOFragment.showDialogAction(description: String, onAccept: () -> Unit, onDecline: (() -> Unit)? = null) {
+    val builder = AlertDialog.Builder(getAct())
+    val inflater = this.layoutInflater
+    var actionDialog: AlertDialog? = null
+
+    val view = inflater.inflate(R.layout.dialog_action, null)
+    view.findViewById<AppCompatTextView>(R.id.actv__dialog_action__description).text = description
+    view.findViewById<AppCompatButton>(R.id.acb__dialog_action__accept).setOnClickListener {
+        onAccept()
+        actionDialog?.dismiss()
+    }
+    view.findViewById<AppCompatButton>(R.id.acb__dialog_action__decline).setOnClickListener {
+        onDecline?.invoke()
+        actionDialog?.dismiss()
+    }
+    builder.setView(view)
+    actionDialog = builder.create()
+    actionDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    actionDialog.show()
+}
+
 //showDlgPickup!r_dos
 fun AAct.showDlgLogout(): View {
     val builder = AlertDialog.Builder(this)

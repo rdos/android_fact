@@ -31,6 +31,7 @@ import com.yandex.mapkit.offline_cache.*
 import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.AViewModel
+import ru.smartro.worknote.awORKOLDs.extensions.showDialogAction
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.utils.ZipManager
 import ru.smartro.worknote.work.RegionEntity
@@ -103,9 +104,12 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
 
         acbClearMapCache = view.findViewById(R.id.acb__f_debug__clear_map_cache)
         acbClearMapCache?.setOnClickListener {
-            MapKitFactory.getInstance().offlineCacheManager.clear {
-                toast("Кэш очищен")
-            }
+            App.getAppliCation().startVibrateServiceHaptic()
+            showDialogAction("Вы уверены, что хотите очистить ВСЕ скачанные регионы?", {
+                MapKitFactory.getInstance().offlineCacheManager.clear {
+                    toast("Регионы очищены")
+                }
+            })
         }
 
         actvRegionCounter = view.findViewById(R.id.actv__f_debug__cached_regions_count)
@@ -477,7 +481,9 @@ class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, Re
             holder.actvDropRegion.setOnClickListener {
                 LOG.debug("Region Drop Clicked: ${region.id}")
                 App.getAppliCation().startVibrateServiceHaptic()
-                MapKitFactory.getInstance().offlineCacheManager.drop(region.id)
+                showDialogAction("Вы уверены, что хотите очистить скачанный регион?", {
+                    MapKitFactory.getInstance().offlineCacheManager.drop(region.id)
+                })
             }
 
             if(payloads.size > 0) {

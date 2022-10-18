@@ -39,5 +39,5 @@
     <dimen name="map_markers_dm">28dp</dimen>
 
 
-    <dimen name="region_item_size">28dp</dimen>
+    <dimen name="region_item_size">24dp</dimen>
 </resources>
