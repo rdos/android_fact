@@ -464,6 +464,20 @@ class RealmRepository(private val p_realm: Realm) {
         return res
     }
 
+    fun findPlatformByCoord(coordLat: Double, coordLong: Double): PlatformEntity? {
+        val platformByCoord = getQueryPlatform()
+            .equalTo("coordLat", coordLat)
+            .equalTo("coordLong", coordLong)
+            .findFirst()
+
+        if (platformByCoord == null)
+            return platformByCoord
+
+        LOG.warn( "res.address=${platformByCoord.address} ")
+
+        return platformByCoord
+    }
+
 //    fun findPlatformByCoord(point: Point): LiveRealmData<PlatformEntity> {
 //        //lat=0,000133755 это 15 метров
 //        val LAT15M = 0.000133755

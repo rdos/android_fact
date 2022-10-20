@@ -21,8 +21,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.lottie.LottieAnimationView
-import com.bumptech.glide.load.engine.executor.GlideExecutor.UncaughtThrowableStrategy.LOG
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.yandex.mapkit.Animation
@@ -62,6 +60,8 @@ import java.io.IOException
 class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener, Callback {
 
+    private var mLastActivePlatform: PlatformEntity? = null
+    private var mMappingPlatformMapObjects: HashMap<Int, PlacemarkMapObject> = HashMap()
 
     private var mTimeBeforeInSec: Long = Lnull
     private var acibNavigatorToggle: AppCompatImageButton? = null
@@ -91,8 +91,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private lateinit var userLocationLayer: UserLocationLayer
     private lateinit var mDrivingRouter: DrivingRouter
     private lateinit var mDrivingSession: DrivingSession.DrivingRouteListener
-    private lateinit var selectedPlatformToNavigate: Point
-
 
     override fun onNewGPS() {
         LOG.debug("onNewGPS")
@@ -262,10 +260,33 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
                 // TODO: !!факТ)
                 return@observe
             }
+            if(mLastActivePlatform != null) {
+                changeMapObjectIcon(mLastActivePlatform!!, false)
+            }
+
+            changeMapObjectIcon(it, true)
+
             moveCameraTo(PoinT(it.coordLat, it.coordLong))
+
+            mLastActivePlatform = it
         }
 //        setDevelMode()
         onRefreshData()
+    }
+
+    private fun changeMapObjectIcon(platformEntity: PlatformEntity, isForceMode: Boolean) {
+        val platformId = platformEntity.platformId
+
+        val oldObj = mMappingPlatformMapObjects[platformId]
+        mMapObjectCollection?.remove(oldObj as MapObject)
+
+        val coordLat = platformEntity.coordLat
+        val coordLong = platformEntity.coordLong
+        val point = Point(coordLat, coordLong)
+        val viewProvider = getIconViewProvider(requireContext(), platformEntity, isForceMode)
+
+        val newObj = mMapObjectCollection?.addPlacemark(point, viewProvider)
+        mMappingPlatformMapObjects[platformId] = newObj!!
     }
 
     override fun onBackPressed() {
@@ -664,14 +685,14 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         navigateMain(R.id.PhotoFailureMediaF, item.platformId)
     }
 
-    override fun moveCameraPlatform(point: PoinT) {
+    override fun moveCameraPlatform(item: PlatformEntity) {
         mIsAUTOMoveCamera = false
         if (clMapBehavior == null) {
             return
         }
         val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        moveCameraTo(point)
+        viewModel.setPlatformEntity(item)
     }
 
     override fun navigatePlatform(checkPoint: Point) {
@@ -714,6 +735,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private fun moveCameraTo(pont: PoinT) {
         LOG.debug("before pont.latitude=${pont.latitude} pont.long=${pont.longitude}")
+        mMapMyYandex.map.mapObjects
         mMapMyYandex.map.move(
             CameraPosition(pont, 15.0f, 0.0f, 0.0f),
             Animation(Animation.Type.SMOOTH, 1F), null
@@ -795,7 +817,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //        val distanceToPoint = MyUtil.calculateDistance(location.position, selectedPlatformToNavigate)
 ////        LOG.debug("Distance: $distanceToPoint")
 //        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
-//            isOnPointFirstTime = false
+//            isOnPointFirstTime = falsemMappingPlatformMapObjects
 //            alertOnPoint().let {
 //                it.dismiss_btn.setOnClickListener {
 //                    drivingModeState = false
@@ -831,26 +853,26 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             val iconProvider = getIconViewProvider(getAct(), platform)
             LOG.trace("getIconViewProvider.end")
             val pointYandex = Point(platform.coordLat, platform.coordLong)
-            mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
-
+            val mapObject = mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
+            if(mapObject != null)
+                mMappingPlatformMapObjects.put(platform.platformId, mapObject)
         }
         LOG.trace("for (platform in platformS) {.end")
         mMapObjectCollection?.addTapListener(this)
     }
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
+        LOG.debug("::: onMapObjectTap")
         val placeMark = mapObject as PlacemarkMapObject
-        val coord = placeMark.geometry
-        val plaformS = getActualPlatformS()
-        val clickedPlatform = plaformS.find {
-            it.coordLat == coord.latitude && it.coordLong == coord.longitude
-        }
-        if (clickedPlatform == null) {
-            toast("Платформа не найдена")
-            return false
-        }
+        val coordS = placeMark.geometry
+        val plaformE = viewModel.loadPlatformEntityByCoordS(coordS.latitude, coordS.longitude)
+        LOG.debug("::: loadPLAtformENtityByCoords:: ${plaformE.platformId}")
+//        if (plaformE == null) {
+//            toast("Платформа не найдена")
+//            return false
+//        }
         LOG.warn("onMapObjectTap")
-        val platformClickedDtlDialog = MapPlatformClickedDtlF(clickedPlatform, coord, this)
+        val platformClickedDtlDialog = MapPlatformClickedDtlF(plaformE, coordS, this)
         platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
 
 //        todo: !!!R_dos
@@ -861,11 +883,15 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
 
-    private fun getIconViewProvider(_context: Context, _platform: PlatformEntity): ViewProvider {
+    private fun getIconViewProvider(_context: Context, _platform: PlatformEntity, isForceMode: Boolean = false): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
         iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconFromStatus()))
         val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
+        if(isForceMode)
+            result.findViewById<View>(R.id.v__map_activity__iconmaker__bg_active).visibility = View.VISIBLE
+        else
+            result.findViewById<View>(R.id.v__map_activity__iconmaker__bg_active).visibility = View.GONE
         tv.isVisible = false
         if (_platform.isOrderTimeWarning()) {
             val orderTime = _platform.getOrderTimeForMaps()
@@ -1210,7 +1236,7 @@ class MapPlatformSBehaviorAdapter(
         holder.itemView.findViewById<TextView>(R.id.map_behavior_container_count).text = "${item.containerS.size} $containerString"
 
         holder.itemView.findViewById<TextView>(R.id.map_behavior_coordinate).setOnClickListener {
-            listener.moveCameraPlatform(PoinT(item.coordLat, item.coordLong))
+            listener.moveCameraPlatform(item)
         }
         holder.itemView.findViewById<ImageButton>(R.id.map_behavior_location).setOnClickListener {
             listener.navigatePlatform(Point(item.coordLat, item.coordLong))
@@ -1288,7 +1314,7 @@ class MapPlatformSBehaviorAdapter(
     interface PlatformClickListener {
         fun startPlatformService(item: PlatformEntity)
         fun startPlatformProblem(item: PlatformEntity)
-        fun moveCameraPlatform(point: PoinT)
+        fun moveCameraPlatform(item: PlatformEntity)
         fun navigatePlatform(checkPoint: Point)
         fun openFailureFire(item: PlatformEntity)
     }
