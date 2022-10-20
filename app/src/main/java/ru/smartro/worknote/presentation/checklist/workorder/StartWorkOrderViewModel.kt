@@ -21,7 +21,7 @@ class StartWorkOrderViewModel(app: Application) : AViewModel(app) {
     val mWorkOrderList: LiveData<Resource<WorkOrderResponse_know1>>
         get() = _workOrderList
 
-    val mSelectedWorkOrders: MutableLiveData<MutableList<Int>> = MutableLiveData(mutableListOf())
+    val mSelectedWorkOrdersIndecies: MutableLiveData<MutableList<Int>> = MutableLiveData(mutableListOf())
 
     
 
@@ -30,7 +30,7 @@ class StartWorkOrderViewModel(app: Application) : AViewModel(app) {
             LOG.info( "getWorkOder.before")
             try {
                 val response = networkDat.getWorkOrder(orgId, wayBillId)
-                mSelectedWorkOrders.postValue(mutableListOf())
+                mSelectedWorkOrdersIndecies.postValue(mutableListOf())
                 LOG.debug("getWorkOder.after ${response.body().toString()}")
                 when {
                     response.isSuccessful -> {

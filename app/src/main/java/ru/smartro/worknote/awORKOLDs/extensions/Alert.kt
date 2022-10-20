@@ -99,7 +99,7 @@ fun AAct.showDlgLogout(): View {
     return view
 }
 
-fun AAct.showDlgWarning(warningType: WarningType): View {
+fun AAct.showDlgWarning(warningType: WarningType, onDismiss: (() -> Unit)? = null): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.dialog_warning, null)
@@ -111,9 +111,11 @@ fun AAct.showDlgWarning(warningType: WarningType): View {
         WarningType.CAR_LOCKED -> getString(R.string.car_locked)
         WarningType.FUEL_LOCKED -> getString(R.string.fuel_locked)
         WarningType.PHOTO_LOCKED -> getString(R.string.photo_locked)
+        WarningType.DIFFERENT_UNLOAD_POINTS -> getString(R.string.different_unload_points)
     }
     view.findViewById<AppCompatButton>(R.id.acb__dialog_warning__ok)?.setOnClickListener {
         warningDialog?.dismiss()
+        onDismiss?.invoke()
     }
     builder.setView(view)
     warningDialog = builder.create()
@@ -129,6 +131,7 @@ enum class WarningType {
     CAR_LOCKED,
     FUEL_LOCKED,
     PHOTO_LOCKED,
+    DIFFERENT_UNLOAD_POINTS
 }
 
 //showDlgPickup!r_dos
