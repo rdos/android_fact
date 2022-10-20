@@ -77,6 +77,15 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         return mPlatformId
     }
 
+    fun loadPlatformEntityByCoordS(coordLat: Double, coordLong: Double): PlatformEntity {
+        val platformE = database.findPlatformByCoord(coordLat, coordLong)
+        if(platformE == null)
+            mPlatformId = Inull
+        else
+            mPlatformId = platformE.platformId
+        set_PlatformLiveData()
+        return platformE ?: PlatformEntity()
+    }
 
     // TODO: !!!
     fun setPlatformEntity(platformEntity: PlatformEntity) {

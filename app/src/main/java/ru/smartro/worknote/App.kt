@@ -777,17 +777,12 @@ fun Any.getDeviceDateTime(): Date {
     return Date()
 }
 
-fun Fragment.toast(text: String? = "") {
+fun Any.toast(text: String? = "") {
     try {
-        if(this.context != null && this.view != null) {
-            this.requireView().post{
-                Toast.makeText(this.context, text, Toast.LENGTH_SHORT).show()
-            }
-        }
+       Toast.makeText(App.getAppliCation().applicationContext, text, Toast.LENGTH_SHORT).show()
     } catch (ex: Exception) {
         LOG.error("eXthr", ex)
     }
-
 }
 
 fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
@@ -832,14 +827,6 @@ fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
 //    }
 //
 //}
-
-fun AppCompatActivity.toast(text: String? = "") {
-    try {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show()
-    } catch (e: Exception) {
-
-    }
-}
 
 /** Milliseconds used for UI animations */
 fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 1050L) {
