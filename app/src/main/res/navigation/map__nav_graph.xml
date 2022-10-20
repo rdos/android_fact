@@ -289,4 +289,18 @@
             />
     </dialog>
 
+    <fragment
+        android:id="@+id/StartUploadF"
+        android:name="ru.smartro.worknote.presentation.StartUploadF"
+        android:label="StartUploadF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
 </navigation>

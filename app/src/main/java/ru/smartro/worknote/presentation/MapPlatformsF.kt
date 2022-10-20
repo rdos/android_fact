@@ -159,13 +159,13 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //        LOG.debug("Location updated")
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewCreated(sview: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(sview, savedInstanceState)
         if (!MyUtil.hasPermissions(getAct(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(getAct(), PERMISSIONS, 1)
         }
 
-        mMapMyYandex = view.findViewById(R.id.map_view)
+        mMapMyYandex = sview.findViewById(R.id.map_view)
         val hasWorkOrdersInNotProgress = viewModel.database.hasWorkOrderInNotProgress()
         if (hasWorkOrdersInNotProgress) {
             showingProgress()
@@ -175,26 +175,26 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
         mMapMyYandex.map.addInertiaMoveListener(this)
 
-        mAcbInfo = view.findViewById(R.id.acb_f_map__info)
+        mAcbInfo = sview.findViewById(R.id.acb_f_map__info)
         mAcbInfo.setOnClickListener {
             createInfoDialog({})
         }
         setInfoData()
 
-        carFullStatusButton = view.findViewById(R.id.fl__f_map__car)
+        carFullStatusButton = sview.findViewById(R.id.fl__f_map__car)
         carFullStatusButton.setOnClickListener {
             getAct().showDlgWarning(WarningType.CAR_LOCKED)
         }
-        fuelStatusButton = view.findViewById(R.id.fl__f_map__fuel)
+        fuelStatusButton = sview.findViewById(R.id.fl__f_map__fuel)
         fuelStatusButton.setOnClickListener {
             getAct().showDlgWarning(WarningType.FUEL_LOCKED)
         }
-        photoStatusButton = view.findViewById(R.id.fl__f_map__photo)
+        photoStatusButton = sview.findViewById(R.id.fl__f_map__photo)
         photoStatusButton.setOnClickListener {
             getAct().showDlgWarning(WarningType.PHOTO_LOCKED)
         }
 
-        initBottomBehavior(view)
+        initBottomBehavior(sview)
 
         userLocationLayer = MapKitFactory.getInstance()
             .createUserLocationLayer(mMapMyYandex.mapWindow)
@@ -203,7 +203,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         userLocationLayer.isAutoZoomEnabled = true
         userLocationLayer.setObjectListener(this)
 
-        val fabGotoMyGPS = view.findViewById<FloatingActionButton>(R.id.fab_f_map__goto_my_gps)
+        val fabGotoMyGPS = sview.findViewById<FloatingActionButton>(R.id.fab_f_map__goto_my_gps)
         fabGotoMyGPS.setOnClickListener {
             try {
                 AppliCation().startLocationService(true)
@@ -214,14 +214,14 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             }
         }
 
-        acibNavigatorToggle = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__navigator_toggle)
+        acibNavigatorToggle = sview.findViewById<AppCompatImageButton>(R.id.acib__f_map__navigator_toggle)
         acibNavigatorToggle?.setOnClickListener {
             drivingModeState = false
             acibNavigatorToggle?.isVisible = drivingModeState
             clearMapObjectsDrive()
             hideDialog()
         }
-        val acibGotoLogActMapAPIB = view.findViewById<AppCompatImageButton>(R.id.goto_log__f_map__apib)
+        val acibGotoLogActMapAPIB = sview.findViewById<AppCompatImageButton>(R.id.goto_log__f_map__apib)
         acibGotoLogActMapAPIB.setOnClickListener {
             navigateMain(R.id.JournalChatFragment, null)
         }
@@ -272,6 +272,11 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
 //        setDevelMode()
         onRefreshData()
+
+        val acbUnload = sview.findViewById<AppCompatButton>(R.id.acb__f_map__unload)
+        acbUnload.setOnClickListener {
+            navigateMain(R.id.StartUploadF)
+        }
     }
 
     private fun changeMapObjectIcon(platformEntity: PlatformEntity, isForceMode: Boolean) {
