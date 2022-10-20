@@ -6,7 +6,6 @@ import android.graphics.Color
 import androidx.core.content.ContextCompat
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.yandex.mapkit.offline_cache.RegionState
 import io.realm.Realm
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -29,8 +28,8 @@ open class WorkOrderEntity(
     var waste_type_id: Int? = null,
     var waste_type_name: String? = null,
     var waste_type_color: String? = null,
-    var start: StartEntity? = null,
-//    var unload: UnloadEntity? = null,
+    var start: StartWorkOrderEntity? = null,
+    var unload: UnloadWorkOrderEntity? = null,
 
     var cnt_platform: Int = Inull,
     var cnt_container: Int = Inull,
@@ -194,17 +193,32 @@ open class WorkOrderEntity(
             return result
         }
 
-        private fun mapStart(data: STaRT_know1?): StartEntity? {
-            var result: StartEntity? = null
+        private fun mapStart(data: STaRT_know1?,  workorderId: Int): StartWorkOrderEntity? {
+            var result: StartWorkOrderEntity? = null
             if (data != null) {
-                result = StartEntity(
+                result = StartWorkOrderEntity(
                     coords = RealmList(data.coords[0], data.coords[1]),
                     name = data.name,
-                    id = data.id
+                    id = data.id,
+                    workOrderId = workorderId
                 )
             }
             return result
         }
+
+        private fun mapUnload(data: Unload_know1?,  workorderId: Int): UnloadWorkOrderEntity? {
+            var result: UnloadWorkOrderEntity? = null
+            if (data != null) {
+                result = UnloadWorkOrderEntity(
+                    coords = RealmList(data.coords[0], data.coords[1]),
+                    name = data.name,
+                    id = data.id,
+                    workOrderId = workorderId
+                )
+            }
+            return result
+        }
+
 
         /**public inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.mapTo(destination: C, transform: (T) -> R): C {        */
         fun map(woRKoRDeRknow1List: List<WoRKoRDeR_know1>, database: RealmRepository): RealmList<WorkOrderEntity> {
@@ -219,7 +233,8 @@ open class WorkOrderEntity(
                             waste_type_name = woRKoRDeRknow1.waste_type?.name,
                             waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
                             platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id, database),
-                            start = mapStart(woRKoRDeRknow1.STaRTknow1)
+                            start = mapStart(woRKoRDeRknow1.STaRTknow1, woRKoRDeRknow1.id),
+                            unload = mapUnload(woRKoRDeRknow1.uNLoaDknow1, woRKoRDeRknow1.id)
                         )
                         res.add(workOrder)
                     } catch (eXthr: Exception) {
@@ -231,12 +246,6 @@ open class WorkOrderEntity(
         }
     }
 }
-
-open class StartEntity(
-    var coords: RealmList<Double> = RealmList(),
-    var name: String? = null,
-    var id: Int? = null
-    ) : Serializable, RealmObject()
 
 open class KGOEntity(
     @Expose
@@ -393,6 +402,10 @@ open class PlatformEntity(
     @Expose
     @SerializedName("status")
     var status: String? = Snull,
+
+    @Expose
+    @SerializedName("unload")
+    var weightUnloadEntity: WeightUnloadEntity? = null,
     @Expose
     @SerializedName("beginned_at")
     var beginnedAt: String? = null,
@@ -435,7 +448,7 @@ open class PlatformEntity(
     @SerializedName("kgo_served")
     var kgoServed: KGOEntity? = null,
 
-) : Serializable, RealmObject() {
+    ) : Serializable, RealmObject() {
 
     fun getBeforeMediaSize() = this.beforeMedia.size
     fun getAfterMediaSize() = afterMedia.size
@@ -888,12 +901,38 @@ open class PlatformEntity(
 //    }
 }
 
-
-open class UnloadEntity(
+open class StartWorkOrderEntity(
     var coords: RealmList<Double> = RealmList(),
     var name: String? = null,
-    var id: Int? = null
+    var id: Int? = null,
+    var workOrderId: Int = Inull
 ) : Serializable, RealmObject()
+
+open class UnloadWorkOrderEntity(
+    var coords: RealmList<Double> = RealmList(),
+    var name: String? = null,
+    var id: Int? = null,
+    var workOrderId: Int = Inull
+) : RealmObject()
+
+
+open class WeightUnloadEntity(
+    @SerializedName("before_media")
+    @Expose
+    var beforeMedia: RealmList<ImageEntity> = RealmList(),
+    @SerializedName("after_media")
+    @Expose
+    var afterMedia: RealmList<ImageEntity> = RealmList(),
+    @SerializedName("before_value")
+    @Expose
+    var beforeValue: Float? = null,
+    @SerializedName("after_value")
+    @Expose
+    var afterValue: Float? = null,
+    @SerializedName("ticket_value")
+    @Expose
+    var ticketValue: Float? = null,
+): RealmObject()
 
 enum class ConfigName(val displayName: String) {
     BOOT_CNT("BOOT_CNT"),

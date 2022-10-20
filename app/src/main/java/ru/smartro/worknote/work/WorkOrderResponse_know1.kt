@@ -1,9 +1,6 @@
 package ru.smartro.worknote.work
 
 import com.google.gson.annotations.SerializedName
-import io.realm.RealmList
-import io.realm.RealmObject
-import java.io.Serializable
 
 
 data class WorkOrderResponse_know1(
@@ -30,10 +27,10 @@ data class WoRKoRDeR_know1(
     @SerializedName("start")
     val STaRTknow1: STaRT_know1,
     @SerializedName("unload")
-    val unload: Unload
+    val uNLoaDknow1: Unload_know1
 )
 
-data class Unload(
+data class Unload_know1(
     @SerializedName("coords")
     val coords: List<Double>,
     @SerializedName("id")
