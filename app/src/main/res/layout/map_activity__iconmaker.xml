@@ -18,13 +18,21 @@
         android:text="TesT.RNull"
         />
     <!--        android:textSize="13px"-->
-    <ImageView
-        android:id="@+id/map_activity__iconmaker__imageview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_bunker_red"
-        android:layout_gravity="center"
-        android:padding="4dp"
-        android:background="@drawable/bg_active_circle"
-        />
+    <RelativeLayout
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <View
+            android:id="@+id/v__map_activity__iconmaker__bg_active"
+            android:layout_width="32dp" android:layout_height="32dp"
+            android:background="@drawable/bg_circle_button"/>
+
+        <ImageView
+            android:id="@+id/map_activity__iconmaker__imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_bunker_red"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
 </androidx.appcompat.widget.LinearLayoutCompat >
