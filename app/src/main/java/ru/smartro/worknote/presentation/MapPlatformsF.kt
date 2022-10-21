@@ -167,7 +167,8 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         mMapMyYandex = view.findViewById(R.id.map_view)
         val hasWorkOrdersInNotProgress = viewModel.database.hasWorkOrderInNotProgress()
-        if (hasWorkOrdersInNotProgress) {
+        if (hasWorkOrdersInNotProgress || viewModel.database.findAllBreakDown().isEmpty()) {
+            LOG.debug("::: hasWorkOrdersInNotProgress: ${hasWorkOrdersInNotProgress}, breakdown list size: ${viewModel.database.findAllBreakDown().size}")
             showingProgress()
             val extraPramId = getAct().getPutExtraParam_ID()
             val workOrderS = viewModel.database.findWorkOrders_Old(extraPramId)

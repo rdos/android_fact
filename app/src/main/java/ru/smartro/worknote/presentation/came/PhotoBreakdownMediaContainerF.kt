@@ -18,13 +18,13 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
             return viewModel.getContainerMediaEntity(mContainerId)
         }
     override fun onGetTextForFailHint() = "Причина поломки контейнера"
-    override fun onGetStringList(): List<String>? {
+    override fun onGetStringList(): List<String> {
         mBreakDownReasonS = viewModel.database.findAllBreakDown()
-        if (mBreakDownReasonS == null) {
+        if (mBreakDownReasonS == null || mBreakDownReasonS?.size == 0) {
             toast("Ошибка.todo:::")
             return emptyList()
         }
-        return mBreakDownReasonS
+        return mBreakDownReasonS!!
     }
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
         return mContainerMediaEntity.breakdownMedia
