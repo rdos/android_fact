@@ -24,7 +24,7 @@ abstract class ANOFragment : Fragment(){
 
     //todo: ???onCreate
     // TODO: abstract fun onInitLayoutView(view: View): Boolean
-    protected open fun onInitLayoutView(view: SmartROllc): Boolean {
+    protected open fun onInitLayoutView(sview: SmartROllc): Boolean {
         LOG.warn(" LoG.todo()")
         return true
     }
