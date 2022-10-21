@@ -125,7 +125,6 @@ open class WorkOrderEntity(
 
         private fun mapPlatforms(data: List<Platform_know1>, workorderId: Int, database: RealmRepository): RealmList<PlatformEntity> {
             val result = data.mapTo(RealmList()) {
-                LOG.info("PLATFORM MAP::: failureMediaSize ${it.failureMedia.size} failureReason ${it.failureReasonId}")
                 val platformEntity = PlatformEntity(
                     platformId = it.id,
                     address = it.address,
@@ -895,9 +894,10 @@ open class UnloadEntity(
     var id: Int? = null
 ) : Serializable, RealmObject()
 
+// TODO:: Rename
 enum class ConfigName(val displayName: String) {
-    BOOT_CNT("BOOT_CNT"),
     Snull(ru.smartro.worknote.Snull),
+    BOOT_CNT("BOOT_CNT"),
     RUNAPP_CNT("RUNAPP_CNT"),
     SWIPE_CNT("SWIPE_CNT"),
     AIRPLANE_MODE_ON_CNT("AIRPLANE_MODE_ON_CNT"),
@@ -905,6 +905,7 @@ enum class ConfigName(val displayName: String) {
     NOINTERNET_CNT("NOINTERNET_CNT"),
     MAPACTDESTROY_CNT("MAPACTDESTROY_CNT"),
     USER_WORK_SERVE_MODE_CODENAME("USER_WORK_SERVE_MODE_CODENAME"),
+    AAPP__LAST_SYNCHROTIME_IN_SEC("AAPP__LAST_SYNCHROTIME_IN_SEC")
 }
 
 open class ConfigEntity(

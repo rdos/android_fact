@@ -471,7 +471,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private fun getNextPlatformToSend(next: (nextSentPlatforms: List<PlatformEntity>, timeBefore: Long) -> Any) {
         var nextSentPlatforms: List<PlatformEntity> = emptyList()
         mTimeBeforeInSec = MyUtil.timeStampInSec()
-        val lastSynchroTimeInSec = paramS().lastSynchroTimeInSec
+        val lastSynchroTimeInSec = paramS().lastSynchroAttemptTimeInSec
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
@@ -1097,7 +1097,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     override fun onResponse(call: Call, response: Response) {
         if(response.isSuccessful) {
             view?.post{
-                paramS().lastSynchroTimeInSec = mTimeBeforeInSec
+                paramS().lastSynchroAttemptTimeInSec = mTimeBeforeInSec
                 gotoSynchronize()
             }
         } else {
