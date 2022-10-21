@@ -12,19 +12,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AbstractDialog
+import ru.smartro.worknote.abs.ADFragment
+import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
+import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.PlatformEntity
 import kotlin.math.min
 
-class MapPlatformClickedDtlF(private val _platform: PlatformEntity, private val _point: Point,
-                             private val listener: MapPlatformSBehaviorAdapter.PlatformClickListener
-) : AbstractDialog(), View.OnClickListener {
+class MapPlatformClickedDF : ADFragment(), View.OnClickListener {
+    private val viewModel: ServePlatformVM by activityViewModels()
     private lateinit var mCurrentActivity: AppCompatActivity
     private val mOnClickListener = this as View.OnClickListener
 
@@ -33,9 +34,10 @@ class MapPlatformClickedDtlF(private val _platform: PlatformEntity, private val 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val _platform = viewModel.getPlatformEntity()
         //onBindViewHolder
         super.onViewCreated(view, savedInstanceState)
-        LOG.warn( "R_dos")
+        LOG.warn("R_dos")
         mCurrentActivity = requireActivity() as MainAct
 
         val spanCount = min(_platform.containerS.size, 10)
@@ -65,7 +67,7 @@ class MapPlatformClickedDtlF(private val _platform: PlatformEntity, private val 
         // TODO: 27.10.2021 !! !?
         initButtonsViews(view)
         view.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener {
-            dismiss()
+//            dismiss()
         }
 
         view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
@@ -89,11 +91,12 @@ class MapPlatformClickedDtlF(private val _platform: PlatformEntity, private val 
         when (v?.id) {
             R.id.btn_dialog_platform_clicked_dtl__serve_again  -> {
                 dismiss()
-                listener.startPlatformService(_platform)
+//                navigateBack()
+//                listener.startPlatformService(_platform)
             }
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
-                dismiss()
-                listener.startPlatformService(_platform)
+                navigateBack()
+//                listener.startPlatformService(_platform)
             }
         }
 
@@ -110,16 +113,28 @@ class MapPlatformClickedDtlF(private val _platform: PlatformEntity, private val 
         dialog?.window?.attributes = params
     }
 
+    override fun onInitLayoutView(sview: SmartROllc): Boolean {
+        return true
+    }
+
+    override fun onNewLiveData() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBackPressed() {
+
+    }
+
     private fun initButtonsViews(view: View) {
         view.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener {
-            dismiss()
-            listener.openFailureFire(_platform)
+//            dismiss()
+//            listener.openFailureFire(_platform)
         }
 
         //коммент инициализации
         view.findViewById<ImageButton>(R.id.platform_location).setOnClickListener {
-            dismiss()
-            listener.navigatePlatform(_point)
+//            dismiss()
+//            listener.navigatePlatform(_point)
         }
     }
     

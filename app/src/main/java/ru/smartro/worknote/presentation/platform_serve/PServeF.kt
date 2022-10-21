@@ -122,10 +122,7 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
         }
 
         sscToGroupByFMode?.setOnCheckedChangeListener { _, _ ->
-            // TODO: !!!
-            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
-            configEntity.value = PlatformEntity.Companion.ServeMode.PServeGroupByContainersF
-            vm.database.saveConfig(configEntity)
+            vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeGroupByContainersF)
             navigateMain(R.id.PServeGroupByContainersF, vm.getPlatformId())
         }
 

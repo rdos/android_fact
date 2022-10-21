@@ -263,9 +263,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             if(mLastActivePlatform != null) {
                 changeMapObjectIcon(mLastActivePlatform!!, false)
             }
-
             changeMapObjectIcon(it, true)
-
             moveCameraTo(PoinT(it.coordLat, it.coordLong))
 
             mLastActivePlatform = it
@@ -277,9 +275,14 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         acbUnload.setOnClickListener {
             navigateMain(R.id.StartUploadF)
         }
+        val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+        if (isModeUnload) {
+            acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.red_cool))
+        }
     }
 
-    private fun changeMapObjectIcon(platformEntity: PlatformEntity, isForceMode: Boolean) {
+    private fun changeMapObjectIcon(platformEntity: PlatformEntity, isActiveMode: Boolean) {
+        LOG.debug("changeMapObjectIcon")
         val platformId = platformEntity.platformId
 
         val oldObj = mMappingPlatformMapObjects[platformId]
@@ -288,7 +291,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         val coordLat = platformEntity.coordLat
         val coordLong = platformEntity.coordLong
         val point = Point(coordLat, coordLong)
-        val viewProvider = getIconViewProvider(requireContext(), platformEntity, isForceMode)
+        val viewProvider = getIconViewProvider(requireContext(), platformEntity, isActiveMode)
 
         val newObj = mMapObjectCollection?.addPlacemark(point, viewProvider)
         mMappingPlatformMapObjects[platformId] = newObj!!
@@ -877,8 +880,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //            return false
 //        }
         LOG.warn("onMapObjectTap")
-        val platformClickedDtlDialog = MapPlatformClickedDtlF(plaformE, coordS, this)
-        platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
+        navigateMain(R.id.MapPlatformClickedDtlF)
+//        val platformClickedDtlDialog = MapPlatformClickedDtlF(plaformE, coordS, this)
+//        platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
 
 //        todo: !!!R_dos
 //        findNavController().navigate(
@@ -888,15 +892,16 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
 
-    private fun getIconViewProvider(_context: Context, _platform: PlatformEntity, isForceMode: Boolean = false): ViewProvider {
+    private fun getIconViewProvider(_context: Context, _platform: PlatformEntity, isActiveMode: Boolean = false): ViewProvider {
         val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
         iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconFromStatus()))
         val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
-        if(isForceMode)
+        if (isActiveMode) {
             result.findViewById<View>(R.id.v__map_activity__iconmaker__bg_active).visibility = View.VISIBLE
-        else
+        } else {
             result.findViewById<View>(R.id.v__map_activity__iconmaker__bg_active).visibility = View.GONE
+        }
         tv.isVisible = false
         if (_platform.isOrderTimeWarning()) {
             val orderTime = _platform.getOrderTimeForMaps()
@@ -972,9 +977,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         super.onDestroy()
         mMapMyYandex.onStop()
         MapKitFactory.getInstance().onStop()
-        val configEntity = viewModel.database.loadConfig(ConfigName.MAPACTDESTROY_CNT)
-        configEntity.cntPlusOne()
-        viewModel.database.saveConfig(configEntity)
+        viewModel.database.setConfigCntPlusOne(ConfigName.MAPACTDESTROY_CNT)
         viewModel.database.close()
     }
 
