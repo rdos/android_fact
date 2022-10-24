@@ -167,7 +167,8 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         mMapMyYandex = sview.findViewById(R.id.map_view)
         val hasWorkOrdersInNotProgress = viewModel.database.hasWorkOrderInNotProgress()
-        if (hasWorkOrdersInNotProgress) {
+        if (hasWorkOrdersInNotProgress || viewModel.database.findAllBreakDown().isEmpty()) {
+            LOG.debug("::: hasWorkOrdersInNotProgress: ${hasWorkOrdersInNotProgress}, breakdown list size: ${viewModel.database.findAllBreakDown().size}")
             showingProgress()
             val extraPramId = getAct().getPutExtraParam_ID()
             val workOrderS = viewModel.database.findWorkOrders_Old(extraPramId)
@@ -476,7 +477,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private fun getNextPlatformToSend(next: (nextSentPlatforms: List<PlatformEntity>, timeBefore: Long) -> Any) {
         var nextSentPlatforms: List<PlatformEntity> = emptyList()
         mTimeBeforeInSec = MyUtil.timeStampInSec()
-        val lastSynchroTimeInSec = paramS().lastSynchroTimeInSec
+        val lastSynchroTimeInSec = paramS().lastSynchroAttemptTimeInSec
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
@@ -1102,7 +1103,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     override fun onResponse(call: Call, response: Response) {
         if(response.isSuccessful) {
             view?.post{
-                paramS().lastSynchroTimeInSec = mTimeBeforeInSec
+                paramS().lastSynchroAttemptTimeInSec = mTimeBeforeInSec
                 gotoSynchronize()
             }
         } else {

@@ -501,9 +501,10 @@ class RealmRepository(private val p_realm: Realm) {
 
     // TODO:
     fun findLastPlatforms(): List<PlatformEntity> {
+        LOG.debug("::: findLastPlatforms")
         refreshRealm_know0()
         //todo: -1 секунда
-        val lastSynchroTime = App.getAppParaMS().lastSynchroTimeInSec - 1L
+        val lastSynchroTime = App.getAppParaMS().lastSynchroAttemptTimeInSec - 1L
         return p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).greaterThan("updateAt", lastSynchroTime)
                 .findAll()
@@ -511,10 +512,11 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     fun findPlatforms30min(): List<PlatformEntity> {
+        LOG.debug("::: findPlatforms30min")
         refreshRealm_know0()
         val TIME_30MIN_SEC = 30 * 60
         //todo: -1 секунда
-        val lastSynchroTime = App.getAppParaMS().lastSynchroTimeInSec - 1L
+        val lastSynchroTime = App.getAppParaMS().lastSynchroAttemptTimeInSec - 1L
         return p_realm.copyFromRealm(p_realm.where(PlatformEntity::class.java)
             .greaterThan("updateAt", lastSynchroTime)
             .lessThanOrEqualTo("updateAt", lastSynchroTime + TIME_30MIN_SEC)
@@ -1252,5 +1254,7 @@ class RealmRepository(private val p_realm: Realm) {
         result = true
         return result
     }
+
+
 
 }

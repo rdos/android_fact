@@ -107,13 +107,14 @@ class NetworkRepository(private val context: Context) {
     }
 
     fun getBreakDownTypes() = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info( "getBreakDownTypes")
+        LOG.info("getBreakDownTypes")
         try {
             val response = RetrofitClient(context)
                 .apiService(true).getBreakDownTypes()
             LOG.debug("getBreakDownTypes.after ${response.body().toString()}")
             when {
                 response.isSuccessful -> {
+                    LOG.debug("getBreakDownTypes.after SUCCESSFUL")
                     insertBreakDown(response.body()?.data)
 //                    emit(Resource.success(response.body()))
                 }
@@ -125,6 +126,7 @@ class NetworkRepository(private val context: Context) {
                 }
             }
         } catch (e: Exception) {
+            LOG.debug("getBreakDownTypes.after EXCEPTION")
             emit(Resource.network("Проблемы с подключением интернета", null))
         }
     }

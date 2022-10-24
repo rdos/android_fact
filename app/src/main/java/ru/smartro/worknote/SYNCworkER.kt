@@ -4,13 +4,11 @@ package ru.smartro.worknote
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import io.realm.Realm
 import kotlinx.coroutines.delay
-import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -142,7 +140,7 @@ class SYNCworkER(
         LOG.debug("before")
         logSentry("SYNCworkER STARTED")
         var timeBeforeRequest: Long = MyUtil.timeStampInSec()
-        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroAttemptTimeInSec
         var platforms: List<PlatformEntity> = emptyList()
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
@@ -173,8 +171,11 @@ class SYNCworkER(
         val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
         when (synchronizeResponse.status) {
             Status.SUCCESS -> {
+//                TODO ::: 0:)
+//                db().setConfig(ConfigName.AAPP__LAST_SYNCHROTIME_IN_SEC, timeBeforeRequest)
+                App.getAppParaMS().lastSynchroAttemptTimeInSec = timeBeforeRequest
                 if (platforms.isNotEmpty()) {
-                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
+                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest.toString()
                     LOG.error( Thread.currentThread().getId().toString())
                     db().updatePlatformNetworkStatus(platforms)
                     LOG.info("SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")

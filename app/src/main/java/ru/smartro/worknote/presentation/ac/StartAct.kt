@@ -109,7 +109,7 @@ class StartAct : AAct() {
                     //ниже "супер код"
                     //todo: copy-past from SYNCworkER
                     var timeBeforeRequest: Long
-                    val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+                    val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroAttemptTimeInSec
                     var platforms: List<PlatformEntity> = emptyList()
 
                     val m30MinutesInSec = 30 * 60
