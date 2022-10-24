@@ -16,7 +16,7 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttrs: Int = 0
 ): ConstraintLayout(context, attrs, defStyleAttrs) {
-
+//?1)
     private var rlBackground: View? = null
     private var vLayer: View? = null
     private var acibDraggableButton: AppCompatImageButton? = null

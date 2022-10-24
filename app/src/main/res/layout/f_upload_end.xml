@@ -18,7 +18,10 @@
             android:text="@string/f_upload_start__info"
             />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <!--<androidx.appcompat.widget.AppCompatButton-->
+        <!--<ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton-->
+        <!--    android:layout_width="" android:layout_height=""-->
+        <ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
             android:id="@+id/acb_f_upload_end__start"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="Начать"/>
