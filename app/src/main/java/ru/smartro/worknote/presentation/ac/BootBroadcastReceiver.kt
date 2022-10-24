@@ -27,9 +27,7 @@ class BootBroadcastReceiver : BroadcastReceiver() {
             return
         }
         Log.w(TAG, "onReceive")
-        val configEntity = db.loadConfig(ConfigName.BOOT_CNT)
-        configEntity.cntPlusOne()
-        db.saveConfig(configEntity)
+        db.setConfigCntPlusOne(ConfigName.BOOT_CNT)
         db.close()
 //        TODO("Not yet implemented")
     }

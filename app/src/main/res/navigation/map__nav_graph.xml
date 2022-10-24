@@ -20,9 +20,9 @@
     </fragment>
     <!--Directions-->
     <dialog
-        android:id="@+id/MapActPlatformClickedDtlDialog"
-        android:name="ru.smartro.worknote.presentation.MapPlatformClickedDtlF"
-        android:label="MapActPlatformClickedDtlDialog">
+        android:id="@+id/MapPlatformClickedDtlF"
+        android:name="ru.smartro.worknote.presentation.MapPlatformClickedDF"
+        android:label="MapPlatformClickedDtlF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -289,7 +289,7 @@
             />
     </dialog>
 
-    <fragment
+    <dialog
         android:id="@+id/StartUploadF"
         android:name="ru.smartro.worknote.presentation.StartUploadF"
         android:label="StartUploadF">
@@ -301,6 +301,6 @@
             android:name="ARGUMENT_NAME___PARAM_NAME"
             app:argType="string"
             />
-    </fragment>
+    </dialog>
 
 </navigation>

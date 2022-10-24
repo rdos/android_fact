@@ -1093,7 +1093,7 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun loadConfig(name: ConfigName): ConfigEntity {
+    private fun loadConfig(name: ConfigName): ConfigEntity {
         val result: ConfigEntity
         val configEntity = p_realm.where(ConfigEntity::class.java).equalTo("name", name.displayName.uppercase()).findFirst()
         if (configEntity == null) {
@@ -1114,10 +1114,54 @@ class RealmRepository(private val p_realm: Realm) {
         return result
     }
 
-    fun saveConfig(configEntity: ConfigEntity) {
+    private fun saveConfig(configEntity: ConfigEntity) {
         p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(configEntity)
         }
+    }
+
+    fun setConfigCntPlusOne(name: ConfigName){
+        val configEntity = loadConfig(name)
+        configEntity.cntPlusOne()
+        saveConfig(configEntity)
+    }
+    fun setConfig(name: ConfigName, value: String) {
+        val configEntity = loadConfig(name)
+
+        configEntity.value = value.toString()
+        saveConfig(configEntity)
+    }
+
+    fun setConfig(name: ConfigName, value: Long) {
+        val configEntity = loadConfig(name)
+
+        configEntity.value = value.toString()
+        saveConfig(configEntity)
+    }
+
+    fun setConfig(name: ConfigName, value: Boolean) {
+        val configEntity = loadConfig(name)
+        configEntity.value = value.toString()
+        saveConfig(configEntity)
+    }
+
+
+    fun getConfigBool(name: ConfigName): Boolean {
+        var result = false
+        val configEntity = loadConfig(name)
+        try {
+            result = configEntity.value.toBoolean()
+        } catch (ex: Exception) {
+            configEntity.value = result.toString()
+            saveConfig(configEntity)
+        }
+        return result
+    }
+
+
+    fun getConfigString(name: ConfigName): String {
+        val configEntity = loadConfig(name)
+        return configEntity.value
     }
 
     fun close() {

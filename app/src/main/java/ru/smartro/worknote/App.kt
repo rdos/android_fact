@@ -267,9 +267,7 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
-        val configEntity = getDB().loadConfig(ConfigName.RUNAPP_CNT)
-        configEntity.cntPlusOne()
-        getDB().saveConfig(configEntity)
+        getDB().setConfigCntPlusOne(ConfigName.RUNAPP_CNT)
 
         LOG.info("DEBUG::: Current Realm Schema Version : ${Realm.getDefaultInstance().version}")
 

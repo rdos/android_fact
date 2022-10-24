@@ -22,12 +22,11 @@ class AirplanemodeIntentService() : IntentService("AirplanemodeIntentService") {
         Log.w("AirplanemodeIntentService", "onHandleIntent")
         val isAirplaneModeEnabled = intent?.getBooleanExtra("isAirplaneModeEnabled", false) ?: return
         LOG.warn("AirplaneService: isAirplaneModeEnabled = ${isAirplaneModeEnabled}")
-        val configEntity = if(isAirplaneModeEnabled)
-            db.loadConfig(ConfigName.AIRPLANE_MODE_ON_CNT)
-        else
-            db.loadConfig(ConfigName.AIRPLANE_MODE_OFF_CNT)
-        configEntity.cntPlusOne()
-        db.saveConfig(configEntity)
+        if (isAirplaneModeEnabled) {
+            db.setConfigCntPlusOne(ConfigName.AIRPLANE_MODE_ON_CNT)
+        } else {
+            db.setConfigCntPlusOne(ConfigName.AIRPLANE_MODE_OFF_CNT)
+        }
         db.close()
 //        TODO("Not yet implemented")
     }

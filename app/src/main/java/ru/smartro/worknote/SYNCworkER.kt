@@ -191,9 +191,7 @@ class SYNCworkER(
             Status.ERROR -> LOG.error("SYNCworkER ERROR")
             Status.NETWORK -> {
                 LOG.warn("SYNCworkER NO INTERNET")
-                val configEntity = db().loadConfig(ConfigName.NOINTERNET_CNT)
-                configEntity.cntPlusOne()
-                db().saveConfig(configEntity)
+                db().setConfigCntPlusOne(ConfigName.NOINTERNET_CNT)
             }
             Status.ERROR -> LOG.error("Status.ERROR")
             Status.NETWORK -> LOG.warn("Status.NETWORK==NO INTERNET")

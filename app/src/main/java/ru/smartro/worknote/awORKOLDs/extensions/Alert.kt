@@ -11,13 +11,12 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import org.slf4j.LoggerFactory
-import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.ANOFragment
-import ru.smartro.worknote.abs.AbstractDialog
+import ru.smartro.worknote.abs.ADFragment
 
 private var loadingDialog: AlertDialog? = null
 private var mCustomDialog: AlertDialog? = null
@@ -32,7 +31,7 @@ fun AppCompatActivity.hideDialog() {
     hideCustomDialog()
 }
 
-fun AbstractDialog.hideDialog() {
+fun ADFragment.hideDialog() {
     hideCustomDialog()
 }
 
