@@ -45,6 +45,12 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         return mPlatformEntity!!
     }
 
+    fun updatePlatformEntity() {
+        if(mPlatformId != Inull && mPlatformEntity != null) {
+            set_PlatformLiveData()
+        }
+    }
+
     fun getPlatformMediaEntity(): PlatformMediaEntity {
         if (mPlatformMediaEntity == null) {
             mPlatformMediaEntity = database.getPlatformMediaEntity(getPlatformEntity())
@@ -178,7 +184,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         mPlatformVoiceCommentEntity = null
         getPlatformVoiceCommentEntity()
 
-    _PlatformLiveData.postValue(mPlatformEntity!!)
+        _PlatformLiveData.postValue(mPlatformEntity!!)
     }
 
     fun decGroupByContainerTypeClientS(typeClientEntity: ContainerGROUPClientTypeEntity) {

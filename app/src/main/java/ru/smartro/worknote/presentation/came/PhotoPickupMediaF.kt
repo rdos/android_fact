@@ -49,14 +49,10 @@ class PhotoPickupMediaF : APhotoFragment() {
         viewModel.updateVolumePickup(newVolume)
         navigateMain(R.id.PServeF, viewModel.getPlatformId())
     }
-
-
+    
     override fun onBackPressed() {
         super.onBackPressed()
         super.dropOutputD()
         navigateBack()
-    }
-
-    companion object {
     }
 }
