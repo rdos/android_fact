@@ -324,6 +324,7 @@ abstract class APhotoFragment(
 //                 = if(mediaSize <= 0) else View.VISIBLE
                 acbCancel?.setOnClickListener {
                     onClickBtnCancel()
+                    viewModel.updatePlatformEntity()
                 }
                 ibTakePhoto?.isEnabled = true
 
@@ -424,6 +425,7 @@ abstract class APhotoFragment(
                 }
                 LOG.debug("onAfterUSE")
                 onAfterUSE(imageS)
+                viewModel.updatePlatformEntity()
                 LOG.info("onAfterUSE.after")
                 dropOutputD()
             } finally {

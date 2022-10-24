@@ -25,7 +25,7 @@
         <View
             android:id="@+id/v__map_activity__iconmaker__bg_active"
             android:layout_width="32dp" android:layout_height="32dp"
-            android:background="@drawable/bg_circle_button"/>
+            android:background="@drawable/bg_circle_button__active"/>
 
         <ImageView
             android:id="@+id/map_activity__iconmaker__imageview"
