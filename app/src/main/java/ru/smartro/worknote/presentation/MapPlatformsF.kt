@@ -848,17 +848,17 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
 
         mMapObjectCollection?.removeTapListener(this)
-        LOG.trace("for (platform in platformS) {.init")
+//        LOG.trace("for (platform in platformS) {.init")
         for (platform in platformS) {
-            LOG.trace("getIconViewProvider.init")
+//            LOG.trace("getIconViewProvider.init")
             val iconProvider = getIconViewProvider(getAct(), platform)
-            LOG.trace("getIconViewProvider.end")
+//            LOG.trace("getIconViewProvider.end")
             val pointYandex = Point(platform.coordLat, platform.coordLong)
             val mapObject = mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
             if(mapObject != null)
                 mMappingPlatformMapObjects.put(platform.platformId, mapObject)
         }
-        LOG.trace("for (platform in platformS) {.end")
+//        LOG.trace("for (platform in platformS) {.end")
         mMapObjectCollection?.addTapListener(this)
     }
 

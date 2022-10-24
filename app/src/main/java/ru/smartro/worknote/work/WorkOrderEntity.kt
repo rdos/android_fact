@@ -6,7 +6,6 @@ import android.graphics.Color
 import androidx.core.content.ContextCompat
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.yandex.mapkit.offline_cache.RegionState
 import io.realm.Realm
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -161,9 +160,11 @@ open class WorkOrderEntity(
                 val beforeMedia = mapMedia(it.beforeMedia)
                 platformEntity.addAfterMedia(beforeMedia)
                 platformMediaEntity.beforeMedia.addAll(beforeMedia)
-                val failureMedia = mapMedia(it.failureMedia)
-                platformEntity.addFailureMedia(failureMedia)
-                platformMediaEntity.failureMedia.addAll(failureMedia)
+                if(it.failureMedia != null) {
+                    val failureMedia = mapMedia(it.failureMedia)
+                    platformEntity.addFailureMedia(failureMedia)
+                    platformMediaEntity.failureMedia.addAll(failureMedia)
+                }
 
                 it.kgo_served?.let {
                     it.volume?.let {
@@ -426,7 +427,7 @@ open class PlatformEntity(
     var pickupMedia: RealmList<ImageEntity> = RealmList(),
     @Expose
     @SerializedName("failure_media")
-    var failureMedia: RealmList<ImageEntity> = RealmList(),
+    var failureMedia: RealmList<ImageEntity>? = RealmList(),
     @Expose
     @SerializedName("kgo_remaining")
     var kgoRemaining: KGOEntity? = null,
@@ -438,7 +439,7 @@ open class PlatformEntity(
 
     fun getBeforeMediaSize() = this.beforeMedia.size
     fun getAfterMediaSize() = afterMedia.size
-    fun getFailureMediaSize() = this.failureMedia.size
+    fun getFailureMediaSize() = this.failureMedia?.size ?: 0
     fun getPickupMediaSize() = this.pickupMedia.size
     fun getRemainingKGOMediaSize(): Int {
         var result = 0
@@ -796,7 +797,7 @@ open class PlatformEntity(
         this.failureMedia = RealmList()
         for(image in imageS) {
             val imageEntity = ImageEntity.createEmpty(image)
-            this.failureMedia.add(imageEntity)
+            this.failureMedia?.add(imageEntity)
         }
     }
 
@@ -819,15 +820,22 @@ open class PlatformEntity(
                 failureReasonId = it.failureReasonId,
 //                breakdownReasonId = ,
 //                comment
-                failureMedia = WorkOrderEntity.mapMedia(it.failureMedia),
 //                breakdownMedia
 //                breakdownComment
                 workOrderId = this.workOrderId
             )
             val containerMediaEntity = database.loadContainerMediaEntity(containerEntity)
-            val failureMedia = WorkOrderEntity.mapMedia(it.failureMedia)
-            containerEntity.addFailureMedia(afterMedia)
-            containerMediaEntity.failureMedia.addAll(failureMedia)
+            if(it.failureMedia != null) {
+                val failureMedia = WorkOrderEntity.mapMedia(it.failureMedia)
+                containerEntity.addFailureMedia(failureMedia)
+                containerMediaEntity.failureMedia.addAll(failureMedia)
+            }
+
+            if(it.breakdownMedia != null) {
+                val breakdownMedia = WorkOrderEntity.mapMedia(it.breakdownMedia)
+                containerEntity.addBreakdownMedia(breakdownMedia)
+                containerMediaEntity.failureMedia.addAll(breakdownMedia)
+            }
 
             containerEntity
         }
@@ -853,7 +861,12 @@ open class PlatformEntity(
                 platform.kgoRemaining?.let {
                     it.media = platformMediaEntity.kgoRemainingMedia
                 }
-                platform.failureMedia = platformMediaEntity.failureMedia
+
+                if(platformMediaEntity.failureMedia.size > 0)
+                    platform.failureMedia = platformMediaEntity.failureMedia
+                else
+                    platform.failureMedia = null
+
                 platform.pickupMedia = platformMediaEntity.pickupMedia
                 platform.afterMedia = platformMediaEntity.afterMedia
 
@@ -866,8 +879,15 @@ open class PlatformEntity(
                 for (container in platform.containerS) {
                     LOG.debug("container.containerId=${container.containerId}")
                     val containerMediaEntity = db.getContainerMediaEntity(container)
-                    container.failureMedia = containerMediaEntity.failureMedia
-                    container.breakdownMedia = containerMediaEntity.breakdownMedia
+                    if(containerMediaEntity.failureMedia.size > 0)
+                        container.failureMedia = containerMediaEntity.failureMedia
+                    else
+                        container.failureMedia = null
+
+                    if(containerMediaEntity.breakdownMedia.size > 0)
+                        container.breakdownMedia = containerMediaEntity.breakdownMedia
+                    else
+                        container.breakdownMedia = null
                 }
             }
 
@@ -1019,10 +1039,10 @@ open class ContainerEntity(
     var comment: String? = null,
     @Expose
     @SerializedName("failure_media")
-    var failureMedia: RealmList<ImageEntity> = RealmList(),
+    var failureMedia: RealmList<ImageEntity>? = RealmList(),
     @Expose
     @SerializedName("breakdown_media")
-    var breakdownMedia: RealmList<ImageEntity> = RealmList(),
+    var breakdownMedia: RealmList<ImageEntity>? = RealmList(),
     @Expose
     @SerializedName("breakdown_comment")
     var breakdownComment: String? = null,
@@ -1050,18 +1070,17 @@ open class ContainerEntity(
         if (this.failureReasonId <= 0) {
             return res
         }
-        res = this.failureMedia.size
+        res = this.failureMedia?.size ?: 0
 
         return res
     }
-
 
     private fun getBreakdownMediaSize(): Int {
         var res = 0
         if (this.breakdownReasonId == null ) {
             return res
         }
-        res = this.breakdownMedia.size
+        res = this.breakdownMedia?.size ?: 0
 
         return res
     }
@@ -1104,7 +1123,15 @@ open class ContainerEntity(
         this.failureMedia = RealmList()
         for(image in imageS) {
             val imageEntity = ImageEntity.createEmpty(image)
-            this.failureMedia.add(imageEntity)
+            this.failureMedia?.add(imageEntity)
+        }
+    }
+
+    fun addBreakdownMedia(imageS: List<ImageEntity>) {
+        this.breakdownMedia = RealmList()
+        for(image in imageS) {
+            val imageEntity = ImageEntity.createEmpty(image)
+            this.breakdownMedia?.add(imageEntity)
         }
     }
 
@@ -1112,7 +1139,7 @@ open class ContainerEntity(
         this.breakdownMedia = RealmList()
         for(image in imageS) {
             val imageEntity = ImageEntity.createEmpty(image)
-            this.breakdownMedia.add(imageEntity)
+            this.breakdownMedia?.add(imageEntity)
         }
     }
 
