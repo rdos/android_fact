@@ -17,11 +17,11 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
     defStyleAttrs: Int = 0
 ): ConstraintLayout(context, attrs, defStyleAttrs) {
 
-    private var rlBackground: RelativeLayout? = null
-    private var acibDraggableButton: AppCompatImageButton? = null
+    private var rlBackground: View? = null
     private var vLayer: View? = null
+    private var acibDraggableButton: AppCompatImageButton? = null
 
-    private val rlBackgroundReachPoint: Int by lazy { ViewUtil(rlBackground!!).getXEnd() }
+    private val rlBackgroundReachPoint: Int by lazy { ViewUtil(rlBackground!!).getXEnd() - (acibDraggableButton!!.width / 2)  }
     private val acibDraggableButtonWidth: Int by lazy { acibDraggableButton?.width ?: 0 }
 
     private var movableView: MovableView? = null
@@ -34,13 +34,13 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
     init {
         inflate(getContext(), R.layout.sview_swipe_button, this)
 
-        rlBackground = findViewById(R.id.rl__sview_swipe_button__background)
+        rlBackground = findViewById(R.id.v__sview_swipe_button__background)
         acibDraggableButton = findViewById(R.id.aciv__sview_swipe_button__draggable)
         vLayer = findViewById(R.id.v__sview_swipe_button__layer)
 
-        initialState()
-
         vLayer?.pivotX = 0f
+
+        initialState()
 
         movableView = MovableView()
             .setTargetView(acibDraggableButton!!)
