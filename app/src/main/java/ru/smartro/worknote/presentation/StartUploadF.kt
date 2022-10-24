@@ -10,6 +10,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ADFragment
 import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
+import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
@@ -26,9 +27,8 @@ class StartUploadF: ADFragment() {
     }
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
-        val acbStart = sview.findViewById<AppCompatButton>(R.id.acb_f_upload_start__start)
-        acbStart.setOnClickListener {
-
+        val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_start_upload__swipe_button)
+        acbStart.mOnReachEnd = {
             val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
 
             if (isModeUnload) {
