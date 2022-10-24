@@ -8,18 +8,17 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.activityViewModels
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ADFragment
-import ru.smartro.worknote.abs.AFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
 
-class StartUploadF: ADFragment() {
+class UploadEndF: ADFragment() {
     private val viewModel: ServePlatformVM by activityViewModels()
 
-    fun onGetLayout(): Int {
-        return R.layout.f_upload_start
+    override fun onGetLayout(): Int {
+        return R.layout.f_upload_end
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

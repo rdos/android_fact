@@ -17,8 +17,6 @@ import ru.smartro.worknote.presentation.ac.MainAct
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
 abstract class ANOFragment : Fragment(), IAFragment {
-    abstract fun onGetLayout(): Int
-
 
 
 
@@ -63,12 +61,11 @@ abstract class ANOFragment : Fragment(), IAFragment {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-//        try {
-//          это провал!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//        }
-        LOG.debug("onGetLayout()")
-        val view = inflater.inflate(onGetLayout(), container, false)
-        LOG.debug("onGetLayout().after")
+        LOG.debug("before")
+        val view = AUFragment.onSetItemLayout(this, inflater, container, savedInstanceState)
+        //        try {
+//          это провал!!!
+//        } try в имени это тру! VT, слышь)))
         return view
     }
 

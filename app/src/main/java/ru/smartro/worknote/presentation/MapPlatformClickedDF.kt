@@ -29,8 +29,8 @@ class MapPlatformClickedDF : ADFragment(), View.OnClickListener {
     private lateinit var mCurrentActivity: AppCompatActivity
     private val mOnClickListener = this as View.OnClickListener
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.act_map__dialog_platform_clicked_dtl, container, false)
+    override fun onGetLayout(): Int {
+        return R.layout.act_map__dialog_platform_clicked_dtl
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -113,12 +113,14 @@ class MapPlatformClickedDF : ADFragment(), View.OnClickListener {
         dialog?.window?.attributes = params
     }
 
+
+
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
         return true
     }
 
     override fun onNewLiveData() {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 
     override fun onBackPressed() {

@@ -1,16 +1,18 @@
 package ru.smartro.worknote.abs
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.SmartROllc
 
 object AUFragment {
-    fun showLastFragment(fragment: IAFragment, navFragmentId: Int? = null) {
+    fun showLastFragment(frag: IAFragment, navFragmentId: Int? = null) {
         LOG.debug("before")
-        val fm = fragment.getAct().supportFragmentManager
+        val fm = frag.getAct().supportFragmentManager
         val navHostFragment = fm.findFragmentById(R.id.fcv_container) as NavHostFragment
         val navController = navHostFragment.navController
 
@@ -23,21 +25,28 @@ object AUFragment {
         LOG.debug("after")
     }
 
-    fun onViewCreated(aFragment: IAFragment, view: View, savedInstanceState: Bundle?) {
+    fun onViewCreated(frag: IAFragment, view: View, savedInstanceState: Bundle?) {
         LOG.warn("onInitLayoutView")
         if (view is SmartROllc) {
-            val result = aFragment.onInitLayoutView(view) //ой пахнет savedInstanceState
+            val result = frag.onInitLayoutView(view) //ой пахнет savedInstanceState
             LOG.trace("onInitLayoutView.result=${result}")
         } else {
-            throw Throwable("TODO: onViewCreated.if (view is SmartROLinearLayout) ")
+            throw Throwable("TODO: onViewCreated.if (view is SmartROllc) ")
             LOG.error("onInitLayoutView.result")
         }
-        aFragment.onNewLiveData() //todo:r_dos!!!
+        frag.onNewLiveData() //todo:r_dos!!!
         if (savedInstanceState == null) {
             LOG.debug("savedInstanceState == null")
         } else {
             LOG.debug("savedInstanceState HE null")
         }
+    }
+
+    fun onSetItemLayout(frag: IAFragment, inflater: LayoutInflater, cont: ViewGroup?, sIS: Bundle?): View {
+        LOG.warn("onGetLayout:before")
+        val sview = inflater.inflate(frag.onGetLayout(), cont, false)
+        LOG.warn("after:onGetLayout")
+        return sview
     }
 
 
