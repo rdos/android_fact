@@ -837,6 +837,17 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun addPlatformUnloadEntity(platformEntity: PlatformEntity){
+        p_realm.executeTransaction { realm ->
+            //todo: [pe
+            val pe = getQueryPlatform()
+                .equalTo("platformId", platformEntity.platformId)
+                .findFirst()!!
+            pe?.unloadEntity = platformEntity.unloadEntity
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
     fun addAfterMedia(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
         p_realm.executeTransaction { realm ->
             val platformEntity = getQueryPlatform()
@@ -1298,7 +1309,6 @@ class RealmRepository(private val p_realm: Realm) {
         result = true
         return result
     }
-
 
 
 }

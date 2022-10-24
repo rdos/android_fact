@@ -671,29 +671,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //        }
     }
 
-    override fun startPlatformService(item: PlatformEntity) {
-        if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
-            viewModel.setPlatformEntity(item)
-            navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
-        } else {
-            showAlertPlatformByPoint().let { view ->
-                val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
-                btnOk.setOnClickListener {
-                    hideDialog()
-                    viewModel.setPlatformEntity(item)
-                    navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
-                }
-            }
-        }
-
-    }
-
-    override fun startPlatformProblem(item: PlatformEntity) {
-        hideDialog()
-        viewModel.setPlatformEntity(item)
-        navigateMain(R.id.PhotoFailureMediaF, item.platformId)
-    }
-
     override fun moveCameraPlatform(item: PlatformEntity) {
         mIsAUTOMoveCamera = false
         if (clMapBehavior == null) {
@@ -811,6 +788,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         return R.layout.f_map
     }
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         LOG.debug("r_dos//onActivityResult.requestCode=${requestCode}")
@@ -871,7 +849,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
-        LOG.debug("::: onMapObjectTap")
+        val result = true
+        LOG.debug("onMapObjectTap:result=${result}")
+
         val placeMark = mapObject as PlacemarkMapObject
         val coordS = placeMark.geometry
         val plaformE = viewModel.loadPlatformEntityByCoordS(coordS.latitude, coordS.longitude)
@@ -880,16 +860,14 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //            toast("Платформа не найдена")
 //            return false
 //        }
-        LOG.warn("onMapObjectTap")
-        navigateMain(R.id.MapPlatformClickedDtlF)
-//        val platformClickedDtlDialog = MapPlatformClickedDtlF(plaformE, coordS, this)
-//        platformClickedDtlDialog.show(childFragmentManager, "PlaceMarkDetailDialog")
 
+        navigateMain(R.id.MapPlatformClickedDtlF)
 //        todo: !!!R_dos
 //        findNavController().navigate(
 //            PServeExtendedFragDirections
 //            .actionExtendedServeFragmentToContainerServeBottomDiaLOG.debug(item.containerId!!))
-        return true
+        LOG.warn("result=${result}::onMapObjectTap")
+        return result
     }
 
 
@@ -1113,6 +1091,42 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             THR.BadRequestPOSTsynchroOKHTTP(response)
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    override fun startPlatformService(item: PlatformEntity) {
+        if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
+            viewModel.setPlatformEntity(item)
+            navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
+        } else {
+            getAct().showAlertPlatformByPoint().let { view ->
+                val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
+                btnOk.setOnClickListener {
+                    hideDialog()
+                    viewModel.setPlatformEntity(item)
+                    navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
+                }
+            }
+        }
+    }
+
+    override fun startPlatformProblem(item: PlatformEntity) {
+        hideDialog()
+        viewModel.setPlatformEntity(item)
+        navigateMain(R.id.PhotoFailureMediaF, item.platformId)
+    }
+
+
 
 
 }

@@ -199,8 +199,8 @@ fun AppCompatActivity.showingProgress(text: String?=null, isEmptyOldText: Boolea
 
 
 
-fun ANOFragment.showAlertPlatformByPoint(): View {
-    val builder = AlertDialog.Builder(getAct())
+fun AAct.showAlertPlatformByPoint(): View {
+    val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.act_map__dialog_platform_clicked_dtl__alert_by_point, null)
     builder.setView(view)

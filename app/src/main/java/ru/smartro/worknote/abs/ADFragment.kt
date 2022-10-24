@@ -14,7 +14,7 @@ abstract class ADFragment : DialogFragment(), IAFragment {
     }
     final override fun getAct() = requireActivity() as AAct
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    final override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         LOG.debug("before")
         val view = AUFragment.onSetItemLayout(this, inflater, container, savedInstanceState)
         //        try {
@@ -23,7 +23,7 @@ abstract class ADFragment : DialogFragment(), IAFragment {
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         AUFragment.onViewCreated(this, view, savedInstanceState)
         LOG.debug("onViewCreated")
@@ -45,9 +45,20 @@ abstract class ADFragment : DialogFragment(), IAFragment {
         AUFragment.showLastFragment(this, navFragmentId)
     }
 
-    fun navigateBack() {
+    final fun navigateBack() {
         LOG.debug("before")
         //todo:???        dismiss() vs
-        AUFragment.showLastFragment(this)
+//        AUFragment.showLastFragment(this)
+        dismissAllowingStateLoss()
     }
+
+    final fun navigateMain(navFragmentId: Int, argumentId: Int, argumentName: String?= null) {
+        AUFragment.showLastFragment(this, navFragmentId, argumentId)
+    }
+
+    final override fun getArgSBundle(argumentId: Int, argumentName: String?): Bundle {
+        val bundle = AUFragment.setFragmentVar(argumentId, argumentName)
+        return bundle
+    }
+
 }

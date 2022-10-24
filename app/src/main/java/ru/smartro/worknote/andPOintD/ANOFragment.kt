@@ -13,6 +13,7 @@ import ru.smartro.worknote.abs.IAFragment
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.presentation.ac.MainAct
+import ru.smartro.worknote.work.PlatformEntity
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
@@ -28,12 +29,6 @@ abstract class ANOFragment : Fragment(), IAFragment {
     override fun onDetach() {
         super.onDetach()
         LOG.debug("before")
-    }
-
-    // TODO:  abstract fun onBindLayoutState(): Boolean
-    protected open fun onBindLayoutState(): Boolean {
-        LOG.warn(" LoG.todo()")
-        return false
     }
 
     protected fun paramS() = App.getAppParaMS()
@@ -93,21 +88,15 @@ abstract class ANOFragment : Fragment(), IAFragment {
         LOG.trace("after")
     }
 
+    protected fun navigateSMallDeep(navFragmentId: Int, method: (PlatformEntity) -> Unit,argumentId: Int?=null, argumentName: String?=null) {
+//        navigateMain(R.id.MapPlatformClickedDtlF, ::this.startPlatformService)
+//        method.invoke()
+    }
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
        LOG.trace("navigateMain.before")
         LOG.debug("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        val navController = navHost.navController
-//        val navOptions = NavOptions.Builder().setPopUpTo(navFragmentId, true).build()
-        if (argumentId == null) {
-            // TODO: !~r_dos
-//            navController.popBackStack(navFragmentId, true)
-            navController.navigate(navFragmentId, null)
-            return
-        }
-        val argSBundle = getArgSBundle(argumentId, argumentName)
 
-        navController.navigate(navFragmentId, argSBundle)
+        AUFragment.showLastFragment(this, navFragmentId, argumentId, argumentName)
     }
 
     protected fun navigateMainChecklist(navFragmentId: Int, argumentId: Int?, argumentName: String? = null) {
@@ -125,13 +114,9 @@ abstract class ANOFragment : Fragment(), IAFragment {
 
     }
 
-    fun getArgSBundle(argumentId: Int, argumentName: String ?= null): Bundle {
-        val bundle = Bundle(2)
-        bundle.putInt(ARGUMENT_NAME___PARAM_ID, argumentId)
-        // TODO: 10.12.2021 let на всякий П???
-        argumentName?.let {
-            bundle.putString(ARGUMENT_NAME___PARAM_NAME, argumentName)
-        }
+    override fun getArgSBundle(argumentId: Int, argumentName: String?): Bundle {
+        LOG.debug("before")
+        val bundle = AUFragment.setFragmentVar(argumentId, argumentName)
         return bundle
     }
 
@@ -147,8 +132,6 @@ abstract class ANOFragment : Fragment(), IAFragment {
         LOG.info("getArgumentName .result = ${result}")
         return result
     }
-
-
 
     final override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -193,6 +176,15 @@ abstract class ANOFragment : Fragment(), IAFragment {
     }
     override fun onNewLiveData() {
         LOG.warn(" LoG.todo()")
+    }
+
+    //    // TODO:  abstract fun onBindLayoutState(): Boolean
+//     open fun onBindLayoutState(): Boolean {
+//        LOG.warn(" LoG.todo()")
+//        return false
+//    }
+    override fun onBindLayoutState(): Boolean {
+        return false
     }
 
 }

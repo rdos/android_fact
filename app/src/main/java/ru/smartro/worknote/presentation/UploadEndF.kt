@@ -21,9 +21,6 @@ class UploadEndF: ADFragment() {
         return R.layout.f_upload_end
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.f_upload_start, container, false)
-    }
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
         val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_start_upload__swipe_button)
@@ -44,6 +41,10 @@ class UploadEndF: ADFragment() {
 
     override fun onNewLiveData() {
 //        TODO("Not yet implemented")
+    }
+
+    override fun onBindLayoutState(): Boolean {
+        return false
     }
 
     override fun onBackPressed() {

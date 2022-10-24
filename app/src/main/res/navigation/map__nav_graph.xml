@@ -21,7 +21,7 @@
     <!--Directions-->
     <dialog
         android:id="@+id/MapPlatformClickedDtlF"
-        android:name="ru.smartro.worknote.presentation.MapPlatformClickedDF"
+        android:name="ru.smartro.worknote.presentation.MapPlatformsMapObjectTapDF"
         android:label="MapPlatformClickedDtlF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"

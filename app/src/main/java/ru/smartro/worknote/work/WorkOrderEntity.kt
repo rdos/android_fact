@@ -404,7 +404,7 @@ open class PlatformEntity(
 
     @Expose
     @SerializedName("unload")
-    var weightUnloadEntity: WeightUnloadEntity? = null,
+    var unloadEntity: PlatformUnloadEntity? = null,
     @Expose
     @SerializedName("beginned_at")
     var beginnedAt: String? = null,
@@ -848,6 +848,15 @@ open class PlatformEntity(
         return result
     }
 
+    //wtf?Upload
+    fun ploadUploadEntity(): PlatformUnloadEntity {
+        val result = PlatformUnloadEntity.createEmpty()
+        result.workOrderId = this.workOrderId
+        result.platformId = this.platformId
+        this.unloadEntity = result
+        return  result
+    }
+
     companion object {
         // TODO: !!!
         fun createEmpty(): PlatformEntity {
@@ -911,11 +920,20 @@ open class UnloadWorkOrderEntity(
     var coords: RealmList<Double> = RealmList(),
     var name: String? = null,
     var id: Int? = null,
-    var workOrderId: Int = Inull
-) : RealmObject()
+    var workOrderId: Int = Inull,
+    var dev_info: String? = null
+) : RealmObject() {
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): UnloadWorkOrderEntity {
+            val result = UnloadWorkOrderEntity(dev_info=THIS_IS_ERROR)
+            return result
+        }
+    }
+}
 
 
-open class WeightUnloadEntity(
+open class PlatformUnloadEntity(
     @SerializedName("before_media")
     @Expose
     var beforeMedia: RealmList<ImageEntity> = RealmList(),
@@ -931,7 +949,20 @@ open class WeightUnloadEntity(
     @SerializedName("ticket_value")
     @Expose
     var ticketValue: Float? = null,
-): RealmObject()
+
+    var workOrderId: Int = Inull,
+
+    var platformId: Int = Inull,
+    var dev_info: String? = null
+): RealmObject() {
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): PlatformUnloadEntity {
+            val result = PlatformUnloadEntity(dev_info=THIS_IS_ERROR)
+            return result
+        }
+    }
+}
 
 enum class ConfigName(val displayName: String) {
     Snull(ru.smartro.worknote.Snull),

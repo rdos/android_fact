@@ -2,13 +2,13 @@ package ru.smartro.worknote.presentation
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
@@ -18,13 +18,17 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.ADFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.awORKOLDs.extensions.showAlertPlatformByPoint
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.PlatformEntity
 import kotlin.math.min
 
-class MapPlatformClickedDF : ADFragment(), View.OnClickListener {
+//todo: MapPlatformsDF MapPlatformsDF MapPlatformsDF???ИЛИ MapPlatforms(on)MapObjectTap(DF)=
+class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
+    private lateinit var TbIboy__item: PlatformEntity
     private val viewModel: ServePlatformVM by activityViewModels()
     private lateinit var mCurrentActivity: AppCompatActivity
     private val mOnClickListener = this as View.OnClickListener
@@ -33,69 +37,38 @@ class MapPlatformClickedDF : ADFragment(), View.OnClickListener {
         return R.layout.act_map__dialog_platform_clicked_dtl
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val _platform = viewModel.getPlatformEntity()
-        //onBindViewHolder
-        super.onViewCreated(view, savedInstanceState)
-        LOG.warn("R_dos")
-        mCurrentActivity = requireActivity() as MainAct
 
-        val spanCount = min(_platform.containerS.size, 10)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_dialog_platform_clicked_dtl)
-        recyclerView.layoutManager = GridLayoutManager(context, spanCount)
-        recyclerView.adapter = PlatformClickedDtlAdapter(_platform)
-
-        val tvContainersCnt = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__containers_cnt)
-        tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), _platform.containerS.size)
-
-
-        val isServeAgain = _platform.getStatusPlatform() != StatusEnum.NEW
-
-        val cvStartServe = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
-        cvStartServe.isVisible = !isServeAgain
-
-        val cvServeAgain = view.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__serve_again)
-        cvServeAgain.isVisible = isServeAgain
-        val tvAddress = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__address)
-        tvAddress.text = String.format(getString(R.string.dialog_platform_clicked_dtl__address), _platform.address, _platform.srpId)
-
-        val tvPlatformContact = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__platform_contact)
-        val contactsInfo = _platform.getContactsInfo()
-        tvPlatformContact.text = contactsInfo
-        tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
-
-        // TODO: 27.10.2021 !! !?
-        initButtonsViews(view)
-        view.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener {
-//            dismiss()
-        }
-
-        view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
-        val btnStartServe = view.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
-        btnStartServe.setOnClickListener(mOnClickListener)
-        if (_platform.getStatusPlatform() == StatusEnum.UNFINISHED) {
-            btnStartServe.setText(R.string.start_serve_again)
-        }
-        val tvName = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__name)
-        tvName.text = _platform.name
-        val tvOrderTime = view.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__order_time)
-        val orderTime = _platform.getOrderTime()
-        if (orderTime.isShowForUser()) {
-            tvOrderTime.text = orderTime
-            tvOrderTime.setTextColor(_platform.getOrderTimeColor(requireContext()))
-            tvOrderTime.isVisible = true
+    fun startPlatformServe() {
+//     todo:!r_dos??   declare PSerceF extend
+        if (App.getAppliCation().gps().isThisPoint(TbIboy__item.coordLat, TbIboy__item.coordLong)) {
+            viewModel.setPlatformEntity(TbIboy__item)
+            navigateMain(R.id.PhotoBeforeMediaF, TbIboy__item.platformId)
+        } else {
+            getAct().showAlertPlatformByPoint().let { view ->
+                val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
+                btnOk.setOnClickListener {
+//                    hideDialog()
+                    navigateMain(R.id.PhotoBeforeMediaF, TbIboy__item.platformId)
+                }
+            }
         }
     }
+
+    fun startPlatformProblem() {
+        navigateMain(R.id.PhotoFailureMediaF, TbIboy__item.platformId)
+    }
+
+
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btn_dialog_platform_clicked_dtl__serve_again  -> {
-                dismiss()
+                startPlatformServe()
 //                navigateBack()
 //                listener.startPlatformService(_platform)
             }
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
-                navigateBack()
+                startPlatformServe()
 //                listener.startPlatformService(_platform)
             }
         }
@@ -116,28 +89,79 @@ class MapPlatformClickedDF : ADFragment(), View.OnClickListener {
 
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
-        return true
+        TbIboy__item = viewModel.getPlatformEntity()
+        //onBindViewHolder
+//        super.onViewCreated(view, savedInstanceState)
+        mCurrentActivity = requireActivity() as MainAct
+
+        val spanCount = min(TbIboy__item.containerS.size, 10)
+        val recyclerView = sview.findViewById<RecyclerView>(R.id.rv_dialog_platform_clicked_dtl)
+        recyclerView.layoutManager = GridLayoutManager(context, spanCount)
+        recyclerView.adapter = PlatformClickedDtlAdapter(TbIboy__item)
+
+        val tvContainersCnt = sview.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__containers_cnt)
+        tvContainersCnt.text = String.format(getString(R.string.dialog_platform_clicked_dtl__containers_cnt), TbIboy__item.containerS.size)
+
+
+        val isServeAgain = TbIboy__item.getStatusPlatform() != StatusEnum.NEW
+
+        val cvStartServe = sview.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
+        cvStartServe.isVisible = !isServeAgain
+
+        val cvServeAgain = sview.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__serve_again)
+        cvServeAgain.isVisible = isServeAgain
+        val tvAddress = sview.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__address)
+        tvAddress.text = String.format(getString(R.string.dialog_platform_clicked_dtl__address), TbIboy__item.address, TbIboy__item.srpId)
+
+        val tvPlatformContact = sview.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__platform_contact)
+        val contactsInfo = TbIboy__item.getContactsInfo()
+        tvPlatformContact.text = contactsInfo
+        tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
+
+        // TODO: 27.10.2021 !! R_DOS! = СПРОСИть ОН знает
+        LOG.warn("R_DOS")
+        sview.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener {
+            navigateBack()
+            startPlatformProblem()
+        }
+
+        //коммент инициализации
+        sview.findViewById<ImageButton>(R.id.platform_location).setOnClickListener {
+            dismiss()
+//            listener.navigatePlatform(_point)
+        }
+        sview.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener {
+            navigateBack()
+        }
+
+        sview.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
+        val btnStartServe = sview.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
+        btnStartServe.setOnClickListener(mOnClickListener)
+        if (TbIboy__item.getStatusPlatform() == StatusEnum.UNFINISHED) {
+            btnStartServe.setText(R.string.start_serve_again)
+        }
+        val tvName = sview.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__name)
+        tvName.text = TbIboy__item.name
+        val tvOrderTime = sview.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__order_time)
+        val orderTime = TbIboy__item.getOrderTime()
+        if (orderTime.isShowForUser()) {
+            tvOrderTime.text = orderTime
+            tvOrderTime.setTextColor(TbIboy__item.getOrderTimeColor(requireContext()))
+            tvOrderTime.isVisible = true
+        }
+        return false
     }
 
     override fun onNewLiveData() {
 //        TODO("Not yet implemented")
     }
 
-    override fun onBackPressed() {
-
+    override fun onBindLayoutState(): Boolean {
+        return false
     }
 
-    private fun initButtonsViews(view: View) {
-        view.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener {
-//            dismiss()
-//            listener.openFailureFire(_platform)
-        }
-
-        //коммент инициализации
-        view.findViewById<ImageButton>(R.id.platform_location).setOnClickListener {
-//            dismiss()
-//            listener.navigatePlatform(_point)
-        }
+    override fun onBackPressed() {
+        navigateBack()
     }
     
 

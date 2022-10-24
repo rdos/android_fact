@@ -28,14 +28,19 @@ class UploadStartF: ADFragment() {
                 toast("включился режим Выгрузки")
             }
             viewModel.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, !isModeUnload)
-
+            val unloadEntity = viewModel.getPlatformEntity().ploadUploadEntity()
+            viewModel.database.addPlatformUnloadEntity(viewModel.getPlatformEntity())
             navigateBack(R.id.MapPlatformsF)
         }
         return true
     }
 
     override fun onNewLiveData() {
-//        TODO("Not yet implemented")
+
+    }
+
+    override fun onBindLayoutState(): Boolean{
+        return false
     }
 
     override fun onBackPressed() {
