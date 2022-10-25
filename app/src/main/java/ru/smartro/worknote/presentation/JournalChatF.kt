@@ -126,15 +126,15 @@ class JournalChatF : ANOFragment() {
 
             holder.log_item_content.text = serveStatus + pickupVolume + networkStatus
 
-            if (item.networkStatus!!)
-                holder.log_item_status.setImageResource(R.drawable.ic_done)
+            if (item.networkStatus)
+                holder.log_item_status.setImageResource(R.drawable.ic_message_sent)
             else
                 holder.log_item_status.setImageResource(R.drawable.ic_clock)
         }
 
         private fun getNetworkStatusText(platform: PlatformEntity): String {
             var result = "Статус сети: "
-            result += if (platform.networkStatus!!) {
+            result += if (platform.networkStatus) {
                 "Отправлено"
             } else {
                 "Еще не отправлен"
