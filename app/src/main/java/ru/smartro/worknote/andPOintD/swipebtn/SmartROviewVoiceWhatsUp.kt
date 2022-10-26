@@ -96,7 +96,6 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                 acivRecordButton!!.animate()?.scaleX(1.6f)?.scaleY(1.6f)?.setDuration(200)?.start()
             }
             .onMoveHorizontally { view, absoluteX ->
-                LOG.debug("MOVABLE ON MOVE HORIZONTALLY: ${absoluteX}")
                 if(!mIsLockReady && absoluteX > (rlPathLockX - 30f) && absoluteX < (rlPathLockX + 30f)) {
                     LOG.debug("LOCK")
                     mIsLockReady = true
