@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
@@ -20,6 +21,7 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
     private var rlBackground: View? = null
     private var vLayer: View? = null
     private var acibDraggableButton: AppCompatImageButton? = null
+    private var actvInnerText: AppCompatTextView? = null
 
     private val rlBackgroundReachPoint: Int by lazy { ViewUtil(rlBackground!!).getXEnd() - (acibDraggableButtonWidth / 2.5f).toInt()  }
     private val acibDraggableButtonWidth: Int by lazy { acibDraggableButton?.width ?: 0 }
@@ -36,9 +38,38 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
 
         rlBackground = findViewById(R.id.v__sview_swipe_button__background)
         acibDraggableButton = findViewById(R.id.aciv__sview_swipe_button__draggable)
+        actvInnerText = findViewById(R.id.actv__sview_swipe_button__inner_text)
         vLayer = findViewById(R.id.v__sview_swipe_button__layer)
-
         vLayer?.pivotX = 0f
+
+        if(attrs != null) {
+            val a = context.obtainStyledAttributes(attrs, R.styleable.sViewSwipeButton, defStyleAttrs, 0)
+
+            val buttonColor = a.getColor(R.styleable.sViewSwipeButton_buttonSrc, -1)
+            if (buttonColor != -1) {
+                acibDraggableButton?.setBackgroundColor(buttonColor)
+            } else {
+                val buttonSrc = a.getDrawable(R.styleable.sViewSwipeButton_buttonSrc)
+                if (buttonSrc != null)
+                    acibDraggableButton?.background = buttonSrc
+            }
+
+            val buttonIcon = a.getDrawable(R.styleable.sViewSwipeButton_buttonIcon)
+            if (buttonIcon != null)
+                acibDraggableButton?.setImageDrawable(buttonIcon)
+
+            val innerTextResource = a.getString(R.styleable.sViewSwipeButton_innerText)
+            if (innerTextResource != null) {
+                actvInnerText?.text = innerTextResource
+            } else {
+                val innerTextPlain = a.getNonResourceString(R.styleable.sViewSwipeButton_innerText)
+                if(innerTextPlain != null)
+                    actvInnerText?.text = innerTextPlain
+            }
+
+            a.recycle()
+        }
+
 
         initialState()
 
@@ -46,7 +77,6 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
             .setTargetView(acibDraggableButton!!)
             .setMovementRules(MovableView.MovementRule.HORIZONTAL)
             .onMoveHorizontally { view, absoluteX ->
-                LOG.debug("MOVABLE ON MOVE HORIZONTALLY: ${absoluteX}")
 
                 if(absoluteX > acibDraggableButtonWidth)
                     vLayer?.scaleX = absoluteX / acibDraggableButtonWidth
