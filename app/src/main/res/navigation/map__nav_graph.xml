@@ -290,9 +290,9 @@
     </dialog>
 
     <dialog
-        android:id="@+id/StartUploadF"
-        android:name="ru.smartro.worknote.presentation.UploadStartF"
-        android:label="StartUploadF">
+        android:id="@+id/UnloadInfoF"
+        android:name="ru.smartro.worknote.presentation.UnloadInfoF"
+        android:label="UnloadInfoF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"

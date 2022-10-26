@@ -1,10 +1,5 @@
 package ru.smartro.worknote.presentation
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.activityViewModels
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ADFragment
@@ -14,16 +9,16 @@ import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
 
-class UploadEndF: ADFragment() {
+class UnloadTicketF: ADFragment() {
     private val viewModel: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {
-        return R.layout.f_upload_end
+        return R.layout.f_unload_ticket
     }
 
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
-        val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_start_upload__swipe_button)
+        val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_unload_info__swipe_button)
         acbStart.mOnReachEnd = {
             val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
 

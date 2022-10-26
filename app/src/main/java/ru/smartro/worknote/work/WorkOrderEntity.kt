@@ -858,7 +858,7 @@ open class PlatformEntity(
     }
 
     //wtf?Upload
-    fun ploadUploadEntity(): PlatformUnloadEntity {
+    fun ploadUnloadEntity(): PlatformUnloadEntity {
         val result = PlatformUnloadEntity.createEmpty()
         result.workOrderId = this.workOrderId
         result.platformId = this.platformId

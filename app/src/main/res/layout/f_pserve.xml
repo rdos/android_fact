@@ -107,11 +107,6 @@
             android:background="@drawable/bg_action_buttons"
             android:orientation="vertical">
 
-            <ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
-                android:id="@+id/sv__f_start_upload__swipe_button"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent" android:layout_height="wrap_content"/>
-
             <ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPlayer
                 android:id="@+id/srvv__f_pserve__voice_player"
                 android:layout_marginTop="8dp"

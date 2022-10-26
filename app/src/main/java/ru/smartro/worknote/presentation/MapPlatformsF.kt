@@ -274,7 +274,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         val acbUnload = sview.findViewById<AppCompatButton>(R.id.acb__f_map__unload)
         acbUnload.setOnClickListener {
-            navigateMain(R.id.StartUploadF)
+            navigateMain(R.id.UnloadInfoF)
         }
         val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
         if (isModeUnload) {
