@@ -21,7 +21,7 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
     private var vLayer: View? = null
     private var acibDraggableButton: AppCompatImageButton? = null
 
-    private val rlBackgroundReachPoint: Int by lazy { ViewUtil(rlBackground!!).getXEnd() - (acibDraggableButton!!.width / 2)  }
+    private val rlBackgroundReachPoint: Int by lazy { ViewUtil(rlBackground!!).getXEnd() - (acibDraggableButtonWidth / 2.5f).toInt()  }
     private val acibDraggableButtonWidth: Int by lazy { acibDraggableButton?.width ?: 0 }
 
     private var movableView: MovableView? = null
@@ -48,7 +48,10 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
             .onMoveHorizontally { view, absoluteX ->
                 LOG.debug("MOVABLE ON MOVE HORIZONTALLY: ${absoluteX}")
 
-                vLayer?.scaleX = absoluteX / acibDraggableButtonWidth
+                if(absoluteX > acibDraggableButtonWidth)
+                    vLayer?.scaleX = absoluteX / acibDraggableButtonWidth
+                else
+                    vLayer?.scaleX = -(acibDraggableButtonWidth / absoluteX)
 
                 if(!mIsLockReady && absoluteX > (rlBackgroundReachPoint - 50f)) {
                     LOG.debug("LOCK")
@@ -66,9 +69,8 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
                 LOG.debug("MOVABLE ON STOP")
                 if(mIsLockReady) {
                     mOnReachEnd?.invoke()
-                } else {
-                    initialState()
                 }
+                initialState()
             }
 
         movableView?.apply()
@@ -77,6 +79,7 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
     private fun initialState() {
         mIsLockReady = false
         vLayer?.scaleX = 0f
+        acibDraggableButton?.translationX = 0f
     }
 
 }
