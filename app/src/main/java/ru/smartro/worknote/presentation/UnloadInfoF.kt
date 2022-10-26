@@ -19,7 +19,7 @@ class UnloadInfoF: ADFragment() {
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
         val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_unload_info__swipe_button)
-        acbStart?.mOnReachEnd = {
+        acbStart.mOnReachEnd = {
 
             val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
 

@@ -8,15 +8,14 @@ import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
-
+//todo: смотри прикол, VT !!!UnloadInfo++ploadTicket
 class UnloadTicketF: ADFragment() {
     private val viewModel: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {
         return R.layout.f_unload_ticket
     }
-
-
+    
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
         val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_unload_info__swipe_button)
         acbStart.mOnReachEnd = {
