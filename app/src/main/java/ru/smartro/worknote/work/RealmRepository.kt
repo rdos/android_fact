@@ -771,6 +771,15 @@ class RealmRepository(private val p_realm: Realm) {
         return result!!
     }
 
+    private fun loadPlatformUnloadEntity(platformEntity: PlatformEntity): PlatformUnloadEntity {
+        var result = getQueryPlatformUnload(platformEntity).findFirst()
+        if (result == null) {
+            result = p_realm.createObject(PlatformUnloadEntity::class.java,  platformEntity.platformId)
+            result.workOrderId = platformEntity.workOrderId
+        }
+        return result!!
+    }
+
     fun getContainerMediaEntity(containerEntity: ContainerEntity): ContainerMediaEntity {
         var result: ContainerMediaEntity = ContainerMediaEntity.createEmpty()
         p_realm.executeTransaction { realm ->
@@ -843,7 +852,8 @@ class RealmRepository(private val p_realm: Realm) {
             val pe = getQueryPlatform()
                 .equalTo("platformId", platformEntity.platformId)
                 .findFirst()!!
-            pe?.unloadEntity = platformEntity.unloadEntity
+            val platformUnloadEntity = loadPlatformUnloadEntity(platformEntity)
+            pe?.unloadEntity = platformUnloadEntity
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -1055,6 +1065,10 @@ class RealmRepository(private val p_realm: Realm) {
 
     private fun getQueryPlatformMedia(platformEntity: PlatformEntity): RealmQuery<PlatformMediaEntity> {
         return p_realm.where(PlatformMediaEntity::class.java).equalTo("platformId", platformEntity.platformId)
+    }
+
+    private fun getQueryPlatformUnload(platformEntity: PlatformEntity): RealmQuery<PlatformUnloadEntity> {
+        return p_realm.where(PlatformUnloadEntity::class.java).equalTo("platformId", platformEntity.platformId)
     }
 
     private fun getQueryPlatformVoiceComment(platformEntity: PlatformEntity): RealmQuery<PlatformVoiceCommentEntity> {

@@ -17,8 +17,9 @@ class UploadStartF: ADFragment() {
         return R.layout.f_upload_start
     }
 
+
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
-        val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.acb_f_upload_end__start)
+        val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_start_upload__swipe_button)
         acbStart.mOnReachEnd = {
 
             val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)

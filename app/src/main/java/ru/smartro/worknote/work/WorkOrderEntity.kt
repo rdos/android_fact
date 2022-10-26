@@ -934,6 +934,8 @@ open class UnloadWorkOrderEntity(
 
 
 open class PlatformUnloadEntity(
+    @PrimaryKey
+    var platformId: Int = Inull,
     @SerializedName("before_media")
     @Expose
     var beforeMedia: RealmList<ImageEntity> = RealmList(),
@@ -949,10 +951,8 @@ open class PlatformUnloadEntity(
     @SerializedName("ticket_value")
     @Expose
     var ticketValue: Float? = null,
-
     var workOrderId: Int = Inull,
 
-    var platformId: Int = Inull,
     var dev_info: String? = null
 ): RealmObject() {
     companion object {
