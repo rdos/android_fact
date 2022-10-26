@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId "ru.smartro.worknote"
         minSdkVersion 26
-        targetSdkVersion 32
+        targetSdkVersion 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -30,11 +30,11 @@ android {
         if (propFile.canRead()){
             props.load(new FileInputStream(propFile))
 
-            if (props!=null && props.containsKey('version.code')) {
+            if (props != null && props.containsKey('version.code')) {
                 versionCode = props['version.code'].toInteger()
             }
 
-            if (props!=null && props.containsKey('version.name')) {
+            if (props != null && props.containsKey('version.name')) {
                 versionName = props['version.name']
             }
         }
