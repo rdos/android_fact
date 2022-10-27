@@ -1,4 +1,5 @@
 # killall terminal root ANDROIDFACT_D="/home/rdos/D/android-fact"
+set -x
 ANDROIDFACTd='/home/rdos/D/android-fact/'
 mv VERSION VERSION.tmp
 mv VERSION.prod VERSION
