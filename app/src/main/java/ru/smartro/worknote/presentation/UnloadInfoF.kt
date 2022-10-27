@@ -10,7 +10,8 @@ import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
 
 class UnloadInfoF: ADFragment() {
-    private val viewModel: ServePlatformVM by activityViewModels()
+    //    https://en.wikipedia.org/wiki/Virtual_machine :))))))
+    private val vm: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {
         return R.layout.f_unload_info
@@ -21,16 +22,16 @@ class UnloadInfoF: ADFragment() {
         val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_unload_info__swipe_button)
         acbStart.mOnReachEnd = {
 
-            val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+            val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
 
             if (isModeUnload) {
                 toast("выключился режим Выгрузки")
             } else {
                 toast("включился режим Выгрузки")
             }
-            viewModel.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, !isModeUnload)
-            val unloadEntity = viewModel.getPlatformEntity().ploadUnloadEntity()
-            viewModel.database.addPlatformUnloadEntity(viewModel.getPlatformEntity())
+            vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, !isModeUnload)
+            val unloadEntity = vm.getPlatformEntity().ploadUnloadEntity()
+            vm.database.addPlatformUnloadEntity(vm.getPlatformEntity())
             navigateBack(R.id.MapPlatformsF)
         }
         return true

@@ -79,7 +79,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private lateinit var fuelStatusButton: FrameLayout
     private lateinit var photoStatusButton: FrameLayout
 
-    private val viewModel: ServePlatformVM by activityViewModels()
+    private val vm: ServePlatformVM by activityViewModels()
 
     private val mWorkOrderFilteredIds: MutableList<Int> = mutableListOf()
     private var mWorkOrderS: List<WorkOrderEntity>? = null
@@ -104,7 +104,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             moveCameraTo(point)
         }
 
-        val platformNear = viewModel.database.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
+        val platformNear = vm.database.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
 
         if (platformNear == null) {
             LOG.debug("platformNear.is null")
@@ -166,12 +166,12 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
 
         mMapMyYandex = sview.findViewById(R.id.map_view)
-        val hasWorkOrdersInNotProgress = viewModel.database.hasWorkOrderInNotProgress()
-        if (hasWorkOrdersInNotProgress || viewModel.database.findAllBreakDown().isEmpty()) {
-            LOG.debug("::: hasWorkOrdersInNotProgress: ${hasWorkOrdersInNotProgress}, breakdown list size: ${viewModel.database.findAllBreakDown().size}")
+        val hasWorkOrdersInNotProgress = vm.database.hasWorkOrderInNotProgress()
+        if (hasWorkOrdersInNotProgress || vm.database.findAllBreakDown().isEmpty()) {
+            LOG.debug("::: hasWorkOrdersInNotProgress: ${hasWorkOrdersInNotProgress}, breakdown list size: ${vm.database.findAllBreakDown().size}")
             showingProgress()
             val extraPramId = getAct().getPutExtraParam_ID()
-            val workOrderS = viewModel.database.findWorkOrders_Old(extraPramId)
+            val workOrderS = vm.database.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
         }
         mMapMyYandex.map.addInertiaMoveListener(this)
@@ -256,7 +256,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
                     //        }
 //        setDevelMode()
 
-        viewModel.todoLiveData.observe(viewLifecycleOwner) {
+        vm.todoLiveData.observe(viewLifecycleOwner) {
             if (it.coordLat == Dnull) {
                 // TODO: !!факТ)
                 return@observe
@@ -276,8 +276,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         acbUnload.setOnClickListener {
             navigateMain(R.id.UnloadInfoF)
         }
-        val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
         if (isModeUnload) {
+            navigateMain(R.id.UnloadTicketF)
             acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.red_cool))
         }
     }
@@ -353,9 +354,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private fun getActualWorkOrderS(isForceMode: Boolean = false, isFilterMode: Boolean = true): List<WorkOrderEntity> {
         if (mWorkOrderS == null || isForceMode) {
-            mWorkOrderS = viewModel.database.findWorkOrders(isFilterMode)
+            mWorkOrderS = vm.database.findWorkOrders(isFilterMode)
             if (mWorkOrderS?.isEmpty() == true) {
-                mWorkOrderS = viewModel.database.findWorkOrders(false)
+                mWorkOrderS = vm.database.findWorkOrders(false)
             }
         }
         return mWorkOrderS!!
@@ -397,7 +398,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     private fun saveBreakDownTypes() {
-        viewModel.networkDat.getBreakDownTypes().observe(getAct()) { result ->
+        vm.networkDat.getBreakDownTypes().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     // TODO: ПО голове себе постучи
@@ -414,7 +415,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private fun saveFailReason() {
         LOG.info("saveFailReason.before")
-        viewModel.networkDat.getFailReason().observe(getAct()) { result ->
+        vm.networkDat.getFailReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     LOG.debug("saveFailReason. Status.SUCCESS")
@@ -428,7 +429,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private fun saveCancelWayReason() {
         LOG.debug("saveCancelWayReason.before")
-        viewModel.networkDat.getCancelWayReason().observe(getAct()) { result ->
+        vm.networkDat.getCancelWayReason().observe(getAct()) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     LOG.debug("saveCancelWayReason. Status.SUCCESS")
@@ -447,21 +448,21 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {
         LOG.debug("acceptProgress.before")
-        viewModel.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec()))
+        vm.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec()))
             .observe(getAct()) { result ->
                 resultStatusList.add(result.status)
                 getAct().modeSyNChrON_off(false)
                 when (result.status) {
                     Status.SUCCESS -> {
                         logSentry("acceptProgress Status.SUCCESS ")
-                        viewModel.database.setProgressData(workOrder)
+                        vm.database.setProgressData(workOrder)
                         getAct().modeSyNChrON_off(false)
                         hideProgress()
                     }
                     else -> {
                         logSentry("acceptProgress Status.ERROR")
                         toast(result.msg)
-                        viewModel.database.setNextProcessDate(workOrder)
+                        vm.database.setNextProcessDate(workOrder)
                     }
                 }
                 if (workOrderSize == resultStatusList.size) {
@@ -485,13 +486,13 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
             mTimeBeforeInSec = lastSynchroTimeInSec + m30MinutesInSec
-            nextSentPlatforms = viewModel.database.findPlatforms30min()
+            nextSentPlatforms = vm.database.findPlatforms30min()
             LOG.debug("SYNCworkER PLATFORMS IN LAST 30 min")
             next(nextSentPlatforms, mTimeBeforeInSec)
         }
         if (nextSentPlatforms.isEmpty()) {
             mTimeBeforeInSec = MyUtil.timeStampInSec()
-            nextSentPlatforms = viewModel.database.findLastPlatforms()
+            nextSentPlatforms = vm.database.findLastPlatforms()
             LOG.debug("SYNCworkER LAST PLATFORMS")
             next(nextSentPlatforms, mTimeBeforeInSec)
         }
@@ -500,7 +501,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private fun gotoSynchronize() {
         var lastPlatforms: List<PlatformEntity> = emptyList()
-        lastPlatforms = viewModel.database.findLastPlatforms()
+        lastPlatforms = vm.database.findLastPlatforms()
         val lastPlatformsSize = lastPlatforms.size
 
         val deviceId = Settings.Secure.getString(getAct().contentResolver, Settings.Secure.ANDROID_ID)
@@ -514,9 +515,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
                     gps.PointTOBaseData(),
                     deviceId,
                     gps.PointTimeToLastKnowTime_SRV(),
-                    PlatformEntity.toSRV(nextSentPlatforms, viewModel.database)
+                    PlatformEntity.toSRV(nextSentPlatforms, vm.database)
                 )
-                viewModel.networkDat.sendLastPlatforms(synchronizeBody, this)
+                vm.networkDat.sendLastPlatforms(synchronizeBody, this)
                 Any()
             }
 
@@ -572,7 +573,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         val rvInfo = view.findViewById<RecyclerView>(R.id.rv_f_map__workorder_info)
         mAcbGotoComplete = view.findViewById(R.id.acb_f_map__workorder_info__gotocomplete)
         mAcbGotoComplete?.setOnClickListener {
-            viewModel.database.setWorkOrderIsShowForUser(workOrderS)
+            vm.database.setWorkOrderIsShowForUser(workOrderS)
             gotoComplete()
         }
         setAcbCompleteText(workOrderS)
@@ -584,7 +585,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         builder.setView(view)
         result = builder.create()
         result.setOnCancelListener {
-            val workorder: Unit = viewModel.database.setWorkOrderIsShowForUser(workOrderS)
+            val workorder: Unit = vm.database.setWorkOrderIsShowForUser(workOrderS)
             next()
             onRefreshData()
         }
@@ -678,7 +679,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
         val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        viewModel.setPlatformEntity(item)
+        vm.setPlatformEntity(item)
     }
 
     override fun navigatePlatform(checkPoint: Point) {
@@ -695,7 +696,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     override fun openFailureFire(item: PlatformEntity) {
-        viewModel.setPlatformEntity(item)
+        vm.setPlatformEntity(item)
         navigateMain(R.id.PhotoFailureMediaF, item.platformId)
     }
 
@@ -703,7 +704,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         try {
 //            getMapObjCollection().clear()
             clearMapObjectsDrive()
-            viewModel.buildMapNavigator(AppliCation().gps(), checkPoint, mDrivingRouter, mDrivingSession)
+            vm.buildMapNavigator(AppliCation().gps(), checkPoint, mDrivingRouter, mDrivingSession)
             drivingModeState = true
             acibNavigatorToggle?.isVisible = drivingModeState
             hideDialog()
@@ -854,7 +855,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         val placeMark = mapObject as PlacemarkMapObject
         val coordS = placeMark.geometry
-        val plaformE = viewModel.loadPlatformEntityByCoordS(coordS.latitude, coordS.longitude)
+        val plaformE = vm.loadPlatformEntityByCoordS(coordS.latitude, coordS.longitude)
         LOG.debug("::: loadPLAtformENtityByCoords:: ${plaformE.platformId}")
 //        if (plaformE == null) {
 //            toast("Платформа не найдена")
@@ -956,8 +957,8 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         super.onDestroy()
         mMapMyYandex.onStop()
         MapKitFactory.getInstance().onStop()
-        viewModel.database.setConfigCntPlusOne(ConfigName.MAPACTDESTROY_CNT)
-        viewModel.database.close()
+        vm.database.setConfigCntPlusOne(ConfigName.MAPACTDESTROY_CNT)
+        vm.database.close()
     }
 
     inner class InfoAdapter(private var p_workOrderS: List<WorkOrderEntity>) :
@@ -1106,14 +1107,14 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     override fun startPlatformService(item: PlatformEntity) {
         if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
-            viewModel.setPlatformEntity(item)
+            vm.setPlatformEntity(item)
             navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
         } else {
             getAct().showAlertPlatformByPoint().let { view ->
                 val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
                 btnOk.setOnClickListener {
                     hideDialog()
-                    viewModel.setPlatformEntity(item)
+                    vm.setPlatformEntity(item)
                     navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
                 }
             }
@@ -1122,7 +1123,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     override fun startPlatformProblem(item: PlatformEntity) {
         hideDialog()
-        viewModel.setPlatformEntity(item)
+        vm.setPlatformEntity(item)
         navigateMain(R.id.PhotoFailureMediaF, item.platformId)
     }
 

@@ -302,5 +302,18 @@
             app:argType="string"
             />
     </dialog>
+    <dialog
+        android:id="@+id/UnloadTicketF"
+        android:name="ru.smartro.worknote.presentation.UnloadTicketF"
+        android:label="UnloadInfoF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
 
 </navigation>

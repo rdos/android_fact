@@ -16,10 +16,12 @@ import ru.smartro.worknote.Inull
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.*
-
+//todo:   private var mPlatformId: Int = Inull
+//    get() {
+//
+//    }
 class ServePlatformVM(app: Application) : AViewModel(app) {
-    private var mPlatformId: Int = Inull
-
+    private var dIPlatformId: Int = Inull
 
     private var mPlatformEntity: PlatformEntity? = null
     private var mPlatformMediaEntity: PlatformMediaEntity? = null
