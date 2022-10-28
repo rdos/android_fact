@@ -3,7 +3,6 @@ package ru.smartro.worknote.andPOintD.swipebtn
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -31,7 +30,7 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
         //todo: мне кажется
     private var mIsLockReady = false
 
-    var mOnReachEnd: (() -> Unit)? = null
+    var onSwipe: (() -> Unit)? = null
 
     init {
         inflate(getContext(), R.layout.sview_swipe_button, this)
@@ -98,7 +97,7 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
             .onMoveEnd {
                 LOG.debug("MOVABLE ON STOP")
                 if(mIsLockReady) {
-                    mOnReachEnd?.invoke()
+                    onSwipe?.invoke()
                 }
                 initialState()
             }

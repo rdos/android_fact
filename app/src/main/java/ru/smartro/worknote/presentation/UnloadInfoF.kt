@@ -20,7 +20,7 @@ class UnloadInfoF: ADFragment() {
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
         val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_unload_info__swipe_button)
-        acbStart.mOnReachEnd = {
+        acbStart.onSwipe = {
 
             val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
 
@@ -29,6 +29,7 @@ class UnloadInfoF: ADFragment() {
             } else {
                 toast("включился режим Выгрузки")
             }
+
             vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, !isModeUnload)
             val unloadEntity = vm.getPlatformEntity().ploadUnloadEntity()
             vm.database.addPlatformUnloadEntity(vm.getPlatformEntity())
