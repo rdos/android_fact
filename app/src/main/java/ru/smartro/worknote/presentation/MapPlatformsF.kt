@@ -184,15 +184,15 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         carFullStatusButton = sview.findViewById(R.id.fl__f_map__car)
         carFullStatusButton.setOnClickListener {
-            getAct().showDlgWarning(WarningType.CAR_LOCKED)
+            navigateMain(R.id.InfoDialogF, 1, getString(R.string.car_locked))
         }
         fuelStatusButton = sview.findViewById(R.id.fl__f_map__fuel)
         fuelStatusButton.setOnClickListener {
-            getAct().showDlgWarning(WarningType.FUEL_LOCKED)
+            navigateMain(R.id.InfoDialogF, 1, getString(R.string.fuel_locked))
         }
         photoStatusButton = sview.findViewById(R.id.fl__f_map__photo)
         photoStatusButton.setOnClickListener {
-            getAct().showDlgWarning(WarningType.PHOTO_LOCKED)
+            navigateMain(R.id.InfoDialogF, 1, getString(R.string.photo_locked))
         }
 
         initBottomBehavior(sview)

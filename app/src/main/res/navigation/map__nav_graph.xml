@@ -316,4 +316,18 @@
             />
     </dialog>
 
+    <dialog
+        android:id="@+id/InfoDialogF"
+        android:name="ru.smartro.worknote.presentation.InfoDialogF"
+        android:label="InfoDialogF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
 </navigation>
