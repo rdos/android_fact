@@ -266,9 +266,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             }
 
             changeMapObjectIcon(it, true)
-
-                return@observe
-            }
             moveCameraTo(PoinT(it.coordLat, it.coordLong))
 
             mLastActivePlatform = it
