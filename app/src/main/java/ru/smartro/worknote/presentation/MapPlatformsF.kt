@@ -247,6 +247,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         viewModel.todoLiveData.observe(viewLifecycleOwner) {
             if (it.coordLat == Dnull) {
+                // TODO: !!факТ)
                 return@observe
             }
             moveCameraTo(PoinT(it.coordLat, it.coordLong))
