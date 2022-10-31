@@ -37,6 +37,29 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
         return R.layout.act_map__dialog_platform_clicked_dtl
     }
 
+
+    private fun startPlatformServe() {
+//     todo:!r_dos??   declare PSerceF extend
+        if (App.getAppliCation().gps().isThisPoint(TbIboy__item.coordLat, TbIboy__item.coordLong)) {
+            viewModel.setPlatformEntity(TbIboy__item)
+            navigateMain(R.id.PhotoBeforeMediaF, TbIboy__item.platformId)
+        } else {
+            getAct().showAlertPlatformByPoint().let { view ->
+                val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
+                btnOk.setOnClickListener {
+                    hideDialog()
+                    navigateMain(R.id.PhotoBeforeMediaF, TbIboy__item.platformId)
+                }
+            }
+        }
+    }
+
+    private fun startPlatformProblem() {
+        navigateMain(R.id.PhotoFailureMediaF, TbIboy__item.platformId)
+    }
+
+
+
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btn_dialog_platform_clicked_dtl__serve_again  -> {

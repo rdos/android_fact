@@ -1,10 +1,8 @@
 package ru.smartro.worknote.presentation.platform_serve
 
 import android.app.Application
-import android.widget.Button
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.RequestPoint
 import com.yandex.mapkit.RequestPointType
 import com.yandex.mapkit.directions.driving.DrivingOptions
@@ -12,10 +10,11 @@ import com.yandex.mapkit.directions.driving.DrivingRouter
 import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.directions.driving.VehicleOptions
 import com.yandex.mapkit.geometry.Point
-import ru.smartro.worknote.*
+import ru.smartro.worknote.App
+import ru.smartro.worknote.Dnull
+import ru.smartro.worknote.Inull
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.AViewModel
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.awORKOLDs.extensions.warningClearNavigator
 import ru.smartro.worknote.work.*
 //todo:   private var mPlatformId: Int = Inull
 //    get() {
@@ -319,60 +318,6 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         set_PlatformLiveData()
     }
 
-    override fun moveCameraPlatform(item: PlatformEntity) {
-        mIsAUTOMoveCamera = false
-        if (clMapBehavior == null) {
-            return
-        }
-        val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        vm.setPlatformEntity(item)
-    }
-
-    override fun navigatePlatform(checkPoint: Point) {
-        if (drivingModeState) {
-            warningClearNavigator(getString(R.string.way_is_exist)).let {
-                val btnAccept = it.findViewById<Button>(R.id.accept_btn)
-                btnAccept.setOnClickListener {
-                    buildNavigator(checkPoint)
-                }
-            }
-        } else {
-            buildNavigator(checkPoint)
-        }
-    }
-
-    override fun openFailureFire(item: PlatformEntity) {
-        vm.setPlatformEntity(item)
-        navigateMain(R.id.PhotoFailureMediaF, item.platformId)
-    }
-
-
-    private fun startPlatformServe() {
-//     todo:!r_dos??   declare PSerceF extend
-        if (App.getAppliCation().gps().isThisPoint(TbIboy__item.coordLat, TbIboy__item.coordLong)) {
-            viewModel.setPlatformEntity(TbIboy__item)
-            navigateMain(R.id.PhotoBeforeMediaF, TbIboy__item.platformId)
-        } else {
-            getAct().showAlertPlatformByPoint().let { view ->
-                val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
-                btnOk.setOnClickListener {
-                    hideDialog()
-                    navigateMain(R.id.PhotoBeforeMediaF, TbIboy__item.platformId)
-                }
-            }
-        }
-    }
-
-
-    override fun startPlatformProblem(item: PlatformEntity) {
-        hideDialog()
-        vm.setPlatformEntity(item)
-        navigateMain(R.id.PhotoFailureMediaF, item.platformId)
-    }
-
-
-
     fun addBeforeMedia(imageS: List<ImageEntity>) {
         database.addBeforeMedia(this.getPlatformId(), imageS)
         set_PlatformLiveData()
@@ -418,5 +363,4 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         database.removeVoiceComment(platformVoiceCommentEntity)
         set_PlatformLiveData()
     }
-
 }
