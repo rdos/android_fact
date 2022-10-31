@@ -23,6 +23,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.showAlertPlatformByPoint
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
+import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.PlatformEntity
 import kotlin.math.min
 
@@ -38,7 +39,7 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
     }
 
 
-    private fun startPlatformServe() {
+    private fun startPlatformBeforeMedia() {
 //     todo:!r_dos??   declare PSerceF extend
         if (App.getAppliCation().gps().isThisPoint(TbIboy__item.coordLat, TbIboy__item.coordLong)) {
             viewModel.setPlatformEntity(TbIboy__item)
@@ -48,27 +49,34 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
                 val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
                 btnOk.setOnClickListener {
                     hideDialog()
+                    viewModel.setPlatformEntity(TbIboy__item)
                     navigateMain(R.id.PhotoBeforeMediaF, TbIboy__item.platformId)
                 }
             }
         }
     }
 
-    private fun startPlatformProblem() {
+    private fun startPhotoFailureMedia() {
+        viewModel.setPlatformEntity(TbIboy__item)
         navigateMain(R.id.PhotoFailureMediaF, TbIboy__item.platformId)
     }
 
 
 
     override fun onClick(v: View?) {
+        val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+        if (isModeUnload) {
+            toast("В режиме выгрузка нельзя обслуживать КП")
+            return
+        }
         when (v?.id) {
             R.id.btn_dialog_platform_clicked_dtl__serve_again  -> {
-                startPlatformServe()
+                startPlatformBeforeMedia()
 //                navigateBack()
 //                listener.startPlatformService(_platform)
             }
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
-                startPlatformServe()
+                startPlatformBeforeMedia()
 //                listener.startPlatformService(_platform)
             }
         }
@@ -122,7 +130,7 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
         LOG.warn("R_DOS")
         sview.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener {
             navigateBack()
-            startPlatformProblem()
+            startPhotoFailureMedia()
         }
 
         //коммент инициализации

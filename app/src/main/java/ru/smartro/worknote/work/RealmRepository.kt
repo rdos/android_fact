@@ -1157,6 +1157,14 @@ class RealmRepository(private val p_realm: Realm) {
         saveConfig(configEntity)
     }
 
+    fun setConfig(name: ConfigName, value: Int) {
+        val configEntity = loadConfig(name)
+
+        configEntity.value = value.toString()
+        saveConfig(configEntity)
+    }
+
+
     fun setConfig(name: ConfigName, value: Long) {
         val configEntity = loadConfig(name)
 

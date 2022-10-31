@@ -274,6 +274,10 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         val acbUnload = sview.findViewById<AppCompatButton>(R.id.acb__f_map__unload)
         acbUnload.setOnClickListener {
+            val platformID = vm.getPlatformId()
+            if (platformID == Inull) {
+                return@setOnClickListener
+            }
             val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
             if (isModeUnload) {
                 navigateMain(R.id.UnloadTicketF)
@@ -284,6 +288,14 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
         if (isModeUnload) {
             acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.red_cool))
+            val workOrders = getActualWorkOrderS()
+
+            val coordLat = workOrders.get(0).start?.coords?.get(0)
+            val coordLong = workOrders.get(0).start?.coords?.get(1)
+            coordLat?.let {
+                val point = Point(coordLat, coordLong!!)
+                buildNavigator(point)
+            }
         }
     }
 
@@ -1109,7 +1121,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
 
 
-    override fun startPlatformService(item: PlatformEntity) {
+    override fun startPlatformBeforeMedia(item: PlatformEntity) {
         if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
             vm.setPlatformEntity(item)
             navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
@@ -1125,7 +1137,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
     }
 
-    override fun startPlatformProblem(item: PlatformEntity) {
+    override fun startPhotoFailureMedia(item: PlatformEntity) {
         hideDialog()
         vm.setPlatformEntity(item)
         navigateMain(R.id.PhotoFailureMediaF, item.platformId)
@@ -1287,11 +1299,11 @@ class MapPlatformSBehaviorAdapter(
                         findViewById<ExpandableLayout>(R.id.map_behavior_expl).expand()
 
                         findViewById<Button>(R.id.map_behavior_start_service).setOnClickListener {
-                            listener.startPlatformService(item)
+                            listener.startPlatformBeforeMedia(item)
                         }
 
                         findViewById<ImageButton>(R.id.map_behavior_fire).setOnClickListener {
-                            listener.startPlatformProblem(item)
+                            listener.startPhotoFailureMedia(item)
                         }
 
                         if (lastHolder?.platformId != item.platformId) {
@@ -1340,8 +1352,8 @@ class MapPlatformSBehaviorAdapter(
     }
 
     interface PlatformClickListener {
-        fun startPlatformService(item: PlatformEntity)
-        fun startPlatformProblem(item: PlatformEntity)
+        fun startPlatformBeforeMedia(item: PlatformEntity)
+        fun startPhotoFailureMedia(item: PlatformEntity)
         fun moveCameraPlatform(item: PlatformEntity)
         fun navigatePlatform(checkPoint: Point)
         fun openFailureFire(item: PlatformEntity)

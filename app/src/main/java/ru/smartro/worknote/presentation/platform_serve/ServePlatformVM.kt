@@ -98,6 +98,7 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
             return
         }
         mPlatformId = platformEntity.platformId
+        database.setConfig(ConfigName.AAPP__LAST_PLATFORM_ID, mPlatformId)
         set_PlatformLiveData()
         mPlatformMediaEntity = null
         mContainerGROUPClientEntity = null
