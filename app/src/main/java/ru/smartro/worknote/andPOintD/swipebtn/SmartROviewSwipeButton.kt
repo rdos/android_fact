@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.getColorOrThrow
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
@@ -44,15 +45,14 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
         if(attrs != null) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.sViewSwipeButton, defStyleAttrs, 0)
 
-            val buttonColor = a.getColor(R.styleable.sViewSwipeButton_buttonSrc, -1)
-            if (buttonColor != -1) {
-                acibDraggableButton?.setBackgroundColor(buttonColor)
-            } else {
-                val buttonSrc = a.getDrawable(R.styleable.sViewSwipeButton_buttonSrc)
-                if (buttonSrc != null)
-                    acibDraggableButton?.background = buttonSrc
+            try {
+                val buttonSrcIfColor = a.getColorOrThrow(R.styleable.sViewSwipeButton_buttonSrc)
+                acibDraggableButton?.setBackgroundColor(buttonSrcIfColor)
+            } catch(e: Exception) {
+                val buttonSrcIfDrawable = a.getDrawable(R.styleable.sViewSwipeButton_buttonSrc)
+                if (buttonSrcIfDrawable != null)
+                    acibDraggableButton?.background = buttonSrcIfDrawable
             }
-
             val buttonIcon = a.getDrawable(R.styleable.sViewSwipeButton_buttonIcon)
             if (buttonIcon != null)
                 acibDraggableButton?.setImageDrawable(buttonIcon)

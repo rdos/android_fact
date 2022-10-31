@@ -18,8 +18,8 @@ class UnloadTicketF: ADFragment() {
     }
     
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
-        val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_unload_info__swipe_button)
-        acbStart.onSwipe = {
+        val acbStart: SmartROviewSwipeButton? = sview.findViewById(R.id.acb_f_unload_ticket__finish)
+        acbStart?.onSwipe = {
             val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
 
             if (isModeUnload) {

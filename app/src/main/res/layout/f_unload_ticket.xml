@@ -132,7 +132,7 @@
 	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
-		android:id="@+id/acb_f_unload_ticket__start"
+		android:id="@+id/acb_f_unload_ticket__finish"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_marginTop="12dp"
 		app:innerText="Проведите вправо,\nчтобы завершить"
