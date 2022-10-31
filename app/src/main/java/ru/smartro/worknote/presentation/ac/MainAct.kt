@@ -27,6 +27,7 @@ import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
 import ru.smartro.worknote.awORKOLDs.extensions.WarningType
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ConfigName
@@ -112,6 +113,8 @@ class MainAct :
     //todo:::
     override fun onDestroy() {
         super.onDestroy()
+
+        hideDialog()
 //        mTooltipHell.setNextTime(paramS())
 
     }

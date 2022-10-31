@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/start__nav_graph"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/StartF">
+
+    <fragment
+        android:id="@+id/StartF"
+        android:name="ru.smartro.worknote.presentation.StartF"
+        tools:layout="@layout/f_start"
+        android:label="StartF" />
+
+    <dialog
+        android:id="@+id/ReAuthWarningDialogF"
+        android:name="ru.smartro.worknote.presentation.ReAuthWarningDialogF"
+        tools:layout="@layout/df_action"
+        android:label="ReAuthWarningDialogF" />
+
+    <dialog
+        android:id="@+id/ReAuthConfirmationDialogF"
+        android:name="ru.smartro.worknote.presentation.ReAuthConfirmationDialogF"
+        tools:layout="@layout/df_action"
+        android:label="ReAuthConfirmationDialogF" />
+
+</navigation>
