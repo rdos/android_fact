@@ -43,30 +43,27 @@ class SmartROviewSwipeButton @JvmOverloads constructor(
         vLayer?.pivotX = 0f
 
         if(attrs != null) {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.sViewSwipeButton, defStyleAttrs, 0)
+            val parsedAttributes = context.obtainStyledAttributes(attrs, R.styleable.sViewSwipeButton, defStyleAttrs, 0)
 
-            try {
-                val buttonSrcIfColor = a.getColorOrThrow(R.styleable.sViewSwipeButton_buttonSrc)
-                acibDraggableButton?.setBackgroundColor(buttonSrcIfColor)
-            } catch(e: Exception) {
-                val buttonSrcIfDrawable = a.getDrawable(R.styleable.sViewSwipeButton_buttonSrc)
-                if (buttonSrcIfDrawable != null)
-                    acibDraggableButton?.background = buttonSrcIfDrawable
-            }
-            val buttonIcon = a.getDrawable(R.styleable.sViewSwipeButton_buttonIcon)
+
+            val buttonSrc = parsedAttributes.getDrawable(R.styleable.sViewSwipeButton_buttonSrc)
+            if (buttonSrc != null)
+                acibDraggableButton?.background = buttonSrc
+
+            val buttonIcon = parsedAttributes.getDrawable(R.styleable.sViewSwipeButton_buttonIcon)
             if (buttonIcon != null)
                 acibDraggableButton?.setImageDrawable(buttonIcon)
 
-            val innerTextResource = a.getString(R.styleable.sViewSwipeButton_innerText)
+            val innerTextResource = parsedAttributes.getString(R.styleable.sViewSwipeButton_innerText)
             if (innerTextResource != null) {
                 actvInnerText?.text = innerTextResource
             } else {
-                val innerTextPlain = a.getNonResourceString(R.styleable.sViewSwipeButton_innerText)
+                val innerTextPlain = parsedAttributes.getNonResourceString(R.styleable.sViewSwipeButton_innerText)
                 if(innerTextPlain != null)
                     actvInnerText?.text = innerTextPlain
             }
 
-            a.recycle()
+            parsedAttributes.recycle()
         }
 
 
