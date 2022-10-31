@@ -274,11 +274,15 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         val acbUnload = sview.findViewById<AppCompatButton>(R.id.acb__f_map__unload)
         acbUnload.setOnClickListener {
-            navigateMain(R.id.UnloadInfoF)
+            val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+            if (isModeUnload) {
+                navigateMain(R.id.UnloadTicketF)
+            } else {
+                navigateMain(R.id.UnloadInfoF)
+            }
         }
         val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
         if (isModeUnload) {
-            navigateMain(R.id.UnloadTicketF)
             acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.red_cool))
         }
     }

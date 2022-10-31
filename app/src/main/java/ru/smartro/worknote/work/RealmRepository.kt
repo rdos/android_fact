@@ -1183,10 +1183,21 @@ class RealmRepository(private val p_realm: Realm) {
         return result
     }
 
-
     fun getConfigString(name: ConfigName): String {
         val configEntity = loadConfig(name)
         return configEntity.value
+    }
+
+    fun getConfigInt(name: ConfigName): Int {
+        var result = Inull
+        val configEntity = loadConfig(name)
+        try {
+            result = configEntity.value.toInt()
+        } catch (ex: Exception) {
+            configEntity.value = result.toString()
+            saveConfig(configEntity)
+        }
+        return result
     }
 
     fun close() {
