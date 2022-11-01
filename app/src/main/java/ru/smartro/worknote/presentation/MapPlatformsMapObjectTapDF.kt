@@ -1,13 +1,10 @@
 package ru.smartro.worknote.presentation
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -20,7 +17,6 @@ import ru.smartro.worknote.abs.ADFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showAlertPlatformByPoint
-import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ConfigName
@@ -34,7 +30,7 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
     private val mOnClickListener = this as View.OnClickListener
 
     override fun onGetLayout(): Int {
-        return R.layout.act_map__dialog_platform_clicked_dtl
+        return R.layout.df_map_platforms__map_object_tap
     }
 
 
