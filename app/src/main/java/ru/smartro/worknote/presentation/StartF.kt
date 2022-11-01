@@ -67,7 +67,7 @@ class StartF : ANOFragment() {
     private fun gotoNextAct(isHasToken: Boolean = false) {
 //            val isHasTask = true
         val isHasTask = vm.database.hasWorkOrderInProgress()
-        if (isHasToken && !isHasTask) {
+        if (isHasToken && isHasTask) {
             LOG.debug("::: HAS TOKEN AND TASK")
             vm.viewModelScope.launch {
                 App.getAppliCation().getNetwork().sendAppStartUp()

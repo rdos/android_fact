@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation
 
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ADFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
@@ -33,6 +34,8 @@ class UnloadInfoF: ADFragment() {
             vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, !isModeUnload)
             val unloadEntity = vm.getPlatformEntity().ploadUnloadEntity()
             vm.database.addPlatformUnloadEntity(vm.getPlatformEntity())
+
+            findNavController().previousBackStackEntry?.savedStateHandle?.set("buildNavigatorPlatformUnload", true)
             navigateBack(R.id.MapPlatformsF)
         }
         return true

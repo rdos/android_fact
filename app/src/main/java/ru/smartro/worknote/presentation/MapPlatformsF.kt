@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -282,20 +283,20 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             if (isModeUnload) {
                 navigateMain(R.id.UnloadTicketF)
             } else {
+
+                findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("buildNavigatorPlatformUnload")?.observe(
+                    viewLifecycleOwner) {result ->
+                    if(result) {
+                        buildNavigatorPlatformUnload()
+                    }
+                }
                 navigateMain(R.id.UnloadInfoF)
             }
         }
         val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
         if (isModeUnload) {
             acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.red_cool))
-            val workOrders = getActualWorkOrderS()
-
-            val coordLat = workOrders.get(0).start?.coords?.get(0)
-            val coordLong = workOrders.get(0).start?.coords?.get(1)
-            coordLat?.let {
-                val point = Point(coordLat, coordLong!!)
-                buildNavigator(point)
-            }
+            buildNavigatorPlatformUnload()
         }
     }
 
@@ -698,7 +699,23 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         vm.setPlatformEntity(item)
     }
 
+    private fun buildNavigatorPlatformUnload(){
+        val workOrders = getActualWorkOrderS()
+
+        val coordLat = workOrders.get(0).unload?.coords?.get(0)
+        val coordLong = workOrders.get(0).unload?.coords?.get(1)
+        coordLat?.let {
+            val point = Point(coordLat, coordLong!!)
+            buildNavigator(point)
+        }
+    }
+
     override fun navigatePlatform(checkPoint: Point) {
+        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+        if (isModeUnload) {
+            toast("В режиме выгрузка нельзя обслуживать КП")
+            return
+        }
         if (drivingModeState) {
             warningClearNavigator(getString(R.string.way_is_exist)).let {
                 val btnAccept = it.findViewById<Button>(R.id.accept_btn)
@@ -873,16 +890,32 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         val coordS = placeMark.geometry
         val plaformE = vm.loadPlatformEntityByCoordS(coordS.latitude, coordS.longitude)
         LOG.debug("::: loadPLAtformENtityByCoords:: ${plaformE.platformId}")
-//        if (plaformE == null) {
-//            toast("Платформа не найдена")
-//            return false
-//        }
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("startPlatformBeforeMedia")?.observe(
+            viewLifecycleOwner) {result ->
+            if(result) {
+                startPlatformBeforeMedia(plaformE)
+            }
+            // Do something with the result.
+        }
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("startPhotoFailureMedia")?.observe(
+            viewLifecycleOwner) {result ->
+            if(result) {
+                startPhotoFailureMedia(plaformE)
+            }
+            // Do something with the result.
+        }
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("navigatePlatform")?.observe(
+            viewLifecycleOwner) {result ->
+            if(result) {
+                navigatePlatform(Point(plaformE.coordLat, plaformE.coordLong))
+            }
+            // Do something with the result.
+        }
 
         navigateMain(R.id.MapPlatformClickedDtlF)
-//        todo: !!!R_dos
-//        findNavController().navigate(
-//            PServeExtendedFragDirections
-//            .actionExtendedServeFragmentToContainerServeBottomDiaLOG.debug(item.containerId!!))
         LOG.warn("result=${result}::onMapObjectTap")
         return result
     }
@@ -1110,6 +1143,12 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     override fun startPlatformBeforeMedia(item: PlatformEntity) {
+        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+        if (isModeUnload) {
+            toast("В режиме выгрузка нельзя обслуживать КП")
+            return
+        }
+
         if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
             vm.setPlatformEntity(item)
             navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
@@ -1127,6 +1166,11 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     override fun startPhotoFailureMedia(item: PlatformEntity) {
         hideDialog()
+        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+        if (isModeUnload) {
+            toast("В режиме выгрузка нельзя обслуживать КП")
+            return
+        }
         vm.setPlatformEntity(item)
         navigateMain(R.id.PhotoFailureMediaF, item.platformId)
     }

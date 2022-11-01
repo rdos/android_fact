@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
@@ -33,46 +34,23 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
         return R.layout.df_map_platforms__map_object_tap
     }
 
-
-    private fun startPlatformBeforeMedia() {
-//     todo:!r_dos??   declare PSerceF extend
-        if (App.getAppliCation().gps().isThisPoint(TbIboy__item.coordLat, TbIboy__item.coordLong)) {
-            viewModel.setPlatformEntity(TbIboy__item)
-            navigateMain(R.id.PhotoBeforeMediaF, TbIboy__item.platformId)
-        } else {
-            getAct().showAlertPlatformByPoint().let { view ->
-                val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
-                btnOk.setOnClickListener {
-                    hideDialog()
-                    viewModel.setPlatformEntity(TbIboy__item)
-                    navigateMain(R.id.PhotoBeforeMediaF, TbIboy__item.platformId)
-                }
-            }
-        }
-    }
-
-    private fun startPhotoFailureMedia() {
-        viewModel.setPlatformEntity(TbIboy__item)
-        navigateMain(R.id.PhotoFailureMediaF, TbIboy__item.platformId)
-    }
-
-
-
     override fun onClick(v: View?) {
-        val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
-        if (isModeUnload) {
-            toast("В режиме выгрузка нельзя обслуживать КП")
-            return
-        }
         when (v?.id) {
             R.id.btn_dialog_platform_clicked_dtl__serve_again  -> {
-                startPlatformBeforeMedia()
-//                navigateBack()
-//                listener.startPlatformService(_platform)
+                findNavController().previousBackStackEntry?.savedStateHandle?.set("startPlatformBeforeMedia", true)
             }
             R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
-                startPlatformBeforeMedia()
-//                listener.startPlatformService(_platform)
+                findNavController().previousBackStackEntry?.savedStateHandle?.set("startPlatformBeforeMedia", true)
+            }
+            R.id.platform_detail_fire -> {
+                findNavController().previousBackStackEntry?.savedStateHandle?.set("startPhotoFailureMedia", true)
+            }
+            R.id.ibtn_dialog_platform_clicked_dtl__close -> {
+                navigateBack()
+            }
+            R.id.platform_location -> {
+                navigateBack()
+                findNavController().previousBackStackEntry?.savedStateHandle?.set("navigatePlatform", true)
             }
         }
 
@@ -110,20 +88,11 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
 
         // TODO: 27.10.2021 !! R_DOS! = СПРОСИть ОН знает
         LOG.warn("R_DOS")
-        sview.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener {
-            navigateBack()
-            startPhotoFailureMedia()
-        }
+        sview.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener(mOnClickListener)
 
         //коммент инициализации
-        sview.findViewById<ImageButton>(R.id.platform_location).setOnClickListener {
-            dismiss()
-//            listener.navigatePlatform(_point)
-        }
-        sview.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener {
-            navigateBack()
-        }
-
+        sview.findViewById<ImageButton>(R.id.platform_location).setOnClickListener(mOnClickListener)
+        sview.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener(mOnClickListener)
         sview.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
         val btnStartServe = sview.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
         btnStartServe.setOnClickListener(mOnClickListener)
