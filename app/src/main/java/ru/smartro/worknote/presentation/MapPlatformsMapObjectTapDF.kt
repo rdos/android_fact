@@ -31,7 +31,6 @@ import kotlin.math.min
 class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
     private lateinit var TbIboy__item: PlatformEntity
     private val viewModel: ServePlatformVM by activityViewModels()
-    private lateinit var mCurrentActivity: AppCompatActivity
     private val mOnClickListener = this as View.OnClickListener
 
     override fun onGetLayout(): Int {
@@ -84,23 +83,10 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
     }
 
 
-    override fun onResume() {
-        super.onResume()
-        val params: WindowManager.LayoutParams? = dialog?.window?.attributes
-        params?.height = FrameLayout.LayoutParams.WRAP_CONTENT
-        params?.width = FrameLayout.LayoutParams.MATCH_PARENT
-        params?.horizontalMargin = 56f
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog?.window?.attributes = params
-    }
-
-
-
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
         TbIboy__item = viewModel.getPlatformEntity()
         //onBindViewHolder
 //        super.onViewCreated(view, savedInstanceState)
-        mCurrentActivity = requireActivity() as MainAct
 
         val spanCount = min(TbIboy__item.containerS.size, 10)
         val recyclerView = sview.findViewById<RecyclerView>(R.id.rv_dialog_platform_clicked_dtl)
@@ -230,6 +216,15 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
     }
 
 
-
+    override fun onResume() {
+        super.onResume()
+        //todo:r_dos:: сделать прозрачными
+        val params: WindowManager.LayoutParams? = dialog?.window?.attributes
+        params?.height = FrameLayout.LayoutParams.WRAP_CONTENT
+        params?.width = FrameLayout.LayoutParams.MATCH_PARENT
+        params?.horizontalMargin = 56f
+//        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.attributes = params
+    }
 
 }

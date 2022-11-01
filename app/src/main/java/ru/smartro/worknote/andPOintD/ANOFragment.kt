@@ -95,7 +95,7 @@ abstract class ANOFragment : Fragment(), IAFragment {
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
        LOG.trace("navigateMain.before")
         LOG.debug("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
-
+        getAct().SAVE_AFRAGMENT = this
         AUFragment.showLastFragment(this, navFragmentId, argumentId, argumentName)
     }
 

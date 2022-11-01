@@ -1109,18 +1109,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     override fun startPlatformBeforeMedia(item: PlatformEntity) {
         if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
             vm.setPlatformEntity(item)
@@ -1144,10 +1132,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
 
-
-
 }
-
 
 class MapPlatformSBehaviorAdapter(
     private val listener: PlatformClickListener,
