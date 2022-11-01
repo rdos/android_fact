@@ -10,6 +10,8 @@ class UnloadPhotoBeforeMediaF : APhotoFragment() {
         get() =  viewModel.getPlatformEntity()
 //    override fun onGetTextLabelFor() = "фото до обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+        if(mPlatformEntity.unloadEntity == null)
+            viewModel.addBeforeMediaUnload()
         return mPlatformEntity.unloadEntity!!.beforeMedia
     }
 

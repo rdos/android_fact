@@ -69,6 +69,8 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private var clMapBehavior: ConstraintLayout? = null
     private var mAcbGotoComplete: AppCompatButton? = null
 
+    private var acbUnload: AppCompatImageButton? = null
+
     private var mAdapterBottomBehavior: MapPlatformSBehaviorAdapter? = null
     private var mMapObjectCollection: MapObjectCollection? = null
     private var mIsAUTOMoveCamera: Boolean = false
@@ -183,6 +185,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
         setInfoData()
 
+        acbUnload = sview.findViewById(R.id.acb__f_map__unload)
         carFullStatusButton = sview.findViewById(R.id.fl__f_map__car)
         carFullStatusButton.setOnClickListener {
             navigateMain(R.id.InfoDialogF, 1, getString(R.string.car_locked))
@@ -270,34 +273,46 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //        setDevelMode()
         onRefreshData()
 
-        val acbUnload = sview.findViewById<AppCompatButton>(R.id.acb__f_map__unload)
-        acbUnload.setOnClickListener {
+
+        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+
+        if (isModeUnload) {
+            toggleUnloadButton(true)
+        } else {
+            toggleUnloadButton(false)
+        }
+
+        acbUnload?.setOnClickListener {
             val platformID = vm.getPlatformId()
             if (platformID == Inull) {
                 return@setOnClickListener
             }
-            val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
             if (isModeUnload) {
                 navigateMain(R.id.UnloadTicketF)
             } else {
                 findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("buildNavigatorPlatformUnload")?.observe(
-                    viewLifecycleOwner) {result ->
+                    viewLifecycleOwner) { result ->
                     if(result) {
                         buildNavigatorPlatformUnload()
-                        acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.red_cool))
+                        toggleUnloadButton(true)
                     } else {
                         acibNavigatorClear()
-                        acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.black))
                     }
                 }
                 navigateMain(R.id.UnloadInfoF)
             }
         }
-        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
-        if (isModeUnload) {
-            acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.red_cool))
-            buildNavigatorPlatformUnload()
-        }
+    }
+
+    private fun toggleUnloadButton(isActive: Boolean) {
+        val backgroundResource = if(isActive) R.drawable.bg_button__with_caution else R.drawable.bg_button__inactive
+        val iconResource = if(isActive) R.drawable.ic_unload_truck__active else R.drawable.ic_unload_truck__inactive
+
+        val backgroundDrawable = ContextCompat.getDrawable(requireContext(), backgroundResource)
+        val iconDrawable = ContextCompat.getDrawable(requireContext(), iconResource)
+
+        acbUnload?.background = backgroundDrawable
+        acbUnload?.setImageDrawable(iconDrawable)
     }
 
     private fun acibNavigatorClear() {
