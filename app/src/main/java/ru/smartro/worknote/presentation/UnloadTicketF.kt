@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation
 
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ADFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
@@ -28,7 +29,7 @@ class UnloadTicketF: ADFragment() {
                 toast("включился режим Выгрузки")
             }
             vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, !isModeUnload)
-
+            findNavController().previousBackStackEntry?.savedStateHandle?.set("buildNavigatorPlatformUnload", false)
             navigateBack(R.id.MapPlatformsF)
         }
         return true

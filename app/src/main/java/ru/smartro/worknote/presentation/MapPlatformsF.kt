@@ -218,10 +218,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         acibNavigatorToggle = sview.findViewById<AppCompatImageButton>(R.id.acib__f_map__navigator_toggle)
         acibNavigatorToggle?.setOnClickListener {
-            drivingModeState = false
-            acibNavigatorToggle?.isVisible = drivingModeState
-            clearMapObjectsDrive()
-            hideDialog()
+           acibNavigatorClear()
         }
         val acibGotoLogActMapAPIB = sview.findViewById<AppCompatImageButton>(R.id.goto_log__f_map__apib)
         acibGotoLogActMapAPIB.setOnClickListener {
@@ -283,11 +280,14 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             if (isModeUnload) {
                 navigateMain(R.id.UnloadTicketF)
             } else {
-
                 findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("buildNavigatorPlatformUnload")?.observe(
                     viewLifecycleOwner) {result ->
                     if(result) {
                         buildNavigatorPlatformUnload()
+                        acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.red_cool))
+                    } else {
+                        acibNavigatorClear()
+                        acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.black))
                     }
                 }
                 navigateMain(R.id.UnloadInfoF)
@@ -298,6 +298,13 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             acbUnload.setTextColor(ContextCompat.getColor(getAct(), R.color.red_cool))
             buildNavigatorPlatformUnload()
         }
+    }
+
+    private fun acibNavigatorClear() {
+        drivingModeState = false
+        acibNavigatorToggle?.isVisible = drivingModeState
+        clearMapObjectsDrive()
+        hideDialog()
     }
 
     private fun changeMapObjectIcon(platformEntity: PlatformEntity, isActiveMode: Boolean) {
