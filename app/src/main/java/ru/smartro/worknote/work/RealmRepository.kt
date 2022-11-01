@@ -724,6 +724,27 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+
+    fun addBeforeMediaUnload(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.unloadEntity?.beforeMedia?.addAll(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun addAfterMediaUnload(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.unloadEntity?.afterMedia?.addAll(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
     fun getPlatformVoiceCommentEntity(platformEntity: PlatformEntity): PlatformVoiceCommentEntity {
         var result: PlatformVoiceCommentEntity = PlatformVoiceCommentEntity.createEmpty()
         p_realm.executeTransaction { realm ->

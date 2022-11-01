@@ -1,5 +1,6 @@
 package ru.smartro.worknote.presentation
 
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
@@ -31,6 +32,17 @@ class UnloadTicketF: ADFragment() {
             vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, !isModeUnload)
             findNavController().previousBackStackEntry?.savedStateHandle?.set("buildNavigatorPlatformUnload", false)
             navigateBack(R.id.MapPlatformsF)
+        }
+
+        val acibPhotoBefore = sview.findViewById<AppCompatImageButton>(R.id.acib__f_unload_ticket__photo_before)
+        acibPhotoBefore.setOnClickListener {
+            navigateMain(R.id.UnloadPhotoBeforeMediaF)
+        }
+
+
+        val acibPhotoAfter = sview.findViewById<AppCompatImageButton>(R.id.acib__f_unload_ticket__photo_after)
+        acibPhotoAfter.setOnClickListener {
+            navigateMain(R.id.UnloadPhotoAfterMediaF)
         }
         return true
     }

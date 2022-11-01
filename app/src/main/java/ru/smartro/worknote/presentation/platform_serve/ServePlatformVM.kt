@@ -316,6 +316,16 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         set_PlatformLiveData()
     }
 
+    fun addBeforeMediaUnload(imageS: List<ImageEntity>) {
+        database.addBeforeMediaUnload(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+    }
+
+    fun addAfterMediaUnload(imageS: List<ImageEntity>) {
+        database.addAfterMediaUnload(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+    }
+
     fun addAfterMedia(imageS: List<ImageEntity>) {
         LOG.debug("before.imageS=${imageS.size}")
         database.addAfterMedia(this.getPlatformId(), imageS)
