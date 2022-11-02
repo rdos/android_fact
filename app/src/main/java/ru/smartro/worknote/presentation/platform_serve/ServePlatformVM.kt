@@ -366,4 +366,8 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         database.removeVoiceComment(platformVoiceCommentEntity)
         set_PlatformLiveData()
     }
+
+    fun isUnloadMode(): Boolean {
+        return database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+    }
 }

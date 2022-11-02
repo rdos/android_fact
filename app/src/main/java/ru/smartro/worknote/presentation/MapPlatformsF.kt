@@ -273,10 +273,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //        setDevelMode()
         onRefreshData()
 
-
-        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
-
-        if (isModeUnload) {
+        if (vm.isUnloadMode()) {
             toggleUnloadButton(true)
         } else {
             toggleUnloadButton(false)
@@ -300,7 +297,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
                 }
             }
 
-            if (isModeUnload) {
+            if (vm.isUnloadMode()) {
                 navigateMain(R.id.UnloadTicketF)
             } else {
                 navigateMain(R.id.UnloadInfoF)
