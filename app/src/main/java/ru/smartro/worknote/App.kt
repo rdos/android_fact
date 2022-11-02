@@ -233,7 +233,11 @@ class App : AApp() {
         connectionLiveData = ConnectionLiveData(applicationContext)
         connectionLiveData.observeForever {
             if(it == false) {
-                mCurrentAct?.showDlgWarning(WarningType.CONNECTION_LOST)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if(connectionLiveData.value == false) {
+                        mCurrentAct?.showDlgWarning(WarningType.CONNECTION_LOST)
+                    }
+                }, 1000)
             }
         }
 
