@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
+import ru.smartro.worknote.R
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
 import java.io.File
@@ -27,7 +28,7 @@ class UnloadPhotoAfterMediaF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.addAfterMediaUnload(imageS)
-        navigateBack()
+        navigateMain(R.id.MapPlatformsF)
     }
 
     override fun onSavePhoto() {
@@ -44,7 +45,7 @@ class UnloadPhotoAfterMediaF : APhotoFragment() {
     override fun onBackPressed() {
         super.onBackPressed()
         super.dropOutputD()
-        navigateBack()
+        navigateMain(R.id.MapPlatformsF)
 
     }
     companion object {

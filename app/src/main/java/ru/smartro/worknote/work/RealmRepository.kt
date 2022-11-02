@@ -792,7 +792,7 @@ class RealmRepository(private val p_realm: Realm) {
         return result!!
     }
 
-    private fun loadPlatformUnloadEntity(platformEntity: PlatformEntity): PlatformUnloadEntity {
+    /** private*/fun loadPlatformUnloadEntity(platformEntity: PlatformEntity): PlatformUnloadEntity {
         var result = getQueryPlatformUnload(platformEntity).findFirst()
         if (result == null) {
             result = p_realm.createObject(PlatformUnloadEntity::class.java,  platformEntity.platformId)
@@ -867,13 +867,32 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun setPlatformUnloadEntity(newUnloadEntity: PlatformUnloadEntity) {
+        p_realm.executeTransaction { realm ->
+            //todo: [pe
+            val pe = getQueryPlatform()
+                .equalTo("platformId", newUnloadEntity.platformId)
+                .findFirst()!!
+            val platformUnloadEntity = loadPlatformUnloadEntity(pe)
+
+            platformUnloadEntity.afterValue = newUnloadEntity?.afterValue
+            platformUnloadEntity.beforeValue = newUnloadEntity?.beforeValue
+            platformUnloadEntity.ticketValue = newUnloadEntity?.ticketValue
+            setEntityUpdateAt(pe)
+        }
+    }
+
+
+
     fun addPlatformUnloadEntity(platformEntity: PlatformEntity){
+        val newUnloadEntity = platformEntity.unloadEntity
         p_realm.executeTransaction { realm ->
             //todo: [pe
             val pe = getQueryPlatform()
                 .equalTo("platformId", platformEntity.platformId)
                 .findFirst()!!
             val platformUnloadEntity = loadPlatformUnloadEntity(platformEntity)
+
             pe?.unloadEntity = platformUnloadEntity
             setEntityUpdateAt(platformEntity)
         }
@@ -1363,6 +1382,7 @@ class RealmRepository(private val p_realm: Realm) {
         result = true
         return result
     }
+
 
 
 }

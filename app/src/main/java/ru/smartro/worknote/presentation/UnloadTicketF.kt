@@ -1,5 +1,7 @@
 package ru.smartro.worknote.presentation
 
+import android.content.DialogInterface
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -10,9 +12,15 @@ import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
+import ru.smartro.worknote.work.PlatformUnloadEntity
+
 //todo: смотри прикол, VT !!!UnloadInfo++ploadTicket
 class UnloadTicketF: ADFragment() {
-//    https://en.wikipedia.org/wiki/Virtual_machine :))))))
+    private var acetTalonValue: AppCompatEditText? = null
+    private var acetWeightAfter: AppCompatEditText? = null
+    private var acetWeightBefore: AppCompatEditText? = null
+
+    //    https://en.wikipedia.org/wiki/Virtual_machine :))))))
     private val vm: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {
@@ -20,6 +28,8 @@ class UnloadTicketF: ADFragment() {
     }
     
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
+        val platformUnloadEntity = vm.getPlatformEntity().unloadEntity
+
         val acibPhotoBefore = sview.findViewById<AppCompatImageButton>(R.id.acib__f_unload_ticket__photo_before)
         acibPhotoBefore.setOnClickListener {
             navigateMain(R.id.UnloadPhotoBeforeMediaF)
@@ -38,6 +48,22 @@ class UnloadTicketF: ADFragment() {
             navigateBack(R.id.MapPlatformsF)
         }
 
+
+        acetWeightBefore = sview.findViewById(R.id.acet__f_unload_ticket__value_before)
+        if (platformUnloadEntity?.beforeValue != null) {
+            acetWeightBefore?.setText(platformUnloadEntity?.beforeValue.toString())
+        }
+
+        acetWeightAfter = sview.findViewById(R.id.acet__f_unload_ticket__value_after)
+        if (platformUnloadEntity?.afterValue != null) {
+            acetWeightAfter?.setText(platformUnloadEntity?.afterValue.toString())
+        }
+        acetTalonValue = sview.findViewById(R.id.acet__f_unload_ticket__value_talon)
+
+        if (platformUnloadEntity?.ticketValue != null) {
+            acetTalonValue?.setText(platformUnloadEntity?.ticketValue.toString())
+        }
+
         return true
     }
 
@@ -51,5 +77,15 @@ class UnloadTicketF: ADFragment() {
 
     override fun onBackPressed() {
         navigateBack()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        val platformUnloadEntity = vm.getPlatformEntity().unloadEntity
+
+        platformUnloadEntity?.beforeValue = acetWeightBefore?.text.toString().toFloatOrNull()
+        platformUnloadEntity?.afterValue = acetWeightAfter?.text.toString().toFloatOrNull()
+        platformUnloadEntity?.ticketValue = acetTalonValue?.text.toString().toFloatOrNull()
+        vm.database.setPlatformUnloadEntity(platformUnloadEntity!!)
     }
 }

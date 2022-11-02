@@ -273,7 +273,20 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //        setDevelMode()
         onRefreshData()
 
+        //TODO: сюда изменения вностиьб!
         if (vm.isUnloadMode()) {
+            navigateMain(R.id.UnloadTicketF)
+            findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("buildNavigatorPlatformUnload")?.observe(
+                viewLifecycleOwner) { result ->
+                LOG.debug("TEST:::!!!")
+                if(result) {
+                    buildNavigatorPlatformUnload()
+                    toggleUnloadButton(true)
+                } else {
+                    clearNavigator()
+                    toggleUnloadButton(false)
+                }
+            }
             toggleUnloadButton(true)
         } else {
             toggleUnloadButton(false)
@@ -287,6 +300,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
             findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("buildNavigatorPlatformUnload")?.observe(
                 viewLifecycleOwner) { result ->
+                //TODO: сюда изменения вностиьб! 
                 LOG.debug("TEST:::!!!")
                 if(result) {
                     buildNavigatorPlatformUnload()
