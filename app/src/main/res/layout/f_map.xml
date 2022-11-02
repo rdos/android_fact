@@ -107,7 +107,6 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
 
-
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/acib__f_map__navigator_toggle"
             android:layout_width="48dp"

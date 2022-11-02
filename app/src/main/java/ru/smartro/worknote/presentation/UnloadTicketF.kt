@@ -20,30 +20,24 @@ class UnloadTicketF: ADFragment() {
     }
     
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
-        val acbStart: SmartROviewSwipeButton? = sview.findViewById(R.id.acb_f_unload_ticket__finish)
-        acbStart?.onSwipe = {
-            val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
-
-            if (isModeUnload) {
-                toast("выключился режим Выгрузки")
-            } else {
-                toast("включился режим Выгрузки")
-            }
-            vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, !isModeUnload)
-            findNavController().previousBackStackEntry?.savedStateHandle?.set("buildNavigatorPlatformUnload", false)
-            navigateBack(R.id.MapPlatformsF)
-        }
-
         val acibPhotoBefore = sview.findViewById<AppCompatImageButton>(R.id.acib__f_unload_ticket__photo_before)
         acibPhotoBefore.setOnClickListener {
             navigateMain(R.id.UnloadPhotoBeforeMediaF)
         }
 
-
         val acibPhotoAfter = sview.findViewById<AppCompatImageButton>(R.id.acib__f_unload_ticket__photo_after)
         acibPhotoAfter.setOnClickListener {
             navigateMain(R.id.UnloadPhotoAfterMediaF)
         }
+
+        val acbFinish: SmartROviewSwipeButton? = sview.findViewById(R.id.acb_f_unload_ticket__finish)
+        acbFinish?.onSwipe = {
+            toast("выключился режим Выгрузки")
+            vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, false)
+            findNavController().previousBackStackEntry?.savedStateHandle?.set("buildNavigatorPlatformUnload", false)
+            navigateBack(R.id.MapPlatformsF)
+        }
+
         return true
     }
 

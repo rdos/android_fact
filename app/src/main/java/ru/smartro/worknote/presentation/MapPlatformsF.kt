@@ -221,7 +221,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         acibNavigatorToggle = sview.findViewById<AppCompatImageButton>(R.id.acib__f_map__navigator_toggle)
         acibNavigatorToggle?.setOnClickListener {
-           acibNavigatorClear()
+           clearNavigator()
         }
         val acibGotoLogActMapAPIB = sview.findViewById<AppCompatImageButton>(R.id.goto_log__f_map__apib)
         acibGotoLogActMapAPIB.setOnClickListener {
@@ -287,18 +287,22 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             if (platformID == Inull) {
                 return@setOnClickListener
             }
+
+            findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("buildNavigatorPlatformUnload")?.observe(
+                viewLifecycleOwner) { result ->
+                LOG.debug("TEST:::!!!")
+                if(result) {
+                    buildNavigatorPlatformUnload()
+                    toggleUnloadButton(true)
+                } else {
+                    clearNavigator()
+                    toggleUnloadButton(false)
+                }
+            }
+
             if (isModeUnload) {
                 navigateMain(R.id.UnloadTicketF)
             } else {
-                findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("buildNavigatorPlatformUnload")?.observe(
-                    viewLifecycleOwner) { result ->
-                    if(result) {
-                        buildNavigatorPlatformUnload()
-                        toggleUnloadButton(true)
-                    } else {
-                        acibNavigatorClear()
-                    }
-                }
                 navigateMain(R.id.UnloadInfoF)
             }
         }
@@ -315,7 +319,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         acbUnload?.setImageDrawable(iconDrawable)
     }
 
-    private fun acibNavigatorClear() {
+    private fun clearNavigator() {
         drivingModeState = false
         acibNavigatorToggle?.isVisible = drivingModeState
         clearMapObjectsDrive()

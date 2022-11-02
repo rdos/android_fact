@@ -23,18 +23,10 @@ class UnloadInfoF: ADFragment() {
         val acbStart = sview.findViewById<SmartROviewSwipeButton>(R.id.sv__f_unload_info__swipe_button)
         acbStart.onSwipe = {
 
-            val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
-
-            if (isModeUnload) {
-                toast("выключился режим Выгрузки")
-            } else {
-                toast("включился режим Выгрузки")
-            }
-
-            vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, !isModeUnload)
+            toast("включился режим Выгрузки")
+            vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, true)
             val unloadEntity = vm.getPlatformEntity().ploadUnloadEntity()
             vm.database.addPlatformUnloadEntity(vm.getPlatformEntity())
-
             findNavController().previousBackStackEntry?.savedStateHandle?.set("buildNavigatorPlatformUnload", true)
             navigateBack(R.id.MapPlatformsF)
         }
