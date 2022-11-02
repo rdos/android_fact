@@ -19,7 +19,7 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
         }
     override fun onGetTextForFailHint() = "Причина поломки контейнера"
     override fun onGetStringList(): List<String> {
-        mBreakDownReasonS = viewModel.database.findAllBreakDown()
+        mBreakDownReasonS = viewModel.database.findAllBreakDownReasonS()
         if (mBreakDownReasonS == null || mBreakDownReasonS?.size == 0) {
             toast("Ошибка.todo:::")
             return emptyList()

@@ -3,7 +3,7 @@ package ru.smartro.worknote.work
 import io.realm.*
 import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.LiveRealmData
-import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
+import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -181,7 +181,7 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun insertBreakDown(entities: List<BreakDownEntity>) {
+    fun insertBreakDown(entities: List<BreakDownReasonEntity>) {
         p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)
         }
@@ -205,9 +205,9 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
 
-    private fun findBreakdownByValue(realm: Realm, problem: String): BreakDownEntity {
+    private fun findBreakdownByValue(realm: Realm, problem: String): BreakDownReasonEntity {
         return realm.copyFromRealm(
-            realm.where(BreakDownEntity::class.java).equalTo("problem", problem).findFirst()!!
+            realm.where(BreakDownReasonEntity::class.java).equalTo("problem", problem).findFirst()!!
         )
     }
 
@@ -221,8 +221,8 @@ class RealmRepository(private val p_realm: Realm) {
         return found.map { it.problem!! }
     }
 
-    fun findAllBreakDown(): List<String> {
-        val found = p_realm.copyFromRealm(p_realm.where(BreakDownEntity::class.java).findAll())
+    fun findAllBreakDownReasonS(): List<String> {
+        val found = p_realm.copyFromRealm(p_realm.where(BreakDownReasonEntity::class.java).findAll())
         return found.map { it.problem!! }
     }
 

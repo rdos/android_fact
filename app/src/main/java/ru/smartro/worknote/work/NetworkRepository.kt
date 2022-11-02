@@ -19,7 +19,7 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.PostExample
-import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownEntity
+import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.network.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
@@ -101,7 +101,7 @@ class NetworkRepository(private val context: Context) {
         val entities = data?.filter {
             it.attributes.organisationId == paramS().ownerId
         }?.map {
-            BreakDownEntity(it.attributes.id, it.attributes.name)
+            BreakDownReasonEntity(it.attributes.id, it.attributes.name)
         }
         db.insertBreakDown(entities!!)
     }
