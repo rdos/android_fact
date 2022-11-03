@@ -41,10 +41,7 @@ import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
@@ -117,6 +114,8 @@ class ConnectionLostLiveData(context: Context) : LiveData<Boolean>(), AndroidNet
 
 class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : ConnectivityManager.NetworkCallback() {
     private val validNetworks: MutableSet<Network> = HashSet()
+    private var mOnLostInternetJob: Job? =  null
+
     override fun onAvailable(network: Network) {
         LOG.debug("before: network=${network}, validNetworks size=${validNetworks.size}")
         val networkCapabilities = p_cm.getNetworkCapabilities(network)
@@ -124,6 +123,7 @@ class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : Conn
         if(isInternet == true) {
             LOG.info("if(isInternet == true)")
             validNetworks.add(network)
+            blockOnLostInternet()
         }
         checkValidNetworks()
     }
@@ -139,14 +139,30 @@ class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : Conn
         LOG.debug("before::: validNetworks size=${validNetworks.size}")
         if (validNetworks.size <= 0) {
             LOG.trace("if (validNetworks.size <= 0) {")
+            runOnLostInternet()
+        }
+    }
+
+    private fun runOnLostInternet() {
+        blockOnLostInternet()
+        mOnLostInternetJob = App.getAppliCation().applicationScope.launch(Dispatchers.Main) {
+            delay(3000L)
             LOG.info("onLostInternet")
             p_callback.onLostInternet()
             LOG.debug("onLostInternet")
         }
     }
+
+    private fun blockOnLostInternet() {
+        if (mOnLostInternetJob != null) {
+            mOnLostInternetJob?.cancel()
+        }
+    }
     interface  CallBack {
         fun onLostInternet()
     }
+
+
 }
 
 class App : AApp() {
