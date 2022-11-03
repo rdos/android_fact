@@ -79,11 +79,12 @@ const val D__LOGS = "logs"
 const val D__R_DOS = "r_dos"
 const val D__FILES = "files"
 
-class ConnectionLiveData(context: Context) : LiveData<Boolean>(), AndroidNet.CallBack {
+class ConnectionLostLiveData(context: Context) : LiveData<Boolean>(), AndroidNet.CallBack {
     private var mNetworkCallback: ConnectivityManager.NetworkCallback? = null
     private val cm = context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
 
     override fun onActive() {
+        LOG.debug("before")
         mNetworkCallback = AndroidNet(cm, this)
 
         val networkRequest = NetworkRequest.Builder()
@@ -92,16 +93,23 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>(), AndroidNet.Cal
             .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
             .build()
 
-        if(mNetworkCallback != null)
-            cm.registerNetworkCallback(networkRequest, mNetworkCallback!!)
+        if(mNetworkCallback == null) {
+            LOG.warn(" if(mNetworkCallback == null) {")
+            return
+        }
+        cm.registerNetworkCallback(networkRequest, mNetworkCallback!!)
     }
 
     override fun onInactive() {
-        if(mNetworkCallback != null)
+        LOG.debug("before")
+        if(mNetworkCallback != null) {
+            LOG.info("if(mNetworkCallback != null)")
             cm.unregisterNetworkCallback(mNetworkCallback!!)
+        }
     }
 
     override fun onLostInternet() {
+        LOG.debug("before")
         postValue(true)
     }
 
@@ -110,11 +118,11 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>(), AndroidNet.Cal
 class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : ConnectivityManager.NetworkCallback() {
     private val validNetworks: MutableSet<Network> = HashSet()
     override fun onAvailable(network: Network) {
-
+        LOG.debug("before: network=${network}, validNetworks size=${validNetworks.size}")
         val networkCapabilities = p_cm.getNetworkCapabilities(network)
         val isInternet = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         if(isInternet == true) {
-            LOG.debug("ADDING")
+            LOG.info("if(isInternet == true)")
             validNetworks.add(network)
         }
         checkValidNetworks()
@@ -122,16 +130,19 @@ class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : Conn
 
     override fun onLost(network: Network) {
         super.onLost(network)
+        LOG.debug("before::: validNetworks size=${validNetworks.size}")
         validNetworks.remove(network)
         checkValidNetworks()
     }
 
     private fun checkValidNetworks() {
-        if (validNetworks.size > 0) {
-            return
+        LOG.debug("before::: validNetworks size=${validNetworks.size}")
+        if (validNetworks.size <= 0) {
+            LOG.trace("if (validNetworks.size <= 0) {")
+            LOG.info("onLostInternet")
+            p_callback.onLostInternet()
+            LOG.debug("onLostInternet")
         }
-        p_callback.onLostInternet()
-
     }
     interface  CallBack {
         fun onLostInternet()
@@ -141,7 +152,7 @@ class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : Conn
 class App : AApp() {
 
     private var mCurrentAct: AAct? = null
-    private lateinit var connectionLiveData: ConnectionLiveData
+    private lateinit var connectionLiveData: ConnectionLostLiveData
 
     fun setCurrentAct(aAct: AAct?) {
         mCurrentAct = aAct
@@ -186,7 +197,6 @@ class App : AApp() {
     }
 
     fun gps(): PoinT {
-        LOG.debug("BBBB")
         var gps_enabled = false
         var network_enabled = false
         val lm = AndRoid.getService()
@@ -241,14 +251,13 @@ class App : AApp() {
             throw throwable
         }
 
-        connectionLiveData = ConnectionLiveData(applicationContext)
-        connectionLiveData.observeForever {
-            if(it == true) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    if(connectionLiveData.value == false) {
-                        mCurrentAct?.showDlgWarning(WarningType.CONNECTION_LOST)
-                    }
-                }, 1000)
+        connectionLiveData = ConnectionLostLiveData(applicationContext)
+        LOG.debug("connectionLiveData = ConnectionLiveData(applicationContext)")
+
+        connectionLiveData.observeForever { isConnectionLost ->
+
+            if(isConnectionLost == true) {
+                mCurrentAct?.showDlgWarning(WarningType.CONNECTION_LOST)
             }
         }
 
