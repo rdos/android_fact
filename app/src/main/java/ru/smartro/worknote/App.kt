@@ -19,13 +19,10 @@ import android.os.*
 import android.os.StrictMode.ThreadPolicy
 import android.widget.RemoteViews
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -65,7 +62,6 @@ import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
 import ru.smartro.worknote.work.RegionEntity
-import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -83,33 +79,12 @@ const val D__LOGS = "logs"
 const val D__R_DOS = "r_dos"
 const val D__FILES = "files"
 
-class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
+class ConnectionLiveData(context: Context) : LiveData<Boolean>(), AndroidNet.CallBack {
     private var mNetworkCallback: ConnectivityManager.NetworkCallback? = null
     private val cm = context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
-    private val validNetworks: MutableSet<Network> = HashSet()
-
-    private fun checkValidNetworks() {
-        postValue(validNetworks.size > 0)
-    }
 
     override fun onActive() {
-        mNetworkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                val networkCapabilities = cm.getNetworkCapabilities(network)
-                val isInternet = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                if(isInternet == true) {
-                    LOG.debug("ADDING")
-                    validNetworks.add(network)
-                }
-                checkValidNetworks()
-            }
-
-            override fun onLost(network: Network) {
-                super.onLost(network)
-                validNetworks.remove(network)
-                checkValidNetworks()
-            }
-        }
+        mNetworkCallback = AndroidNet(cm, this)
 
         val networkRequest = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
@@ -124,6 +99,42 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
     override fun onInactive() {
         if(mNetworkCallback != null)
             cm.unregisterNetworkCallback(mNetworkCallback!!)
+    }
+
+    override fun onLostInternet() {
+        postValue(true)
+    }
+
+}
+
+class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : ConnectivityManager.NetworkCallback() {
+    private val validNetworks: MutableSet<Network> = HashSet()
+    override fun onAvailable(network: Network) {
+
+        val networkCapabilities = p_cm.getNetworkCapabilities(network)
+        val isInternet = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        if(isInternet == true) {
+            LOG.debug("ADDING")
+            validNetworks.add(network)
+        }
+        checkValidNetworks()
+    }
+
+    override fun onLost(network: Network) {
+        super.onLost(network)
+        validNetworks.remove(network)
+        checkValidNetworks()
+    }
+
+    private fun checkValidNetworks() {
+        if (validNetworks.size > 0) {
+            return
+        }
+        p_callback.onLostInternet()
+
+    }
+    interface  CallBack {
+        fun onLostInternet()
     }
 }
 
@@ -232,7 +243,7 @@ class App : AApp() {
 
         connectionLiveData = ConnectionLiveData(applicationContext)
         connectionLiveData.observeForever {
-            if(it == false) {
+            if(it == true) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     if(connectionLiveData.value == false) {
                         mCurrentAct?.showDlgWarning(WarningType.CONNECTION_LOST)
