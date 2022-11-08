@@ -178,7 +178,7 @@ class JournalChatF : ANOFragment() {
             }
 
             val tv_act_messager__media_after: AppCompatTextView by lazy {
-                view.findViewById(R.id.tv_act_messager__media_before)
+                view.findViewById(R.id.tv_act_messager__media_after)
             }
             val img_act_messager__media_after: AppCompatImageView by lazy {
                 view.findViewById(R.id.img_act_messager__media_after)
