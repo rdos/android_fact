@@ -1251,11 +1251,15 @@ class MapPlatformSBehaviorAdapter(
             //nothing
         }
 
+        holder.acivArrowDropDown.visibility = View.GONE
+
         val currentStatus = item.getStatusPlatform()
         if(currentStatus == StatusEnum.NEW || currentStatus == StatusEnum.UNFINISHED) {
+            holder.acivArrowDropDown.visibility = View.VISIBLE
             holder.itemView.apply {
                 setOnClickListener {
                     if (!findViewById<ExpandableLayout>(R.id.map_behavior_expl).isExpanded) {
+                        holder.acivArrowDropDown.visibility = View.GONE
                         findViewById<ExpandableLayout>(R.id.map_behavior_expl).expand()
 
                         findViewById<Button>(R.id.map_behavior_start_service).setOnClickListener {
@@ -1272,6 +1276,7 @@ class MapPlatformSBehaviorAdapter(
                         lastHolder = holder
                         lastHolder?.platformId = item.platformId
                     } else {
+                        holder.acivArrowDropDown.visibility = View.VISIBLE
                         findViewById<ExpandableLayout>(R.id.map_behavior_expl).collapse(true)
                     }
                 }
@@ -1301,14 +1306,20 @@ class MapPlatformSBehaviorAdapter(
     }
 
     class PlatformViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var platformId: Int? = null
+
+        val acivArrowDropDown: AppCompatImageView by lazy {
+            itemView.findViewById(R.id.aciv_baseline_arrow_drop_down_24)
+        }
         fun collapseOld() {
             if (platformId == null) {
                 return
             }
+            acivArrowDropDown.visibility = View.GONE
             itemView.findViewById<ExpandableLayout>(R.id.map_behavior_expl)?.collapse()
             platformId = null
         }
-        var platformId: Int? = null
+
     }
 
     interface PlatformClickListener {
