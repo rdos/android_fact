@@ -1,5 +1,6 @@
 package ru.smartro.worknote.presentation
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.ADFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.awORKOLDs.extensions.showAlertPlatformByPoint
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ConfigName
@@ -73,11 +72,7 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
 
         val isServeAgain = TbIboy__item.getStatusPlatform() != StatusEnum.NEW
 
-        val cvStartServe = sview.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__start_serve)
-        cvStartServe.isVisible = !isServeAgain
 
-        val cvServeAgain = sview.findViewById<CardView>(R.id.cv_dialog_platform_clicked_dtl__serve_again)
-        cvServeAgain.isVisible = isServeAgain
         val tvAddress = sview.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__address)
         tvAddress.text = String.format(getString(R.string.dialog_platform_clicked_dtl__address), TbIboy__item.address, TbIboy__item.srpId)
 
@@ -93,8 +88,15 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
         //коммент инициализации
         sview.findViewById<ImageButton>(R.id.platform_location).setOnClickListener(mOnClickListener)
         sview.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener(mOnClickListener)
-        sview.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
+
+        sview.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).apply {
+            isVisible = isServeAgain
+            setOnClickListener(mOnClickListener)
+        }
+
+
         val btnStartServe = sview.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
+        btnStartServe.isVisible = !isServeAgain
         btnStartServe.setOnClickListener(mOnClickListener)
         if (TbIboy__item.getStatusPlatform() == StatusEnum.UNFINISHED) {
             btnStartServe.setText(R.string.start_serve_again)
