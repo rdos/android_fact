@@ -74,10 +74,9 @@ open class WorkOrderEntity(
                 StatusEnum.PARTIAL_PROBLEMS -> platformsStatusPartialProblemsCnt++
             }
             /** статистика для ContainerEntity*/
-            platform.containerS!!.forEach {
+            platform.containerS.forEach {
                 containersCnt++
                 val containerStatus = it.getStatusContainer()
-                LOG.info("containerStatus=${containerStatus}")
                 when(containerStatus) {
                     StatusEnum.NEW -> containersStatusNewCnt++
                     StatusEnum.SUCCESS -> containersStatusSuccessCnt++
