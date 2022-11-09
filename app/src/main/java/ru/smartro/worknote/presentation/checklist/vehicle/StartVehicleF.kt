@@ -111,8 +111,8 @@ class StartVehicleF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
 
-        log("viewModel.mLastOwnerId=${viewModel.mLastOwnerId}")
-        log("getArgumentID(mLastOwnerId)=${getArgumentID()}")
+        LOG.debug("viewModel.mLastOwnerId=${viewModel.mLastOwnerId}")
+        LOG.debug("getArgumentID(mLastOwnerId)=${getArgumentID()}")
         if(viewModel.mVehicleList.value == null) {
             if(getArgumentName() == null)
                 (requireActivity() as XChecklistAct).showProgressBar()
@@ -145,7 +145,7 @@ class StartVehicleF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
+        LOG.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mVehicleList.removeObservers(viewLifecycleOwner)
     }
 

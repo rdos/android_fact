@@ -13,27 +13,25 @@ import com.yandex.mapkit.geometry.Point
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.Inull
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.AViewModel
-import ru.smartro.worknote.work.ContainerEntity
-import ru.smartro.worknote.work.GroupByContainerClientEntity
-import ru.smartro.worknote.work.GroupByContainerTypeClientEntity
-import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.*
 
 class ServePlatformVM(app: Application) : AViewModel(app) {
     private var mPlatformId: Int = Inull
 
 
     private var mPlatformEntity: PlatformEntity? = null
+    private var mPlatformMediaEntity: PlatformMediaEntity? = null
+    private var mPlatformVoiceCommentEntity: PlatformVoiceCommentEntity? = null
 
     private val _PlatformLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
     val todoLiveData: LiveData<PlatformEntity>
         get() = _PlatformLiveData
-    
 
 
-    private var mGroupByContainerClientEntity: MutableList<GroupByContainerClientEntity>? = null
-    private var mGroupByContainerTypeClientEntity: MutableList<GroupByContainerTypeClientEntity>? = null
+    private var mContainerGROUPClientEntity: MutableList<ContainerGROUPClientEntity>? = null
+    private var mContainerGROUPClientTypeEntity: MutableList<ContainerGROUPClientTypeEntity>? = null
 
     private val _failReasonS: MutableLiveData<List<String>> = MutableLiveData(emptyList())
 //    val mFailReasonS: LiveData<List<String>>
@@ -42,9 +40,31 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     fun getPlatformEntity(): PlatformEntity {
         if (mPlatformEntity == null) {
             mPlatformEntity = database.getPlatformEntity(mPlatformId)
-            LoG.trace("result=${mPlatformEntity?.platformId}")
+            LOG.trace("result=${mPlatformEntity?.platformId}")
         }
         return mPlatformEntity!!
+    }
+
+    fun updatePlatformEntity() {
+        if(mPlatformId != Inull && mPlatformEntity != null) {
+            set_PlatformLiveData()
+        }
+    }
+
+    fun getPlatformMediaEntity(): PlatformMediaEntity {
+        if (mPlatformMediaEntity == null) {
+            mPlatformMediaEntity = database.getPlatformMediaEntity(getPlatformEntity())
+            LOG.trace("result.getBeforeMediaSize=${mPlatformMediaEntity!!.getBeforeMediaSize()}")
+        }
+        return mPlatformMediaEntity!!
+    }
+
+    fun getPlatformVoiceCommentEntity(): PlatformVoiceCommentEntity {
+        if (mPlatformVoiceCommentEntity == null) {
+            mPlatformVoiceCommentEntity = database.getPlatformVoiceCommentEntity(getPlatformEntity())
+            LOG.trace("result.getBeforeMediaSize=${mPlatformMediaEntity!!.getBeforeMediaSize()}")
+        }
+        return mPlatformVoiceCommentEntity!!
     }
 
     fun getPlatformId(): Int {
@@ -53,75 +73,92 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
             if (App.getAppliCation().isDevelMode()) {
                 throw Exception()
             } else {
-                LoG.debug(" if (result != mPlatformId)")
-                LoG.error(" if (result != mPlatformId)")
-                LoG.warn(" if (result != mPlatformId)")
-                LoG.info(" if (result != mPlatformId)")
+                LOG.debug(" if (result != mPlatformId)")
+                LOG.error(" if (result != mPlatformId)")
+                LOG.warn(" if (result != mPlatformId)")
+                LOG.info(" if (result != mPlatformId)")
             }
         }
+        LOG.trace("result=${result}")
         return mPlatformId
     }
 
+    fun loadPlatformEntityByCoordS(coordLat: Double, coordLong: Double): PlatformEntity {
+        val platformE = database.findPlatformByCoord(coordLat, coordLong)
+        if(platformE == null)
+            mPlatformId = Inull
+        else
+            mPlatformId = platformE.platformId
+        set_PlatformLiveData()
+        return platformE ?: PlatformEntity()
+    }
 
     // TODO: !!!
     fun setPlatformEntity(platformEntity: PlatformEntity) {
-        LoG.debug("before.mPlatformId=${mPlatformId}")
-        LoG.debug("before.platformEntity.platformId=${platformEntity.platformId}")
+        LOG.debug("before.mPlatformId=${mPlatformId}")
+        LOG.debug("before.platformEntity.platformId=${platformEntity.platformId}")
 
 //        mPlatformEntity = platformEntity
         if (mPlatformId == platformEntity.platformId) {
-            LoG.warn("mPlatformId == platformEntity.platformId")
+            LOG.warn("mPlatformId == platformEntity.platformId")
             return
         }
         mPlatformId = platformEntity.platformId
         set_PlatformLiveData()
-        mGroupByContainerClientEntity = null
-        mGroupByContainerTypeClientEntity = null
-        LoG.trace("after.mPlatformId=${mPlatformId}")
+        mPlatformMediaEntity = null
+        mContainerGROUPClientEntity = null
+        mContainerGROUPClientTypeEntity = null
+        LOG.trace("after.mPlatformId=${mPlatformId}")
     }
 
     fun getContainerS(): List<ContainerEntity> {
-        var result =  this.getPlatformEntity().containers.toList()
+        var result =  this.getPlatformEntity().containerS.toList()
 
         result = result.sortedBy {
             it.isActiveToday == false
         }
-        LoG.trace("result=${result.count()}")
+        LOG.trace("result=${result.count()}")
         return result
     }
 
     fun getContainer(containerId: Int): ContainerEntity {
-        LoG.trace("containerId=${containerId}")
-        var result =  this.getPlatformEntity().containers.find { it.containerId == containerId}
+        LOG.trace("containerId=${containerId}")
+        var result =  this.getPlatformEntity().containerS.find { it.containerId == containerId}
         if (result == null) {
            result = ContainerEntity.createEmpty()
         }
-        LoG.trace("result.isFailureNotEmpty() = ${result.isFailureNotEmpty()}")
-        LoG.debug("result = ${result.containerId}")
+        LOG.trace("result.isFailureNotEmpty() = ${result.isFailureNotEmpty()}")
+        LOG.debug("result = ${result.containerId}")
         return result
     }
 
-    // TODO: !??
-    fun getGroupByContainerClientS(): MutableList<GroupByContainerClientEntity> {
-        // todo:: !!!!
-//        if (mGroupByContainerClientEntity == null) {
-            mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
-            LoG.info("mGroupByContainerClientEntity START = ${mGroupByContainerClientEntity}")
-            if (mGroupByContainerClientEntity == null) {
-                database.createGroupByContainerEntityS(mPlatformId)
-                mGroupByContainerClientEntity = database.loadGroupByContainerClient(mPlatformId)
-                LoG.info("mGroupByContainerClientEntity NULL 1 = ${mGroupByContainerClientEntity}")
-            }
-            if (mGroupByContainerClientEntity == null) {
-                LoG.error("mGroupByContainerClientEntity == null")
-                mGroupByContainerClientEntity = mutableListOf(GroupByContainerClientEntity.createEmpty())
-            }
-//        }
-        return mGroupByContainerClientEntity!!
+    fun getContainerMediaEntity(containerId: Int): ContainerMediaEntity {
+        val result = database.getContainerMediaEntity(getContainer(containerId))
+        return result
     }
 
-    fun incGroupByContainerTypeClientS(typeClientEntity: GroupByContainerTypeClientEntity) {
-        var containers = typeClientEntity.containers
+
+    // TODO: !??
+    fun getGroupByContainerClientS(): MutableList<ContainerGROUPClientEntity> {
+        // todo:: !!!!
+//        if (mGroupByContainerClientEntity == null) {
+            mContainerGROUPClientEntity = database.loadGroupByContainerClient(mPlatformId)
+            LOG.info("mGroupByContainerClientEntity START = ${mContainerGROUPClientEntity}")
+            if (mContainerGROUPClientEntity == null) {
+                database.createGroupByContainerEntityS(mPlatformId)
+                mContainerGROUPClientEntity = database.loadGroupByContainerClient(mPlatformId)
+                LOG.info("mGroupByContainerClientEntity NULL 1 = ${mContainerGROUPClientEntity}")
+            }
+            if (mContainerGROUPClientEntity == null) {
+                LOG.error("mGroupByContainerClientEntity == null")
+                mContainerGROUPClientEntity = mutableListOf(ContainerGROUPClientEntity.createEmpty())
+            }
+//        }
+        return mContainerGROUPClientEntity!!
+    }
+
+    fun incGroupByContainerTypeClientS(containerGROUPClientTypeEntity: ContainerGROUPClientTypeEntity) {
+        var containers = containerGROUPClientTypeEntity.containers
         var min: Double? = containers.minOf {
             it.volume ?: Dnull
         }
@@ -132,19 +169,25 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
         val container = containers.find { it.volume == min }!!
         val newVolume = (container.volume ?: 0.0) + 1.0
-        database.setGroByContainerTypeClientVolume(typeClientEntity, container.containerId!!, newVolume)
+        database.setContainerGROUPClientTypeVolume(containerGROUPClientTypeEntity, container.containerId!!, newVolume)
         set_PlatformLiveData()
     }
 
-
-
+//todo:~r_dos
     private fun set_PlatformLiveData() {
         mPlatformEntity = null
         mPlatformEntity = getPlatformEntity()
+
+        mPlatformMediaEntity = null
+        mPlatformMediaEntity = getPlatformMediaEntity()
+
+        mPlatformVoiceCommentEntity = null
+        getPlatformVoiceCommentEntity()
+
         _PlatformLiveData.postValue(mPlatformEntity!!)
     }
 
-    fun decGroupByContainerTypeClientS(typeClientEntity: GroupByContainerTypeClientEntity) {
+    fun decGroupByContainerTypeClientS(typeClientEntity: ContainerGROUPClientTypeEntity) {
         val containers = typeClientEntity.containers
 
         if(containers.all { it.volume == null }) {
@@ -164,27 +207,27 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
             it.volume == max
         }!!
         val newVolume = container.volume!! - 1f
-        database.setGroByContainerTypeClientVolume(typeClientEntity, container.containerId!!, newVolume)
+        database.setContainerGROUPClientTypeVolume(typeClientEntity, container.containerId!!, newVolume)
         set_PlatformLiveData()
     }
 
     // TODO: !!! ))
-    fun getGroupByContainerTypeClientS(client: String?): MutableList<GroupByContainerTypeClientEntity> {
-        LoG.debug("before, client = ${client}")
+    fun getGroupByContainerTypeClientS(client: String?): MutableList<ContainerGROUPClientTypeEntity> {
+        LOG.debug("before, client = ${client}")
         // TODO: !!!
 //        if (mGroupByContainerTypeClientEntity == null) {
-            mGroupByContainerTypeClientEntity = database.loadGroupByContainerTypeClientEntity(mPlatformId, client)
-            if (mGroupByContainerTypeClientEntity == null) {
+            mContainerGROUPClientTypeEntity = database.loadContainerGROUPClientTypeEntityS(mPlatformId, client)
+            if (mContainerGROUPClientTypeEntity == null) {
                 database.createGroupByContainerEntityS(mPlatformId)
-                mGroupByContainerTypeClientEntity = database.loadGroupByContainerTypeClientEntity(mPlatformId, client)
+                mContainerGROUPClientTypeEntity = database.loadContainerGROUPClientTypeEntityS(mPlatformId, client)
             }
-            if (mGroupByContainerTypeClientEntity == null) {
-                LoG.error("mGroupByContainerClientTypeEntity == null")
-                mGroupByContainerTypeClientEntity = mutableListOf(GroupByContainerTypeClientEntity.createEmpty())
+            if (mContainerGROUPClientTypeEntity == null) {
+                LOG.error("mGroupByContainerClientTypeEntity == null")
+                mContainerGROUPClientTypeEntity = mutableListOf(ContainerGROUPClientTypeEntity.createEmpty())
             }
 //        }
-        LoG.debug("mGroupByContainerClientTypeEntity = ${mGroupByContainerTypeClientEntity!!.size}")
-        return mGroupByContainerTypeClientEntity!!
+        LOG.debug("mGroupByContainerClientTypeEntity = ${mContainerGROUPClientTypeEntity!!.size}")
+        return mContainerGROUPClientTypeEntity!!
     }
 
 
@@ -199,11 +242,15 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 
 
 
-    fun updateContainerVolume( containerId: Int, volume: Double?) {
+    fun updateContainerVolume(containerId: Int, volume: Double?) {
         database.updateContainerVolume(this.getPlatformId(), containerId, volume)
         set_PlatformLiveData()
 //        getContainerEntity(containerId)
 //        getPlatformEntity(platformId)
+    }
+
+    fun updatePlatformComment(comment: String) {
+        database.updatePlatformComment(this.getPlatformId(), comment)
     }
 
     fun updateContainerComment(containerId: Int, comment: String?) {
@@ -216,18 +263,18 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 //        getPlatformEntity(mPlatformEntityLiveData.value!!.platformId!!)
     }
 
-    fun updateVolumePickup(platformId: Int, volume: Double?) {
-        database.updateVolumePickup(platformId, volume)
+    fun updateVolumePickup(volume: Double?) {
+        database.updateVolumePickup(this.getPlatformId(), volume)
         set_PlatformLiveData()
     }
 
-    fun updatePlatformKGO(platformId: Int, kgoVolume: String, isServedKGO: Boolean) {
-        database.updatePlatformKGO(platformId, kgoVolume, isServedKGO)
+    fun updatePlatformKGO(kgoVolume: String, isServedKGO: Boolean) {
+        database.updatePlatformKGO(this.getPlatformId(), kgoVolume, isServedKGO)
         set_PlatformLiveData()
     }
 
-    fun updatePlatformStatusSuccess(platformId: Int) {
-        database.updatePlatformStatusSuccess(platformId)
+    fun updatePlatformStatusSuccess() {
+        database.updatePlatformStatusSuccess(this.getPlatformId())
     }
 
 
@@ -259,13 +306,59 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         drivingRouter.requestRoutes(requestPoints, drivingOptions, vehicleOptions, drivingSession)
     }
 
-    fun updateContainerFailure(platformId: Int, containerId: Int, failText: String, commentText: String) {
-        database.setStateFailureForContainer(platformId, containerId, failText, commentText)
+    fun updateContainerFailure(containerId: Int, failText: String, commentText: String) {
+        database.setStateFailureForContainer(this.getPlatformId(), containerId, failText, commentText)
         set_PlatformLiveData()
     }
 
-    fun updateContainerBreakDown(platformId: Int, containerId: Int, failText: String, commentText: String) {
-        database.setStateBreakdownForContainer(platformId, containerId, failText, commentText)
+    fun updateContainerBreakDown(containerId: Int, failText: String, commentText: String) {
+        database.setStateBreakdownForContainer(this.getPlatformId(), containerId, failText, commentText)
+        set_PlatformLiveData()
+    }
+
+    fun addBeforeMedia(imageS: List<ImageEntity>) {
+        database.addBeforeMedia(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+    }
+
+    fun addAfterMedia(imageS: List<ImageEntity>) {
+        LOG.debug("before.imageS=${imageS.size}")
+        database.addAfterMedia(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+        LOG.debug("after.imageS=${imageS.size}")
+    }
+
+    fun addBeforeMediaComntainerByTypes(imageS: List<ImageEntity>) {
+        database.addBeforeMediaComntainerByTypes(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+    }
+
+    fun addFailureMediaContainer(containerId: Int, imageS: List<ImageEntity>) {
+        database.addFailureMediaContainer(this.getPlatformId(), containerId, imageS)
+        set_PlatformLiveData()
+    }
+
+    fun addBreakdownMediaContainer(containerId: Int, imageS: List<ImageEntity>) {
+        database.addBreakdownMediaContainer(this.getPlatformId(), containerId, imageS)
+        set_PlatformLiveData()
+    }
+
+
+    fun addVoiceComment(platformVoiceCommentEntity: PlatformVoiceCommentEntity) {
+        if (platformVoiceCommentEntity.voiceByteArray == null) {
+            LOG.error("platformVoiceCommentEntity.voiceByteArray == null")
+            return
+        }
+        database.addVoiceComment(platformVoiceCommentEntity)
+        set_PlatformLiveData()
+    }
+
+    fun removeVoiceComment(platformVoiceCommentEntity: PlatformVoiceCommentEntity) {
+        if (platformVoiceCommentEntity.voiceByteArray == null) {
+            LOG.error("platformVoiceCommentEntity.voiceByteArray == null")
+            return
+        }
+        database.removeVoiceComment(platformVoiceCommentEntity)
         set_PlatformLiveData()
     }
 }

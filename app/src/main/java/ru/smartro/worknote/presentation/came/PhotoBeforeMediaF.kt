@@ -5,18 +5,15 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 class PhotoBeforeMediaF : APhotoFragment() {
-        private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+    private val mPlatformMediaEntity: PlatformMediaEntity
+        get() =  viewModel.getPlatformMediaEntity()
 //    override fun onGetTextLabelFor() = "фото до обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mPlatformEntity == null) {
-            toast("Ошибка.todo:::")
-            return RealmList<ImageEntity>()
-        }
-        return mPlatformEntity!!.beforeMedia
+        return mPlatformMediaEntity.beforeMedia
     }
 
     override fun onGetDirName(): String {
@@ -33,10 +30,10 @@ class PhotoBeforeMediaF : APhotoFragment() {
 
     //TODO: r_dos!!!
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        vm.database.addBeforeMedia(mPlatformEntity.platformId, imageS)
-
-        val platformServeMode = mPlatformEntity.getServeMode()
-        LoG.info("PLATFORM SERVE MODE ::: ${platformServeMode}")
+        viewModel.addBeforeMedia(imageS)
+        val platformEntity = viewModel.getPlatformEntity()
+        val platformServeMode = platformEntity.getServeMode()
+        LOG.info("PLATFORM SERVE MODE ::: ${platformServeMode}")
         if (platformServeMode != null) {
 //            // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
 ////            if mPLatformEntity.isServeModeFixPServeF
@@ -44,34 +41,34 @@ class PhotoBeforeMediaF : APhotoFragment() {
 //                navigateMain(R.id.PServeF, mPlatformEntity.platformId)
 //                return
 //            }
-//                             //todo: линию незаметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+//                             //todo: линию не заметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 ////            //            if mPLatformEntity.isModeFixPServeGroupByContainersF
 //            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
 //                navigateMain(R.id.PServeByTypesF, mPlatformEntity.platformId)
 //                return
 //            }
             if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeF) {
-                navigateMain(R.id.PServeF, mPlatformEntity.platformId)
+                navigateMain(R.id.PServeF, viewModel.getPlatformId())
                 return
             } else {
-                navigateMain(R.id.PServeGroupByContainersF, mPlatformEntity.platformId)
+                navigateMain(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
                 return
             }
         }
 
         // TODO: !!!
-        val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
+        val configEntity = viewModel.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
 
         if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeF) {
-            navigateMain(R.id.PServeF, mPlatformEntity.platformId)
+            navigateMain(R.id.PServeF, viewModel.getPlatformId())
             return
         }
         if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-            navigateMain(R.id.PServeGroupByContainersF, mPlatformEntity.platformId)
+            navigateMain(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
             return
         }
 
-        navigateMain(R.id.PServeF, mPlatformEntity.platformId)
+        navigateMain(R.id.PServeF, viewModel.getPlatformId())
     }
 
     override fun onSavePhoto() {

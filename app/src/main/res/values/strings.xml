@@ -39,7 +39,7 @@
     <string name="capture_mode_night">Night</string>
     <string name="delete_button_alt">Delete</string>
     <string name="end_task">Досрочное завершение</string>
-    <string name="problem_on_point">Невывоз площадки</string>
+    <string name="problem_on_point">Невывоз\nплощадки</string>
     <string name="container_fail">Все оставшиеся контейнеры на площадке будут помечены как невывезенные.</string>
     <string name="finish_way">Завершить маршрут</string>
     <string name="finish_way_now">Досрочно завершить маршрут</string>
@@ -61,6 +61,24 @@
         <item quantity="many">контейнеров</item>
         <item quantity="other">контейнер(ов)</item>
     </plurals>
+
+    <plurals name="region_count">
+        <item quantity="zero">регион</item>
+        <item quantity="one">регион</item>
+        <item quantity="two">региона</item>
+        <item quantity="few">региона</item>
+        <item quantity="many">регионов</item>
+        <item quantity="other">регион(ов)</item>
+    </plurals>
+    <plurals name="region_downloaded">
+        <item quantity="zero">Скачан</item>
+        <item quantity="one">Скачан</item>
+        <item quantity="two">Скачано</item>
+        <item quantity="few">Скачано</item>
+        <item quantity="many">Скачано</item>
+        <item quantity="other">Скачан(о)</item>
+    </plurals>
+
     <string name="title_activity_test">TestActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -89,4 +107,11 @@
     <string name="walkhrough_step_b_b">Кол-во контейнеров на КП. \nПлюсом добавляется \"подбор\"</string>
     <string name="walkhrough_step_b_c">Фото \"до\" и \"после\" для каждого контейнера.</string>
     <string name="walkhrough_step_b_d">Кол-во сгруппированных контейнеров по типу</string>
+	
+	<string name="warning_airplane_mode">На Вашем устройстве включен режим \"В самолёте\". Ваш прогресс сохраняется вне зависимости от наличия интернета, однако данное действие будет зафиксировано.</string>
+    <string name="warning_connection_lost">На Вашем устройстве отсутствует подключение к интернету. Ваш прогресс сохраняется вне зависимости от наличия интернета, однако данное действие будет зафиксировано.</string>
+    <string name="warning_gps_off">На Вашем устройстве выключен GPS. Ваш прогресс сохраняется вне зависимости от возможности определить местоположение, однако данное действие будет зафиксировано.</string>
+    <string name="car_locked">Чтобы видеть заполненность мусоровоза в приложении необходимо приобрести датчик заполненности.\nОбратитесь к менеджеру для подключения.</string>
+    <string name="fuel_locked">Чтобы видеть уровень топлива в приложении необходимо приобрести датчик уровня топлива.\nОбратитесь к менеджеру для подключения.</string>
+    <string name="photo_locked">Чтобы делать фото с помощью навесных камер не выходя из машины необходимо приобрести комплект камер. Обратитесь к менеджеру для подключения.</string>
 </resources>

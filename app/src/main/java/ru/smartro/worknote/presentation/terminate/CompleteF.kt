@@ -21,7 +21,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.App
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.Status
@@ -87,7 +87,7 @@ class CompleteF : ANOFragment() {
                 if(mDatabase.hasWorkOrderInProgress() == false) {
                     finishTask_know()
                 } else {
-                    navigateBack(R.id.MapF)
+                    navigateBack(R.id.MapPlatformsF)
                 }
             }
         }
@@ -104,7 +104,7 @@ class CompleteF : ANOFragment() {
 
     //todo:!r_dos
     fun finishTask_know() {
-        LoG.info( "finishTask")
+        LOG.info( "finishTask")
         getAct().modeSyNChrON_off()
         mDatabase.clearDataBase()
 

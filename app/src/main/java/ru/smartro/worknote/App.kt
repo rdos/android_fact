@@ -11,19 +11,19 @@ import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.StrictMode
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.os.*
 import android.os.StrictMode.ThreadPolicy
 import android.widget.RemoteViews
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -41,32 +41,143 @@ import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SentryOptions.BeforeBreadcrumbCallback
 import io.sentry.android.core.SentryAndroid
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.andPOintD.AndRoid
 import ru.smartro.worknote.andPOintD.FloatCool
 import ru.smartro.worknote.andPOintD.PoinT
+import ru.smartro.worknote.awORKOLDs.extensions.WarningType
+import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.work.ConfigName
 import ru.smartro.worknote.work.NetworkRepository
 import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.work.ac.AirplanemodeIntentService
+import ru.smartro.worknote.work.RegionEntity
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashSet
 
 
 //INSTANCE
 // TODO: service locator паттерн альтернатива DI
 private var INSTANCE: App? = null
+const val FN__REALM = "FACT.realm"
+const val FN__REALM_VERSION = 1L
+const val D__LOGS = "logs"
+const val D__R_DOS = "r_dos"
+const val D__FILES = "files"
+
+class ConnectionLostLiveData(context: Context) : LiveData<Boolean>(), AndroidNet.CallBack {
+    private var mNetworkCallback: ConnectivityManager.NetworkCallback? = null
+    private val cm = context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
+
+    override fun onActive() {
+        LOG.debug("before")
+        mNetworkCallback = AndroidNet(cm, this)
+
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .build()
+
+        if(mNetworkCallback == null) {
+            LOG.warn(" if(mNetworkCallback == null) {")
+            return
+        }
+        cm.registerNetworkCallback(networkRequest, mNetworkCallback!!)
+    }
+
+    override fun onInactive() {
+        LOG.debug("before")
+        if(mNetworkCallback != null) {
+            LOG.info("if(mNetworkCallback != null)")
+            cm.unregisterNetworkCallback(mNetworkCallback!!)
+        }
+    }
+
+    override fun onLostInternet() {
+        LOG.debug("before")
+        postValue(true)
+    }
+
+}
+
+class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : ConnectivityManager.NetworkCallback() {
+    private val validNetworks: MutableSet<Network> = HashSet()
+    private var mOnLostInternetJob: Job? =  null
+
+    override fun onAvailable(network: Network) {
+        LOG.debug("before: network=${network}, validNetworks size=${validNetworks.size}")
+        val networkCapabilities = p_cm.getNetworkCapabilities(network)
+        val isInternet = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        if(isInternet == true) {
+            LOG.info("if(isInternet == true)")
+            validNetworks.add(network)
+            blockOnLostInternet()
+        }
+        checkValidNetworks()
+    }
+
+    override fun onLost(network: Network) {
+        super.onLost(network)
+        LOG.debug("before::: validNetworks size=${validNetworks.size}")
+        validNetworks.remove(network)
+        checkValidNetworks()
+    }
+
+    private fun checkValidNetworks() {
+        LOG.debug("before::: validNetworks size=${validNetworks.size}")
+        if (validNetworks.size <= 0) {
+            LOG.trace("if (validNetworks.size <= 0) {")
+            runOnLostInternet()
+        }
+    }
+
+    private fun runOnLostInternet() {
+        blockOnLostInternet()
+        mOnLostInternetJob = App.getAppliCation().applicationScope.launch(Dispatchers.Main) {
+            delay(3000L)
+            LOG.info("onLostInternet")
+            p_callback.onLostInternet()
+            LOG.debug("onLostInternet")
+        }
+    }
+
+    private fun blockOnLostInternet() {
+        if (mOnLostInternetJob != null) {
+            mOnLostInternetJob?.cancel()
+        }
+    }
+    interface  CallBack {
+        fun onLostInternet()
+    }
+
+
+}
 
 class App : AApp() {
+
+    private var mCurrentAct: AAct? = null
+    private lateinit var connectionLiveData: ConnectionLostLiveData
+
+    fun setCurrentAct(aAct: AAct?) {
+        mCurrentAct = aAct
+    }
+
+    fun getCurrentAct(): AAct? {
+        return mCurrentAct
+    }
+
     companion object {
 //        internal lateinit var INSTANCE: App
 //            private set
@@ -84,20 +195,24 @@ class App : AApp() {
 
     private var mNetworkDat: NetworkRepository? = null
     private var mDB: RealmRepository? = null
-    var LASTact: AAct? = null
 
+    val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-    fun restartAppAndShareLog() {
+    override fun onLowMemory() {
+        super.onLowMemory()
+        applicationScope.cancel()
+    }
+
+    fun restartApp() {
         val mStartActivity = Intent(baseContext, StartAct::class.java)
-        val mPendingIntentId = 123456
+        val mPendingIntentId = BuildConfig.VERSION_CODE
         val mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
         val mgr = baseContext.getSystemService(ALARM_SERVICE) as AlarmManager
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 5000, mPendingIntent);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 2000, mPendingIntent);
         System.exit(0)
     }
 
     fun gps(): PoinT {
-        log("BBBB")
         var gps_enabled = false
         var network_enabled = false
         val lm = AndRoid.getService()
@@ -106,9 +221,16 @@ class App : AApp() {
         var net_loc: Location? = null
         var gps_loc: Location? = null
         var finalLoc: Location? = null
+        try {
+            if (gps_enabled) {
+                gps_loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            }
+            if (network_enabled) {
+                net_loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            }
+        } catch (ex: Exception) {
 
-        if (gps_enabled) gps_loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        if (network_enabled) net_loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        }
 
         if (gps_loc == null && net_loc == null) {
             return getAppParaMS().getSaveGPS()
@@ -138,14 +260,22 @@ class App : AApp() {
         INSTANCE = this
         mSystemUncaughtHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            LoG.warn("exTHR")
-            LoG.error("exTHR", throwable)
+            LOG.warn("exTHR")
+            LOG.error("exTHR", throwable)
 //            todo: start THRActivity (oops for user)))
             mSystemUncaughtHandler?.uncaughtException(thread, throwable)
             throw throwable
         }
 
+        connectionLiveData = ConnectionLostLiveData(applicationContext)
+        LOG.debug("connectionLiveData = ConnectionLiveData(applicationContext)")
 
+        connectionLiveData.observeForever { isConnectionLost ->
+
+            if(isConnectionLost == true) {
+                mCurrentAct?.showDlgWarning(WarningType.CONNECTION_LOST)
+            }
+        }
 
 //        val context = LoggerFactory.getILoggerFactory() as LoggerContext
 //        for (logger in context.loggerList) {
@@ -153,7 +283,7 @@ class App : AApp() {
 //            while (index.hasNext()) {
 //                val appender = index.next()
 //                if (appender is FileAppender<*>) {
-//                    val file = getF("logs", "file.log")
+//                    val file = getF(D__LOGS, "file.log")
 //                    (appender as FileAppender<*>).file = "/data/data/ru.smartro.worknote/logs/log.log"
 //                    appender.start()
 //                }
@@ -161,14 +291,13 @@ class App : AApp() {
 //        }
 
         logbackInit()
-        log("AAAAAAAAAAAA")
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
 
-        LoG.info("on App created App.onCreate onAppCreate")
+        LOG.info("on App created App.onCreate onAppCreate")
         sentryInit()
-        RealmInit()
+        realmInit()
 //        try {    // Add a breadcrumb that will be sent with the next event(s)//            throw Exception("This is a devel.")//        } catch (e: Exception) {
 //            Sentry.captureException(e) //        }                                             //        val objectAnimator: ObjectAnimator = ObjectAnimator.ofFloat( //            mLlcMap, "alpha", 0f
 //        ) //        objectAnimator.setDuration(4000);
@@ -178,25 +307,17 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
-
         val configEntity = getDB().loadConfig(ConfigName.RUNAPP_CNT)
         configEntity.cntPlusOne()
         getDB().saveConfig(configEntity)
 
-        registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
+        LOG.info("DEBUG::: Current Realm Schema Version : ${Realm.getDefaultInstance().version}")
 
-// todo: https://developer.android.com/training/monitoring-device-state/connectivity-status-type
-//        val networkRequest = NetworkRequest.Builder()
-//            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-//            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-//            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-//            .build()
-//        val connectivityManager = getSystemService(ConnectivityManager::class.java) as ConnectivityManager
-//        connectivityManager.requestNetwork(networkRequest, networkCallback)
+        registerReceiver(mAirplaneModeStateReceiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
     }
 
     private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){
-        val logsFilesArray = this.getD("logs").listFiles()
+        val logsFilesArray = this.getD(D__LOGS).listFiles()
 
         if (logsFilesArray != null) {
             val delCount = logsFilesArray.size - maxHistoryFileCount-1
@@ -231,7 +352,7 @@ class App : AApp() {
         val fileAppender = FileAppender<ILoggingEvent>()
         fileAppender.context = lc
 
-        val file = getF("logs", "${MyUtil.currentTime()}.log")
+        val file = getF(D__LOGS, "${MyUtil.currentTime()}.log")
         fileAppender.file = file.absolutePath
         fileAppender.encoder = encoder1
         fileAppender.start()
@@ -252,36 +373,36 @@ class App : AApp() {
 
     inner class MyLocationListener() : LocationListener {
         override fun onProviderEnabled(provider: String) {
-            LOGbefore("onProviderEnabled")
-            log("provider=${provider}")
-            LOGafterLOG()
+            LOG.debug("onProviderEnabled")
+            LOG.debug("provider=${provider}")
+            LOG.debug("after")
         }
 
         override fun onProviderDisabled(provider: String) {
-            LOGbefore("onProviderDisabled")
-            log("provider=${provider}")
-            LOGafterLOG()
+            LOG.debug("onProviderDisabled")
+            LOG.debug("provider=${provider}")
+            LOG.debug("after")
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            LOGbefore("onProviderStatusChanged")
-            log("provider=${provider}, status=${status}")
-            LOGafterLOG()
+            LOG.debug("onProviderStatusChanged")
+            LOG.debug("provider=${provider}, status=${status}")
+            LOG.debug("after")
         }
 
         override fun onLocationChanged(location: Location) {
-            LOGbefore("onLocationChanged")
+            LOG.debug("onLocationChanged")
 
             val LocationACCURACY = FloatCool("LocationACCURACY", this@App)
             LocationACCURACY.setDATAing(location.accuracy)
 
 
             val LocationLAT = location.latitude
-            log("LocationLAT=${LocationLAT}")
+            LOG.debug("LocationLAT=${LocationLAT}")
             val LocationLONG = location.longitude
-            log("LocationLONG=${LocationLONG}")
+            LOG.debug("LocationLONG=${LocationLONG}")
             val LocationTIME = location.time
-            log("LocationTIME=${LocationTIME}")
+            LOG.debug("LocationTIME=${LocationTIME}")
 
             var yandexLAT: Double? = null
             var yandexLONG: Double? = null
@@ -308,23 +429,23 @@ class App : AApp() {
 //                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
                     getAppParaMS().saveLastGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY.LET)
                     try {
-                        if (LASTact is MainAct) {
-                            LASTact?.onNewGPS()
+                        if (mCurrentAct is MainAct) {
+                            mCurrentAct?.onNewGPS()
                         }
                     } catch (ex: Exception) {
-                        logSentry("Exception!!! LASTact?.onNEWfromGPSSrv()")
-                        log("Exception!!! LASTact?.onNEWfromGPSSrv()")
+                        logSentry("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
+                        LOG.debug("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
                     }
 //                }
             }
-            LOGafterLOG()
+            LOG.debug("after")
         }
 
     }
 
     override fun onTerminate() {
         super.onTerminate()
-        LOGbefore("onTerminate")
+        LOG.debug("onTerminate")
     }
     //Реплику: gjпох
     public fun getDB(): RealmRepository {
@@ -343,21 +464,56 @@ class App : AApp() {
     }
 
 
-    private fun RealmInit() {
+    private fun realmInit() {
         Realm.init(this@App)
         val config = RealmConfiguration.Builder()
         config.allowWritesOnUiThread(true)
-        config.name("FACT.realm")
+        config.name(FN__REALM)
         config.deleteRealmIfMigrationNeeded()
+
+        config.initialData {
+            LOG.debug("::: INITIAL before")
+
+            try {
+                val jsonInputStream = applicationContext.resources.openRawResource(R.raw.regions)
+
+                it.createAllFromJson(RegionEntity::class.java, jsonInputStream)
+            } catch(e : Exception) {
+                LOG.error("::: INITIAL EXCEPTION: ${e.stackTraceToString()}")
+            }
+
+            LOG.debug("::: INITIAL after")
+        }
+
         Realm.setDefaultConfiguration(config.build())
         //gjпох
     }
 
+    fun startVibrateService(ms: Long = 80, amplitude: Int = 160) {
+        val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+
+        // Vibrate for 500 milliseconds
+        //private var vibrationEffect = VibrationEffect.createOneShot(100, 128)
+        val ve = VibrationEffect.createOneShot(ms, amplitude)
+        v.vibrate(ve)
+    }
+
+    fun startVibrateServicePredefined(predefined: Int) {
+        val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        v.vibrate(VibrationEffect.createPredefined(predefined))
+    }
+
+    fun startVibrateServiceHaptic() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            startVibrateServicePredefined(VibrationEffect.EFFECT_HEAVY_CLICK)
+        else
+            startVibrateService()
+    }
 
     fun showNotification(pendingIntent: PendingIntent, contentText: String, title: String) {
         val notificationManager = NotificationManagerCompat.from(this)
         if (notificationManager.notificationChannels.size <= 0) {
-            log("showNotification.textContent={$contentText}")
+            LOG.debug("showNotification.textContent={$contentText}")
             showNotificationForce(pendingIntent, contentText, title)
         } else {
 //            logSentry("showNotification. notificationManager.notificationChannels.size = ${notificationManager.notificationChannels.size}")
@@ -366,11 +522,11 @@ class App : AApp() {
 
     fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
-        log("${text}")
+        LOG.debug("${text}")
     }
 
     fun showAlertNotification(message: String) {
-        log("showAlertNotification.textContent={$message}")
+        LOG.debug("showAlertNotification.textContent={$message}")
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID__MAP_ACT)
 
         val customView = RemoteViews(packageName, R.layout.notification_alert).apply {
@@ -401,7 +557,7 @@ class App : AApp() {
                               actionName: String? = null,
                               notifyId: Int = 1,
                               channelId: String = NOTIFICATION_CHANNEL_ID__DEFAULT){
-        log("showNotificationForce.textContent={$textContent}")
+        LOG.debug("showNotificationForce.textContent={$textContent}")
 
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channelId)
 
@@ -432,7 +588,7 @@ class App : AApp() {
             builder.setOngoing(true)
         }
         val notification: Notification = builder.build()
-        log("notifyId=${notifyId}")
+        LOG.debug("notifyId=${notifyId}")
         createNotificationChannel(channelId).notify(notifyId, notification)
     }
 
@@ -458,20 +614,20 @@ class App : AApp() {
     }
 
     fun cancelNotification(id: Int? = 1) {
-        log("cancelNotification.before")
+        LOG.debug("cancelNotification.before")
         val notificationManager = NotificationManagerCompat.from(this)
         if (id == null) {
             notificationManager.cancelAll()
-            log("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
+            LOG.debug("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
             return
         }
         notificationManager.cancel(id)
-        log("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
+        LOG.debug("cancelNotification.notificationChannels.size=${notificationManager.notificationChannels.size}")
     }
 
 
     fun startLocationService(isForceMode: Boolean=false) {
-        LOGbefore("runLocationService")
+        LOG.debug("runLocationService")
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -480,14 +636,14 @@ class App : AApp() {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            log("ActivityCompat.checkSelfPermission = true")
+            LOG.debug("ActivityCompat.checkSelfPermission = true")
             return
         }
 
 
         if(!isForceMode && getAppParaMS().isModeLOCATION) {
-            log("getAppParaMS().isModeLOCATION=true")
-            LOGafterLOG()
+            LOG.debug("getAppParaMS().isModeLOCATION=true")
+            LOG.debug("after")
             return
         }
 //todo:        getAp
@@ -510,15 +666,15 @@ class App : AApp() {
 //      .subscribeForLocationUpdates(0.0, 500, 0.0, true, FilteringMode.OFF, null)
 
         getAppParaMS().isModeLOCATION = true
-        LOGafterLOG()
+        LOG.debug("after")
     }
 
 
     fun startWorkER() {
-        LOGbefore("runSyncWorkER")
+        LOG.debug("runSyncWorkER")
         if(getAppParaMS().isModeWorkER) {
-            log("getAppParaMS().isModeWorkER=true")
-            LOGafterLOG()
+            LOG.debug("getAppParaMS().isModeWorkER=true")
+            LOG.debug("after")
             return
         }
 //todo:        getAppParaMS().isModeWorkER = true
@@ -526,13 +682,13 @@ class App : AApp() {
 
         val uploadDataWorkManager = PeriodicWorkRequestBuilder<SYNCworkER>(1, TimeUnit.MINUTES).build()
 //        uploadDataWorkManager.id = UUID
-        log("uploadDataWorkManager.id = ${uploadDataWorkManager.id}")
+        LOG.debug("uploadDataWorkManager.id = ${uploadDataWorkManager.id}")
         val operation =  WorkManager.getInstance(getAppliCation())
             .enqueueUniquePeriodicWork("SYNCworkER", ExistingPeriodicWorkPolicy.REPLACE, uploadDataWorkManager)
 
         // TODO: THIS!!! after(isModeWorkER)
 
-        LOGafterLOG()
+        LOG.debug("after")
     }
 
     fun stopWorkERS() {
@@ -588,40 +744,47 @@ class App : AApp() {
         }
         return App.getAppParaMS().isModeDEVEL
     }
-    private val receiver by lazy { getAirplaneModeBroadcastReceiver() }
+    private val mAirplaneModeStateReceiver by lazy { getAirplaneModeBroadcastReceiver() }
 
     private fun getAirplaneModeBroadcastReceiver(): BroadcastReceiver {
         return object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent?) {
                 if (intent?.action == Intent.ACTION_AIRPLANE_MODE_CHANGED) {
                     val isAirplaneModeEnabled = intent.getBooleanExtra("state", false)
-//                    textView.text = isAirplaneModeEnabled.toString()
-                    log("isAirplaneModeEnabled=${isAirplaneModeEnabled}")
+                    LOG.debug("isAirplaneModeEnabled=${isAirplaneModeEnabled}")
+                    val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
+                    serviceIntent.putExtra("isAirplaneModeEnabled", isAirplaneModeEnabled)
+                    context.startService(serviceIntent)
+
                     if (isAirplaneModeEnabled) {
-                        val serviceIntent = Intent(context, AirplanemodeIntentService::class.java)
-                        context.startService(serviceIntent)
+                        mCurrentAct?.showDlgWarning(WarningType.AIRPLANE_MODE)
                     }
                 }
             }
         }
     }
-
 }
 
 const val TIME_OUT = 240000L
 private const val NOTIFICATION_CHANNEL_ID__DEFAULT = "FACT_CH_ID"
 const val NOTIFICATION_CHANNEL_ID__MAP_ACT = "FACT_APP_CH_ID"
 
+//DownloadManager
+//WorkManager
 
+//AlarmMan
 val PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
+//    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
     Manifest.permission.WRITE_EXTERNAL_STORAGE,
     Manifest.permission.READ_EXTERNAL_STORAGE,
     Manifest.permission.READ_PHONE_STATE,
     Manifest.permission.LOCATION_HARDWARE,
     Manifest.permission.ACCESS_NETWORK_STATE,
     Manifest.permission.CAMERA,
-    Manifest.permission.SYSTEM_ALERT_WINDOW
+    Manifest.permission.SYSTEM_ALERT_WINDOW,
+    Manifest.permission.RECORD_AUDIO
+
 )
 
 //todo:const val A_SLEEP_TIME_1MIN__MS = 60000L
@@ -654,13 +817,12 @@ fun Any.getDeviceDateTime(): Date {
     return Date()
 }
 
-fun Fragment.toast(text: String? = "") {
+fun Any.toast(text: String? = "") {
     try {
-        Toast.makeText(this.context, text, Toast.LENGTH_SHORT).show()
-    } catch (e: Exception) {
-
+       Toast.makeText(App.getAppliCation().applicationContext, text, Toast.LENGTH_SHORT).show()
+    } catch (ex: Exception) {
+        LOG.error("eXthr", ex)
     }
-
 }
 
 fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
@@ -706,14 +868,6 @@ fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
 //
 //}
 
-fun AppCompatActivity.toast(text: String? = "") {
-    try {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show()
-    } catch (e: Exception) {
-
-    }
-}
-
 /** Milliseconds used for UI animations */
 fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 1050L) {
     postDelayed({
@@ -737,51 +891,40 @@ fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 
 
 val Any.TAG: String
     get() = "${this::class.simpleName}"
-val Any.LoG: org.slf4j.Logger
+val Any.LOG: org.slf4j.Logger
     get() = LoggerFactory.getLogger(TAG)
+
+fun org.slf4j.Logger.todo(text: String? = null) {
+    this.trace("TODO")
+    this.info("TODO")
+    this.debug("TODO:${text}")
+    this.warn("TODO")
+    this.error("TODO")
+}
 
 
 fun Any.getLogger(): org.slf4j.Logger {
    return LoggerFactory.getLogger( "${this::class.simpleName}")
 }
 
-fun Any.LOGbefore(valueName: String? = Snull) {
-//todo:???        AppliCation().LOGbefore(valueName)
-    log(":Before")
-}
 
-fun Any.LOGafterLOG(result: String? = Snull) {
-    LoG.trace(":After")
-}
 //
-//    protected fun LOGafterLOG(res: Boolean? = null) {
-//        logAfterResult(res.toStr())
-//    }
-
-fun Any.log(valueNameAndValue: String) {
-    LoG.debug(valueNameAndValue)
-}
-
-fun Any.info(valueNameAndValue: String) {
-    LoG.info(valueNameAndValue)
-}
-//
-//    protected fun log(valueName: String, value: Int) {
-//        log("${valueName}=$value\"")
+//    protected fun LOG.debug(valueName: String, value: Int) {
+//        LOG.debug("${valueName}=$value\"")
 //    }
 
 fun  Any.LOGinCYCLEStart(s: String) {
 //        mMethodName?.let {
-//            log("${mMethodName}.CYCLes.${s}")
+//            LOG.debug("${mMethodName}.CYCLes.${s}")
 //            return@INcyclEStart
 //        }
-    log("CYCLes.${s}")
+    LOG.debug("CYCLes.${s}")
 }
 
 fun  Any.LOGINcyclEStop() {
 //        mMethodName?.let {
-//            log("${mMethodName}.************-_(:;)")
+//            LOG.debug("${mMethodName}.************-_(:;)")
 //            return@INcyclEStop
 //        }
-    log(".************-_(:;)")
+    LOG.debug(".************-_(:;)")
 }

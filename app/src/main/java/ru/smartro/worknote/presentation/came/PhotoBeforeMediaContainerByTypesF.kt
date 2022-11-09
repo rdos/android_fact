@@ -6,19 +6,16 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
 
-        private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+    private val mPlatformMediaEntity: PlatformMediaEntity
+        get() =  viewModel.getPlatformMediaEntity()
     override fun onGetTextLabelFor() = "фото контейнера до"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mPlatformEntity == null) {
-            toast("Ошибка.todo:::")
-            return RealmList<ImageEntity>()
-        }
-        return mPlatformEntity!!.beforeMedia
+        return mPlatformMediaEntity.beforeMedia
     }
 
     override fun onGetDirName(): String {
@@ -34,8 +31,13 @@ class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
     }
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-        vm.database.addBeforeMediaSimplifyServe(mPlatformEntity?.platformId!!, imageS)
-        navigateMain(R.id.PServeGroupByContainersF, mPlatformEntity?.platformId)
+        val typeId = getArgumentID()
+        val client = getArgumentName()
+        val platformId = viewModel.getPlatformId()
+        val groupByContainerTypeClientEntity = viewModel.database.loadContainerGROUPClientTypeEntity(platformId, typeId, client)
+        viewModel.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
+        viewModel.addBeforeMediaComntainerByTypes(imageS)
+        navigateMain(R.id.PServeGroupByContainersF, platformId)
     }
 
     override fun onSavePhoto() {

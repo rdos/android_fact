@@ -5,11 +5,11 @@ import android.view.View
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.sentry.Sentry
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_NAME
-import ru.smartro.worknote.log
+import ru.smartro.worknote.LOG
 
 abstract class AbstractBottomSheetF : BottomSheetDialogFragment() {
     
@@ -17,16 +17,16 @@ abstract class AbstractBottomSheetF : BottomSheetDialogFragment() {
     protected fun getAct() = requireActivity() as AAct
     protected fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
-        LoG.info( "onCreate")
+        LOG.info( "onCreate")
     }
 
     init {
-        LoG.info( "init AbstractBottomDialog")
+        LOG.info( "init AbstractBottomDialog")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        log("onViewCreated")
+        LOG.debug("onViewCreated")
 
     }
 

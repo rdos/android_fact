@@ -82,7 +82,7 @@ data class Platform_know1(
     @SerializedName("coords")
     val coords: List<Double>,
     @SerializedName("failure_media")
-    val failureMedia: List<String>,
+    val failureMedia: List<String>? = null,
     @SerializedName("failure_reason_id")
     val failureReasonId: Int,
     @SerializedName("breakdown_reason_id")
@@ -93,7 +93,7 @@ data class Platform_know1(
     val id: Int,
     @SerializedName("name")
     val name: String? = null,
-    @SerializedName("updateAt")
+    @SerializedName("updated_at")
     var updateAt: Long,
     @SerializedName("srp_id")
     val srpId: Int,
@@ -137,9 +137,11 @@ data class CoNTaiNeR_know1(
     @SerializedName("icon")
     val icon : String,
     @SerializedName("failure_media")
-    val failureMedia: List<String>,
+    val failureMedia: List<String>? = null,
     @SerializedName("failure_reason_id")
     val failureReasonId: Int,
+    @SerializedName("breakdown_media")
+    val breakdownMedia: List<String>? = null,
     @SerializedName("breakdown_reason_id")
     val breakdownReasonId: Int,
     @SerializedName("id")

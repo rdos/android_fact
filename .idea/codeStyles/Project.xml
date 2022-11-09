@@ -35,6 +35,7 @@
       <option name="BLOCK_COMMENT_AT_FIRST_COLUMN" value="false" />
       <indentOptions>
         <option name="CONTINUATION_INDENT_SIZE" value="4" />
+        <option name="USE_TAB_CHARACTER" value="true" />
       </indentOptions>
       <arrangement>
         <rules>

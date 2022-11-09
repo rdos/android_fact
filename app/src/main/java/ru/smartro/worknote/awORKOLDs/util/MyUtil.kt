@@ -30,7 +30,11 @@ object MyUtil {
     }
 
     fun timeStampInSec(): Long {
-        return System.currentTimeMillis() / 1000L
+        return this.timeStampInMS() / 1000
+    }
+
+    fun timeStampInMS(): Long {
+        return System.currentTimeMillis()
     }
 
     fun currentTime(): String {

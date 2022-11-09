@@ -1,22 +1,24 @@
 package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.log
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
 import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 open class PhotoFailureMediaF : APhotoFragment() {
 
     private var mFailReasonS: List<String>? = null
-    private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+    private val mPlatformMediaEntity: PlatformMediaEntity
+        get() =  viewModel.getPlatformMediaEntity()
 
     override fun onGetTextForFailHint() = "Причина невывоза КП"
     override fun onGetStringList(): List<String>? {
-        mFailReasonS = vm.getFailReasonS()
+        mFailReasonS = viewModel.getFailReasonS()
         if (mFailReasonS == null) {
             toast("Ошибка.todo:::")
             return emptyList()
@@ -27,12 +29,12 @@ open class PhotoFailureMediaF : APhotoFragment() {
     override fun onGetIsVisibleComment(): Boolean = true
 
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        return mPlatformEntity.failureMedia
+        return mPlatformMediaEntity.failureMedia
     }
 
     override fun onSavePhoto() {
 //        TODO("Not yet implemented")
-        log(":P:onSavePhoto")
+        LOG.debug(":P:onSavePhoto")
     }
 
     override fun onClickBtnCancel() {
@@ -51,6 +53,9 @@ open class PhotoFailureMediaF : APhotoFragment() {
     override fun onBeforeUSE() {
        
         tvLabelFor(requireView())
+        val failureComment = viewModel.getPlatformEntity().failureComment
+        if(failureComment != null)
+            setCommentText(failureComment)
 //        viewModel.mPlatformEntity.observe(viewLifecycleOwner){
 //            mPlatformEntity = it
 //        }
@@ -68,12 +73,9 @@ open class PhotoFailureMediaF : APhotoFragment() {
 
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
-//        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
-        vm.database.addFailureMediaPlatform(mPlatformEntity?.platformId!!, imageS)
-//        val problemComment = problem_comment.text.toString()
-
-        vm.database.setStateFailureForPlatform(mPlatformEntity?.platformId!!, failText!!, getCommentText())
-        navigateBack(R.id.MapF)
+        viewModel.database.addFailureMediaPlatform(viewModel.getPlatformId(), imageS)
+        viewModel.database.setStateFailureForPlatform(viewModel.getPlatformId(), failText!!, getCommentText())
+        navigateBack(R.id.MapPlatformsF)
     }
 
 

@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.andPOintD.SmartROLinearLayout
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.presentation.ac.MainAct
@@ -16,7 +15,8 @@ import ru.smartro.worknote.presentation.ac.MainAct
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
 abstract class ANOFragment : Fragment(){
-     abstract fun onGetLayout(): Int
+    abstract fun onGetLayout(): Int
+
 
     open fun onNewLiveData() {
 
@@ -24,14 +24,24 @@ abstract class ANOFragment : Fragment(){
 
     //todo: ???onCreate
     // TODO: abstract fun onInitLayoutView(view: View): Boolean
-    protected open fun onInitLayoutView(view: SmartROLinearLayout): Boolean {
-        LoG.warn(" LoG.todo()")
+    protected open fun onInitLayoutView(view: SmartROllc): Boolean {
+        LOG.warn(" LoG.todo()")
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LOG.debug("before")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        LOG.debug("before")
     }
 
     // TODO:  abstract fun onBindLayoutState(): Boolean
     protected open fun onBindLayoutState(): Boolean {
-        LoG.warn(" LoG.todo()")
+        LOG.warn(" LoG.todo()")
         return false
     }
 
@@ -39,7 +49,7 @@ abstract class ANOFragment : Fragment(){
     fun getAct() = requireActivity() as AAct
     protected fun showingProgress(text: String? = null, isEmptyOldText: Boolean=false){
         //todo:ActAbstract
-        log("FRAG NAME: ${this::class.java.simpleName}")
+        LOG.debug("FRAG NAME: ${this::class.java.simpleName}")
         getAct().showingProgress(text, isEmptyOldText)
     }
 
@@ -63,55 +73,57 @@ abstract class ANOFragment : Fragment(){
 //        try {
 //          это провал!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //        }
-        log("onGetLayout.before")
+        LOG.debug("onGetLayout()")
         val view = inflater.inflate(onGetLayout(), container, false)
-        log("onGetLayout.after")
+        LOG.debug("onGetLayout().after")
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        LoG.trace("onInitLayoutView")
+        LOG.trace("onInitLayoutView")
+        LOG.trace("onViewCreated")
 //        onCreate()
     }
 
     protected fun navigateBack() {
-        LOGbefore()
+        LOG.debug("before")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
         navController.navigateUp()
-        LOGafterLOG()
+        LOG.debug("after")
     }
 
     protected fun navigateBack(navFragmentId: Int) {
-        log("navigateBack.before")
-        log("navigateBack .navFragmentId=${navFragmentId}")
+        LOG.debug("navigateBack.before")
+        LOG.debug("navigateBack .navFragmentId=${navFragmentId}")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
         navController.popBackStack(navFragmentId, false)
-       LoG.trace("navigateBack.after")
+       LOG.trace("navigateBack.after")
     }
 
 
     protected fun navigateClose() {
-        log("navigateClose.before")
+        LOG.debug("navigateClose.before")
         getAct().finish()
-       LoG.trace("navigateClose.after")
+       LOG.trace("navigateClose.after")
     }
 
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
-       LoG.trace("navigateMain.before")
-        log("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
+       LOG.trace("navigateMain.before")
+        LOG.debug("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
-
+//        val navOptions = NavOptions.Builder().setPopUpTo(navFragmentId, true).build()
         if (argumentId == null) {
             // TODO: !~r_dos
 //            navController.popBackStack(navFragmentId, true)
-            navController.navigate(navFragmentId)
+            navController.navigate(navFragmentId, null)
             return
         }
         val argSBundle = getArgSBundle(argumentId, argumentName)
+
         navController.navigate(navFragmentId, argSBundle)
     }
 
@@ -142,16 +154,14 @@ abstract class ANOFragment : Fragment(){
 
 
     protected fun getArgumentID(): Int {
-        log("getArgumentID.before")
         val result = requireArguments().getInt(ARGUMENT_NAME___PARAM_ID, Inull)
-       LoG.info("getArgumentID .result = ${result}")
+        LOG.info("getArgumentID .result = ${result}")
         return result
     }
 
     protected fun getArgumentName(): String? {
-        log("getArgumentName.before")
         val result = requireArguments().getString(ARGUMENT_NAME___PARAM_NAME)
-       LoG.info("getArgumentName .result = ${result}")
+        LOG.info("getArgumentName .result = ${result}")
         return result
     }
 
@@ -166,17 +176,21 @@ abstract class ANOFragment : Fragment(){
 
     override fun onDestroyView() {
         super.onDestroyView()
-        log("onDestroyView")
+        LOG.debug("onDestroyView")
         //  displayManager.unregisterDisplayListener(displayListener)
     }
 
     open fun onBackPressed() {
-        log("onBackPressed")
+        LOG.debug("onBackPressed")
     }
 
     open fun onNewGPS() {
-       LoG.warn("onNewGPS")
+       LOG.warn("onNewGPS")
+    }
 
+    override fun onResume() {
+        LOG.info("before")
+        super.onResume()
     }
     //    companion object {
                                     //        private const val TAG = "CameraXBasic"

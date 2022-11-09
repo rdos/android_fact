@@ -15,8 +15,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
@@ -44,6 +46,34 @@ class StartAct : AAct() {
     private var authPasswordOut: TextInputLayout? = null
     private var authDebugInfo: AppCompatTextView? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+//        vm = ViewModelProvider(this)[AuthViewModel::class.java]
+        AppliCation().stopWorkERS()
+        if (paramS().isRestartApp) {
+            paramS().AppRestarted()
+        }
+        setContentView(R.layout.act_start)
+        supportActionBar?.hide()
+
+        authLoginEditText = findViewById(R.id.auth_login)
+        authPasswordEditText = findViewById(R.id.auth_password)
+        authLoginEditText = findViewById(R.id.auth_login)
+        authPasswordEditText = findViewById(R.id.auth_password)
+        authAppVersion = findViewById(R.id.actv_act_start__appversion)
+        authRootView = findViewById(R.id.cl_act_start)
+        authEnter = findViewById(R.id.acb_login)
+        authLoginOut = findViewById(R.id.login_login_out)
+        authPasswordOut = findViewById(R.id.auth_password_out)
+        authDebugInfo = findViewById(R.id.actv_activity_auth__it_test_version)
+
+        authAppVersion?.text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+        authRootView?.setOnClickListener {
+            MyUtil.hideKeyboard(this)
+        }
+        viewInit()
+    }
+
     // TODO: 27.05.2022 !! !
     private fun gotoNextAct(isHasToken: Boolean = false) {
 //            val isHasTask = true
@@ -51,6 +81,9 @@ class StartAct : AAct() {
         if (isHasToken && isHasTask) {
             hideDialog()
             hideInfoDialog()
+            vm.viewModelScope.launch {
+                App.getAppliCation().getNetwork().sendAppStartUp()
+            }
             startActivity(Intent(this, MainAct::class.java))
             finish()
             return
@@ -76,19 +109,19 @@ class StartAct : AAct() {
                     //ниже "супер код"
                     //todo: copy-past from SYNCworkER
                     var timeBeforeRequest: Long
-                    val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+                    val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroAttemptTimeInSec
                     var platforms: List<PlatformEntity> = emptyList()
 
                     val m30MinutesInSec = 30 * 60
                     if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
                         timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
                         platforms = vm.database.findPlatforms30min()
-                        log( "SYNCworkER PLATFORMS IN LAST 30 min")
+                        LOG.debug( "SYNCworkER PLATFORMS IN LAST 30 min")
                     }
                     if (platforms.isEmpty()) {
                         timeBeforeRequest = MyUtil.timeStampInSec()
                         platforms = vm.database.findLastPlatforms()
-                        log("SYNCworkER LAST PLATFORMS")
+                        LOG.debug("SYNCworkER LAST PLATFORMS")
                     }
                     val noSentPlatformCnt = platforms.size
 
@@ -138,33 +171,7 @@ class StartAct : AAct() {
 
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        vm = ViewModelProvider(this)[AuthViewModel::class.java]
-        AppliCation().stopWorkERS()
-        if (paramS().isRestartApp) {
-            paramS().AppRestarted()
-        }
-        setContentView(R.layout.act_start)
-        actionBar?.title = "Вход в Систему"
 
-        authLoginEditText = findViewById(R.id.auth_login)
-        authPasswordEditText = findViewById(R.id.auth_password)
-        authLoginEditText = findViewById(R.id.auth_login)
-        authPasswordEditText = findViewById(R.id.auth_password)
-        authAppVersion = findViewById(R.id.auth_appversion)
-        authRootView = findViewById(R.id.cl_act_start)
-        authEnter = findViewById(R.id.auth_enter)
-        authLoginOut = findViewById(R.id.login_login_out)
-        authPasswordOut = findViewById(R.id.auth_password_out)
-        authDebugInfo = findViewById(R.id.actv_activity_auth__it_test_version)
-
-        authAppVersion?.text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-        authRootView?.setOnClickListener {
-            MyUtil.hideKeyboard(this)
-        }
-        viewInit()
-    }
 
 
     private fun viewInit() {
@@ -270,18 +277,20 @@ class StartAct : AAct() {
 //            window.attributes = wlp
             mInfoDialog?.show()
         } catch (ex: Exception) {
-            LoG.error("createInfoDialog", ex)
+            LOG.error("createInfoDialog", ex)
         }
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         val isHasToken = paramS().token.isShowForUser()
-        log("isHasToken=${isHasToken}")
+        LOG.debug("isHasToken=${isHasToken}")
         if (isHasToken) {
             gotoNextAct(isHasToken = true)
         }
+
+//        startActivity(Intent(this, MainActivity::class.java))
     }
 
     open class AuthViewModel(app: Application) : AViewModel(app) {

@@ -2,21 +2,16 @@ package ru.smartro.worknote.presentation.came
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
-import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ImageEntity
-import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.work.PlatformMediaEntity
 import java.io.File
 
 class PhotoKgoRemainingF : APhotoFragment() {
-        private val mPlatformEntity: PlatformEntity
-        get() =  vm.getPlatformEntity()
+    private val mPlatformMediaEntity: PlatformMediaEntity
+        get() =  viewModel.getPlatformMediaEntity()
     override fun onGetTextLabelFor() = "КГО.заказать борт"
     override fun onGetMediaRealmList(): RealmList<ImageEntity> {
-        if (mPlatformEntity == null) {
-            toast("Ошибка.todo:::")
-            return RealmList<ImageEntity>()
-        }
-        return mPlatformEntity!!.kgoRemaining!!.media
+        return mPlatformMediaEntity.kgoRemainingMedia
     }
 
     override fun onGetDirName(): String {
@@ -33,9 +28,9 @@ class PhotoKgoRemainingF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         val remainingKGOVolumeText = getArgumentName()!!
-        vm.database.addPlatformKgoRemaining(mPlatformEntity?.platformId!!, imageS)
-        vm.updatePlatformKGO(mPlatformEntity?.platformId!!, remainingKGOVolumeText, isServedKGO = false)
-        navigateMain(R.id.PServeF, mPlatformEntity?.platformId)
+        viewModel.database.addPlatformKgoRemaining(viewModel.getPlatformId(), imageS)
+        viewModel.updatePlatformKGO(remainingKGOVolumeText, isServedKGO = false)
+        navigateMain(R.id.PServeF, viewModel.getPlatformId())
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 

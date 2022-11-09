@@ -7,9 +7,12 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import org.slf4j.LoggerFactory
-import ru.smartro.worknote.LoG
+import ru.smartro.worknote.App
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.AAct
@@ -65,6 +68,68 @@ fun AAct.showDlgPickup(): View {
     return view
 }
 
+fun ANOFragment.showDialogAction(description: String, onAccept: () -> Unit, onDecline: (() -> Unit)? = null) {
+    val builder = AlertDialog.Builder(getAct())
+    val inflater = this.layoutInflater
+    var actionDialog: AlertDialog? = null
+
+    val view = inflater.inflate(R.layout.dialog_action, null)
+    view.findViewById<AppCompatTextView>(R.id.actv__dialog_action__description).text = description
+    view.findViewById<AppCompatButton>(R.id.acb__dialog_action__accept).setOnClickListener {
+        onAccept()
+        actionDialog?.dismiss()
+    }
+    view.findViewById<AppCompatButton>(R.id.acb__dialog_action__decline).setOnClickListener {
+        onDecline?.invoke()
+        actionDialog?.dismiss()
+    }
+    builder.setView(view)
+    actionDialog = builder.create()
+    actionDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    actionDialog.show()
+}
+
+//showDlgPickup!r_dos
+fun AAct.showDlgLogout(): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.act_xchecklist__dialog_logout, null)
+    builder.setView(view)
+    showCustomDialog(builder)
+    return view
+}
+
+fun AAct.showDlgWarning(warningType: WarningType): View {
+    val builder = AlertDialog.Builder(this)
+    val inflater = this.layoutInflater
+    val view = inflater.inflate(R.layout.dialog_warning, null)
+    var warningDialog: AlertDialog? = null
+    view.findViewById<AppCompatTextView>(R.id.actv__dialog_warning__description).text = when(warningType) {
+        WarningType.AIRPLANE_MODE -> getString(R.string.warning_airplane_mode)
+        WarningType.CONNECTION_LOST -> getString(R.string.warning_connection_lost)
+        WarningType.GPS_OFF -> getString(R.string.warning_gps_off)
+        WarningType.CAR_LOCKED -> getString(R.string.car_locked)
+        WarningType.FUEL_LOCKED -> getString(R.string.fuel_locked)
+        WarningType.PHOTO_LOCKED -> getString(R.string.photo_locked)
+    }
+    view.findViewById<AppCompatButton>(R.id.acb__dialog_warning__ok)?.setOnClickListener {
+        warningDialog?.dismiss()
+    }
+    builder.setView(view)
+    warningDialog = builder.create()
+    warningDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    warningDialog.show()
+    return view
+}
+
+enum class WarningType {
+    AIRPLANE_MODE,
+    CONNECTION_LOST,
+    GPS_OFF,
+    CAR_LOCKED,
+    FUEL_LOCKED,
+    PHOTO_LOCKED,
+}
 
 //showDlgPickup!r_dos
 fun ANOFragment.showDlgPickup(): View {
@@ -94,13 +159,13 @@ private fun showLoadingDialog(builder: AlertDialog.Builder) {
 
 fun AppCompatActivity.hideProgress() {
     try {
-        LoG.warn( "hideProgress")
+        LOG.warn( "hideProgress")
         if (loadingDialog?.isShowing == true) {
             loadingDialog?.dismiss()
         }
     } catch (ex: Exception) {
         // TODO: 02.11.2021
-        LoG.error("hideProgress", ex)
+        LOG.error("hideProgress", ex)
     }
 }
 
@@ -176,7 +241,7 @@ fun ANOFragment.warningClearNavigator(title: String): View {
 //                view.title_tv.text = title
 //                builder.setView(view)
 //                builder.setCancelable(false)
-//                showCustomDialog(builder)
+//                showCustomDiaLOG.debug(builder)
 //                return view
 //            }
 //
@@ -186,7 +251,7 @@ fun ANOFragment.warningClearNavigator(title: String): View {
 //                val view = inflater.inflate(R.layout.alert_successful_complete, null)
 //                builder.setView(view)
 //                builder.setCancelable(false)
-//                showCustomDialog(builder)
+//                showCustomDiaLOG.debug(builder)
 //                return view
 //            }
 //
@@ -196,7 +261,7 @@ fun ANOFragment.warningClearNavigator(title: String): View {
 //                val inflater = this.layoutInflater
 //                val view = inflater.inflate(R.layout.dialog_fill_kgo, null)
 //                builder.setView(view)
-//                showCustomDialog(builder)
+//                showCustomDiaLOG.debug(builder)
 //                return view
 //            }
 //
@@ -210,7 +275,7 @@ fun ANOFragment.warningClearNavigator(title: String): View {
 //                view.title_tv.text = title
 //                builder.setView(view)
 //                builder.setCancelable(false)
-//                showCustomDialog(builder)
+//                showCustomDiaLOG.debug(builder)
 //                return view
 //            }
 

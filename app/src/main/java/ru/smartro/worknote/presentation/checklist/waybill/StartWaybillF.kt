@@ -8,14 +8,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
-import ru.smartro.worknote.PERMISSIONS
-import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.log
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.presentation.ac.XChecklistAct
-import ru.smartro.worknote.toast
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -70,7 +68,7 @@ class StartWaybillF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         viewModel.mWayBillsViewState.observe(viewLifecycleOwner) { state ->
-            log("WAYBILL STATE::: ${state}")
+            LOG.debug("WAYBILL STATE::: ${state}")
             if(state !is XChecklistAct.ViewState.LOADING) {
                 (requireActivity() as XChecklistAct).hideProgressBar()
             }
@@ -131,7 +129,7 @@ class StartWaybillF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
+        LOG.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mWayBillList.removeObservers(viewLifecycleOwner)
         viewModel.mWayBillsViewState.postValue(XChecklistAct.ViewState.IDLE())
     }

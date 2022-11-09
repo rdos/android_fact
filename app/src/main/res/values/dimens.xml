@@ -37,4 +37,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="themed_btn_size">11dp</dimen>
     <dimen name="map_markers_dm">28dp</dimen>
+
+
+    <dimen name="region_item_size">24dp</dimen>
 </resources>

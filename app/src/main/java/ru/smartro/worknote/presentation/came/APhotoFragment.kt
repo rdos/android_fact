@@ -33,6 +33,7 @@ import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ImageEntity
+import ru.smartro.worknote.work.MD5
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
@@ -73,7 +74,7 @@ abstract class APhotoFragment(
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 //  todo:!R_dos??  protected val viewModel: PlatformServeSharedViewModel by viewModel()
-    protected val vm: ServePlatformVM by activityViewModels()
+    protected val viewModel: ServePlatformVM by activityViewModels()
 
 
     protected open fun onGetTextLabelFor(): String? = null
@@ -101,6 +102,10 @@ abstract class APhotoFragment(
         return false
     }
 
+    protected fun setCommentText(comment: String) {
+        acetComment?.setText(comment)
+    }
+
     protected fun getCommentText(): String {
         return acetComment?.text.toString()
     }
@@ -118,7 +123,7 @@ abstract class APhotoFragment(
     //    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        log("onViewCreated")
+        LOG.debug("onViewCreated")
         mMediaPlayer = MediaPlayer.create(requireContext(), R.raw.camera_sound)
         view.findViewById<AppCompatTextView>(R.id.label_for).visibility = View.GONE
         mPreviewView = view.findViewById(R.id.view_finder)
@@ -185,12 +190,12 @@ abstract class APhotoFragment(
 
     override fun onDetach() {
         super.onDetach()
-        LoG.warn( "onDetach")
+        LOG.warn( "onDetach")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LoG.info( "onDestroy")
+        LOG.info( "onDestroy")
     }
 
     fun getOutputD(): File {
@@ -203,8 +208,8 @@ abstract class APhotoFragment(
     override fun onImageSaved(outputFileResults: OutputFileResults) {
         val imageUri = outputFileResults.savedUri!!
 
-        log("Photo capture succeeded: $imageUri path: ${imageUri.path}")
-        LoG.error( "Current thread: ${Thread.currentThread().id}")
+        LOG.debug("Photo capture succeeded: $imageUri path: ${imageUri.path}")
+        LOG.error( "Current thread: ${Thread.currentThread().id}")
         setImageCounter()
         setGalleryThumbnail(imageUri)
 
@@ -220,7 +225,10 @@ abstract class APhotoFragment(
                     val matrix = Matrix()
                     matrix.postRotate(90f)
                     val scaledBitmap = Bitmap.createScaledBitmap(resource, resource.width, resource.height, true)
+
                     bitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
+                } else {
+                    bitmap = resource
                 }
 
             }
@@ -230,19 +238,19 @@ abstract class APhotoFragment(
             outputStream.use { it ->
                 it.write(byteArray)
             }
-            LoG.warn( Thread.currentThread().name)
+            LOG.warn( Thread.currentThread().name)
 
 
             onSavePhoto()
         } catch (ex: Exception) {
-            LoG.error("onImageSaved", ex)
+            LOG.error("onImageSaved", ex)
             toast(TOAST_TEXT)
         }
     }
 
     override fun onError(exception: ImageCaptureException) {
         toast(TOAST_TEXT)
-        LoG.error("onError", exception)
+        LOG.error("onError", exception)
     }
 
 
@@ -281,8 +289,8 @@ abstract class APhotoFragment(
             }
         } catch (ex: Exception) {
             logSentry("setGalleryThumbnail и try{}catch")
-            LoG.info( "setGalleryThumbnail и try{}catch")
-            LoG.error("setGalleryThumbnail", ex)
+            LOG.info( "setGalleryThumbnail и try{}catch")
+            LOG.error("setGalleryThumbnail", ex)
         }
     }
 
@@ -316,13 +324,14 @@ abstract class APhotoFragment(
 //                 = if(mediaSize <= 0) else View.VISIBLE
                 acbCancel?.setOnClickListener {
                     onClickBtnCancel()
+                    viewModel.updatePlatformEntity()
                 }
                 ibTakePhoto?.isEnabled = true
 
             } catch (ex: Exception) {
                 logSentry("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
-                LoG.info("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
-                LoG.error("setImageCounter", ex)
+                LOG.info("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
+                LOG.error("setImageCounter", ex)
             }
 
         }
@@ -337,7 +346,7 @@ abstract class APhotoFragment(
 
     private fun enableFlash() {
         val isEnableTorch = paramS().isTorchEnabled
-        log("enableFlash:isEnableTorch= ${isEnableTorch}")
+        LOG.debug("enableFlash:isEnableTorch= ${isEnableTorch}")
         mCameraController.enableTorch(isEnableTorch)
         mActbPhotoFlash?.isChecked = isEnableTorch
     }
@@ -360,7 +369,7 @@ abstract class APhotoFragment(
 
 
     private fun initViews(view: View) {
-        log("initViews")
+        LOG.debug("initViews")
 
         mImageCounter = view.findViewById(R.id.image_counter)
         acbCancel = view.findViewById(R.id.acb_f_aphoto__cancel)
@@ -414,7 +423,10 @@ abstract class APhotoFragment(
                     val imageEntity = photoFileScanner.getImageEntity()
                     imageS.add(imageEntity)
                 }
+                LOG.debug("onAfterUSE")
                 onAfterUSE(imageS)
+                viewModel.updatePlatformEntity()
+                LOG.info("onAfterUSE.after")
                 dropOutputD()
             } finally {
 //                hideProgress()
@@ -425,7 +437,7 @@ abstract class APhotoFragment(
         ibTakePhoto = view.findViewById(R.id.ib_f_aphoto__takephoto)
         mActbPhotoFlash = view.findViewById<AppCompatToggleButton>(R.id.photo_flash)
         mCameraController.initializationFuture.addListener({
-            log("initializationFuture")
+            LOG.debug("initializationFuture")
             if (hasBackCamera()) {
                 if (hasFlashUnit()) {
                     enableFlash()
@@ -437,14 +449,14 @@ abstract class APhotoFragment(
                         takePhoto()
                     } catch (ex: Exception) {
                         toast("Извините, произошла ошибка \n повторите, пожалуйста, попытку")
-                        LoG.error("ibTakePhoto?.setOnClickListener", ex)
+                        LOG.error("ibTakePhoto?.setOnClickListener", ex)
                         ibTakePhoto?.isEnabled = true
                     }
 
                 }
                 mActbPhotoFlash?.setOnClickListener {
                     paramS().isTorchEnabled = mActbPhotoFlash!!.isChecked
-                    log("mActbPhotoFlash:setOnClickListener paramS().isTorchEnabled=${paramS().isTorchEnabled}")
+                    LOG.debug("mActbPhotoFlash:setOnClickListener paramS().isTorchEnabled=${paramS().isTorchEnabled}")
                     if (hasFlashUnit()) {
                         enableFlash()
                     } else {
@@ -456,7 +468,7 @@ abstract class APhotoFragment(
                 toast("Извините, но на вашем устройстве \n отсутсвует камера")
             }
 
-            LoG.error( Thread.currentThread().name)
+            LOG.error( Thread.currentThread().name)
         }, ContextCompat.getMainExecutor(requireContext()))
 
 
@@ -502,9 +514,9 @@ abstract class APhotoFragment(
 
     }
     private fun restorePhotoFileS(imageS: RealmList<ImageEntity>) {
-        log("restorePhotoFileS(imageS.size=${imageS.size}) before")
+        LOG.debug("restorePhotoFileS(imageS.size=${imageS.size}) before")
         for (imageEntity in imageS) {
-            log("restorePhotoFileS(/):for(imageEntity in imageS).imageEntityID=${imageEntity.date}")
+            LOG.debug("restorePhotoFileS(/):for(imageEntity in imageS).imageEntityID=${imageEntity.date}")
             val imageInBase64 = imageEntity.image!!.replace("data:image/png;base64,", "")
             val byteArray: ByteArray =
                 Base64.decode(imageInBase64, Base64.DEFAULT)
@@ -514,35 +526,35 @@ abstract class APhotoFragment(
                 it.write(byteArray)
             }
         }
-        log("restorePhotoFileS()after")
+        LOG.debug("restorePhotoFileS()after")
     }
 
-    inner class PhotoFileScanner(val Dname: String) : AbsObject(TAG, "ImageEntityScanner") {
+    inner class PhotoFileScanner(val Dname: String) : AbsObject("PhotoFileScanner") {
         private var mIdx: Int = Inull
         private var mFileS: Array<File>? = null
 
         fun scan(): Boolean {
-            LoG.warn( "scan().before")
+            LOG.warn( "scan().before")
             if (mFileS == null) {
-                LoG.error( "scan(false).after mFileS == null")
+                LOG.error( "scan(false).after mFileS == null")
                 return false
             }
             if (mIdx > mFileS!!.size - 1) {
-                log("scan(false).after mIdx > mFileS!!.size")
+                LOG.debug("scan(false).after mIdx > mFileS!!.size")
                 return false
             }
             while (mFileS!![mIdx].isDirectory) {
                 mIdx++
                 if (mIdx > mFileS!!.size - 1) {
-                    log("scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
+                    LOG.debug("scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
                     return false
                 }
-                LoG.warn( "onAfterUSE")
-                LoG.error( "onAfterUSE")
-                log("onAfterUSE")
+                LOG.warn( "onAfterUSE")
+                LOG.error( "onAfterUSE")
+                LOG.debug("onAfterUSE")
             }
 
-            log("scan(true).after ")
+            LOG.debug("scan(true).after ")
             return true
         }
 
@@ -554,15 +566,16 @@ abstract class APhotoFragment(
                 resource.compress(Bitmap.CompressFormat.WEBP, 90, baos)
             }
             val b: ByteArray = baos.toByteArray()
-            LoG.warn( "b.size=${b.size}")
+            LOG.warn( "b.size=${b.size}")
             val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
-            LoG.warn( "imageBase64=${imageBase64.length}")
+            LOG.warn( "imageBase64=${imageBase64.length}")
             val gps = App.getAppliCation().gps()
             val imageEntity = gps.inImageEntity(imageBase64)
 
             imageEntity.date = imageFile.name.substring(0, imageFile.name.length - 4).toLong()
 //        imageEntity.isNoLimitPhoto = true
 //        onGetImage
+            imageEntity.md5 = MD5.calculateMD5(imageFile)!!
             return imageEntity
         }
 
@@ -642,7 +655,7 @@ orientationEventListener.enable()
 //                // Compute average luminance for the image
 //                val luma = pixels.average()
 //                // Log the new luma value
-//                log("Average luminosity: $luma")
+//                LOG.debug("Average luminosity: $luma")
 //                // Update timestamp of last analyzed frame
 //                lastAnalyzedTimestamp = currentTimestamp
 //            }

@@ -15,6 +15,8 @@ import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
+import java.io.File
+import java.io.FileOutputStream
 
 //private var App.LocationLAT: Double
 //    get() {
@@ -51,8 +53,8 @@ class SYNCworkER(
     fun db(): RealmRepository {
         val currentThreadId = Thread.currentThread().id
         if (oldThreadId != currentThreadId) {
-            log("SYNCworkER::db:.currentThreadId=${currentThreadId} ")
-            log("SYNCworkER::db:.oldThreadId=${oldThreadId} ")
+            LOG.debug("SYNCworkER::db:.currentThreadId=${currentThreadId} ")
+            LOG.debug("SYNCworkER::db:.oldThreadId=${oldThreadId} ")
             oldThreadId = currentThreadId
             mDb = RealmRepository(Realm.getDefaultInstance())
             return mDb!!
@@ -67,7 +69,7 @@ class SYNCworkER(
 
     // TODO: r_dos.)))кака код...лох это судьба))два
     override suspend fun doWork(): Result {
-        LOGbefore()
+        LOG.debug("before")
         var isFirstRun: Boolean = true
         var isModeSyncOldVal = false
 
@@ -84,14 +86,14 @@ class SYNCworkER(
                 }
                 isModeSyncOldVal = params.isModeSYNChrONize
                 if (params.isModeSYNChrONize) {
-                    log( "SYNCworkER RUN")
+                    LOG.debug( "SYNCworkER RUN")
                     synChrONizationDATA()
                     ping()
                     if (isFirstRun) {
                         showWorkERNotification(true)
                     }
                 } else {
-                    log("SYNCworkER STOPPED")
+                    LOG.debug("SYNCworkER STOPPED")
                     if (isFirstRun) {
                         showWorkERNotification(true, contentText = "Служба отправки данных не работает",
                             titleText = "Отправка Данных ПРИОСТАНОВЛЕНА")
@@ -102,7 +104,7 @@ class SYNCworkER(
                 delay(DELAY_MS)
             } //todo: while (true) {
         } catch (eXthr: Throwable) {
-            LoG.error("", eXthr)
+            LOG.error("eXthr", eXthr)
 //            аккуратней::r_dos
             params.isModeSYNChrONize_FoundError = true
             showWorkERROR()
@@ -114,11 +116,11 @@ class SYNCworkER(
     }
 
     private suspend fun ping() {
-//        LOGbefore("PING STARTED ::::")
+//        LOG.debug("PING STARTED ::::")
         val pingResponse = mNetworkRepository.ping(PingBody("ping"))
         when (pingResponse.status) {
             Status.SUCCESS -> {
-//                log("PING RESPONSE:")
+//                LOG.debug("PING RESPONSE:")
 //                LoG.error( pingResponse.data.toString())
                 val message = pingResponse.data?.payload?.message
                 if(message != null)
@@ -131,48 +133,55 @@ class SYNCworkER(
 //            Status.NETWORK -> LoG.warn( "Ping NO INTERNET")
         }
 
-//        LOGafterLOG()
+//        LOGafterLOG.debug()
     }
 
     private suspend fun synChrONizationDATA() {
-        LOGbefore()
+        LOG.debug("before")
         logSentry("SYNCworkER STARTED")
         var timeBeforeRequest: Long = MyUtil.timeStampInSec()
-        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroAttemptTimeInSec
         var platforms: List<PlatformEntity> = emptyList()
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
         if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
             timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
             platforms = db().findPlatforms30min()
-            log( "SYNCworkER PLATFORMS IN LAST 30 min")
+            LOG.debug( "SYNCworkER PLATFORMS IN LAST 30 min")
         }
         if (platforms.isEmpty()) {
             timeBeforeRequest = MyUtil.timeStampInSec()
             platforms = db().findLastPlatforms()
-            log("SYNCworkER LAST PLATFORMS")
+            LOG.debug("SYNCworkER LAST PLATFORMS")
         }
 
-
         val gps = App.getAppliCation().gps()
-        val synchronizeBody = SynchronizeBody(App.getAppParaMS().wayBillId,
-            gps.PointTOBaseData(),
-            AppParaMS().deviceId,
-            gps.PointTimeToLastKnowTime_SRV(),
-            platforms)
+        val synchronizeBody = SynchronizeBody(
+            wb_id = App.getAppParaMS().wayBillId,
+            coords = gps.PointTOBaseData(),
+            device = AppParaMS().deviceId,
+            lastKnownLocationTime = gps.PointTimeToLastKnowTime_SRV(),
+            data = PlatformEntity.toSRV(platforms, db())
+        )
 
-        info("platforms.size=${platforms.size}")
-//        saveJSON(synchronizeBody)
+
+        LOG.info("platforms.size=${platforms.size}")
+//        val gson = Gson()
+//        val bodyInStringFormat = gson.toJson(synchronizeBody)
+//        saveJSON(bodyInStringFormat, "postSynchro")
         val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
         when (synchronizeResponse.status) {
             Status.SUCCESS -> {
+//                TODO ::: 0:)
+//                db().setConfig(ConfigName.AAPP__LAST_SYNCHROTIME_IN_SEC, timeBeforeRequest)
+                App.getAppParaMS().lastSynchroAttemptTimeInSec = timeBeforeRequest
                 if (platforms.isNotEmpty()) {
-                   App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
-                    LoG.error( Thread.currentThread().getId().toString())
+                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest.toString()
+                    LOG.error( Thread.currentThread().getId().toString())
                     db().updatePlatformNetworkStatus(platforms)
-                    info("SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
+                    LOG.info("SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
                 } else {
-                    info("SUCCESS: GPS SENT")
+                    LOG.info("SUCCESS: GPS SENT")
                 }
                 val alertMsg = synchronizeResponse.data?.alert
                 if (!alertMsg.isNullOrEmpty()) {
@@ -180,22 +189,23 @@ class SYNCworkER(
 //                    App.getAppliCation().showNotification(alertMsg, "Уведомление")
                 }
             }
-            Status.ERROR -> LoG.error("SYNCworkER ERROR")
+            Status.ERROR -> LOG.error("SYNCworkER ERROR")
             Status.NETWORK -> {
-                LoG.warn("SYNCworkER NO INTERNET")
+                LOG.warn("SYNCworkER NO INTERNET")
                 val configEntity = db().loadConfig(ConfigName.NOINTERNET_CNT)
                 configEntity.cntPlusOne()
                 db().saveConfig(configEntity)
             }
-            Status.ERROR -> LoG.error( "Status.ERROR")
-            Status.NETWORK -> LoG.warn( "Status.NETWORK==NO INTERNET")
+            Status.ERROR -> LOG.error("Status.ERROR")
+            Status.NETWORK -> LOG.warn("Status.NETWORK==NO INTERNET")
         }
-        LOGafterLOG()
+
+        LOG.debug("after")
         
     }
 
 
-//    protected fun log(valueNameAndValue: String) {
+//    protected fun LOG.debug(valueNameAndValue: String) {
 //        mMethodName?.let {
 //            Log.i(TAGLOG, "${TAGLOG}:${mMethodName}.${valueNameAndValue}")
 //            return@LOGWork
@@ -203,9 +213,49 @@ class SYNCworkER(
 //        Log.i(TAGLOG, "${TAGLOG}:${valueNameAndValue}")
 //    }
 //
-//    protected fun log(valueName: String, value: Int) {
-//        log("${valueName}=$value")
+//    protected fun LOG.debug(valueName: String, value: Int) {
+//        LOG.debug("${valueName}=$value")
 //    }
+
+
+    fun saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+        fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
+            var dirPath = App.getAppliCation().dataDir.absolutePath
+            if(containerUuid == null) {
+                dirPath = dirPath + File.separator + platformUuid
+            } else {
+                dirPath = dirPath + File.separator + platformUuid + File.separator + containerUuid
+            }
+
+            val file = File(dirPath)
+            if (!file.exists()) file.mkdirs()
+            return file
+        }
+        val file: File = File(getOutputDirectory("saveJSON", null), "${p_jsonName}.json")
+
+        //This point and below is responsible for the write operation
+
+        try {
+            file.delete()
+        } catch (ex: Exception) {
+            LOG.error("file.delete()", ex)
+        }
+
+        //This point and below is responsible for the write operation
+        var outputStream: FileOutputStream? = null
+        try {
+
+            file.createNewFile()
+            //second argument of FileOutputStream constructor indicates whether
+            //to append or create new file if one exists
+            outputStream = FileOutputStream(file, true)
+            outputStream.write(bodyInStringFormat.toByteArray())
+            outputStream.flush()
+            outputStream.close()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
 
     protected fun logSentry(text: String) {
         App.getAppliCation().logSentry(text)
@@ -215,36 +265,36 @@ class SYNCworkER(
 
 //    fun INcyclEStart(s: String) {
 //        mMethodName?.let {
-//            log("${mMethodName}.CYCLes.${s}")
+//            LOG.debug("${mMethodName}.CYCLes.${s}")
 //            return@INcyclEStart
 //        }
-//        log("CYCLes.${s}")
+//        LOG.debug("CYCLes.${s}")
 //    }
 //
 //    fun INcyclEStop() {
 //        mMethodName?.let {
-//            log("${mMethodName}.************-_(:;)")
+//            LOG.debug("${mMethodName}.************-_(:;)")
 //            return@INcyclEStop
 //        }
-//        log(".************-_(:;)")
+//        LOG.debug(".************-_(:;)")
 //    }
 
 //    //SYNCworkER
-//    protected fun LOGafterLOG(res: String) {
+//    protected fun LOGafterLOG.debug(res: String) {
 //        logAfterResult(res.toStr())
 //    }
 //
 //    //    SYNCworkER
-//    protected fun LOGafterLOG(res: Boolean? = null) {
+//    protected fun LOGafterLOG.debug(res: Boolean? = null) {
 //        logAfterResult(res.toStr())
 //    }
 
 //    private fun logAfterResult(result: String) {
 //        result?.let {
-//            log("${mMethodName}.after result=${result} ")
+//            LOG.debug("${mMethodName}.after result=${result} ")
 //            return@logAfterResult
 //        }
-//        log("${mMethodName}.after")
+//        LOG.debug("${mMethodName}.after")
 //        mMethodName = null
 //    }
 **/

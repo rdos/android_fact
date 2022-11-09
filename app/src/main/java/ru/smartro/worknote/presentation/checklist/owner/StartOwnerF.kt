@@ -7,13 +7,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
-import ru.smartro.worknote.PERMISSIONS
-import ru.smartro.worknote.R
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.log
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.presentation.ac.XChecklistAct
-import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.Status
 
 class StartOwnerF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -26,7 +24,6 @@ class StartOwnerF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        log("STARTOWNERFRAG :: onViewCreated")
 
         if (!MyUtil.hasPermissions(requireContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
@@ -56,7 +53,7 @@ class StartOwnerF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
                 when (result.status) {
                     Status.SUCCESS -> {
                         val owners = data!!.data.organisations
-                        log("owners size: ${owners.size}")
+                        LOG.debug("owners size: ${owners.size}")
                         if (owners.size == 1)
                             goToNextStep(owners[0].id, owners[0].name)
                         else
@@ -93,7 +90,7 @@ class StartOwnerF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        log("${this::class.java.simpleName} :: ON DESTROY VIEW")
+        LOG.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mOwnersList.removeObservers(viewLifecycleOwner)
     }
 }
