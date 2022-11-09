@@ -56,14 +56,12 @@ class PhotoBeforeMediaF : APhotoFragment() {
             }
         }
 
-        // TODO: !!!
-        val configEntity = viewModel.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
-
-        if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeF) {
+        val configVal = viewModel.database.getConfigString(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
+        if (configVal == PlatformEntity.Companion.ServeMode.PServeF) {
             navigateMain(R.id.PServeF, viewModel.getPlatformId())
             return
         }
-        if (configEntity.value == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
+        if (configVal == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
             navigateMain(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
             return
         }

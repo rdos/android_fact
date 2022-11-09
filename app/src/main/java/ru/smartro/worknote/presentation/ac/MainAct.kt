@@ -22,10 +22,12 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbsObject
+import ru.smartro.worknote.abs.IAFragment
 import ru.smartro.worknote.andPOintD.ANOFragment
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
 import ru.smartro.worknote.awORKOLDs.extensions.WarningType
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ConfigName
@@ -71,7 +73,7 @@ class MainAct :
 
     override fun onBackPressed() {
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        (navHostFragment.childFragmentManager.fragments[0] as ANOFragment).onBackPressed()
+        (navHostFragment.childFragmentManager.fragments[0] as IAFragment).onBackPressed()
     }
 
 
@@ -93,12 +95,8 @@ class MainAct :
     override fun onPause() {
         super.onPause()
         unregisterReceiver(mGpsStateReceiver)
-        AppliCation().getDB().apply {
-            LOG.info("SWIPE")
-            val config = loadConfig(ConfigName.SWIPE_CNT)
-            config.cntPlusOne()
-            saveConfig(config)
-        }
+        LOG.info("SWIPE")
+        vm.database.setConfigCntPlusOne(ConfigName.SWIPE_CNT)
     }
 
     override fun onRestart() {
@@ -115,6 +113,8 @@ class MainAct :
     //todo:::
     override fun onDestroy() {
         super.onDestroy()
+
+        hideDialog()
 //        mTooltipHell.setNextTime(paramS())
 
     }

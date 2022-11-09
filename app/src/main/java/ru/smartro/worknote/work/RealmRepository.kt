@@ -724,6 +724,27 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+
+    fun addBeforeMediaUnload(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.unloadEntity?.beforeMedia?.addAll(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun addAfterMediaUnload(platformId: Int, imageS: List<ImageEntity>/**, isRequireClean: Boolean*/) {
+        p_realm.executeTransaction { realm ->
+            val platformEntity = getQueryPlatform()
+                .equalTo("platformId", platformId)
+                .findFirst()
+            platformEntity?.unloadEntity?.afterMedia?.addAll(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
     fun getPlatformVoiceCommentEntity(platformEntity: PlatformEntity): PlatformVoiceCommentEntity {
         var result: PlatformVoiceCommentEntity = PlatformVoiceCommentEntity.createEmpty()
         p_realm.executeTransaction { realm ->
@@ -766,6 +787,15 @@ class RealmRepository(private val p_realm: Realm) {
         var result = getQueryPlatformMedia(platformEntity).findFirst()
         if (result == null) {
             result = p_realm.createObject(PlatformMediaEntity::class.java,  platformEntity.platformId)
+            result.workOrderId = platformEntity.workOrderId
+        }
+        return result!!
+    }
+
+    /** private*/fun loadPlatformUnloadEntity(platformEntity: PlatformEntity): PlatformUnloadEntity {
+        var result = getQueryPlatformUnload(platformEntity).findFirst()
+        if (result == null) {
+            result = p_realm.createObject(PlatformUnloadEntity::class.java,  platformEntity.platformId)
             result.workOrderId = platformEntity.workOrderId
         }
         return result!!
@@ -833,6 +863,37 @@ class RealmRepository(private val p_realm: Realm) {
             val platformMediaEntity = loadPlatformMediaEntity(platformEntity!!)
             platformMediaEntity.pickupMedia = mEmptyImageEntityList
             platformMediaEntity.pickupMedia.addAll(imageS)
+            setEntityUpdateAt(platformEntity)
+        }
+    }
+
+    fun setPlatformUnloadEntity(newUnloadEntity: PlatformUnloadEntity) {
+        p_realm.executeTransaction { realm ->
+            //todo: [pe
+            val pe = getQueryPlatform()
+                .equalTo("platformId", newUnloadEntity.platformId)
+                .findFirst()!!
+            val platformUnloadEntity = loadPlatformUnloadEntity(pe)
+
+            platformUnloadEntity.afterValue = newUnloadEntity?.afterValue
+            platformUnloadEntity.beforeValue = newUnloadEntity?.beforeValue
+            platformUnloadEntity.ticketValue = newUnloadEntity?.ticketValue
+            setEntityUpdateAt(pe)
+        }
+    }
+
+
+
+    fun addPlatformUnloadEntity(platformEntity: PlatformEntity){
+        val newUnloadEntity = platformEntity.unloadEntity
+        p_realm.executeTransaction { realm ->
+            //todo: [pe
+            val pe = getQueryPlatform()
+                .equalTo("platformId", platformEntity.platformId)
+                .findFirst()!!
+            val platformUnloadEntity = loadPlatformUnloadEntity(platformEntity)
+
+            pe?.unloadEntity = platformUnloadEntity
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -1046,6 +1107,10 @@ class RealmRepository(private val p_realm: Realm) {
         return p_realm.where(PlatformMediaEntity::class.java).equalTo("platformId", platformEntity.platformId)
     }
 
+    private fun getQueryPlatformUnload(platformEntity: PlatformEntity): RealmQuery<PlatformUnloadEntity> {
+        return p_realm.where(PlatformUnloadEntity::class.java).equalTo("platformId", platformEntity.platformId)
+    }
+
     private fun getQueryPlatformVoiceComment(platformEntity: PlatformEntity): RealmQuery<PlatformVoiceCommentEntity> {
         return p_realm.where(PlatformVoiceCommentEntity::class.java).equalTo("platformId", platformEntity.platformId)
     }
@@ -1093,7 +1158,7 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun loadConfig(name: ConfigName): ConfigEntity {
+    private fun loadConfig(name: ConfigName): ConfigEntity {
         val result: ConfigEntity
         val configEntity = p_realm.where(ConfigEntity::class.java).equalTo("name", name.displayName.uppercase()).findFirst()
         if (configEntity == null) {
@@ -1114,10 +1179,73 @@ class RealmRepository(private val p_realm: Realm) {
         return result
     }
 
-    fun saveConfig(configEntity: ConfigEntity) {
+    private fun saveConfig(configEntity: ConfigEntity) {
         p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(configEntity)
         }
+    }
+
+    fun setConfigCntPlusOne(name: ConfigName){
+        val configEntity = loadConfig(name)
+        configEntity.cntPlusOne()
+        saveConfig(configEntity)
+    }
+    fun setConfig(name: ConfigName, value: String) {
+        val configEntity = loadConfig(name)
+
+        configEntity.value = value.toString()
+        saveConfig(configEntity)
+    }
+
+    fun setConfig(name: ConfigName, value: Int) {
+        val configEntity = loadConfig(name)
+
+        configEntity.value = value.toString()
+        saveConfig(configEntity)
+    }
+
+
+    fun setConfig(name: ConfigName, value: Long) {
+        val configEntity = loadConfig(name)
+
+        configEntity.value = value.toString()
+        saveConfig(configEntity)
+    }
+
+    fun setConfig(name: ConfigName, value: Boolean) {
+        val configEntity = loadConfig(name)
+        configEntity.value = value.toString()
+        saveConfig(configEntity)
+    }
+
+
+    fun getConfigBool(name: ConfigName): Boolean {
+        var result = false
+        val configEntity = loadConfig(name)
+        try {
+            result = configEntity.value.toBoolean()
+        } catch (ex: Exception) {
+            configEntity.value = result.toString()
+            saveConfig(configEntity)
+        }
+        return result
+    }
+
+    fun getConfigString(name: ConfigName): String {
+        val configEntity = loadConfig(name)
+        return configEntity.value
+    }
+
+    fun getConfigInt(name: ConfigName): Int {
+        var result = Inull
+        val configEntity = loadConfig(name)
+        try {
+            result = configEntity.value.toInt()
+        } catch (ex: Exception) {
+            configEntity.value = result.toString()
+            saveConfig(configEntity)
+        }
+        return result
     }
 
     fun close() {

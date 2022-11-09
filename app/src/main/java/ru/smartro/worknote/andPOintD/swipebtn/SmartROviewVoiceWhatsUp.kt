@@ -1,12 +1,7 @@
 package ru.smartro.worknote.andPOintD.swipebtn
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
@@ -42,7 +37,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
     private val rlPathCancelX: Int by lazy { ViewUtil(rlPathCancel!!).getXStart() }
     private val rlPathLockX: Int by lazy { ViewUtil(rlPathLock!!).getXStart() }
 
-    private var movableViewBuilder: MovableViewBuilder? = null
+    private var movableView: MovableView? = null
 
         //todo: мне кажется
     private var mIsLockReady = false
@@ -91,9 +86,9 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
             mOnStopRecording?.invoke()
         }
 
-        movableViewBuilder = MovableViewBuilder()
+        movableView = MovableView()
             .setTargetView(acivRecordButton!!)
-            .setMovementRules(MovableViewBuilder.MovementRule.LEFT)
+            .setMovementRules(MovableView.MovementRule.HORIZONTAL)
             .setDelay(200)
             .onMoveStart {
                 LOG.debug("MOVABLE ON START")
@@ -116,7 +111,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                     LOG.debug("stop")
                     mIsStop = true
 
-                    movableViewBuilder?.stopMove()
+                    movableView?.stopMove()
                 }
             }
             .onMoveEnd {
@@ -136,7 +131,7 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                 initialState()
                 mOnEndRecording?.invoke()
             }
-        movableViewBuilder?.apply()
+        movableView?.apply()
     }
 
     fun setTime(timeInMS: Long) {
@@ -207,179 +202,5 @@ class SmartROviewVoiceWhatsUp @JvmOverloads constructor(
                     .scaleY(scale)
                     .setInterpolator(interpolator)
                     .duration = interValInMS
-    }
-}
-
-class MovableViewBuilder {
-    private var mTargetView: View? = null
-
-    private var mOnMoveStart: ((view: View) -> Unit)? = null
-    private var mOnMoveHorizontally: ((view: View, absoluteX: Float) -> Unit)? = null
-    private var mOnMoveEnd: ((view: View) -> Unit)? = null
-
-    // TODO:: VT : TO BE CONTINUED)
-//    private var mOnMoveLeft: ((view: View, absoluteX: Float) -> Unit)? = null
-//    private var mOnMoveRight: ((view: View, absoluteX: Float) -> Unit)? = null
-//    private var mOnMoveTop: ((view: View, absoluteX: Float) -> Unit)? = null
-//    private var mOnMoveBottom: ((view: View, absoluteX: Float) -> Unit)? = null
-//    private var mOnMoveVertically: ((view: View, absoluteX: Float) -> Unit)? = null
-
-    private var mDelay: Long = 0
-
-    private var mIsRuleLeftInitialized: Boolean = false
-    private var mIsRuleTopInitialized: Boolean = false
-    private var mIsRuleRightInitialized: Boolean = false
-    private var mIsRuleBottomInitialized: Boolean = false
-
-    private var mIsReadyForMove = false
-
-    private var mCurrentMotionEvent: MotionEvent? = null
-
-    fun setTargetView(targetView: View): MovableViewBuilder {
-        mTargetView = targetView
-        return this
-    }
-
-    fun setDelay(delay: Long): MovableViewBuilder {
-        mDelay = delay
-        return this
-    }
-
-    fun setMovementRules(vararg rules: MovementRule): MovableViewBuilder {
-        if(rules.contains(MovementRule.LEFT)) {
-            mIsRuleLeftInitialized = true
-        }
-        if(rules.contains(MovementRule.TOP)) {
-            mIsRuleTopInitialized = true
-        }
-        if(rules.contains(MovementRule.BOTTOM)) {
-            mIsRuleBottomInitialized = true
-        }
-        if(rules.contains(MovementRule.RIGHT)) {
-            mIsRuleRightInitialized = true
-        }
-        return this
-    }
-
-    fun onMoveStart(callback: (view: View) -> Unit): MovableViewBuilder {
-        mOnMoveStart = callback
-        return this
-    }
-
-    fun onMoveHorizontally(callback: (view: View, absoluteX: Float) -> Unit): MovableViewBuilder {
-        mOnMoveHorizontally = callback
-        return this
-    }
-
-    fun onMoveEnd(callback: (view: View) -> Unit): MovableViewBuilder {
-        mOnMoveEnd = callback
-        return this
-    }
-
-    private fun startMove() {
-        mIsReadyForMove = true
-        mOnMoveStart?.invoke(getTargetView())
-    }
-
-    fun stopMove() {
-        mIsReadyForMove = false
-        getTargetView().isPressed = false
-        mOnMoveEnd?.invoke(getTargetView())
-    }
-
-    private fun getTargetView(): View {
-        if(mTargetView == null)
-            throw Exception("Target View was not initialized")
-        return mTargetView!!
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    fun apply() {
-
-        var viewXStart: Int? = null
-//            var viewXEnd: Int
-
-        getTargetView().setOnTouchListener { _, event ->
-            mCurrentMotionEvent = event
-            when(event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    getTargetView().isPressed = true
-
-                    val viewUtil = ViewUtil(getTargetView())
-                    viewXStart = viewUtil.getXStart()
-//                        viewXEnd = viewUtil.getXEnd()
-
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        if(getTargetView().isPressed) {
-                            this.startMove()
-                        }
-                    }, mDelay)
-
-                    true
-                }
-
-                MotionEvent.ACTION_MOVE -> {
-                    if(mIsReadyForMove) {
-                        val rawX = event.rawX
-                        var dx: Float
-
-                        if(mIsRuleLeftInitialized) {
-                            dx = rawX - (viewXStart ?: 0)
-
-                            if (dx < 10f) {
-                                getTargetView().translationX = dx
-
-                                mOnMoveHorizontally?.invoke(getTargetView(), rawX)
-                            }
-                        }
-                    }
-                    true
-                }
-
-                MotionEvent.ACTION_UP -> {
-                    getTargetView().isPressed = false
-                    if(mIsReadyForMove) {
-                        stopMove()
-                        // TODO: должно быть так//  mOnStop.invoke(mTargetView!!)
-                    }
-                    false
-                }
-
-                else -> false
-            }
-        }
-    }
-
-    enum class MovementRule {
-        LEFT, TOP, RIGHT, BOTTOM
-    }
-}
-
-class ViewUtil(val targetView: View) {
-    private var mLocationOnScreen: IntArray? = null
-
-    private fun getLocationOnScreen(): IntArray {
-        if(mLocationOnScreen != null) {
-            return mLocationOnScreen!!
-        }
-        mLocationOnScreen = IntArray(2)
-        targetView.getLocationOnScreen(mLocationOnScreen)
-        return mLocationOnScreen!!
-    }
-
-    fun getXStart(): Int {
-        return getLocationOnScreen()[0]
-    }
-
-    fun getXEnd(): Int {
-        return getXStart() + targetView.width
-    }
-
-    fun getYStart(): Int {
-        return getLocationOnScreen()[1]
-    }
-
-    fun getYEnd(): Int {
-        return getYStart() + targetView.height
     }
 }

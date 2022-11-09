@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ru.smartro.worknote.andPOintD.SmartROllc
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:whatever="http://schemas.android.com/apk/res-auto"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:orientation="vertical"
+     android:gravity="center"
+     android:padding="8dp"
+>
+
+     <androidx.appcompat.widget.AppCompatTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Выгрузка"
+          android:textColor="@color/black"
+          android:textStyle="bold"
+          android:textSize="16sp"
+     />
+
+     <androidx.appcompat.widget.AppCompatTextView
+          android:id="@+id/actv_f_unload_info__info"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/f_unload_info__info"
+          android:layout_marginTop="8dp"
+     />
+
+     <androidx.appcompat.widget.AppCompatTextView
+          android:id="@+id/actv_f_unload_info__info_start"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/f_unload_info__info_start"
+          android:textStyle="italic"
+          android:textColor="@color/dark_gray"
+          android:layout_marginTop="8dp"
+     />
+
+     <ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
+          android:id="@+id/sv__f_unload_info__swipe_button"
+          android:layout_marginTop="16dp"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:innerText="@string/swipe_right_to_start"
+    />
+
+</ru.smartro.worknote.andPOintD.SmartROllc>

@@ -106,6 +106,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/acib__f_map__navigator_toggle"
             android:layout_width="48dp"
@@ -118,6 +119,21 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginBottom="72dp"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id = "@+id/acb__f_map__unload"
+            android:layout_width="48dp" android:layout_height="48dp"
+            android:text="Выгрузка"
+            android:background="@drawable/bg_button__with_caution"
+            android:src="@drawable/ic_unload_truck__active"
+            android:scaleType="fitCenter"
+            android:foreground="?attr/selectableItemBackground"
+            android:padding="5dp"
+            android:layout_marginStart="@dimen/margin_default"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/goto_log__f_map__apib"
+            app:layout_constraintBottom_toBottomOf="@id/goto_log__f_map__apib"
             />
 
         <androidx.appcompat.widget.AppCompatImageButton

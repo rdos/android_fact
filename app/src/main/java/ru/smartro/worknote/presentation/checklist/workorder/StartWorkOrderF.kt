@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.awORKOLDs.extensions.WarningType
+import ru.smartro.worknote.awORKOLDs.extensions.showDialogAction
+import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.presentation.ac.MainAct
@@ -44,7 +47,13 @@ class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
             setOnClickListener {
                 val workOrders = viewModel.mWorkOrderList.value?.data?.dataKnow100?.woRKoRDeRknow1s
                 if(workOrders != null) {
-                    goToNextStep(workOrders)
+                    // TODO::: Vlad
+                    showDialogAction(
+                        resources.getString(R.string.different_unload_points),
+                        onAccept = {
+                            goToNextStep(workOrders)
+                        }
+                    )
                 }
             }
         }
@@ -52,7 +61,7 @@ class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
         val takeSelected = view.findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_selected).apply {
             visibility = View.GONE
             setOnClickListener {
-                val selectedIndexes = viewModel.mSelectedWorkOrders.value
+                val selectedIndexes = viewModel.mSelectedWorkOrdersIndecies.value
                 if(selectedIndexes != null) {
                     val workOrders = viewModel.mWorkOrderList.value?.data?.dataKnow100?.woRKoRDeRknow1s
                     if(workOrders != null) {
@@ -65,21 +74,52 @@ class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         rvAdapter = StartWorkOrderAdapter()
-        rvAdapter?.setListener { woInd ->
-            val isSelected = viewModel.mSelectedWorkOrders.value?.contains(woInd)
+        rvAdapter?.setListener { woIndex ->
+            val isSelected = viewModel.mSelectedWorkOrdersIndecies.value?.contains(woIndex)
             if(isSelected != null) {
                 if(isSelected) {
-                    viewModel.mSelectedWorkOrders.value.let {
-                        viewModel.mSelectedWorkOrders.postValue(it?.apply { remove(woInd) } ?: it)
+                    viewModel.mSelectedWorkOrdersIndecies.value.let {
+                        viewModel.mSelectedWorkOrdersIndecies.postValue(it?.apply { remove(woIndex) } ?: it)
                     }
-                    rvAdapter?.updateItemSelection(listOf(woInd), false)
+                    rvAdapter?.updateItemSelection(listOf(woIndex), false)
                 } else {
-                    viewModel.mSelectedWorkOrders.value.let {
-                        viewModel.mSelectedWorkOrders.postValue(it?.apply { add(woInd) } ?: it)
+                    var hasDifferentUnloadPoint = false
+
+                    val workOrderS = viewModel.mWorkOrderList.value!!.data!!.dataKnow100.woRKoRDeRknow1s
+
+                    val choosedWo = workOrderS[woIndex]
+                    val choosedWoCoordLat = choosedWo.uNLoaDknow1.coords[0]
+                    val choosedWoCoordLong = choosedWo.uNLoaDknow1.coords[1]
+
+                    viewModel.mSelectedWorkOrdersIndecies.value!!.forEach { selectedWoIndex ->
+                        val selectedWo = workOrderS[selectedWoIndex]
+                        val selectedWoCoordLat = selectedWo.uNLoaDknow1.coords[0]
+                        val selectedWoCoordLong = selectedWo.uNLoaDknow1.coords[1]
+                        if(choosedWoCoordLat != selectedWoCoordLat ||
+                                choosedWoCoordLong != selectedWoCoordLong) {
+                            hasDifferentUnloadPoint = true
+                            return@forEach
+                        }
                     }
-                    rvAdapter?.updateItemSelection(listOf(woInd), true)
+
+                    if(hasDifferentUnloadPoint) {
+                        getAct().showDlgWarning(WarningType.DIFFERENT_UNLOAD_POINTS)
+                    }
+
+                    viewModel.mSelectedWorkOrdersIndecies.value.let {
+                        viewModel.mSelectedWorkOrdersIndecies.postValue(it?.apply { add(woIndex) } ?: it)
+                    }
+                    rvAdapter?.updateItemSelection(listOf(woIndex), true)
                 }
             }
+
+//            if(isSelected != null) {
+//                viewModel.mSelectedWorkOrders.value.let {
+//                    val updatedList = it?.apply { if(isSelected) remove(woInd) else add(woInd) } ?: it
+//                    viewModel.mSelectedWorkOrders.postValue(updatedList)
+//                    rvAdapter?.updateItemSelection(listOf(woInd), !isSelected)
+//                }
+//            }
         }
 
         rv = view.findViewById<RecyclerView>(R.id.rv__f_start_workorder__workorders).apply {
@@ -101,7 +141,6 @@ class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
                             takeAll?.visibility = View.VISIBLE
                             rvAdapter?.setItems(workOrders)
                         } else {
-                            // TODO::Vlad
                             toast("Нет данных. Перезагрузите страницу")
                         }
                         (requireActivity() as XChecklistAct).hideProgressBar()
@@ -122,7 +161,7 @@ class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
 
-        viewModel.mSelectedWorkOrders.observe(viewLifecycleOwner) {
+        viewModel.mSelectedWorkOrdersIndecies.observe(viewLifecycleOwner) {
             if(it != null) {
                 if(it.isEmpty()) {
                     rvAdapter?.clearSelections()
@@ -154,9 +193,8 @@ class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        LOG.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
         viewModel.mWorkOrderList.removeObservers(viewLifecycleOwner)
-        viewModel.mSelectedWorkOrders.removeObservers(viewLifecycleOwner)
+        viewModel.mSelectedWorkOrdersIndecies.removeObservers(viewLifecycleOwner)
     }
 
     override fun onRefresh() {

@@ -53,9 +53,8 @@ class PServeGroupByContainersF : AFragment() {
         srosToPserveFMode?.isChecked = true
         srosToPserveFMode?.setOnCheckedChangeListener { _, _ ->
             // TODO: !!!
-            val configEntity = vm.database.loadConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
-            configEntity.value = PlatformEntity.Companion.ServeMode.PServeF
-            vm.database.saveConfig(configEntity)
+            vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeF)
+
             navigateMain(R.id.PServeF, vm.getPlatformId())
         }
 
@@ -172,7 +171,7 @@ class PServeGroupByContainersF : AFragment() {
 //}
 
     override fun onBackPressed() {
-        --mBackPressedCnt
+        mBackPressedCnt -= 1
         if (mBackPressedCnt <= 0) {
             vm.updatePlatformStatusUnfinished()
             navigateBack(R.id.MapPlatformsF)

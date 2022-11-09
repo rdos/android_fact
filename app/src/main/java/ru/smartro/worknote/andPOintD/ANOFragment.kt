@@ -8,26 +8,18 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
+import ru.smartro.worknote.abs.AUFragment
+import ru.smartro.worknote.abs.IAFragment
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.presentation.ac.MainAct
+import ru.smartro.worknote.work.PlatformEntity
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
-abstract class ANOFragment : Fragment(){
-    abstract fun onGetLayout(): Int
+abstract class ANOFragment : Fragment(), IAFragment {
 
 
-    open fun onNewLiveData() {
-
-    }
-
-    //todo: ???onCreate
-    // TODO: abstract fun onInitLayoutView(view: View): Boolean
-    protected open fun onInitLayoutView(view: SmartROllc): Boolean {
-        LOG.warn(" LoG.todo()")
-        return true
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -39,14 +31,8 @@ abstract class ANOFragment : Fragment(){
         LOG.debug("before")
     }
 
-    // TODO:  abstract fun onBindLayoutState(): Boolean
-    protected open fun onBindLayoutState(): Boolean {
-        LOG.warn(" LoG.todo()")
-        return false
-    }
-
     protected fun paramS() = App.getAppParaMS()
-    fun getAct() = requireActivity() as AAct
+
     protected fun showingProgress(text: String? = null, isEmptyOldText: Boolean=false){
         //todo:ActAbstract
         LOG.debug("FRAG NAME: ${this::class.java.simpleName}")
@@ -70,12 +56,11 @@ abstract class ANOFragment : Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-//        try {
-//          это провал!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//        }
-        LOG.debug("onGetLayout()")
-        val view = inflater.inflate(onGetLayout(), container, false)
-        LOG.debug("onGetLayout().after")
+        LOG.debug("before")
+        val view = AUFragment.onSetItemLayout(this, inflater, container, savedInstanceState)
+        //        try {
+//          это провал!!!
+//        } try в имени это тру! VT, слышь)))
         return view
     }
 
@@ -88,43 +73,29 @@ abstract class ANOFragment : Fragment(){
 
     protected fun navigateBack() {
         LOG.debug("before")
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        val navController = navHost.navController
-        navController.navigateUp()
-        LOG.debug("after")
+        AUFragment.showLastFragment(this)
     }
 
     protected fun navigateBack(navFragmentId: Int) {
-        LOG.debug("navigateBack.before")
-        LOG.debug("navigateBack .navFragmentId=${navFragmentId}")
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        val navController = navHost.navController
-        navController.popBackStack(navFragmentId, false)
-       LOG.trace("navigateBack.after")
+        LOG.debug("before")
+        AUFragment.showLastFragment(this, navFragmentId)
     }
 
 
     protected fun navigateClose() {
-        LOG.debug("navigateClose.before")
+        LOG.debug("before")
         getAct().finish()
-       LOG.trace("navigateClose.after")
+        LOG.trace("after")
     }
 
+    protected fun navigateSMallDeep(navFragmentId: Int, method: (PlatformEntity) -> Unit,argumentId: Int?=null, argumentName: String?=null) {
+//        navigateMain(R.id.MapPlatformClickedDtlF, ::this.startPlatformService)
+//        method.invoke()
+    }
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
-       LOG.trace("navigateMain.before")
+        LOG.trace("navigateMain.before")
         LOG.debug("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
-        val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        val navController = navHost.navController
-//        val navOptions = NavOptions.Builder().setPopUpTo(navFragmentId, true).build()
-        if (argumentId == null) {
-            // TODO: !~r_dos
-//            navController.popBackStack(navFragmentId, true)
-            navController.navigate(navFragmentId, null)
-            return
-        }
-        val argSBundle = getArgSBundle(argumentId, argumentName)
-
-        navController.navigate(navFragmentId, argSBundle)
+        AUFragment.showLastFragment(this, navFragmentId, argumentId, argumentName)
     }
 
     protected fun navigateMainChecklist(navFragmentId: Int, argumentId: Int?, argumentName: String? = null) {
@@ -142,13 +113,9 @@ abstract class ANOFragment : Fragment(){
 
     }
 
-    fun getArgSBundle(argumentId: Int, argumentName: String ?= null): Bundle {
-        val bundle = Bundle(2)
-        bundle.putInt(ARGUMENT_NAME___PARAM_ID, argumentId)
-        // TODO: 10.12.2021 let на всякий П???
-        argumentName?.let {
-            bundle.putString(ARGUMENT_NAME___PARAM_NAME, argumentName)
-        }
+    override fun getArgSBundle(argumentId: Int, argumentName: String?): Bundle {
+        LOG.debug("before")
+        val bundle = AUFragment.setFragmentVar(argumentId, argumentName)
         return bundle
     }
 
@@ -165,8 +132,6 @@ abstract class ANOFragment : Fragment(){
         return result
     }
 
-
-
     final override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (getAct() is MainAct) {
@@ -180,9 +145,6 @@ abstract class ANOFragment : Fragment(){
         //  displayManager.unregisterDisplayListener(displayListener)
     }
 
-    open fun onBackPressed() {
-        LOG.debug("onBackPressed")
-    }
 
     open fun onNewGPS() {
        LOG.warn("onNewGPS")
@@ -199,5 +161,29 @@ abstract class ANOFragment : Fragment(){
                                     //        private const val RATIO_4_3_VALUE = 4.0 / 3.0
                                     //        private const val RATIO_16_9_VALUE = 16.0 / 9.0
                                     //
+    final override fun getAct() = requireActivity() as AAct
+
+    override fun onBackPressed() {
+        LOG.debug("onBackPressed")
+    }
+
+    //todo: ???onCreate
+    // TODO: abstract fun onInitLayoutView(view: View): Boolean
+    override fun onInitLayoutView(sview: SmartROllc): Boolean {
+        LOG.warn(" LoG.todo()")
+        return false
+    }
+    override fun onNewLiveData() {
+        LOG.warn(" LoG.todo()")
+    }
+
+    //    // TODO:  abstract fun onBindLayoutState(): Boolean
+//     open fun onBindLayoutState(): Boolean {
+//        LOG.warn(" LoG.todo()")
+//        return false
+//    }
+    override fun onBindLayoutState(): Boolean {
+        return false
+    }
 
 }

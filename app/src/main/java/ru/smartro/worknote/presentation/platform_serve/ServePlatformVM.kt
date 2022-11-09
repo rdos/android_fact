@@ -10,7 +10,6 @@ import com.yandex.mapkit.directions.driving.DrivingRouter
 import com.yandex.mapkit.directions.driving.DrivingSession
 import com.yandex.mapkit.directions.driving.VehicleOptions
 import com.yandex.mapkit.geometry.Point
-import ru.smartro.worknote.App
 import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.LOG
@@ -18,8 +17,8 @@ import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.work.*
 
 class ServePlatformVM(app: Application) : AViewModel(app) {
+//   dIPlatformId
     private var mPlatformId: Int = Inull
-
 
     private var mPlatformEntity: PlatformEntity? = null
     private var mPlatformMediaEntity: PlatformMediaEntity? = null
@@ -37,16 +36,17 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 //    val mFailReasonS: LiveData<List<String>>
 //        get() = _failReasonS
 
+
     fun getPlatformEntity(): PlatformEntity {
         if (mPlatformEntity == null) {
-            mPlatformEntity = database.getPlatformEntity(mPlatformId)
+            mPlatformEntity = database.getPlatformEntity(this.getPlatformId())
             LOG.trace("result=${mPlatformEntity?.platformId}")
         }
         return mPlatformEntity!!
     }
 
     fun updatePlatformEntity() {
-        if(mPlatformId != Inull && mPlatformEntity != null) {
+        if(this.getPlatformId() != Inull && mPlatformEntity != null) {
             set_PlatformLiveData()
         }
     }
@@ -68,18 +68,12 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     }
 
     fun getPlatformId(): Int {
-        val result = getPlatformEntity().platformId
-        if (result != mPlatformId) {
-            if (App.getAppliCation().isDevelMode()) {
-                throw Exception()
-            } else {
-                LOG.debug(" if (result != mPlatformId)")
-                LOG.error(" if (result != mPlatformId)")
-                LOG.warn(" if (result != mPlatformId)")
-                LOG.info(" if (result != mPlatformId)")
-            }
+        if (mPlatformId == Inull) {
+            LOG.warn("(mPlatformId == Inull")
+            mPlatformId = database.getConfigInt(ConfigName.AAPP__LAST_PLATFORM_ID)
+            return mPlatformId
         }
-        LOG.trace("result=${result}")
+        LOG.trace("dIPlatformId=${mPlatformId}")
         return mPlatformId
     }
 
@@ -99,11 +93,12 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         LOG.debug("before.platformEntity.platformId=${platformEntity.platformId}")
 
 //        mPlatformEntity = platformEntity
-        if (mPlatformId == platformEntity.platformId) {
+        if (getPlatformId() == platformEntity.platformId) {
             LOG.warn("mPlatformId == platformEntity.platformId")
             return
         }
         mPlatformId = platformEntity.platformId
+        database.setConfig(ConfigName.AAPP__LAST_PLATFORM_ID, mPlatformId)
         set_PlatformLiveData()
         mPlatformMediaEntity = null
         mContainerGROUPClientEntity = null
@@ -142,11 +137,11 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
     fun getGroupByContainerClientS(): MutableList<ContainerGROUPClientEntity> {
         // todo:: !!!!
 //        if (mGroupByContainerClientEntity == null) {
-            mContainerGROUPClientEntity = database.loadGroupByContainerClient(mPlatformId)
+            mContainerGROUPClientEntity = database.loadGroupByContainerClient(this.getPlatformId())
             LOG.info("mGroupByContainerClientEntity START = ${mContainerGROUPClientEntity}")
             if (mContainerGROUPClientEntity == null) {
-                database.createGroupByContainerEntityS(mPlatformId)
-                mContainerGROUPClientEntity = database.loadGroupByContainerClient(mPlatformId)
+                database.createGroupByContainerEntityS(this.getPlatformId())
+                mContainerGROUPClientEntity = database.loadGroupByContainerClient(this.getPlatformId())
                 LOG.info("mGroupByContainerClientEntity NULL 1 = ${mContainerGROUPClientEntity}")
             }
             if (mContainerGROUPClientEntity == null) {
@@ -216,10 +211,10 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         LOG.debug("before, client = ${client}")
         // TODO: !!!
 //        if (mGroupByContainerTypeClientEntity == null) {
-            mContainerGROUPClientTypeEntity = database.loadContainerGROUPClientTypeEntityS(mPlatformId, client)
+            mContainerGROUPClientTypeEntity = database.loadContainerGROUPClientTypeEntityS(this.getPlatformId(), client)
             if (mContainerGROUPClientTypeEntity == null) {
-                database.createGroupByContainerEntityS(mPlatformId)
-                mContainerGROUPClientTypeEntity = database.loadContainerGROUPClientTypeEntityS(mPlatformId, client)
+                database.createGroupByContainerEntityS(this.getPlatformId())
+                mContainerGROUPClientTypeEntity = database.loadContainerGROUPClientTypeEntityS(this.getPlatformId(), client)
             }
             if (mContainerGROUPClientTypeEntity == null) {
                 LOG.error("mGroupByContainerClientTypeEntity == null")
@@ -321,6 +316,16 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         set_PlatformLiveData()
     }
 
+    fun addBeforeMediaUnload(imageS: List<ImageEntity>) {
+        database.addBeforeMediaUnload(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+    }
+
+    fun addAfterMediaUnload(imageS: List<ImageEntity>) {
+        database.addAfterMediaUnload(this.getPlatformId(), imageS)
+        set_PlatformLiveData()
+    }
+
     fun addAfterMedia(imageS: List<ImageEntity>) {
         LOG.debug("before.imageS=${imageS.size}")
         database.addAfterMedia(this.getPlatformId(), imageS)
@@ -360,5 +365,9 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         }
         database.removeVoiceComment(platformVoiceCommentEntity)
         set_PlatformLiveData()
+    }
+
+    fun isUnloadMode(): Boolean {
+        return database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
     }
 }

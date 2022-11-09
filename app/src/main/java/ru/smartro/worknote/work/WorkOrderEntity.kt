@@ -28,8 +28,8 @@ open class WorkOrderEntity(
     var waste_type_id: Int? = null,
     var waste_type_name: String? = null,
     var waste_type_color: String? = null,
-    var start: StartEntity? = null,
-//    var unload: UnloadEntity? = null,
+    var start: StartWorkOrderEntity? = null,
+    var unload: UnloadWorkOrderEntity? = null,
 
     var cnt_platform: Int = Inull,
     var cnt_container: Int = Inull,
@@ -193,17 +193,32 @@ open class WorkOrderEntity(
             return result
         }
 
-        private fun mapStart(data: STaRT_know1?): StartEntity? {
-            var result: StartEntity? = null
+        private fun mapStart(data: STaRT_know1?,  workorderId: Int): StartWorkOrderEntity? {
+            var result: StartWorkOrderEntity? = null
             if (data != null) {
-                result = StartEntity(
+                result = StartWorkOrderEntity(
                     coords = RealmList(data.coords[0], data.coords[1]),
                     name = data.name,
-                    id = data.id
+                    id = data.id,
+                    workOrderId = workorderId
                 )
             }
             return result
         }
+
+        private fun mapUnload(data: Unload_know1?,  workorderId: Int): UnloadWorkOrderEntity? {
+            var result: UnloadWorkOrderEntity? = null
+            if (data != null) {
+                result = UnloadWorkOrderEntity(
+                    coords = RealmList(data.coords[0], data.coords[1]),
+                    name = data.name,
+                    id = data.id,
+                    workOrderId = workorderId
+                )
+            }
+            return result
+        }
+
 
         /**public inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.mapTo(destination: C, transform: (T) -> R): C {        */
         fun map(woRKoRDeRknow1List: List<WoRKoRDeR_know1>, database: RealmRepository): RealmList<WorkOrderEntity> {
@@ -218,7 +233,8 @@ open class WorkOrderEntity(
                             waste_type_name = woRKoRDeRknow1.waste_type?.name,
                             waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
                             platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id, database),
-                            start = mapStart(woRKoRDeRknow1.STaRTknow1)
+                            start = mapStart(woRKoRDeRknow1.STaRTknow1, woRKoRDeRknow1.id),
+                            unload = mapUnload(woRKoRDeRknow1.uNLoaDknow1, woRKoRDeRknow1.id)
                         )
                         res.add(workOrder)
                     } catch (eXthr: Exception) {
@@ -230,12 +246,6 @@ open class WorkOrderEntity(
         }
     }
 }
-
-open class StartEntity(
-    var coords: RealmList<Double> = RealmList(),
-    var name: String? = null,
-    var id: Int? = null
-    ) : Serializable, RealmObject()
 
 open class KGOEntity(
     @Expose
@@ -392,6 +402,10 @@ open class PlatformEntity(
     @Expose
     @SerializedName("status")
     var status: String? = Snull,
+
+    @Expose
+    @SerializedName("unload")
+    var unloadEntity: PlatformUnloadEntity? = null,
     @Expose
     @SerializedName("beginned_at")
     var beginnedAt: String? = null,
@@ -434,7 +448,7 @@ open class PlatformEntity(
     @SerializedName("kgo_served")
     var kgoServed: KGOEntity? = null,
 
-) : Serializable, RealmObject() {
+    ) : Serializable, RealmObject() {
 
     fun getBeforeMediaSize() = this.beforeMedia.size
     fun getAfterMediaSize() = afterMedia.size
@@ -842,6 +856,15 @@ open class PlatformEntity(
         return result
     }
 
+    //wtf?Upload
+    fun ploadUnloadEntity(): PlatformUnloadEntity {
+        val result = PlatformUnloadEntity.createEmpty()
+        result.workOrderId = this.workOrderId
+        result.platformId = this.platformId
+        this.unloadEntity = result
+        return  result
+    }
+
     companion object {
         // TODO: !!!
         fun createEmpty(): PlatformEntity {
@@ -906,14 +929,61 @@ open class PlatformEntity(
 //    }
 }
 
-
-open class UnloadEntity(
+open class StartWorkOrderEntity(
     var coords: RealmList<Double> = RealmList(),
     var name: String? = null,
-    var id: Int? = null
+    var id: Int? = null,
+    var workOrderId: Int = Inull
 ) : Serializable, RealmObject()
 
-// TODO:: Rename
+open class UnloadWorkOrderEntity(
+    var coords: RealmList<Double> = RealmList(),
+    var name: String? = null,
+    var id: Int? = null,
+    var workOrderId: Int = Inull,
+    var dev_info: String? = null
+) : RealmObject() {
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): UnloadWorkOrderEntity {
+            val result = UnloadWorkOrderEntity(dev_info=THIS_IS_ERROR)
+            return result
+        }
+    }
+}
+
+
+open class PlatformUnloadEntity(
+    @PrimaryKey
+    var platformId: Int = Inull,
+    @SerializedName("before_media")
+    @Expose
+    var beforeMedia: RealmList<ImageEntity> = RealmList(),
+    @SerializedName("after_media")
+    @Expose
+    var afterMedia: RealmList<ImageEntity> = RealmList(),
+    @SerializedName("before_value")
+    @Expose
+    var beforeValue: Float? = null,
+    @SerializedName("after_value")
+    @Expose
+    var afterValue: Float? = null,
+    @SerializedName("ticket_value")
+    @Expose
+    var ticketValue: Float? = null,
+    var workOrderId: Int = Inull,
+
+    var dev_info: String? = null
+): RealmObject() {
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): PlatformUnloadEntity {
+            val result = PlatformUnloadEntity(dev_info=THIS_IS_ERROR)
+            return result
+        }
+    }
+}
+
 enum class ConfigName(val displayName: String) {
     Snull(ru.smartro.worknote.Snull),
     BOOT_CNT("BOOT_CNT"),
@@ -924,7 +994,9 @@ enum class ConfigName(val displayName: String) {
     NOINTERNET_CNT("NOINTERNET_CNT"),
     MAPACTDESTROY_CNT("MAPACTDESTROY_CNT"),
     USER_WORK_SERVE_MODE_CODENAME("USER_WORK_SERVE_MODE_CODENAME"),
-    AAPP__LAST_SYNCHROTIME_IN_SEC("AAPP__LAST_SYNCHROTIME_IN_SEC")
+    AAPP__IS_MODE__UNLOAD("IS_MODE__UNLOAD"),
+    AAPP__LAST_SYNCHROTIME_IN_SEC("APP_PARAM__LAST_SYNCHROTIME_IN_SEC"),
+    AAPP__LAST_PLATFORM_ID("AAPP__LAST_PLATFORM_ID")
 }
 
 open class ConfigEntity(

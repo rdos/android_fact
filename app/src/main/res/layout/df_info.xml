@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ru.smartro.worknote.andPOintD.SmartROllc
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="12dp"
+    android:background="@drawable/bg_button_red__default">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actv__df_info__title"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Оповещение"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actv__df_info__content"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/accept_task_check"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:layout_marginHorizontal="22dp"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/acb__df_info__ok"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:background="@drawable/bg_button_interactive"
+        android:paddingHorizontal="32dp"
+        android:stateListAnimator="@null"
+        android:text="Подтвердить"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginTop="16dp"
+        />
+
+</ru.smartro.worknote.andPOintD.SmartROllc>

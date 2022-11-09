@@ -20,9 +20,9 @@
     </fragment>
     <!--Directions-->
     <dialog
-        android:id="@+id/MapActPlatformClickedDtlDialog"
-        android:name="ru.smartro.worknote.presentation.MapPlatformClickedDtlF"
-        android:label="MapActPlatformClickedDtlDialog">
+        android:id="@+id/MapPlatformClickedDtlF"
+        android:name="ru.smartro.worknote.presentation.MapPlatformsMapObjectTapDF"
+        android:label="MapPlatformClickedDtlF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -282,6 +282,77 @@
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
             android:defaultValue="-1"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/UnloadInfoF"
+        android:name="ru.smartro.worknote.presentation.UnloadInfoF"
+        android:label="UnloadInfoF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+    <dialog
+        android:id="@+id/UnloadTicketF"
+        android:name="ru.smartro.worknote.presentation.UnloadTicketF"
+        android:label="UnloadInfoF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <fragment
+        android:id="@+id/UnloadPhotoBeforeMediaF"
+        android:name="ru.smartro.worknote.presentation.came.UnloadPhotoBeforeMediaF"
+        tools:layout="@layout/f_aphoto"
+        android:label="UnloadPhotoBeforeMediaF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/UnloadPhotoAfterMediaF"
+        android:name="ru.smartro.worknote.presentation.came.UnloadPhotoAfterMediaF"
+        tools:layout="@layout/f_aphoto"
+        android:label="UnloadPhotoAfterMediaF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <dialog
+        android:id="@+id/InfoDialogF"
+        android:name="ru.smartro.worknote.presentation.InfoDialogF"
+        android:label="InfoDialogF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
             />
         <argument
             android:name="ARGUMENT_NAME___PARAM_NAME"
