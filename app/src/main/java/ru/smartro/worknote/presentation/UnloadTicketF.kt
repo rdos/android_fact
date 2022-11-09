@@ -86,6 +86,8 @@ class UnloadTicketF: ADFragment() {
         platformUnloadEntity?.beforeValue = acetWeightBefore?.text.toString().toFloatOrNull()
         platformUnloadEntity?.afterValue = acetWeightAfter?.text.toString().toFloatOrNull()
         platformUnloadEntity?.ticketValue = acetTalonValue?.text.toString().toFloatOrNull()
-        vm.database.setPlatformUnloadEntity(platformUnloadEntity!!)
+
+        if(platformUnloadEntity != null)
+            vm.database.setPlatformUnloadEntity(platformUnloadEntity)
     }
 }

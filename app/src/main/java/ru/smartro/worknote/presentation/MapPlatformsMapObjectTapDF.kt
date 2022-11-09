@@ -79,7 +79,8 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
         val tvPlatformContact = sview.findViewById<TextView>(R.id.tv_dialog_platform_clicked_dtl__platform_contact)
         val contactsInfo = TbIboy__item.getContactsInfo()
         tvPlatformContact.text = contactsInfo
-        tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
+        // TODO::: СВЕЖО
+        tvPlatformContact.isVisible = contactsInfo.trim().isNotEmpty()
 
         // TODO: 27.10.2021 !! R_DOS! = СПРОСИть ОН знает
         LOG.warn("R_DOS")

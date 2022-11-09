@@ -116,21 +116,6 @@
             app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt"
             />
 
-        <Button
-            android:id="@+id/btn_dialog_platform_clicked_dtl__serve_again"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/margin_max"
-            android:background="@drawable/bg_button_gray"
-            android:text="@string/dialog_platform_clicked_dtl__serve_again"
-            android:textColor="@color/white"
-            android:layout_marginTop="8dp"
-
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__platform_contact"
-            />
-
         <ImageButton
             android:id="@+id/platform_detail_fire"
             android:layout_width="46dp"
@@ -140,27 +125,46 @@
             android:layout_marginStart="12dp"
 
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/btn_dialog_platform_clicked_dtl__start_serve"
-            app:layout_constraintBottom_toBottomOf="@id/btn_dialog_platform_clicked_dtl__start_serve"
+            app:layout_constraintTop_toTopOf="@id/fl__button_wrapper"
+            app:layout_constraintBottom_toBottomOf="@id/fl__button_wrapper"
             />
 
-        <Button
-            android:id="@+id/btn_dialog_platform_clicked_dtl__start_serve"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:background="@drawable/bg_button"
-            android:text="@string/start_serve"
-            android:textColor="@color/white"
+        <FrameLayout
+            android:id="@+id/fl__button_wrapper"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-
+            android:layout_marginHorizontal="16dp"
 
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/platform_location"
             app:layout_constraintStart_toEndOf="@+id/platform_detail_fire"
             app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__platform_contact"
-            tools:layout_constraintTop_toBottomOf="@id/btn_dialog_platform_clicked_dtl__serve_again" />
+            >
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_dialog_platform_clicked_dtl__serve_again"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_button_gray"
+                android:text="@string/dialog_platform_clicked_dtl__serve_again"
+                android:textColor="@color/white"
+                />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_dialog_platform_clicked_dtl__start_serve"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_button"
+                android:text="@string/start_serve"
+                android:textColor="@color/white"
+
+
+                tools:layout_marginTop="50dp"
+                />
+
+        </FrameLayout>
 
         <ImageButton
             android:id="@+id/platform_location"
@@ -171,8 +175,8 @@
             android:layout_marginEnd="12dp"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/btn_dialog_platform_clicked_dtl__start_serve"
-            app:layout_constraintBottom_toBottomOf="@id/btn_dialog_platform_clicked_dtl__start_serve"
+            app:layout_constraintTop_toTopOf="@id/fl__button_wrapper"
+            app:layout_constraintBottom_toBottomOf="@id/fl__button_wrapper"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
