@@ -258,11 +258,14 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //        setDevelMode()
 
         vm.todoLiveData.observe(viewLifecycleOwner) {
+            LOG.debug("vm.todoLiveData.observe ::: ")
             if (it.coordLat == Dnull) {
+                LOG.debug("vm.todoLiveData.observe ::: it.coordLat == Dnull")
                 // TODO: !!факТ)
                 return@observe
             }
             if(mLastActivePlatform != null) {
+                LOG.debug("vm.todoLiveData.observe ::: mLastActivePlatform != null")
                 changeMapObjectIcon(mLastActivePlatform!!, false)
             }
             changeMapObjectIcon(it, true)
@@ -727,10 +730,15 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     }
 
     override fun moveCameraPlatform(item: PlatformEntity) {
+        LOG.debug("::: CLICK, plId: ${item.platformId}")
+
         mIsAUTOMoveCamera = false
         if (clMapBehavior == null) {
+            LOG.debug("::: clMapBehavior == null")
             return
         }
+
+        LOG.debug("::: clMapBehavior != null")
         val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         vm.setPlatformEntity(item)
@@ -1342,6 +1350,7 @@ class MapPlatformSBehaviorAdapter(
         holder.itemView.findViewById<TextView>(R.id.map_behavior_container_count).text = "${item.containerS.size} $containerString"
 
         holder.itemView.findViewById<TextView>(R.id.map_behavior_coordinate).setOnClickListener {
+            LOG.debug("::: CLICK :::")
             listener.moveCameraPlatform(item)
         }
         holder.itemView.findViewById<ImageButton>(R.id.map_behavior_location).setOnClickListener {

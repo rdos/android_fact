@@ -94,32 +94,18 @@
             />
 
 
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_f_map__goto_my_gps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_default"
-            android:layout_marginBottom="72dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:src="@drawable/ic_geo"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/acib__f_map__navigator_toggle"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginStart="@dimen/margin_default"
             android:background="@drawable/bg_circle_button"
             android:src="@drawable/ic_route_off"
             android:visibility="gone"
-            tools:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginBottom="72dp"
-            />
+            app:layout_constraintBottom_toBottomOf="@+id/goto_log__f_map__apib"
+            app:layout_constraintTop_toTopOf="@+id/goto_log__f_map__apib"
+            tools:visibility="visible" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id = "@+id/acb__f_map__unload"
@@ -131,9 +117,9 @@
             android:foreground="?attr/selectableItemBackground"
             android:padding="5dp"
             android:layout_marginStart="@dimen/margin_default"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/goto_log__f_map__apib"
-            app:layout_constraintBottom_toBottomOf="@id/goto_log__f_map__apib"
+            android:layout_marginBottom="72dp"
             />
 
         <androidx.appcompat.widget.AppCompatImageButton
@@ -146,6 +132,17 @@
             app:layout_constraintBottom_toTopOf="@id/fab_f_map__goto_my_gps"
             app:layout_constraintEnd_toEndOf="@id/fab_f_map__goto_my_gps"
             app:layout_constraintStart_toStartOf="@id/fab_f_map__goto_my_gps" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_f_map__goto_my_gps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:layout_marginBottom="72dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:src="@drawable/ic_geo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

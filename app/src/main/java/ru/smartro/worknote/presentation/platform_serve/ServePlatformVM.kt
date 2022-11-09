@@ -95,8 +95,10 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
 //        mPlatformEntity = platformEntity
         if (getPlatformId() == platformEntity.platformId) {
             LOG.warn("mPlatformId == platformEntity.platformId")
+            set_PlatformLiveData()
             return
         }
+
         mPlatformId = platformEntity.platformId
         database.setConfig(ConfigName.AAPP__LAST_PLATFORM_ID, mPlatformId)
         set_PlatformLiveData()

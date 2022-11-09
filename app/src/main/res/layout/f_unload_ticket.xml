@@ -146,6 +146,7 @@
 		android:layout_marginTop="12dp"
 		app:innerText="Проведите вправо,\nчтобы завершить"
 		app:buttonSrc="@drawable/bg_button_orange"
+		app:tailColor="@color/dark_orange"
 		/>
 
 </ru.smartro.worknote.andPOintD.SmartROllc>
