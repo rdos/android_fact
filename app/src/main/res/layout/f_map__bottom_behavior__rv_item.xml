@@ -92,10 +92,12 @@
                     android:id="@+id/map_behavior_coordinate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_baseline_goto_location_24"
                     android:gravity="end"
                     android:padding="@dimen/margin_min"
-                    android:text="@string/goto_location_on_map" />
+                    android:text="@string/goto_location_on_map"
+                    app:drawableStartCompat="@drawable/ic_baseline_goto_location_24"
+                    />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
