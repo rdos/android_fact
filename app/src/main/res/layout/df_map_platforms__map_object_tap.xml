@@ -26,7 +26,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_dialog_platform_clicked_dtl__address"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
                         android:layout_marginTop="16dp"
                         android:textColor="@color/black"
                         tools:text="г. Москва, ул Пушкина д4" />
-                    <ImageButton
+                    <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/ibtn_dialog_platform_clicked_dtl__close"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                         android:layout_marginEnd="@dimen/margin_default" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_dialog_platform_clicked_dtl__name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                     tools:itemCount="3"
                     tools:listitem="@layout/item_dialog_platform_clicked_dtl" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_dialog_platform_clicked_dtl__order_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
                 android:layout_margin="@dimen/margin_default"
                 android:gravity="center_vertical">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_dialog_platform_clicked_dtl__serve_again"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -143,7 +143,7 @@
                 android:layout_margin="@dimen/margin_default"
                 android:gravity="center_vertical">
 
-                <ImageButton
+                <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/platform_detail_fire"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
@@ -154,7 +154,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_dialog_platform_clicked_dtl__start_serve"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -168,7 +168,7 @@
                     app:layout_constraintEnd_toStartOf="@id/platform_location"
                     app:layout_constraintTop_toTopOf="@id/platform_detail_fire" />
 
-                <ImageButton
+                <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/platform_location"
                     android:layout_width="46dp"
                     android:layout_height="46dp"

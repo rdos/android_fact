@@ -8,6 +8,7 @@ import android.widget.*
 import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -87,13 +88,14 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
         tvPlatformContact.isVisible = contactsInfo.isNotEmpty()
 
         // TODO: 27.10.2021 !! R_DOS! = СПРОСИть ОН знает
-        LOG.warn("R_DOS")
+        LOG.warn("R_DOS sview.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener(mOnClickListener)")
+        val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
         sview.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener(mOnClickListener)
 
         //коммент инициализации
         sview.findViewById<ImageButton>(R.id.platform_location).setOnClickListener(mOnClickListener)
         sview.findViewById<ImageButton>(R.id.ibtn_dialog_platform_clicked_dtl__close).setOnClickListener(mOnClickListener)
-        sview.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
+        sview.findViewById<AppCompatButton>(R.id.btn_dialog_platform_clicked_dtl__serve_again).setOnClickListener(mOnClickListener)
         val btnStartServe = sview.findViewById<Button>(R.id.btn_dialog_platform_clicked_dtl__start_serve)
         btnStartServe.setOnClickListener(mOnClickListener)
         if (TbIboy__item.getStatusPlatform() == StatusEnum.UNFINISHED) {
@@ -110,6 +112,12 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
         }
         return false
     }
+
+
+    private fun setUseButtonStyleBackgroundGreen(appCompatButton: AppCompatButton) {
+        appCompatButton.setBackgroundDrawable(ContextCompat.getDrawable(getAct(), R.drawable.bg_button_green__usebutton))
+    }
+
 
     override fun onNewLiveData() {
 //        TODO("Not yet implemented")
