@@ -25,9 +25,8 @@ import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.FragmentAI
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
-import ru.smartro.worknote.awORKOLDs.extensions.WarningType
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
+import ru.smartro.worknote.presentation.ServePlatformVM
 import ru.smartro.worknote.work.ConfigName
 
 //todo: INDEterminate)

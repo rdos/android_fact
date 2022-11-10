@@ -101,7 +101,7 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
                     }
 
                     if(hasDifferentUnloadPoint) {
-                        navigateNext(R.id.InfoPointsUploadDF)
+                        navigateNext(R.id.InfoPointsUploadFD)
                     }
 
                     viewModel.mSelectedWorkOrdersIndecies.value.let {

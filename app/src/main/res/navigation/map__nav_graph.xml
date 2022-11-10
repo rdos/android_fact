@@ -21,7 +21,7 @@
     <!--Directions-->
     <dialog
         android:id="@+id/MapPlatformClickedDtlF"
-        android:name="ru.smartro.worknote.presentation.MapFD"
+        android:name="ru.smartro.worknote.presentation.PMapFragmentDialog"
         android:label="MapPlatformClickedDtlF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -34,7 +34,7 @@
     </dialog>
     <fragment
         android:id="@+id/PhotoBeforeMediaF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaF"
+        android:name="ru.smartro.worknote.presentation.PhotoBeforeMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaF" >
         <argument
@@ -48,7 +48,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoKgoServedF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoKgoServedF"
+        android:name="ru.smartro.worknote.presentation.PhotoKgoServedF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoKgoServedF" >
         <argument
@@ -62,7 +62,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoKgoRemainingF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoKgoRemainingF"
+        android:name="ru.smartro.worknote.presentation.PhotoKgoRemainingF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoKgoRemainingF" >
         <argument
@@ -76,7 +76,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoPickupMediaF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoPickupMediaF"
+        android:name="ru.smartro.worknote.presentation.PhotoPickupMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoPickupMediaF" >
         <argument
@@ -90,7 +90,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoFailureMediaF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoFailureMediaF"
+        android:name="ru.smartro.worknote.presentation.PhotoFailureMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoFailureMediaF" >
         <argument
@@ -104,7 +104,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoBreakdownMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBreakdownMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.PhotoBreakdownMediaContainerF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBreakdownMediaContainerF" >
         <argument
@@ -118,7 +118,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoFailureMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoFailureMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.PhotoFailureMediaContainerF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoFailureMediaContainerF" >
         <argument
@@ -132,7 +132,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoAfterMediaF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoAfterMediaF"
+        android:name="ru.smartro.worknote.presentation.PhotoAfterMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoAfterMediaF" >
         <argument
@@ -146,7 +146,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoBeforeMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.PhotoBeforeMediaContainerF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerF" >
         <argument
@@ -160,7 +160,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoBeforeMediaContainerSimplifyF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerByTypesF"
+        android:name="ru.smartro.worknote.presentation.PhotoBeforeMediaContainerByTypesF"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerSimplifyF" >
         <argument
@@ -174,7 +174,7 @@
     </fragment>
     <fragment
         android:id="@+id/GalleryPhotoF"
-        android:name="ru.smartro.worknote.presentation.came.GalleryPhotoF"
+        android:name="ru.smartro.worknote.presentation.GalleryPhotoF"
         tools:layout="@layout/media_fragment"
         android:label="GalleryPhotoF" >
         <argument
@@ -215,7 +215,7 @@
 
     <fragment
         android:id="@+id/CompleteF"
-        android:name="ru.smartro.worknote.presentation.terminate.CompleteF"
+        android:name="ru.smartro.worknote.presentation.CompleteF"
         tools:layout="@layout/f_complete___map_act"
         android:label="CompleteF">
         <argument
@@ -231,7 +231,7 @@
     <fragment
         android:id="@+id/FinishCompleteF"
         tools:layout="@layout/f_finish_complete"
-        android:name="ru.smartro.worknote.presentation.terminate.FinishCompleteF"
+        android:name="ru.smartro.worknote.presentation.FinishCompleteF"
         android:label="FinishCompleteF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -245,7 +245,7 @@
 
     <fragment
         android:id="@+id/PServeF"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeF"
+        android:name="ru.smartro.worknote.presentation.PServeF"
         tools:layout="@layout/f_pserve"
         android:label="CompleteF">
         <argument
@@ -260,7 +260,7 @@
 
     <fragment
         android:id="@+id/PServeGroupByContainersF"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeGroupByContainersF"
+        android:name="ru.smartro.worknote.presentation.PServeGroupByContainersF"
         tools:layout="@layout/f_pserve_groupby"
         android:label="CompleteF">
         <argument
@@ -276,7 +276,7 @@
     <dialog
         android:id="@+id/ContainerServeBottomDialog"
         tools:layout="@layout/fragment_container_serve"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeContainerServeF"
+        android:name="ru.smartro.worknote.presentation.PServeContainerServeF"
         android:label="ContainerServeBottomDialog">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -291,7 +291,7 @@
 
     <dialog
         android:id="@+id/UnloadInfoF"
-        android:name="ru.smartro.worknote.presentation.UnloadStartDF"
+        android:name="ru.smartro.worknote.presentation.UnloadStartFD"
         android:label="UnloadInfoF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -304,7 +304,7 @@
     </dialog>
     <dialog
         android:id="@+id/UnloadTicketF"
-        android:name="ru.smartro.worknote.presentation.UnloadTicketF"
+        android:name="ru.smartro.worknote.presentation.UnloadTicketFD"
         android:label="UnloadInfoF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -318,7 +318,7 @@
 
     <fragment
         android:id="@+id/UnloadPhotoBeforeMediaF"
-        android:name="ru.smartro.worknote.presentation.came.UnloadPhotoBeforeMediaF"
+        android:name="ru.smartro.worknote.presentation.UnloadPhotoBeforeMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="UnloadPhotoBeforeMediaF" >
         <argument
@@ -333,7 +333,7 @@
 
     <fragment
         android:id="@+id/UnloadPhotoAfterMediaF"
-        android:name="ru.smartro.worknote.presentation.came.UnloadPhotoAfterMediaF"
+        android:name="ru.smartro.worknote.presentation.UnloadPhotoAfterMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="UnloadPhotoAfterMediaF" >
         <argument
@@ -348,7 +348,7 @@
 
     <dialog
         android:id="@+id/LockedCarInfoDF"
-        android:name="ru.smartro.worknote.presentation.LockedCarInfoDF"
+        android:name="ru.smartro.worknote.presentation.DInfoLockedCarF"
         android:label="LockedCarInfoDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -362,7 +362,7 @@
 
     <dialog
         android:id="@+id/LockedGasInfoDF"
-        android:name="ru.smartro.worknote.presentation.LockedGasInfoDF"
+        android:name="ru.smartro.worknote.presentation.LockedGasInfoFD"
         android:label="LockedGasInfoDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -376,7 +376,7 @@
 
     <dialog
         android:id="@+id/LockedPhotoInfoDF"
-        android:name="ru.smartro.worknote.presentation.LockedPhotoInfoDF"
+        android:name="ru.smartro.worknote.presentation.LockedPhotoInfoFD"
         android:label="LockedCarInfoDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -390,7 +390,7 @@
 
     <dialog
         android:id="@+id/WarnDF"
-        android:name="ru.smartro.worknote.presentation.WarnDF"
+        android:name="ru.smartro.worknote.presentation.PMapFDWarn"
         android:label="WarnDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -404,7 +404,7 @@
 
     <dialog
         android:id="@+id/InfoAirplaneModeOnDF"
-        android:name="ru.smartro.worknote.presentation.BaSeInfoAirplaneModeOnDF"
+        android:name="ru.smartro.worknote.presentation.DInfoAirplaneModeOn"
         android:label="InfoAirplaneModeOnDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -417,8 +417,8 @@
     </dialog>
 
     <dialog
-        android:id="@+id/InfoPointsUploadDF"
-        android:name="ru.smartro.worknote.presentation.InfoPointsUploadDF"
+        android:id="@+id/InfoPointsUploadFD"
+        android:name="ru.smartro.worknote.presentation.DInfoPointsUploadF"
         android:label="InfoPointsUploadDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -432,7 +432,7 @@
 
     <dialog
         android:id="@+id/InfoInternetOffDF"
-        android:name="ru.smartro.worknote.presentation.InfoInternetOffDF"
+        android:name="ru.smartro.worknote.presentation.DInfoInternetOffF"
         android:label="InfoInternetOffDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -446,7 +446,7 @@
 
     <dialog
         android:id="@+id/InfoGpsOffDF"
-        android:name="ru.smartro.worknote.presentation.InfoGpsOffDF"
+        android:name="ru.smartro.worknote.presentation.DInfoGpsOff"
         android:label="InfoGpsOffDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"

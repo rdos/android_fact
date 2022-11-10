@@ -8,7 +8,6 @@ import ru.smartro.worknote.andPOintD.AActionDialogF
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.ac.XChecklistAct
-import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.PlatformEntity
 
 class ReAuthConfirmationDialogF: AActionDialogF() {

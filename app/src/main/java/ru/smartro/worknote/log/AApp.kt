@@ -5,7 +5,7 @@ import android.provider.Settings
 import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.presentation.came.EXTENSION_WHITELIST
+import ru.smartro.worknote.presentation.EXTENSION_WHITELIST
 import java.io.File
 import java.util.*
 
