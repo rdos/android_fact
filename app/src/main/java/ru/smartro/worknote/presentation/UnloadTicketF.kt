@@ -12,7 +12,6 @@ import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
-import ru.smartro.worknote.work.PlatformUnloadEntity
 
 //todo: смотри прикол, VT !!!UnloadInfo++ploadTicket
 class UnloadTicketF: ADFragment() {
@@ -32,12 +31,12 @@ class UnloadTicketF: ADFragment() {
 
         val acibPhotoBefore = sview.findViewById<AppCompatImageButton>(R.id.acib__f_unload_ticket__photo_before)
         acibPhotoBefore.setOnClickListener {
-            navigateMain(R.id.UnloadPhotoBeforeMediaF)
+            navigateNext(R.id.UnloadPhotoBeforeMediaF)
         }
 
         val acibPhotoAfter = sview.findViewById<AppCompatImageButton>(R.id.acib__f_unload_ticket__photo_after)
         acibPhotoAfter.setOnClickListener {
-            navigateMain(R.id.UnloadPhotoAfterMediaF)
+            navigateNext(R.id.UnloadPhotoAfterMediaF)
         }
 
         val acbFinish: SmartROviewSwipeButton? = sview.findViewById(R.id.acb_f_unload_ticket__finish)
@@ -45,7 +44,7 @@ class UnloadTicketF: ADFragment() {
             toast("выключился режим Выгрузки")
             vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, false)
             findNavController().previousBackStackEntry?.savedStateHandle?.set("buildNavigatorPlatformUnload", false)
-            navigateBack(R.id.MapPlatformsF)
+            navigate(R.id.MapPlatformsF)
         }
 
 

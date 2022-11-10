@@ -83,7 +83,7 @@ class PhotoBeforeMediaF : APhotoFragment() {
     override fun onBackPressed() {
         super.onBackPressed()
         super.dropOutputD()
-        navigateBack()
+        navigateBack(R.id.MapPlatformsF)
 
     }
     companion object {

@@ -39,21 +39,19 @@ abstract class ADFragment : DialogFragment(), IAFragment {
         LOG.debug("before")
     }
 
-    fun navigateBack(navFragmentId: Int) {
+    protected fun navigateBack() {
         LOG.debug("before")
-        //todo:???        dismiss() vs
-        AUFragment.showLastFragment(this, navFragmentId)
+        AUFragment.showFragment(this)
     }
 
-    final fun navigateBack() {
+    protected fun navigate(navFragmentId: Int) {
         LOG.debug("before")
-        //todo:???        dismiss() vs
-//        AUFragment.showLastFragment(this)
-        dismissAllowingStateLoss()
+        AUFragment.showFragment(this, navFragmentId)
     }
 
-    final fun navigateMain(navFragmentId: Int, argumentId: Int? = null, argumentName: String?= null) {
-        AUFragment.showLastFragment(this, navFragmentId, argumentId, argumentName)
+
+    final fun navigateNext(navFragmentId: Int, argumentId: Int? = null, argumentName: String?= null) {
+        AUFragment.showNextFragment(this, navFragmentId, argumentId, argumentName)
     }
 
     final override fun getArgSBundle(argumentId: Int, argumentName: String?): Bundle {

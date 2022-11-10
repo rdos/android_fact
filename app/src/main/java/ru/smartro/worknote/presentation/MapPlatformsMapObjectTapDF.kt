@@ -1,13 +1,12 @@
 package ru.smartro.worknote.presentation
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.widget.AppCompatButton
-import androidx.cardview.widget.CardView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -27,7 +26,7 @@ import kotlin.math.min
 //todo: MapPlatformsDF MapPlatformsDF MapPlatformsDF???ИЛИ MapPlatforms(on)MapObjectTap(DF)=
 class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
     private lateinit var TbIboy__item: PlatformEntity
-    private val viewModel: ServePlatformVM by activityViewModels()
+    private val vm: ServePlatformVM by activityViewModels()
     private val mOnClickListener = this as View.OnClickListener
 
     override fun onGetLayout(): Int {
@@ -36,20 +35,29 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.btn_dialog_platform_clicked_dtl__serve_again  -> {
-                findNavController().previousBackStackEntry?.savedStateHandle?.set("startPlatformBeforeMedia", true)
+            R.id.btn_dialog_platform_clicked_dtl__serve_again,
+            R.id.btn_dialog_platform_clicked_dtl__start_serve  -> {
+                val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+                if (isModeUnload) {
+                    toast("В режиме выгрузка нельзя обслуживать КП")
+                    return
+                }
+                navigateNext(R.id.WarnDF, TbIboy__item.platformId, getString(R.string.warning_gps_exception))
             }
-            R.id.btn_dialog_platform_clicked_dtl__start_serve -> {
-                findNavController().previousBackStackEntry?.savedStateHandle?.set("startPlatformBeforeMedia", true)
-            }
+
             R.id.platform_detail_fire -> {
-                findNavController().previousBackStackEntry?.savedStateHandle?.set("startPhotoFailureMedia", true)
-            }
+                val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+                if (isModeUnload) {
+                    toast("В режиме выгрузка нельзя обслуживать КП")
+                    return
+                }
+                vm.setPlatformEntity(TbIboy__item)
+                navigateNext(R.id.PhotoFailureMediaF, TbIboy__item.platformId)}
             R.id.ibtn_dialog_platform_clicked_dtl__close -> {
-                navigateBack()
+                navigate(R.id.MapPlatformsF)
             }
             R.id.platform_location -> {
-                navigateBack()
+                navigate(R.id.MapPlatformsF)
                 findNavController().previousBackStackEntry?.savedStateHandle?.set("navigatePlatform", true)
             }
         }
@@ -58,7 +66,7 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
 
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
-        TbIboy__item = viewModel.getPlatformEntity()
+        TbIboy__item = vm.getPlatformEntity()
         //onBindViewHolder
 //        super.onViewCreated(view, savedInstanceState)
 
@@ -85,7 +93,7 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
 
         // TODO: 27.10.2021 !! R_DOS! = СПРОСИть ОН знает
         LOG.warn("R_DOS sview.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener(mOnClickListener)")
-        val isModeUnload = viewModel.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
         sview.findViewById<ImageButton>(R.id.platform_detail_fire).setOnClickListener(mOnClickListener)
 
         //коммент инициализации
@@ -113,7 +121,23 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
             tvOrderTime.setTextColor(TbIboy__item.getOrderTimeColor(requireContext()))
             tvOrderTime.isVisible = true
         }
+
+
+//        ключ
+        bottomWrapperInit(sview, isModeUnload)
         return false
+    }
+
+    private fun bottomWrapperInit(sview: SmartROllc, isModeUnload: Boolean) {
+        //   переключатель!
+        val llcInfoUnload = sview.findViewById<LinearLayoutCompat>(R.id.llc_info_unload)
+        val llcButtonWrapper = sview.findViewById<LinearLayoutCompat>(R.id.llc_button_wrapper)
+        llcButtonWrapper.visibility = View.VISIBLE
+        llcInfoUnload.visibility = View.GONE
+        if (isModeUnload) {
+            llcButtonWrapper.visibility = View.GONE
+            llcInfoUnload.visibility = View.VISIBLE
+        }
     }
 
 

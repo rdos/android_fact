@@ -188,7 +188,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         acbUnload = sview.findViewById(R.id.acb__f_map__unload)
         carFullStatusButton = sview.findViewById(R.id.fl__f_map__car)
         carFullStatusButton.setOnClickListener {
+
             navigateMain(R.id.InfoDialogF, 1, getString(R.string.car_locked))
+
         }
         fuelStatusButton = sview.findViewById(R.id.fl__f_map__fuel)
         fuelStatusButton.setOnClickListener {
@@ -279,8 +281,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         //TODO: сюда изменения вностиьб!
         if (vm.isUnloadMode()) {
             navigateMain(R.id.UnloadTicketF)
-            findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("buildNavigatorPlatformUnload")?.observe(
-                viewLifecycleOwner) { result ->
+            getStateHandle("buildNavigatorPlatformUnload") { result ->
                 LOG.debug("TEST:::!!!")
                 if(result) {
                     buildNavigatorPlatformUnload()
@@ -300,9 +301,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             if (platformID == Inull) {
                 return@setOnClickListener
             }
-
-            findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("buildNavigatorPlatformUnload")?.observe(
-                viewLifecycleOwner) { result ->
+            getStateHandle("buildNavigatorPlatformUnload") { result ->
                 //TODO: сюда изменения вностиьб! 
                 LOG.debug("TEST:::!!!")
                 if(result) {
@@ -319,6 +318,14 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             } else {
                 navigateMain(R.id.UnloadInfoF)
             }
+        }
+    }
+//
+    fun getStateHandle(keyString: String, next: (result: Boolean) -> Any) {
+        findNavController().currentBackStackEntry?.savedStateHandle?.clearSavedStateProvider(keyString)
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>(keyString)?.observe(viewLifecycleOwner)
+        { result ->
+            next(result)
         }
     }
 
@@ -370,7 +377,12 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private var mMapObjectsDrive: MapObjectCollection? = null
     private fun clearMapObjectsDrive() {
-        mMapObjectsDrive?.clear()
+        try {
+            mMapObjectsDrive?.clear()
+
+        } catch (ex: Exception) {
+
+        }
         mMapObjectsDrive = null
     }
 
@@ -936,14 +948,8 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         val plaformE = vm.loadPlatformEntityByCoordS(coordS.latitude, coordS.longitude)
         LOG.debug("::: loadPLAtformENtityByCoords:: ${plaformE.platformId}")
 
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("startPlatformBeforeMedia")?.observe(
-            viewLifecycleOwner) {result ->
-            if(result) {
-                startPlatformBeforeMedia(plaformE)
-            }
-            // Do something with the result.
-        }
 
+        findNavController().currentBackStackEntry?.savedStateHandle?.clearSavedStateProvider("startPhotoFailureMedia")
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("startPhotoFailureMedia")?.observe(
             viewLifecycleOwner) {result ->
             if(result) {
@@ -951,7 +957,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             }
             // Do something with the result.
         }
-
+        findNavController().currentBackStackEntry?.savedStateHandle?.clearSavedStateProvider("navigatePlatform")
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("navigatePlatform")?.observe(
             viewLifecycleOwner) {result ->
             if(result) {
@@ -1193,24 +1199,11 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             toast("В режиме выгрузка нельзя обслуживать КП")
             return
         }
+        navigateMain(R.id.WarnDF, item.platformId, getString(R.string.warning_gps_exception))
 
-        if (AppliCation().gps().isThisPoint(item.coordLat, item.coordLong)) {
-            vm.setPlatformEntity(item)
-            navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
-        } else {
-            getAct().showAlertPlatformByPoint().let { view ->
-                val btnOk = view.findViewById<AppCompatButton>(R.id.act_map__dialog_platform_clicked_dtl__alert_by_point__ok)
-                btnOk.setOnClickListener {
-                    hideDialog()
-                    vm.setPlatformEntity(item)
-                    navigateMain(R.id.PhotoBeforeMediaF, item.platformId)
-                }
-            }
-        }
     }
 
     override fun startPhotoFailureMedia(item: PlatformEntity) {
-        hideDialog()
         val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
         if (isModeUnload) {
             toast("В режиме выгрузка нельзя обслуживать КП")

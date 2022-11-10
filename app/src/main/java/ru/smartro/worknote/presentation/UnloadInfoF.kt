@@ -28,7 +28,7 @@ class UnloadInfoF: ADFragment() {
             val unloadEntity = vm.getPlatformEntity().ploadUnloadEntity()
             vm.database.addPlatformUnloadEntity(vm.getPlatformEntity())
             findNavController().previousBackStackEntry?.savedStateHandle?.set("buildNavigatorPlatformUnload", true)
-            navigateBack(R.id.MapPlatformsF)
+            navigate(R.id.MapPlatformsF)
         }
         return true
     }

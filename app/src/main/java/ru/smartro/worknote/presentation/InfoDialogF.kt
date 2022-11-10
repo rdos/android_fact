@@ -9,13 +9,14 @@ import ru.smartro.worknote.abs.ADFragment
 import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_NAME
 import ru.smartro.worknote.andPOintD.SmartROllc
 
-class InfoDialogF: ADFragment() {
+open class InfoDialogF: ADFragment() {
 
 //    private val vm: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {
         return R.layout.df_info
     }
+
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
 
@@ -25,17 +26,18 @@ class InfoDialogF: ADFragment() {
         val actvContent = sview.findViewById<AppCompatTextView>(R.id.actv__df_info__content)
 
         acbAccept.setOnClickListener {
-            navigateBack(R.id.MapPlatformsF)
+            navigate(R.id.MapPlatformsF)
         }
 
         actvContent.text = requireArguments().getString(ARGUMENT_NAME___PARAM_NAME)
-
+        onNewLiveData()
         return true
     }
 
     override fun onNewLiveData() {
 
     }
+
 
     override fun onBindLayoutState(): Boolean{
         return false
@@ -44,4 +46,6 @@ class InfoDialogF: ADFragment() {
     override fun onBackPressed() {
         navigateBack()
     }
+
+
 }

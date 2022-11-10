@@ -73,12 +73,12 @@ abstract class ANOFragment : Fragment(), IAFragment {
 
     protected fun navigateBack() {
         LOG.debug("before")
-        AUFragment.showLastFragment(this)
+        AUFragment.showFragment(this)
     }
 
     protected fun navigateBack(navFragmentId: Int) {
         LOG.debug("before")
-        AUFragment.showLastFragment(this, navFragmentId)
+        AUFragment.showFragment(this, navFragmentId)
     }
 
 
@@ -95,7 +95,7 @@ abstract class ANOFragment : Fragment(), IAFragment {
     protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
         LOG.trace("navigateMain.before")
         LOG.debug("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
-        AUFragment.showLastFragment(this, navFragmentId, argumentId, argumentName)
+        AUFragment.showNextFragment(this, navFragmentId, argumentId, argumentName)
     }
 
     protected fun navigateMainChecklist(navFragmentId: Int, argumentId: Int?, argumentName: String? = null) {

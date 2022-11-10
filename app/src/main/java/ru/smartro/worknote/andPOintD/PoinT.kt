@@ -79,6 +79,8 @@ class PoinT(latitude: Double, longitude: Double,
         this.pointAccuracy?.let {
             koef = 15f + it
         }
+        koef = 1500f
+
         val minLat = coordLat - LAT15M*koef
         val maxLat = coordLat + LAT15M*koef
         val minLong = coordLong - LONG15M*koef

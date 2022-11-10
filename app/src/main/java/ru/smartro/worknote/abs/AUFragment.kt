@@ -1,3 +1,4 @@
+
 package ru.smartro.worknote.abs
 
 import android.os.Bundle
@@ -13,7 +14,7 @@ import ru.smartro.worknote.andPOintD.SmartROllc
 
 object AUFragment {
 
-    fun showLastFragment(frag: IAFragment, navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
+    fun showNextFragment(frag: IAFragment, navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
         LOG.debug("frag.javaClass.name:${frag.javaClass.name}")
         val fm = frag.getAct().supportFragmentManager
         val navHostFragment = fm.findFragmentById(R.id.fcv_container) as NavHostFragment
@@ -30,7 +31,7 @@ object AUFragment {
         navController.navigate(navFragmentId, argSBundle)
     }
 
-    fun showLastFragment(frag: IAFragment, navFragmentId: Int? = null) {
+    fun showFragment(frag: IAFragment, navFragmentId: Int? = null) {
         LOG.debug("frag.javaClass.name:${frag.javaClass.name}")
         val fm = frag.getAct().supportFragmentManager
         val navHostFragment = fm.findFragmentById(R.id.fcv_container) as NavHostFragment

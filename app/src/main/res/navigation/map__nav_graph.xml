@@ -359,5 +359,17 @@
             app:argType="string"
             />
     </dialog>
-
+    <dialog
+        android:id="@+id/WarnDF"
+        android:name="ru.smartro.worknote.presentation.WarnDF"
+        android:label="WarnDialogF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
 </navigation>
