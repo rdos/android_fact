@@ -303,9 +303,9 @@
             />
     </dialog>
     <dialog
-        android:id="@+id/UnloadTicketF"
-        android:name="ru.smartro.worknote.presentation.ModUnloadTicketFD"
-        android:label="UnloadInfoF">
+        android:id="@+id/ModeUnloadTicketFD"
+        android:name="ru.smartro.worknote.presentation.ModeUnloadTicketFD"
+        android:label="ModeUnloadTicketFD">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -361,9 +361,9 @@
     </dialog>
 
     <dialog
-        android:id="@+id/LockedGasInfoDF"
-        android:name="ru.smartro.worknote.presentation.LockedGasInfoFD"
-        android:label="LockedGasInfoDF">
+        android:id="@+id/DInfoLockedGasF"
+        android:name="ru.smartro.worknote.presentation.DInfoLockedGasF"
+        android:label="DInfoLockedGasF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -375,9 +375,9 @@
     </dialog>
 
     <dialog
-        android:id="@+id/LockedPhotoInfoDF"
-        android:name="ru.smartro.worknote.presentation.LockedPhotoInfoFD"
-        android:label="LockedCarInfoDF">
+        android:id="@+id/DInfoLockedPhotoF"
+        android:name="ru.smartro.worknote.presentation.DInfoLockedPhotoF"
+        android:label="DInfoLockedPhotoF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"

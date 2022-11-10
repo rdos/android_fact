@@ -1,10 +1,12 @@
 package ru.smartro.worknote.presentation
 
 import android.view.View
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.andPOintD.AInformFD
@@ -15,8 +17,6 @@ import ru.smartro.worknote.presentation.work.PlatformEntity
 class PMapWarnF: AInformFD() {
 
     private val viewModel: ServePlatformVM by activityViewModels()
-
-
 
     override fun onGetEntity(): PlatformEntity {
         val platformId = requireArguments().getInt(ARGUMENT_NAME___PARAM_ID, Inull)
@@ -33,6 +33,12 @@ class PMapWarnF: AInformFD() {
         navigateNext(R.id.PhotoBeforeMediaF, tbIbYO__item.platformId)
     }
 
+    final override fun onBackFragment(entity: PlatformEntity) {
+        LOG.warn("DON'T_USE") //not use
+
+    }
+
+
     override fun onLiveData(tbIbYO__item: PlatformEntity) {
         if (App.getAppliCation().gps().isThisPoint(tbIbYO__item.coordLat, tbIbYO__item.coordLong)) {
             viewModel.setPlatformEntity(tbIbYO__item)
@@ -41,8 +47,9 @@ class PMapWarnF: AInformFD() {
         }
     }
 
-    override fun onStyle(sview: SmartROllc) {
+    override fun onStyle(sview: SmartROllc, acbGotoBack: AppCompatButton) {
         setUseButtonStyleBackgroundRed(sview)
+        acbGotoBack.visibility = View.GONE
     }
 
 

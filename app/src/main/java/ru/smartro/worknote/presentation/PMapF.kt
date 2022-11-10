@@ -183,11 +183,11 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
         val fuelStatusButton = sview.findViewById<FrameLayout>(R.id.fl__f_map__gas)
         fuelStatusButton.setOnClickListener {
-            navigateNext(R.id.LockedGasInfoDF)
+            navigateNext(R.id.DInfoLockedGasF)
         }
         val photoStatusButton = sview.findViewById<FrameLayout>(R.id.fl__f_map__photo)
         photoStatusButton.setOnClickListener {
-            navigateNext(R.id.LockedPhotoInfoDF)
+            navigateNext(R.id.DInfoLockedPhotoF)
         }
 
         initBottomBehavior(sview)
@@ -269,7 +269,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 
         //TODO: сюда изменения вностиьб!
         if (vm.isUnloadMode()) {
-            navigateNext(R.id.UnloadTicketF)
+            navigateNext(R.id.ModeUnloadTicketFD)
             getStateHandle("buildNavigatorPlatformUnload") { result ->
                 LOG.debug("TEST:::!!!")
                 if(result) {
@@ -303,7 +303,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
             }
 
             if (vm.isUnloadMode()) {
-                navigateNext(R.id.UnloadTicketF)
+                navigateNext(R.id.ModeUnloadTicketFD)
             } else {
                 navigateNext(R.id.UnloadInfoF)
             }

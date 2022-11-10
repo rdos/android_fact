@@ -14,7 +14,7 @@ import ru.smartro.worknote.toast
 import ru.smartro.worknote.presentation.work.ConfigName
 
 //todo: смотри прикол, VT !!!UnloadInfo++ploadTicket
-class UnloadTicketF: FragmentDialogA() {
+class ModeUnloadTicketFD: FragmentDialogA() {
     private var acetTalonValue: AppCompatEditText? = null
     private var acetWeightAfter: AppCompatEditText? = null
     private var acetWeightBefore: AppCompatEditText? = null

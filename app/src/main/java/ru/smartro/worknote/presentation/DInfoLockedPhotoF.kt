@@ -2,9 +2,9 @@ package ru.smartro.worknote.presentation
 
 import ru.smartro.worknote.R
 
-class LockedPhotoInfo: AFragmentInfoDialog() {
+class DInfoLockedPhotoF: AFragmentInfoDialog() {
     override fun onGetNavId(): Int {
-        return R.id.LockedPhotoInfoDF
+        return R.id.DInfoLockedPhotoF
     }
 
     override fun onGetContentText(): String {

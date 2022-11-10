@@ -4,7 +4,7 @@ import ru.smartro.worknote.R
 
 class DInfoLockedGasF: AFragmentInfoDialog() {
     override fun onGetNavId(): Int {
-        return R.id.LockedGasInfoDF
+        return R.id.DInfoLockedGasF
     }
 
     override fun onGetContentText(): String {
