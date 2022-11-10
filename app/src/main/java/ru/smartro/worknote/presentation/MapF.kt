@@ -44,7 +44,7 @@ import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
 import ru.smartro.worknote.awORKOLDs.extensions.*
@@ -58,7 +58,7 @@ import ru.smartro.worknote.utils.getActivityProperly
 import ru.smartro.worknote.work.*
 import java.io.IOException
 
-class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickListener,
+class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickListener,
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener, Callback {
 
     private var mLastActivePlatform: PlatformEntity? = null
@@ -77,10 +77,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
     private lateinit var mMapMyYandex: MapView
-
-    private lateinit var carFullStatusButton: FrameLayout
-    private lateinit var fuelStatusButton: FrameLayout
-    private lateinit var photoStatusButton: FrameLayout
 
     private val vm: ServePlatformVM by activityViewModels()
 
@@ -180,19 +176,18 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         setInfoData()
 
         acbUnload = sview.findViewById(R.id.acb__f_map__unload)
-        carFullStatusButton = sview.findViewById(R.id.fl__f_map__car)
+        val carFullStatusButton = sview.findViewById<FrameLayout>(R.id.fl__f_map__car)
         carFullStatusButton.setOnClickListener {
-
-            navigateMain(R.id.InfoDialogF, 1, getString(R.string.car_locked))
+            navigateNext(R.id.LockedCarInfoDF)
 
         }
-        fuelStatusButton = sview.findViewById(R.id.fl__f_map__fuel)
+        val fuelStatusButton = sview.findViewById<FrameLayout>(R.id.fl__f_map__gas)
         fuelStatusButton.setOnClickListener {
-            navigateMain(R.id.InfoDialogF, 1, getString(R.string.fuel_locked))
+            navigateNext(R.id.LockedGasInfoDF)
         }
-        photoStatusButton = sview.findViewById(R.id.fl__f_map__photo)
+        val photoStatusButton = sview.findViewById<FrameLayout>(R.id.fl__f_map__photo)
         photoStatusButton.setOnClickListener {
-            navigateMain(R.id.InfoDialogF, 1, getString(R.string.photo_locked))
+            navigateNext(R.id.LockedPhotoInfoDF)
         }
 
         initBottomBehavior(sview)
@@ -221,7 +216,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         }
         val acibGotoLogActMapAPIB = sview.findViewById<AppCompatImageButton>(R.id.goto_log__f_map__apib)
         acibGotoLogActMapAPIB.setOnClickListener {
-            navigateMain(R.id.JournalChatFragment, null)
+            navigateNext(R.id.JournalChatFragment, null)
         }
 
         mDrivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
@@ -274,7 +269,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         //TODO: сюда изменения вностиьб!
         if (vm.isUnloadMode()) {
-            navigateMain(R.id.UnloadTicketF)
+            navigateNext(R.id.UnloadTicketF)
             getStateHandle("buildNavigatorPlatformUnload") { result ->
                 LOG.debug("TEST:::!!!")
                 if(result) {
@@ -308,9 +303,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             }
 
             if (vm.isUnloadMode()) {
-                navigateMain(R.id.UnloadTicketF)
+                navigateNext(R.id.UnloadTicketF)
             } else {
-                navigateMain(R.id.UnloadInfoF)
+                navigateNext(R.id.UnloadInfoF)
             }
         }
         val userPoint = App.getAppliCation().gps()
@@ -597,7 +592,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private fun completeWorkOrders() {
         hideInfoDiaLOG()
-        navigateMain(R.id.CompleteF)
+        navigateNext(R.id.CompleteF)
     }
 
     private fun showInfoDialog() {
@@ -629,7 +624,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
         val debugButton = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__workorder_info__debug)
         debugButton.setOnClickListener {
-            navigateMain(R.id.DebugFragment, null)
+            navigateNext(R.id.DebugFragment, null)
             result.dismiss()
         }
 
@@ -783,7 +778,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     override fun openFailureFire(item: PlatformEntity) {
         vm.setPlatformEntity(item)
-        navigateMain(R.id.PhotoFailureMediaF, item.platformId)
+        navigateNext(R.id.PhotoFailureMediaF, item.platformId)
     }
 
     private fun buildNavigator(checkPoint: Point) {
@@ -962,7 +957,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             // Do something with the result.
         }
 
-        navigateMain(R.id.MapPlatformClickedDtlF)
+        navigateNext(R.id.MapPlatformClickedDtlF)
         LOG.warn("result=${result}::onMapObjectTap")
         return result
     }
@@ -1195,7 +1190,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             toast("В режиме выгрузка нельзя обслуживать КП")
             return
         }
-        navigateMain(R.id.WarnDF, item.platformId, getString(R.string.warning_gps_exception))
+        navigateNext(R.id.WarnDF, item.platformId)
 
     }
 
@@ -1206,7 +1201,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             return
         }
         vm.setPlatformEntity(item)
-        navigateMain(R.id.PhotoFailureMediaF, item.platformId)
+        navigateNext(R.id.PhotoFailureMediaF, item.platformId)
     }
 
 

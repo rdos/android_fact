@@ -32,7 +32,7 @@ class PhotoBeforeMediaContainerF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.addBeforeMediaComntainerByTypes(imageS)
-        navigateMain(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(R.id.PServeF, viewModel.getPlatformId())
     }
 
     override fun onGetIsVisibleBtnCancel() = false

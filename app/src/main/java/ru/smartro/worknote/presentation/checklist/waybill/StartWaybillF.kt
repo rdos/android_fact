@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.LOG
@@ -17,7 +17,7 @@ import ru.smartro.worknote.presentation.ac.XChecklistAct
 import java.text.SimpleDateFormat
 import java.util.*
 
-class StartWaybillF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
     private var mRvWaybill: RecyclerView? = null
     private var srlRefresh: SwipeRefreshLayout? = null

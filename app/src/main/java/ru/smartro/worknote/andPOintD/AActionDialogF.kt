@@ -1,15 +1,15 @@
-package ru.smartro.worknote.presentation
+package ru.smartro.worknote.andPOintD
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ADFragment
-import ru.smartro.worknote.abs.IADialogFragment
+import ru.smartro.worknote.abs.FragmentDialogA
+import ru.smartro.worknote.abs.FragmentDialogAI
 import ru.smartro.worknote.andPOintD.SmartROllc
 
-abstract class AActionDialogF: ADFragment(), IADialogFragment {
+abstract class AActionDialogF: FragmentDialogA(), FragmentDialogAI {
 
     var actvTitle: AppCompatTextView? = null
     var actvContent: AppCompatTextView? = null
@@ -34,7 +34,7 @@ abstract class AActionDialogF: ADFragment(), IADialogFragment {
         return true
     }
 
-    override fun onNewLiveData() {
+    override fun onLiveData() {
 
     }
 

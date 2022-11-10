@@ -15,8 +15,8 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.andPOintD.ANOFragment
-import ru.smartro.worknote.abs.ADFragment
+import ru.smartro.worknote.abs.FragmentA
+import ru.smartro.worknote.abs.FragmentDialogA
 
 private var loadingDialog: AlertDialog? = null
 private var mCustomDialog: AlertDialog? = null
@@ -31,7 +31,7 @@ fun AppCompatActivity.hideDialog() {
     hideCustomDialog()
 }
 
-fun ADFragment.hideDialog() {
+fun FragmentDialogA.hideDialog() {
     hideCustomDialog()
 }
 
@@ -67,7 +67,7 @@ fun AAct.showDlgPickup(): View {
     return view
 }
 
-fun ANOFragment.showDialogAction(description: String, onAccept: () -> Unit, onDecline: (() -> Unit)? = null) {
+fun FragmentA.showDialogAction(description: String, onAccept: () -> Unit, onDecline: (() -> Unit)? = null) {
     val builder = AlertDialog.Builder(getAct())
     val inflater = this.layoutInflater
     var actionDialog: AlertDialog? = null
@@ -98,30 +98,6 @@ fun AAct.showDlgLogout(): View {
     return view
 }
 
-fun AAct.showDlgWarning(warningType: WarningType, onDismiss: (() -> Unit)? = null): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.dialog_warning, null)
-    var warningDialog: AlertDialog? = null
-    view.findViewById<AppCompatTextView>(R.id.actv__dialog_warning__description).text = when(warningType) {
-        WarningType.AIRPLANE_MODE -> getString(R.string.warning_airplane_mode)
-        WarningType.CONNECTION_LOST -> getString(R.string.warning_connection_lost)
-        WarningType.GPS_OFF -> getString(R.string.warning_gps_off)
-        WarningType.CAR_LOCKED -> getString(R.string.car_locked)
-        WarningType.FUEL_LOCKED -> getString(R.string.fuel_locked)
-        WarningType.PHOTO_LOCKED -> getString(R.string.photo_locked)
-        WarningType.DIFFERENT_UNLOAD_POINTS -> getString(R.string.different_unload_points)
-    }
-    view.findViewById<AppCompatButton>(R.id.acb__dialog_warning__ok)?.setOnClickListener {
-        warningDialog?.dismiss()
-        onDismiss?.invoke()
-    }
-    builder.setView(view)
-    warningDialog = builder.create()
-    warningDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    warningDialog.show()
-    return view
-}
 
 enum class WarningType {
     AIRPLANE_MODE,
@@ -134,7 +110,7 @@ enum class WarningType {
 }
 
 //showDlgPickup!r_dos
-fun ANOFragment.showDlgPickup(): View {
+fun FragmentA.showDlgPickup(): View {
     val context = requireActivity() as AAct
     val builder = AlertDialog.Builder(context)
     val inflater = this.layoutInflater
@@ -198,7 +174,7 @@ fun AppCompatActivity.showingProgress(text: String?=null, isEmptyOldText: Boolea
 }
 
 
-fun ANOFragment.showDialogFillKgoVolume(): View {
+fun FragmentA.showDialogFillKgoVolume(): View {
     val context = requireActivity() as AAct
     val builder = AlertDialog.Builder(context)
     val inflater = context.layoutInflater
@@ -210,7 +186,7 @@ fun ANOFragment.showDialogFillKgoVolume(): View {
 
 
 
-fun ANOFragment.warningClearNavigator(title: String): View {
+fun FragmentA.warningClearNavigator(title: String): View {
     val builder = AlertDialog.Builder(getAct())
     val inflater = this.layoutInflater
     val view = inflater.inflate(R.layout.alert_clear_navigator, null)

@@ -15,7 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.ADFragment
+import ru.smartro.worknote.abs.FragmentDialogA
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
@@ -24,7 +24,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import kotlin.math.min
 
 //todo: MapPlatformsDF MapPlatformsDF MapPlatformsDF???ИЛИ MapPlatforms(on)MapObjectTap(DF)=
-class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
+class MapFD : FragmentDialogA(), View.OnClickListener {
     private lateinit var TbIboy__item: PlatformEntity
     private val vm: ServePlatformVM by activityViewModels()
     private val mOnClickListener = this as View.OnClickListener
@@ -58,7 +58,7 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
             }
             R.id.platform_location -> {
                 navigate(R.id.MapPlatformsF)
-                findNavController().previousBackStackEntry?.savedStateHandle?.set("navigatePlatform", true)
+                findNavController().previousBackStackEntry?.savedStateHandle?.set("FragmentA(Platform", true)
             }
         }
 
@@ -146,7 +146,7 @@ class MapPlatformsMapObjectTapDF : ADFragment(), View.OnClickListener {
     }
 
 
-    override fun onNewLiveData() {
+    override fun onLiveData() {
 //        TODO("Not yet implemented")
     }
 

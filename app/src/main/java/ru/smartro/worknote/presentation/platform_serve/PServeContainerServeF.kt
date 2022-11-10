@@ -15,8 +15,8 @@ import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
+import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.abs.AbstractBottomSheetF
-import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 
 
@@ -80,7 +80,7 @@ class PServeContainerServeF : AbstractBottomSheetF() {
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val volume = toPercent(radioButton.text.toString())
             vm.updateContainerVolume(mContainerId, volume)
-            navigateMain(R.id.PhotoFailureMediaContainerF, mContainerId, vm.getPlatformId().toString())
+            navigateNext(R.id.PhotoFailureMediaContainerF, mContainerId, vm.getPlatformId().toString())
         }
         if (containerEntity.isBreakdownNotEmpty()) {
             setUseButtonStyleBackgroundRed(apbBreakdown!!)
@@ -90,14 +90,14 @@ class PServeContainerServeF : AbstractBottomSheetF() {
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val volume = toPercent(radioButton.text.toString())
             vm.updateContainerVolume(mContainerId, volume)
-            navigateMain(R.id.PhotoBreakdownMediaContainerF, mContainerId, vm.getPlatformId().toString())
+            navigateNext(R.id.PhotoBreakdownMediaContainerF, mContainerId, vm.getPlatformId().toString())
         }
 
 //        if (containerEntity.isBreakdownNotEmpty()) {
 //            setUseButtonStyleBackgroundRed(apbBreakdown)
 //        }
         apbBeforeMedia?.setOnClickListener {
-            navigateMain(R.id.PhotoBeforeMediaContainerF, vm.getPlatformId())
+            navigateNext(R.id.PhotoBeforeMediaContainerF, vm.getPlatformId())
             hideDialog()
         }
 

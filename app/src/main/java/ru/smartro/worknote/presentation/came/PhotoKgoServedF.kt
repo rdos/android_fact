@@ -33,7 +33,7 @@ class PhotoKgoServedF : APhotoFragment() {
         val servedKGOVolumeText = getArgumentName()!!
         viewModel.database.addKgoServed(viewModel.getPlatformId(), imageS)
         viewModel.updatePlatformKGO(servedKGOVolumeText, isServedKGO = true)
-        navigateMain(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(R.id.PServeF, viewModel.getPlatformId())
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 

@@ -44,12 +44,8 @@ import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.andPOintD.AViewModel
-import ru.smartro.worknote.andPOintD.AndRoid
-import ru.smartro.worknote.andPOintD.FloatCool
-import ru.smartro.worknote.andPOintD.PoinT
+import ru.smartro.worknote.andPOintD.*
 import ru.smartro.worknote.awORKOLDs.extensions.WarningType
-import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
@@ -76,94 +72,8 @@ const val D__LOGS = "logs"
 const val D__R_DOS = "r_dos"
 const val D__FILES = "files"
 
-class ConnectionLostLiveData(context: Context) : LiveData<Boolean>(), AndroidNet.CallBack {
-    private var mNetworkCallback: ConnectivityManager.NetworkCallback? = null
-    private val cm = context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
-
-    override fun onActive() {
-        LOG.debug("before")
-        mNetworkCallback = AndroidNet(cm, this)
-
-        val networkRequest = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-            .build()
-
-        if(mNetworkCallback == null) {
-            LOG.warn(" if(mNetworkCallback == null) {")
-            return
-        }
-        cm.registerNetworkCallback(networkRequest, mNetworkCallback!!)
-    }
-
-    override fun onInactive() {
-        LOG.debug("before")
-        if(mNetworkCallback != null) {
-            LOG.info("if(mNetworkCallback != null)")
-            cm.unregisterNetworkCallback(mNetworkCallback!!)
-        }
-    }
-
-    override fun onLostInternet() {
-        LOG.debug("before")
-        postValue(true)
-    }
-
-}
-
-class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : ConnectivityManager.NetworkCallback() {
-    private val validNetworks: MutableSet<Network> = HashSet()
-    private var mOnLostInternetJob: Job? =  null
-
-    override fun onAvailable(network: Network) {
-        LOG.debug("before: network=${network}, validNetworks size=${validNetworks.size}")
-        val networkCapabilities = p_cm.getNetworkCapabilities(network)
-        val isInternet = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        if(isInternet == true) {
-            LOG.info("if(isInternet == true)")
-            validNetworks.add(network)
-            blockOnLostInternet()
-        }
-        checkValidNetworks()
-    }
-
-    override fun onLost(network: Network) {
-        super.onLost(network)
-        LOG.debug("before::: validNetworks size=${validNetworks.size}")
-        validNetworks.remove(network)
-        checkValidNetworks()
-    }
-
-    private fun checkValidNetworks() {
-        LOG.debug("before::: validNetworks size=${validNetworks.size}")
-        if (validNetworks.size <= 0) {
-            LOG.trace("if (validNetworks.size <= 0) {")
-            runOnLostInternet()
-        }
-    }
-
-    private fun runOnLostInternet() {
-        blockOnLostInternet()
-        mOnLostInternetJob = App.getAppliCation().applicationScope.launch(Dispatchers.Main) {
-            delay(3000L)
-            LOG.info("onLostInternet")
-            p_callback.onLostInternet()
-            LOG.debug("onLostInternet")
-        }
-    }
-
-    private fun blockOnLostInternet() {
-        if (mOnLostInternetJob != null) {
-            mOnLostInternetJob?.cancel()
-        }
-    }
-    interface  CallBack {
-        fun onLostInternet()
-    }
 
 
-}
 
 class App : AApp() {
 
@@ -273,7 +183,7 @@ class App : AApp() {
         connectionLiveData.observeForever { isConnectionLost ->
 
             if(isConnectionLost == true) {
-                mCurrentAct?.showDlgWarning(WarningType.CONNECTION_LOST)
+                mCurrentAct?.showNextFragment(R.id.InfoInternetOffDF)
             }
         }
 
@@ -755,7 +665,7 @@ class App : AApp() {
                     context.startService(serviceIntent)
 
                     if (isAirplaneModeEnabled) {
-                        mCurrentAct?.showDlgWarning(WarningType.AIRPLANE_MODE)
+                        mCurrentAct?.showNextFragment(R.id.InfoAirplaneModeOnDF)
                     }
                 }
             }

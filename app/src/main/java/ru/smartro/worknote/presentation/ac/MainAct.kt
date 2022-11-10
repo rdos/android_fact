@@ -22,13 +22,11 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbsObject
-import ru.smartro.worknote.abs.IAFragment
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentAI
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
 import ru.smartro.worknote.awORKOLDs.extensions.WarningType
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.work.ConfigName
 
@@ -54,7 +52,7 @@ class MainAct :
                     val dialogShouldShow = (isGpsEnabled || isNetworkEnabled) == false
 
                     if(dialogShouldShow && mIsDlgShown != dialogShouldShow) {
-                        showDlgWarning(WarningType.GPS_OFF)
+                        showNextFragment(R.id.InfoGpsOffDF)
                     }
 
                     mIsDlgShown = dialogShouldShow
@@ -73,7 +71,7 @@ class MainAct :
 
     override fun onBackPressed() {
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        (navHostFragment.childFragmentManager.fragments[0] as IAFragment).onBackPressed()
+        (navHostFragment.childFragmentManager.fragments[0] as FragmentAI).onBackPressed()
     }
 
 
@@ -208,7 +206,7 @@ class MainAct :
 
         fun setStartId(viewIdAsText: String, paramS: AppParaMS) {
             if(paramS.isShowTooltipInNextTime) {
-//            navigateMain(R.id.WalkthroughStepAF, 1)
+//            navigateNext(R.id.WalkthroughStepAF, 1)
                 setNextId(viewIdAsText)
                 paramS.isShowTooltipInNextTime = false
             }

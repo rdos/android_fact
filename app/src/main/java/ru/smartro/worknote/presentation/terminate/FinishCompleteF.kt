@@ -4,11 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.ac.StartAct
 
-class FinishCompleteF : ANOFragment() {
+class FinishCompleteF : FragmentA() {
     companion object {
         fun newInstance(workOrderId: Any? = null): FinishCompleteF {
             val fragment = FinishCompleteF()

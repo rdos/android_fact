@@ -1,4 +1,4 @@
-package ru.smartro.worknote.andPOintD
+package ru.smartro.worknote.abs
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.abs.AUFragment
-import ru.smartro.worknote.abs.IAFragment
+import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.presentation.ac.MainAct
@@ -17,8 +15,7 @@ import ru.smartro.worknote.work.PlatformEntity
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
-abstract class ANOFragment : Fragment(), IAFragment {
-
+abstract class FragmentA : Fragment(), FragmentAI {
 
 
     override fun onDestroy() {
@@ -57,7 +54,7 @@ abstract class ANOFragment : Fragment(), IAFragment {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         LOG.debug("before")
-        val view = AUFragment.onSetItemLayout(this, inflater, container, savedInstanceState)
+        val view = AUF.onSetItemLayout(this, inflater, container, savedInstanceState)
         //        try {
 //          это провал!!!
 //        } try в имени это тру! VT, слышь)))
@@ -71,32 +68,34 @@ abstract class ANOFragment : Fragment(), IAFragment {
 //        onCreate()
     }
 
+    protected fun navigate(navFragmentId: Int) {
+        LOG.debug("before")
+        AUF.showFragment(this, navFragmentId)
+    }
+
+    protected fun navigateNext(navFragmentId: Int, argumentId: Int? = null, argumentName: String?= null) {
+        AUF.showNextFragment(this, navFragmentId, argumentId, argumentName)
+    }
+
     protected fun navigateBack() {
         LOG.debug("before")
-        AUFragment.showFragment(this)
+        AUF.showFragment(this)
     }
-
     protected fun navigateBack(navFragmentId: Int) {
         LOG.debug("before")
-        AUFragment.showFragment(this, navFragmentId)
+        AUF.showFragment(this, navFragmentId)
     }
-
 
     protected fun navigateClose() {
         LOG.debug("before")
         getAct().finish()
-        LOG.trace("after")
     }
 
     protected fun navigateSMallDeep(navFragmentId: Int, method: (PlatformEntity) -> Unit,argumentId: Int?=null, argumentName: String?=null) {
-//        navigateMain(R.id.MapPlatformClickedDtlF, ::this.startPlatformService)
+//        navigateNext(R.id.MapPlatformClickedDtlF, ::this.startPlatformService)
 //        method.invoke()
     }
-    protected fun navigateMain(navFragmentId: Int, argumentId: Int?=null, argumentName: String?=null) {
-        LOG.trace("navigateMain.before")
-        LOG.debug("navigateMain .argumentId=${argumentId}, argumentName=${argumentName}")
-        AUFragment.showNextFragment(this, navFragmentId, argumentId, argumentName)
-    }
+
 
     protected fun navigateMainChecklist(navFragmentId: Int, argumentId: Int?, argumentName: String? = null) {
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
@@ -115,7 +114,7 @@ abstract class ANOFragment : Fragment(), IAFragment {
 
     override fun getArgSBundle(argumentId: Int, argumentName: String?): Bundle {
         LOG.debug("before")
-        val bundle = AUFragment.setFragmentVar(argumentId, argumentName)
+        val bundle = AUF.setFragmentVar(argumentId, argumentName)
         return bundle
     }
 
@@ -173,7 +172,7 @@ abstract class ANOFragment : Fragment(), IAFragment {
         LOG.warn(" LoG.todo()")
         return false
     }
-    override fun onNewLiveData() {
+    override fun onLiveData() {
         LOG.warn(" LoG.todo()")
     }
 

@@ -3,10 +3,10 @@ package ru.smartro.worknote.abs
 import android.os.Bundle
 import ru.smartro.worknote.andPOintD.SmartROllc
 
-interface IAFragment {
+interface FragmentAI {
     fun onGetLayout(): Int
     fun onInitLayoutView(sview: SmartROllc): Boolean
-    fun onNewLiveData()
+    fun onLiveData()
     fun onBindLayoutState(): Boolean
     fun onBackPressed()
     fun getAct(): AAct

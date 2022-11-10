@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.offline_cache.*
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogAction
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -40,7 +40,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 
-class DebugF : ANOFragment(), MediaScannerConnection.OnScanCompletedListener, RegionListener, RegionListUpdatesListener {
+class DebugF : FragmentA(), MediaScannerConnection.OnScanCompletedListener, RegionListener, RegionListUpdatesListener {
 
     private var acbSendLogs: AppCompatButton? = null
     private val vm: DebugViewModel by viewModels()

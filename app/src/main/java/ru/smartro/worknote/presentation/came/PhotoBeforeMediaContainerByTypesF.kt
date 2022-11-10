@@ -37,7 +37,7 @@ class PhotoBeforeMediaContainerByTypesF : APhotoFragment() {
         val groupByContainerTypeClientEntity = viewModel.database.loadContainerGROUPClientTypeEntity(platformId, typeId, client)
         viewModel.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
         viewModel.addBeforeMediaComntainerByTypes(imageS)
-        navigateMain(R.id.PServeGroupByContainersF, platformId)
+        navigateNext(R.id.PServeGroupByContainersF, platformId)
     }
 
     override fun onSavePhoto() {

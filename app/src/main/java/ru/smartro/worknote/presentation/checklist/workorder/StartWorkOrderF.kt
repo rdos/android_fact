@@ -10,17 +10,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.ANOFragment
-import ru.smartro.worknote.awORKOLDs.extensions.WarningType
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.extensions.showDialogAction
-import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.work.Status
 import ru.smartro.worknote.work.WoRKoRDeR_know1
 
-class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel: StartWorkOrderViewModel by viewModels()
     private var rvAdapter: StartWorkOrderAdapter? = null
@@ -103,7 +101,7 @@ class StartWorkOrderF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
                     }
 
                     if(hasDifferentUnloadPoint) {
-                        getAct().showDlgWarning(WarningType.DIFFERENT_UNLOAD_POINTS)
+                        navigateNext(R.id.InfoPointsUploadDF)
                     }
 
                     viewModel.mSelectedWorkOrdersIndecies.value.let {

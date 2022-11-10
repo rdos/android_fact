@@ -35,7 +35,7 @@ class PhotoPickupMediaF : APhotoFragment() {
 
         viewModel.database.addPlatformPickupMedia(viewModel.getPlatformId(), imageS)
         viewModel.updateVolumePickup(newVolume)
-        navigateMain(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(R.id.PServeF, viewModel.getPlatformId())
     }
 
     override fun onSavePhoto() {
@@ -47,7 +47,7 @@ class PhotoPickupMediaF : APhotoFragment() {
 
     override fun onClickBtnCancel() {
         viewModel.updateVolumePickup(newVolume)
-        navigateMain(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(R.id.PServeF, viewModel.getPlatformId())
     }
     
     override fun onBackPressed() {

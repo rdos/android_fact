@@ -64,7 +64,7 @@ class PhotoBreakdownMediaContainerF : APhotoFragment() {
         //        val problemComment = problem_comment.text.toString()
         viewModel.addBreakdownMediaContainer(mContainerId, imageS)
         viewModel.updateContainerBreakDown(mContainerId, breakdownText!!, getCommentText())
-        navigateMain(R.id.PServeF, platformId)
+        navigateNext(R.id.PServeF, platformId)
     }
 
     override fun onGetIsVisibleBtnCancel() = false

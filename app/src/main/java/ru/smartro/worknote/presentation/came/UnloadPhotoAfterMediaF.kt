@@ -28,7 +28,7 @@ class UnloadPhotoAfterMediaF : APhotoFragment() {
 
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.addAfterMediaUnload(imageS)
-        navigateMain(R.id.MapPlatformsF)
+        navigateNext(R.id.MapPlatformsF)
     }
 
     override fun onSavePhoto() {
@@ -45,7 +45,7 @@ class UnloadPhotoAfterMediaF : APhotoFragment() {
     override fun onBackPressed() {
         super.onBackPressed()
         super.dropOutputD()
-        navigateMain(R.id.MapPlatformsF)
+        navigateNext(R.id.MapPlatformsF)
 
     }
     companion object {

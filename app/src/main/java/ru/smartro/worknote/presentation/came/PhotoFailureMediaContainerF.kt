@@ -63,7 +63,7 @@ class PhotoFailureMediaContainerF : APhotoFragment() {
     override fun onAfterUSE(imageS: List<ImageEntity>) {
         viewModel.addFailureMediaContainer(mContainerId, imageS)
         viewModel.updateContainerFailure(mContainerId, failText!!, getCommentText())
-        navigateMain(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(R.id.PServeF, viewModel.getPlatformId())
     }
 
     override fun onGetIsVisibleBtnCancel() = false

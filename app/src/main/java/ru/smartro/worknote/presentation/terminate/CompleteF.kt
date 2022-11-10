@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
@@ -36,7 +36,7 @@ import ru.smartro.worknote.work.net.EarlyCompleteBody
 import kotlin.math.round
 
 
-class CompleteF : ANOFragment() {
+class CompleteF : FragmentA() {
 
     private lateinit var mReasonAdapter: ReasonAdapter
     private lateinit var mDatabase: RealmRepository

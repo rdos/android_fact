@@ -9,7 +9,7 @@
     android:background="@drawable/bg_button_red__default">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/actv__df_info__title"
+        android:id="@+id/actv__adf_inform__title"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="Оповещение"
         android:textSize="18sp"
@@ -18,7 +18,7 @@
         />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/actv__df_info__content"
+        android:id="@+id/actv__adf_inform__content"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="@string/accept_task_check"
         android:textSize="16sp"
@@ -28,7 +28,7 @@
         />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/acb__df_info__ok"
+        android:id="@+id/acb__adf_inform__gotonext"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:background="@drawable/bg_button_interactive"
         android:paddingHorizontal="32dp"

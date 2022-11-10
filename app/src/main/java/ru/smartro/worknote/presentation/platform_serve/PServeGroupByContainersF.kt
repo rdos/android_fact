@@ -10,7 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.abs.AbsFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
 import ru.smartro.worknote.work.ConfigName
@@ -19,7 +19,7 @@ import ru.smartro.worknote.work.ContainerGROUPClientTypeEntity
 import ru.smartro.worknote.work.PlatformEntity
 
 
-class PServeGroupByContainersF : AFragment() {
+class PServeGroupByContainersF : AbsFragment() {
 
     private var adapter: PServeGROUPClientsAdapter? = null
     private var mBackPressedCnt: Int = 2
@@ -55,7 +55,7 @@ class PServeGroupByContainersF : AFragment() {
             // TODO: !!!
             vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeF)
 
-            navigateMain(R.id.PServeF, vm.getPlatformId())
+            navigateNext(R.id.PServeF, vm.getPlatformId())
         }
 
         return super.onInitLayoutView(view)
@@ -76,7 +76,7 @@ class PServeGroupByContainersF : AFragment() {
         tvContainersProgress?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
 
         btnCompleteTask?.setOnClickListener {
-            navigateMain(R.id.PhotoAfterMediaF, _PlatformEntity.platformId!!)
+            navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId!!)
         }
 
         actvAddress?.text = "${_PlatformEntity.address}"
@@ -96,7 +96,7 @@ class PServeGroupByContainersF : AFragment() {
         return super.onBindLayoutState()
     }
 
-    override fun onNewLiveData() {
+    override fun onLiveData() {
         vm.todoLiveData.observe(viewLifecycleOwner) {
             LOG.debug("onBindLayoutState")
             val result = onBindLayoutState()
@@ -118,7 +118,7 @@ class PServeGroupByContainersF : AFragment() {
 //            }
 //
 //            override fun onAddPhoto(clientName: String, typeName: String) {
-//                navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, viewModel.mPlatformEntity.value!!.platformId!!)
+//                navigateNext(R.id.PhotoBeforeMediaContainerSimplifyF, viewModel.mPlatformEntity.value!!.platformId!!)
 //            }
 //        }
 
@@ -280,7 +280,7 @@ class PServeGroupByContainersF : AFragment() {
                     }
 
                     bAddPhoto.setOnClickListener {
-                       navigateMain(R.id.PhotoBeforeMediaContainerSimplifyF, containerGROUPClientTypeEntity.typeId, containerGROUPClientTypeEntity.client)
+                       navigateNext(R.id.PhotoBeforeMediaContainerSimplifyF, containerGROUPClientTypeEntity.typeId, containerGROUPClientTypeEntity.client)
                     }
                 }
             }

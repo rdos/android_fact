@@ -16,7 +16,7 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.MainAct
@@ -24,7 +24,7 @@ import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.work.Status
 
-class StartF : ANOFragment() {
+class StartF : FragmentA() {
     
     private val vm: StartAct.AuthViewModel by activityViewModels()
 

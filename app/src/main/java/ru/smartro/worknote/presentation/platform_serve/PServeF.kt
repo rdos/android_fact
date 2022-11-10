@@ -24,7 +24,7 @@ import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.AFragment
+import ru.smartro.worknote.abs.AbsFragment
 import ru.smartro.worknote.andPOintD.SmartROacb
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
@@ -44,7 +44,7 @@ import java.io.File
 import java.nio.file.Files
 
 
-class PServeF : AFragment(), VoiceComment.IVoiceComment {
+class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
 
     private var mContainersAdapter: PServeContainersAdapter? = null
     private val _PlatformEntity: PlatformEntity
@@ -123,13 +123,13 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
         sscToGroupByFMode?.setOnCheckedChangeListener { _, _ ->
             vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeGroupByContainersF)
-            navigateMain(R.id.PServeGroupByContainersF, vm.getPlatformId())
+            navigateNext(R.id.PServeGroupByContainersF, vm.getPlatformId())
         }
 
         tvPlatformSrpId?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
 
         btnCompleteTask?.setOnClickListener {
-            navigateMain(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
+            navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
         }
 
         actvAddress?.text = "${_PlatformEntity.address}"
@@ -156,7 +156,7 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
                     if (servedKGOVolumeText.isNullOrBlank()) {
                         return@setOnClickListener
                     }
-                    navigateMain(R.id.PhotoKgoServedF, _PlatformEntity.platformId, servedKGOVolumeText)
+                    navigateNext(R.id.PhotoKgoServedF, _PlatformEntity.platformId, servedKGOVolumeText)
                     hideDialog()
                 }
             }
@@ -172,7 +172,7 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
                     if (remainingKGOVolumeText.isNullOrBlank()) {
                         return@setOnClickListener
                     }
-                    navigateMain(R.id.PhotoKgoRemainingF, _PlatformEntity.platformId, remainingKGOVolumeText)
+                    navigateNext(R.id.PhotoKgoRemainingF, _PlatformEntity.platformId, remainingKGOVolumeText)
                     hideDialog()
                 }
             }
@@ -208,7 +208,7 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
             acbProblem?.let { setUseButtonStyleBackgroundRed(it) }
         }
         acbProblem?.setOnClickListener {
-            navigateMain(R.id.PhotoFailureMediaF, _PlatformEntity.platformId)
+            navigateNext(R.id.PhotoFailureMediaF, _PlatformEntity.platformId)
         }
         if (_PlatformEntity.isServedKGONotEmpty()) {
             mAcbKGOServed?.let { setUseButtonStyleBackgroundGreen(it) }
@@ -288,7 +288,7 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
         return false
     }
 
-    override fun onNewLiveData(/**platformEntity*/){
+    override fun onLiveData(/**platformEntity*/){
         vm.todoLiveData.observe(viewLifecycleOwner) { platformEntity ->
             LOG.debug("onBindLayoutState")
             val result = onBindLayoutState()
@@ -323,7 +323,7 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
     }
 
     private fun gotoMakePhotoForPickup(newVolume: Double) {
-        navigateMain(R.id.PhotoPickupMediaF, vm.getPlatformId(), newVolume.toString())
+        navigateNext(R.id.PhotoPickupMediaF, vm.getPlatformId(), newVolume.toString())
     }
 
     private fun tvVolumePickuptext(progressDouble: Double?) {
@@ -406,10 +406,10 @@ class PServeF : AFragment(), VoiceComment.IVoiceComment {
 
             holder.itemView.setOnClickListener {
                 if(container.isActiveToday || container.volume != null) {
-                    navigateMain(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
+                    navigateNext(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
                 } else {
                     showTakeInactiveContainerAlert(getAct()) {
-                        navigateMain(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
+                        navigateNext(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
                     }
                 }
             }

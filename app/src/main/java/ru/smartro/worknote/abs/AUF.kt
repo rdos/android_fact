@@ -8,13 +8,12 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_ID
-import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_NAME
 import ru.smartro.worknote.andPOintD.SmartROllc
 
-object AUFragment {
+//AbstractUtil(for)Fragment
+object AUF {
 
-    fun showNextFragment(frag: IAFragment, navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
+    fun showNextFragment(frag: FragmentAI, navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
         LOG.debug("frag.javaClass.name:${frag.javaClass.name}")
         val fm = frag.getAct().supportFragmentManager
         val navHostFragment = fm.findFragmentById(R.id.fcv_container) as NavHostFragment
@@ -31,7 +30,7 @@ object AUFragment {
         navController.navigate(navFragmentId, argSBundle)
     }
 
-    fun showFragment(frag: IAFragment, navFragmentId: Int? = null) {
+    fun showFragment(frag: FragmentAI, navFragmentId: Int? = null) {
         LOG.debug("frag.javaClass.name:${frag.javaClass.name}")
         val fm = frag.getAct().supportFragmentManager
         val navHostFragment = fm.findFragmentById(R.id.fcv_container) as NavHostFragment
@@ -46,7 +45,7 @@ object AUFragment {
         LOG.debug("::")
     }
 
-    fun onViewCreated(frag: IAFragment, view: View, savedInstanceState: Bundle?) {
+    fun onViewCreated(frag: FragmentAI, view: View, savedInstanceState: Bundle?) {
         LOG.warn("onInitLayoutView")
         if (view is SmartROllc) {
             val result = frag.onInitLayoutView(view) //ой пахнет savedInstanceState
@@ -55,7 +54,7 @@ object AUFragment {
             throw Throwable("TODO: onViewCreated.if (view is SmartROllc) ")
             LOG.error("onInitLayoutView.result")
         }
-        frag.onNewLiveData() //todo:r_dos!!!
+        frag.onLiveData() //todo:r_dos!!!
         if (savedInstanceState == null) {
             LOG.debug("savedInstanceState == null")
         } else {
@@ -63,7 +62,7 @@ object AUFragment {
         }
     }
 
-    fun onSetItemLayout(frag: IAFragment, inflater: LayoutInflater, cont: ViewGroup?, sIS: Bundle?): View {
+    fun onSetItemLayout(frag: FragmentAI, inflater: LayoutInflater, cont: ViewGroup?, sIS: Bundle?): View {
         LOG.warn("onGetLayout:before")
         val sview = inflater.inflate(frag.onGetLayout(), cont, false)
         LOG.warn("after:onGetLayout")

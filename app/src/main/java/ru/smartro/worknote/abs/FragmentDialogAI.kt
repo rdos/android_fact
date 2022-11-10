@@ -1,5 +1,5 @@
 package ru.smartro.worknote.abs
 
-interface IADialogFragment {
+interface FragmentDialogAI {
     fun onLayoutInitialized()
 }

@@ -3,19 +3,19 @@ package ru.smartro.worknote.presentation
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ADFragment
+import ru.smartro.worknote.abs.FragmentDialogA
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
 
-class UnloadInfoF: ADFragment() {
+class UnloadStartDF: FragmentDialogA() {
     //    https://en.wikipedia.org/wiki/Virtual_machine :))))))
     private val vm: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {
-        return R.layout.f_unload_info
+        return R.layout.df_unload_start
     }
 
 
@@ -33,7 +33,7 @@ class UnloadInfoF: ADFragment() {
         return true
     }
 
-    override fun onNewLiveData() {
+    override fun onLiveData() {
 
     }
 

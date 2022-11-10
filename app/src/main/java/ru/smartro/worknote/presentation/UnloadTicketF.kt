@@ -6,7 +6,7 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.ADFragment
+import ru.smartro.worknote.abs.FragmentDialogA
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
@@ -14,7 +14,7 @@ import ru.smartro.worknote.toast
 import ru.smartro.worknote.work.ConfigName
 
 //todo: смотри прикол, VT !!!UnloadInfo++ploadTicket
-class UnloadTicketF: ADFragment() {
+class UnloadTicketF: FragmentDialogA() {
     private var acetTalonValue: AppCompatEditText? = null
     private var acetWeightAfter: AppCompatEditText? = null
     private var acetWeightBefore: AppCompatEditText? = null
@@ -66,7 +66,7 @@ class UnloadTicketF: ADFragment() {
         return true
     }
 
-    override fun onNewLiveData() {
+    override fun onLiveData() {
 //        TODO("Not yet implemented")
     }
 

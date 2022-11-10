@@ -38,35 +38,35 @@ class PhotoBeforeMediaF : APhotoFragment() {
 //            // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
 ////            if mPLatformEntity.isServeModeFixPServeF
 //            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeF) {
-//                navigateMain(R.id.PServeF, mPlatformEntity.platformId)
+//                navigateNext(R.id.PServeF, mPlatformEntity.platformId)
 //                return
 //            }
 //                             //todo: линию не заметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 ////            //            if mPLatformEntity.isModeFixPServeGroupByContainersF
 //            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-//                navigateMain(R.id.PServeByTypesF, mPlatformEntity.platformId)
+//                navigateNext(R.id.PServeByTypesF, mPlatformEntity.platformId)
 //                return
 //            }
             if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeF) {
-                navigateMain(R.id.PServeF, viewModel.getPlatformId())
+                navigateNext(R.id.PServeF, viewModel.getPlatformId())
                 return
             } else {
-                navigateMain(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
+                navigateNext(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
                 return
             }
         }
 
         val configVal = viewModel.database.getConfigString(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
         if (configVal == PlatformEntity.Companion.ServeMode.PServeF) {
-            navigateMain(R.id.PServeF, viewModel.getPlatformId())
+            navigateNext(R.id.PServeF, viewModel.getPlatformId())
             return
         }
         if (configVal == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-            navigateMain(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
+            navigateNext(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
             return
         }
 
-        navigateMain(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(R.id.PServeF, viewModel.getPlatformId())
     }
 
     override fun onSavePhoto() {

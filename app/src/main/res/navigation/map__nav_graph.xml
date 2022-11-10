@@ -21,7 +21,7 @@
     <!--Directions-->
     <dialog
         android:id="@+id/MapPlatformClickedDtlF"
-        android:name="ru.smartro.worknote.presentation.MapPlatformsMapObjectTapDF"
+        android:name="ru.smartro.worknote.presentation.MapFD"
         android:label="MapPlatformClickedDtlF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -291,7 +291,7 @@
 
     <dialog
         android:id="@+id/UnloadInfoF"
-        android:name="ru.smartro.worknote.presentation.UnloadInfoF"
+        android:name="ru.smartro.worknote.presentation.UnloadStartDF"
         android:label="UnloadInfoF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -347,9 +347,9 @@
     </fragment>
 
     <dialog
-        android:id="@+id/InfoDialogF"
-        android:name="ru.smartro.worknote.presentation.InfoDialogF"
-        android:label="InfoDialogF">
+        android:id="@+id/LockedCarInfoDF"
+        android:name="ru.smartro.worknote.presentation.LockedCarInfoDF"
+        android:label="LockedCarInfoDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -359,10 +359,95 @@
             app:argType="string"
             />
     </dialog>
+
+    <dialog
+        android:id="@+id/LockedGasInfoDF"
+        android:name="ru.smartro.worknote.presentation.LockedGasInfoDF"
+        android:label="LockedGasInfoDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/LockedPhotoInfoDF"
+        android:name="ru.smartro.worknote.presentation.LockedPhotoInfoDF"
+        android:label="LockedCarInfoDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
     <dialog
         android:id="@+id/WarnDF"
         android:name="ru.smartro.worknote.presentation.WarnDF"
-        android:label="WarnDialogF">
+        android:label="WarnDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/InfoAirplaneModeOnDF"
+        android:name="ru.smartro.worknote.presentation.BaSeInfoAirplaneModeOnDF"
+        android:label="InfoAirplaneModeOnDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/InfoPointsUploadDF"
+        android:name="ru.smartro.worknote.presentation.InfoPointsUploadDF"
+        android:label="InfoPointsUploadDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/InfoInternetOffDF"
+        android:name="ru.smartro.worknote.presentation.InfoInternetOffDF"
+        android:label="InfoInternetOffDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/InfoGpsOffDF"
+        android:name="ru.smartro.worknote.presentation.InfoGpsOffDF"
+        android:label="InfoGpsOffDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"

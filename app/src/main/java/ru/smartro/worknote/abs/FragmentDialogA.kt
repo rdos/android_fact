@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import ru.smartro.worknote.LOG
 
-abstract class ADFragment : DialogFragment(), IAFragment {
+abstract class FragmentDialogA : DialogFragment(), FragmentAI {
 
     init {
         LOG.info( "init AbstractDialog")
@@ -16,7 +16,7 @@ abstract class ADFragment : DialogFragment(), IAFragment {
 
     final override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         LOG.debug("before")
-        val view = AUFragment.onSetItemLayout(this, inflater, container, savedInstanceState)
+        val view = AUF.onSetItemLayout(this, inflater, container, savedInstanceState)
         //        try {
 //          это провал!!!
 //        } try в имени это тру! VT, слышь)))
@@ -25,7 +25,7 @@ abstract class ADFragment : DialogFragment(), IAFragment {
 
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AUFragment.onViewCreated(this, view, savedInstanceState)
+        AUF.onViewCreated(this, view, savedInstanceState)
         LOG.debug("onViewCreated")
     }
 
@@ -39,23 +39,31 @@ abstract class ADFragment : DialogFragment(), IAFragment {
         LOG.debug("before")
     }
 
-    protected fun navigateBack() {
-        LOG.debug("before")
-        AUFragment.showFragment(this)
-    }
-
     protected fun navigate(navFragmentId: Int) {
         LOG.debug("before")
-        AUFragment.showFragment(this, navFragmentId)
+        AUF.showFragment(this, navFragmentId)
     }
 
+    protected fun navigateNext(navFragmentId: Int, argumentId: Int? = null, argumentName: String?= null) {
+        AUF.showNextFragment(this, navFragmentId, argumentId, argumentName)
+    }
 
-    final fun navigateNext(navFragmentId: Int, argumentId: Int? = null, argumentName: String?= null) {
-        AUFragment.showNextFragment(this, navFragmentId, argumentId, argumentName)
+    protected fun navigateBack() {
+        LOG.debug("before")
+        AUF.showFragment(this)
+    }
+    protected fun navigateBack(navFragmentId: Int) {
+        LOG.debug("before")
+        AUF.showFragment(this, navFragmentId)
+    }
+
+    protected fun navigateClose() {
+        LOG.debug("before")
+        getAct().finish()
     }
 
     final override fun getArgSBundle(argumentId: Int, argumentName: String?): Bundle {
-        val bundle = AUFragment.setFragmentVar(argumentId, argumentName)
+        val bundle = AUF.setFragmentVar(argumentId, argumentName)
         return bundle
     }
 

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -24,7 +24,7 @@ import ru.smartro.worknote.work.PlatformEntity
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JournalChatF : ANOFragment() {
+class JournalChatF : FragmentA() {
 
     private var mAdapter: JournalChatAdapter? = null
     private val viewModel: JournalChatViewModel by viewModels()
