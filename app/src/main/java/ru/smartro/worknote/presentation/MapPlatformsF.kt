@@ -87,9 +87,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
     private val mWorkOrderFilteredIds: MutableList<Int> = mutableListOf()
     private var mWorkOrderS: List<WorkOrderEntity>? = null
     private var mPlatformS: List<PlatformEntity>? = null
-    var drivingModeState = false
-
-    private var mIsFirstTime = true
+    private var drivingModeState = false
 
     private lateinit var userLocationLayer: UserLocationLayer
     private lateinit var mDrivingRouter: DrivingRouter
@@ -99,10 +97,6 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         LOG.debug("onNewGPS")
 
         val point = AppliCation().gps()
-        if (mIsFirstTime) {
-            moveCameraTo(point)
-            mIsFirstTime = false
-        }
         if (mIsAUTOMoveCamera) {
             moveCameraTo(point)
         }
@@ -319,6 +313,8 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
                 navigateMain(R.id.UnloadInfoF)
             }
         }
+        val userPoint = App.getAppliCation().gps()
+        moveCameraTo(userPoint)
     }
 //
     fun getStateHandle(keyString: String, next: (result: Boolean) -> Any) {
