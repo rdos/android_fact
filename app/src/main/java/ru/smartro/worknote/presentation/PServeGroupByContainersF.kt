@@ -13,10 +13,11 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AbsFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
-import ru.smartro.worknote.work.ConfigName
-import ru.smartro.worknote.work.ContainerGROUPClientEntity
-import ru.smartro.worknote.work.ContainerGROUPClientTypeEntity
-import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.presentation.work.ServePlatformVM
+import ru.smartro.worknote.presentation.work.ConfigName
+import ru.smartro.worknote.presentation.work.ContainerGROUPClientEntity
+import ru.smartro.worknote.presentation.work.ContainerGROUPClientTypeEntity
+import ru.smartro.worknote.presentation.work.PlatformEntity
 
 
 class PServeGroupByContainersF : AbsFragment() {

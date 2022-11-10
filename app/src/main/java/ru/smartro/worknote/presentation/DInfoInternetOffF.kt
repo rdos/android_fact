@@ -1,9 +1,8 @@
 package ru.smartro.worknote.presentation
 
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.AInfoFD
 
-class DInfoInternetOffF : AInfoFD() {
+class DInfoInternetOffF : AFragmentInfoDialog() {
     override fun onGetContentText(): String? {
         return  getString(R.string.warning_connection_lost)
     }

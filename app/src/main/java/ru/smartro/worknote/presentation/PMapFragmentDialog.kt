@@ -18,8 +18,9 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FragmentDialogA
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
-import ru.smartro.worknote.work.ConfigName
-import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.presentation.work.ServePlatformVM
+import ru.smartro.worknote.presentation.work.ConfigName
+import ru.smartro.worknote.presentation.work.PlatformEntity
 import kotlin.math.min
 
 //todo: MapPlatformsDF MapPlatformsDF MapPlatformsDF???ИЛИ MapPlatforms(on)MapObjectTap(DF)=

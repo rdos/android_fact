@@ -53,8 +53,9 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBod
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.ac.MainAct
-import ru.smartro.worknote.utils.getActivityProperly
-import ru.smartro.worknote.work.*
+import ru.smartro.worknote.presentation.work.ServePlatformVM
+import ru.smartro.worknote.presentation.work.*
+import ru.smartro.worknote.presentation.work.utils.getActivityProperly
 import java.io.IOException
 
 class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickListener,
@@ -608,17 +609,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 
         val logoutButton = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__workorder_info__logout)
         logoutButton.setOnClickListener {
-            getAct().showDlgLogout().let { view ->
-                val btnYes = view.findViewById<AppCompatButton>(R.id.acb__act_xchecklist__dialog_logout__yes)
-                val btnNo = view.findViewById<AppCompatButton>(R.id.acb__act_xchecklist__dialog_logout__no)
-                btnYes.setOnClickListener {
-                    result.dismiss()
-                    getAct().logout()
-                }
-                btnNo.setOnClickListener {
-                    hideDialog()
-                }
-            }
+            navigateNext(R.id.DYesNoRelogin)
         }
 
         val debugButton = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__workorder_info__debug)

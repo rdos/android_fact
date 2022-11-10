@@ -2,8 +2,8 @@ package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.ImageEntity
-import ru.smartro.worknote.work.PlatformMediaEntity
+import ru.smartro.worknote.presentation.work.ImageEntity
+import ru.smartro.worknote.presentation.work.PlatformMediaEntity
 import java.io.File
 
 class PhotoBeforeMediaContainerF : APhotoFragment() {

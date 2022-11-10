@@ -170,7 +170,7 @@
                 android:id="@+id/pickup_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                layout="@layout/act_platformserve__pickup"
+                layout="@layout/fact_platformserve__pickup"
                 />
         </androidx.appcompat.widget.LinearLayoutCompat>
 

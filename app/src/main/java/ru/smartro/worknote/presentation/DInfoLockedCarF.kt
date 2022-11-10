@@ -1,9 +1,8 @@
 package ru.smartro.worknote.presentation
 
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.AInfoFD
 
-class DInfoLockedCarF: AInfoFD() {
+class DInfoLockedCarF: AFragmentInfoDialog() {
     override fun onGetNavId(): Int {
         return R.id.LockedCarInfoDF
     }

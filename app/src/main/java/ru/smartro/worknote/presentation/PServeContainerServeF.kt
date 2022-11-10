@@ -18,6 +18,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.abs.AbstractBottomSheetF
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.presentation.work.ServePlatformVM
 
 
 class PServeContainerServeF : AbstractBottomSheetF() {

@@ -8,7 +8,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.breakdown.BreakdownBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.work.net.EarlyCompleteBody
+import ru.smartro.worknote.presentation.work.net.EarlyCompleteBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.failure.FailureBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
@@ -23,7 +23,10 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedRespo
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
-import ru.smartro.worknote.work.*
+import ru.smartro.worknote.presentation.work.AppStartUpBody
+import ru.smartro.worknote.presentation.work.AppStartUpResponse
+import ru.smartro.worknote.presentation.work.RPCBody
+import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
 
 interface ApiService {
 

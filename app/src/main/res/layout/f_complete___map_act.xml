@@ -7,7 +7,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".presentation.CompleteF">
+    tools:context=".presentation.ac.CompleteF">
 
 
     <androidx.recyclerview.widget.RecyclerView

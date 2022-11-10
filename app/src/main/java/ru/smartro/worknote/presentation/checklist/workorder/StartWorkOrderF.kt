@@ -15,8 +15,8 @@ import ru.smartro.worknote.awORKOLDs.extensions.showDialogAction
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.presentation.ac.MainAct
-import ru.smartro.worknote.work.Status
-import ru.smartro.worknote.work.WoRKoRDeR_know1
+import ru.smartro.worknote.presentation.work.Status
+import ru.smartro.worknote.presentation.work.WoRKoRDeR_know1
 
 class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 

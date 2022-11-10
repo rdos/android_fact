@@ -13,8 +13,8 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.StartAct
-import ru.smartro.worknote.utils.getActivityProperly
-import ru.smartro.worknote.work.*
+import ru.smartro.worknote.presentation.work.*
+import ru.smartro.worknote.presentation.work.utils.getActivityProperly
 import java.io.File
 import java.io.FileOutputStream
 

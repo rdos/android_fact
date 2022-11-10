@@ -27,16 +27,34 @@
         android:layout_marginHorizontal="22dp"
         />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/acb__adf_inform__gotonext"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:background="@drawable/bg_button_interactive"
-        android:paddingHorizontal="32dp"
-        android:stateListAnimator="@null"
-        android:text="Подтвердить"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:layout_marginTop="16dp"
-        />
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb__adf_inform__gotonext"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginVertical="18dp"
+            android:background="@drawable/bg_button"
+            android:text="Подтвердить"
+            android:textColor="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb__adf_inform__gotoback"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_button_green__default"
+            android:text="Отмена"
+            android:textColor="@color/black" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
 
 </ru.smartro.worknote.andPOintD.SmartROllc>

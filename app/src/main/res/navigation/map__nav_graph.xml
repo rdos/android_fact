@@ -201,7 +201,7 @@
     </fragment>
     <fragment
         android:id="@+id/JournalChatFragment"
-        android:name="ru.smartro.worknote.presentation.JournalChatF"
+        android:name="ru.smartro.worknote.presentation.JornalChatWorkLogF"
         android:label="JournalChatFragment" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -215,7 +215,7 @@
 
     <fragment
         android:id="@+id/CompleteF"
-        android:name="ru.smartro.worknote.presentation.CompleteF"
+        android:name="ru.smartro.worknote.presentation.ac.CompleteF"
         tools:layout="@layout/f_complete___map_act"
         android:label="CompleteF">
         <argument
@@ -231,7 +231,7 @@
     <fragment
         android:id="@+id/FinishCompleteF"
         tools:layout="@layout/f_finish_complete"
-        android:name="ru.smartro.worknote.presentation.FinishCompleteF"
+        android:name="ru.smartro.worknote.presentation.ac.EndF"
         android:label="FinishCompleteF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -291,7 +291,7 @@
 
     <dialog
         android:id="@+id/UnloadInfoF"
-        android:name="ru.smartro.worknote.presentation.UnloadStartFD"
+        android:name="ru.smartro.worknote.presentation.ModeUnloadStartFD"
         android:label="UnloadInfoF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -304,7 +304,7 @@
     </dialog>
     <dialog
         android:id="@+id/UnloadTicketF"
-        android:name="ru.smartro.worknote.presentation.UnloadTicketFD"
+        android:name="ru.smartro.worknote.presentation.ModUnloadTicketFD"
         android:label="UnloadInfoF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -318,7 +318,7 @@
 
     <fragment
         android:id="@+id/UnloadPhotoBeforeMediaF"
-        android:name="ru.smartro.worknote.presentation.UnloadPhotoBeforeMediaF"
+        android:name="ru.smartro.worknote.presentation.ModeUnloadPhotoBeforeMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="UnloadPhotoBeforeMediaF" >
         <argument
@@ -333,7 +333,7 @@
 
     <fragment
         android:id="@+id/UnloadPhotoAfterMediaF"
-        android:name="ru.smartro.worknote.presentation.UnloadPhotoAfterMediaF"
+        android:name="ru.smartro.worknote.presentation.ModeUnloadPhotoAfterMediaF"
         tools:layout="@layout/f_aphoto"
         android:label="UnloadPhotoAfterMediaF" >
         <argument
@@ -390,7 +390,7 @@
 
     <dialog
         android:id="@+id/WarnDF"
-        android:name="ru.smartro.worknote.presentation.PMapFDWarn"
+        android:name="ru.smartro.worknote.presentation.PMapWarnF"
         android:label="WarnDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -404,7 +404,7 @@
 
     <dialog
         android:id="@+id/InfoAirplaneModeOnDF"
-        android:name="ru.smartro.worknote.presentation.DInfoAirplaneModeOn"
+        android:name="ru.smartro.worknote.presentation.DInfoAirplaneModeOnF"
         android:label="InfoAirplaneModeOnDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -446,8 +446,22 @@
 
     <dialog
         android:id="@+id/InfoGpsOffDF"
-        android:name="ru.smartro.worknote.presentation.DInfoGpsOff"
+        android:name="ru.smartro.worknote.presentation.DInfoGpsOffF"
         android:label="InfoGpsOffDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DYesNoRelogin"
+        android:name="ru.smartro.worknote.presentation.DYesNoRelogin"
+        android:label="DYesNoRelogin">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"

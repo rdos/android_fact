@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
+
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
-import ru.smartro.worknote.awORKOLDs.extensions.WarningType
+
 
 import ru.smartro.worknote.presentation.ac.StartAct
 import java.lang.Exception

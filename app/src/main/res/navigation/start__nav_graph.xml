@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/StartF"
-        android:name="ru.smartro.worknote.presentation.StartF"
+        android:name="ru.smartro.worknote.presentation.ac.StartF"
         tools:layout="@layout/f_start"
         android:label="StartF" />
 
     <dialog
         android:id="@+id/ReAuthWarningDialogF"
-        android:name="ru.smartro.worknote.presentation.ReAuthWarningDialogF"
+        android:name="ru.smartro.worknote.presentation.work.ReAuthWarningDialogF"
         tools:layout="@layout/df_action"
         android:label="ReAuthWarningDialogF" />
 
     <dialog
         android:id="@+id/ReAuthConfirmationDialogF"
-        android:name="ru.smartro.worknote.presentation.ReAuthConfirmationDialogF"
+        android:name="ru.smartro.worknote.presentation.work.ReAuthConfirmationDialogF"
         tools:layout="@layout/df_action"
         android:label="ReAuthConfirmationDialogF" />
 

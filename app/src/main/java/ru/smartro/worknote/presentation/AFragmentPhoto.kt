@@ -31,8 +31,9 @@ import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.work.ImageEntity
-import ru.smartro.worknote.work.MD5
+import ru.smartro.worknote.presentation.work.ServePlatformVM
+import ru.smartro.worknote.presentation.work.ImageEntity
+import ru.smartro.worknote.presentation.work.MD5
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream

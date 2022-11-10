@@ -4,8 +4,8 @@ import io.realm.RealmList
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.work.ContainerMediaEntity
-import ru.smartro.worknote.work.ImageEntity
+import ru.smartro.worknote.presentation.work.ContainerMediaEntity
+import ru.smartro.worknote.presentation.work.ImageEntity
 import java.io.File
 
 class PhotoFailureMediaContainerF : APhotoFragment() {

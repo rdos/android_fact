@@ -9,8 +9,8 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.os.UserManagerCompat
 import io.realm.Realm
-import ru.smartro.worknote.work.ConfigName
-import ru.smartro.worknote.work.RealmRepository
+import ru.smartro.worknote.presentation.work.ConfigName
+import ru.smartro.worknote.presentation.work.RealmRepository
 
 class BootBroadcastReceiver : BroadcastReceiver() {
 

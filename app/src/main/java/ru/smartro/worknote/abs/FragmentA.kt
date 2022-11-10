@@ -11,7 +11,7 @@ import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.extensions.showingProgress
 import ru.smartro.worknote.presentation.ac.MainAct
-import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.presentation.work.PlatformEntity
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"
@@ -91,7 +91,7 @@ abstract class FragmentA : Fragment(), FragmentAI {
         getAct().finish()
     }
 
-    protected fun navigateSMallDeep(navFragmentId: Int, method: (PlatformEntity) -> Unit,argumentId: Int?=null, argumentName: String?=null) {
+    protected fun navigateSMallDeep(navFragmentId: Int, method: (PlatformEntity) -> Unit, argumentId: Int?=null, argumentName: String?=null) {
 //        navigateNext(R.id.MapPlatformClickedDtlF, ::this.startPlatformService)
 //        method.invoke()
     }

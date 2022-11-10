@@ -23,10 +23,10 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.Organ
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.saveJSON
-import ru.smartro.worknote.work.Resource
-import ru.smartro.worknote.work.THR
-import ru.smartro.worknote.work.WoRKoRDeR_know1
-import ru.smartro.worknote.work.WorkOrderResponse_know1
+import ru.smartro.worknote.presentation.work.Resource
+import ru.smartro.worknote.presentation.work.THR
+import ru.smartro.worknote.presentation.work.WoRKoRDeR_know1
+import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
 
 class XChecklistAct: AAct() {
 

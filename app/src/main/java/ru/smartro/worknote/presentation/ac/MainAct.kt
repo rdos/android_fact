@@ -26,8 +26,8 @@ import ru.smartro.worknote.abs.FragmentAI
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.presentation.ServePlatformVM
-import ru.smartro.worknote.work.ConfigName
+import ru.smartro.worknote.presentation.work.ServePlatformVM
+import ru.smartro.worknote.presentation.work.ConfigName
 
 //todo: INDEterminate)
 class MainAct :
@@ -63,7 +63,7 @@ class MainAct :
 //    val mTooltipHell = MainAct.DialogHelpER(this, TAG)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_main)
+        setContentView(R.layout.a_main)
         supportActionBar?.hide()
 //        mTooltipHell.setStartId("ll_containers_count", paramS())
     }

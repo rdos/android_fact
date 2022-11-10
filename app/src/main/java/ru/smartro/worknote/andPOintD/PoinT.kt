@@ -5,7 +5,7 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.RealmList
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.work.ImageEntity
+import ru.smartro.worknote.presentation.work.ImageEntity
 
 class PoinT(latitude: Double, longitude: Double,
     // TODO:!!pointAccuracy: Float?

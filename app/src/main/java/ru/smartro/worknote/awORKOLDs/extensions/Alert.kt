@@ -99,15 +99,6 @@ fun AAct.showDlgLogout(): View {
 }
 
 
-enum class WarningType {
-    AIRPLANE_MODE,
-    CONNECTION_LOST,
-    GPS_OFF,
-    CAR_LOCKED,
-    FUEL_LOCKED,
-    PHOTO_LOCKED,
-    DIFFERENT_UNLOAD_POINTS
-}
 
 //showDlgPickup!r_dos
 fun FragmentA.showDlgPickup(): View {

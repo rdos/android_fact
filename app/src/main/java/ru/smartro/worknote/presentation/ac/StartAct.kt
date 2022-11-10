@@ -28,9 +28,9 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.Resource
-import ru.smartro.worknote.work.Status
+import ru.smartro.worknote.presentation.work.PlatformEntity
+import ru.smartro.worknote.presentation.work.Resource
+import ru.smartro.worknote.presentation.work.Status
 
 
 class StartAct : AAct() {

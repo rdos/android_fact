@@ -36,10 +36,11 @@ import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewVoiceWhatsUp
 import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPlayer
-import ru.smartro.worknote.work.ConfigName
-import ru.smartro.worknote.work.ContainerEntity
-import ru.smartro.worknote.work.PlatformEntity
-import ru.smartro.worknote.work.VoiceComment
+import ru.smartro.worknote.presentation.work.ServePlatformVM
+import ru.smartro.worknote.presentation.work.ConfigName
+import ru.smartro.worknote.presentation.work.ContainerEntity
+import ru.smartro.worknote.presentation.work.PlatformEntity
+import ru.smartro.worknote.presentation.work.VoiceComment
 import java.io.File
 import java.nio.file.Files
 
