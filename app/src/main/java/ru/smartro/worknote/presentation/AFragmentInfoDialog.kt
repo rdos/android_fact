@@ -19,6 +19,14 @@ abstract class AFragmentInfoDialog: AInformFD() {
         LOG.warn("DON'T_USE")   //not use
     }
 
+    override fun onGetNextText(): String? {
+        return "Подтвердить"
+    }
+
+    override fun onGetBackText(): String? {
+        return null
+    }
+
     final override fun onNextFragment(entity: PlatformEntity) {
        navigateBack()
     }

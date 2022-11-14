@@ -21,6 +21,4 @@ class DYesNoRelogin : AFragmentYesNoDialog() {
     override fun onGetNavId(): Int {
       return R.id.DYesNoRelogin
     }
-
-
 }

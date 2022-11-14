@@ -17,10 +17,14 @@ abstract class AInformFD: FragmentDialogA() {
         return R.layout.afd_inform
     }
 
+    abstract fun onGetNextText() : String?
+    abstract fun onGetBackText() : String?
+
     abstract fun onLiveData(entity: PlatformEntity)
     abstract fun onStyle(sview: SmartROllc, acbGotoBack: AppCompatButton)
     abstract fun onNextFragment(entity: PlatformEntity)
     abstract fun onBackFragment(entity: PlatformEntity)
+
 
     final override fun onLiveData() {
         LOG.error("DONT USE!!!!!!!!!!")
@@ -57,6 +61,9 @@ abstract class AInformFD: FragmentDialogA() {
         mAcbGotoNext = sview.findViewById(R.id.acb__adf_inform__gotonext)
         mAcbGotoBack = sview.findViewById(R.id.acb__adf_inform__gotoback)
 
+        val entity = getFragEntity()
+        onLiveData(entity)
+
         onStyle(sview, acbGotoBack())
         val contextText = onGetContentText()
         if (contextText == null) {
@@ -65,16 +72,22 @@ abstract class AInformFD: FragmentDialogA() {
         }
         actvContent().text = contextText
 
-        val entity = getFragEntity()
+        val nextText = onGetNextText()
+        if(nextText != null)
+            acbGotoNext().text = nextText
+
         acbGotoNext().setOnClickListener {
             onNextFragment(entity)
         }
+
+        val backText = onGetBackText()
+        if(backText != null)
+            acbGotoBack().text = backText
 
         acbGotoBack().setOnClickListener {
             onBackFragment(entity)
         }
 
-        onLiveData(entity)
         return true
     }
 

@@ -5,29 +5,32 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.AActionDialogF
+import ru.smartro.worknote.presentation.AFragmentYesNoDialog
 import ru.smartro.worknote.presentation.ac.MainAct
 
-class ReAuthWarningDialogF: AActionDialogF() {
+class ReAuthWarningDialogF : AFragmentYesNoDialog() {
+    override fun onNextFragment(entity: PlatformEntity) {
+        startActivity(Intent(requireActivity(), MainAct::class.java))
+        requireActivity().finish()
+    }
 
-    private val vm: ServePlatformVM by activityViewModels()
+    override fun onGetNextText(): String {
+        return "Да, продолжить"
+    }
 
-    override fun onLayoutInitialized() {
-        actvTitle?.text = "Предупреждение"
-        actvContent?.text = "У вас есть незавершенный маршрут.\nПродолжить?"
+    override fun onBackFragment(entity: PlatformEntity) {
+        navigateNext(R.id.ReAuthConfirmationDialogF)
+    }
 
-        acbAccept?.text = "Да, продолжить"
-        acbAccept?.setOnClickListener {
-            // TODO :::
-//            findNavController().navigate(R.id.MapPlatformsF)
+    override fun onGetBackText(): String {
+        return "Стереть и начать заново"
+    }
 
-            startActivity(Intent(requireActivity(), MainAct::class.java))
+    override fun onGetContentText(): String {
+        return "У вас есть незавершенный маршрут.\nПродолжить?"
+    }
 
-            requireActivity().finish()
-        }
-
-        acbDecline?.text = "Стереть и начать заново"
-        acbDecline?.setOnClickListener {
-            navigateNext(R.id.ReAuthConfirmationDialogF)
-        }
+    override fun onGetNavId(): Int {
+        return R.id.ReAuthWarningDialogF
     }
 }

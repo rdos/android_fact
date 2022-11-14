@@ -33,9 +33,16 @@ class PMapWarnF: AInformFD() {
         navigateNext(R.id.PhotoBeforeMediaF, tbIbYO__item.platformId)
     }
 
-    final override fun onBackFragment(entity: PlatformEntity) {
+    override fun onGetNextText(): String {
+        return "Подтвердить"
+    }
+
+    override fun onBackFragment(entity: PlatformEntity) {
         LOG.warn("DON'T_USE") //not use
 
+    }
+    override fun onGetBackText(): String {
+        return "Отмена"
     }
 
 
