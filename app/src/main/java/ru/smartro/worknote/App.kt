@@ -203,7 +203,6 @@ class App : AApp() {
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
-
         LOG.info("on App created App.onCreate onAppCreate")
         sentryInit()
         realmInit()
