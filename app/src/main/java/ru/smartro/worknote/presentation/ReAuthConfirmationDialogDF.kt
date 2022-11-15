@@ -21,10 +21,9 @@ class ReAuthConfirmationDialogDF : AInformFD() {
     private val viewModel: ServePlatformVM by activityViewModels()
     private var platforms: List<PlatformEntity>? = null
 
-    override fun onGetEntity(): PlatformEntity {
-        val platformId = requireArguments().getInt(ARGUMENT_NAME___PARAM_ID, Inull)
-        val tbIbYO__item = viewModel.database.getPlatformEntity(platformId)
-        return tbIbYO__item
+    override fun onGetEntity(): PlatformEntity? {
+        LOG.warn("DON'T_USE")   //not use
+        return null
     }
 
     override fun onBindLayoutState(): Boolean {
