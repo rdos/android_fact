@@ -13,13 +13,13 @@
 
     <dialog
         android:id="@+id/ReAuthWarningDialogF"
-        android:name="ru.smartro.worknote.presentation.work.ReAuthWarningDialogF"
+        android:name="ru.smartro.worknote.presentation.DYesNoReAuthDialogF"
         tools:layout="@layout/df_action"
         android:label="ReAuthWarningDialogF" />
 
     <dialog
         android:id="@+id/ReAuthConfirmationDialogF"
-        android:name="ru.smartro.worknote.presentation.work.ReAuthConfirmationDialogF"
+        android:name="ru.smartro.worknote.presentation.ReAuthConfirmationDialogDF"
         tools:layout="@layout/df_action"
         android:label="ReAuthConfirmationDialogF" />
 

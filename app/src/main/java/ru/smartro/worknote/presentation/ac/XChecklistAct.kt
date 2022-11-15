@@ -90,7 +90,9 @@ class XChecklistAct: AAct() {
         super.onPause()
         hideProgress()
     }
-
+    /**
+    ***Охраняемая Зона R_)OS
+    */
     sealed class ViewState(val msg: String? = null) {
         class IDLE(): ViewState()
         class LOADING(): ViewState()
@@ -99,6 +101,10 @@ class XChecklistAct: AAct() {
         class MESSAGE(_msg: String? = null): ViewState(_msg)
         class REFRESH(): ViewState()
     }
+    /**Охраняемая Зона R_)OS
+       Охраняемая Зона R_)OS
+        Охраняемая Зона R_)OS
+     */
 
     class ChecklistViewModel(app: Application) : AViewModel(app) {
         

@@ -2,8 +2,12 @@ package ru.smartro.worknote.andPOintD
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.view.isVisible
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.FragmentDialogA
@@ -38,6 +42,13 @@ abstract class AInformFD: FragmentDialogA() {
         return mAcbGotoNext!!
     }
 
+    private var mActvTitle: AppCompatTextView? = null
+    fun actvTitle(): AppCompatTextView {
+        if (mActvTitle == null) {
+            return AppCompatTextView(this.requireContext())
+        }
+        return mActvTitle!!
+    }
 
     private var mActvContent: AppCompatTextView? = null
     private fun actvContent(): AppCompatTextView {
@@ -55,11 +66,34 @@ abstract class AInformFD: FragmentDialogA() {
         return mAcbGotoBack!!
     }
 
+    private var mTietAdditional: TextInputEditText? = null
+    fun tietAdditional(): TextInputEditText {
+        if (mTietAdditional == null) {
+            return TextInputEditText(this.requireContext())
+        }
+        return mTietAdditional!!
+    }
+
+    private var mTilAdditional: TextInputLayout? = null
+    fun tilAdditional(): TextInputLayout {
+        if (mTilAdditional == null) {
+            return TextInputLayout(this.requireContext())
+        }
+        return mTilAdditional!!
+    }
+
+
     final override fun onInitLayoutView(sview: SmartROllc): Boolean {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
         mActvContent = sview.findViewById(R.id.actv__adf_inform__content)
+        mActvTitle = sview.findViewById(R.id.actv__adf_inform__title)
+
         mAcbGotoNext = sview.findViewById(R.id.acb__adf_inform__gotonext)
         mAcbGotoBack = sview.findViewById(R.id.acb__adf_inform__gotoback)
+        mTietAdditional = sview.findViewById(R.id.tiet_alert_additional)
+        mTilAdditional = sview.findViewById(R.id.til_alert_additional)
+
+//        todo:R_dos!Up!!
 
         val entity = getFragEntity()
         onLiveData(entity)
@@ -81,8 +115,12 @@ abstract class AInformFD: FragmentDialogA() {
         }
 
         val backText = onGetBackText()
-        if(backText != null)
+        if(backText == null) {
+            acbGotoBack().visibility = View.GONE
+        } else {
             acbGotoBack().text = backText
+
+        }
 
         acbGotoBack().setOnClickListener {
             onBackFragment(entity)
@@ -91,7 +129,7 @@ abstract class AInformFD: FragmentDialogA() {
         return true
     }
 
-    private fun getFragEntity(): PlatformEntity {
+    fun getFragEntity(): PlatformEntity {
         var result =  onGetEntity()
         if (result == null) {
             LOG.error("if (result == null) {")

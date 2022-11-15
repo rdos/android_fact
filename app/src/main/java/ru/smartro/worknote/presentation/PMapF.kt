@@ -757,17 +757,15 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
             toast("В режиме выгрузка нельзя обслуживать КП")
             return
         }
-        if (drivingModeState) {
-            warningClearNavigator(getString(R.string.way_is_exist)).let {
-                val btnAccept = it.findViewById<Button>(R.id.accept_btn)
-                btnAccept.setOnClickListener {
-                    buildNavigator(checkPoint)
-                }
-            }
-        } else {
+//        if (drivingModeState) {
+//            navigateNext(R.id.DYesNoClearNavigator)
+////            navigateNext(DYesNoClearNavigator::class.javaClass)
+//        } else {
             buildNavigator(checkPoint)
-        }
+//        }
     }
+
+
 
     override fun openFailureFire(item: PlatformEntity) {
         vm.setPlatformEntity(item)

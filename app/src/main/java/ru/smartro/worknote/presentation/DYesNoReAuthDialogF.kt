@@ -1,14 +1,11 @@
-package ru.smartro.worknote.presentation.work
+package ru.smartro.worknote.presentation
 
 import android.content.Intent
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.AActionDialogF
-import ru.smartro.worknote.presentation.AFragmentYesNoDialog
 import ru.smartro.worknote.presentation.ac.MainAct
+import ru.smartro.worknote.presentation.work.PlatformEntity
 
-class ReAuthWarningDialogF : AFragmentYesNoDialog() {
+class DYesNoReAuthDialogF : AFragmentYesNoDialog() {
     override fun onNextFragment(entity: PlatformEntity) {
         startActivity(Intent(requireActivity(), MainAct::class.java))
         requireActivity().finish()

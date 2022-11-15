@@ -390,7 +390,7 @@
 
     <dialog
         android:id="@+id/WarnDF"
-        android:name="ru.smartro.worknote.presentation.PMapWarnF"
+        android:name="ru.smartro.worknote.presentation.PMapWarnDF"
         android:label="WarnDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -471,4 +471,58 @@
             app:argType="string"
             />
     </dialog>
+    <dialog
+        android:id="@+id/PickupDF"
+        android:name="ru.smartro.worknote.presentation.PickupDF"
+        android:label="PickupDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+    <dialog
+        android:id="@+id/PServeKGOServedVolumeDF"
+        android:name="ru.smartro.worknote.presentation.PServeKGOServedVolumeDF"
+        android:label="PServeKGOServedVolumeDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+    <dialog
+        android:id="@+id/PServeKGORemainingVolumeDF"
+        android:name="ru.smartro.worknote.presentation.PServeKGORemainingVolumeDF"
+        android:label="PServeKGOServedVolumeDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DYesNoClearNavigator"
+        android:name="ru.smartro.worknote.presentation.DYesNoClearNavigator"
+        android:label="DYesNoClearNavigator">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
 </navigation>

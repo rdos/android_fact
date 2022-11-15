@@ -14,7 +14,7 @@ import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.presentation.work.ServePlatformVM
 import ru.smartro.worknote.presentation.work.PlatformEntity
 
-class PMapWarnF: AInformFD() {
+class PMapWarnDF: AInformFD() {
 
     private val viewModel: ServePlatformVM by activityViewModels()
 

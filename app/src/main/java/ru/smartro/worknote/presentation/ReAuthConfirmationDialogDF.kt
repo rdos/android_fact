@@ -1,24 +1,22 @@
-package ru.smartro.worknote.presentation.work
+package ru.smartro.worknote.presentation
 
 import android.content.Intent
-import android.view.View
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import ru.smartro.worknote.App
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
-import ru.smartro.worknote.andPOintD.AActionDialogF
 import ru.smartro.worknote.andPOintD.AInformFD
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.AFragmentYesNoDialog
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.ac.XChecklistAct
+import ru.smartro.worknote.presentation.work.PlatformEntity
+import ru.smartro.worknote.presentation.work.ServePlatformVM
 
-class ReAuthConfirmationDialogF : AInformFD() {
+class ReAuthConfirmationDialogDF : AInformFD() {
 
     private val viewModel: ServePlatformVM by activityViewModels()
     private var platforms: List<PlatformEntity>? = null

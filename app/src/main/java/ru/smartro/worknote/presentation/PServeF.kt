@@ -29,8 +29,6 @@ import ru.smartro.worknote.andPOintD.SmartROacb
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
 import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.awORKOLDs.extensions.showDialogFillKgoVolume
-import ru.smartro.worknote.awORKOLDs.extensions.showDlgPickup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
@@ -148,35 +146,11 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             actvAddress?.maxLines = 3
         }
         mAcbKGOServed?.setOnClickListener {
-            showDialogFillKgoVolume().let { vi ->
-                val tietKGOVolumeIn = vi.findViewById<TextInputEditText>(R.id.kgo_volume_in)
-                tietKGOVolumeIn.setText(_PlatformEntity.getServedKGOVolume())
-                val btnSave = vi.findViewById<Button>(R.id.btn_alert_kgo__save)
-                btnSave.setOnClickListener {
-                    val servedKGOVolumeText = tietKGOVolumeIn.text.toString()
-                    if (servedKGOVolumeText.isNullOrBlank()) {
-                        return@setOnClickListener
-                    }
-                    navigateNext(R.id.PhotoKgoServedF, _PlatformEntity.platformId, servedKGOVolumeText)
-                    hideDialog()
-                }
-            }
+            navigateNext(R.id.PServeKGOServedVolumeDF)
         }
 
         acbKGORemaining?.setOnClickListener {
-            showDialogFillKgoVolume().let { vi ->
-                val tietKGOVolumeIn = vi.findViewById<TextInputEditText>(R.id.kgo_volume_in)
-                tietKGOVolumeIn.setText(_PlatformEntity.getRemainingKGOVolume())
-                val btnSave = vi.findViewById<Button>(R.id.btn_alert_kgo__save)
-                btnSave.setOnClickListener{
-                    val remainingKGOVolumeText = tietKGOVolumeIn.text.toString()
-                    if (remainingKGOVolumeText.isNullOrBlank()) {
-                        return@setOnClickListener
-                    }
-                    navigateNext(R.id.PhotoKgoRemainingF, _PlatformEntity.platformId, remainingKGOVolumeText)
-                    hideDialog()
-                }
-            }
+            navigateNext(R.id.PServeKGORemainingVolumeDF)
         }
 
         return false //))
@@ -301,23 +275,7 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     private fun onClickPickup(acsbVolumePickup: SeekBar) {
         acsbVolumePickup.isEnabled = false
         try {
-            showDlgPickup().let{ dialogView ->
-                val tietAdditionalVolumeInM3 = dialogView.findViewById<TextInputEditText>(R.id.tiet_alert_additional_volume_container)
-                vm.getPlatformEntity().volumePickup?.let{
-                    tietAdditionalVolumeInM3.setText(vm.getPlatformEntity().volumePickup.toString())
-                }
-
-                val btnOk = dialogView.findViewById<Button>(R.id.btn_alert_additional_volume_container__ok)
-                btnOk.setOnClickListener {
-                    hideDialog()
-                    val volume = tietAdditionalVolumeInM3.text.toString().toDoubleOrNull()
-                    if (volume == null) {
-                        acsbVolumePickup.progress = 0
-                    } else {
-                        gotoMakePhotoForPickup(volume)
-                    }
-                }
-            }
+            navigateNext(R.id.PickupDF)
         } finally {
             acsbVolumePickup.isEnabled = true
         }

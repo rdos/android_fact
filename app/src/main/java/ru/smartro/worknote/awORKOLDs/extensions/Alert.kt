@@ -57,16 +57,6 @@ fun showCustomDialog(builder: AlertDialog.Builder) {
     log.info("after")
 }
 
-//showDlgPickup!r_dos
-fun AAct.showDlgPickup(): View {
-    val builder = AlertDialog.Builder(this)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.act_platformserve__pickup__alert_dialog, null)
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
-
 fun FragmentA.showDialogAction(description: String, onAccept: () -> Unit, onDecline: (() -> Unit)? = null) {
     val builder = AlertDialog.Builder(getAct())
     val inflater = this.layoutInflater
@@ -88,7 +78,7 @@ fun FragmentA.showDialogAction(description: String, onAccept: () -> Unit, onDecl
     actionDialog.show()
 }
 
-//showDlgPickup!r_dos
+//todo:!r_dos!Ж)
 fun AAct.showDlgLogout(): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
@@ -98,18 +88,6 @@ fun AAct.showDlgLogout(): View {
     return view
 }
 
-
-
-//showDlgPickup!r_dos
-fun FragmentA.showDlgPickup(): View {
-    val context = requireActivity() as AAct
-    val builder = AlertDialog.Builder(context)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.act_platformserve__pickup__alert_dialog, null)
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
 
 
 private fun showLoadingDialog(builder: AlertDialog.Builder) {
@@ -165,33 +143,21 @@ fun AppCompatActivity.showingProgress(text: String?=null, isEmptyOldText: Boolea
 }
 
 
-fun FragmentA.showDialogFillKgoVolume(): View {
-    val context = requireActivity() as AAct
-    val builder = AlertDialog.Builder(context)
-    val inflater = context.layoutInflater
-    val view = inflater.inflate(R.layout.dialog_fill_kgo, null)
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
-
-
-
-fun FragmentA.warningClearNavigator(title: String): View {
-    val builder = AlertDialog.Builder(getAct())
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_clear_navigator, null)
-    builder.setView(view)
-    builder.setCancelable(false)
-    mCustomDialog = builder.create()
-    view.findViewById<TextView>(R.id.title_tv).text = title
-    view.findViewById<Button>(R.id.dismiss_btn).setOnClickListener {
-        mCustomDialog?.dismiss()
-    }
-    mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    mCustomDialog?.show()
-    return view
-}
+//fun FragmentA.warningClearNavigator(title: String): View {
+//    val builder = AlertDialog.Builder(getAct())
+//    val inflater = this.layoutInflater
+//    val view = inflater.inflate(R.layout.alert_clear_navigator, null)
+//    builder.setView(view)
+//    builder.setCancelable(false)
+//    mCustomDialog = builder.create()
+//    view.findViewById<TextView>(R.id.title_tv).text = title
+//    view.findViewById<Button>(R.id.dismiss_btn).setOnClickListener {
+//        mCustomDialog?.dismiss()
+//    }
+//    mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//    mCustomDialog?.show()
+//    return view
+//}
 
 //            fun Fragment.warningCameraShow(title: String): View {
 //                val builder = AlertDialog.Builder(this.requireContext())
@@ -238,20 +204,3 @@ fun FragmentA.warningClearNavigator(title: String): View {
 //                return view
 //            }
 
-//fun AppCompatActivity.showClickedPointDetail(point: PlatformEntity): View {
-//    val customDialog: AlertDialog
-//    val builder = AlertDialog.Builder(this)
-//    val inflater = this.layoutInflater
-//    val view = inflater.inflate(R.layout.alert_point_detail, null)
-//    builder.setView(view)
-//    customDialog = builder.create()
-//    view.bottom_card.isVisible = point.status == StatusEnum.NEW
-//    view.point_detail_address.text = "${point.address} \n ${point.srpId} ${point.containers.size} конт."
-//    view.point_detail_close.setOnClickListener {
-//        customDiaLoG.dismiss()
-//    }
-//    view.point_detail_rv.adapter = ContainerDetailAdapter(point.containers)
-//    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//    customDialog.show()
-//    return view
-//}
