@@ -62,7 +62,11 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
     MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener, Callback {
 
     private var mLastActivePlatform: PlatformEntity? = null
-    private var mMappingPlatformMapObjects: HashMap<Int, PlacemarkMapObject> = HashMap()
+    private val mapIconViewProviderS: HashMap<MapIconData, ViewProvider> = hashMapOf()
+
+    private var mapObjectCollection: MapObjectCollection? = null
+    private val mapObjectExplicitList: MutableMap<Int, MapObject> = mutableMapOf()
+
 
     private var mTimeBeforeInSec: Long = Lnull
     private var acibNavigatorToggle: AppCompatImageButton? = null
@@ -72,7 +76,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
     private var acbUnload: AppCompatImageButton? = null
 
     private var mAdapterBottomBehavior: MapPlatformSBehaviorAdapter? = null
-    private var mMapObjectCollection: MapObjectCollection? = null
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
     private lateinit var mAcbInfo: AppCompatButton
@@ -342,16 +345,16 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         LOG.debug("changeMapObjectIcon")
         val platformId = platformEntity.platformId
 
-        val oldObj = mMappingPlatformMapObjects[platformId]
-        mMapObjectCollection?.remove(oldObj as MapObject)
+        val oldObj = mapObjectExplicitList[platformId]
+        mapObjectCollection?.remove(oldObj as MapObject)
 
         val coordLat = platformEntity.coordLat
         val coordLong = platformEntity.coordLong
         val point = Point(coordLat, coordLong)
-        val viewProvider = getIconViewProvider(requireContext(), platformEntity, isActiveMode)
+        val viewProvider = getIconViewProvider(platformEntity, isActiveMode)
 
-        val newObj = mMapObjectCollection?.addPlacemark(point, viewProvider)
-        mMappingPlatformMapObjects[platformId] = newObj!!
+        val newObj = mapObjectCollection?.addPlacemark(point, viewProvider)
+        mapObjectExplicitList[platformId] = newObj!!
     }
 
     override fun onBackPressed() {
@@ -896,28 +899,28 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 //    }
 
     private fun onRefreshMap(platformS: List<PlatformEntity>) {
-        mMapObjectCollection?.clear()
+        mapObjectCollection?.clear()
         try {
-            mMapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
+            mapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
         } catch (ex: Exception) {
             LOG.error("onRefreshMap", ex)
             // TODO: :)!!!
-            mMapObjectCollection = null
+            mapObjectCollection = null
         }
 
-        mMapObjectCollection?.removeTapListener(this)
+        mapObjectCollection?.removeTapListener(this)
 //        LOG.trace("for (platform in platformS) {.init")
         for (platform in platformS) {
 //            LOG.trace("getIconViewProvider.init")
-            val iconProvider = getIconViewProvider(getAct(), platform)
+            val iconProvider = getIconViewProvider(platform)
 //            LOG.trace("getIconViewProvider.end")
             val pointYandex = Point(platform.coordLat, platform.coordLong)
-            val mapObject = mMapObjectCollection?.addPlacemark(pointYandex, iconProvider)
+            val mapObject = mapObjectCollection?.addPlacemark(pointYandex, iconProvider)
             if(mapObject != null)
-                mMappingPlatformMapObjects.put(platform.platformId, mapObject)
+                mapObjectExplicitList.put(platform.platformId, mapObject)
         }
 //        LOG.trace("for (platform in platformS) {.end")
-        mMapObjectCollection?.addTapListener(this)
+        mapObjectCollection?.addTapListener(this)
     }
 
     override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
@@ -952,37 +955,48 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         return result
     }
 
+    ///  TODO ::: relatively big
+    private fun getIconViewProvider(platform: PlatformEntity, isActiveMode: Boolean = false): ViewProvider {
 
-    private fun getIconViewProvider(_context: Context, _platform: PlatformEntity, isActiveMode: Boolean = false): ViewProvider {
-        val result = layoutInflater.inflate(R.layout.map_activity__iconmaker, null)
+        val isOrderTimeShowForUser = platform.isOrderTimeWarning() && platform.getOrderTimeForMaps().isShowForUser()
+
+        val iconDataInfo = MapIconData(
+            iconResId = platform.getIconFromStatus(),
+            isActive = isActiveMode,
+            orderTimeWarning = if(isOrderTimeShowForUser) platform.getOrderTimeForMaps() else null,
+            orderTimeColor = if(isOrderTimeShowForUser) platform.getOrderTimeColor(requireContext()) else null
+        )
+
+        if(mapIconViewProviderS.containsKey(iconDataInfo)) {
+            LOG.debug("TEST ::: mapIconViewProviderS.containsKey")
+            return mapIconViewProviderS.get(iconDataInfo)!!
+        }
+
+        val result = LayoutInflater.from(requireContext()).inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
-        iv.setImageDrawable(ContextCompat.getDrawable(_context, _platform.getIconFromStatus()))
+        iv.setImageDrawable(ContextCompat.getDrawable(requireContext(), iconDataInfo.iconResId))
+
         val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
         if (isActiveMode) {
             result.findViewById<View>(R.id.v__map_activity__iconmaker__bg_active).visibility = View.VISIBLE
         } else {
             result.findViewById<View>(R.id.v__map_activity__iconmaker__bg_active).visibility = View.GONE
         }
+
         tv.isVisible = false
-        if (_platform.isOrderTimeWarning()) {
-            val orderTime = _platform.getOrderTimeForMaps()
-            if (orderTime.isShowForUser()) {
-                tv.text = orderTime
-                tv.setTextColor(_platform.getOrderTimeColor(getAct()))
-                tv.isVisible = true
-            }
+
+        if (isOrderTimeShowForUser) {
+            tv.text = iconDataInfo.orderTimeWarning!!
+            tv.setTextColor(iconDataInfo.orderTimeColor!!)
+            tv.isVisible = true
         }
 
-        //фильрация
-        if (_platform.workOrderId in mWorkOrderFilteredIds) {
-            iv.alpha = 0.1f
-            result.alpha = 0.1f
-            tv.alpha = 0.1f
-        }
+        val viewProvider = ViewProvider(result)
 
-        return ViewProvider(result)
+        mapIconViewProviderS.put(iconDataInfo, viewProvider)
+
+        return viewProvider
     }
-
 
 //    private fun drawSimpleBitmap(number: String):Bitmap{
 //        val picSize = 100.0f// {нужный вам размер изображения}
@@ -1419,3 +1433,10 @@ class MapPlatformSBehaviorAdapter(
         fun openFailureFire(item: PlatformEntity)
     }
 }
+
+data class MapIconData(
+    val iconResId: Int,
+    val isActive: Boolean,
+    val orderTimeWarning: String?,
+    val orderTimeColor: Int?
+)
