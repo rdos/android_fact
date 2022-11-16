@@ -25,4 +25,8 @@ class EndF : FragmentA() {
             getAct().logout()
         }
     }
+
+    override fun onBackPressed() {
+        // TODO ::: Знаю, знаю..
+    }
 }

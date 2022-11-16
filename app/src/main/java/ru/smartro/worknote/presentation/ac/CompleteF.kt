@@ -107,7 +107,7 @@ class CompleteF : FragmentA() {
         getAct().modeSyNChrON_off()
         mDatabase.clearDataBase()
 
-        navigate(R.id.FinishCompleteF)
+        navigateNext(R.id.FinishCompleteF)
     }
 
     inner class ReasonAdapter(private val workOrderS: MutableList<WorkOrderEntity>,
