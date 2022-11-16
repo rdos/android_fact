@@ -16,7 +16,7 @@ class EndF : FragmentA() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         hideProgress()
-
+//        EndF::class.java.constructors.get(0).newInstance()
         view.findViewById<Button>(R.id.finish_accept_btn).setOnClickListener {
             getAct().startActivity(Intent(getAct(), StartAct::class.java))
             getAct().finish()
