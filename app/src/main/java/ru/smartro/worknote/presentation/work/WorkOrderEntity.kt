@@ -628,7 +628,7 @@ open class PlatformEntity(
 
     fun getOrderTimeColor(context: Context): Int {
         if (isOrderTimeWarning() && isNotOrderTimeAlert()) {
-            return ContextCompat.getColor(context, R.color.dark_orange)
+            return ContextCompat.getColor(context, R.color.orange)
         }
         if (isOrderTimeAlert()) {
             return ContextCompat.getColor(context, R.color.dark_red)
