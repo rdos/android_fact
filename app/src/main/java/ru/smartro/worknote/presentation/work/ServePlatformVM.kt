@@ -273,35 +273,6 @@ class ServePlatformVM(app: Application) : AViewModel(app) {
         database.updatePlatformStatusSuccess(this.getPlatformId())
     }
 
-
-
-    fun buildMapNavigator(
-        point: Point,
-        checkPoint: Point, drivingRouter: DrivingRouter,
-        drivingSession: DrivingSession.DrivingRouteListener
-    ) {
-        val drivingOptions = DrivingOptions()
-        drivingOptions.routesCount = 1
-        drivingOptions.avoidTolls = true
-        val vehicleOptions = VehicleOptions()
-        val requestPoints = ArrayList<RequestPoint>()
-        requestPoints.add(
-            RequestPoint(
-                point,
-                RequestPointType.WAYPOINT,
-                null
-            )
-        )
-        requestPoints.add(
-            RequestPoint(
-                checkPoint,
-                RequestPointType.WAYPOINT,
-                null
-            )
-        )
-        drivingRouter.requestRoutes(requestPoints, drivingOptions, vehicleOptions, drivingSession)
-    }
-
     fun updateContainerFailure(containerId: Int, failText: String, commentText: String) {
         database.setStateFailureForContainer(this.getPlatformId(), containerId, failText, commentText)
         set_PlatformLiveData()

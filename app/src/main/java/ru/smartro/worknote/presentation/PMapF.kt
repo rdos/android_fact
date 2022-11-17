@@ -26,10 +26,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.RequestPoint
+import com.yandex.mapkit.RequestPointType
 import com.yandex.mapkit.directions.DirectionsFactory
-import com.yandex.mapkit.directions.driving.DrivingRoute
-import com.yandex.mapkit.directions.driving.DrivingRouter
-import com.yandex.mapkit.directions.driving.DrivingSession
+import com.yandex.mapkit.directions.driving.*
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
 import com.yandex.mapkit.map.*
@@ -58,28 +58,21 @@ import ru.smartro.worknote.presentation.work.*
 import ru.smartro.worknote.presentation.work.utils.getActivityProperly
 import java.io.IOException
 
-class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickListener,
-    MapObjectTapListener, UserLocationObjectListener, InertiaMoveListener, Callback {
-
-    private var mLastActivePlatform: PlatformEntity? = null
-    private val mapIconViewProviderS: HashMap<MapIconData, ViewProvider> = hashMapOf()
-
-    private var mapObjectCollection: MapObjectCollection? = null
-    private val mapObjectExplicitList: MutableMap<Int, MapObject> = mutableMapOf()
-
+class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickListener, Callback, MapListener {
 
     private var mTimeBeforeInSec: Long = Lnull
-    private var acibNavigatorToggle: AppCompatImageButton? = null
-    private var clMapBehavior: ConstraintLayout? = null
-    private var mAcbGotoComplete: AppCompatButton? = null
 
+    private var mMapMyYandex: MapView? = null
+
+    private var acibNavigatorToggle: AppCompatImageButton? = null
     private var acbUnload: AppCompatImageButton? = null
+    private var mAcbGotoComplete: AppCompatButton? = null
+    private var mAcbInfo: AppCompatButton? = null
+    private var clMapBehavior: ConstraintLayout? = null
 
     private var mAdapterBottomBehavior: MapPlatformSBehaviorAdapter? = null
     private var mIsAUTOMoveCamera: Boolean = false
     private var mInfoDialog: AlertDialog? = null
-    private lateinit var mAcbInfo: AppCompatButton
-    private lateinit var mMapMyYandex: MapView
 
     private val vm: ServePlatformVM by activityViewModels()
 
@@ -88,71 +81,13 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
     private var mPlatformS: List<PlatformEntity>? = null
     private var drivingModeState = false
 
-    private lateinit var userLocationLayer: UserLocationLayer
-    private lateinit var mDrivingRouter: DrivingRouter
-    private lateinit var mDrivingSession: DrivingSession.DrivingRouteListener
+    private val resultStatusList = mutableListOf<Status>()
+    val mNotifyMap = mutableMapOf<Int, Long>()
 
-    override fun onNewGPS() {
-        LOG.debug("onNewGPS")
-
-        val point = AppliCation().gps()
-        if (mIsAUTOMoveCamera) {
-            moveCameraTo(point)
-        }
-
-        val platformNear = vm.database.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
-
-        if (platformNear == null) {
-            LOG.debug("platformNear.is null")
-            for ((key, _) in mNotifyMap) {
-                AppliCation().cancelNotification(key)
-                mNotifyMap.remove(key)
-            }
-        } else {
-//            toast("FFFFFFFFFFFFF${platformNear.srpId}")]
-            if (!platformNear.isTypoMiB()) {
-                // TODO: !!!r_dos
-                showNotificationPlatfrom(platformNear.platformId, platformNear.srpId!!, platformNear.name)
-            }
-        }
-
-//       platformNear.observe(this, Observer { platformList ->
-//        if (!platformNear.isNullOrEmpty()) {
-//            if (platformNear.size == 1) {
-//                val platform = platformNear[0]
-//                toast("FFFFFFFFFFFFF${platform.platformId}")
-//                showNotificationPlatfrom(platform.platformId, platform.name)
-//            } else {
-//                toast("platformList.size=${platformList.size}")
-//            }
-//        } else {
-//            LOGWork("platformList.is null")
-//        }
-//       })
-
-//        LOG.debug("###################")
-//
-//
-//
-//        val distanceToPoint = MyUtil.calculateDistance(AppliCation().LocationPOINT, selectedPlatformToNavigate)
-////        LOG.debug("Distance: $distanceToPoint")
-//        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
-//            isOnPointFirstTime = false
-//            alertOnPoint().let {
-//                it.
-        //                dismiss_btn.setOnClickListener {
-//                    drivingModeState = false
-//                    isOnPointFirstTime = true
-//                    clearMapIbjectsDrive()
-//                    hideDialog()
-//                }
-//            }
-//        } else {
-////            LOG.debug("Distance not arrive")
-//        }
-
-//
-//        LOG.debug("Location updated")
+    private var MAP: MapHelper? = null
+    
+    override fun onGetLayout(): Int {
+        return R.layout.f_map
     }
 
     override fun onViewCreated(sview: View, savedInstanceState: Bundle?) {
@@ -162,6 +97,8 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
 
         mMapMyYandex = sview.findViewById(R.id.map_view)
+        MAP = MapHelper(mMapMyYandex!!, this)
+        
         val hasWorkOrdersInNotProgress = vm.database.hasWorkOrderInNotProgress()
         if (hasWorkOrdersInNotProgress || vm.database.findAllBreakDownReasonS().isEmpty()) {
             LOG.debug("::: hasWorkOrdersInNotProgress: ${hasWorkOrdersInNotProgress}, breakdown list size: ${vm.database.findAllBreakDownReasonS().size}")
@@ -170,10 +107,9 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
             val workOrderS = vm.database.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
         }
-        mMapMyYandex.map.addInertiaMoveListener(this)
 
         mAcbInfo = sview.findViewById(R.id.acb_f_map__info)
-        mAcbInfo.setOnClickListener {
+        mAcbInfo?.setOnClickListener {
             createInfoDialog({})
         }
         setInfoData()
@@ -194,20 +130,13 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
 
         initBottomBehavior(sview)
-
-        userLocationLayer = MapKitFactory.getInstance()
-            .createUserLocationLayer(mMapMyYandex.mapWindow)
-        userLocationLayer.isVisible = true
-        userLocationLayer.isHeadingEnabled = true
-        userLocationLayer.isAutoZoomEnabled = true
-        userLocationLayer.setObjectListener(this)
-
+        
         val fabGotoMyGPS = sview.findViewById<FloatingActionButton>(R.id.fab_f_map__goto_my_gps)
         fabGotoMyGPS.setOnClickListener {
             try {
                 AppliCation().startLocationService(true)
                 mIsAUTOMoveCamera = true
-                moveCameraTo(AppliCation().gps())
+                MAP?.moveCameraTo(AppliCation().gps())
             } catch (e: Exception) {
                 toast("Клиент не найден")
             }
@@ -222,22 +151,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
             navigateNext(R.id.JournalChatFragment, null)
         }
 
-        mDrivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
-        mDrivingSession = object : DrivingSession.DrivingRouteListener {
-            override fun onDrivingRoutesError(p0: com.yandex.runtime.Error) {
-                toast("Ошибка при построении маршрута")
-            }
-
-            override fun onDrivingRoutes(routes: MutableList<DrivingRoute>) {
-                routes.forEach { getMapObjectsDrive()?.addPolyline(it.geometry) }
-            }
-
-
-        }
-        LOG.warn("r_dos/onStart.before")
-        mMapMyYandex.onStart()
-        MapKitFactory.getInstance().onStart()
-        LOG.warn("r_dos/onStart.after")
         //todo:  R_dos!!! modeSyNChrON_off(false)
         paramS().isModeSYNChrONize = true
         AppliCation().startWorkER()
@@ -258,14 +171,9 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
                 // TODO: !!факТ)
                 return@observe
             }
-            if(mLastActivePlatform != null) {
-                LOG.debug("vm.todoLiveData.observe ::: mLastActivePlatform != null")
-                changeMapObjectIcon(mLastActivePlatform!!, false)
-            }
-            changeMapObjectIcon(it, true)
-            moveCameraTo(PoinT(it.coordLat, it.coordLong))
 
-            mLastActivePlatform = it
+            MAP?.setActivePlatform(it.platformId)
+            MAP?.moveCameraTo(PoinT(it.coordLat, it.coordLong))
         }
 //        setDevelMode()
         onRefreshData()
@@ -312,9 +220,9 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
             }
         }
         val userPoint = App.getAppliCation().gps()
-        moveCameraTo(userPoint)
+        MAP?.moveCameraTo(userPoint)
     }
-//
+
     fun getStateHandle(keyString: String, next: (result: Boolean) -> Any) {
         findNavController().currentBackStackEntry?.savedStateHandle?.clearSavedStateProvider(keyString)
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>(keyString)?.observe(viewLifecycleOwner)
@@ -337,69 +245,28 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
     private fun clearNavigator() {
         drivingModeState = false
         acibNavigatorToggle?.isVisible = drivingModeState
-        clearMapObjectsDrive()
+        MAP?.clearMapObjectsDrive()
         hideDialog()
     }
 
-    private fun changeMapObjectIcon(platformEntity: PlatformEntity, isActiveMode: Boolean) {
-        LOG.debug("changeMapObjectIcon")
-        val platformId = platformEntity.platformId
-
-        val oldObj = mapObjectExplicitList[platformId]
-        mapObjectCollection?.remove(oldObj as MapObject)
-
-        val coordLat = platformEntity.coordLat
-        val coordLong = platformEntity.coordLong
-        val point = Point(coordLat, coordLong)
-        val viewProvider = getIconViewProvider(platformEntity, isActiveMode)
-
-        val newObj = mapObjectCollection?.addPlacemark(point, viewProvider)
-        mapObjectExplicitList[platformId] = newObj!!
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        if (clMapBehavior != null) {
-            val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
-            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                return
-            }
-        }
-        navigateClose()
-    }
-
-    private var mMapObjectsDrive: MapObjectCollection? = null
-    private fun clearMapObjectsDrive() {
-        try {
-            mMapObjectsDrive?.clear()
-
-        } catch (ex: Exception) {
-
-        }
-        mMapObjectsDrive = null
-    }
-
-    private fun getMapObjectsDrive(): MapObjectCollection? {
-        if (mMapObjectsDrive == null) {
-            mMapObjectsDrive = mMapMyYandex.map.mapObjects.addCollection()
-        }
-        return mMapObjectsDrive
-    }
 
     private fun onRefreshData() {
         LOG.warn("before")
 //        mWorkOrderS = getActualWorkOrderS(true)
 //        mPlatformS = getActualPlatformS(true)
+        
         LOG.trace("getActualPlatformS.init")
         val platformS = getActualPlatformS(true)
         LOG.trace("getActualPlatformS.end")
+        
         LOG.trace("onRefreshBottomBehavior.init")
         val platformSWithQueryText = onRefreshBottomBehavior(platformS)
         LOG.trace("onRefreshBottomBehavior.end")
+        
         LOG.trace("onRefreshMap.init")
-        onRefreshMap(platformSWithQueryText)
+        MAP?.setPlatforms(platformSWithQueryText)
         LOG.trace("onRefreshMap.end")
+        
         setInfoData()
         LOG.warn("after")
     }
@@ -412,7 +279,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
             platformCnt += workOrder.cnt_platform
             platformProgress += workOrder.cnt_platform - workOrder.cnt_platform_status_new
         }
-        mAcbInfo.text = "$platformProgress / $platformCnt"
+        mAcbInfo?.text = "$platformProgress / $platformCnt"
     }
 
     private fun getActualWorkOrderS(isForceMode: Boolean = false, isFilterMode: Boolean = true): List<WorkOrderEntity> {
@@ -508,7 +375,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
     }
 
-    private val resultStatusList = mutableListOf<Status>()
     private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {
         LOG.debug("acceptProgress.before")
         vm.networkDat.progress(workOrder.id, ProgressBody(MyUtil.timeStampInSec()))
@@ -706,7 +572,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         acetFilterAddress.addTextChangedListener { newText ->
             mAdapterBottomBehavior?.let { mapBottom ->
                 mapBottom.filteredList(newText.toString())
-                onRefreshMap(mapBottom.getItems())
+                MAP?.setPlatforms(mapBottom.getItems())
             }
         }
         acetFilterAddress.clearFocus()
@@ -725,21 +591,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 //        }
     }
 
-    override fun moveCameraPlatform(item: PlatformEntity) {
-        LOG.debug("::: CLICK, plId: ${item.platformId}")
-
-        mIsAUTOMoveCamera = false
-        if (clMapBehavior == null) {
-            LOG.debug("::: clMapBehavior == null")
-            return
-        }
-
-        LOG.debug("::: clMapBehavior != null")
-        val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        vm.setPlatformEntity(item)
-    }
-
     private fun buildNavigatorPlatformUnload(){
         val workOrders = getActualWorkOrderS()
 
@@ -751,32 +602,10 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
     }
 
-    override fun navigatePlatform(checkPoint: Point) {
-        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
-        if (isModeUnload) {
-            toast("В режиме выгрузка нельзя обслуживать КП")
-            return
-        }
-//        if (drivingModeState) {
-//            navigateNext(R.id.DYesNoClearNavigator)
-////            navigateNext(DYesNoClearNavigator::class.javaClass)
-//        } else {
-            buildNavigator(checkPoint)
-//        }
-    }
-
-
-
-    override fun openFailureFire(item: PlatformEntity) {
-        vm.setPlatformEntity(item)
-        navigateNext(R.id.PhotoFailureMediaF, item.platformId)
-    }
-
     private fun buildNavigator(checkPoint: Point) {
         try {
 //            getMapObjCollection().clear()
-            clearMapObjectsDrive()
-            vm.buildMapNavigator(AppliCation().gps(), checkPoint, mDrivingRouter, mDrivingSession)
+            MAP?.buildMapNavigator(AppliCation().gps(), checkPoint)
             drivingModeState = true
             acibNavigatorToggle?.isVisible = drivingModeState
             hideDialog()
@@ -784,7 +613,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
                 val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             }
-            moveCameraTo(AppliCation().gps())
+            MAP?.moveCameraTo(AppliCation().gps())
         } catch (ex: Exception) {
             LOG.error("buildNavigator", ex)
             toast(getString(R.string.error_build_way))
@@ -792,47 +621,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 
     }
 
-    private fun moveCameraTo(pont: PoinT) {
-        LOG.debug("before pont.latitude=${pont.latitude} pont.long=${pont.longitude}")
-        mMapMyYandex.map.mapObjects
-        mMapMyYandex.map.move(
-            CameraPosition(pont, 15.0f, 0.0f, 0.0f),
-            Animation(Animation.Type.SMOOTH, 1F), null
-        )
-    }
-
-//    override fun onLocationStatusUpdated(locationStatus: LocationStatus) {
-//        logSentry("onLocationStatusUpdated ${locationStatus.name.toStr()}")
-//        when (locationStatus) {
-//            LocationStatus.NOT_AVAILABLE -> LOG.debug("GPS STOP")
-//            LocationStatus.AVAILABLE -> LOG.debug("GPS START")
-//
-//        }
-//    }
-//
-
-//    private fun rotateCompass(azimut: Float) {
-//        val azimuth = Math.round(Math.toDegrees(azimut.toDouble())).toFloat()
-//        val currentLoc = AppliCation().GPS().Location!!
-//
-//        val target = Location("")
-//        target.setLatitude(34.000)
-//        target.setLongitude(34.000)
-//        var bearing: Float = currentLoc.bearingTo(target) // (it's already in degrees)
-//        if (bearing < 0) {
-//            bearing = bearing + 360
-//        }
-//        var direction = (bearing - azimuth)
-//
-//        // If the direction is smaller than 0, add 360 to get the rotation clockwise.
-//        if (direction < 0) {
-//            direction = direction + 360
-//        }
-//        toast("" + direction)
-//        rotateImageView(imgCompass, R.drawable.pin_finder, direction)
-//    }
-
-    val mNotifyMap = mutableMapOf<Int, Long>()
     private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, string: String?) {
         if (mNotifyMap.containsKey(srpId)) {
             return
@@ -857,198 +645,118 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         )
     }
 
-    override fun onGetLayout(): Int {
-        return R.layout.f_map
+    override fun onInertiaStart() {
+        mIsAUTOMoveCamera = false
     }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        LOG.debug("r_dos//onActivityResult.requestCode=${requestCode}")
-        LOG.debug("r_dos//onActivityResult.resultCode=${resultCode}")
-
-    }
-//    override fun onLocationUpdated(location: Location) {
-////        LOG.debug("###################")
-//        currentLocation = location
-//        LOGWork("onLocationUpdatedaccuracy.${currentLocation.accuracy}")
-//        paramS().currentCoordinate = "${location.position.longitude}#${location.position.latitude}"
-//        paramS().currentCoordinateAccuracy = location.accuracy.toString()
-//        val distanceToPoint = MyUtil.calculateDistance(location.position, selectedPlatformToNavigate)
-////        LOG.debug("Distance: $distanceToPoint")
-//        if (drivingModeState && distanceToPoint <= MIN_METERS && isOnPointFirstTime) {
-//            isOnPointFirstTime = falsemMappingPlatformMapObjects
-//            alertOnPoint().let {
-//                it.dismiss_btn.setOnClickListener {
-//                    drivingModeState = false
-//                    isOnPointFirstTime = true
-//                    clearMapIbjectsDrive()
-//                    hideDialog()
-//                }
-//            }
-//        } else {
-////            LOG.debug("Distance not arrive")
-//        }
-//        if (firstTime) {
-//            moveCameraToUser(location)
-//            firstTime = false
-//        }
-////        LOG.debug("Location updated")
-//    }
-
-    private fun onRefreshMap(platformS: List<PlatformEntity>) {
-        mapObjectCollection?.clear()
-        try {
-            mapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
-        } catch (ex: Exception) {
-            LOG.error("onRefreshMap", ex)
-            // TODO: :)!!!
-            mapObjectCollection = null
-        }
-
-        mapObjectCollection?.removeTapListener(this)
-//        LOG.trace("for (platform in platformS) {.init")
-        for (platform in platformS) {
-//            LOG.trace("getIconViewProvider.init")
-            val iconProvider = getIconViewProvider(platform)
-//            LOG.trace("getIconViewProvider.end")
-            val pointYandex = Point(platform.coordLat, platform.coordLong)
-            val mapObject = mapObjectCollection?.addPlacemark(pointYandex, iconProvider)
-            if(mapObject != null)
-                mapObjectExplicitList.put(platform.platformId, mapObject)
-        }
-//        LOG.trace("for (platform in platformS) {.end")
-        mapObjectCollection?.addTapListener(this)
-    }
-
-    override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
-        val result = true
-        LOG.debug("onMapObjectTap:result=${result}")
-
-        val placeMark = mapObject as PlacemarkMapObject
-        val coordS = placeMark.geometry
-        val plaformE = vm.loadPlatformEntityByCoordS(coordS.latitude, coordS.longitude)
-        LOG.debug("::: loadPLAtformENtityByCoords:: ${plaformE.platformId}")
-
-
+    
+    override fun onPlatformTap(pId: Int) {
+        val platformE = vm.database.getPlatformEntity(pId)
+        
         findNavController().currentBackStackEntry?.savedStateHandle?.clearSavedStateProvider("startPhotoFailureMedia")
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("startPhotoFailureMedia")?.observe(
             viewLifecycleOwner) {result ->
             if(result) {
-                startPhotoFailureMedia(plaformE)
+                if(platformE != null)
+                    startPhotoFailureMedia(platformE)
             }
             // Do something with the result.
         }
+
         findNavController().currentBackStackEntry?.savedStateHandle?.clearSavedStateProvider("navigatePlatform")
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("navigatePlatform")?.observe(
             viewLifecycleOwner) {result ->
             if(result) {
-                navigatePlatform(Point(plaformE.coordLat, plaformE.coordLong))
+                if(platformE != null)
+                    navigatePlatform(Point(platformE.coordLat, platformE.coordLong))
             }
             // Do something with the result.
         }
 
         navigateNext(R.id.MapPlatformClickedDtlF)
-        LOG.warn("result=${result}::onMapObjectTap")
-        return result
     }
 
-    ///  TODO ::: relatively big
-    private fun getIconViewProvider(platform: PlatformEntity, isActiveMode: Boolean = false): ViewProvider {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        LOG.debug("r_dos//onActivityResult.requestCode=${requestCode}")
+        LOG.debug("r_dos//onActivityResult.resultCode=${resultCode}")
+    }
+    
+    override fun navigatePlatform(checkPoint: Point) {
+        val isModeUnload = vm.database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
+        if (isModeUnload) {
+            toast("В режиме выгрузка нельзя обслуживать КП")
+            return
+        }
+//        if (drivingModeState) {
+//            navigateNext(R.id.DYesNoClearNavigator)
+////            navigateNext(DYesNoClearNavigator::class.javaClass)
+//        } else {
+        buildNavigator(checkPoint)
+//        }
+    }
 
-        val isOrderTimeShowForUser = platform.isOrderTimeWarning() && platform.getOrderTimeForMaps().isShowForUser()
 
-        val iconDataInfo = MapIconData(
-            iconResId = platform.getIconFromStatus(),
-            isActive = isActiveMode,
-            orderTimeWarning = if(isOrderTimeShowForUser) platform.getOrderTimeForMaps() else null,
-            orderTimeColor = if(isOrderTimeShowForUser) platform.getOrderTimeColor(requireContext()) else null
-        )
+    override fun openFailureFire(item: PlatformEntity) {
+        vm.setPlatformEntity(item)
+        navigateNext(R.id.PhotoFailureMediaF, item.platformId)
+    }
 
-        if(mapIconViewProviderS.containsKey(iconDataInfo)) {
-            LOG.debug("TEST ::: mapIconViewProviderS.containsKey")
-            return mapIconViewProviderS.get(iconDataInfo)!!
+
+    override fun moveCameraPlatform(item: PlatformEntity) {
+        LOG.debug("::: CLICK, plId: ${item.platformId}")
+
+        mIsAUTOMoveCamera = false
+        if (clMapBehavior == null) {
+            LOG.debug("::: clMapBehavior == null")
+            return
         }
 
-        val result = LayoutInflater.from(requireContext()).inflate(R.layout.map_activity__iconmaker, null)
-        val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
-        iv.setImageDrawable(ContextCompat.getDrawable(requireContext(), iconDataInfo.iconResId))
+        LOG.debug("::: clMapBehavior != null")
+        val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        vm.setPlatformEntity(item)
+    }
 
-        val tv = result.findViewById<TextView>(R.id.map_activity__iconmaker__textview)
-        if (isActiveMode) {
-            result.findViewById<View>(R.id.v__map_activity__iconmaker__bg_active).visibility = View.VISIBLE
+
+    override fun onNewGPS() {
+        LOG.debug("onNewGPS")
+
+        val point = AppliCation().gps()
+        if (mIsAUTOMoveCamera) {
+            MAP?.moveCameraTo(point)
+        }
+
+        val platformNear = vm.database.findPlatformByCoord(point.latitude, point.longitude, point.getAccuracy())
+
+        if (platformNear == null) {
+            LOG.debug("platformNear.is null")
+            for ((key, _) in mNotifyMap) {
+                AppliCation().cancelNotification(key)
+                mNotifyMap.remove(key)
+            }
         } else {
-            result.findViewById<View>(R.id.v__map_activity__iconmaker__bg_active).visibility = View.GONE
+            if (!platformNear.isTypoMiB()) {
+                // TODO: !!!r_dos
+                showNotificationPlatfrom(platformNear.platformId, platformNear.srpId!!, platformNear.name)
+            }
         }
+    }
 
-        tv.isVisible = false
-
-        if (isOrderTimeShowForUser) {
-            tv.text = iconDataInfo.orderTimeWarning!!
-            tv.setTextColor(iconDataInfo.orderTimeColor!!)
-            tv.isVisible = true
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (clMapBehavior != null) {
+            val bottomSheetBehavior = BottomSheetBehavior.from(clMapBehavior!!)
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                return
+            }
         }
-
-        val viewProvider = ViewProvider(result)
-
-        mapIconViewProviderS.put(iconDataInfo, viewProvider)
-
-        return viewProvider
+        navigateClose()
     }
-
-//    private fun drawSimpleBitmap(number: String):Bitmap{
-//        val picSize = 100.0f// {нужный вам размер изображения}
-//        val bitmap =  Bitmap.createBitmap(picSize.toInt(), picSize.toInt(), Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(bitmap)
-//        //        // отрисовка плейсмарка
-//        val paint = Paint()
-//        paint.color = Color.GREEN
-//        paint.setStyle(Paint.Style.FILL)
-//        canvas.drawCircle(picSize / 2, picSize / 2, picSize / 2, paint)
-//        //        // отрисовка текста
-//        paint.setColor(Color.WHITE)
-//        paint.setAntiAlias(true)
-//        paint.setTextSize(30f)
-//        canvas.drawText(number, 0f,picSize / 2 - ((paint.descent() + paint.ascent()) / 2), paint);
-//        return bitmap
-//    }
-
-
-    /** РИСУЕМ МАШИНКУ, нормальную ic_truck_icon.png*/
-    override fun onObjectAdded(userLocationView: UserLocationView) {
-        LOG.debug("before")
-        userLocationView.accuracyCircle.isVisible = true
-//        userLocationLayer.setObjectListener(this)
-    }
-
-    override fun onObjectRemoved(p0: UserLocationView) {
-//        TODO("Not yet implemented")
-        LOG.debug("before")
-    }
-
-    override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) {
-//        TODO("Not yet implemented")
-        LOG.debug("before")
-
-    }
-
-
-    /**
-    //        val source = BitmapFactory.decodeResource(context.resources, R.drawable.your_icon_name)
-    // создаем mutable копию, чтобы можно было рисовать поверх
-    // создаем mutable копию, чтобы можно было рисовать поверх
-    //        val bitmap = source.copy(Bitmap.Config.ARGB_8888, true)
-    // инициализируем канвас
-    // инициализируем канвас
-    //        val canvas = Canvas(bitmap)
-    // рисуем текст на канвасе аналогично примеру выше
-
-     */
-
 
     override fun onDestroy() {
         super.onDestroy()
-        mMapMyYandex.onStop()
+        mMapMyYandex?.onStop()
         MapKitFactory.getInstance().onStop()
         vm.database.setConfigCntPlusOne(ConfigName.MAPACTDESTROY_CNT)
         vm.database.close()
@@ -1152,24 +860,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         mAcbGotoComplete?.background = ContextCompat.getDrawable(getAct(), R.drawable.bg_button)
         mAcbGotoComplete?.isEnabled = true
     }
-
-    /** ********************************************************************************************
-     * ЗДЕСЬ интерфейсы interface*/
-
-    override fun onStart(p0: Map, p1: CameraPosition) {
-        mIsAUTOMoveCamera = false
-    }
-
-    override fun onCancel(p0: Map, p1: CameraPosition) {
-        this as InertiaMoveListener
-        LOG.debug("onCancel")
-    }
-
-    override fun onFinish(p0: Map, p1: CameraPosition) {
-        LOG.debug("onFinish")
-//        this as InertiaMoveListener
-    }
-
+    
     override fun onFailure(call: Call, e: IOException) {
         toast("Проблемы с интернетом")
         hideProgress()
@@ -1205,7 +896,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         vm.setPlatformEntity(item)
         navigateNext(R.id.PhotoFailureMediaF, item.platformId)
     }
-
 
 }
 
@@ -1431,10 +1121,3 @@ class MapPlatformSBehaviorAdapter(
         fun openFailureFire(item: PlatformEntity)
     }
 }
-
-data class MapIconData(
-    val iconResId: Int,
-    val isActive: Boolean,
-    val orderTimeWarning: String?,
-    val orderTimeColor: Int?
-)
