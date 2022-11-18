@@ -215,9 +215,9 @@
 
     <fragment
         android:id="@+id/CompleteF"
+        android:label="CompleteF"
         android:name="ru.smartro.worknote.presentation.ac.CompleteF"
-        tools:layout="@layout/f_complete___map_act"
-        android:label="CompleteF">
+        tools:layout="@layout/f_complete___map_act">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -247,7 +247,7 @@
         android:id="@+id/PServeF"
         android:name="ru.smartro.worknote.presentation.PServeF"
         tools:layout="@layout/f_pserve"
-        android:label="CompleteF">
+        android:label="PServeF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -262,7 +262,7 @@
         android:id="@+id/PServeGroupByContainersF"
         android:name="ru.smartro.worknote.presentation.PServeGroupByContainersF"
         tools:layout="@layout/f_pserve_groupby"
-        android:label="CompleteF">
+        android:label="PServeGroupByContainersF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
