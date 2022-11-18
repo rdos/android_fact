@@ -69,6 +69,12 @@ class AppParaMS {
             it.putString("userName", value)
         }
 
+    var userPass: String
+        get() = sharedPref__env.getString("userPass", Snull)!!
+        set(value) = sharedPref__env.edit {
+            it.putString("userPass", value)
+    }
+
     var deviceId: String
         get() {
             var devId = sharedPref__env.getString("deviceId", Snull)!!

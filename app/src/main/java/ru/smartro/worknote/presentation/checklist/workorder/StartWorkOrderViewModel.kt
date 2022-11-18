@@ -8,9 +8,9 @@ import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.AViewModel
+import ru.smartro.worknote.awORKOLDs.util.THR
 import ru.smartro.worknote.saveJSON
 import ru.smartro.worknote.presentation.work.Resource
-import ru.smartro.worknote.presentation.work.THR
 import ru.smartro.worknote.presentation.work.WoRKoRDeR_know1
 import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
 

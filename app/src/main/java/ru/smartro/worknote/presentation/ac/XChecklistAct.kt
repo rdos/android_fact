@@ -24,7 +24,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleRes
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.saveJSON
 import ru.smartro.worknote.presentation.work.Resource
-import ru.smartro.worknote.presentation.work.THR
+import ru.smartro.worknote.awORKOLDs.util.THR
 import ru.smartro.worknote.presentation.work.WoRKoRDeR_know1
 import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
 

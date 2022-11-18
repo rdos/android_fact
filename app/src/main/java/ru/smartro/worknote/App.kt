@@ -45,6 +45,7 @@ import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.*
+import ru.smartro.worknote.awORKOLDs.service.OkRESTman
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
 import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
@@ -91,7 +92,7 @@ class App : AApp() {
 //        internal lateinit var INSTANCE: App
 //            private set
         fun getAppliCation(): App = INSTANCE!!
-
+        fun oKRESTman(): OkRESTman = getAppliCation().mRESTman!!
         fun getAppParaMS(): AppParaMS = getAppliCation().aPPParamS
         fun getMethodMan(): String? {
             return "MethodMan"
@@ -105,7 +106,10 @@ class App : AApp() {
     private var mNetworkDat: NetworkRepository? = null
     private var mDB: RealmRepository? = null
 
+
+    private var mRESTman: OkRESTman? = null
     val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
 
     override fun onLowMemory() {
         super.onLowMemory()
@@ -206,6 +210,7 @@ class App : AApp() {
         LOG.info("on App created App.onCreate onAppCreate")
         sentryInit()
         realmInit()
+        manInit()
 //        try {    // Add a breadcrumb that will be sent with the next event(s)//            throw Exception("This is a devel.")//        } catch (e: Exception) {
 //            Sentry.captureException(e) //        }                                             //        val objectAnimator: ObjectAnimator = ObjectAnimator.ofFloat( //            mLlcMap, "alpha", 0f
 //        ) //        objectAnimator.setDuration(4000);
@@ -221,6 +226,11 @@ class App : AApp() {
 
         registerReceiver(mAirplaneModeStateReceiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
     }
+
+    private fun manInit() {
+        mRESTman = OkRESTman()
+    }
+
 
     private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){
         val logsFilesArray = this.getD(D__LOGS).listFiles()

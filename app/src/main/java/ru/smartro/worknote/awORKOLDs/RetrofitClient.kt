@@ -1,7 +1,6 @@
-package ru.smartro.worknote.awORKOLDs.service.network
+package ru.smartro.worknote.awORKOLDs
 
 import android.content.Context
-import com.google.gson.GsonBuilder
 import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -12,9 +11,8 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
+import ru.smartro.worknote.awORKOLDs.service.network.ApiService
 import java.util.concurrent.TimeUnit
-import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.awORKOLDs.service.network.interceptor.TokenAuthenticator
 
 class RetrofitClient(context: Context) {
     

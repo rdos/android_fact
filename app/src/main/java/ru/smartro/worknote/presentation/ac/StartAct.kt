@@ -3,13 +3,9 @@ package ru.smartro.worknote.presentation.ac
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.lifecycle.LiveData
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
-import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
-import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
-import ru.smartro.worknote.presentation.work.Resource
 
 
 class StartAct : AAct() {
@@ -29,10 +25,16 @@ class StartAct : AAct() {
     }
 
     open class AuthViewModel(app: Application) : AViewModel(app) {
-
-        fun auth(authModel: AuthBody): LiveData<Resource<AuthResponse>> {
-            return networkDat.auth(authModel)
-        }
+// TODO: R_dos!!!
+//        fun auth(): LiveData<Resource<AuthResponse>> {
+//                                                    //            viewModelScope.coroutineContext
+//            val authRequest = AuthRequest()
+//            App.oKRESTman().add(authRequest)
+//            App.oKRESTman().send()
+////            Test().main()
+//            val res = networkDat.auth(authModel)
+//            return res
+//        }
     }
 
 }
