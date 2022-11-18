@@ -108,7 +108,7 @@ class CompleteF : ANOFragment() {
         getAct().modeSyNChrON_off()
         mDatabase.clearDataBase()
 
-        getAct().findNavController(R.id.fcv_container).navigate(R.id.FinishCompleteF)
+        getAct().logout()
     }
 
     inner class ReasonAdapter(private val workOrderS: MutableList<WorkOrderEntity>,

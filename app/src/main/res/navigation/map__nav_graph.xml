@@ -228,20 +228,6 @@
             />
     </fragment>
 
-    <fragment
-        android:id="@+id/FinishCompleteF"
-        tools:layout="@layout/f_finish_complete"
-        android:name="ru.smartro.worknote.presentation.terminate.FinishCompleteF"
-        android:label="FinishCompleteF">
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
 
     <fragment
         android:id="@+id/PServeF"
