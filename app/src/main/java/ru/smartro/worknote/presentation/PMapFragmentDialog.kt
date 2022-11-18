@@ -57,8 +57,8 @@ class PMapFragmentDialog : FragmentDialogA(), View.OnClickListener {
                 navigate(R.id.MapPlatformsF)
             }
             R.id.platform_location -> {
+                findNavController().previousBackStackEntry?.savedStateHandle?.set("navigatePlatform", true)
                 navigate(R.id.MapPlatformsF)
-                findNavController().previousBackStackEntry?.savedStateHandle?.set("FragmentA(Platform", true)
             }
         }
 

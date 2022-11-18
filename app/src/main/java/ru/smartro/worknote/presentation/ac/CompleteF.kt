@@ -221,7 +221,7 @@ class CompleteF : FragmentA() {
 
                 acbAccept.setOnClickListener {
                     if (workOrderEntity.isShowForUser == false) {
-                        toast("Вы завершили Сменного Задания")
+                        toast("Вы завершили Сменное(-ые) Задание(-я)")
                         return@setOnClickListener
                     }
                     val hold = this

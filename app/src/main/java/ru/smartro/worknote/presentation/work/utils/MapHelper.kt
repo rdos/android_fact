@@ -1,4 +1,4 @@
-package ru.smartro.worknote.presentation
+package ru.smartro.worknote.presentation.work.utils
 
 import android.content.Context
 import android.view.*
@@ -20,6 +20,7 @@ import com.yandex.mapkit.mapview.MapView
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
+import com.yandex.runtime.Error
 import com.yandex.runtime.ui_view.ViewProvider
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
@@ -44,7 +45,8 @@ interface MapListener {
 class MapHelper(private val mapView: MapView, private val listener: MapListener):
     MapObjectTapListener,
     UserLocationObjectListener,
-    InertiaMoveListener {
+    InertiaMoveListener,
+    DrivingSession.DrivingRouteListener {
 
     private val mapIconViewProviderS: HashMap<PlatformIconConfig, ViewProvider> = hashMapOf()
     private val platformIconConfigS: HashMap<Int, PlatformIconConfig> = hashMapOf()
@@ -76,16 +78,7 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
         userLocationLayer.setObjectListener(this)
 
         mDrivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
-        mDrivingSession = object : DrivingSession.DrivingRouteListener {
-            override fun onDrivingRoutesError(p0: com.yandex.runtime.Error) {
-                toast("Ошибка при построении маршрута")
-            }
-
-            override fun onDrivingRoutes(routes: MutableList<DrivingRoute>) {
-//                routes.forEach { getMapObjectsDrive()?.addPolyline(it.geometry) }
-            }
-
-        }
+        mDrivingSession = this
 
         LOG.warn("r_dos/onStart.before")
 
@@ -124,7 +117,7 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
     private fun getActiveIcon(platformId: Int): ViewProvider? {
         val candidate = platformIconConfigS[platformId]
         val iconView = if(candidate != null) {
-            generateViewProivder(candidate, true)
+            generateViewProvider(candidate, true)
         } else {
             return null
         }
@@ -134,7 +127,7 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
     private fun getInactiveIcon(platformId: Int): ViewProvider? {
         val candidate = platformIconConfigS[platformId]
         val iconView = if(candidate != null) {
-            generateViewProivder(candidate, false)
+            generateViewProvider(candidate, false)
         } else {
             return null
         }
@@ -178,14 +171,14 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
             return candidate
         }
 
-        val viewProvider = generateViewProivder(iconData, isActiveMode)
+        val viewProvider = generateViewProvider(iconData, isActiveMode)
 
         mapIconViewProviderS.put(iconData, viewProvider)
 
         return viewProvider
     }
 
-    private fun generateViewProivder(iconData: PlatformIconConfig, isActiveMode: Boolean): ViewProvider {
+    private fun generateViewProvider(iconData: PlatformIconConfig, isActiveMode: Boolean): ViewProvider {
         val result = LayoutInflater.from(context).inflate(R.layout.map_activity__iconmaker, null)
         val iv = result.findViewById<ImageView>(R.id.map_activity__iconmaker__imageview)
         iv.setImageDrawable(ContextCompat.getDrawable(context, iconData.iconResId))
@@ -237,6 +230,7 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
 
     fun clearMapObjectsDrive() {
         try {
+            LOG.debug("CLEARED::::!!!!")
             mMapObjectsDrive?.clear()
         } catch (ex: Exception) {
             LOG.warn(ex.stackTraceToString())
@@ -258,7 +252,28 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
     }
 
     fun setActivePlatform(platformId: Int) {
+        val candidate = platformMapObjectS[platformId] as PlacemarkMapObject?
+        if(candidate == null) {
+            return
+        }
 
+        if(lastActive != null) {
+            val lastActiveId = lastActive!!.userData as Int
+            if(lastActiveId == platformId)
+                return
+
+            val inactiveIcon = getInactiveIcon(lastActiveId)
+            if(inactiveIcon != null) {
+                lastActive!!.setView(inactiveIcon)
+            }
+        }
+
+        val newIcon = getActiveIcon(platformId)
+        if(newIcon != null) {
+            candidate.setView(newIcon)
+        }
+
+        lastActive = candidate
     }
 
     fun moveCameraTo(pont: PoinT) {
@@ -282,8 +297,8 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
 
     }
 
-    override fun onObjectAdded(p0: UserLocationView) {
-
+    override fun onObjectAdded(userLocationView: UserLocationView) {
+        userLocationView.accuracyCircle.isVisible = true
     }
 
     override fun onObjectRemoved(p0: UserLocationView) {
@@ -292,5 +307,13 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
 
     override fun onObjectUpdated(p0: UserLocationView, p1: ObjectEvent) {
 
+    }
+
+    override fun onDrivingRoutes(routes: MutableList<DrivingRoute>) {
+        routes.forEach { getMapObjectsDrive()?.addPolyline(it.geometry) }
+    }
+
+    override fun onDrivingRoutesError(p0: Error) {
+        toast("Ошибка при построении маршрута")
     }
 }

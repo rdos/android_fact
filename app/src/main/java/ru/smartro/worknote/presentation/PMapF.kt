@@ -2,7 +2,6 @@ package ru.smartro.worknote.presentation
 
 import android.app.AlertDialog
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -10,7 +9,6 @@ import android.view.*
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -24,21 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.RequestPoint
-import com.yandex.mapkit.RequestPointType
-import com.yandex.mapkit.directions.DirectionsFactory
-import com.yandex.mapkit.directions.driving.*
 import com.yandex.mapkit.geometry.Point
-import com.yandex.mapkit.layers.ObjectEvent
-import com.yandex.mapkit.map.*
-import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.mapview.MapView
-import com.yandex.mapkit.user_location.UserLocationLayer
-import com.yandex.mapkit.user_location.UserLocationObjectListener
-import com.yandex.mapkit.user_location.UserLocationView
-import com.yandex.runtime.ui_view.ViewProvider
 import net.cachapa.expandablelayout.ExpandableLayout
 import okhttp3.Call
 import okhttp3.Callback
@@ -55,6 +41,8 @@ import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.work.ServePlatformVM
 import ru.smartro.worknote.presentation.work.*
+import ru.smartro.worknote.presentation.work.utils.MapHelper
+import ru.smartro.worknote.presentation.work.utils.MapListener
 import ru.smartro.worknote.presentation.work.utils.getActivityProperly
 import java.io.IOException
 
@@ -98,7 +86,28 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 
         mMapMyYandex = sview.findViewById(R.id.map_view)
         MAP = MapHelper(mMapMyYandex!!, this)
-        
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("startPhotoFailureMedia")?.observe(
+            viewLifecycleOwner) { result ->
+            LOG.debug("TEST ::: LIVE DATA SAVED STATE: startPhotoFailureMedia: ${result}")
+            if(result) {
+                val pl = vm.getPlatformEntity()
+                findNavController().currentBackStackEntry?.savedStateHandle?.set("startPhotoFailureMedia", false)
+                startPhotoFailureMedia(pl)
+            }
+            // Do something with the result.
+        }
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("navigatePlatform")?.observe(
+            viewLifecycleOwner) { result ->
+            LOG.debug("TEST ::: LIVE DATA SAVED STATE: navigatePlatform: ${result}")
+            if(result) {
+                val pl = vm.getPlatformEntity()
+                findNavController().currentBackStackEntry?.savedStateHandle?.set("navigatePlatform", false)
+                navigatePlatform(Point(pl.coordLat, pl.coordLong))
+            }
+            // Do something with the result.
+        }
+
         val hasWorkOrdersInNotProgress = vm.database.hasWorkOrderInNotProgress()
         if (hasWorkOrdersInNotProgress || vm.database.findAllBreakDownReasonS().isEmpty()) {
             LOG.debug("::: hasWorkOrdersInNotProgress: ${hasWorkOrdersInNotProgress}, breakdown list size: ${vm.database.findAllBreakDownReasonS().size}")
@@ -651,27 +660,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
     
     override fun onPlatformTap(pId: Int) {
         val platformE = vm.database.getPlatformEntity(pId)
-        
-        findNavController().currentBackStackEntry?.savedStateHandle?.clearSavedStateProvider("startPhotoFailureMedia")
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("startPhotoFailureMedia")?.observe(
-            viewLifecycleOwner) {result ->
-            if(result) {
-                if(platformE != null)
-                    startPhotoFailureMedia(platformE)
-            }
-            // Do something with the result.
-        }
-
-        findNavController().currentBackStackEntry?.savedStateHandle?.clearSavedStateProvider("navigatePlatform")
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("navigatePlatform")?.observe(
-            viewLifecycleOwner) {result ->
-            if(result) {
-                if(platformE != null)
-                    navigatePlatform(Point(platformE.coordLat, platformE.coordLong))
-            }
-            // Do something with the result.
-        }
-
+        vm.setPlatformEntity(platformE)
         navigateNext(R.id.MapPlatformClickedDtlF)
     }
 
