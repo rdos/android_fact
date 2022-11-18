@@ -1,7 +1,7 @@
 package ru.smartro.worknote.awORKOLDs.service.network.body.synchro
 
 import com.google.gson.annotations.Expose
-import ru.smartro.worknote.work.PlatformEntity
+import ru.smartro.worknote.presentation.work.PlatformEntity
 
 class SynchronizeBody(
     @Expose

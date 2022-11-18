@@ -5,7 +5,7 @@ import android.provider.Settings
 import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.presentation.came.EXTENSION_WHITELIST
+import ru.smartro.worknote.presentation.EXTENSION_WHITELIST
 import java.io.File
 import java.util.*
 
@@ -65,6 +65,13 @@ abstract class AApp : Application() {
         makeD(fl)
         val file = File(fl, Fname)
         return file
+    }
+
+    fun checkF(Dname: String, Fname: String): Boolean {
+        val fl = getDPath(Dname)
+        makeD(fl)
+        val file = File(fl, Fname)
+        return file.exists()
     }
 
 }

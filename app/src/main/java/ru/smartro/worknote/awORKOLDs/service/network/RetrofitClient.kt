@@ -14,6 +14,7 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
 import java.util.concurrent.TimeUnit
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
+import ru.smartro.worknote.awORKOLDs.service.network.interceptor.TokenAuthenticator
 
 class RetrofitClient(context: Context) {
     

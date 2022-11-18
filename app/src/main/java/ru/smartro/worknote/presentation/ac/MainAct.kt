@@ -1,7 +1,12 @@
 package ru.smartro.worknote.presentation.ac
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -12,32 +17,60 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
-import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.AppParaMS
+import ru.smartro.worknote.LOG
+import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbsObject
+import ru.smartro.worknote.abs.FragmentAI
 import ru.smartro.worknote.andPOintD.IActTooltip
 import ru.smartro.worknote.andPOintD.ITooltip
-import ru.smartro.worknote.presentation.platform_serve.ServePlatformVM
-import ru.smartro.worknote.work.ConfigName
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.presentation.work.ServePlatformVM
+import ru.smartro.worknote.presentation.work.ConfigName
 
 //todo: INDEterminate)
 class MainAct :
     AAct(), IActTooltip {
+
     val vm: ServePlatformVM by viewModels()
+    private var mIsDlgShown = false
+
+    private val mGpsStateReceiver by lazy { getGpsStateBroadcastReceiver() }
+
+    private fun getGpsStateBroadcastReceiver(): BroadcastReceiver {
+        return object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent?) {
+                if(intent?.action == LocationManager.PROVIDERS_CHANGED_ACTION) {
+                    val locationManager = context.getSystemService(LOCATION_SERVICE) as LocationManager
+                    val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                    val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+                    LOG.debug("IS GPS ENABLED = ${isGpsEnabled}, IS NETWORK ENABLED = ${isNetworkEnabled}")
+
+                    val dialogShouldShow = (isGpsEnabled || isNetworkEnabled) == false
+
+                    if(dialogShouldShow && mIsDlgShown != dialogShouldShow) {
+                        showNextFragment(R.id.InfoGpsOffDF)
+                    }
+
+                    mIsDlgShown = dialogShouldShow
+                }
+            }
+        }
+    }
+
 //    val mTooltipHell = MainAct.DialogHelpER(this, TAG)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_main)
+        setContentView(R.layout.a_main)
         supportActionBar?.hide()
-
 //        mTooltipHell.setStartId("ll_containers_count", paramS())
     }
 
-
     override fun onBackPressed() {
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        (navHostFragment.childFragmentManager.fragments[0] as ANOFragment).onBackPressed()
+        (navHostFragment.childFragmentManager.fragments[0] as FragmentAI).onBackPressed()
     }
 
 
@@ -58,21 +91,27 @@ class MainAct :
 
     override fun onPause() {
         super.onPause()
-        AppliCation().getDB().apply {
-            LOG.info("SWIPE")
-            val config = loadConfig(ConfigName.SWIPE_CNT)
-            config.cntPlusOne()
-            saveConfig(config)
-        }
+        unregisterReceiver(mGpsStateReceiver)
+        LOG.info("SWIPE")
+        vm.database.setConfigCntPlusOne(ConfigName.SWIPE_CNT)
     }
 
     override fun onRestart() {
         super.onRestart()
     }
 
+    override fun onResume() {
+        super.onResume()
+        val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
+        filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
+        registerReceiver(mGpsStateReceiver, filter)
+    }
+
     //todo:::
     override fun onDestroy() {
         super.onDestroy()
+
+        hideDialog()
 //        mTooltipHell.setNextTime(paramS())
 
     }
@@ -108,7 +147,7 @@ class MainAct :
     }
 //
 
-    class DialogHelpER(val actTooltip: IActTooltip, val p_TAG: String, val p_valim: String="TooltipHelpER") : AbsObject(p_TAG, p_valim) {
+    class DialogHelpER(val actTooltip: IActTooltip, val p_valim: String="TooltipHelpER") : AbsObject(p_valim) {
         var isRecyclerMode: Boolean = false
         private var mTooltipNextId: String? = null
         private var vDialog: View? = null
@@ -166,7 +205,7 @@ class MainAct :
 
         fun setStartId(viewIdAsText: String, paramS: AppParaMS) {
             if(paramS.isShowTooltipInNextTime) {
-//            navigateMain(R.id.WalkthroughStepAF, 1)
+//            navigateNext(R.id.WalkthroughStepAF, 1)
                 setNextId(viewIdAsText)
                 paramS.isShowTooltipInNextTime = false
             }
@@ -189,7 +228,7 @@ class MainAct :
         }
     }
 
-    class ViewScaner(val _DialogHelper: DialogHelpER, val isFromRecylcer: Boolean) : AbsObject(_DialogHelper.p_TAG, "${_DialogHelper.p_valim}:ViewScaner") {
+    class ViewScaner(val _DialogHelper: DialogHelpER, val isFromRecylcer: Boolean) : AbsObject("${_DialogHelper.p_valim}:ViewScaner") {
         var mStopScan: Boolean = false
         var mSaveObj: View? = null
         var mSaveIndex: Int? = null

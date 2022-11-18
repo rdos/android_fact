@@ -8,14 +8,15 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.andPOintD.ANOFragment
-import ru.smartro.worknote.abs.AbstractDialog
+import ru.smartro.worknote.abs.FragmentA
+import ru.smartro.worknote.abs.FragmentDialogA
 
 private var loadingDialog: AlertDialog? = null
 private var mCustomDialog: AlertDialog? = null
@@ -30,7 +31,7 @@ fun AppCompatActivity.hideDialog() {
     hideCustomDialog()
 }
 
-fun AbstractDialog.hideDialog() {
+fun FragmentDialogA.hideDialog() {
     hideCustomDialog()
 }
 
@@ -56,27 +57,37 @@ fun showCustomDialog(builder: AlertDialog.Builder) {
     log.info("after")
 }
 
-//showDlgPickup!r_dos
-fun AAct.showDlgPickup(): View {
+fun FragmentA.showDialogAction(description: String, onAccept: () -> Unit, onDecline: (() -> Unit)? = null) {
+    val builder = AlertDialog.Builder(getAct())
+    val inflater = this.layoutInflater
+    var actionDialog: AlertDialog? = null
+
+    val view = inflater.inflate(R.layout.dialog_action, null)
+    view.findViewById<AppCompatTextView>(R.id.actv__dialog_action__description).text = description
+    view.findViewById<AppCompatButton>(R.id.acb__dialog_action__accept).setOnClickListener {
+        onAccept()
+        actionDialog?.dismiss()
+    }
+    view.findViewById<AppCompatButton>(R.id.acb__dialog_action__decline).setOnClickListener {
+        onDecline?.invoke()
+        actionDialog?.dismiss()
+    }
+    builder.setView(view)
+    actionDialog = builder.create()
+    actionDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    actionDialog.show()
+}
+
+//todo:!r_dos!Ж)
+fun AAct.showDlgLogout(): View {
     val builder = AlertDialog.Builder(this)
     val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.act_platformserve__pickup__alert_dialog, null)
+    val view = inflater.inflate(R.layout.act_xchecklist__dialog_logout, null)
     builder.setView(view)
     showCustomDialog(builder)
     return view
 }
 
-
-//showDlgPickup!r_dos
-fun ANOFragment.showDlgPickup(): View {
-    val context = requireActivity() as AAct
-    val builder = AlertDialog.Builder(context)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.act_platformserve__pickup__alert_dialog, null)
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
 
 
 private fun showLoadingDialog(builder: AlertDialog.Builder) {
@@ -132,59 +143,21 @@ fun AppCompatActivity.showingProgress(text: String?=null, isEmptyOldText: Boolea
 }
 
 
-
-fun ANOFragment.showAlertPlatformByPoint(): View {
-    val builder = AlertDialog.Builder(getAct())
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.act_map__dialog_platform_clicked_dtl__alert_by_point, null)
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
-
-fun ANOFragment.showDialogFillKgoVolume(): View {
-    val context = requireActivity() as AAct
-    val builder = AlertDialog.Builder(context)
-    val inflater = context.layoutInflater
-    val view = inflater.inflate(R.layout.dialog_fill_kgo, null)
-    builder.setView(view)
-    showCustomDialog(builder)
-    return view
-}
-
-fun ANOFragment.showNeedCleanupAlert(onDismiss: () -> Unit): View {
-    val context = requireActivity() as AAct
-    val builder = AlertDialog.Builder(context)
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.f_pserve__alert_dialog_spring_cleaning, null)
-    builder.setView(view)
-    builder.setCancelable(false)
-    mCustomDialog = builder.create()
-    view.findViewById<AppCompatButton>(R.id.acb__alert_dialog_spring_cleaning__accept).setOnClickListener {
-        mCustomDialog?.dismiss()
-        onDismiss()
-    }
-    mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    mCustomDialog?.show()
-    return view
-}
-
-
-fun ANOFragment.warningClearNavigator(title: String): View {
-    val builder = AlertDialog.Builder(getAct())
-    val inflater = this.layoutInflater
-    val view = inflater.inflate(R.layout.alert_clear_navigator, null)
-    builder.setView(view)
-    builder.setCancelable(false)
-    mCustomDialog = builder.create()
-    view.findViewById<TextView>(R.id.title_tv).text = title
-    view.findViewById<Button>(R.id.dismiss_btn).setOnClickListener {
-        mCustomDialog?.dismiss()
-    }
-    mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    mCustomDialog?.show()
-    return view
-}
+//fun FragmentA.warningClearNavigator(title: String): View {
+//    val builder = AlertDialog.Builder(getAct())
+//    val inflater = this.layoutInflater
+//    val view = inflater.inflate(R.layout.alert_clear_navigator, null)
+//    builder.setView(view)
+//    builder.setCancelable(false)
+//    mCustomDialog = builder.create()
+//    view.findViewById<TextView>(R.id.title_tv).text = title
+//    view.findViewById<Button>(R.id.dismiss_btn).setOnClickListener {
+//        mCustomDialog?.dismiss()
+//    }
+//    mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//    mCustomDialog?.show()
+//    return view
+//}
 
 //            fun Fragment.warningCameraShow(title: String): View {
 //                val builder = AlertDialog.Builder(this.requireContext())
@@ -231,20 +204,3 @@ fun ANOFragment.warningClearNavigator(title: String): View {
 //                return view
 //            }
 
-//fun AppCompatActivity.showClickedPointDetail(point: PlatformEntity): View {
-//    val customDialog: AlertDialog
-//    val builder = AlertDialog.Builder(this)
-//    val inflater = this.layoutInflater
-//    val view = inflater.inflate(R.layout.alert_point_detail, null)
-//    builder.setView(view)
-//    customDialog = builder.create()
-//    view.bottom_card.isVisible = point.status == StatusEnum.NEW
-//    view.point_detail_address.text = "${point.address} \n ${point.srpId} ${point.containers.size} конт."
-//    view.point_detail_close.setOnClickListener {
-//        customDiaLoG.dismiss()
-//    }
-//    view.point_detail_rv.adapter = ContainerDetailAdapter(point.containers)
-//    customDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//    customDialog.show()
-//    return view
-//}

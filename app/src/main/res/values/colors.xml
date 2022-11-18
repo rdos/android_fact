@@ -10,7 +10,8 @@
     <color name="black">#000</color>
     <color name="dark_red">#ff0000</color>
     <color name="red_cool">#fff0f5</color>
-    <color name="dark_orange">#ff851e</color>
+    <color name="orange">#ff851e</color>
+    <color name="dark_orange">#975A26</color>
     <color name="orange_cool">#ffedcc</color>
 
     <color name="icFocused">#DDFFFFFF</color>
@@ -25,7 +26,9 @@
     <color name="green">#32cd32</color>
     <color name="dark_yellow">#C39B0A</color>
     <color name="yellow_cool">#FDFBE7</color>
-    <color name="purple_light">#DCA8E4</color>
+    <color name="white_gray">#EFEFEF</color>
+    <color name="light_red">#F77575</color>
+    <color name="pastel_red">#A7342B</color>
 
 
 </resources>

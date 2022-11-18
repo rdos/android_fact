@@ -8,4 +8,12 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="sViewSwipeButton">
+        <attr name="buttonIcon" format="reference" />
+        <attr name="buttonSrc" format="reference" />
+        <attr name="tailColor" format="color" />
+        <attr name="innerText" format="reference|string" />
+        <attr name="backgroundSrc" format="reference|color" />
+    </declare-styleable>
+
 </resources>

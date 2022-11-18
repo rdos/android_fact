@@ -3,8 +3,9 @@
     package="ru.smartro.worknote">
 
     <!--todo:https://developer.android.com/training/monitoring-device-state/connectivity-status-type-->
-    <!--<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>-->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!--<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,6 +17,8 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-feature android:name="android.hardware.location.gps" />
 
     <application
@@ -51,7 +54,6 @@
             android:screenOrientation="portrait"
             >
         </activity>
-
         <!-- Voice Recognition Samples -->
         <!--отказ-->
         <!--<activity android:name=".app.VoiceRecognition" android:label="@string/voice_recognition">-->
@@ -78,10 +80,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <service
-            android:directBootAware="true"
-            android:name=".presentation.ac.BootIntentService"
-            android:enabled="true" />
         <service
             android:directBootAware="true"
             android:name=".presentation.ac.AirplanemodeIntentService"

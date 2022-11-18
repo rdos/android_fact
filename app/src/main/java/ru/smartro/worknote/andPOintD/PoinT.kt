@@ -5,7 +5,7 @@ import com.yandex.mapkit.geometry.Point
 import io.realm.RealmList
 import ru.smartro.worknote.*
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.work.ImageEntity
+import ru.smartro.worknote.presentation.work.ImageEntity
 
 class PoinT(latitude: Double, longitude: Double,
     // TODO:!!pointAccuracy: Float?
@@ -79,6 +79,8 @@ class PoinT(latitude: Double, longitude: Double,
         this.pointAccuracy?.let {
             koef = 15f + it
         }
+//        koef = 1500f
+
         val minLat = coordLat - LAT15M*koef
         val maxLat = coordLat + LAT15M*koef
         val minLong = coordLong - LONG15M*koef

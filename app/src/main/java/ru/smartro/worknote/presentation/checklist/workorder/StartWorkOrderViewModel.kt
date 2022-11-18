@@ -9,10 +9,10 @@ import kotlinx.coroutines.launch
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.saveJSON
-import ru.smartro.worknote.work.Resource
-import ru.smartro.worknote.work.THR
-import ru.smartro.worknote.work.WoRKoRDeR_know1
-import ru.smartro.worknote.work.WorkOrderResponse_know1
+import ru.smartro.worknote.presentation.work.Resource
+import ru.smartro.worknote.presentation.work.THR
+import ru.smartro.worknote.presentation.work.WoRKoRDeR_know1
+import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
 
 class StartWorkOrderViewModel(app: Application) : AViewModel(app) {
 
@@ -21,7 +21,7 @@ class StartWorkOrderViewModel(app: Application) : AViewModel(app) {
     val mWorkOrderList: LiveData<Resource<WorkOrderResponse_know1>>
         get() = _workOrderList
 
-    val mSelectedWorkOrders: MutableLiveData<MutableList<Int>> = MutableLiveData(mutableListOf())
+    val mSelectedWorkOrdersIndecies: MutableLiveData<MutableList<Int>> = MutableLiveData(mutableListOf())
 
     
 
@@ -30,7 +30,7 @@ class StartWorkOrderViewModel(app: Application) : AViewModel(app) {
             LOG.info( "getWorkOder.before")
             try {
                 val response = networkDat.getWorkOrder(orgId, wayBillId)
-                mSelectedWorkOrders.postValue(mutableListOf())
+                mSelectedWorkOrdersIndecies.postValue(mutableListOf())
                 LOG.debug("getWorkOder.after ${response.body().toString()}")
                 when {
                     response.isSuccessful -> {

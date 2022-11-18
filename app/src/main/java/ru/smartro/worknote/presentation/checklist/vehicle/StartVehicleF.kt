@@ -17,13 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
-import ru.smartro.worknote.work.Status
+import ru.smartro.worknote.presentation.work.Status
 
-class StartVehicleF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
 

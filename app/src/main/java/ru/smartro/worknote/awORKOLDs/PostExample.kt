@@ -6,7 +6,6 @@ import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.logging.HttpLoggingInterceptor
-import ru.smartro.worknote.App
 import ru.smartro.worknote.App.Companion.getAppParaMS
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
@@ -65,6 +64,16 @@ class PostExample : Callback {
             .build()
         val result = client.newCall(request).execute()
         return result
+    }
+
+    fun post(url: String?, json: String, callBack: Callback) {
+        val body: RequestBody = RequestBody.create(JSON, json)
+        val request: Request = Request.Builder()
+            .url(url!!)
+            .addHeader("Authorization", "Bearer " + getAppParaMS().token)
+            .post(body)
+            .build()
+        client.newCall(request).enqueue(callBack)
     }
 
     fun bowlingJson(player1: String, player2: String): String {

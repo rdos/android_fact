@@ -5,8 +5,8 @@ import android.content.Intent
 import android.util.Log
 import io.realm.Realm
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.work.ConfigName
+import ru.smartro.worknote.presentation.work.RealmRepository
+import ru.smartro.worknote.presentation.work.ConfigName
 
 class AirplanemodeIntentService() : IntentService("AirplanemodeIntentService") {
     private val db: RealmRepository by lazy {
@@ -22,12 +22,11 @@ class AirplanemodeIntentService() : IntentService("AirplanemodeIntentService") {
         Log.w("AirplanemodeIntentService", "onHandleIntent")
         val isAirplaneModeEnabled = intent?.getBooleanExtra("isAirplaneModeEnabled", false) ?: return
         LOG.warn("AirplaneService: isAirplaneModeEnabled = ${isAirplaneModeEnabled}")
-        val configEntity = if(isAirplaneModeEnabled)
-            db.loadConfig(ConfigName.AIRPLANE_MODE_ON_CNT)
-        else
-            db.loadConfig(ConfigName.AIRPLANE_MODE_OFF_CNT)
-        configEntity.cntPlusOne()
-        db.saveConfig(configEntity)
+        if (isAirplaneModeEnabled) {
+            db.setConfigCntPlusOne(ConfigName.AIRPLANE_MODE_ON_CNT)
+        } else {
+            db.setConfigCntPlusOne(ConfigName.AIRPLANE_MODE_OFF_CNT)
+        }
         db.close()
 //        TODO("Not yet implemented")
     }

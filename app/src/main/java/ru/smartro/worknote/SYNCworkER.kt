@@ -4,19 +4,17 @@ package ru.smartro.worknote
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import io.realm.Realm
 import kotlinx.coroutines.delay
-import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.StartAct
-import ru.smartro.worknote.utils.getActivityProperly
-import ru.smartro.worknote.work.*
+import ru.smartro.worknote.presentation.work.*
+import ru.smartro.worknote.presentation.work.utils.getActivityProperly
 import java.io.File
 import java.io.FileOutputStream
 
@@ -142,7 +140,7 @@ class SYNCworkER(
         LOG.debug("before")
         logSentry("SYNCworkER STARTED")
         var timeBeforeRequest: Long = MyUtil.timeStampInSec()
-        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroTimeInSec
+        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroAttemptTimeInSec
         var platforms: List<PlatformEntity> = emptyList()
         //проблема в секундах синхронизаций
         val m30MinutesInSec = 30 * 60
@@ -158,11 +156,13 @@ class SYNCworkER(
         }
 
         val gps = App.getAppliCation().gps()
-        val synchronizeBody = SynchronizeBody(App.getAppParaMS().wayBillId,
-            gps.PointTOBaseData(),
-            AppParaMS().deviceId,
-            gps.PointTimeToLastKnowTime_SRV(),
-        PlatformEntity.toSRV(platforms, db()))
+        val synchronizeBody = SynchronizeBody(
+            wb_id = App.getAppParaMS().wayBillId,
+            coords = gps.PointTOBaseData(),
+            device = AppParaMS().deviceId,
+            lastKnownLocationTime = gps.PointTimeToLastKnowTime_SRV(),
+            data = PlatformEntity.toSRV(platforms, db())
+        )
 
 
         LOG.info("platforms.size=${platforms.size}")
@@ -172,8 +172,11 @@ class SYNCworkER(
         val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
         when (synchronizeResponse.status) {
             Status.SUCCESS -> {
+//                TODO ::: 0:)
+//                db().setConfig(ConfigName.AAPP__LAST_SYNCHROTIME_IN_SEC, timeBeforeRequest)
+                App.getAppParaMS().lastSynchroAttemptTimeInSec = timeBeforeRequest
                 if (platforms.isNotEmpty()) {
-                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest
+                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest.toString()
                     LOG.error( Thread.currentThread().getId().toString())
                     db().updatePlatformNetworkStatus(platforms)
                     LOG.info("SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
@@ -189,9 +192,7 @@ class SYNCworkER(
             Status.ERROR -> LOG.error("SYNCworkER ERROR")
             Status.NETWORK -> {
                 LOG.warn("SYNCworkER NO INTERNET")
-                val configEntity = db().loadConfig(ConfigName.NOINTERNET_CNT)
-                configEntity.cntPlusOne()
-                db().saveConfig(configEntity)
+                db().setConfigCntPlusOne(ConfigName.NOINTERNET_CNT)
             }
             Status.ERROR -> LOG.error("Status.ERROR")
             Status.NETWORK -> LOG.warn("Status.NETWORK==NO INTERNET")

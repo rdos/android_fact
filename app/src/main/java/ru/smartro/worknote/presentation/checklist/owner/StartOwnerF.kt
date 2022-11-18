@@ -8,13 +8,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.ANOFragment
+import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.presentation.ac.XChecklistAct
-import ru.smartro.worknote.work.Status
+import ru.smartro.worknote.presentation.work.Status
 
-class StartOwnerF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
+class StartOwnerF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
     private var srlRefresh: SwipeRefreshLayout? = null
 
@@ -24,7 +24,6 @@ class StartOwnerF: ANOFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        LOG.debug("STARTOWNERFRAG :: onViewCreated")
 
         if (!MyUtil.hasPermissions(requireContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)

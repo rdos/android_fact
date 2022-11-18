@@ -9,43 +9,56 @@
     <!--    android:orientation="vertical"-->
     <!--    >-->
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/llc__act_checklist__bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            android:paddingStart="10dp"
-            >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/llc__act_checklist__bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:paddingStart="4dp"
+        >
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/acib__act_checklist__gotoback"
-                android:layout_width="wrap_content" android:layout_height="match_parent"
-                android:backgroundTint="@android:color/transparent"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:src="@drawable/ic_baseline_arrow_back_24"
-                />
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/acib__act_checklist__gotoback"
+            android:layout_width="wrap_content" android:layout_height="match_parent"
+            android:backgroundTint="@android:color/transparent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:src="@drawable/ic_baseline_arrow_back_24"
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/actv__act_checklist__bar_title"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Экран"
-                android:layout_marginStart="10dp"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
 
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/sv__act_checklist__filteraddress"
-                android:layout_width="0dp" android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:defaultQueryHint="@string/hint__search_by_address"
-                />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/actv__act_checklist__bar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Экран"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+            app:layout_constraintStart_toEndOf="@id/acib__act_checklist__gotoback"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_goneMarginStart="8dp"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/aciv__act_checklist__logout"
+            android:layout_width="32dp" android:layout_height="32dp"
+            android:src="@drawable/ic_exit"
+            android:layout_marginEnd="16dp"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fcv_container"

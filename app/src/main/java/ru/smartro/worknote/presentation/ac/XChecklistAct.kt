@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -17,18 +15,18 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
+import ru.smartro.worknote.awORKOLDs.extensions.*
 
-import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.saveJSON
-import ru.smartro.worknote.work.Resource
-import ru.smartro.worknote.work.THR
-import ru.smartro.worknote.work.WoRKoRDeR_know1
-import ru.smartro.worknote.work.WorkOrderResponse_know1
+import ru.smartro.worknote.presentation.work.Resource
+import ru.smartro.worknote.presentation.work.THR
+import ru.smartro.worknote.presentation.work.WoRKoRDeR_know1
+import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
 
 class XChecklistAct: AAct() {
 
@@ -36,6 +34,7 @@ class XChecklistAct: AAct() {
     private var pbLoading: ProgressBar? = null
     private var actvLoadingLabel: TextView? = null
     private var actvBarTitle: AppCompatTextView? = null
+    private var acivLogout: AppCompatImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +43,19 @@ class XChecklistAct: AAct() {
 
         supportActionBar?.hide()
 
-        findViewById<SearchView>(R.id.sv__act_checklist__filteraddress).visibility = View.GONE
-
+        acivLogout = findViewById(R.id.aciv__act_checklist__logout)
+        acivLogout?.setOnClickListener {
+            showDlgLogout().let { view ->
+                val btnYes = view.findViewById<AppCompatButton>(R.id.acb__act_xchecklist__dialog_logout__yes)
+                val btnNo = view.findViewById<AppCompatButton>(R.id.acb__act_xchecklist__dialog_logout__no)
+                btnYes.setOnClickListener {
+                    logout()
+                }
+                btnNo.setOnClickListener {
+                    hideDialog()
+                }
+            }
+        }
         pbLoading = findViewById(R.id.pb__act_checklist__loading)
         actvLoadingLabel = findViewById(R.id.actv__act_checklist__loading_label)
         actvBarTitle = findViewById(R.id.actv__act_checklist__bar_title)
@@ -80,7 +90,9 @@ class XChecklistAct: AAct() {
         super.onPause()
         hideProgress()
     }
-
+    /**
+    ***Охраняемая Зона R_)OS
+    */
     sealed class ViewState(val msg: String? = null) {
         class IDLE(): ViewState()
         class LOADING(): ViewState()
@@ -89,6 +101,10 @@ class XChecklistAct: AAct() {
         class MESSAGE(_msg: String? = null): ViewState(_msg)
         class REFRESH(): ViewState()
     }
+    /**Охраняемая Зона R_)OS
+       Охраняемая Зона R_)OS
+        Охраняемая Зона R_)OS
+     */
 
     class ChecklistViewModel(app: Application) : AViewModel(app) {
         

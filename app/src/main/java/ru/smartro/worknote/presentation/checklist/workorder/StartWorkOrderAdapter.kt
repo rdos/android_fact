@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.R
-import ru.smartro.worknote.work.WoRKoRDeR_know1
+import ru.smartro.worknote.presentation.work.WoRKoRDeR_know1
 
 class StartWorkOrderAdapter(): RecyclerView.Adapter<StartWorkOrderAdapter.WorkOrderViewHolder>() {
 

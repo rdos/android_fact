@@ -96,7 +96,7 @@ class AppParaMS {
     private fun isTimeForSaveData(time: Long?=null): Boolean {
         val currentTimeMS = System.currentTimeMillis()
         val diff = currentTimeMS - (time?:gpsTIME)
-        val res =  diff >= 30_000
+        val res =  diff >= 5_000
         LOG.warn( "res=${res} time=${time} gpsTIME=${gpsTIME} currentTimeMS=${currentTimeMS} diff=${diff}")
         return res
     }
@@ -198,10 +198,16 @@ class AppParaMS {
         }
 
 
-    var lastSynchroTimeInSec: Long
-        get() = sharedPref__env.getLong("lastSynchronizeTime", MyUtil.timeStampInSec())
+    var lastSynchroAttemptTimeInSec: Long
+        get() = sharedPref__env.getLong("lastSynchronizeAttemptTime", MyUtil.timeStampInSec())
         set(value) = sharedPref__env.edit {
-            it.putLong("lastSynchronizeTime", value)
+            it.putLong("lastSynchronizeAttemptTime", value)
+        }
+
+    var lastSynchroTimeInSec: String
+        get() = sharedPref__env.getString("lastSynchronizeTime", "ВАся дурак!")!!
+        set(value) = sharedPref__env.edit {
+            it.putString("lastSynchronizeTime", value)
         }
 
     fun getVehicleId(): Int {
@@ -295,7 +301,7 @@ class AppParaMS {
         wayBillId = Inull
         //TODO:r_Null!
         isModeSYNChrONize = false
-        lastSynchroTimeInSec = MyUtil.timeStampInSec()
+        lastSynchroAttemptTimeInSec = MyUtil.timeStampInSec()
     }
 
 

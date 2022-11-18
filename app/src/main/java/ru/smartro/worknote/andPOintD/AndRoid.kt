@@ -60,6 +60,7 @@ class AndRoid {
 
     fun getLocationService(): LocationManager {
         //todo: ПЕРЕключатель.ключ.вкл.ON_выкл-OFF
+//        toggle
         if (mLocationManagerSystem == null) {
             mLocationManagerSystem = App.getAppliCation().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         }
