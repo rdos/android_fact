@@ -4,28 +4,35 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
 import ru.smartro.worknote.App
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.awORKOLDs.service.NetObject
 import ru.smartro.worknote.awORKOLDs.util.RESTconnection
 import java.io.IOException
-import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
 
-abstract class AbsRequest: AbsObject(), Callback {
+//Tin Toup
+abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI {
+   final override fun getTAGObject(): String {
+//        TODO("Not yet implemented")
+        return TAGObj
+    }
+
     private var mResponseString: String? = null
     private var mGson: Gson? = null
     private val URL = BuildConfig.URL__AUTH
     private val mMediaType: MediaType = "application/json; charset=utf-8".toMediaType()
-    abstract fun onGetNetObject(): NetObject
-    abstract fun onBeforeSend()
-    abstract fun onAfterSend(connectionREVERS: RESTconnection)
+
+    abstract fun onGetRequestBodyIn(): TA
+    abstract fun onBefore()
+    abstract fun onAfter(bodyOut: TB)
+    abstract fun onGetResponseClazz(): KClass<TB>
+
+    abstract fun onGetSRVName(): String
 //    abstract fun onGetResponseClazz(): Class<AuthResponse>
 
     private fun getGson(): Gson {
@@ -36,51 +43,75 @@ abstract class AbsRequest: AbsObject(), Callback {
         }
         return mGson!!
     }
-    fun getOKHTTPRequest(): Request {
 
-        val netObject = onGetNetObject()
+    final override fun getOKHTTPRequest(): Request {
+        LOG.debug("before")
+        val netObject = onGetRequestBodyIn()
+//        val authBodyIn = AuthBodyIn(email="asd", password = "asdf")
         val bodyInStringFormat = getGson().toJson(netObject)
-
+        LOG.info("my body::${bodyInStringFormat}")
         val body: RequestBody = RequestBody.create(mMediaType, bodyInStringFormat)
 
-
+        val url = URL + this.onGetSRVName()
+        LOG.warn("my url::${url}")
+        val headerAuthorization = "Bearer " + App.getAppParaMS().token
         val request: Request = Request.Builder()
-            .url(URL)
-            .addHeader("Authorization", "Bearer " + App.getAppParaMS().token)
+            .url(url)
+            .addHeader("Authorization", headerAuthorization)
             .post(body)
             .build()
-        /**НТР*/return request
+        return request
     }
 
     override fun onFailure(call: Call, e: IOException) {
-      LOG.warn("onFailure")
+        LOG.error("onResponse", e)
+
     }
 
 
-    fun getLiveDate() : LiveData<RESTconnection?> {
+    fun getLiveDate() : LiveData<RESTconnection> {
         if (mRESTconnectionMutableLiveData == null) {
-            mRESTconnectionMutableLiveData = MutableLiveData(null)
+            mRESTconnectionMutableLiveData = MutableLiveData()
         }
         return mRESTconnectionMutableLiveData!!
     }
-    private var mRESTconnectionMutableLiveData: MutableLiveData<RESTconnection?>? = null
+
+    private var mRESTconnectionMutableLiveData: MutableLiveData<RESTconnection>? = null
     override fun onResponse(call: Call, response: Response) {
-        LOG.info("onFailure")
+        LOG.info("onResponse")
         if(response.code == 401) {
+//            val charset = Charsets.UTF_8
+//val byteArray = "Hello".toByteArray(charset)
+//println(byteArray.contentToString()) // [72, 101, 108, 108, 111]
+//println(byteArray.toString(charset)) // Hello
             return
         }
 //        TypeToken.get(onGetResponseClazz())
         val connectionREVERS = RESTconnection()
         connectionREVERS.isSent = true
-        mResponseString = response.body.toString()
+        mResponseString = response.body?.string()
 
-        this.onAfterSend(connectionREVERS)
+        LOG.debug("TEST ::::: RESP BODY : ${mResponseString}")
+//        val test = getGson().fromJson(mResponseString, (NetObject() as TB)::class.java)
+
+        this::class.java.methods.forEach{
+            if (it.name == "onAfter"){
+                if (it.genericParameterTypes.size > 0) {
+                    LOG.debug("${it.name}")
+                }
+                val param: Class<*> = it.parameterTypes.get(0)
+
+                LOG.debug("${param::javaClass.name}")
+            }
+
+        }
+
+        val responseObj = getGson().fromJson(mResponseString, this.onGetResponseClazz().java)
+
+        this.onAfter(responseObj)
         mRESTconnectionMutableLiveData?.postValue(connectionREVERS)
     }
 
-    protected fun toClassObject(clazz: Class<NetObject>): NetObject {
-        val result = getGson().fromJson(mResponseString, clazz)
-        return result
-    }
+
 
 }

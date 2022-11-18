@@ -151,11 +151,12 @@ class StartF : FragmentA() {
 
             val authRequest = AuthRequest()
             authRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
-                if (result!!.isSent) {
+                LOG.debug("${result}")
+                hideProgress()
+                if (result.isSent) {
                     gotoNextAct()
                 }
             }
-
             App.oKRESTman().add(authRequest)
             App.oKRESTman().send()
 //

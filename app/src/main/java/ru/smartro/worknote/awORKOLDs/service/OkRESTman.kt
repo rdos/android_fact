@@ -1,33 +1,61 @@
 package ru.smartro.worknote.awORKOLDs.service
 
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaType
+import io.sentry.android.okhttp.SentryOkHttpInterceptor
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import ru.smartro.worknote.App
+import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.awORKOLDs.AbsRequest
+import ru.smartro.worknote.awORKOLDs.RequestAI
 import java.util.PriorityQueue
+import java.util.concurrent.TimeUnit
 
 
 //class OkRESTman: AbsObject(), Queue<AbsRequest> {
 class OkRESTman: AbsObject() {
 //    private var mList: LinkedList<AbsRequest>? = null
-    private lateinit var mPriorityQueue: PriorityQueue<AbsRequest>
+    private lateinit var mPriorityQueue: PriorityQueue<RequestAI>
     init {
 //        mList = LinkedList()
         val comparator = FistCharComparator()
         mPriorityQueue = PriorityQueue(10, comparator)
     }
 
-    private var client = OkHttpClient()
 
 
-    fun add(request: AbsRequest) {
+    private val authInterceptor = Interceptor { chain ->
+        val newUrl = chain.request().url
+            .newBuilder()
+            .build()
+
+        val newRequest = chain.request()
+            .newBuilder()
+            .addHeader("Authorization", "Bearer " + App.getAppParaMS().token)
+            .url(newUrl)
+            .build()
+        chain.proceed(newRequest)
+    }
+    private val client =
+        OkHttpClient().newBuilder()
+//            .addInterceptor(authInterceptor)
+//            .addInterceptor(httpLoggingInterceptor)
+            .addInterceptor(SentryOkHttpInterceptor())
+//            .authenticator(TokenAuthenticator(context))
+            .connectTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
+            .readTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
+            .writeTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
+            .build()
+
+
+    fun add(request: RequestAI) {
         mPriorityQueue.add(request)
     }
 
     fun send() {
         val request = mPriorityQueue.remove()
-        request.onBeforeSend()
+        val aRequest = (request as AbsRequest<*, *>)
+        aRequest.onBefore()
         client.newCall(request.getOKHTTPRequest()).enqueue(request)
         // TODO:  : r_dos!!!//        request.onAfterSend()
     }
@@ -47,11 +75,11 @@ class OkRESTman: AbsObject() {
         }
     }
 */
-    inner class FistCharComparator : Comparator<AbsRequest> {
+    inner class FistCharComparator : Comparator<RequestAI> {
 
-        override fun compare(o1: AbsRequest, o2: AbsRequest): Int {
-            val oneString = o1.TAGObject
-            val twoString = o2.TAGObject
+        override fun compare(o1: RequestAI, o2: RequestAI): Int {
+            val oneString = o1.getTAGObject()
+            val twoString = o2.getTAGObject()
 
             val firstSymbolX = oneString[0]
             val firstSymbolY = twoString[0]

@@ -1,47 +1,61 @@
 package ru.smartro.worknote.awORKOLDs
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import retrofit2.Response
 import ru.smartro.worknote.App
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.awORKOLDs.service.NetObject
-import ru.smartro.worknote.awORKOLDs.util.RESTconnection
-import ru.smartro.worknote.awORKOLDs.util.THR
+import kotlin.reflect.KClass
 
 //запрос + бизнесс
-class AuthRequest : AbsRequest(){
-    override fun onGetNetObject(): NetObject {
+class AuthRequest: POSTRequestA<AuthBodyIn, AuthBodyOut>() {
+    override fun onGetRequestBodyIn(): AuthBodyIn {
         val userName = App.getAppParaMS().userName
         val userPass = App.getAppParaMS().userPass
-        val result = AuthBody(userName, userPass)
+        val result = AuthBodyIn(userName, userPass)
         return result
     }
 
-    override fun onBeforeSend() {
-//        TODO("Not yet implemented")
+
+    override fun onBefore() {
+        LOG.debug("before")
     }
 
-    override fun onAfterSend(connectionREVERS: RESTconnection) {
-//        TODO("Not yet implemented")
+    override fun onAfter(bodyOut: AuthBodyOut) {
+        LOG.debug("after")
+        App.getAppParaMS().token = bodyOut.data.token
+    }
 
+    override fun onGetSRVName(): String {
+       return "login"
+    }
+
+    override fun onGetResponseClazz(): KClass<AuthBodyOut> {
+        return AuthBodyOut::class
     }
 
 
 }
-class AuthBody(
+data class AuthBodyIn(
+    @Expose
     @SerializedName("email")
     val email: String,
+    @Expose
     @SerializedName("password")
     val password: String
 ) : NetObject()
 
-data class AuthResponse(
+data class AuthBodyOut(
+    @Expose
     @SerializedName("data")
-    val data: Data,
+    val data: AuthBodyOutData,
+    @Expose
     @SerializedName("success")
     val success: Boolean
-): NetObject()
+) : NetObject()
 
-data class Data(
+data class AuthBodyOutData(
+    @Expose
     @SerializedName("token")
     val token: String
-)
+) : NetObject()
