@@ -261,6 +261,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
                 // TODO: !!факТ)
                 return@observe
             }
+
             if(mLastActivePlatform != null) {
                 changeMapObjectIcon(mLastActivePlatform!!, false)
             }
@@ -278,6 +279,9 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
         val platformId = platformEntity.platformId
 
         val oldObj = mMappingPlatformMapObjects[platformId]
+        if(oldObj == null) {
+            return
+        }
         mMapObjectCollection?.remove(oldObj as MapObject)
 
         val coordLat = platformEntity.coordLat
@@ -838,6 +842,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 
     private fun onRefreshMap(platformS: List<PlatformEntity>) {
         mMapObjectCollection?.clear()
+        mMappingPlatformMapObjects.clear()
         try {
             mMapObjectCollection = mMapMyYandex.map.mapObjects.addCollection()
         } catch (ex: Exception) {
