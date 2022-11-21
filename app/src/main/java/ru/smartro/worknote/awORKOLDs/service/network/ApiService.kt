@@ -2,22 +2,15 @@ package ru.smartro.worknote.awORKOLDs.service.network
 
 import retrofit2.Response
 import retrofit2.http.*
-import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.breakdown.BreakdownBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.presentation.work.net.EarlyCompleteBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.failure.FailureBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.sendBreakDown.BreakDownResultResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.send_failure.FailureResultResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
@@ -27,11 +20,12 @@ import ru.smartro.worknote.presentation.work.AppStartUpBody
 import ru.smartro.worknote.presentation.work.AppStartUpResponse
 import ru.smartro.worknote.presentation.work.RPCBody
 import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
+import ru.smartro.worknote.presentation.work.net.EarlyCompleteBody
 
 interface ApiService {
 
-    @POST("login")
-    suspend fun auth(@Body model: AuthBody): Response<AuthResponse>
+//    @POST("login")
+//    suspend fun auth(@Body model: AuthBody): Response<AuthResponse>
 
     @GET("owner")
     suspend fun getOwners(): Response<OrganisationResponse>

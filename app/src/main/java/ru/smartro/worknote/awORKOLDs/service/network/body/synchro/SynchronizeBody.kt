@@ -1,6 +1,7 @@
 package ru.smartro.worknote.awORKOLDs.service.network.body.synchro
 
 import com.google.gson.annotations.Expose
+import ru.smartro.worknote.awORKOLDs.service.NetObject
 import ru.smartro.worknote.presentation.work.PlatformEntity
 
 class SynchronizeBody(
@@ -14,4 +15,6 @@ class SynchronizeBody(
     val lastKnownLocationTime: Long,
     @Expose
     val data: List<PlatformEntity>?
-)
+): NetObject() {
+
+}

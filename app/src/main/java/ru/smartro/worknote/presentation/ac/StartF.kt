@@ -17,9 +17,8 @@ import kotlinx.coroutines.launch
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.FragmentA
-import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
+import ru.smartro.worknote.awORKOLDs.AuthRequest
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.presentation.work.Status
 
 class StartF : FragmentA() {
     
@@ -147,28 +146,42 @@ class StartF : FragmentA() {
     private fun clickAuthEnter() {
         if (!authLoginEditText?.text.isNullOrBlank() && !authPasswordEditText?.text.isNullOrBlank()) {
             showingProgress()
-            vm.auth(AuthBody(authLoginEditText?.text.toString(), authPasswordEditText?.text.toString()))
-                .observe(viewLifecycleOwner) { result ->
-                    val data = result.data
-                    when (result.status) {
-                        Status.SUCCESS -> {
-                            hideProgress()
-                            toast("Вы авторизованы")
-//                            AppPreferences.BoTlogin = auth_login.text.toString()
-                            paramS().token = data!!.data.token
-                            paramS().userName = authLoginEditText?.text.toString()
-                            gotoNextAct()
-                        }
-                        Status.ERROR -> {
-                            hideProgress()
-                            toast("Логин или пароль не совпадает")
-                        }
-                        Status.NETWORK -> {
-                            hideProgress()
-                            toast("Проблемы с интернетом")
-                        }
-                    }
+            paramS().userName = authLoginEditText?.text.toString()
+            paramS().userPass = authPasswordEditText?.text.toString()
+
+            val authRequest = AuthRequest()
+            authRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
+                LOG.debug("${result}")
+                hideProgress()
+                if (result.isSent) {
+                    gotoNextAct()
                 }
+            }
+            App.oKRESTman().add(authRequest)
+            App.oKRESTman().send()
+//
+//            vm.auth()
+//                .observe(viewLifecycleOwner) { result ->
+//                    val data = result.data
+//                    when (result.status) {
+//                        Status.SUCCESS -> {
+//                            hideProgress()
+//                            toast("Вы авторизованы")
+////                            AppPreferences.BoTlogin = auth_login.text.toString()
+//                            paramS().token = data!!.data.token
+//                            paramS().userName = authLoginEditText?.text.toString()
+//
+//                        }
+//                        Status.ERROR -> {
+//                            hideProgress()
+//
+//                        }
+//                        Status.NETWORK -> {
+//                            hideProgress()
+//                            toast("Проблемы с интернетом")
+//                        }
+//                    }
+//                }
         } else {
             authLoginOut?.error = "Проверьте логин"
             authPasswordOut?.error = "Проверьте пароль"

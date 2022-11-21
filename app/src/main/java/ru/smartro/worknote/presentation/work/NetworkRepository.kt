@@ -4,41 +4,29 @@ package ru.smartro.worknote.presentation.work
 
 import android.content.Context
 import android.os.Build
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
 import androidx.lifecycle.liveData
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.realm.Realm
-import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import okhttp3.Callback
-import retrofit2.Response
 import ru.smartro.worknote.App
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.PostExample
+import ru.smartro.worknote.awORKOLDs.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
-import ru.smartro.worknote.awORKOLDs.service.network.RetrofitClient
-import ru.smartro.worknote.awORKOLDs.service.network.body.AuthBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.auth.AuthResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
-import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
+import ru.smartro.worknote.awORKOLDs.util.THR
 import ru.smartro.worknote.presentation.work.net.CancelWayReasonEntity
 import ru.smartro.worknote.presentation.work.net.EarlyCompleteBody
 import java.io.File
@@ -51,23 +39,23 @@ class NetworkRepository(private val context: Context) {
     protected fun paramS() =  App.getAppParaMS()
     
 
-    fun auth(model: AuthBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info( "auth")
-        try {
-            val response = RetrofitClient(context).apiService(false).auth(model)
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestLogin(response)
-                    emit(Resource.error("Неверный логин или пароль", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
+//    fun auth(model: AuthBody) = liveData(Dispatchers.IO, TIME_OUT) {
+//        LOG.info( "auth")
+//        try {
+//            val response = RetrofitClient(context).apiService(false).auth(model)
+//            when {
+//                response.isSuccessful -> {
+//                    emit(Resource.success(response.body()))
+//                }
+//                else -> {
+//                    THR.BadRequestLogin(response)
+//                    emit(Resource.error("Неверный логин или пароль", null))
+//                }
+//            }
+//        } catch (e: Exception) {
+//            emit(Resource.network("Проблемы с подключением интернета", null))
+//        }
+//    }
 
     suspend fun getVehicle(organisationId: Int) =
         RetrofitClient(context).apiService(true).getVehicle(organisationId)
@@ -460,167 +448,4 @@ enum class Status {
     ERROR,
     NETWORK,
 }
-
-sealed class THR(code: Int) : Throwable(code.toString()) {
-    //    abstract val message: String
-    fun <T> sentToSentry(response: Response<T>){
-        if (response.code() in 400..599) {
-            val urlName = response.raw().request.url.encodedPath
-            Sentry.setTag("url_name", urlName)
-            Sentry.setTag("http_code", response.code().toString())
-            Sentry.setTag("url_host_name", response.raw().request.url.host)
-
-            Sentry.setTag("user", App.getAppParaMS().userName)
-            // TODO: replace  BadRequestException for post  @POST("synchro")
-//        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
-            Sentry.captureException(this)
-        }
-    }
-
-    fun sentToSentryOKHTTP(response: okhttp3.Response){
-        if (response.isSuccessful) {
-            val urlName = response.request.url.encodedPath
-            Sentry.setTag("url_name", urlName)
-            Sentry.setTag("http_code", response.code.toString())
-            Sentry.setTag("url_host_name", response.request.url.host)
-
-            Sentry.setTag("user", App.getAppParaMS().userName)
-            // TODO: replace  BadRequestException for post  @POST("synchro")
-//        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
-            Sentry.captureException(this)
-        }
-    }
-
-    class BadRequestLogin(response: Response<AuthResponse>) : THR(response.code()) {
-        //        override val message = 70.0
-        init {
-            sentToSentry(response)
-        }
-
-    }
-
-    class BadRequestOwner(response: Response<OrganisationResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-
-    class BadRequestVehicle(response: Response<VehicleResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-    class BadRequestBreakdown_type(response: Response<BreakDownResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-    class BadRequestFailure_reason(response: Response<FailureReasonResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-
-    class BadRequestWaybill(response: Response<WayListResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-//    class breakdown(response: String) : THR(response.code()) {
-//
-//        init {
-//            sentToSentry(response)
-//        }
-//
-//    }
-//    class failure(response: String) : THR(response.code()) {
-//
-//        init {
-//            sentToSentry(response)
-//        }
-//
-//    }
-    class BadRequestProgress(response: Response<ServedResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-    class BadRequestWorkorder__id__complete(response: Response<EmptyResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-
-    class BadRequestWork_order_cancelation_reason(response: Response<CancelationReasonResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-    class BadRequestWorkorder__id__early_complete(response: Response<EmptyResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-    class BadRequestPOSTsynchro(response: Response<SynchronizeResponse>) : THR(response.code()) {
-        
-        init {
-            sentToSentry(response)
-        }
-
-    }
-
-    class BadRequestPOSTsynchroOKHTTP(response: okhttp3.Response) : THR(response.code) {
-
-        init {
-            sentToSentryOKHTTP(response)
-        }
-
-    }
-
-    class BadRequestPing(response: Response<PingBody>) : THR(response.code()) {
-        init {
-            sentToSentry(response)
-        }
-
-    }
-
-
-
-    class BadRequestAppStartUp(response: Response<RPCBody<AppStartUpResponse>>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
-
-//    BadRequestSynchro__o_id__w_id
-    class BadRequestSynchro__o_id__w_id(response: Response<WorkOrderResponse_know1>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
-
-}
-
 
