@@ -134,23 +134,6 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
         return iconView
     }
 
-    private fun addPlatformAsMapObject(platformEntity: PlatformEntity) {
-        val candidate = platformMapObjectS[platformEntity.platformId]
-        if(candidate != null) {
-            LOG.debug("TEST ::: platformIdS.containsKey")
-            return
-        }
-
-        val mapObject = mapObjectCollection!!.addPlacemark(
-            Point(platformEntity.coordLat, platformEntity.coordLong),
-            getIconViewProvider(platformEntity)
-        )
-
-        mapObject.userData = platformEntity.platformId
-
-        platformMapObjectS.put(platformEntity.platformId, mapObject)
-    }
-
     ///  TODO ::: relatively big
     private fun getIconViewProvider(platform: PlatformEntity, isActiveMode: Boolean = false): ViewProvider {
 
@@ -246,8 +229,30 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
     }
 
     fun setPlatforms(platformS: List<PlatformEntity>) {
+        val lastActivePlatformId = lastActive?.userData
+        lastActive = null
+
+        mapObjectCollection?.clear()
+        platformMapObjectS.clear()
+
         for(pl in platformS) {
-            addPlatformAsMapObject(pl)
+            val candidate = platformMapObjectS[pl.platformId]
+            if(candidate != null) {
+                LOG.debug("TEST ::: platformIdS.containsKey")
+                return
+            }
+            val mapObject = mapObjectCollection!!.addPlacemark(
+                Point(pl.coordLat, pl.coordLong),
+                getIconViewProvider(pl)
+            )
+
+            mapObject.userData = pl.platformId
+
+            platformMapObjectS[pl.platformId] = mapObject
+        }
+
+        if(lastActivePlatformId != null) {
+            setActivePlatform(lastActivePlatformId as Int)
         }
     }
 
