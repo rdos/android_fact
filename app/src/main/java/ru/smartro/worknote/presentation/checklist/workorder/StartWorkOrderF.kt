@@ -175,6 +175,23 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     fun goToNextStep(workOrders: List<WoRKoRDeR_know1>) {
+//        todo: Ох, рано встаёт охрана!
+        // TODO: добавить логирование
+        if (workOrders.size <= 0) {
+            return
+        }
+        var checkName: String? = workOrders[0].waste_type?.name
+        for(workOrder in workOrders) {
+            if (checkName == workOrder.waste_type?.name) {
+                checkName = workOrder.waste_type?.name
+            } else {
+                toast("Нельзя одновременно взять два задания с разными типами отходов")
+                return
+            }
+        }
+
+
+
         val intent = Intent(requireActivity(), MainAct::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
 
