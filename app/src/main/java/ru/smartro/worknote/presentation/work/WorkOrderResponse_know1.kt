@@ -1,5 +1,6 @@
 package ru.smartro.worknote.presentation.work
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 
@@ -103,10 +104,17 @@ data class Platform_know1(
     @SerializedName("order_alert_time")
     var orderAlertTime: String? = null,
 
+    @SerializedName("need_cleanup")
+    var needCleanup: Boolean = false,
+    @SerializedName("was_cleaned_up")
+    var wasCleanedUp: Boolean = false,
+
+//    var needCleanupWasShown: Boolean = false,
+
     var kgo_remaining: KGOEntity_know100? = null,
     var kgo_served: KGOEntity_know100? = null,
 
-    )
+)
 
 data class KGOEntity_know100(
     var volume: Double?,

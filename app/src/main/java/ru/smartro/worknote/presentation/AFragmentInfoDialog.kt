@@ -10,7 +10,7 @@ import ru.smartro.worknote.presentation.work.PlatformEntity
 //todo: FYI: AbstractInfoDF=BaseInfoDF
 abstract class AFragmentInfoDialog: AInformFD() {
 
-    final override fun onGetEntity(): PlatformEntity? {
+    override fun onGetEntity(): PlatformEntity? {
         LOG.warn("DON'T_USE") //not use
         return null
     }
@@ -27,7 +27,7 @@ abstract class AFragmentInfoDialog: AInformFD() {
         return null
     }
 
-    final override fun onNextFragment(entity: PlatformEntity) {
+    override fun onNextFragment(entity: PlatformEntity) {
        navigateBack()
     }
 

@@ -17,6 +17,7 @@ import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.random.Random
 
 const val THIS_IS_ERROR = "это ошибка?"
 open class WorkOrderEntity(
@@ -123,6 +124,7 @@ open class WorkOrderEntity(
 
         private fun mapPlatforms(data: List<Platform_know1>, workorderId: Int, database: RealmRepository): RealmList<PlatformEntity> {
             val result = data.mapTo(RealmList()) {
+                val randomCleanUp = Random.nextBoolean()
                 val platformEntity = PlatformEntity(
                     platformId = it.id,
                     address = it.address,
@@ -148,6 +150,10 @@ open class WorkOrderEntity(
                     // isWorkOrderProgress
                     // isWorkOrderComplete
                     // pickupMedia
+
+                    needCleanup = randomCleanUp,
+                    wasCleanedUp = false,
+
                     /** volumeKGO = null,*/
                     /** volumeKGO = null,*/
                 )
@@ -432,7 +438,7 @@ open class PlatformEntity(
     @Expose
     var wasCleanedUp: Boolean = false,
 
-    var needCleanupWasShown: Boolean = false,
+//    var needCleanupWasShown: Boolean = false,
 
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,

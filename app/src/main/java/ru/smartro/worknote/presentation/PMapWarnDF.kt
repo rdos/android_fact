@@ -61,7 +61,7 @@ class PMapWarnDF: AInformFD() {
 
 
     override fun onGetNavId(): Int {
-        return R.id.WarnDF
+        return R.id.PMapWarnDF
     }
 
     override fun onGetContentText(): String {

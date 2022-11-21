@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.TransitionDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,9 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -60,6 +63,8 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     private var acsbVolumePickup: SeekBar? = null
     private var rvContainers: RecyclerView? = null
 
+    private var clHeader: ConstraintLayout? = null
+
     private var srvVoicePlayer: SmartROviewPlayer? = null
     private var srvVoiceWhatsUp: SmartROviewVoiceWhatsUp? = null
     private var mVoiceComment: VoiceComment? = null
@@ -79,7 +84,9 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
         tvPlatformSrpId = sview.findViewById(R.id.tv_f_pserve__sprid)
 
-        val btnCompleteTask = sview.findViewById<SmartROacb>(R.id.acb_activity_platform_serve__complete)
+        val btnCompleteTask = sview.findViewById<SmartROllc>(R.id.acb_activity_platform_serve__complete)
+
+        clHeader = sview.findViewById(R.id.cl__f_pserve__header_wrapper)
 
         actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
         sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
@@ -128,7 +135,11 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
         tvPlatformSrpId?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
 
         btnCompleteTask?.setOnClickListener {
-            navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
+            if(_PlatformEntity.needCleanup && _PlatformEntity.wasCleanedUp == false) {
+                navigateNext(R.id.PServeCleanupDF, _PlatformEntity.platformId)
+            } else {
+                navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
+            }
         }
 
         actvAddress?.text = "${_PlatformEntity.address}"
@@ -153,6 +164,18 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             navigateNext(R.id.PServeKGORemainingVolumeDF)
         }
 
+        if(_PlatformEntity.needCleanup) {
+            var transitionDrawable = clHeader?.background as TransitionDrawable
+            transitionDrawable.startTransition(500)
+
+            transitionDrawable = btnCompleteTask?.background as TransitionDrawable
+            transitionDrawable.startTransition(500)
+
+            getAct().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.orange)
+        } else {
+            sview.findViewById<AppCompatImageView>(R.id.aciv__f_pserve__cleanup).visibility = View.GONE
+        }
+
         return false //))
     }
 
@@ -160,6 +183,7 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
         super.onDestroyView()
         srvVoicePlayer?.release()
         mVoiceComment?.stop()
+        getAct().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark)
     }
 
     override fun onBindLayoutState(): Boolean {
