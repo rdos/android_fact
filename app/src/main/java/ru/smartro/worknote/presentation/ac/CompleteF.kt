@@ -23,6 +23,9 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.AViewModel
+import ru.smartro.worknote.awORKOLDs.AuthRequest
+import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyIn
+import ru.smartro.worknote.awORKOLDs.EarlyCompleteRequestPOST
 import ru.smartro.worknote.presentation.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -31,7 +34,6 @@ import ru.smartro.worknote.toast
 import ru.smartro.worknote.presentation.work.RealmRepository
 import ru.smartro.worknote.presentation.work.WorkOrderEntity
 import ru.smartro.worknote.presentation.work.net.CancelWayReasonEntity
-import ru.smartro.worknote.presentation.work.net.EarlyCompleteBody
 import kotlin.math.round
 
 
@@ -235,30 +237,41 @@ class CompleteF : FragmentA() {
                         val failureId = mDatabase.findCancelWayReasonIdByValue(reasonText.toString())
                         val totalValue = round(hold.tiedTotalVolume.text.toString().toDouble() * 100) / 100
                         val totalType = if (hold.tbTypeVolume.isChecked) 1 else 2
-                        val body = EarlyCompleteBody(failureId, MyUtil.timeStampInSec(), totalType, totalValue)
+                        val body = EarlyCompleteBodyIn(failureId, MyUtil.timeStampInSec(), totalType, totalValue)
 
-                        App.getAppliCation().getNetwork().earlyComplete(workOrderId, body)
-                            .observe(viewLifecycleOwner) { result ->
-
-                                when (result.status) {
-                                    Status.SUCCESS -> {
-                                        mDatabase.setCompleteWorkOrderData(workOrder)
-                                        setUseButtonStyleBackgroundRed(acbAccept)
-                                        hold.itemView.isEnabled = false
-                                        workOrderEntity.isShowForUser = false
-                                        hideProgress()
-                                        listener.onSuccess()
-                                    }
-                                    Status.ERROR -> {
-                                        hideProgress()
-                                        toast(result.msg)
-                                    }
-                                    Status.NETWORK -> {
-                                        hideProgress()
-                                        toast("Проблемы с интернетом")
-                                    }
-                                }
+                        val earlyCompleteRequest = EarlyCompleteRequestPOST()
+                        earlyCompleteRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
+                            LOG.debug("${result}")
+                            hideProgress()
+                            if (result.isSent) {
+                                LOG.debug("TODO::: !!!")
+//                                gotoNextAct()
                             }
+                        }
+                        App.oKRESTman().add(earlyCompleteRequest)
+                        App.oKRESTman().send()
+//                        App.getAppliCation().getNetwork().earlyComplete(workOrderId, body)
+//                            .observe(viewLifecycleOwner) { result ->
+//
+//                                when (result.status) {
+//                                    Status.SUCCESS -> {
+//                                        mDatabase.setCompleteWorkOrderData(workOrder)
+//                                        setUseButtonStyleBackgroundRed(acbAccept)
+//                                        hold.itemView.isEnabled = false
+//                                        workOrderEntity.isShowForUser = false
+//                                        hideProgress()
+//                                        listener.onSuccess()
+//                                    }
+//                                    Status.ERROR -> {
+//                                        hideProgress()
+//                                        toast(result.msg)
+//                                    }
+//                                    Status.NETWORK -> {
+//                                        hideProgress()
+//                                        toast("Проблемы с интернетом")
+//                                    }
+//                                }
+//                            }
                     } else {
                         toast("Заполните все поля")
                     }

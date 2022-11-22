@@ -27,15 +27,15 @@ import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.mapview.MapView
 import net.cachapa.expandablelayout.ExpandableLayout
 import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.Response
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
+import ru.smartro.worknote.awORKOLDs.AuthRequest
+import ru.smartro.worknote.awORKOLDs.SynchroRequestPOST
 import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.awORKOLDs.util.THR
@@ -47,7 +47,7 @@ import ru.smartro.worknote.presentation.work.utils.MapListener
 import ru.smartro.worknote.presentation.work.utils.getActivityProperly
 import java.io.IOException
 
-class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickListener, Callback, MapListener {
+class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListener {
 
     private var mTimeBeforeInSec: Long = Lnull
 
@@ -443,22 +443,36 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         lastPlatforms = vm.database.findLastPlatforms()
         val lastPlatformsSize = lastPlatforms.size
 
-        val deviceId = Settings.Secure.getString(getAct().contentResolver, Settings.Secure.ANDROID_ID)
+//        val deviceId = Settings.Secure.getString(getAct().contentResolver, Settings.Secure.ANDROID_ID)
+
         if (lastPlatformsSize > 0) {
             showingProgress()
-            getNextPlatformToSend() { nextSentPlatforms, timeBeforeInSec ->
-                showingProgress("отправляются ${nextSentPlatforms.size} КП\n осталось ${lastPlatformsSize}", true)
-                val gps = AppliCation().gps()
-                val synchronizeBody = SynchronizeBody(
-                    paramS().wayBillId,
-                    gps.PointTOBaseData(),
-                    deviceId,
-                    gps.PointTimeToLastKnowTime_SRV(),
-                    PlatformEntity.toSRV(nextSentPlatforms, vm.database)
-                )
-                vm.networkDat.sendLastPlatforms(synchronizeBody, this)
-                Any()
+
+            val synchroRequest = SynchroRequestPOST()
+            synchroRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
+                LOG.debug("${result}")
+                hideProgress()
+                if (result.isSent) {
+                    TODO("WORK IN PROGRESS 0:)")
+                    gotoSynchronize()
+                }
             }
+            App.oKRESTman().add(synchroRequest)
+            App.oKRESTman().send()
+
+//            getNextPlatformToSend() { nextSentPlatforms, timeBeforeInSec ->
+//                showingProgress("отправляются ${nextSentPlatforms.size} КП\n осталось ${lastPlatformsSize}", true)
+//                val gps = AppliCation().gps()
+//                val synchronizeBody = SynchronizeBody(
+//                    paramS().wayBillId,
+//                    gps.PointTOBaseData(),
+//                    deviceId,
+//                    gps.PointTimeToLastKnowTime_SRV(),
+//                    PlatformEntity.toSRV(nextSentPlatforms, vm.database)
+//                )
+//                vm.networkDat.sendLastPlatforms(synchronizeBody, this)
+//                Any()
+//            }
 
         } else {
             hideProgress()
@@ -466,7 +480,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
         logSentry("SYNCworkER STARTED")
         LOG.debug("gotoComplete::synChrONizationDATA:Thread.currentThread().id()=${Thread.currentThread().id}")
-
     }
 
     private fun completeWorkOrders() {
@@ -849,22 +862,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
         mAcbGotoComplete?.background = ContextCompat.getDrawable(getAct(), R.drawable.bg_button)
         mAcbGotoComplete?.isEnabled = true
-    }
-    
-    override fun onFailure(call: Call, e: IOException) {
-        toast("Проблемы с интернетом")
-        hideProgress()
-    }
-
-    override fun onResponse(call: Call, response: Response) {
-        if(response.isSuccessful) {
-            view?.post{
-                paramS().lastSynchroAttemptTimeInSec = mTimeBeforeInSec
-                gotoSynchronize()
-            }
-        } else {
-            THR.BadRequestPOSTsynchroOKHTTP(response)
-        }
     }
 
     override fun startPlatformBeforeMedia(item: PlatformEntity) {

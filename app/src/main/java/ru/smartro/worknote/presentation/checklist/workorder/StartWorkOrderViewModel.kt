@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import io.sentry.Sentry
 import kotlinx.coroutines.launch
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.andPOintD.AViewModel
@@ -45,7 +46,8 @@ class StartWorkOrderViewModel(app: Application) : AViewModel(app) {
                     }
                 }
             } catch (e: Exception) {
-                _workOrderList.postValue(Resource.network("Проблемы с подключением интернета", null))
+                Sentry.captureException(e)
+                _workOrderList.postValue(Resource.network("Проблемы с подключением: ${e.stackTraceToString()}", null))
             }
         }
     }

@@ -22,13 +22,9 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.awORKOLDs.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
-import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.awORKOLDs.util.THR
 import ru.smartro.worknote.presentation.work.net.CancelWayReasonEntity
-import ru.smartro.worknote.presentation.work.net.EarlyCompleteBody
 import java.io.File
 import java.io.FileOutputStream
 
@@ -108,8 +104,8 @@ class NetworkRepository(private val context: Context) {
                 }
                 else -> {
                     THR.BadRequestBreakdown_type(response)
-                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    LOG.debug("getBreakDownTypes.after errorResponse=${errorResponse}")
+//                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+//                    LOG.debug("getBreakDownTypes.after errorResponse=${errorResponse}")
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -142,8 +138,8 @@ class NetworkRepository(private val context: Context) {
                 }
                 else -> {
                     THR.BadRequestFailure_reason(response)
-                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    LOG.debug("getFailReason.after errorResponse=${errorResponse}")
+//                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+//                    LOG.debug("getFailReason.after errorResponse=${errorResponse}")
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
             }
@@ -201,8 +197,8 @@ class NetworkRepository(private val context: Context) {
                 }
                 else -> {
                     THR.BadRequestProgress(response)
-                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    LOG.debug("progress.after errorResponse=${errorResponse}")
+//                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+//                    LOG.debug("progress.after errorResponse=${errorResponse}")
 
                     emit(Resource.error("Ошибка ${response.code()}", null))
                 }
@@ -224,10 +220,9 @@ class NetworkRepository(private val context: Context) {
                 }
                 else -> {
                     THR.BadRequestWorkorder__id__complete(response)
-                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    LOG.debug("completeWay.after errorResponse=${errorResponse}")
-
-                    emit(Resource.error(errorResponse.message, null))
+//                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+//                    LOG.debug("completeWay.after errorResponse=${errorResponse}")
+//                    emit(Resource.error(errorResponse.message, null))
                 }
             }
         } catch (e: Exception) {
@@ -236,27 +231,27 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    fun earlyComplete(id: Int, body: EarlyCompleteBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info( "earlyComplete.before id={$id}, body={$body}")
-        try {
-            val response = RetrofitClient(context).apiService(true).earlyComplete(id, body)
-            LOG.debug("earlyComplete.after ${response.body().toString()}")
-            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-            LOG.debug("earlyComplete.after errorResponse=${errorResponse}")
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestWorkorder__id__early_complete(response)
-//                    App.getAppliCation().toast(result.msg)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
+//    fun earlyComplete(id: Int, body: EarlyCompleteBody) = liveData(Dispatchers.IO, TIME_OUT) {
+//        LOG.info( "earlyComplete.before id={$id}, body={$body}")
+//        try {
+//            val response = RetrofitClient(context).apiService(true).earlyComplete(id, body)
+//            LOG.debug("earlyComplete.after ${response.body().toString()}")
+////            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+////            LOG.debug("earlyComplete.after errorResponse=${errorResponse}")
+//            when {
+//                response.isSuccessful -> {
+//                    emit(Resource.success(response.body()))
+//                }
+//                else -> {
+//                    THR.BadRequestWorkorder__id__early_complete(response)
+////                    App.getAppliCation().toast(result.msg)
+//                    emit(Resource.error("Ошибка ${response.code()}", null))
+//                }
+//            }
+//        } catch (e: Exception) {
+//            emit(Resource.network("Проблемы с подключением интернета", null))
+//        }
+//    }
 
     fun saveJSON(bodyInStringFormat: String, p_jsonName: String) {
         fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
@@ -296,62 +291,62 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    fun sendLastPlatforms(body: SynchronizeBody, callBack: Callback) {
-        LOG.info( "sendLastPlatforms.before")
+//    fun sendLastPlatforms(body: SynchronizeBody, callBack: Callback) {
+//        LOG.info( "sendLastPlatforms.before")
+//
+//        val builder = GsonBuilder()
+//        builder.excludeFieldsWithoutExposeAnnotation()
+//        val gson = builder.create()
+//        val bodyInStringFormat = gson.toJson(body)
+//        saveJSON(bodyInStringFormat, "sendLastPlatforms")
+//
+//        val example = PostExample()
+//        val URL = BuildConfig.URL__SMARTRO + "fact/synchro"
+//        example.post(URL, bodyInStringFormat, callBack)
+//    }
 
-        val builder = GsonBuilder()
-        builder.excludeFieldsWithoutExposeAnnotation()
-        val gson = builder.create()
-        val bodyInStringFormat = gson.toJson(body)
-        saveJSON(bodyInStringFormat, "sendLastPlatforms")
-        
-        val example = PostExample()
-        val URL = BuildConfig.URL__SMARTRO + "fact/synchro"
-        example.post(URL, bodyInStringFormat, callBack)
-    }
 
-
-    suspend fun postSynchro(body: SynchronizeBody): Resource<SynchronizeResponse> {
-        LOG.info( "synchronizeData.before")
-
-        val builder = GsonBuilder()
-        builder.excludeFieldsWithoutExposeAnnotation()
-        val gson = builder.create()
-        val bodyInStringFormat = gson.toJson(body)
-        saveJSON(bodyInStringFormat, "postSynchro2")
-
-        var result: Resource<SynchronizeResponse> = Resource.success(null)
-
-        try {
-            val example = PostExample()
-            val URL = BuildConfig.URL__SMARTRO + "fact/synchro"
-            val response = example.post(URL, bodyInStringFormat)
-            val str = "${response.body!!.string()}"
-            LOG.info("str=${str}}")
-            if (response.isSuccessful) {
-                val synchronizeResponse = gson.fromJson(str, SynchronizeResponse::class.java)
-                result = Resource.success(synchronizeResponse)
-            } else {
-                THR.BadRequestPOSTsynchroOKHTTP(response)
-                result = Resource.error("Ошибка ${response.code}", null)
-            }
-
-//            val response2 = RetrofitClient(context).apiService(true).postSynchro(body)
-//            if (response2.isSuccessful) {
-////                val synchronizeResponse = gson.fromJson(response2.body(), SynchronizeResponse::class.java)
-//                Resource.success(response2)
+//    suspend fun postSynchro(body: SynchronizeBody): Resource<SynchronizeResponse> {
+//        LOG.info( "synchronizeData.before")
+//
+//        val builder = GsonBuilder()
+//        builder.excludeFieldsWithoutExposeAnnotation()
+//        val gson = builder.create()
+//        val bodyInStringFormat = gson.toJson(body)
+//        saveJSON(bodyInStringFormat, "postSynchro2")
+//
+//        var result: Resource<SynchroOut> = Resource.success(null)
+//
+//        try {
+//            val example = PostExample()
+//            val URL = BuildConfig.URL__SMARTRO + "fact/synchro"
+//            val response = example.post(URL, bodyInStringFormat)
+//            val str = "${response.body!!.string()}"
+//            LOG.info("str=${str}}")
+//            if (response.isSuccessful) {
+//                val synchronizeResponse = gson.fromJson(str, SynchronizeResponse::class.java)
+//                result = Resource.success(synchronizeResponse)
 //            } else {
-//                THR.BadRequestPOSTsynchro(response2)
-//                Resource.error("Ошибка ${response2.code()}", null)
+//                THR.BadRequestPOSTsynchroOKHTTP(response)
+//                result = Resource.error("Ошибка ${response.code}", null)
 //            }
-
-        } catch (ex: Exception) {
-            LOG.error("postSynchro", ex)
-            result = Resource.network("Проблемы с подключением интернета", null)
-        }
-        LOG.info("postSynchro.result=${result.status}")
-        return result
-    }
+//
+////            val response2 = RetrofitClient(context).apiService(true).postSynchro(body)
+////            if (response2.isSuccessful) {
+//////                val synchronizeResponse = gson.fromJson(response2.body(), SynchronizeResponse::class.java)
+////                Resource.success(response2)
+////            } else {
+////                THR.BadRequestPOSTsynchro(response2)
+////                Resource.error("Ошибка ${response2.code()}", null)
+////            }
+//
+//        } catch (ex: Exception) {
+//            LOG.error("postSynchro", ex)
+//            result = Resource.network("Проблемы с подключением интернета", null)
+//        }
+//        LOG.info("postSynchro.result=${result.status}")
+//        return result
+//    }
 
 //    suspend fun getOwners() = RetrofitClient(context).apiService(false).getOwners()
 //    fun getOwnersOld() = liveData(Dispatchers.IO, TIME_OUT) {

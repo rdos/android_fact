@@ -18,7 +18,6 @@ import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.OwnerBodyOut
 import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
-import ru.smartro.worknote.awORKOLDs.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.VehicleBodyOutVehicle
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.awORKOLDs.util.THR
@@ -215,8 +214,8 @@ class XChecklistAct: AAct() {
                         }
                         else -> {
                             THR.BadRequestWaybill(response)
-                            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                            LOG.debug("getWayList.after errorResponse=${errorResponse}")
+//                            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+//                            LOG.debug("getWayList.after errorResponse=${errorResponse}")
                             mWayBillsViewState.postValue(ViewState.ERROR("Ошибка ${response.code()}"))
                         }
                     }

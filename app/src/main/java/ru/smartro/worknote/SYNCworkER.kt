@@ -6,12 +6,10 @@ import android.content.Context
 import android.content.Intent
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.google.gson.Gson
 import io.realm.Realm
 import kotlinx.coroutines.delay
+import ru.smartro.worknote.awORKOLDs.SynchroRequestPOST
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.StartAct
 import ru.smartro.worknote.presentation.work.*
 import ru.smartro.worknote.presentation.work.utils.getActivityProperly
@@ -136,69 +134,35 @@ class SYNCworkER(
 //        LOGafterLOG.debug()
     }
 
-    private suspend fun synChrONizationDATA() {
+    private fun synChrONizationDATA() {
         LOG.debug("before")
         logSentry("SYNCworkER STARTED")
-        var timeBeforeRequest: Long = MyUtil.timeStampInSec()
-        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroAttemptTimeInSec
-        var platforms: List<PlatformEntity> = emptyList()
-        //проблема в секундах синхронизаций
-        val m30MinutesInSec = 30 * 60
-        if (MyUtil.timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
-            timeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
-            platforms = db().findPlatforms30min()
-            LOG.debug( "SYNCworkER PLATFORMS IN LAST 30 min")
-        }
-        if (platforms.isEmpty()) {
-            timeBeforeRequest = MyUtil.timeStampInSec()
-            platforms = db().findLastPlatforms()
-            LOG.debug("SYNCworkER LAST PLATFORMS")
-        }
 
-        val gps = App.getAppliCation().gps()
-        val synchronizeBody = SynchronizeBody(
-            wb_id = App.getAppParaMS().wayBillId,
-            coords = gps.PointTOBaseData(),
-            device = AppParaMS().deviceId,
-            lastKnownLocationTime = gps.PointTimeToLastKnowTime_SRV(),
-            data = PlatformEntity.toSRV(platforms, db())
-        )
+        val synchroRequest = SynchroRequestPOST()
+
+        App.oKRESTman().add(synchroRequest)
+        App.oKRESTman().send()
 
 
-        LOG.info("platforms.size=${platforms.size}")
-//        val gson = Gson()
-//        val bodyInStringFormat = gson.toJson(synchronizeBody)
-//        saveJSON(bodyInStringFormat, "postSynchro")
-        val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
-        when (synchronizeResponse.status) {
-            Status.SUCCESS -> {
-//                TODO ::: 0:)
-//                db().setConfig(ConfigName.AAPP__LAST_SYNCHROTIME_IN_SEC, timeBeforeRequest)
-                App.getAppParaMS().lastSynchroAttemptTimeInSec = timeBeforeRequest
-                if (platforms.isNotEmpty()) {
-                    App.getAppParaMS().lastSynchroTimeInSec = timeBeforeRequest.toString()
-                    LOG.error( Thread.currentThread().getId().toString())
-                    db().updatePlatformNetworkStatus(platforms)
-                    LOG.info("SUCCESS: ${Gson().toJson(synchronizeResponse.data)}")
-                } else {
-                    LOG.info("SUCCESS: GPS SENT")
-                }
-                val alertMsg = synchronizeResponse.data?.alert
-                if (!alertMsg.isNullOrEmpty()) {
-                    logSentry("ValertMsgalertMsgalertMsgalertMsgalertMsg!!!!!!!")
-//                    App.getAppliCation().showNotification(alertMsg, "Уведомление")
-                }
-            }
-            Status.ERROR -> LOG.error("SYNCworkER ERROR")
-            Status.NETWORK -> {
-                LOG.warn("SYNCworkER NO INTERNET")
-                db().setConfigCntPlusOne(ConfigName.NOINTERNET_CNT)
-            }
-            Status.ERROR -> LOG.error("Status.ERROR")
-            Status.NETWORK -> LOG.warn("Status.NETWORK==NO INTERNET")
-        }
-
-        LOG.debug("after")
+//        LOG.info("platforms.size=${platforms.size}")
+////        val gson = Gson()
+////        val bodyInStringFormat = gson.toJson(synchronizeBody)
+////        saveJSON(bodyInStringFormat, "postSynchro")
+//        val synchronizeResponse = mNetworkRepository.postSynchro(synchronizeBody)
+//        when (synchronizeResponse.status) {
+//            Status.SUCCESS -> {
+///
+//            }
+//            Status.ERROR -> LOG.error("SYNCworkER ERROR")
+//            Status.NETWORK -> {
+//                LOG.warn("SYNCworkER NO INTERNET")
+//                db().setConfigCntPlusOne(ConfigName.NOINTERNET_CNT)
+//            }
+//            Status.ERROR -> LOG.error("Status.ERROR")
+//            Status.NETWORK -> LOG.warn("Status.NETWORK==NO INTERNET")
+//        }
+//
+//        LOG.debug("after")
         
     }
 

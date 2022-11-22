@@ -3,13 +3,12 @@ package ru.smartro.worknote.awORKOLDs.util
 import io.sentry.Sentry
 import retrofit2.Response
 import ru.smartro.worknote.App
+import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyOut
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
-import ru.smartro.worknote.awORKOLDs.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.presentation.work.AppStartUpResponse
 import ru.smartro.worknote.presentation.work.RPCBody
@@ -111,7 +110,7 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
         }
 
     }
-    class BadRequestWorkorder__id__complete(response: Response<EmptyResponse>) : THR(response.code()) {
+    class BadRequestWorkorder__id__complete(response: Response<EarlyCompleteBodyOut>) : THR(response.code()) {
 
         init {
             sentToSentry(response)
@@ -126,20 +125,21 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
         }
 
     }
-    class BadRequestWorkorder__id__early_complete(response: Response<EmptyResponse>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
-    class BadRequestPOSTsynchro(response: Response<SynchronizeResponse>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
+//    class BadRequestWorkorder__id__early_complete(response: Response<EarlyCompleteBodyOut>) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
+//
+//    class BadRequestPOSTsynchro(response: Response<SynchronizeResponse>) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
 
     class BadRequestPOSTsynchroOKHTTP(response: okhttp3.Response) : THR(response.code) {
 
@@ -168,7 +168,6 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
 
     //    BadRequestSynchro__o_id__w_id
     class BadRequestSynchro__o_id__w_id(response: Response<WorkOrderResponse_know1>) : THR(response.code()) {
-
         init {
             sentToSentry(response)
         }
