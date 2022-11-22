@@ -778,11 +778,11 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
 //    }
 
     val mNotifyMap = mutableMapOf<Int, Long>()
-    private fun showNotificationPlatfrom(platformId: Int?, srpId: Int, string: String?) {
-        if (mNotifyMap.containsKey(srpId)) {
+    private fun showNotificationPlatfrom(platformId: Int, srpId: Long, string: String?) {
+        if (mNotifyMap.containsKey(platformId)) {
             return
         }
-        mNotifyMap[srpId] = Lnull
+        mNotifyMap[platformId] = srpId
 
         val intent = Intent(getAct(), MainAct::class.java)
 
@@ -797,7 +797,7 @@ class MapPlatformsF: ANOFragment() , MapPlatformSBehaviorAdapter.PlatformClickLi
             "Контейнерная площадка №${srpId}",
             "Вы подъехали к контейнерной площадке",
             "Начать обслуживание ",
-            srpId,
+            platformId,
             NOTIFICATION_CHANNEL_ID__MAP_ACT
         )
     }

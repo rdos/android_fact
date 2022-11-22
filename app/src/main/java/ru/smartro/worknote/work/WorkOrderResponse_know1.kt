@@ -96,7 +96,7 @@ data class Platform_know1(
     @SerializedName("updated_at")
     var updateAt: Long,
     @SerializedName("srp_id")
-    val srpId: Int,
+    val srpId: Long,
     @SerializedName("order_start_time")
     var orderStartTime: String? = null,
     @SerializedName("order_end_time")
