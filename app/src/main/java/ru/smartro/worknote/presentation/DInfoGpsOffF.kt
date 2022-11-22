@@ -8,7 +8,7 @@ class DInfoGpsOffF : AFragmentInfoDialog() {
     }
 
     override fun onGetNavId(): Int {
-        return R.id.InfoGpsOffDF
+        return R.id.DInfoGpsOffF
     }
 
 }

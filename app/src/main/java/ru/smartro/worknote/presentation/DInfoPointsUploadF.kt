@@ -8,7 +8,7 @@ class DInfoPointsUploadF : AFragmentInfoDialog() {
     }
 
     override fun onGetNavId(): Int {
-        return R.id.InfoPointsUploadFD
+        return R.id.DInfoPointsUploadF
     }
 
 }

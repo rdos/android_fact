@@ -8,6 +8,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.realm.Realm
 import io.realm.RealmList
+import io.realm.RealmModel
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.*
@@ -339,6 +340,19 @@ open class RegionEntity(
         return showName ?: name
     }
 }
+
+open class OrganisationEntity(
+    @PrimaryKey
+    var id: Int = Inull,
+    var name: String? = null,
+): RealmObject()
+
+open class VehicleEntity(
+    @PrimaryKey
+    var id: Int = Inull,
+    var name: String? = null,
+    var organizationId: Int = Inull
+): RealmObject()
 
 open class PlatformEntity(
     @Expose

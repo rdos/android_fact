@@ -417,9 +417,9 @@
     </dialog>
 
     <dialog
-        android:id="@+id/InfoPointsUploadFD"
+        android:id="@+id/DInfoPointsUploadF"
         android:name="ru.smartro.worknote.presentation.DInfoPointsUploadF"
-        android:label="InfoPointsUploadDF">
+        android:label="DInfoPointsUploadF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -431,9 +431,9 @@
     </dialog>
 
     <dialog
-        android:id="@+id/InfoInternetOffDF"
+        android:id="@+id/DInfoInternetOffF"
         android:name="ru.smartro.worknote.presentation.DInfoInternetOffF"
-        android:label="InfoInternetOffDF">
+        android:label="DInfoInternetOffF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -445,9 +445,9 @@
     </dialog>
 
     <dialog
-        android:id="@+id/InfoGpsOffDF"
+        android:id="@+id/DInfoGpsOffF"
         android:name="ru.smartro.worknote.presentation.DInfoGpsOffF"
-        android:label="InfoGpsOffDF">
+        android:label="DInfoGpsOffF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"

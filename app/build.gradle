@@ -40,7 +40,7 @@ android {
         }
 
         setProperty("archivesBaseName", "Fact-" + defaultConfig.versionName + "-")
-        "https://wn-api.smartro.ru/api/fact/"
+//        "https://wn-api.smartro.ru/api/fact/"
     }
 
     compileOptions {
@@ -70,7 +70,7 @@ android {
             resValue "string", "app_name", "Fact.STAGE"
             signingConfig signingConfigs.release
             debuggable true
-            buildConfigField "String", "URL__SMARTRO", "\"https://worknote-back.stage.smartro.ru/api/\""
+            buildConfigField "String", "URL__SMARTRO", "\"https://worknote-back.stage.smartro.ru/api/fact/\""
             buildConfigField "String", "URL__AUTH", "\"https://auth.stage.smartro.ru/api/\""
         }
 
@@ -83,7 +83,7 @@ android {
             // the Android Gradle plugin. To learn more, go to the section about
             // R8 configuration files.
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "URL__SMARTRO", "\"https://wn-api.smartro.ru/api/\""
+            buildConfigField "String", "URL__SMARTRO", "\"https://wn-api.smartro.ru/api/fact/\""
             buildConfigField "String", "URL__AUTH", "\"https://auth.smartro.ru/api/\""
         }
 
@@ -93,14 +93,14 @@ android {
             resValue "string", "app_name", "Fact.RC"
             signingConfig signingConfigs.release
             debuggable true
-            buildConfigField "String", "URL__SMARTRO", "\"https://worknote-back.rc.smartro.ru/api/\""
+            buildConfigField "String", "URL__SMARTRO", "\"https://worknote-back.rc.smartro.ru/api/fact/\""
             buildConfigField "String", "URL__AUTH", "\"https://auth.rc.smartro.ru/api/\""
         }
         debugProd {
             signingConfig signingConfigs.release
             resValue "string", "app_name", "Fact"
             debuggable true
-            buildConfigField "String", "URL__SMARTRO", "\"https://wn-api.smartro.ru/api/\""
+            buildConfigField "String", "URL__SMARTRO", "\"https://wn-api.smartro.ru/api/fact/\""
             buildConfigField "String", "URL__AUTH", "\"https://auth.smartro.ru/api/\""
         }
     }

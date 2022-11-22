@@ -186,7 +186,7 @@ class App : AApp() {
         connectionLiveData.observeForever { isConnectionLost ->
 
             if(isConnectionLost == true) {
-                mCurrentAct?.showNextFragment(R.id.InfoInternetOffDF)
+                mCurrentAct?.showNextFragment(R.id.DInfoInternetOffF)
             }
         }
 

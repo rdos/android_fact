@@ -16,12 +16,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ru.smartro.worknote.*
+import ru.smartro.worknote.App
+import ru.smartro.worknote.LOG
+import ru.smartro.worknote.PERMISSIONS
+import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.FragmentA
-import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
+import ru.smartro.worknote.awORKOLDs.VehicleBodyOutVehicle
+import ru.smartro.worknote.awORKOLDs.VehicleRequestGET
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
-import ru.smartro.worknote.presentation.work.Status
 
 class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -76,39 +79,39 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         rv.adapter = rvAdapter
 
         viewModel.mVehicleList.observe(viewLifecycleOwner) { result ->
-            if(result != null) {
-                val data = result.data
-                srlRefresh?.isRefreshing = false
-                (requireActivity() as XChecklistAct).hideProgressBar()
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        val vehicles = data?.data
-                        vehicles?.let {
-                            rvAdapter?.setItems(it)
-                            if (getAct().isDevelMode()) {
-                                val vehicle = it.find { el -> el.name == "Тигуан" }
-                                if(vehicle != null) {
-                                    goToNextStep(vehicle)
-                                } else {
-                                    toast("Не удаётся найти машину с именем \"Тигуан\"")
-                                }
-                            }
-                        }
-                    }
-                    Status.ERROR -> {
-                        toast(result.msg)
-                    }
-                    Status.NETWORK -> {
-                        toast("Проблемы с интернетом")
-                    }
-                }
-            } else {
-                rvAdapter?.clearItems()
-                if(getArgumentName() == null)
-                    (requireActivity() as XChecklistAct).showProgressBar()
-                else
-                    (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
-            }
+//            if(result != null) {
+//                val data = result.data
+//                srlRefresh?.isRefreshing = false
+//                (requireActivity() as XChecklistAct).hideProgressBar()
+//                when (result.status) {
+//                    Status.SUCCESS -> {
+//                        val vehicles = data?.data
+//                        vehicles?.let {
+//                            rvAdapter?.setItems(it)
+//                            if (getAct().isDevelMode()) {
+//                                val vehicle = it.find { el -> el.name == "Тигуан" }
+//                                if(vehicle != null) {
+//                                    goToNextStep(vehicle)
+//                                } else {
+//                                    toast("Не удаётся найти машину с именем \"Тигуан\"")
+//                                }
+//                            }
+//                        }
+//                    }
+//                    Status.ERROR -> {
+//                        toast(result.msg)
+//                    }
+//                    Status.NETWORK -> {
+//                        toast("Проблемы с интернетом")
+//                    }
+//                }
+//            } else {
+//                rvAdapter?.clearItems()
+//                if(getArgumentName() == null)
+//                    (requireActivity() as XChecklistAct).showProgressBar()
+//                else
+//                    (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
+//            }
         }
 
         LOG.debug("viewModel.mLastOwnerId=${viewModel.mLastOwnerId}")
@@ -118,14 +121,14 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
                 (requireActivity() as XChecklistAct).showProgressBar()
             else
                 (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
-            viewModel.getVehicleList(getArgumentID())
+            getVehicleList()
         } else if(viewModel.mLastOwnerId != getArgumentID()) {
             viewModel.clearVehicleList()
-            viewModel.getVehicleList(getArgumentID())
+            getVehicleList()
         }
     }
 
-    private fun goToNextStep(vehicle: Vehicle) {
+    private fun goToNextStep(vehicle: VehicleBodyOutVehicle) {
         paramS().vehicleId = vehicle.id
         paramS().vehicleName = vehicle.name
         // TODO!! will be changed to navigateMain
@@ -150,6 +153,19 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
-        viewModel.getVehicleList(getArgumentID())
+        getVehicleList()
+    }
+
+    private fun getVehicleList() {
+        val vehicleRequestGET = VehicleRequestGET()
+        vehicleRequestGET.getLiveDate().observe(viewLifecycleOwner) { result ->
+            LOG.debug("${result}")
+            hideProgress()
+            if (result.isSent) {
+//                goToNextStep()
+            }
+        }
+        App.oKRESTman().add(vehicleRequestGET)
+        App.oKRESTman().send()
     }
 }

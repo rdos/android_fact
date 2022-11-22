@@ -15,18 +15,16 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
+import ru.smartro.worknote.awORKOLDs.OwnerBodyOut
 import ru.smartro.worknote.awORKOLDs.extensions.*
-
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
-import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
+import ru.smartro.worknote.awORKOLDs.EmptyResponse
+import ru.smartro.worknote.awORKOLDs.VehicleBodyOutVehicle
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
-import ru.smartro.worknote.saveJSON
-import ru.smartro.worknote.presentation.work.Resource
 import ru.smartro.worknote.awORKOLDs.util.THR
-import ru.smartro.worknote.presentation.work.WoRKoRDeR_know1
+import ru.smartro.worknote.presentation.work.Resource
 import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
+import ru.smartro.worknote.saveJSON
 
 class XChecklistAct: AAct() {
 
@@ -110,14 +108,14 @@ class XChecklistAct: AAct() {
         
 
         // OWNERS
-        private val _ownersList: MutableLiveData<Resource<OrganisationResponse>> = MutableLiveData(null)
-        val mOwnersList: LiveData<Resource<OrganisationResponse>>
+        private val _ownersList: MutableLiveData<Resource<OwnerBodyOut>> = MutableLiveData(null)
+        val mOwnersList: LiveData<Resource<OwnerBodyOut>>
             get() = _ownersList
         var mLastOwnerId = -1
 
         // VEHICLES
-        private val _vehicleList: MutableLiveData<Resource<VehicleResponse>> = MutableLiveData(null)
-        val mVehicleList: LiveData<Resource<VehicleResponse>>
+        private val _vehicleList: MutableLiveData<Resource<VehicleBodyOutVehicle>> = MutableLiveData(null)
+        val mVehicleList: LiveData<Resource<VehicleBodyOutVehicle>>
             get() = _vehicleList
         var mLastVehicleId = -1
 
@@ -138,51 +136,51 @@ class XChecklistAct: AAct() {
         fun getOwnersList() {
             viewModelScope.launch {
                 LOG.info( "getOwners")
-                val response = networkDat.getOwners()
-                try {
-                    when {
-                        response.isSuccessful -> {
-                            val gson = Gson()
-                            val bodyInStringFormat = gson.toJson(response.body())
-                            saveJSON(bodyInStringFormat, "getOwners")
-                            _ownersList.postValue(Resource.success(response.body()))
-                        }
-                        else -> {
-                            THR.BadRequestOwner(response)
-                            _ownersList.postValue(Resource.error("Ошибка ${response.code()}", null))
-
-                        }
-                    }
-                } catch (e: Exception) {
-                    _ownersList.postValue(Resource.network("Проблемы с подключением интернета", null))
-                }
+//                val response = networkDat.getOwners()
+//                try {
+//                    when {
+//                        response.isSuccessful -> {
+//                            val gson = Gson()
+//                            val bodyInStringFormat = gson.toJson(response.body())
+//                            saveJSON(bodyInStringFormat, "getOwners")
+//                            _ownersList.postValue(Resource.success(response.body()))
+//                        }
+//                        else -> {
+////                            THR.BadRequestOwner(response)
+//                            _ownersList.postValue(Resource.error("Ошибка ${response.code()}", null))
+//
+//                        }
+//                    }
+//                } catch (e: Exception) {
+//                    _ownersList.postValue(Resource.network("Проблемы с подключением интернета", null))
+//                }
             }
         }
 
         fun getVehicleList(organisationId: Int) {
             viewModelScope.launch {
                 LOG.info( "getVehicle.before")
-                try {
-                    val response = networkDat.getVehicle(organisationId)
-                    LOG.debug("getVehicle.after ${response.body().toString()}")
-                    when {
-                        response.isSuccessful -> {
-                            mLastOwnerId = organisationId
-                            val gson = Gson()
-                            val bodyInStringFormat = gson.toJson(response.body())
-                            saveJSON(bodyInStringFormat, "getVehicle")
-                            _vehicleList.postValue(Resource.success(response.body()))
-                        }
-                        else -> {
-                            THR.BadRequestVehicle(response)
-                            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                            LOG.debug("getVehicle.after errorResponse=${errorResponse}")
-                            _vehicleList.postValue(Resource.error("Ошибка ${response.code()}", null))
-                        }
-                    }
-                } catch (e: Exception) {
-                    _vehicleList.postValue(Resource.network("Проблемы с подключением интернета", null))
-                }
+//                try {
+//                    val response = networkDat.getVehicle(organisationId)
+//                    LOG.debug("getVehicle.after ${response.body().toString()}")
+//                    when {
+//                        response.isSuccessful -> {
+//                            mLastOwnerId = organisationId
+//                            val gson = Gson()
+//                            val bodyInStringFormat = gson.toJson(response.body())
+//                            saveJSON(bodyInStringFormat, "getVehicle")
+//                            _vehicleList.postValue(Resource.success(response.body()))
+//                        }
+//                        else -> {
+//                            THR.BadRequestVehicle(response)
+//                            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+//                            LOG.debug("getVehicle.after errorResponse=${errorResponse}")
+//                            _vehicleList.postValue(Resource.error("Ошибка ${response.code()}", null))
+//                        }
+//                    }
+//                } catch (e: Exception) {
+//                    _vehicleList.postValue(Resource.network("Проблемы с подключением интернета", null))
+//                }
             }
         }
         fun clearVehicleList() {
@@ -251,6 +249,5 @@ class XChecklistAct: AAct() {
                 }
             }
         }
-
     }
 }

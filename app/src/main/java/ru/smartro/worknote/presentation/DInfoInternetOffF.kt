@@ -8,7 +8,7 @@ class DInfoInternetOffF : AFragmentInfoDialog() {
     }
 
     override fun onGetNavId(): Int {
-        return R.id.InfoInternetOffDF
+        return R.id.DInfoInternetOffF
     }
 
 }

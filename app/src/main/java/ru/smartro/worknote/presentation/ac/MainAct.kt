@@ -51,7 +51,7 @@ class MainAct :
                     val dialogShouldShow = (isGpsEnabled || isNetworkEnabled) == false
 
                     if(dialogShouldShow && mIsDlgShown != dialogShouldShow) {
-                        showNextFragment(R.id.InfoGpsOffDF)
+                        showNextFragment(R.id.DInfoGpsOffF)
                     }
 
                     mIsDlgShown = dialogShouldShow

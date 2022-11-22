@@ -181,6 +181,24 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
+    fun insertOrganisationEntity(entities: List<OrganisationEntity>) {
+        LOG.debug("before.entities.size=${entities.size}")
+        p_realm.executeTransaction { realm ->
+            realm.insertOrUpdate(entities)
+        }
+        LOG.debug("after")
+    }
+
+
+    fun insertVehicleEntity(entities: List<VehicleEntity>) {
+        LOG.debug("before.entities.size=${entities.size}")
+        p_realm.executeTransaction { realm ->
+            realm.insertOrUpdate(entities)
+        }
+        LOG.debug("after")
+    }
+
+
     fun insertBreakDown(entities: List<BreakDownReasonEntity>) {
         p_realm.executeTransaction { realm ->
             realm.insertOrUpdate(entities)

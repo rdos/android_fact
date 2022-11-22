@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import ru.smartro.worknote.App
 import ru.smartro.worknote.BuildConfig
@@ -15,24 +16,30 @@ import ru.smartro.worknote.awORKOLDs.util.RESTconnection
 import java.io.IOException
 import kotlin.reflect.KClass
 
+
 //Tin Toup
 abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI {
-   final override fun getTAGObject(): String {
-//        TODO("Not yet implemented")
+    final override fun getTAGObject(): String {
+    //        TODO("Not yet implemented")
         return TAGObj
     }
 
     private var mResponseString: String? = null
+    private var mQueryParamMap: HashMap<String, String> = HashMap()
     private var mGson: Gson? = null
-    private val URL = BuildConfig.URL__AUTH
     private val mMediaType: MediaType = "application/json; charset=utf-8".toMediaType()
 
+    protected open fun onGetURL(): String {
+        return BuildConfig.URL__SMARTRO
+    }
+
+    abstract fun onGetSRVName(): String
     abstract fun onGetRequestBodyIn(): TA
+    abstract fun onSetQueryParameter(queryParamMap: HashMap<String, String>)
     abstract fun onBefore()
     abstract fun onAfter(bodyOut: TB)
     abstract fun onGetResponseClazz(): KClass<TB>
 
-    abstract fun onGetSRVName(): String
 //    abstract fun onGetResponseClazz(): Class<AuthResponse>
 
     private fun getGson(): Gson {
@@ -46,22 +53,40 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
 
     final override fun getOKHTTPRequest(): Request {
         LOG.debug("before")
-        val netObject = onGetRequestBodyIn()
-//        val authBodyIn = AuthBodyIn(email="asd", password = "asdf")
-        val bodyInStringFormat = getGson().toJson(netObject)
-        LOG.info("my body::${bodyInStringFormat}")
-        val body: RequestBody = RequestBody.create(mMediaType, bodyInStringFormat)
+        var url = this.onGetURL() + this.onGetSRVName()
 
-        val url = URL + this.onGetSRVName()
-        LOG.warn("my url::${url}")
+
+
+        onSetQueryParameter(mQueryParamMap)
+        if (mQueryParamMap.size > 0) {
+            val urlBuilder: HttpUrl.Builder = url.toHttpUrlOrNull()!!.newBuilder()
+            for(queryParam in mQueryParamMap) {
+                urlBuilder.addQueryParameter(queryParam.key, queryParam.value)
+            }
+            url = urlBuilder.build().toString()
+        }
+        LOG.info("url=${url}")
+
         val headerAuthorization = "Bearer " + App.getAppParaMS().token
-        val request: Request = Request.Builder()
-            .url(url)
-            .addHeader("Authorization", headerAuthorization)
-            .post(body)
-            .build()
-        return request
+        LOG.warn("headerAuthorization=${headerAuthorization}")
+
+        val requestBuilder =  Request.Builder()
+        requestBuilder.url(url)
+        requestBuilder.addHeader("Authorization", headerAuthorization)
+
+        val netObject = onGetRequestBodyIn()
+        if (netObject is NoBody) {
+            return requestBuilder.build()
+        }
+
+        val bodyInStringFormat = getGson().toJson(netObject)
+        LOG.debug("bodyInStringFormat=${bodyInStringFormat}")
+        val body: RequestBody = RequestBody.create(mMediaType, bodyInStringFormat)
+        requestBuilder.post(body)
+        return requestBuilder.build()
     }
+
+
 
     override fun onFailure(call: Call, e: IOException) {
         LOG.error("onResponse", e)
@@ -107,11 +132,7 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
         }
 
         val responseObj = getGson().fromJson(mResponseString, this.onGetResponseClazz().java)
-
         this.onAfter(responseObj)
         mRESTconnectionMutableLiveData?.postValue(connectionREVERS)
     }
-
-
-
 }

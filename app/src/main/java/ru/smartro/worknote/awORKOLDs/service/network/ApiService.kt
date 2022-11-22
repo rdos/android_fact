@@ -7,14 +7,12 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
+import ru.smartro.worknote.awORKOLDs.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.OrganisationResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.VehicleResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.presentation.work.AppStartUpBody
 import ru.smartro.worknote.presentation.work.AppStartUpResponse
@@ -27,11 +25,11 @@ interface ApiService {
 //    @POST("login")
 //    suspend fun auth(@Body model: AuthBody): Response<AuthResponse>
 
-    @GET("owner")
-    suspend fun getOwners(): Response<OrganisationResponse>
+//    @GET("owner")
+//    suspend fun getOwners(): Response<OrganisationResponse>
 
-    @GET("vehicle")
-    suspend fun getVehicle(@Query("o") organisationId: Int): Response<VehicleResponse>
+//    @GET("vehicle")
+//    suspend fun getVehicle(@Query("o") organisationId: Int): Response<VehicleResponse>
 
     @GET("breakdown_type?page=all")
     suspend fun getBreakDownTypes(): Response<BreakDownResponse>

@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.service.network.response.vehicle.Vehicle
+import ru.smartro.worknote.awORKOLDs.VehicleBodyOutVehicle
 
-class StartVehicleAdapter(private val listener: (Vehicle) -> Unit): RecyclerView.Adapter<StartVehicleAdapter.VehicleViewHolder>() {
+class StartVehicleAdapter(private val listener: (VehicleBodyOutVehicle) -> Unit): RecyclerView.Adapter<StartVehicleAdapter.VehicleViewHolder>() {
 
-    private val mItems: MutableList<Vehicle> = mutableListOf()
-    private var mFilteredItems: MutableList<Vehicle> = mutableListOf()
-    fun setItems(vehicleList: List<Vehicle>) {
+    private val mItems: MutableList<VehicleBodyOutVehicle> = mutableListOf()
+    private var mFilteredItems: MutableList<VehicleBodyOutVehicle> = mutableListOf()
+    fun setItems(vehicleList: List<VehicleBodyOutVehicle>) {
         mItems.clear()
         mItems.addAll(vehicleList)
         mFilteredItems.clear()
@@ -53,8 +53,8 @@ class StartVehicleAdapter(private val listener: (Vehicle) -> Unit): RecyclerView
 
     override fun getItemCount(): Int = mFilteredItems.size
 
-    class VehicleViewHolder(val itemView: View, val listener: (Vehicle) -> Unit): RecyclerView.ViewHolder(itemView) {
-        fun bind(vehicle: Vehicle) {
+    class VehicleViewHolder(val itemView: View, val listener: (VehicleBodyOutVehicle) -> Unit): RecyclerView.ViewHolder(itemView) {
+        fun bind(vehicle: VehicleBodyOutVehicle) {
             itemView.findViewById<TextView>(R.id.vehicle_name).text = vehicle.name
             itemView.setOnClickListener {
                 listener(vehicle)

@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.R
-import ru.smartro.worknote.awORKOLDs.service.network.response.organisation.Organisation
+import ru.smartro.worknote.awORKOLDs.OwnerBodyOutDataOrganisation
 
-class StartOwnerAdapter(private val listener: (Organisation) -> Unit): RecyclerView.Adapter<StartOwnerAdapter.OwnerViewHolder>() {
+class StartOwnerAdapter(private val listener: (OwnerBodyOutDataOrganisation) -> Unit): RecyclerView.Adapter<StartOwnerAdapter.OwnerViewHolder>() {
 
-    private val mItems: MutableList<Organisation> = mutableListOf()
-    fun setItems(ownersList: List<Organisation>) {
+    private val mItems: MutableList<OwnerBodyOutDataOrganisation> = mutableListOf()
+    fun setItems(ownersList: List<OwnerBodyOutDataOrganisation>) {
         mItems.clear()
         mItems.addAll(ownersList)
         notifyDataSetChanged()
@@ -29,8 +29,8 @@ class StartOwnerAdapter(private val listener: (Organisation) -> Unit): RecyclerV
 
     override fun getItemCount(): Int = mItems.size
 
-    class OwnerViewHolder(val itemView: View, val listener: (Organisation) -> Unit): RecyclerView.ViewHolder(itemView) {
-        fun bind(owner: Organisation) {
+    class OwnerViewHolder(val itemView: View, val listener: (OwnerBodyOutDataOrganisation) -> Unit): RecyclerView.ViewHolder(itemView) {
+        fun bind(owner: OwnerBodyOutDataOrganisation) {
             itemView.findViewById<TextView>(R.id.owner_name).text = owner.name
             itemView.setOnClickListener {
                 listener(owner)

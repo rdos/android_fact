@@ -11,6 +11,7 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.LOG
+import ru.smartro.worknote.awORKOLDs.OwnerRequestGET
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.presentation.work.Status
 
@@ -70,7 +71,7 @@ class StartOwnerF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         }
         if(viewModel.mOwnersList.value == null) {
             (requireActivity() as XChecklistAct).showProgressBar()
-            viewModel.getOwnersList()
+            getOwnersList()
         } else {
             (requireActivity() as XChecklistAct).hideProgressBar()
         }
@@ -84,7 +85,20 @@ class StartOwnerF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
-        viewModel.getOwnersList()
+        getOwnersList()
+    }
+
+    private fun getOwnersList() {
+        val ownerRequest = OwnerRequestGET()
+        ownerRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
+            LOG.debug("${result}")
+            hideProgress()
+            if (result.isSent) {
+                goToNextStep(1, "Cj.p")
+            }
+        }
+        App.oKRESTman().add(ownerRequest)
+        App.oKRESTman().send()
     }
 
 

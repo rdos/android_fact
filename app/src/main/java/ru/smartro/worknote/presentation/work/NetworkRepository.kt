@@ -23,7 +23,7 @@ import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.synchro.SynchronizeBody
-import ru.smartro.worknote.awORKOLDs.service.network.response.EmptyResponse
+import ru.smartro.worknote.awORKOLDs.EmptyResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
 import ru.smartro.worknote.awORKOLDs.service.network.response.synchronize.SynchronizeResponse
 import ru.smartro.worknote.awORKOLDs.util.THR
@@ -57,31 +57,31 @@ class NetworkRepository(private val context: Context) {
 //        }
 //    }
 
-    suspend fun getVehicle(organisationId: Int) =
-        RetrofitClient(context).apiService(true).getVehicle(organisationId)
-    fun getVehicleOld(organisationId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info( "getVehicle.before")
-        try {
-
-            val response = RetrofitClient(context)
-
-                .apiService(true).getVehicle(organisationId)
-            LOG.debug("getVehicle.after ${response.body()}")
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestVehicle(response)
-                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-                    LOG.debug("getVehicle.after errorResponse=${errorResponse}")
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
+//    suspend fun getVehicle(organisationId: Int) =
+//        RetrofitClient(context).apiService(true).getVehicle(organisationId)
+//    fun getVehicleOld(organisationId: Int) = liveData(Dispatchers.IO, TIME_OUT) {
+//        LOG.info( "getVehicle.before")
+//        try {
+//
+//            val response = RetrofitClient(context)
+//
+//                .apiService(true).getVehicle(organisationId)
+//            LOG.debug("getVehicle.after ${response.body()}")
+//            when {
+//                response.isSuccessful -> {
+//                    emit(Resource.success(response.body()))
+//                }
+//                else -> {
+//                    THR.BadRequestVehicle(response)
+//                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+//                    LOG.debug("getVehicle.after errorResponse=${errorResponse}")
+//                    emit(Resource.error("Ошибка ${response.code()}", null))
+//                }
+//            }
+//        } catch (e: Exception) {
+//            emit(Resource.network("Проблемы с подключением интернета", null))
+//        }
+//    }
 
 
     private fun insertBreakDown(data: List<ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.Data>?) {
@@ -353,26 +353,26 @@ class NetworkRepository(private val context: Context) {
         return result
     }
 
-    suspend fun getOwners() = RetrofitClient(context).apiService(false).getOwners()
-    fun getOwnersOld() = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info( "getOwners")
-
-        try {
-            val response = RetrofitClient(context).apiService(false).getOwners()
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestOwner(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
+//    suspend fun getOwners() = RetrofitClient(context).apiService(false).getOwners()
+//    fun getOwnersOld() = liveData(Dispatchers.IO, TIME_OUT) {
+//        LOG.info( "getOwners")
+//
+//        try {
+//            val response = RetrofitClient(context).apiService(false).getOwners()
+//            when {
+//                response.isSuccessful -> {
+//                    emit(Resource.success(response.body()))
+//                }
+//                else -> {
+//                    THR.BadRequestOwner(response)
+//                    emit(Resource.error("Ошибка ${response.code()}", null))
+//
+//                }
+//            }
+//        } catch (e: Exception) {
+//            emit(Resource.network("Проблемы с подключением интернета", null))
+//        }
+//    }
 
     suspend fun ping(pingBody: PingBody): Resource<PingBody> {
         LOG.info( "test_ping.before")
