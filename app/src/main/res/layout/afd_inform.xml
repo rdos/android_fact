@@ -50,6 +50,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="16dp"
         android:gravity="center">
 
         <androidx.appcompat.widget.AppCompatButton
@@ -59,7 +60,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginVertical="18dp"
             android:background="@drawable/bg_button"
             android:text="acb__adf_inform__gotonext"
             android:textColor="@color/white" />
