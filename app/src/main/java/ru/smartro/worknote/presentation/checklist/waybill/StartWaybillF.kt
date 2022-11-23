@@ -1,7 +1,10 @@
 package ru.smartro.worknote.presentation.checklist.waybill
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
@@ -13,6 +16,7 @@ import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.LOG
+import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import java.text.SimpleDateFormat
 import java.util.*
@@ -113,18 +117,20 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         mRvWaybill?.visibility = View.VISIBLE
     }
 
-    private fun getWayBillList(isRefresh: Boolean = false) {
+    private fun getWayBillList() {
         val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
         val body = WayListBody(
             date = currentDate,
             organisationId = paramS().getOwnerId(),
             vehicleId = getArgumentID()
         )
-        viewModel.getWayBillsList(body, isRefresh)
+        viewModel.getWayBillsList(body)
     }
 
     override fun onRefresh() {
-        getWayBillList(true)
+        getWayBillList()
+        srlRefresh?.isRefreshing = false
+        (requireActivity() as XChecklistAct).showProgressBar()
     }
 
     override fun onDestroyView() {
@@ -139,5 +145,40 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         paramS().wayBillId = wayBillId
         paramS().wayBillNumber = wayBillNumber
         navigateMainChecklist(R.id.startWorkOrderF, wayBillId, wayBillNumber)
+    }
+
+
+    class StartWayBillAdapter(private val listener: (WayBillDto) -> Unit): RecyclerView.Adapter<StartWayBillAdapter.WayBillViewHolder>() {
+
+        private val mItems: MutableList<WayBillDto> = mutableListOf()
+        fun setItems(wayBillsList: List<WayBillDto>) {
+            mItems.clear()
+            mItems.addAll(wayBillsList)
+            notifyDataSetChanged()
+        }
+        override fun getItemCount(): Int = mItems.size
+
+        fun clearItems() {
+            mItems.clear()
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WayBillViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.f_start_waybill__rv_item, parent, false)
+            return WayBillViewHolder(view, listener)
+        }
+
+        override fun onBindViewHolder(holder: WayBillViewHolder, position: Int) {
+            holder.bind(mItems[position])
+        }
+
+        class WayBillViewHolder(val itemView: View, val listener: (WayBillDto) -> Unit): RecyclerView.ViewHolder(itemView) {
+            fun bind(wayBill: WayBillDto) {
+                itemView.findViewById<TextView>(R.id.waybill_number).text = wayBill.number
+                itemView.setOnClickListener {
+                    listener(wayBill)
+                }
+            }
+        }
     }
 }

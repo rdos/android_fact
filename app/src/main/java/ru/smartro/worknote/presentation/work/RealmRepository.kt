@@ -181,23 +181,6 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun insertOrganisationEntity(entities: List<OrganisationEntity>) {
-        LOG.debug("before.entities.size=${entities.size}")
-        p_realm.executeTransaction { realm ->
-            realm.insertOrUpdate(entities)
-        }
-        LOG.debug("after")
-    }
-
-
-    fun insertVehicleEntity(entities: List<VehicleEntity>) {
-        LOG.debug("before.entities.size=${entities.size}")
-        p_realm.executeTransaction { realm ->
-            realm.insertOrUpdate(entities)
-        }
-        LOG.debug("after")
-    }
-
 
     fun insertBreakDown(entities: List<BreakDownReasonEntity>) {
         p_realm.executeTransaction { realm ->
@@ -1121,6 +1104,14 @@ class RealmRepository(private val p_realm: Realm) {
         return res
     }
 
+    private fun getQueryOrganisation(): RealmQuery<OrganisationEntity> {
+        return p_realm.where(OrganisationEntity::class.java)
+    }
+
+    private fun getQueryVehicle(): RealmQuery<VehicleEntity> {
+        return p_realm.where(VehicleEntity::class.java)
+    }
+
     private fun getQueryPlatformMedia(platformEntity: PlatformEntity): RealmQuery<PlatformMediaEntity> {
         return p_realm.where(PlatformMediaEntity::class.java).equalTo("platformId", platformEntity.platformId)
     }
@@ -1403,4 +1394,45 @@ class RealmRepository(private val p_realm: Realm) {
 
 
 
+    fun setOrganisationEntity(entities: List<OrganisationEntity>) {
+        LOG.debug("before.entities.size=${entities.size}")
+        p_realm.executeTransaction { realm ->
+            val organisationEntity = getQueryOrganisation().findAll()
+            organisationEntity.deleteAllFromRealm()
+            realm.insertOrUpdate(entities)
+        }
+        LOG.debug("after")
+    }
+
+
+    fun getOrganisationS(): List<OrganisationEntity> {
+        var result = emptyList<OrganisationEntity>()
+        p_realm.executeTransaction { realm ->
+            val organisationEntity = getQueryOrganisation().findAll()
+            result = realm.copyFromRealm(organisationEntity)
+
+        }
+        return result
+    }
+
+    fun setVehicleEntity(entities: List<VehicleEntity>) {
+        LOG.debug("before.entities.size=${entities.size}")
+        p_realm.executeTransaction { realm ->
+            val vehicleS= getQueryVehicle().findAll()
+            vehicleS.deleteAllFromRealm()
+            realm.insertOrUpdate(entities)
+        }
+        LOG.debug("after")
+    }
+
+
+    fun getVehicleS(): List<VehicleEntity> {
+        var result = emptyList<VehicleEntity>()
+        p_realm.executeTransaction { realm ->
+            val vehicleS = getQueryVehicle().findAll()
+            result = realm.copyFromRealm(vehicleS)
+
+        }
+        return result
+    }
 }

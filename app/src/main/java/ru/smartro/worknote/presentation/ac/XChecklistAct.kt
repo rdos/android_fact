@@ -104,18 +104,18 @@ class XChecklistAct: AAct() {
      */
 
     class ChecklistViewModel(app: Application) : AViewModel(app) {
-        
+
 
         // OWNERS
-        private val _ownersList: MutableLiveData<Resource<OwnerBodyOut>> = MutableLiveData(null)
-        val mOwnersList: LiveData<Resource<OwnerBodyOut>>
-            get() = _ownersList
+//        private val _ownersList: MutableLiveData<Resource<OwnerBodyOut>> = MutableLiveData(null)
+//        val mOwnersList: LiveData<Resource<OwnerBodyOut>>
+//            get() = _ownersList
         var mLastOwnerId = -1
 
         // VEHICLES
-        private val _vehicleList: MutableLiveData<Resource<VehicleBodyOutVehicle>> = MutableLiveData(null)
-        val mVehicleList: LiveData<Resource<VehicleBodyOutVehicle>>
-            get() = _vehicleList
+//        private val _vehicleList: MutableLiveData<Resource<VehicleBodyOutVehicle>> = MutableLiveData(null)
+//        val mVehicleList: LiveData<Resource<VehicleBodyOutVehicle>>
+//            get() = _vehicleList
         var mLastVehicleId = -1
 
         // WAYBILLS
@@ -181,9 +181,6 @@ class XChecklistAct: AAct() {
 //                    _vehicleList.postValue(Resource.network("Проблемы с подключением интернета", null))
 //                }
             }
-        }
-        fun clearVehicleList() {
-            _vehicleList.postValue(null)
         }
 
         fun getWayBillsList(body : WayListBody, isRefresh: Boolean = false) {

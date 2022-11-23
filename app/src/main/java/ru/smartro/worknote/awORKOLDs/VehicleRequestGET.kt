@@ -25,11 +25,11 @@ class VehicleRequestGET: GETRequestA<VehicleBodyOut>() {
         for(vehicle in bodyOut.vehicles) {
             val vehicleEntity = VehicleEntity()
             vehicleEntity.id = vehicle.id
-            vehicleEntity.name = vehicle.name
+            vehicleEntity.name = vehicle.name?:"Имя не задано"
             vehicleEntityS.add(vehicleEntity)
         }
 
-        db.insertVehicleEntity(vehicleEntityS)
+        db.setVehicleEntity(vehicleEntityS)
     }
 
     override fun onGetResponseClazz(): KClass<VehicleBodyOut> {

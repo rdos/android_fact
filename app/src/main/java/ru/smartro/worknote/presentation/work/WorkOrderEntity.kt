@@ -344,13 +344,23 @@ open class RegionEntity(
 open class OrganisationEntity(
     @PrimaryKey
     var id: Int = Inull,
-    var name: String? = null,
-): RealmObject()
+    var name: String = Snull,
+    var dev_info: String? = null
+
+): RealmObject() {
+    companion object {
+        // TODO: !!!
+        fun createEmpty(): OrganisationEntity {
+            val result = OrganisationEntity(dev_info= THIS_IS_ERROR)
+            return result
+        }
+    }
+}
 
 open class VehicleEntity(
     @PrimaryKey
     var id: Int = Inull,
-    var name: String? = null,
+    var name: String = Snull,
     var organizationId: Int = Inull
 ): RealmObject()
 

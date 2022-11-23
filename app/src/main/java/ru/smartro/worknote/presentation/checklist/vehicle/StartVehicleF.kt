@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -16,22 +18,20 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ru.smartro.worknote.App
-import ru.smartro.worknote.LOG
-import ru.smartro.worknote.PERMISSIONS
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.VehicleBodyOutVehicle
 import ru.smartro.worknote.awORKOLDs.VehicleRequestGET
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
+import ru.smartro.worknote.presentation.work.VehicleEntity
 
 class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
+    private var mStartVehicleAdapter: StartVehicleAdapter? = null
     private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
 
     private var etVehicleFilter: EditText? = null
-    private var rvAdapter: StartVehicleAdapter? = null
 
     private var srlRefresh: SwipeRefreshLayout? = null
 
@@ -55,7 +55,7 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         srlRefresh = view.findViewById(R.id.srl__f_start_vehicle__refresh)
         srlRefresh?.setOnRefreshListener(this)
 
-        rvAdapter = StartVehicleAdapter { vehicle ->
+        mStartVehicleAdapter = StartVehicleAdapter { vehicle ->
             goToNextStep(vehicle)
         }
 
@@ -63,7 +63,7 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         etVehicleFilter?.addTextChangedListener { text: Editable? ->
             val filterText = text.toString()
             logSentry(filterText)
-            rvAdapter?.updateList(filterText)
+            mStartVehicleAdapter?.updateList(filterText)
         }
         etVehicleFilter?.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -76,9 +76,9 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
         val rv = view.findViewById<RecyclerView>(R.id.rv__f_start_vehicle__vehicles)
         rv.layoutManager = LinearLayoutManager(requireContext())
-        rv.adapter = rvAdapter
+        rv.adapter = mStartVehicleAdapter
 
-        viewModel.mVehicleList.observe(viewLifecycleOwner) { result ->
+//        viewModel.mVehicleList.observe(viewLifecycleOwner) { result ->
 //            if(result != null) {
 //                val data = result.data
 //                srlRefresh?.isRefreshing = false
@@ -112,23 +112,17 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 //                else
 //                    (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
 //            }
-        }
+//        }
 
         LOG.debug("viewModel.mLastOwnerId=${viewModel.mLastOwnerId}")
         LOG.debug("getArgumentID(mLastOwnerId)=${getArgumentID()}")
-        if(viewModel.mVehicleList.value == null) {
-            if(getArgumentName() == null)
-                (requireActivity() as XChecklistAct).showProgressBar()
-            else
-                (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
-            getVehicleList()
-        } else if(viewModel.mLastOwnerId != getArgumentID()) {
-            viewModel.clearVehicleList()
-            getVehicleList()
-        }
+
+        val vehicleS= viewModel.database.getVehicleS()
+        mStartVehicleAdapter?.setItems(vehicleS)
+        onRefresh()
     }
 
-    private fun goToNextStep(vehicle: VehicleBodyOutVehicle) {
+    private fun goToNextStep(vehicle: VehicleEntity) {
         paramS().vehicleId = vehicle.id
         paramS().vehicleName = vehicle.name
         // TODO!! will be changed to navigateMain
@@ -137,35 +131,97 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onResume() {
         super.onResume()
-        if(etVehicleFilter != null && etVehicleFilter?.text.toString().isNotEmpty()) {
-            val filterText = if(etVehicleFilter!!.text != null) etVehicleFilter!!.text.toString() else return
-            logSentry(filterText)
-            Handler(Looper.getMainLooper()).postDelayed({
-                rvAdapter?.updateList(filterText)
-            }, 500)
-        }
+//        if(etVehicleFilter != null && etVehicleFilter?.text.toString().isNotEmpty()) {
+//            val filterText = if(etVehicleFilter!!.text != null) etVehicleFilter!!.text.toString() else return
+////            logSentry(filterText)
+////            Handler(Looper.getMainLooper()).postDelayed({
+////                rvAdapter?.updateList(filterText)
+////            }, 500)
+//        }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        LOG.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
-        viewModel.mVehicleList.removeObservers(viewLifecycleOwner)
-    }
 
     override fun onRefresh() {
         getVehicleList()
+        srlRefresh?.isRefreshing = false
+        (requireActivity() as XChecklistAct).showProgressBar()
     }
 
     private fun getVehicleList() {
         val vehicleRequestGET = VehicleRequestGET()
         vehicleRequestGET.getLiveDate().observe(viewLifecycleOwner) { result ->
             LOG.debug("${result}")
-            hideProgress()
+            (requireActivity() as XChecklistAct).hideProgressBar()
             if (result.isSent) {
-//                goToNextStep()
+                val vehicleS= viewModel.database.getVehicleS()
+                mStartVehicleAdapter?.setItems(vehicleS)
+                if (getAct().isDevelMode()) {
+                    val vehicle = vehicleS.find { el -> el.name == "Тигуан" }
+                    if(vehicle != null) {
+                        goToNextStep(vehicle)
+                    } else {
+                        toast("Не удаётся найти машину с именем \"Тигуан\"")
+                    }
+                }
             }
         }
         App.oKRESTman().add(vehicleRequestGET)
         App.oKRESTman().send()
+    }
+
+
+    class StartVehicleAdapter(private val listener: (VehicleEntity) -> Unit): RecyclerView.Adapter<StartVehicleAdapter.VehicleViewHolder>() {
+
+        private val mItems: MutableList<VehicleEntity> = mutableListOf()
+        private var mFilteredItems: MutableList<VehicleEntity> = mutableListOf()
+        fun setItems(vehicleList: List<VehicleEntity>) {
+            mItems.clear()
+            mItems.addAll(vehicleList)
+            mFilteredItems.clear()
+            mFilteredItems.addAll(vehicleList)
+            notifyDataSetChanged()
+        }
+
+        fun clearItems() {
+            mItems.clear()
+            notifyDataSetChanged()
+        }
+
+        fun updateList(_filterText: String) {
+            val filterText = _filterText.lowercase()
+            mFilteredItems.clear()
+            mFilteredItems.addAll(mItems.filter { el ->
+                if(el.name != null) {
+                    val name = el.name.lowercase()
+                    name.startsWith(filterText) || name.contains(filterText)
+                } else {
+                    false
+                }
+            })
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VehicleViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.f_start_vehicle__rv_item, parent, false)
+            return VehicleViewHolder(view, listener)
+        }
+
+        override fun onBindViewHolder(holder: VehicleViewHolder, position: Int) {
+            // TODO TEST I THINK THAT IF GETITEMCOUNT RETURNS FILTEREDITEMS SIZE THEN WE CAN GET RID OF IF HERE
+//        if(mFilteredItems.isNotEmpty() && position < mFilteredItems.size) {
+            holder.bind(mFilteredItems[position])
+//        }
+        }
+
+        override fun getItemCount(): Int = mFilteredItems.size
+
+        class VehicleViewHolder(val itemView: View, val listener: (VehicleEntity) -> Unit): RecyclerView.ViewHolder(itemView) {
+            fun bind(vehicle: VehicleEntity) {
+                itemView.findViewById<TextView>(R.id.vehicle_name).text = vehicle.name
+                itemView.setOnClickListener {
+                    listener(vehicle)
+                }
+            }
+        }
     }
 }

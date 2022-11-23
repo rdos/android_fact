@@ -34,7 +34,7 @@ class OwnerRequestGET : GETRequestA<OwnerBodyOut>() {
             organisationEntity.name = organisation.name
             organisationEntityS.add(organisationEntity)
         }
-        db.insertOrganisationEntity(organisationEntityS)
+        db.setOrganisationEntity(organisationEntityS)
     }
 
     override fun onGetResponseClazz(): KClass<OwnerBodyOut> {
