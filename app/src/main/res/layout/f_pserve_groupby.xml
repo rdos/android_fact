@@ -19,7 +19,7 @@
             android:paddingVertical="16dp"
             >
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/nav_title"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -32,8 +32,8 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"/>
 
-            <TextView
-                android:id="@+id/screen_mode_label"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/actv__f_pserve__screen_mode_label"
                 android:layout_marginTop="5dp"
                 app:layout_constraintTop_toBottomOf="@id/nav_title"
                 app:layout_constraintStart_toStartOf="parent"
@@ -42,6 +42,19 @@
                 android:text="id/screen_mode_label"
                 android:maxLines="1"
                 android:ellipsize="end"
+                android:textColor="@color/white"
+                android:textSize="16sp"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/actv__f_pserve__cleanup_label"
+                app:layout_constraintTop_toTopOf="@id/actv__f_pserve__screen_mode_label"
+                app:layout_constraintStart_toEndOf="@id/actv__f_pserve__screen_mode_label"
+                app:layout_constraintBottom_toBottomOf="@id/actv__f_pserve__screen_mode_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="  |  Генеральная уборка"
                 android:textColor="@color/white"
                 android:textSize="16sp"/>
 
@@ -60,7 +73,7 @@
             android:layout_height="wrap_content"
             android:padding="12dp">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_platform_serve__address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -94,16 +107,35 @@
         tools:listitem="@layout/f_pserve_groupby_container_client__rv_item"/>
 
 
-    <androidx.appcompat.widget.AppCompatButton
+    <ru.smartro.worknote.andPOintD.SmartROllc
         android:id="@+id/acb_activity_platform_serve__complete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_min"
         android:layout_marginStart="@dimen/margin_default"
         android:layout_marginEnd="@dimen/margin_default"
         android:layout_marginBottom="@dimen/margin_default"
-        android:background="@drawable/bg_button"
-        android:text="Завершить"
-        android:textColor="@color/white" />
+        android:background="@drawable/bg_button__transition"
+        android:tooltipText="Какой-то текст про кнопку Завершить"
+        android:gravity="center"
+        android:paddingVertical="10dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="Завершить"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/aciv__f_pserve__cleanup"
+            android:layout_width="32dp" android:layout_height="32dp"
+            android:src="@drawable/ic_cleanup"
+            android:layout_marginEnd="14dp"
+            />
+
+    </ru.smartro.worknote.andPOintD.SmartROllc>
 
 </ru.smartro.worknote.andPOintD.SmartROllc>

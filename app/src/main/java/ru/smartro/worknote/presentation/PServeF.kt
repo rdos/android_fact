@@ -12,9 +12,7 @@ import android.graphics.drawable.TransitionDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.SeekBar
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
@@ -23,15 +21,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AbsFragment
-import ru.smartro.worknote.andPOintD.SmartROacb
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
@@ -45,35 +40,39 @@ import ru.smartro.worknote.presentation.work.VoiceComment
 import java.io.File
 import java.nio.file.Files
 
-
 class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
 
-    private var mContainersAdapter: PServeContainersAdapter? = null
+    private val THUMB_INACTIVE = "Inactive"
+    private val THUMB_ACTIVE = "Active"
+
     private val _PlatformEntity: PlatformEntity
         get() = vm.getPlatformEntity()
 
+    private var mContainersAdapter: PServeContainersAdapter? = null
+
     private var mBackPressedCnt: Int = 2
-    private val THUMB_INACTIVE = "Inactive"
-    private val THUMB_ACTIVE = "Active"
     private var mVolumePickup: Double? = null
-    private var tvVolumePickup: TextView? = null
+
+    private var tvVolumePickup: AppCompatTextView? = null
     private var acbKGORemaining: AppCompatButton? = null
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
     private var acsbVolumePickup: SeekBar? = null
     private var rvContainers: RecyclerView? = null
 
-    private var clHeader: ConstraintLayout? = null
-
     private var srvVoicePlayer: SmartROviewPlayer? = null
     private var srvVoiceWhatsUp: SmartROviewVoiceWhatsUp? = null
     private var mVoiceComment: VoiceComment? = null
 
-    private var tvPlatformSrpId: TextView? = null
+    private var tvPlatformSrpId: AppCompatTextView? = null
     private var actvAddress: AppCompatTextView? = null
 
     private var sscToGroupByFMode: SmartROsc? = null
     private var actvScreenLabel: AppCompatTextView? = null
+
+    // Для смены цвета:
+    private var clHeader: ConstraintLayout? = null
+    private var btnCompleteTask: SmartROllc? = null
 
     private val vm: ServePlatformVM by activityViewModels()
 
@@ -84,13 +83,13 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
         tvPlatformSrpId = sview.findViewById(R.id.tv_f_pserve__sprid)
 
-        val btnCompleteTask = sview.findViewById<SmartROllc>(R.id.acb_activity_platform_serve__complete)
+        btnCompleteTask = sview.findViewById(R.id.acb_activity_platform_serve__complete)
 
         clHeader = sview.findViewById(R.id.cl__f_pserve__header_wrapper)
 
         actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
         sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
-        actvScreenLabel = sview.findViewById(R.id.screen_mode_label)
+        actvScreenLabel = sview.findViewById(R.id.actv__f_pserve__screen_mode_label)
 
         tvVolumePickup = sview.findViewById(R.id.et_act_platformserve__volumepickup)
         rvContainers = sview.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
@@ -164,6 +163,12 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             navigateNext(R.id.PServeKGORemainingVolumeDF)
         }
 
+        changeColors()
+
+        return false //))
+    }
+
+    private fun changeColors() {
         if(_PlatformEntity.needCleanup) {
             var transitionDrawable = clHeader?.background as TransitionDrawable
             transitionDrawable.startTransition(500)
@@ -173,10 +178,8 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
 
             getAct().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.orange)
         } else {
-            sview.findViewById<AppCompatImageView>(R.id.aciv__f_pserve__cleanup).visibility = View.GONE
+//            sview.findViewById<AppCompatImageView>(R.id.aciv__f_pserve__cleanup).visibility = View.GONE
         }
-
-        return false //))
     }
 
     override fun onDestroyView() {
@@ -464,10 +467,10 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
         }
 
         inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val actvVolume = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__volume)
-            val actvContainerNumber = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__container_number)
-            val actvTypeName = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__type_name)
-            val actvConstructiveVolume = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__constructiveVolume)
+            val actvVolume = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__volume)
+            val actvContainerNumber = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__container_number)
+            val actvTypeName = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__type_name)
+            val actvConstructiveVolume = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__constructiveVolume)
         }
     }
 

@@ -3,7 +3,6 @@ package ru.smartro.worknote.presentation
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
@@ -22,16 +21,20 @@ import ru.smartro.worknote.presentation.work.PlatformEntity
 
 class PServeGroupByContainersF : AbsFragment() {
 
-    private var adapter: PServeGROUPClientsAdapter? = null
-    private var mBackPressedCnt: Int = 2
     private val _PlatformEntity: PlatformEntity
         get() = vm.getPlatformEntity()
-    private var btnCompleteTask: AppCompatButton? = null
-    private var tvContainersProgress: AppCompatTextView? = null
-    private var actvAddress: AppCompatTextView? = null
+
+    private var adapter: PServeGROUPClientsAdapter? = null
+    private var mBackPressedCnt: Int = 2
+
     private var srosToPserveFMode: SmartROsc? = null
-    private var screenModeLabel: TextView? = null
     private var rvMain: RecyclerView? = null
+
+    private var tvContainersProgress: AppCompatTextView? = null
+    private var screenModeLabel: AppCompatTextView? = null
+    private var actvAddress: AppCompatTextView? = null
+
+    private var btnCompleteTask: AppCompatButton? = null
 
     private val vm: ServePlatformVM by activityViewModels()
 
@@ -40,16 +43,18 @@ class PServeGroupByContainersF : AbsFragment() {
     }
 
     override fun onInitLayoutView(view: SmartROllc): Boolean {
+        screenModeLabel?.text = "По типам"
+
         tvContainersProgress = view.findViewById(R.id.actv_f_pserve_groupby__sprid)
         btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
         actvAddress = view.findViewById(R.id.tv_platform_serve__address)
         srosToPserveFMode = view.findViewById(R.id.sros_f_pserve_groupby__mode)
-        screenModeLabel = view.findViewById(R.id.screen_mode_label)
+        screenModeLabel = view.findViewById(R.id.actv__f_pserve__screen_mode_label)
         rvMain = view.findViewById(R.id.rv_f_pserve_groupby__main)
+
         rvMain?.layoutManager = LinearLayoutManager(getAct())
         adapter = PServeGROUPClientsAdapter(listOf())
         rvMain?.adapter = adapter
-        screenModeLabel?.text = "По типам"
 
         srosToPserveFMode?.isChecked = true
         srosToPserveFMode?.setOnCheckedChangeListener { _, _ ->
@@ -77,7 +82,7 @@ class PServeGroupByContainersF : AbsFragment() {
         tvContainersProgress?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
 
         btnCompleteTask?.setOnClickListener {
-            navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId!!)
+            navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
         }
 
         actvAddress?.text = "${_PlatformEntity.address}"
@@ -105,78 +110,11 @@ class PServeGroupByContainersF : AbsFragment() {
         }
     }
 
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-
-
-//        val adapterCurrentTask = PServeGroupedByClientsAdapter(requireContext(), object : PServeGroupedByClientsAdapter.SimplifyContainerServeListener {
-//            override fun onDecrease(clientName: String, typeName: String) {
-//                viewModel.onDecrease(clientName, typeName)
-//            }
-//
-//            override fun onIncrease(clientName: String, typeName: String) {
-//                viewModel.onIncrease(clientName, typeName)
-//            }
-//
-//            override fun onAddPhoto(clientName: String, typeName: String) {
-//                navigateNext(R.id.PhotoBeforeMediaContainerSimplifyF, viewModel.mPlatformEntity.value!!.platformId!!)
-//            }
-//        }
-
-
-//        rvMain.apply {
-//            layoutManager = LinearLayoutManager(requireContext())
-//            adapter = adapterCurrentTask
-//        }
-//
-//        vm.mSortedContainers.observe(viewLifecycleOwner) { list ->
-//            if(list != null) {
-//                adapterCurrentTask.containers = list
-//            }
-//        }
-//
-//        vm.mServedContainers.observe(viewLifecycleOwner) { list ->
-//            if(list != null) {
-//                adapterCurrentTask.served = list
-//            }
-//        }
-
-
-
-//        if (getAct() is MainAct) {
-//            (getAct() as MainAct).setSpecialProcessingForRecycler(rvMain)
-//        }
-
-
-
-
-//        rvCurrentTask.viewTreeObserver
-//            .addOnGlobalLayoutListener(
-//                object : OnGlobalLayoutListener {
-//                    override fun onGlobalLayout() {
-//                        // At this point the layout is complete and the
-//                        // dimensions of recyclerView and any child views
-//                        if (getAct() is PServeAct) {
-//                            (getAct() as PServeAct).onNewfromAFragment()
-//                        }
-//                        // are known.
-//                        rvCurrentTask.viewTreeObserver
-//                            .removeOnGlobalLayoutListener(this)
-//                    }
-//                })
-
-//    todo: Ох, рано встаёт охрана!
-//    private fun hideSwitch() {
-//        srosToPserveFMode?.visibility = View.GONE
-//    }
-//}
-
     override fun onBackPressed() {
         mBackPressedCnt -= 1
         if (mBackPressedCnt <= 0) {
             vm.updatePlatformStatusUnfinished()
             navigateBack(R.id.MapPlatformsF)
-//            toast("Вы не завершили обслуживание КП.")
         } else {
             toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
         }
@@ -186,30 +124,17 @@ class PServeGroupByContainersF : AbsFragment() {
     inner class PServeGROUPClientsAdapter(
         private var groupByContainerClientS: List<ContainerGROUPClientEntity>
     ) : RecyclerView.Adapter<PServeGROUPClientsAdapter.PServeGroupedByContainerClientViewHolder>() {
-/** следOK
-        init {
-            groupByContainerClientS.observe(viewLifecycleOwner) { groupByContainerClientEntity ->
-                onNewItem(groupByContainerClientEntity)
-            }
-        }
-        */
 
         fun change(groupByContainerClientS: MutableList<ContainerGROUPClientEntity>) {
             this.groupByContainerClientS = groupByContainerClientS
             notifyDataSetChanged()
         }
 
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PServeGroupedByContainerClientViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.f_pserve_groupby_container_client__rv_item, parent, false)
             return PServeGroupedByContainerClientViewHolder(view)
         }
-/** следOK2
-        fun onNewItem(item: Entity){
-            groupByContainerClientS.item
-            this.notifyItemChanged()
-        }
- */
+
         override fun getItemCount(): Int {
             return groupByContainerClientS.size
         }
@@ -235,6 +160,7 @@ class PServeGroupByContainersF : AbsFragment() {
 
 
 
+
         inner class PServeGroupedByContainerClientTypesAdapter(
             private val groupByContainerClientTypeS: List<ContainerGROUPClientTypeEntity>
         ) : RecyclerView.Adapter<PServeGroupedByContainerClientTypesAdapter.PServeGroupedByContainerClientTypeViewHolder>() {
@@ -254,16 +180,15 @@ class PServeGroupByContainersF : AbsFragment() {
             }
 
 
-
             inner class PServeGroupedByContainerClientTypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                 fun bind(containerGROUPClientTypeEntity: ContainerGROUPClientTypeEntity) {
 
-                    val tvTypeName = itemView.findViewById<TextView>(R.id.container_type)
+                    val tvTypeName = itemView.findViewById<AppCompatTextView>(R.id.container_type)
                     val bDecrease = itemView.findViewById<AppCompatButton>(R.id.button_decrease_cont)
-                    val tvCount = itemView.findViewById<TextView>(R.id.containers_count)
+                    val tvCount = itemView.findViewById<AppCompatTextView>(R.id.containers_count)
                     val bIncrease = itemView.findViewById<AppCompatButton>(R.id.button_increase_cont)
                     val bAddPhoto = itemView.findViewById<AppCompatButton>(R.id.button_add_photo)
-                    val tvContSize = itemView.findViewById<TextView>(R.id.containers_size)
+                    val tvContSize = itemView.findViewById<AppCompatTextView>(R.id.containers_size)
 
                     // TODO:::
                     tvTypeName.text = containerGROUPClientTypeEntity.getTypetForUser()
