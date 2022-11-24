@@ -32,8 +32,7 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.andPOintD.BaseAdapter
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.AuthRequest
-import ru.smartro.worknote.awORKOLDs.SynchroRequestPOST
+import ru.smartro.worknote.awORKOLDs.*
 import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -338,51 +337,81 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
     }
 
     private fun saveBreakDownTypes() {
-        vm.networkDat.getBreakDownTypes().observe(getAct()) { result ->
-            when (result.status) {
-                Status.SUCCESS -> {
-                    // TODO: ПО голове себе постучи
-                    LOG.debug("saveBreakDownTypes. Status.SUCCESS")
-                }
-                Status.ERROR -> {
-                    toast(result.msg)
-                }
-                else -> LOG.debug("saveBreakDownTypes:")
-            }
-
-        }
+        val breakDownTypeRequest = BreakDownTypeRequestGET()
+//        breakDownTypeRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
+//            LOG.debug("${result}")
+//            hideProgress()
+//            if (result.isSent) {
+////                gotoNextAct()
+//            }
+//        }
+        App.oKRESTman().add(breakDownTypeRequest)
+        App.oKRESTman().send()
+//        vm.networkDat.getBreakDownTypes().observe(getAct()) { result ->
+//            when (result.status) {
+//                Status.SUCCESS -> {
+//                    // TODO: ПО голове себе постучи
+//                    LOG.debug("saveBreakDownTypes. Status.SUCCESS")
+//                }
+//                Status.ERROR -> {
+//                    toast(result.msg)
+//                }
+//                else -> LOG.debug("saveBreakDownTypes:")
+//            }
+//
+//        }
     }
 
     private fun saveFailReason() {
         LOG.info("saveFailReason.before")
-        vm.networkDat.getFailReason().observe(getAct()) { result ->
-            when (result.status) {
-                Status.SUCCESS -> {
-                    LOG.debug("saveFailReason. Status.SUCCESS")
-                }
-                Status.ERROR -> {
-                    toast(result.msg)
-                }
-            }
-        }
+        val failureReasonRequest = FailureReasonRequestGET()
+//        failureReasonRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
+//            LOG.debug("${result}")
+//            hideProgress()
+//            if (result.isSent) {
+////                gotoNextAct()
+//            }
+//        }
+        App.oKRESTman().add(failureReasonRequest)
+        App.oKRESTman().send()
+//        vm.networkDat.getFailReason().observe(getAct()) { result ->
+//            when (result.status) {
+//                Status.SUCCESS -> {
+//                    LOG.debug("saveFailReason. Status.SUCCESS")
+//                }
+//                Status.ERROR -> {
+//                    toast(result.msg)
+//                }
+//            }
+//        }
     }
 
     private fun saveCancelWayReason() {
         LOG.debug("saveCancelWayReason.before")
-        vm.networkDat.getCancelWayReason().observe(getAct()) { result ->
-            when (result.status) {
-                Status.SUCCESS -> {
-                    LOG.debug("saveCancelWayReason. Status.SUCCESS")
-                }
-                Status.ERROR -> {
-                    LOG.debug("saveCancelWayReason. Status.ERROR")
-                    toast(result.msg)
-                }
-                else -> {
-                    oops()
-                }
-            }
-        }
+        val workOrderCancelationReasonRequest = WorkOrderCancelationReasonRequestGET()
+//        workOrderCancelationReasonRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
+//            LOG.debug("${result}")
+//            hideProgress()
+//            if (result.isSent) {
+////                gotoNextAct()
+//            }
+//        }
+        App.oKRESTman().add(workOrderCancelationReasonRequest)
+        App.oKRESTman().send()
+//        vm.networkDat.getCancelWayReason().observe(getAct()) { result ->
+//            when (result.status) {
+//                Status.SUCCESS -> {
+//                    LOG.debug("saveCancelWayReason. Status.SUCCESS")
+//                }
+//                Status.ERROR -> {
+//                    LOG.debug("saveCancelWayReason. Status.ERROR")
+//                    toast(result.msg)
+//                }
+//                else -> {
+//                    oops()
+//                }
+//            }
+//        }
     }
 
     private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {

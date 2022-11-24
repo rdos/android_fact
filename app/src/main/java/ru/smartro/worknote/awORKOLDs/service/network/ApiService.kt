@@ -6,9 +6,6 @@ import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyOut
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
 import ru.smartro.worknote.presentation.work.AppStartUpBody
 import ru.smartro.worknote.presentation.work.AppStartUpResponse
@@ -25,11 +22,11 @@ interface ApiService {
 //    @GET("vehicle")
 //    suspend fun getVehicle(@Query("o") organisationId: Int): Response<VehicleResponse>
 
-    @GET("breakdown_type?page=all")
-    suspend fun getBreakDownTypes(): Response<BreakDownResponse>
+//    @GET("breakdown_type?page=all")
+//    suspend fun getBreakDownTypes(): Response<BreakDownResponse>
 
-    @GET("failure_reason?page=all")
-    suspend fun getFailReason(): Response<FailureReasonResponse>
+//    @GET("failure_reason?page=all")
+//    suspend fun getFailReason(): Response<FailureReasonResponse>
 
 //    @POST("waybill")
 //    suspend fun getWayList(@Body body: WayListBody): Response<WayListResponse>
@@ -47,8 +44,8 @@ interface ApiService {
     @POST("workorder/{id}/complete")
     suspend fun complete(@Path("id") id: Int, @Body time: CompleteWayBody): Response<EarlyCompleteBodyOut>
 
-    @GET("work_order_cancelation_reason")
-    suspend fun getCancelWayReason(): Response<CancelationReasonResponse>
+//    @GET("work_order_cancelation_reason")
+//    suspend fun getCancelWayReason(): Response<CancelationReasonResponse>
 
     //см  vs.networkDat.earlyComplete(-111, body)
 //    @POST("workorder/{id}/early_complete")

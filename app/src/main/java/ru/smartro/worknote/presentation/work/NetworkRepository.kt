@@ -12,12 +12,10 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.RetrofitClient
-import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
-import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
 import ru.smartro.worknote.awORKOLDs.util.THR
 import ru.smartro.worknote.presentation.work.net.CancelWayReasonEntity
 import java.io.File
@@ -75,104 +73,70 @@ class NetworkRepository(private val context: Context) {
 //    }
 
 
-    private fun insertBreakDown(data: List<ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.Data>?) {
-        val db = RealmRepository(Realm.getDefaultInstance())
-        val entities = data?.filter {
-            it.attributes.organisationId == paramS().ownerId
-        }?.map {
-            BreakDownReasonEntity(it.attributes.id, it.attributes.name)
-        }
-        db.insertBreakDown(entities!!)
-    }
 
-    fun getBreakDownTypes() = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info("getBreakDownTypes")
-        try {
-            val response = RetrofitClient(context)
-                .apiService(true).getBreakDownTypes()
-            LOG.debug("getBreakDownTypes.after ${response.body().toString()}")
-            when {
-                response.isSuccessful -> {
-                    LOG.debug("getBreakDownTypes.after SUCCESSFUL")
-                    insertBreakDown(response.body()?.data)
-//                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestBreakdown_type(response)
-//                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-//                    LOG.debug("getBreakDownTypes.after errorResponse=${errorResponse}")
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            LOG.debug("getBreakDownTypes.after EXCEPTION")
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
+//    private fun insertFailReason(data: List<Data>?) {
+//        val db = RealmRepository(Realm.getDefaultInstance())
+//
+//        val entities = data?.filter {
+//            it.oid == paramS().ownerId
+//        }!!.map {
+//            FailReasonEntity(it.id, it.name)
+//        }
+//        db.insertFailReason(entities)
+//    }
 
-    private fun insertFailReason(data: List<Data>?) {
-        val db = RealmRepository(Realm.getDefaultInstance())
+//    fun getFailReason() = liveData(Dispatchers.IO, TIME_OUT) {
+//        LOG.info( "getFailReason.before")
+//        try {
+//            val response = RetrofitClient(context).apiService(true).getFailReason()
+//            LOG.debug("getFailReason.after ${response.body().toString()}")
+//            when {
+//                response.isSuccessful -> {
+//                    insertFailReason(response.body()?.data)
+////                    emit(Resource.success(response.body()))
+//                }
+//                else -> {
+//                    THR.BadRequestFailure_reason(response)
+////                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+////                    LOG.debug("getFailReason.after errorResponse=${errorResponse}")
+//                    emit(Resource.error("Ошибка ${response.code()}", null))
+//                }
+//            }
+//        } catch (e: Exception) {
+//            emit(Resource.network("Проблемы с подключением интернета", null))
+//        }
+//    }
 
-        val entities = data?.filter {
-            it.oid == paramS().ownerId
-        }!!.map {
-            FailReasonEntity(it.id, it.name)
-        }
-        db.insertFailReason(entities)
-    }
+//    private fun insertCancelWayReason(data: List<ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.Data>?) {
+//        val db = RealmRepository(Realm.getDefaultInstance())
+//
+//        val entities = data?.filter {
+//            it.attributes.organisationId == paramS().ownerId
+//        }!!.map { CancelWayReasonEntity(it.id, it.attributes.name) }
+//
+//        db.insertCancelWayReason(entities)
+//    }
 
-    fun getFailReason() = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info( "getFailReason.before")
-        try {
-            val response = RetrofitClient(context).apiService(true).getFailReason()
-            LOG.debug("getFailReason.after ${response.body().toString()}")
-            when {
-                response.isSuccessful -> {
-                    insertFailReason(response.body()?.data)
-//                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestFailure_reason(response)
-//                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-//                    LOG.debug("getFailReason.after errorResponse=${errorResponse}")
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
-
-    private fun insertCancelWayReason(data: List<ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.Data>?) {
-        val db = RealmRepository(Realm.getDefaultInstance())
-
-        val entities = data?.filter {
-            it.attributes.organisationId == paramS().ownerId
-        }!!.map { CancelWayReasonEntity(it.id, it.attributes.name) }
-
-        db.insertCancelWayReason(entities)
-    }
-
-    fun getCancelWayReason() = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info( "getCancelWayReason.before")
-        try {
-            val response = RetrofitClient(context).apiService(true).getCancelWayReason()
-            when {
-                response.isSuccessful -> {
-                    LOG.debug("getCancelWayReason.after ${response.body().toString()}")
-                    insertCancelWayReason(response.body()?.data)
-//                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestWork_order_cancelation_reason(response)
-                    emit(Resource.error("Ошибка ${response.code()}", null))
-                }
-            }
-        } catch (ex: Exception) {
-            LOG.error("getCancelWayReason", ex)
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
+//    fun getCancelWayReason() = liveData(Dispatchers.IO, TIME_OUT) {
+//        LOG.info( "getCancelWayReason.before")
+//        try {
+//            val response = RetrofitClient(context).apiService(true).getCancelWayReason()
+//            when {
+//                response.isSuccessful -> {
+//                    LOG.debug("getCancelWayReason.after ${response.body().toString()}")
+//                    insertCancelWayReason(response.body()?.data)
+////                    emit(Resource.success(response.body()))
+//                }
+//                else -> {
+//                    THR.BadRequestWork_order_cancelation_reason(response)
+//                    emit(Resource.error("Ошибка ${response.code()}", null))
+//                }
+//            }
+//        } catch (ex: Exception) {
+//            LOG.error("getCancelWayReason", ex)
+//            emit(Resource.network("Проблемы с подключением интернета", null))
+//        }
+//    }
 
 //    suspend fun getWayList(body: WayListBody) = RetrofitClient(context).apiService(true).getWayList(body)
 

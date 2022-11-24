@@ -71,6 +71,7 @@ android {
             signingConfig signingConfigs.release
             debuggable true
             buildConfigField "String", "URL__SMARTRO", "\"https://worknote-back.stage.smartro.ru/api/fact/\""
+            buildConfigField "String", "URL__SMARTRO_PING", "\"https://worknote-back.stage.smartro.ru/api/\""
             buildConfigField "String", "URL__AUTH", "\"https://auth.stage.smartro.ru/api/\""
         }
 
@@ -84,6 +85,7 @@ android {
             // R8 configuration files.
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "String", "URL__SMARTRO", "\"https://wn-api.smartro.ru/api/fact/\""
+            buildConfigField "String", "URL__SMARTRO_PING", "\"https://wn-api.smartro.ru/api/\""
             buildConfigField "String", "URL__AUTH", "\"https://auth.smartro.ru/api/\""
         }
 
@@ -94,6 +96,7 @@ android {
             signingConfig signingConfigs.release
             debuggable true
             buildConfigField "String", "URL__SMARTRO", "\"https://worknote-back.rc.smartro.ru/api/fact/\""
+            buildConfigField "String", "URL__SMARTRO_PING", "\"https://worknote-back.rc.smartro.ru/api/\""
             buildConfigField "String", "URL__AUTH", "\"https://auth.rc.smartro.ru/api/\""
         }
         debugProd {
@@ -101,6 +104,7 @@ android {
             resValue "string", "app_name", "Fact"
             debuggable true
             buildConfigField "String", "URL__SMARTRO", "\"https://wn-api.smartro.ru/api/fact/\""
+            buildConfigField "String", "URL__SMARTRO_PING", "\"https://wn-api.smartro.ru/api/\""
             buildConfigField "String", "URL__AUTH", "\"https://auth.smartro.ru/api/\""
         }
     }

@@ -59,7 +59,7 @@ class RetrofitClient(context: Context) {
             .build()
 
     fun testApiService(): ApiService {
-        return retrofit(BuildConfig.URL__SMARTRO).create(ApiService::class.java)
+        return retrofit(BuildConfig.URL__SMARTRO_PING).create(ApiService::class.java)
     }
 
     fun apiService(isWorkNote: Boolean): ApiService {

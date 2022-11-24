@@ -5,9 +5,6 @@ import retrofit2.Response
 import ru.smartro.worknote.App
 import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyOut
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
-import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
 import ru.smartro.worknote.presentation.work.AppStartUpResponse
 import ru.smartro.worknote.presentation.work.RPCBody
@@ -65,20 +62,20 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
 //        }
 //
 //    }
-    class BadRequestBreakdown_type(response: Response<BreakDownResponse>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
-    class BadRequestFailure_reason(response: Response<FailureReasonResponse>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
+//    class BadRequestBreakdown_type(response: Response<BreakDownResponse>) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
+//    class BadRequestFailure_reason(response: Response<FailureReasonResponse>) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
 
 //    class BadRequestWaybill(response: Response<WayListResponse>) : THR(response.code()) {
 //
@@ -116,13 +113,13 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
 
     }
 
-    class BadRequestWork_order_cancelation_reason(response: Response<CancelationReasonResponse>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
+//    class BadRequestWork_order_cancelation_reason(response: Response<CancelationReasonResponse>) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
 //    class BadRequestWorkorder__id__early_complete(response: Response<EarlyCompleteBodyOut>) : THR(response.code()) {
 //
 //        init {
