@@ -86,18 +86,15 @@ class SmartROviewPServeWrapper @JvmOverloads constructor(
         }
 
         srollcCompleteButton?.setOnClickListener {
-            LOG.debug("TEST:::: AUUUUU")
             mOnCompleteServe?.invoke()
         }
 
         if(platformEntity.needCleanup) {
-            LOG.debug("TEST:::: CHANGE COLORS")
             if(clHeader != null && srollcCompleteButton != null) {
                 val buttonCompleteTransitionDrawable = srollcCompleteButton?.background as TransitionDrawable
-                buttonCompleteTransitionDrawable.startTransition(0)
+                buttonCompleteTransitionDrawable.startTransition(500)
             }
         } else {
-            LOG.debug("TEST:::: NO CHANGE COLORS")
             acivCleanupIcon?.visibility = View.GONE
         }
 

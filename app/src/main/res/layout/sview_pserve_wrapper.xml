@@ -132,7 +132,7 @@
             android:textColor="@color/white"
             android:textStyle="bold"
             android:gravity="center"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:text="Завершить"/>
 
         <androidx.appcompat.widget.AppCompatImageView
