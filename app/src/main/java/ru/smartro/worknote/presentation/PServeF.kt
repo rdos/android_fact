@@ -27,6 +27,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AbsFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
+import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPServeWrapper
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
@@ -53,6 +54,8 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     private var mBackPressedCnt: Int = 2
     private var mVolumePickup: Double? = null
 
+    private var smartROPServeWrapper: SmartROviewPServeWrapper? = null
+
     private var tvVolumePickup: AppCompatTextView? = null
     private var acbKGORemaining: AppCompatButton? = null
     private var mAcbKGOServed: AppCompatButton? = null
@@ -64,16 +67,6 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     private var srvVoiceWhatsUp: SmartROviewVoiceWhatsUp? = null
     private var mVoiceComment: VoiceComment? = null
 
-    private var tvPlatformSrpId: AppCompatTextView? = null
-    private var actvAddress: AppCompatTextView? = null
-
-    private var sscToGroupByFMode: SmartROsc? = null
-    private var actvScreenLabel: AppCompatTextView? = null
-
-    // Для смены цвета:
-    private var clHeader: ConstraintLayout? = null
-    private var btnCompleteTask: SmartROllc? = null
-
     private val vm: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {
@@ -81,15 +74,8 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     }
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
-        tvPlatformSrpId = sview.findViewById(R.id.tv_f_pserve__sprid)
 
-        btnCompleteTask = sview.findViewById(R.id.acb_activity_platform_serve__complete)
-
-        clHeader = sview.findViewById(R.id.cl__f_pserve__header_wrapper)
-
-        actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
-        sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
-        actvScreenLabel = sview.findViewById(R.id.actv__f_pserve__screen_mode_label)
+        smartROPServeWrapper = sview.findViewById(R.id.sro_pserve_wrapper__f_pserve__wrapper)
 
         tvVolumePickup = sview.findViewById(R.id.et_act_platformserve__volumepickup)
         rvContainers = sview.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
@@ -102,8 +88,6 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
         mAcbKGOServed = sview.findViewById(R.id.acb_activity_platform_serve__kgo_served)
         acbKGORemaining = sview.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
         acsbVolumePickup = sview.findViewById(R.id.acsb_activity_platform_serve__seekbar)
-
-        actvScreenLabel?.text = "Списком"
 
         srvVoicePlayer = sview.findViewById(R.id.srvv__f_pserve__voice_player)
         srvVoicePlayer?.visibility = View.GONE
@@ -126,14 +110,17 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             vm.updatePlatformComment(newText)
         }
 
-        sscToGroupByFMode?.setOnCheckedChangeListener { _, _ ->
+        smartROPServeWrapper?.setScreenLabel("Списком")
+
+        smartROPServeWrapper?.setPlatformEntity(_PlatformEntity, requireActivity())
+
+        smartROPServeWrapper?.setOnSwitchMode {
             vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeGroupByContainersF)
             navigateNext(R.id.PServeGroupByContainersF, vm.getPlatformId())
         }
 
-        tvPlatformSrpId?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
-
-        btnCompleteTask?.setOnClickListener {
+        smartROPServeWrapper?.setOnCompleteServeListener {
+            LOG.debug("AUUUUUUUUUUUUUUUUUUUU")
             if(_PlatformEntity.needCleanup && _PlatformEntity.wasCleanedUp == false) {
                 navigateNext(R.id.PServeCleanupDF, _PlatformEntity.platformId)
             } else {
@@ -141,20 +128,26 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             }
         }
 
-        actvAddress?.text = "${_PlatformEntity.address}"
-        if (_PlatformEntity.containerS.size >= 7 ) {
-            actvAddress?.apply {
-                setOnClickListener { view ->
-                    maxLines = if (maxLines < 3) {
-                        3
-                    } else {
-                        1
-                    }
-                }
-            }
-        } else {
-            actvAddress?.maxLines = 3
-        }
+//        wrapper.setOnSwitch { ->
+//            vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeGroupByContainersF)
+//            navigateNext(R.id.PServeGroupByContainersF, vm.getPlatformId())
+//        }
+//
+//        actvAddress?.text = "${_PlatformEntity.address}"3
+//        if (_PlatformEntity.containerS.size >= 7 ) {
+//            actvAddress?.apply {
+//                setOnClickListener { view ->
+//                    maxLines = if (maxLines < 3) {
+//                        3
+//                    } else {
+//                        1
+//                    }
+//                }
+//            }
+//        } else {
+//            actvAddress?.maxLines = 3
+//        }
+
         mAcbKGOServed?.setOnClickListener {
             navigateNext(R.id.PServeKGOServedVolumeDF)
         }
@@ -163,23 +156,9 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             navigateNext(R.id.PServeKGORemainingVolumeDF)
         }
 
-        changeColors()
+//        changeColors()
 
         return false //))
-    }
-
-    private fun changeColors() {
-        if(_PlatformEntity.needCleanup) {
-            var transitionDrawable = clHeader?.background as TransitionDrawable
-            transitionDrawable.startTransition(500)
-
-            transitionDrawable = btnCompleteTask?.background as TransitionDrawable
-            transitionDrawable.startTransition(500)
-
-            getAct().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.orange)
-        } else {
-//            sview.findViewById<AppCompatImageView>(R.id.aciv__f_pserve__cleanup).visibility = View.GONE
-        }
     }
 
     override fun onDestroyView() {
@@ -190,14 +169,6 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     }
 
     override fun onBindLayoutState(): Boolean {
-
-        val platformServeMode = _PlatformEntity.getServeMode()
-
-        if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeF){
-            sscToGroupByFMode?.visibility = View.GONE
-        } else {
-            sscToGroupByFMode?.visibility = View.VISIBLE
-        }
 
         val containers = vm.getContainerS()
 

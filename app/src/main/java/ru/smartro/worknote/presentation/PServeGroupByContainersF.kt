@@ -34,7 +34,7 @@ class PServeGroupByContainersF : AbsFragment() {
     private var screenModeLabel: AppCompatTextView? = null
     private var actvAddress: AppCompatTextView? = null
 
-    private var btnCompleteTask: AppCompatButton? = null
+    private var btnCompleteTask: SmartROllc? = null
 
     private val vm: ServePlatformVM by activityViewModels()
 

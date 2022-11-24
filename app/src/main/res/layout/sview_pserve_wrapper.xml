@@ -85,10 +85,10 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/actv__sview_pserve_wrapper__sprid"/>
+            app:layout_constraintEnd_toStartOf="@id/actv__sview_pserve_wrapper__srpid"/>
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/actv__sview_pserve_wrapper__sprid"
+            android:id="@+id/actv__sview_pserve_wrapper__srpid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -114,7 +114,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ru.smartro.worknote.andPOintD.SmartROllc
-        android:id="@+id/srollc__sview_pserve_wrapper__finish_button"
+        android:id="@+id/srollc__sview_pserve_wrapper__complete_button"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_min"
         android:layout_marginStart="@dimen/margin_default"
