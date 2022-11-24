@@ -3,13 +3,9 @@ package ru.smartro.worknote.awORKOLDs.service.network
 import retrofit2.Response
 import retrofit2.http.*
 import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyOut
-import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
-import ru.smartro.worknote.presentation.work.AppStartUpBody
-import ru.smartro.worknote.presentation.work.AppStartUpResponse
-import ru.smartro.worknote.presentation.work.RPCBody
 
 interface ApiService {
 
@@ -54,11 +50,11 @@ interface ApiService {
 //    @POST("synchro")
 //    suspend fun postSynchro(@Body time: SynchroBodyIn): Response<SynchroBodyOut>
 
-    @POST("rpc")
-    suspend fun ping(@Body pingBody: PingBody): Response<PingBody>
+//    @POST("rpc")
+//    suspend fun ping(@Body pingBody: PingBody): Response<PingBody>
 
-    @POST("rpc")
-    suspend fun sendAppStartUp(@Body rpcBody: RPCBody<AppStartUpBody>): Response<RPCBody<AppStartUpResponse>>
+            //    @POST("rpc")
+            //    suspend fun sendAppStartUp(@Body rpcBody: RPCBody<AppStartUpBody>): Response<RPCBody<AppStartUpResponse>>
 
     // NEXT STEP
 //    @POST("rpc")

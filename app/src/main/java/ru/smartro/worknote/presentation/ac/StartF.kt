@@ -18,6 +18,7 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.AuthRequest
+import ru.smartro.worknote.awORKOLDs.RPCappStartup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
 class StartF : FragmentA() {
@@ -65,9 +66,19 @@ class StartF : FragmentA() {
         val isHasTask = vm.database.hasWorkOrderInProgress()
         if (isHasToken && isHasTask) {
             LOG.debug("::: HAS TOKEN AND TASK")
-            vm.viewModelScope.launch {
-                App.getAppliCation().getNetwork().sendAppStartUp()
-            }
+//            val rpcAppStartup = RPCappStartup()
+//            rpcAppStartup.getLiveDate().observe(viewLifecycleOwner) { result ->
+//                LOG.debug("${result}")
+//                hideProgress()
+//                if (result.isSent) {
+//                    gotoNextAct()
+//                }
+//            }
+//            App.oKRESTman().add(rpcAppStartup)
+//            App.oKRESTman().send()
+                //            vm.viewModelScope.launch {
+                //                App.getAppliCation().getNetwork().sendAppStartUp()
+                //            }
             startActivity(Intent(requireActivity(), MainAct::class.java))
             requireActivity().finish()
             return

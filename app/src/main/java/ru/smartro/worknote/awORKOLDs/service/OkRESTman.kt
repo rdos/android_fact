@@ -39,19 +39,19 @@ class OkRESTman: AbsObject() {
         chain.proceed(newRequest)
     }
 
-//    private var httpLoggingInterceptor = run {
-//        val httpLoggingInterceptor1 = HttpLoggingInterceptor { message ->
-//            LOG.warn(message)
-//        }
-//        httpLoggingInterceptor1.apply {
-//            httpLoggingInterceptor1.level = HttpLoggingInterceptor.Level.BODY
-//        }
-//    }
+    private var httpLoggingInterceptor = run {
+        val httpLoggingInterceptor1 = HttpLoggingInterceptor { message ->
+            LOG.warn(message)
+        }
+        httpLoggingInterceptor1.apply {
+            httpLoggingInterceptor1.level = HttpLoggingInterceptor.Level.BODY
+        }
+    }
 
     private val client =
         OkHttpClient().newBuilder()
 //            .addInterceptor(authInterceptor)
-//            .addInterceptor(httpLoggingInterceptor)
+            .addInterceptor(httpLoggingInterceptor)
             .addInterceptor(SentryOkHttpInterceptor())
 //            .authenticator(TokenAuthenticator(context))
             .connectTimeout(TIME_OUT, TimeUnit.MILLISECONDS)

@@ -9,9 +9,9 @@ import androidx.work.WorkerParameters
 import io.realm.Realm
 import kotlinx.coroutines.delay
 import ru.smartro.worknote.awORKOLDs.SynchroRequestPOST
-import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.presentation.ac.StartAct
-import ru.smartro.worknote.presentation.work.*
+import ru.smartro.worknote.presentation.work.NetworkRepository
+import ru.smartro.worknote.presentation.work.RealmRepository
 import ru.smartro.worknote.presentation.work.utils.getActivityProperly
 import java.io.File
 import java.io.FileOutputStream
@@ -86,7 +86,7 @@ class SYNCworkER(
                 if (params.isModeSYNChrONize) {
                     LOG.debug( "SYNCworkER RUN")
                     synChrONizationDATA()
-                    ping()
+//                    ping()
                     if (isFirstRun) {
                         showWorkERNotification(true)
                     }
@@ -113,25 +113,35 @@ class SYNCworkER(
 //        return Result.failure()
     }
 
-    private suspend fun ping() {
-//        LOG.debug("PING STARTED ::::")
-        val pingResponse = mNetworkRepository.ping(PingBody("ping"))
-        when (pingResponse.status) {
-            Status.SUCCESS -> {
-//                LOG.debug("PING RESPONSE:")
-//                LoG.error( pingResponse.data.toString())
-                val message = pingResponse.data?.payload?.message
-                if(message != null)
-                    (applicationContext as App).showAlertNotification(message)
-                else {
-//                    LoG.error("Ping EMPTY MESSAGE ${pingResponse.data}")
-                }
-            }
-//            Status.ERROR -> LoG.error( "Ping ERROR ${pingResponse.msg}")
-//            Status.NETWORK -> LoG.warn( "Ping NO INTERNET")
-        }
-
-//        LOGafterLOG.debug()
+    private fun ping() {
+//        val rpcPing = RCPping()
+//        rpcPing.getLiveDate().observe(viewLifecycleOwner) { result ->
+//            LOG.debug("${result}")
+//            hideProgress()
+//            if (result.isSent) {
+//                gotoNextAct()
+//            }
+//        }
+//        App.oKRESTman().add(rpcPing)
+//        App.oKRESTman().send()
+                ////        LOG.debug("PING STARTED ::::")
+                //        val pingResponse = mNetworkRepository.ping(PingBody("ping"))
+                //        when (pingResponse.status) {
+                //            Status.SUCCESS -> {
+                ////                LOG.debug("PING RESPONSE:")
+                ////                LoG.error( pingResponse.data.toString())
+                //                val message = pingResponse.data?.payload?.message
+                //                if(message != null)
+                //                    (applicationContext as App).showAlertNotification(message)
+                //                else {
+                ////                    LoG.error("Ping EMPTY MESSAGE ${pingResponse.data}")
+                //                }
+                //            }
+                ////            Status.ERROR -> LoG.error( "Ping ERROR ${pingResponse.msg}")
+                ////            Status.NETWORK -> LoG.warn( "Ping NO INTERNET")
+                //        }
+                //
+                ////        LOGafterLOG.debug()
     }
 
     private fun synChrONizationDATA() {

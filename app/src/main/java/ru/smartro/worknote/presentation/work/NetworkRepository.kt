@@ -3,21 +3,15 @@ package ru.smartro.worknote.presentation.work
 //import ru.smartro.worknote.awORKOLDs.service.network.exception.THR
 
 import android.content.Context
-import android.os.Build
 import androidx.lifecycle.liveData
-import io.realm.Realm
 import kotlinx.coroutines.Dispatchers
 import ru.smartro.worknote.App
-import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.RetrofitClient
-import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
-import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.THR
-import ru.smartro.worknote.presentation.work.net.CancelWayReasonEntity
 import java.io.File
 import java.io.FileOutputStream
 
@@ -328,58 +322,58 @@ class NetworkRepository(private val context: Context) {
 //        }
 //    }
 
-    suspend fun ping(pingBody: PingBody): Resource<PingBody> {
-        LOG.info( "test_ping.before")
-        return try {
-            val response = RetrofitClient(context).testApiService().ping(pingBody)
-            when {
-                response.isSuccessful -> {
-                    Resource.success(response.body())
-                }
-                else -> {
-                    THR.BadRequestPing(response)
-                    Resource.error("Ошибка ${response.code()}", null)
-                }
-            }
-        } catch (ex: Exception) {
-//            LoG.error( ex)
-            Resource.network("Проблемы с подключением интернета", null)
-        }
-    }
+//    suspend fun ping(pingBody: PingBody): Resource<PingBody> {
+//        LOG.info( "test_ping.before")
+//        return try {
+//            val response = RetrofitClient(context).testApiService().ping(pingBody)
+//            when {
+//                response.isSuccessful -> {
+//                    Resource.success(response.body())
+//                }
+//                else -> {
+//                    THR.BadRequestPing(response)
+//                    Resource.error("Ошибка ${response.code()}", null)
+//                }
+//            }
+//        } catch (ex: Exception) {
+////            LoG.error( ex)
+//            Resource.network("Проблемы с подключением интернета", null)
+//        }
+//    }
 
-    suspend fun sendAppStartUp(): Resource<AppStartUpResponse> {
-        val appStartUpBody = AppStartUpBody(
-            deviceId = App.getAppliCation().getDeviceId(),
-            appVersion = BuildConfig.VERSION_NAME
-        )
-
-        appStartUpBody.os = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Build.VERSION.CODENAME
-        } else {
-            Build.VERSION.SDK_INT.toString()
-        }
-
-        val rpcBody = RPCBody("app_startup", appStartUpBody)
-
-        LOG.info("RPCBODY: ${rpcBody}")
-
-        return try {
-            val response = RetrofitClient(context).testApiService().sendAppStartUp(rpcBody)
-            LOG.info("RESPONSE.isSuccessful: ${response.isSuccessful}, responseBody: ${response.body()}")
-            when {
-                response.isSuccessful -> {
-                    Resource.success(response.body()?.payload)
-                }
-                else -> {
-                    THR.BadRequestAppStartUp(response)
-                    Resource.error("Ошибка ${response.code()}", null)
-                }
-            }
-        } catch (ex: Exception) {
-//            LoG.error( ex)
-            Resource.network("Проблемы с подключением интернета", null)
-        }
-    }
+//    suspend fun sendAppStartUp(): Resource<AppStartUpResponse> {
+//        val appStartUpBody = AppStartUpBody(
+//            deviceId = App.getAppliCation().getDeviceId(),
+//            appVersion = BuildConfig.VERSION_NAME
+//        )
+//
+//        appStartUpBody.os = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            Build.VERSION.CODENAME
+//        } else {
+//            Build.VERSION.SDK_INT.toString()
+//        }
+//
+//        val rpcBody = RPCBody("app_startup", appStartUpBody)
+//
+//        LOG.info("RPCBODY: ${rpcBody}")
+//
+//        return try {
+//            val response = RetrofitClient(context).testApiService().sendAppStartUp(rpcBody)
+//            LOG.info("RESPONSE.isSuccessful: ${response.isSuccessful}, responseBody: ${response.body()}")
+//            when {
+//                response.isSuccessful -> {
+//                    Resource.success(response.body()?.payload)
+//                }
+//                else -> {
+//                    THR.BadRequestAppStartUp(response)
+//                    Resource.error("Ошибка ${response.code()}", null)
+//                }
+//            }
+//        } catch (ex: Exception) {
+////            LoG.error( ex)
+//            Resource.network("Проблемы с подключением интернета", null)
+//        }
+//    }
 
 }
 

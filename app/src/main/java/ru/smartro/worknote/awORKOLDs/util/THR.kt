@@ -4,9 +4,7 @@ import io.sentry.Sentry
 import retrofit2.Response
 import ru.smartro.worknote.App
 import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyOut
-import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
-import ru.smartro.worknote.presentation.work.AppStartUpResponse
 import ru.smartro.worknote.presentation.work.RPCBody
 
 sealed class THR(code: Int) : Throwable(code.toString()) {
@@ -144,22 +142,22 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
 
     }
 
-    class BadRequestPing(response: Response<PingBody>) : THR(response.code()) {
-        init {
-            sentToSentry(response)
-        }
+//    class BadRequestPing(response: Response<PingBody>) : THR(response.code()) {
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
 
-    }
 
 
-
-    class BadRequestAppStartUp(response: Response<RPCBody<AppStartUpResponse>>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
+//    class BadRequestAppStartUp(response: Response<RPCBody<AppStartUpResponse>>) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
 
 //    //    BadRequestSynchro__o_id__w_id
 //    class BadRequestSynchro__o_id__w_id(response: Response<WorkOrderResponse_know1>) : THR(response.code()) {
