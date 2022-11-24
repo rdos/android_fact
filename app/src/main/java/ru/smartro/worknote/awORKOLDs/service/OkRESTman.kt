@@ -3,7 +3,9 @@ package ru.smartro.worknote.awORKOLDs.service
 import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import ru.smartro.worknote.App
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.awORKOLDs.AbsRequest
@@ -36,6 +38,16 @@ class OkRESTman: AbsObject() {
             .build()
         chain.proceed(newRequest)
     }
+
+//    private var httpLoggingInterceptor = run {
+//        val httpLoggingInterceptor1 = HttpLoggingInterceptor { message ->
+//            LOG.warn(message)
+//        }
+//        httpLoggingInterceptor1.apply {
+//            httpLoggingInterceptor1.level = HttpLoggingInterceptor.Level.BODY
+//        }
+//    }
+
     private val client =
         OkHttpClient().newBuilder()
 //            .addInterceptor(authInterceptor)

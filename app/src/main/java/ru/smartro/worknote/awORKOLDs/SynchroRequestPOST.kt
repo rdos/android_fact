@@ -13,7 +13,7 @@ import ru.smartro.worknote.presentation.work.RealmRepository
 import ru.smartro.worknote.todo
 import kotlin.reflect.KClass
 
-class SynchroRequestPOST: POSTRequestA<SynchroBodyIn, SynchroBodyOut>() {
+class SynchroRequestPOST: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
 
     private var mTimeBeforeRequest: Long = MyUtil.timeStampInSec()
     // TODO ::: Разбить на два запроса!!!

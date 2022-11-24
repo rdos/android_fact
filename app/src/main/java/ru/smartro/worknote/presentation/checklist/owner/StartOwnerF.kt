@@ -79,7 +79,7 @@ class StartOwnerF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     private fun getOwnersList() {
         val ownerRequest = OwnerRequestGET()
         ownerRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
-            LOG.debug("${result}")
+            LOG.debug("safka${result}")
             (requireActivity() as XChecklistAct).hideProgressBar()
             if (result.isSent) {
 

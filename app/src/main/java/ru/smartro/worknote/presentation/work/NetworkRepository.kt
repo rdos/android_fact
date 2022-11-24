@@ -5,22 +5,17 @@ package ru.smartro.worknote.presentation.work
 import android.content.Context
 import android.os.Build
 import androidx.lifecycle.liveData
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import io.realm.Realm
 import kotlinx.coroutines.Dispatchers
-import okhttp3.Callback
 import ru.smartro.worknote.App
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
-import ru.smartro.worknote.awORKOLDs.PostExample
 import ru.smartro.worknote.awORKOLDs.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.Data
 import ru.smartro.worknote.awORKOLDs.util.THR
@@ -179,11 +174,11 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    suspend fun getWayList(body: WayListBody) = RetrofitClient(context).apiService(true).getWayList(body)
+//    suspend fun getWayList(body: WayListBody) = RetrofitClient(context).apiService(true).getWayList(body)
 
 
-    suspend fun getWorkOrder(organisationId: Int, wayId: Int) =
-        RetrofitClient(context).apiService(true).getWorkOrder(organisationId, wayId)
+//    suspend fun getWorkOrder(organisationId: Int, wayId: Int) =
+//        RetrofitClient(context).apiService(true).getWorkOrder(organisationId, wayId)
 
 
     fun progress(id: Int, body: ProgressBody) = liveData(Dispatchers.IO, TIME_OUT) {

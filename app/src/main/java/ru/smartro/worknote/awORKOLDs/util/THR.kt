@@ -9,10 +9,8 @@ import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDow
 import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.presentation.work.AppStartUpResponse
 import ru.smartro.worknote.presentation.work.RPCBody
-import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
 
 sealed class THR(code: Int) : Throwable(code.toString()) {
     //    abstract val message: String
@@ -82,13 +80,13 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
 
     }
 
-    class BadRequestWaybill(response: Response<WayListResponse>) : THR(response.code()) {
-
-        init {
-            sentToSentry(response)
-        }
-
-    }
+//    class BadRequestWaybill(response: Response<WayListResponse>) : THR(response.code()) {
+//
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
     //    class breakdown(response: String) : THR(response.code()) {
 //
 //        init {
@@ -166,13 +164,13 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
 
     }
 
-    //    BadRequestSynchro__o_id__w_id
-    class BadRequestSynchro__o_id__w_id(response: Response<WorkOrderResponse_know1>) : THR(response.code()) {
-        init {
-            sentToSentry(response)
-        }
-
-    }
+//    //    BadRequestSynchro__o_id__w_id
+//    class BadRequestSynchro__o_id__w_id(response: Response<WorkOrderResponse_know1>) : THR(response.code()) {
+//        init {
+//            sentToSentry(response)
+//        }
+//
+//    }
 
 }
 

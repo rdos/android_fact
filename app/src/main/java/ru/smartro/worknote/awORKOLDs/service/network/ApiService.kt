@@ -5,17 +5,14 @@ import retrofit2.http.*
 import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyOut
 import ru.smartro.worknote.awORKOLDs.service.network.body.PingBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.breakdown.BreakDownResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.cancelation_reason.CancelationReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.failure_reason.FailureReasonResponse
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
-import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayListResponse
 import ru.smartro.worknote.presentation.work.AppStartUpBody
 import ru.smartro.worknote.presentation.work.AppStartUpResponse
 import ru.smartro.worknote.presentation.work.RPCBody
-import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
 
 interface ApiService {
 
@@ -34,14 +31,14 @@ interface ApiService {
     @GET("failure_reason?page=all")
     suspend fun getFailReason(): Response<FailureReasonResponse>
 
-    @POST("waybill")
-    suspend fun getWayList(@Body body: WayListBody): Response<WayListResponse>
+//    @POST("waybill")
+//    suspend fun getWayList(@Body body: WayListBody): Response<WayListResponse>
 
-//    @POST("breakdown")
-//    suspend fun sendBreakDown(@Body body: BreakdownBody): Response<BreakDownResultResponse>
-//
-//    @POST("failure")
-//    suspend fun sendFailure(@Body body: FailureBody): Response<FailureResultResponse>
+                                            //    @POST("breakdown")
+                                            //    suspend fun sendBreakDown(@Body body: BreakdownBody): Response<BreakDownResultResponse>
+                                            //
+                                            //    @POST("failure")
+                                            //    suspend fun sendFailure(@Body body: FailureBody): Response<FailureResultResponse>
 
     @POST("workorder/{id}/progress")
     suspend fun progress(@Path("id") id: Int, @Body time: ProgressBody): Response<ServedResponse>
@@ -70,7 +67,7 @@ interface ApiService {
 //    @POST("rpc")
 //    suspend fun sendAppEvent(@Body rpcBody: RPCBody<AppEventBody>): Response<RPCBody<AppEventResponse>>
 
-    @POST("synchro/{o_id}/{w_id}")
-    suspend fun getWorkOrder(@Path("o_id") organisationId: Int, @Path("w_id") waybillId: Int): Response<WorkOrderResponse_know1>
+//    @POST("synchro/{o_id}/{w_id}")
+//    suspend fun getWorkOrder(@Path("o_id") organisationId: Int, @Path("w_id") waybillId: Int): Response<WorkOrderResponse_know1>
 
 }

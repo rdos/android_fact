@@ -1,5 +1,5 @@
 package ru.smartro.worknote.awORKOLDs.util
 
-class RESTconnection {
+open class RESTconnection {
     var isSent = false
 }

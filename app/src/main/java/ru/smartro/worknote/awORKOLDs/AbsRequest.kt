@@ -19,6 +19,10 @@ import kotlin.reflect.KClass
 
 //Tin Toup
 abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI {
+    private var mRESTconnectionMutableLiveData: MutableLiveData<RESTconnection>? = null
+    private var mRESTconnection: RESTconnection? = null
+
+
     final override fun getTAGObject(): String {
     //        TODO("Not yet implemented")
         return TAGObj
@@ -75,7 +79,7 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
         requestBuilder.addHeader("Authorization", headerAuthorization)
 
         val netObject = onGetRequestBodyIn()
-        if (netObject is NoBody) {
+        if (netObject is NoBodyGET) {
             return requestBuilder.build()
         }
 
@@ -94,6 +98,14 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
     }
 
 
+    protected open fun getRESTconnection(): RESTconnection {
+        LOG.warn("DON'T_USE")
+        if (mRESTconnection == null) {
+            mRESTconnection = RESTconnection()
+        }
+        return mRESTconnection!!
+    }
+
     fun getLiveDate() : LiveData<RESTconnection> {
         if (mRESTconnectionMutableLiveData == null) {
             mRESTconnectionMutableLiveData = MutableLiveData()
@@ -101,7 +113,7 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
         return mRESTconnectionMutableLiveData!!
     }
 
-    private var mRESTconnectionMutableLiveData: MutableLiveData<RESTconnection>? = null
+
     override fun onResponse(call: Call, response: Response) {
         LOG.info("onResponse")
         if(response.code == 401) {
@@ -112,7 +124,7 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
             return
         }
 //        TypeToken.get(onGetResponseClazz())
-        val connectionREVERS = RESTconnection()
+        val connectionREVERS = this.getRESTconnection()
         connectionREVERS.isSent = true
         mResponseString = response.body?.string()
 

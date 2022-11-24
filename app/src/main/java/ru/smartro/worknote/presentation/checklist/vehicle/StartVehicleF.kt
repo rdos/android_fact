@@ -2,8 +2,6 @@ package ru.smartro.worknote.presentation.checklist.vehicle
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FragmentA
-import ru.smartro.worknote.awORKOLDs.VehicleBodyOutVehicle
 import ru.smartro.worknote.awORKOLDs.VehicleRequestGET
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
@@ -28,7 +25,7 @@ import ru.smartro.worknote.presentation.work.VehicleEntity
 
 class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
-    private var mStartVehicleAdapter: StartVehicleAdapter? = null
+    private var mVehicleAdapter: VehicleAdapter? = null
     private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
 
     private var etVehicleFilter: EditText? = null
@@ -55,7 +52,7 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         srlRefresh = view.findViewById(R.id.srl__f_start_vehicle__refresh)
         srlRefresh?.setOnRefreshListener(this)
 
-        mStartVehicleAdapter = StartVehicleAdapter { vehicle ->
+        mVehicleAdapter = VehicleAdapter { vehicle ->
             goToNextStep(vehicle)
         }
 
@@ -63,7 +60,7 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         etVehicleFilter?.addTextChangedListener { text: Editable? ->
             val filterText = text.toString()
             logSentry(filterText)
-            mStartVehicleAdapter?.updateList(filterText)
+            mVehicleAdapter?.updateList(filterText)
         }
         etVehicleFilter?.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -76,7 +73,7 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
         val rv = view.findViewById<RecyclerView>(R.id.rv__f_start_vehicle__vehicles)
         rv.layoutManager = LinearLayoutManager(requireContext())
-        rv.adapter = mStartVehicleAdapter
+        rv.adapter = mVehicleAdapter
 
 //        viewModel.mVehicleList.observe(viewLifecycleOwner) { result ->
 //            if(result != null) {
@@ -118,7 +115,7 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         LOG.debug("getArgumentID(mLastOwnerId)=${getArgumentID()}")
 
         val vehicleS= viewModel.database.getVehicleS()
-        mStartVehicleAdapter?.setItems(vehicleS)
+        mVehicleAdapter?.setItems(vehicleS)
         onRefresh()
     }
 
@@ -154,7 +151,7 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
             (requireActivity() as XChecklistAct).hideProgressBar()
             if (result.isSent) {
                 val vehicleS= viewModel.database.getVehicleS()
-                mStartVehicleAdapter?.setItems(vehicleS)
+                mVehicleAdapter?.setItems(vehicleS)
                 if (getAct().isDevelMode()) {
                     val vehicle = vehicleS.find { el -> el.name == "Тигуан" }
                     if(vehicle != null) {
@@ -170,7 +167,7 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     }
 
 
-    class StartVehicleAdapter(private val listener: (VehicleEntity) -> Unit): RecyclerView.Adapter<StartVehicleAdapter.VehicleViewHolder>() {
+    class VehicleAdapter(private val listener: (VehicleEntity) -> Unit): RecyclerView.Adapter<VehicleAdapter.VehicleViewHolder>() {
 
         private val mItems: MutableList<VehicleEntity> = mutableListOf()
         private var mFilteredItems: MutableList<VehicleEntity> = mutableListOf()

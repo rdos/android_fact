@@ -65,7 +65,7 @@ class RetrofitClient(context: Context) {
     fun apiService(isWorkNote: Boolean): ApiService {
         // переключатель для разных API
         return if (isWorkNote)
-            retrofit(BuildConfig.URL__SMARTRO + "fact/").create(ApiService::class.java)
+            retrofit(BuildConfig.URL__SMARTRO).create(ApiService::class.java)
         else
             retrofit(BuildConfig.URL__AUTH).create(ApiService::class.java)
     }

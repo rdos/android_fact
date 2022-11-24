@@ -6,7 +6,7 @@ import ru.smartro.worknote.awORKOLDs.service.NetObject
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import kotlin.reflect.KClass
 
-class EarlyCompleteRequestPOST: POSTRequestA<EarlyCompleteBodyIn, EarlyCompleteBodyOut>() {
+class EarlyCompleteRequestPOST: AbsRequest<EarlyCompleteBodyIn, EarlyCompleteBodyOut>() {
     override fun onGetSRVName(): String {
         return "workorder/{workOrderId}/early_complete"
     }

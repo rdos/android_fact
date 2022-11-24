@@ -137,6 +137,9 @@ object MyUtil {
     }
 
     fun Any?.toStr() = this?.toString() ?: ""
+    fun currentDate(): String {
+        return SimpleDateFormat("yyyy-MM-dd").format(Date())
+    }
     //        MyUtil(эх молодость)
 
 }

@@ -9,7 +9,7 @@ import ru.smartro.worknote.awORKOLDs.service.NetObject
 import kotlin.reflect.KClass
 
 //запрос + бизнесс
-class AuthRequest: POSTRequestA<AuthBodyIn, AuthBodyOut>() {
+class AuthRequest: AbsRequest<AuthBodyIn, AuthBodyOut>() {
 
     override fun onGetURL(): String {
         return BuildConfig.URL__AUTH

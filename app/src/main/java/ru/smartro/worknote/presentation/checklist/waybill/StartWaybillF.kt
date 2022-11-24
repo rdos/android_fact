@@ -13,16 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FragmentA
-import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
+import ru.smartro.worknote.awORKOLDs.WaybillRequestPOST
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.LOG
-import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
 import ru.smartro.worknote.presentation.ac.XChecklistAct
-import java.text.SimpleDateFormat
-import java.util.*
+import ru.smartro.worknote.presentation.work.WaybillEntity
 
 class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
+    private var mWayBillAdapter: WayBillAdapter? = null
     private var mRvWaybill: RecyclerView? = null
     private var srlRefresh: SwipeRefreshLayout? = null
     private var actvNoData: AppCompatTextView? = null
@@ -44,67 +42,71 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         srlRefresh = view.findViewById(R.id.srl__f_start_waybill__refresh)
         srlRefresh?.setOnRefreshListener(this)
 
-        val rvAdapter = StartWayBillAdapter {
+        mWayBillAdapter = WayBillAdapter {
             goToNextStep(it.id, it.number)
         }
         mRvWaybill = view.findViewById<RecyclerView>(R.id.rv__f_start_waybill__waybills).apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = rvAdapter
+            adapter = mWayBillAdapter
         }
 
-        viewModel.mWayBillList.observe(viewLifecycleOwner) { wayBills ->
-            if(wayBills != null) {
-                if (wayBills.isNotEmpty()) {
-                    if (wayBills.size == 1 && viewModel.mLastWayBillId == -1) {
-                        viewModel.mLastWayBillId = wayBills[0].id
-                        goToNextStep(wayBills[0].id, wayBills[0].number)
-                    } else {
-                        hideNoData()
-                        rvAdapter.setItems(wayBills)
-                    }
-                    return@observe
-                } else {
-                    showNoData()
-                }
-            } else {
-                rvAdapter.clearItems()
-            }
-        }
+//        viewModel.mWayBillList.observe(viewLifecycleOwner) { wayBills ->
+//            if(wayBills != null) {
+//                if (wayBills.isNotEmpty()) {
+//                    if (wayBills.size == 1 && viewModel.mLastWayBillId == -1) {
+//                        viewModel.mLastWayBillId = wayBills[0].id
+//                        goToNextStep(wayBills[0].id, wayBills[0].number)
+//                    } else {
+//                        hideNoData()
+//                        rvAdapter.setItems(wayBills)
+//                    }
+//                    return@observe
+//                } else {
+//                    showNoData()
+//                }
+//            } else {
+//                rvAdapter.clearItems()
+//            }
+//        }
 
-        viewModel.mWayBillsViewState.observe(viewLifecycleOwner) { state ->
-            LOG.debug("WAYBILL STATE::: ${state}")
-            if(state !is XChecklistAct.ViewState.LOADING) {
-                (requireActivity() as XChecklistAct).hideProgressBar()
-            }
+//        viewModel.mWayBillsViewState.observe(viewLifecycleOwner) { state ->
+//            LOG.debug("WAYBILL STATE::: ${state}")
+//            if(state !is XChecklistAct.ViewState.LOADING) {
+//                (requireActivity() as XChecklistAct).hideProgressBar()
+//            }
+//
+//            when(state) {
+//                is XChecklistAct.ViewState.IDLE -> {
+//                    getWayBillList()
+//                }
+//                is XChecklistAct.ViewState.LOADING -> {
+//                    if(getArgumentName() == null)
+//                        (requireActivity() as XChecklistAct).showProgressBar()
+//                    else
+//                        (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
+//                    hideNoData()
+//                }
+//                is XChecklistAct.ViewState.DATA -> {
+//                    srlRefresh?.isRefreshing = false
+//                }
+//                is XChecklistAct.ViewState.ERROR -> {
+//                    toast(state.msg)
+//                }
+//                is XChecklistAct.ViewState.MESSAGE -> {
+//                    toast(state.msg)
+//                }
+//                is XChecklistAct.ViewState.REFRESH -> {
+//                    hideNoData()
+//                }
+//                else -> {
+//                    throw Exception("Illegal View State in ${this::class.java.name}")
+//                }
+//            }
+//        }
 
-            when(state) {
-                is XChecklistAct.ViewState.IDLE -> {
-                    getWayBillList()
-                }
-                is XChecklistAct.ViewState.LOADING -> {
-                    if(getArgumentName() == null)
-                        (requireActivity() as XChecklistAct).showProgressBar()
-                    else
-                        (requireActivity() as XChecklistAct).showProgressBar(getArgumentName()!!)
-                    hideNoData()
-                }
-                is XChecklistAct.ViewState.DATA -> {
-                    srlRefresh?.isRefreshing = false
-                }
-                is XChecklistAct.ViewState.ERROR -> {
-                    toast(state.msg)
-                }
-                is XChecklistAct.ViewState.MESSAGE -> {
-                    toast(state.msg)
-                }
-                is XChecklistAct.ViewState.REFRESH -> {
-                    hideNoData()
-                }
-                else -> {
-                    throw Exception("Illegal View State in ${this::class.java.name}")
-                }
-            }
-        }
+        val waybillS= viewModel.database.getWaybillS()
+        mWayBillAdapter?.setItems(waybillS)
+        onRefresh()
     }
 
     fun showNoData() {
@@ -118,13 +120,25 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun getWayBillList() {
-        val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
-        val body = WayListBody(
-            date = currentDate,
-            organisationId = paramS().getOwnerId(),
-            vehicleId = getArgumentID()
-        )
-        viewModel.getWayBillsList(body)
+
+//        viewModel.getWayBillsList(body)
+
+
+        val waybillRequest = WaybillRequestPOST()
+        waybillRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
+            LOG.debug("${result}")
+            (requireActivity() as XChecklistAct).hideProgressBar()
+            if (result.isSent) {
+                val waybillS = viewModel.database.getWaybillS()
+                if (waybillS.size == 1) {
+                    goToNextStep(waybillS[0].id, waybillS[0].number)
+                } else {
+                    mWayBillAdapter?.setItems(waybillS)
+                }
+            }
+        }
+        App.oKRESTman().add(waybillRequest)
+        App.oKRESTman().send()
     }
 
     override fun onRefresh() {
@@ -136,7 +150,7 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     override fun onDestroyView() {
         super.onDestroyView()
         LOG.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
-        viewModel.mWayBillList.removeObservers(viewLifecycleOwner)
+//        viewModel.mWayBillList.removeObservers(viewLifecycleOwner)
         viewModel.mWayBillsViewState.postValue(XChecklistAct.ViewState.IDLE())
     }
 
@@ -148,10 +162,10 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     }
 
 
-    class StartWayBillAdapter(private val listener: (WayBillDto) -> Unit): RecyclerView.Adapter<StartWayBillAdapter.WayBillViewHolder>() {
+    class WayBillAdapter(private val listener: (WaybillEntity) -> Unit): RecyclerView.Adapter<WayBillAdapter.WayBillViewHolder>() {
 
-        private val mItems: MutableList<WayBillDto> = mutableListOf()
-        fun setItems(wayBillsList: List<WayBillDto>) {
+        private val mItems: MutableList<WaybillEntity> = mutableListOf()
+        fun setItems(wayBillsList: List<WaybillEntity>) {
             mItems.clear()
             mItems.addAll(wayBillsList)
             notifyDataSetChanged()
@@ -172,8 +186,8 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
             holder.bind(mItems[position])
         }
 
-        class WayBillViewHolder(val itemView: View, val listener: (WayBillDto) -> Unit): RecyclerView.ViewHolder(itemView) {
-            fun bind(wayBill: WayBillDto) {
+        class WayBillViewHolder(val itemView: View, val listener: (WaybillEntity) -> Unit): RecyclerView.ViewHolder(itemView) {
+            fun bind(wayBill: WaybillEntity) {
                 itemView.findViewById<TextView>(R.id.waybill_number).text = wayBill.number
                 itemView.setOnClickListener {
                     listener(wayBill)

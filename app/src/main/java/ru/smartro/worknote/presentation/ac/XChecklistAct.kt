@@ -5,25 +5,23 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.widget.*
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.AViewModel
-import ru.smartro.worknote.awORKOLDs.OwnerBodyOut
-import ru.smartro.worknote.awORKOLDs.extensions.*
-import ru.smartro.worknote.awORKOLDs.service.network.body.WayListBody
-import ru.smartro.worknote.awORKOLDs.VehicleBodyOutVehicle
-import ru.smartro.worknote.awORKOLDs.service.network.response.way_list.WayBillDto
+import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.awORKOLDs.extensions.hideProgress
+import ru.smartro.worknote.awORKOLDs.extensions.showDlgLogout
 import ru.smartro.worknote.awORKOLDs.util.THR
 import ru.smartro.worknote.presentation.work.Resource
-import ru.smartro.worknote.presentation.work.WorkOrderResponse_know1
-import ru.smartro.worknote.saveJSON
 
 class XChecklistAct: AAct() {
 
@@ -119,16 +117,16 @@ class XChecklistAct: AAct() {
         var mLastVehicleId = -1
 
         // WAYBILLS
-        private val _wayBillList: MutableLiveData<List<WayBillDto>> = MutableLiveData(null)
-        val mWayBillList: LiveData<List<WayBillDto>>
-            get() = _wayBillList
+//        private val _wayBillList: MutableLiveData<List<WayBillDto>> = MutableLiveData(null)
+//        val mWayBillList: LiveData<List<WayBillDto>>
+//            get() = _wayBillList
         val mWayBillsViewState: MutableLiveData<ViewState> = MutableLiveData(ViewState.IDLE())
         var mLastWayBillId = -1
 
         // WORKORDERS
-        private val _workOrderList: MutableLiveData<Resource<WorkOrderResponse_know1>> = MutableLiveData(null)
-        val mWorkOrderList: LiveData<Resource<WorkOrderResponse_know1>>
-            get() = _workOrderList
+//        private val _workOrderList: MutableLiveData<Resource<WorkOrderResponse_know1>> = MutableLiveData(null)
+//        val mWorkOrderList: LiveData<Resource<WorkOrderResponse_know1>>
+//            get() = _workOrderList
 
         val mSelectedWorkOrders: MutableLiveData<MutableList<Int>> = MutableLiveData(mutableListOf())
 
@@ -183,67 +181,67 @@ class XChecklistAct: AAct() {
             }
         }
 
-        fun getWayBillsList(body : WayListBody, isRefresh: Boolean = false) {
-            _wayBillList.postValue(null)
-            //
-            if(isRefresh) {
-                mWayBillsViewState.postValue(ViewState.REFRESH())
-            } else {
-                mWayBillsViewState.postValue(ViewState.LOADING())
-            }
-            //
-            mLastWayBillId = -1
-            //
-            viewModelScope.launch {
-                try {
-                    val response = networkDat.getWayList(body)
-                    when {
-                        response.isSuccessful -> {
-                            mLastOwnerId = body.organisationId
-                            mLastVehicleId = body.vehicleId
-                            val gson = Gson()
-                            val bodyInStringFormat = gson.toJson(response.body())
-                            saveJSON(bodyInStringFormat, "getWayList")
-                            LOG.debug("getWayList.after ${response.body().toString()}")
-                            mWayBillsViewState.postValue(ViewState.DATA())
-                            LOG.debug("waybills:::: ${response.body()?.data}")
-                            _wayBillList.postValue(response.body()?.data)
-                        }
-                        else -> {
-                            THR.BadRequestWaybill(response)
-//                            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-//                            LOG.debug("getWayList.after errorResponse=${errorResponse}")
-                            mWayBillsViewState.postValue(ViewState.ERROR("Ошибка ${response.code()}"))
-                        }
-                    }
-                } catch (e: Exception) {
-                    mWayBillsViewState.postValue(ViewState.ERROR("Проблемы с подключением интернета"))
-                }
-            }
-        }
+//        fun getWayBillsList(body : WayListBody, isRefresh: Boolean = false) {
+//            _wayBillList.postValue(null)
+//            //
+//            if(isRefresh) {
+//                mWayBillsViewState.postValue(ViewState.REFRESH())
+//            } else {
+//                mWayBillsViewState.postValue(ViewState.LOADING())
+//            }
+//            //
+//            mLastWayBillId = -1
+//            //
+//            viewModelScope.launch {
+//                try {
+//                    val response = networkDat.getWayList(body)
+//                    when {
+//                        response.isSuccessful -> {
+//                            mLastOwnerId = body.organisationId
+//                            mLastVehicleId = body.vehicleId
+//                            val gson = Gson()
+//                            val bodyInStringFormat = gson.toJson(response.body())
+//                            saveJSON(bodyInStringFormat, "getWayList")
+//                            LOG.debug("getWayList.after ${response.body().toString()}")
+//                            mWayBillsViewState.postValue(ViewState.DATA())
+//                            LOG.debug("waybills:::: ${response.body()?.data}")
+//                            _wayBillList.postValue(response.body()?.data)
+//                        }
+//                        else -> {
+//                            THR.BadRequestWaybill(response)
+////                            val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+////                            LOG.debug("getWayList.after errorResponse=${errorResponse}")
+//                            mWayBillsViewState.postValue(ViewState.ERROR("Ошибка ${response.code()}"))
+//                        }
+//                    }
+//                } catch (e: Exception) {
+//                    mWayBillsViewState.postValue(ViewState.ERROR("Проблемы с подключением интернета"))
+//                }
+//            }
+//        }
 
-        fun getWorkOrderList(orgId: Int, wayBillId: Int) {
-            viewModelScope.launch {
-                LOG.info( "getWorkOder.before")
-                try {
-                    val response = networkDat.getWorkOrder(orgId, wayBillId)
-                    mSelectedWorkOrders.postValue(mutableListOf())
-                    LOG.debug("getWorkOder.after ${response.body().toString()}")
-                    when {
-                        response.isSuccessful -> {
-                            mLastOwnerId = orgId
-                            mLastWayBillId = wayBillId
-                            _workOrderList.postValue(Resource.success(response.body()))
-                        }
-                        else -> {
-                            THR.BadRequestSynchro__o_id__w_id(response)
-                            _workOrderList.postValue(Resource.error("Ошибка ${response.code()}", null))
-                        }
-                    }
-                } catch (e: Exception) {
-                    _workOrderList.postValue(Resource.network("Проблемы с подключением интернета", null))
-                }
-            }
-        }
+//        fun getWorkOrderList(orgId: Int, wayBillId: Int) {
+//            viewModelScope.launch {
+//                LOG.info( "getWorkOder.before")
+//                try {
+//                    val response = networkDat.getWorkOrder(orgId, wayBillId)
+//                    mSelectedWorkOrders.postValue(mutableListOf())
+//                    LOG.debug("getWorkOder.after ${response.body().toString()}")
+//                    when {
+//                        response.isSuccessful -> {
+//                            mLastOwnerId = orgId
+//                            mLastWayBillId = wayBillId
+//                            _workOrderList.postValue(Resource.success(response.body()))
+//                        }
+//                        else -> {
+//                            THR.BadRequestSynchro__o_id__w_id(response)
+//                            _workOrderList.postValue(Resource.error("Ошибка ${response.code()}", null))
+//                        }
+//                    }
+//                } catch (e: Exception) {
+//                    _workOrderList.postValue(Resource.network("Проблемы с подключением интернета", null))
+//                }
+//            }
+//        }
     }
 }

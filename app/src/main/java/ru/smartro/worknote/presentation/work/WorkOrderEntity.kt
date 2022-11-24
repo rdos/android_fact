@@ -12,6 +12,7 @@ import io.realm.RealmModel
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.*
+import ru.smartro.worknote.awORKOLDs.*
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
@@ -122,7 +123,7 @@ open class WorkOrderEntity(
         }
 
 
-        private fun mapPlatforms(data: List<Platform_know1>, workorderId: Int, database: RealmRepository): RealmList<PlatformEntity> {
+        private fun mapPlatforms(data: List<SynchroOidWidOutBodyDataWorkorderPlatform>, workorderId: Int, database: RealmRepository): RealmList<PlatformEntity> {
             val result = data.mapTo(RealmList()) {
                 val platformEntity = PlatformEntity(
                     platformId = it.id,
@@ -195,7 +196,7 @@ open class WorkOrderEntity(
             return result
         }
 
-        private fun mapStart(data: STaRT_know1?, workorderId: Int): StartWorkOrderEntity? {
+        private fun mapStart(data: SynchroOidWidOutBodyDataWorkorderStart?, workorderId: Int): StartWorkOrderEntity? {
             var result: StartWorkOrderEntity? = null
             if (data != null) {
                 result = StartWorkOrderEntity(
@@ -208,7 +209,7 @@ open class WorkOrderEntity(
             return result
         }
 
-        private fun mapUnload(data: Unload_know1?, workorderId: Int): UnloadWorkOrderEntity? {
+        private fun mapUnload(data: SynchroOidWidOutBodyDataWorkorderUnload?, workorderId: Int): UnloadWorkOrderEntity? {
             var result: UnloadWorkOrderEntity? = null
             if (data != null) {
                 result = UnloadWorkOrderEntity(
@@ -223,7 +224,7 @@ open class WorkOrderEntity(
 
 
         /**public inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.mapTo(destination: C, transform: (T) -> R): C {        */
-        fun map(woRKoRDeRknow1List: List<WoRKoRDeR_know1>, database: RealmRepository): RealmList<WorkOrderEntity> {
+        fun map(woRKoRDeRknow1List: List<SynchroOidWidOutBodyDataWorkorder>, database: RealmRepository): RealmList<WorkOrderEntity> {
             val res = RealmList<WorkOrderEntity>()
                 for (woRKoRDeRknow1 in woRKoRDeRknow1List) {
                     try {
@@ -235,7 +236,7 @@ open class WorkOrderEntity(
                             waste_type_name = woRKoRDeRknow1.waste_type?.name,
                             waste_type_color = woRKoRDeRknow1.waste_type?.color?.hex,
                             platforms = mapPlatforms(woRKoRDeRknow1.platformKnow1s, woRKoRDeRknow1.id, database),
-                            start = mapStart(woRKoRDeRknow1.STaRTknow1, woRKoRDeRknow1.id),
+                            start = mapStart(woRKoRDeRknow1.start, woRKoRDeRknow1.id),
                             unload = mapUnload(woRKoRDeRknow1.uNLoaDknow1, woRKoRDeRknow1.id)
                         )
                         res.add(workOrder)
@@ -362,6 +363,17 @@ open class VehicleEntity(
     var id: Int = Inull,
     var name: String = Snull,
     var organizationId: Int = Inull
+): RealmObject()
+
+
+open class WaybillEntity(
+    @PrimaryKey
+    var id: Int = Inull,
+    var number: String = Snull,
+
+    var organizationId: Int = Inull,
+    var vehicleId: Int = Inull,
+
 ): RealmObject()
 
 open class PlatformEntity(
@@ -840,7 +852,7 @@ open class PlatformEntity(
     }
 
     // TODO: 29.10.2021 ! it.volume = 0.0 ??Error возраст.
-    fun mapContainers(containerSRV: List<CoNTaiNeR_know1>, database: RealmRepository): RealmList<ContainerEntity> {
+    fun mapContainers(containerSRV: List<SynchroOidWidOutBodyDataWorkorderPlatformContainer>, database: RealmRepository): RealmList<ContainerEntity> {
         val result = containerSRV.mapTo(RealmList()) {
             LOG.trace("containerSRV.id=${it.id}")
             val containerEntity = ContainerEntity(

@@ -3,6 +3,7 @@ package ru.smartro.worknote.presentation.work
 import io.realm.*
 import ru.smartro.worknote.*
 import ru.smartro.worknote.andPOintD.LiveRealmData
+import ru.smartro.worknote.awORKOLDs.SynchroOidWidOutBodyDataWorkorder
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.BreakDownReasonEntity
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -18,7 +19,7 @@ class RealmRepository(private val p_realm: Realm) {
     // TODO: ][3
     private val mEmptyImageEntityList = RealmList<ImageEntity>()
 
-    fun insUpdWorkOrderS(woRKoRDeRknow1List: List<WoRKoRDeR_know1>) {
+    fun insUpdWorkOrderS(woRKoRDeRknow1List: List<SynchroOidWidOutBodyDataWorkorder>) {
         p_realm.executeTransaction { realm ->
             val workOrderS = WorkOrderEntity.map(woRKoRDeRknow1List, this)
             for (workOrder in workOrderS) {
@@ -1112,6 +1113,11 @@ class RealmRepository(private val p_realm: Realm) {
         return p_realm.where(VehicleEntity::class.java)
     }
 
+    private fun getQueryWaybill(): RealmQuery<WaybillEntity> {
+        return p_realm.where(WaybillEntity::class.java)
+    }
+
+
     private fun getQueryPlatformMedia(platformEntity: PlatformEntity): RealmQuery<PlatformMediaEntity> {
         return p_realm.where(PlatformMediaEntity::class.java).equalTo("platformId", platformEntity.platformId)
     }
@@ -1393,7 +1399,6 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
 
-
     fun setOrganisationEntity(entities: List<OrganisationEntity>) {
         LOG.debug("before.entities.size=${entities.size}")
         p_realm.executeTransaction { realm ->
@@ -1431,6 +1436,26 @@ class RealmRepository(private val p_realm: Realm) {
         p_realm.executeTransaction { realm ->
             val vehicleS = getQueryVehicle().findAll()
             result = realm.copyFromRealm(vehicleS)
+
+        }
+        return result
+    }
+
+    fun setWaybillEntity(entities: List<WaybillEntity>) {
+        LOG.debug("before.entities.size=${entities.size}")
+        p_realm.executeTransaction { realm ->
+            val waybillS = getQueryWaybill().findAll()
+            waybillS.deleteAllFromRealm()
+            realm.insertOrUpdate(entities)
+        }
+        LOG.debug("after")
+    }
+
+    fun getWaybillS(): List<WaybillEntity>{
+        var result = emptyList<WaybillEntity>()
+        p_realm.executeTransaction { realm ->
+            val waybillS = getQueryWaybill().findAll()
+            result = realm.copyFromRealm(waybillS)
 
         }
         return result
