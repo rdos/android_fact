@@ -12,6 +12,7 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AbsFragment
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
+import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPServeWrapper
 import ru.smartro.worknote.presentation.work.ServePlatformVM
 import ru.smartro.worknote.presentation.work.ConfigName
 import ru.smartro.worknote.presentation.work.ContainerGROUPClientEntity
@@ -27,14 +28,9 @@ class PServeGroupByContainersF : AbsFragment() {
     private var adapter: PServeGROUPClientsAdapter? = null
     private var mBackPressedCnt: Int = 2
 
-    private var srosToPserveFMode: SmartROsc? = null
+
+    private var smartROPServeWrapper: SmartROviewPServeWrapper? = null
     private var rvMain: RecyclerView? = null
-
-    private var tvContainersProgress: AppCompatTextView? = null
-    private var screenModeLabel: AppCompatTextView? = null
-    private var actvAddress: AppCompatTextView? = null
-
-    private var btnCompleteTask: SmartROllc? = null
 
     private val vm: ServePlatformVM by activityViewModels()
 
@@ -43,62 +39,49 @@ class PServeGroupByContainersF : AbsFragment() {
     }
 
     override fun onInitLayoutView(view: SmartROllc): Boolean {
-        screenModeLabel?.text = "По типам"
 
-        tvContainersProgress = view.findViewById(R.id.actv_f_pserve_groupby__sprid)
-        btnCompleteTask = view.findViewById(R.id.acb_activity_platform_serve__complete)
-        actvAddress = view.findViewById(R.id.tv_platform_serve__address)
-        srosToPserveFMode = view.findViewById(R.id.sros_f_pserve_groupby__mode)
-        screenModeLabel = view.findViewById(R.id.actv__f_pserve__screen_mode_label)
+        smartROPServeWrapper = view.findViewById(R.id.sro_pserve_wrapper__f_pserve_groupby__wrapper)
+
+        smartROPServeWrapper?.setSwitchChecked(true)
+
+        smartROPServeWrapper?.setScreenLabel("По типам")
+
+        smartROPServeWrapper?.setPlatformEntity(_PlatformEntity, requireActivity())
+
+        smartROPServeWrapper?.setOnSwitchMode {
+            vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeF)
+            navigateNext(R.id.PServeF, vm.getPlatformId())
+        }
+
+        smartROPServeWrapper?.setOnCompleteServeListener {
+            if(_PlatformEntity.needCleanup && _PlatformEntity.wasCleanedUp == false) {
+                navigateNext(R.id.PServeCleanupDF, _PlatformEntity.platformId)
+            } else {
+                navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
+            }
+        }
+
+
         rvMain = view.findViewById(R.id.rv_f_pserve_groupby__main)
 
         rvMain?.layoutManager = LinearLayoutManager(getAct())
         adapter = PServeGROUPClientsAdapter(listOf())
         rvMain?.adapter = adapter
 
-        srosToPserveFMode?.isChecked = true
-        srosToPserveFMode?.setOnCheckedChangeListener { _, _ ->
-            // TODO: !!!
-            vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeF)
-
-            navigateNext(R.id.PServeF, vm.getPlatformId())
-        }
-
         return super.onInitLayoutView(view)
     }
 
     override fun onBindLayoutState(): Boolean {
         val groupByContainerClientS = vm.getGroupByContainerClientS()
-        val platformServeMode = _PlatformEntity.getServeMode()
 
-        if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF){
-            srosToPserveFMode?.visibility = View.GONE
-        } else {
-            srosToPserveFMode?.visibility = View.VISIBLE
-        }
-        
         adapter?.change(groupByContainerClientS)
 
-        tvContainersProgress?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
+        val platformServeMode = _PlatformEntity.getServeMode()
 
-        btnCompleteTask?.setOnClickListener {
-            navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
-        }
+        val flag = platformServeMode != PlatformEntity.Companion.ServeMode.PServeGroupByContainersF
 
-        actvAddress?.text = "${_PlatformEntity.address}"
-        if (_PlatformEntity.containerS.size >= 7 ) {
-            actvAddress?.apply {
-                setOnClickListener { view ->
-                    maxLines = if (maxLines < 3) {
-                        3
-                    } else {
-                        1
-                    }
-                }
-            }
-        } else {
-            actvAddress?.maxLines = 3
-        }
+        smartROPServeWrapper?.setSwitchVisibility(flag)
+
         return super.onBindLayoutState()
     }
 

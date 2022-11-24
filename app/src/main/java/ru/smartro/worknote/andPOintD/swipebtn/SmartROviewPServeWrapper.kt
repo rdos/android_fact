@@ -8,13 +8,14 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
 import ru.smartro.worknote.presentation.work.PlatformEntity
+
 
 //todo: ::: https://github.com/ebanx/swipe-button.git
 class SmartROviewPServeWrapper @JvmOverloads constructor(
@@ -92,29 +93,47 @@ class SmartROviewPServeWrapper @JvmOverloads constructor(
         if(platformEntity.needCleanup) {
             LOG.debug("TEST:::: CHANGE COLORS")
             if(clHeader != null && srollcCompleteButton != null) {
-                val transitionDrawableHeader = clHeader?.background as TransitionDrawable
-                val transitionDrawableComplete = srollcCompleteButton?.background as TransitionDrawable
-                transitionDrawableHeader.startTransition(500)
-                transitionDrawableComplete.startTransition(500)
-                activity.window.statusBarColor = ContextCompat.getColor(activity, R.color.dark_orange)
+                val buttonCompleteTransitionDrawable = srollcCompleteButton?.background as TransitionDrawable
+                buttonCompleteTransitionDrawable.startTransition(0)
             }
         } else {
             LOG.debug("TEST:::: NO CHANGE COLORS")
             acivCleanupIcon?.visibility = View.GONE
         }
 
-        val platformServeMode = platformEntity.getServeMode()
+        actvAddress?.text = platformEntity.address
+        if (platformEntity.containerS.size >= 7 ) {
+            actvAddress?.apply {
+                setOnClickListener { view ->
+                    maxLines = if (maxLines < 3) {
+                        3
+                    } else {
+                        1
+                    }
+                }
+            }
+        } else {
+            actvAddress?.maxLines = 3
+        }
 
+        val platformServeMode = platformEntity.getServeMode()
         if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeF){
             switch?.visibility = View.GONE
         } else {
             switch?.visibility = View.VISIBLE
         }
 
-//        CHANGEMODE()
     }
 
     override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
         parent?.addView(child, index, params) ?: super.addView(child, index, params)
+    }
+
+    fun setSwitchVisibility(isVisible: Boolean) {
+        switch?.isVisible = isVisible
+    }
+
+    fun setSwitchChecked(isChecked: Boolean) {
+        switch?.isChecked = isChecked
     }
 }

@@ -128,26 +128,6 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             }
         }
 
-//        wrapper.setOnSwitch { ->
-//            vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeGroupByContainersF)
-//            navigateNext(R.id.PServeGroupByContainersF, vm.getPlatformId())
-//        }
-//
-//        actvAddress?.text = "${_PlatformEntity.address}"3
-//        if (_PlatformEntity.containerS.size >= 7 ) {
-//            actvAddress?.apply {
-//                setOnClickListener { view ->
-//                    maxLines = if (maxLines < 3) {
-//                        3
-//                    } else {
-//                        1
-//                    }
-//                }
-//            }
-//        } else {
-//            actvAddress?.maxLines = 3
-//        }
-
         mAcbKGOServed?.setOnClickListener {
             navigateNext(R.id.PServeKGOServedVolumeDF)
         }
@@ -336,12 +316,6 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
         }
     }
 
-
-    /********************************************************************************************************************
-     ********************************************************************************************************************
-     ********************************************************************************************************************
-     * **************************************VIEW MODEL
-     */
 //
     inner class PServeContainersAdapter(
         private var containers: List<ContainerEntity>,
@@ -443,10 +417,6 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             val actvTypeName = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__type_name)
             val actvConstructiveVolume = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__constructiveVolume)
         }
-    }
-
-    interface ContainerPointClickListener {
-        fun startContainerService(item: ContainerEntity)
     }
 
     override fun onStartVoiceComment() {
