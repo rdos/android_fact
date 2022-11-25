@@ -156,7 +156,7 @@ data class SynchroOidWidOutBodyDataWorkorderPlatform(
     var updateAt: Long,
     @Expose
     @SerializedName("srp_id")
-    val srpId: Int,
+    val srpId: Long,
     @Expose
     @SerializedName("order_start_time")
     var orderStartTime: String? = null,

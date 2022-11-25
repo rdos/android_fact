@@ -400,7 +400,7 @@ open class PlatformEntity(
     var name: String? = null,
     @Expose
     @SerializedName("srp_id")
-    var srpId: Int? = null,
+    var srpId: Long? = null,
     @Expose
     @SerializedName("icon")
     var icon: String? = null,
