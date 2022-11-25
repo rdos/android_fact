@@ -6,4 +6,5 @@ object StatusEnum {
     const val ERROR = "error"
     const val UNFINISHED = "unfinished"
     const val PARTIAL_PROBLEMS = "partial_problems"
+    const val NOT_ACTIVE="not_active"
 }

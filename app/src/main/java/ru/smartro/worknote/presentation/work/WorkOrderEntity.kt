@@ -1202,13 +1202,13 @@ open class ContainerEntity(
     ) : Serializable, RealmObject() {
 
     fun getStatusContainer(): String {
+        if (!this.isActiveToday) {
+            return StatusEnum.NOT_ACTIVE
+        }
         if (this.failureReasonId != 0) {
             return StatusEnum.ERROR
         }
         if(this.volume != null) {
-            return StatusEnum.SUCCESS
-        }
-        if (!this.isActiveToday) {
             return StatusEnum.SUCCESS
         }
 
@@ -1290,6 +1290,16 @@ open class ContainerEntity(
         for(image in imageS) {
             val imageEntity = ImageEntity.createEmpty(image)
             this.breakdownMedia?.add(imageEntity)
+        }
+    }
+
+    fun getIconFromStatus(): Int {
+        val currentStatus = this.getStatusContainer()
+        return when (currentStatus) {
+            StatusEnum.NEW -> R.drawable.ic_euro_blue
+            StatusEnum.SUCCESS ->  R.drawable.ic_euro_green
+            StatusEnum.ERROR -> R.drawable.ic_euro_red
+            else -> R.drawable.ic_euro_gray
         }
     }
 

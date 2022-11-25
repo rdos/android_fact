@@ -195,11 +195,11 @@ class PMapFragmentDialog : FragmentDialogA(), View.OnClickListener {
 
         override fun onBindViewHolder(holder: PlatformClickedDtlHolder, position: Int) {
             val container = _platform.containerS[position]
+
 //            holder.tv_title.text = container!!.number
-            if(container?.isActiveToday == true)
-                holder.platformImageView.setImageResource(_platform.getIconFromStatus())
-            else
-                holder.platformImageView.setImageResource(_platform.getInactiveIcon())
+
+            if(container != null)
+                holder.containerIcon.setImageResource(container.getIconFromStatus())
 
             holder.clParent.setOnClickListener{
                 var toastText = ""
@@ -231,8 +231,8 @@ class PMapFragmentDialog : FragmentDialogA(), View.OnClickListener {
 
         inner class PlatformClickedDtlHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 //            val tv_title = itemView.findViewById<TextView>(R.id.tv_item_dialog_platform_clicked_dtl)
-            val platformImageView = itemView.findViewById<ImageView>(R.id.ib_item_dialog_platform_clicked_dtl__platform)
-            val statusImageView = itemView.findViewById<ImageView>(R.id.iv_item_dialog_platform_clicked_dtl__status)
+            val containerIcon = itemView.findViewById<AppCompatImageView>(R.id.ib_item_dialog_platform_clicked_dtl__container)
+            val statusImageView = itemView.findViewById<AppCompatImageView>(R.id.iv_item_dialog_platform_clicked_dtl__status)
             val clParent = itemView.findViewById<ConstraintLayout>(R.id.cl_item_dialog_platform_clicked_dtl)
         }
     }
