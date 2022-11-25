@@ -48,16 +48,27 @@ class OkRESTman: AbsObject() {
         }
     }
 
-    private val client =
-        OkHttpClient().newBuilder()
+    private val mOkHttpClient: OkHttpClient? = null
+    private fun getClient(): OkHttpClient {
+        if (mOkHttpClient == null) {
+            val builder = OkHttpClient().newBuilder()
 //            .addInterceptor(authInterceptor)
-            .addInterceptor(httpLoggingInterceptor)
-            .addInterceptor(SentryOkHttpInterceptor())
+            if (App.getAppliCation().isDevelMode()) {
+                builder.addInterceptor(httpLoggingInterceptor)
+            }
+            builder.apply {
+                addInterceptor(SentryOkHttpInterceptor())
+                connectTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
+                readTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
+                writeTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
+                build()
+            }
 //            .authenticator(TokenAuthenticator(context))
-            .connectTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
-            .readTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
-            .writeTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
-            .build()
+
+        }
+        return mOkHttpClient!!
+    }
+
 
 
     fun add(request: RequestAI) {
@@ -68,7 +79,7 @@ class OkRESTman: AbsObject() {
         val request = mPriorityQueue.remove()
         val aRequest = (request as AbsRequest<*, *>)
         aRequest.onBefore()
-        client.newCall(request.getOKHTTPRequest()).enqueue(request)
+        getClient().newCall(request.getOKHTTPRequest()).enqueue(request)
         // TODO:  : r_dos!!!//        request.onAfterSend()
     }
 

@@ -155,6 +155,9 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
             return result
         }
         if (response.code == 401) {
+            val authRequest = AuthRequest()
+            App.oKRESTman().add(authRequest)
+            App.oKRESTman().send()
             return result
         }
         BadRequest(response)
