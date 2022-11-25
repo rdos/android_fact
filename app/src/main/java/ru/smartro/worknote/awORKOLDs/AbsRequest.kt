@@ -12,6 +12,7 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.awORKOLDs.service.NetObject
+import ru.smartro.worknote.awORKOLDs.util.BadRequest
 import ru.smartro.worknote.awORKOLDs.util.RESTconnection
 import java.io.IOException
 import kotlin.reflect.KClass
@@ -116,7 +117,7 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
 
     override fun onResponse(call: Call, response: Response) {
         LOG.info("onResponse")
-        if(response.code == 401) {
+        if (isFindError(response)) {
 //            val charset = Charsets.UTF_8
 //val byteArray = "Hello".toByteArray(charset)
 //println(byteArray.contentToString()) // [72, 101, 108, 108, 111]
@@ -147,4 +148,17 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
         this.onAfter(responseObj)
         mRESTconnectionMutableLiveData?.postValue(connectionREVERS)
     }
+
+    private fun isFindError(response: Response): Boolean {
+        val result = false
+        if (response.code == 200) {
+            return result
+        }
+        if (response.code == 401) {
+            return result
+        }
+        BadRequest(response)
+        return result
+    }
+
 }

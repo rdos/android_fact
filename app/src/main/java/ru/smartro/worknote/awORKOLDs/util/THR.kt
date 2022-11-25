@@ -3,9 +3,11 @@ package ru.smartro.worknote.awORKOLDs.util
 import io.sentry.Sentry
 import retrofit2.Response
 import ru.smartro.worknote.App
+import ru.smartro.worknote.awORKOLDs.AbsRequest
 import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyOut
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
 import ru.smartro.worknote.presentation.work.RPCBody
+
 
 sealed class THR(code: Int) : Throwable(code.toString()) {
     //    abstract val message: String
@@ -15,6 +17,20 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
             Sentry.setTag("url_name", urlName)
             Sentry.setTag("http_code", response.code().toString())
             Sentry.setTag("url_host_name", response.raw().request.url.host)
+
+            Sentry.setTag("user", App.getAppParaMS().userName)
+            // TODO: replace  BadRequestException for post  @POST("synchro")
+//        Sentry.captureException(BadRequestException(Gson().toJson(response.errorBody())))
+            Sentry.captureException(this)
+        }
+    }
+
+    fun  sentToSentry(response: okhttp3.Response){
+        if (response.code in 400..599) {
+            val urlName = response.request.url.encodedPath
+            Sentry.setTag("url_name", urlName)
+            Sentry.setTag("http_code", response.code.toString())
+            Sentry.setTag("url_host_name", response.request.url.host)
 
             Sentry.setTag("user", App.getAppParaMS().userName)
             // TODO: replace  BadRequestException for post  @POST("synchro")
@@ -103,13 +119,7 @@ sealed class THR(code: Int) : Throwable(code.toString()) {
         }
 
     }
-    class BadRequestWorkorder__id__complete(response: Response<EarlyCompleteBodyOut>) : THR(response.code()) {
 
-        init {
-            sentToSentry(response)
-        }
-
-    }
 
 //    class BadRequestWork_order_cancelation_reason(response: Response<CancelationReasonResponse>) : THR(response.code()) {
 //
