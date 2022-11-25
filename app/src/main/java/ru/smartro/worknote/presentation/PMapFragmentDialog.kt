@@ -50,7 +50,7 @@ class PMapFragmentDialog : FragmentDialogA(), View.OnClickListener {
                     return
                 }
 
-                if(platformTODO.needCleanup == true && platformTODO.wasCleanedUp == false) {
+                if(platformTODO.needCleanup == true) {
                     navigateNext(R.id.PMapNeedCleanupDF, platformTODO.platformId)
                 } else {
                     // TODO ::: CHECK NEEDED !!!

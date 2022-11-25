@@ -54,7 +54,7 @@ class PServeGroupByContainersF : AbsFragment() {
         }
 
         smartROPServeWrapper?.setOnCompleteServeListener {
-            if(_PlatformEntity.needCleanup && _PlatformEntity.wasCleanedUp == false) {
+            if(_PlatformEntity.needCleanup) {
                 navigateNext(R.id.PServeCleanupDF, _PlatformEntity.platformId)
             } else {
                 navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)

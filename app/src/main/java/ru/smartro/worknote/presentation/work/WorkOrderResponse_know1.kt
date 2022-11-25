@@ -106,8 +106,6 @@ data class Platform_know1(
 
     @SerializedName("need_cleanup")
     var needCleanup: Boolean = false,
-    @SerializedName("was_cleaned_up")
-    var wasCleanedUp: Boolean = false,
 
 //    var needCleanupWasShown: Boolean = false,
 
