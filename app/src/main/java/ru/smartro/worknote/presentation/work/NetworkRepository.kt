@@ -162,27 +162,27 @@ class NetworkRepository(private val context: Context) {
         }
     }
 
-    fun completeWay(id: Int, body: CompleteWayBody) = liveData(Dispatchers.IO, TIME_OUT) {
-        LOG.info( "completeWay.before id=${id}, body=${body}")
-        try {
-            val response = RetrofitClient(context).apiService(true).complete(id, body)
-            LOG.debug("completeWay.after ${response.body().toString()}")
-            when {
-                response.isSuccessful -> {
-                    emit(Resource.success(response.body()))
-                }
-                else -> {
-                    THR.BadRequestWorkorder__id__complete(response)
-//                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
-//                    LOG.debug("completeWay.after errorResponse=${errorResponse}")
-//                    emit(Resource.error(errorResponse.message, null))
-                }
-            }
-        } catch (e: Exception) {
-            LOG.error("completeWay", e)
-            emit(Resource.network("Проблемы с подключением интернета", null))
-        }
-    }
+        //    fun completeWay(id: Int, body: CompleteWayBody) = liveData(Dispatchers.IO, TIME_OUT) {
+        //        LOG.info( "completeWay.before id=${id}, body=${body}")
+        //        try {
+        //            val response = RetrofitClient(context).apiService(true).complete(id, body)
+        //            LOG.debug("completeWay.after ${response.body().toString()}")
+        //            when {
+        //                response.isSuccessful -> {
+        //                    emit(Resource.success(response.body()))
+        //                }
+        //                else -> {
+        //                    THR.BadRequestWorkorder__id__complete(response)
+        ////                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), EmptyResponse::class.java)
+        ////                    LOG.debug("completeWay.after errorResponse=${errorResponse}")
+        ////                    emit(Resource.error(errorResponse.message, null))
+        //                }
+        //            }
+        //        } catch (e: Exception) {
+        //            LOG.error("completeWay", e)
+        //            emit(Resource.network("Проблемы с подключением интернета", null))
+        //        }
+        //    }
 
 //    fun earlyComplete(id: Int, body: EarlyCompleteBody) = liveData(Dispatchers.IO, TIME_OUT) {
 //        LOG.info( "earlyComplete.before id={$id}, body={$body}")

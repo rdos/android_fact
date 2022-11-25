@@ -1,5 +1,6 @@
 package ru.smartro.worknote.awORKOLDs
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.realm.Realm
 import ru.smartro.worknote.awORKOLDs.service.NetObject
@@ -9,7 +10,7 @@ import kotlin.reflect.KClass
 
 class EarlyCompleteRequestPOST(val workOrderId: Int) : AbsRequest<EarlyCompleteBodyIn, EarlyCompleteBodyOut>() {
     override fun onGetSRVName(): String {
-        return "workorder/{workOrderId}/early_complete"
+        return "workorder/${workOrderId}/early_complete"
     }
 
     override fun onGetRequestBodyIn(): EarlyCompleteBodyIn {
@@ -38,12 +39,16 @@ class EarlyCompleteRequestPOST(val workOrderId: Int) : AbsRequest<EarlyCompleteB
 
 
 data class EarlyCompleteBodyIn(
+    @Expose
     @SerializedName("failure_id")
     val failureId: Int,
+    @Expose
     @SerializedName("finished_at")
     val finishedAt: Long,
+    @Expose
     @SerializedName("unload_type")
     val unloadType: Int,
+    @Expose
     @SerializedName("unload_value")
     val unloadValue: Double
 ): NetObject()

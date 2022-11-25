@@ -37,8 +37,8 @@ interface ApiService {
     suspend fun progress(@Path("id") id: Int, @Body time: ProgressBody): Response<ServedResponse>
 
     //find   vs.networkDat.completeWay(-11, body)
-    @POST("workorder/{id}/complete")
-    suspend fun complete(@Path("id") id: Int, @Body time: CompleteWayBody): Response<EarlyCompleteBodyOut>
+//    @POST("workorder/{id}/complete")
+//    suspend fun complete(@Path("id") id: Int, @Body time: CompleteWayBody): Response<EarlyCompleteBodyOut>
 
 //    @GET("work_order_cancelation_reason")
 //    suspend fun getCancelWayReason(): Response<CancelationReasonResponse>

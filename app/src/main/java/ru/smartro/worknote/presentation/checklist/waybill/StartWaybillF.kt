@@ -109,15 +109,6 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         onRefresh()
     }
 
-    fun showNoData() {
-        actvNoData?.visibility = View.VISIBLE
-        mRvWaybill?.visibility = View.GONE
-    }
-
-    fun hideNoData() {
-        actvNoData?.visibility = View.GONE
-        mRvWaybill?.visibility = View.VISIBLE
-    }
 
     private fun getWayBillList() {
 
@@ -132,8 +123,10 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
                 val waybillS = viewModel.database.getWaybillS()
                 if (waybillS.size == 1) {
                     goToNextStep(waybillS[0].id, waybillS[0].number)
-                } else {
+                } else if(waybillS.size > 0) {
                     mWayBillAdapter?.setItems(waybillS)
+                } else {
+                    actvNoData?.visibility = View.VISIBLE
                 }
             }
         }
@@ -142,6 +135,7 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
+        actvNoData?.visibility = View.GONE
         getWayBillList()
         srlRefresh?.isRefreshing = false
         (requireActivity() as XChecklistAct).showProgressBar()

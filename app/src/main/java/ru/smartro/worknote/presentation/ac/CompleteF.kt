@@ -25,7 +25,6 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.EarlyCompleteRequestPOST
 import ru.smartro.worknote.presentation.work.Status
-import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.toast
 
@@ -243,23 +242,24 @@ class CompleteF : FragmentA() {
                             LOG.debug("${result}")
                             hideProgress()
                             if (result.isSent) {
-                                LOG.debug("TODO::: !!!")
-//                                gotoNextAct()
+                                // GOTO
+                                mDatabase.setCompleteWorkOrderData(workOrder)
+                                setUseButtonStyleBackgroundRed(acbAccept)
+                                hold.itemView.isEnabled = false
+                                workOrderEntity.isShowForUser = false
+                                hideProgress()
+                                listener.onSuccess()
                             }
                         }
                         App.oKRESTman().add(earlyCompleteRequest)
                         App.oKRESTman().send()
+
 //                        App.getAppliCation().getNetwork().earlyComplete(workOrderId, body)
 //                            .observe(viewLifecycleOwner) { result ->
 //
 //                                when (result.status) {
 //                                    Status.SUCCESS -> {
-//                                        mDatabase.setCompleteWorkOrderData(workOrder)
-//                                        setUseButtonStyleBackgroundRed(acbAccept)
-//                                        hold.itemView.isEnabled = false
-//                                        workOrderEntity.isShowForUser = false
-//                                        hideProgress()
-//                                        listener.onSuccess()
+//                                        // GOTO
 //                                    }
 //                                    Status.ERROR -> {
 //                                        hideProgress()
@@ -326,31 +326,31 @@ class CompleteF : FragmentA() {
                     if (hold.tbTypeWeight.isChecked || hold.tbTypeVolume.isChecked) {
                         val totalValue = round(hold.tiedTotalVolume.text.toString().toDouble() * 100) / 100
                         val totalType = if (hold.tbTypeVolume.isChecked) 1 else 2
-                        val body = CompleteWayBody(
-                            finishedAt = MyUtil.timeStampInSec(),
-                            unloadType = totalType, unloadValue = totalValue.toString()
-                        )
-
-                        App.getAppliCation().getNetwork().completeWay(workOrderEntity.id, body)
-                            .observe(viewLifecycleOwner) { result ->
-                                when (result.status) {
-                                    Status.SUCCESS -> {
-                                        mDatabase.setCompleteWorkOrderData(workOrderEntity)
-                                        setUseButtonStyleBackgroundGreen(it as AppCompatButton)
-                                        hold.itemView.isEnabled = false
-                                        hideProgress()
-                                        listener.onSuccess()
-                                    }
-                                    Status.ERROR -> {
-                                        hideProgress()
-                                        toast(result.msg)
-                                    }
-                                    Status.NETWORK -> {
-                                        hideProgress()
-                                        toast("Проблемы с интернетом")
-                                    }
-                                }
-                            }
+//                        val body = CompleteWayBody(
+//                            finishedAt = MyUtil.timeStampInSec(),
+//                            unloadType = totalType, unloadValue = totalValue.toString()
+//                        )
+//
+//                        App.getAppliCation().getNetwork().completeWay(workOrderEntity.id, body)
+//                            .observe(viewLifecycleOwner) { result ->
+//                                when (result.status) {
+//                                    Status.SUCCESS -> {
+//                                        mDatabase.setCompleteWorkOrderData(workOrderEntity)
+//                                        setUseButtonStyleBackgroundGreen(it as AppCompatButton)
+//                                        hold.itemView.isEnabled = false
+//                                        hideProgress()
+//                                        listener.onSuccess()
+//                                    }
+//                                    Status.ERROR -> {
+//                                        hideProgress()
+//                                        toast(result.msg)
+//                                    }
+//                                    Status.NETWORK -> {
+//                                        hideProgress()
+//                                        toast("Проблемы с интернетом")
+//                                    }
+//                                }
+//                            }
                     } else {
                         toast("Выберите тип показателей")
                     }
