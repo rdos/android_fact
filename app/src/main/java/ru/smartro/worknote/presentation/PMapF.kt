@@ -329,6 +329,8 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         saveFailReason()
         saveCancelWayReason()
         saveBreakDownTypes()
+        App.oKRESTman().send()
+
 //                    val hand = Handler(Looper.getMainLooper())
         for (workOrder in workOrderS) {
             logSentry(workOrder.id.toString())
@@ -346,7 +348,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 //            }
 //        }
         App.oKRESTman().add(breakDownTypeRequest)
-        App.oKRESTman().send()
 //        vm.networkDat.getBreakDownTypes().observe(getAct()) { result ->
 //            when (result.status) {
 //                Status.SUCCESS -> {
@@ -373,7 +374,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 //            }
 //        }
         App.oKRESTman().add(failureReasonRequest)
-        App.oKRESTman().send()
 //        vm.networkDat.getFailReason().observe(getAct()) { result ->
 //            when (result.status) {
 //                Status.SUCCESS -> {
@@ -397,7 +397,6 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 //            }
 //        }
         App.oKRESTman().add(workOrderCancelationReasonRequest)
-        App.oKRESTman().send()
 //        vm.networkDat.getCancelWayReason().observe(getAct()) { result ->
 //            when (result.status) {
 //                Status.SUCCESS -> {
