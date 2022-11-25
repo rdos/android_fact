@@ -1,19 +1,22 @@
 package ru.smartro.worknote.awORKOLDs
 
 import com.google.gson.annotations.SerializedName
-import ru.smartro.worknote.BuildConfig
+import io.realm.Realm
 import ru.smartro.worknote.awORKOLDs.service.NetObject
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
+import ru.smartro.worknote.presentation.work.RealmRepository
 import kotlin.reflect.KClass
 
-class EarlyCompleteRequestPOST: AbsRequest<EarlyCompleteBodyIn, EarlyCompleteBodyOut>() {
+class EarlyCompleteRequestPOST(val workOrderId: Int) : AbsRequest<EarlyCompleteBodyIn, EarlyCompleteBodyOut>() {
     override fun onGetSRVName(): String {
         return "workorder/{workOrderId}/early_complete"
     }
 
     override fun onGetRequestBodyIn(): EarlyCompleteBodyIn {
-
-        return EarlyCompleteBodyIn(123, MyUtil.timeStampInSec(), 1, 1.0)
+        val db = RealmRepository(Realm.getDefaultInstance())
+        val workOrderEntity = db.getWorkOrderEntity(workOrderId)
+        val result = workOrderEntity.getEarlyCompleteBodyIn()
+        return result
     }
 
     override fun onSetQueryParameter(queryParamMap: HashMap<String, String>) {

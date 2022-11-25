@@ -23,8 +23,6 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.AViewModel
-import ru.smartro.worknote.awORKOLDs.AuthRequest
-import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyIn
 import ru.smartro.worknote.awORKOLDs.EarlyCompleteRequestPOST
 import ru.smartro.worknote.presentation.work.Status
 import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
@@ -234,12 +232,13 @@ class CompleteF : FragmentA() {
                     val totalVolumeText = hold.tiedTotalVolume.text
                     if (reasonText.isNotEmpty() && !totalVolumeText.isNullOrEmpty() ) {
                         showingProgress()
-                        val failureId = mDatabase.findCancelWayReasonIdByValue(reasonText.toString())
-                        val totalValue = round(hold.tiedTotalVolume.text.toString().toDouble() * 100) / 100
-                        val totalType = if (hold.tbTypeVolume.isChecked) 1 else 2
-                        val body = EarlyCompleteBodyIn(failureId, MyUtil.timeStampInSec(), totalType, totalValue)
+                        workOrderEntity.failure_id = viewModel.database.findCancelWayReasonIdByValue(reasonText.toString())
+                        workOrderEntity.finished_at = MyUtil.timeStampInSec()
+                        workOrderEntity.unload_type  = if (hold.tbTypeVolume.isChecked) 1 else 2
+                        workOrderEntity.unload_value = round(hold.tiedTotalVolume.text.toString().toDouble() * 100) / 100
+                        viewModel.database.setCompleteEarly(workOrderEntity)
 
-                        val earlyCompleteRequest = EarlyCompleteRequestPOST()
+                        val earlyCompleteRequest = EarlyCompleteRequestPOST(workOrderEntity.id)
                         earlyCompleteRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
                             LOG.debug("${result}")
                             hideProgress()

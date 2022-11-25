@@ -49,7 +49,10 @@ open class WorkOrderEntity(
     var progress_at: String? = null,
     var end_at: String? = null,
     var isShowForUser: Boolean = true,
-
+    var failure_id: Int? = null,
+    var finished_at: Long? = null,
+    var unload_type: Int? = null,
+    var unload_value: Double? = null
     ) : Serializable, RealmObject() {
 
 
@@ -107,6 +110,24 @@ open class WorkOrderEntity(
 
     fun isComplete(): Boolean {
         return this.cntPlatformProgress() == this.cnt_platform
+    }
+
+    fun getEarlyCompleteBodyIn(): EarlyCompleteBodyIn {
+        var result = EarlyCompleteBodyIn(Inull, Lnull, Inull, Dnull)
+        if (this.failure_id == null) {
+            return result
+        }
+        if (this.finished_at == null) {
+            return result
+        }
+        if (this.unload_type == null) {
+            return result
+        }
+        if (this.unload_value == null) {
+            return result
+        }
+        result = EarlyCompleteBodyIn(this.failure_id!!, this.finished_at!!, this.unload_type!!, this.unload_value!!)
+        return result
     }
 
     companion object {

@@ -1460,4 +1460,20 @@ class RealmRepository(private val p_realm: Realm) {
         }
         return result
     }
+
+    fun setCompleteEarly(entity: WorkOrderEntity): WorkOrderEntity {
+        var res = WorkOrderEntity(name="fun setCompleteEarly(workOrderEntity: WorkOrderEntity) {")
+            p_realm.executeTransaction { realm ->
+                val workOrderEntity = getQueryWorkOrder(true).equalTo("id", entity.id).findFirst()
+
+                if(workOrderEntity == null)
+                    return@executeTransaction
+                workOrderEntity.failure_id = entity.failure_id
+                workOrderEntity.finished_at = entity.finished_at
+                workOrderEntity.unload_type = entity.unload_type
+                workOrderEntity.unload_value = entity.unload_value
+                res = workOrderEntity
+            }
+        return res
+    }
 }
