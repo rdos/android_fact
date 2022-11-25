@@ -329,7 +329,7 @@ class DebugF : FragmentA(), MediaScannerConnection.OnScanCompletedListener, Regi
     }
 
     private fun shareDevInformation() {
-        val downloadD = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val downloadD = App.getAppliCation().baseContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val zipFile = File(downloadD,  "${BuildConfig.BUILD_TYPE}.${BuildConfig.VERSION_NAME}.zip")
         //        val zipFile = AppliCation().getF("toSend", "ttest.zip")
         ZipManager.zip(this.getzipFiles(), zipFile)
