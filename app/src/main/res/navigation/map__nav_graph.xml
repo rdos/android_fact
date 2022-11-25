@@ -374,9 +374,37 @@
     </dialog>
 
     <dialog
-        android:id="@+id/WarnDF"
+        android:id="@+id/PMapWarnDF"
         android:name="ru.smartro.worknote.presentation.PMapWarnDF"
-        android:label="WarnDF">
+        android:label="PMapWarnDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/PMapNeedCleanupDF"
+        android:name="ru.smartro.worknote.presentation.PMapNeedCleanupDF"
+        android:label="PMapNeedCleanupDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/PServeCleanupDF"
+        android:name="ru.smartro.worknote.presentation.PServeCleanupDF"
+        android:label="PServeCleanupDF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"

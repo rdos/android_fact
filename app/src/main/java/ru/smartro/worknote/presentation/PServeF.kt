@@ -8,27 +8,26 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.TransitionDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.SeekBar
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputEditText
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AbsFragment
-import ru.smartro.worknote.andPOintD.SmartROacb
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
+import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPServeWrapper
 import ru.smartro.worknote.awORKOLDs.util.MyUtil.toStr
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
 import ru.smartro.worknote.toast
@@ -42,18 +41,22 @@ import ru.smartro.worknote.presentation.work.VoiceComment
 import java.io.File
 import java.nio.file.Files
 
-
 class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
 
-    private var mContainersAdapter: PServeContainersAdapter? = null
+    private val THUMB_INACTIVE = "Inactive"
+    private val THUMB_ACTIVE = "Active"
+
     private val _PlatformEntity: PlatformEntity
         get() = vm.getPlatformEntity()
 
+    private var mContainersAdapter: PServeContainersAdapter? = null
+
     private var mBackPressedCnt: Int = 2
-    private val THUMB_INACTIVE = "Inactive"
-    private val THUMB_ACTIVE = "Active"
     private var mVolumePickup: Double? = null
-    private var tvVolumePickup: TextView? = null
+
+    private var smartROPServeWrapper: SmartROviewPServeWrapper? = null
+
+    private var tvVolumePickup: AppCompatTextView? = null
     private var acbKGORemaining: AppCompatButton? = null
     private var mAcbKGOServed: AppCompatButton? = null
     private var acbProblem: AppCompatButton? = null
@@ -64,12 +67,6 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     private var srvVoiceWhatsUp: SmartROviewVoiceWhatsUp? = null
     private var mVoiceComment: VoiceComment? = null
 
-    private var tvPlatformSrpId: TextView? = null
-    private var actvAddress: AppCompatTextView? = null
-
-    private var sscToGroupByFMode: SmartROsc? = null
-    private var actvScreenLabel: AppCompatTextView? = null
-
     private val vm: ServePlatformVM by activityViewModels()
 
     override fun onGetLayout(): Int {
@@ -77,13 +74,8 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
     }
 
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
-        tvPlatformSrpId = sview.findViewById(R.id.tv_f_pserve__sprid)
 
-        val btnCompleteTask = sview.findViewById<SmartROacb>(R.id.acb_activity_platform_serve__complete)
-
-        actvAddress = sview.findViewById(R.id.tv_platform_serve__address)
-        sscToGroupByFMode = sview.findViewById(R.id.sc_f_serve__screen_mode)
-        actvScreenLabel = sview.findViewById(R.id.screen_mode_label)
+        smartROPServeWrapper = sview.findViewById(R.id.sro_pserve_wrapper__f_pserve__wrapper)
 
         tvVolumePickup = sview.findViewById(R.id.et_act_platformserve__volumepickup)
         rvContainers = sview.findViewById<RecyclerView?>(R.id.rv_f_pserve__containers).apply {
@@ -96,8 +88,6 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
         mAcbKGOServed = sview.findViewById(R.id.acb_activity_platform_serve__kgo_served)
         acbKGORemaining = sview.findViewById(R.id.apb_activity_platform_serve__kgo_remaining)
         acsbVolumePickup = sview.findViewById(R.id.acsb_activity_platform_serve__seekbar)
-
-        actvScreenLabel?.text = "Списком"
 
         srvVoicePlayer = sview.findViewById(R.id.srvv__f_pserve__voice_player)
         srvVoicePlayer?.visibility = View.GONE
@@ -120,31 +110,24 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             vm.updatePlatformComment(newText)
         }
 
-        sscToGroupByFMode?.setOnCheckedChangeListener { _, _ ->
+        smartROPServeWrapper?.setScreenLabel("Списком")
+
+        smartROPServeWrapper?.setPlatformEntity(_PlatformEntity, requireActivity())
+
+        smartROPServeWrapper?.setOnSwitchMode {
             vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeGroupByContainersF)
             navigateNext(R.id.PServeGroupByContainersF, vm.getPlatformId())
         }
 
-        tvPlatformSrpId?.text = "№${_PlatformEntity.srpId} / ${_PlatformEntity.containerS.size} конт."
-
-        btnCompleteTask?.setOnClickListener {
-            navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
-        }
-
-        actvAddress?.text = "${_PlatformEntity.address}"
-        if (_PlatformEntity.containerS.size >= 7 ) {
-            actvAddress?.apply {
-                setOnClickListener { view ->
-                    maxLines = if (maxLines < 3) {
-                        3
-                    } else {
-                        1
-                    }
-                }
+        smartROPServeWrapper?.setOnCompleteServeListener {
+            LOG.debug("AUUUUUUUUUUUUUUUUUUUU")
+            if(_PlatformEntity.needCleanup) {
+                navigateNext(R.id.PServeCleanupDF, _PlatformEntity.platformId)
+            } else {
+                navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
             }
-        } else {
-            actvAddress?.maxLines = 3
         }
+
         mAcbKGOServed?.setOnClickListener {
             navigateNext(R.id.PServeKGOServedVolumeDF)
         }
@@ -153,6 +136,8 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
             navigateNext(R.id.PServeKGORemainingVolumeDF)
         }
 
+//        changeColors()
+
         return false //))
     }
 
@@ -160,17 +145,10 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
         super.onDestroyView()
         srvVoicePlayer?.release()
         mVoiceComment?.stop()
+        getAct().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark)
     }
 
     override fun onBindLayoutState(): Boolean {
-
-        val platformServeMode = _PlatformEntity.getServeMode()
-
-        if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeF){
-            sscToGroupByFMode?.visibility = View.GONE
-        } else {
-            sscToGroupByFMode?.visibility = View.VISIBLE
-        }
 
         val containers = vm.getContainerS()
 
@@ -338,12 +316,6 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
         }
     }
 
-
-    /********************************************************************************************************************
-     ********************************************************************************************************************
-     ********************************************************************************************************************
-     * **************************************VIEW MODEL
-     */
 //
     inner class PServeContainersAdapter(
         private var containers: List<ContainerEntity>,
@@ -440,15 +412,11 @@ class PServeF : AbsFragment(), VoiceComment.IVoiceComment {
         }
 
         inner class OwnerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val actvVolume = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__volume)
-            val actvContainerNumber = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__container_number)
-            val actvTypeName = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__type_name)
-            val actvConstructiveVolume = itemView.findViewById<TextView>(R.id.actv__f_pserve__rv_item__constructiveVolume)
+            val actvVolume = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__volume)
+            val actvContainerNumber = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__container_number)
+            val actvTypeName = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__type_name)
+            val actvConstructiveVolume = itemView.findViewById<AppCompatTextView>(R.id.actv__f_pserve__rv_item__constructiveVolume)
         }
-    }
-
-    interface ContainerPointClickListener {
-        fun startContainerService(item: ContainerEntity)
     }
 
     override fun onStartVoiceComment() {

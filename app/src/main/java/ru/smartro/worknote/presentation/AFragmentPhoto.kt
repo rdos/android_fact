@@ -76,6 +76,10 @@ abstract class APhotoFragment(
 //  todo:!R_dos??  protected val viewModel: PlatformServeSharedViewModel by viewModel()
     protected val viewModel: ServePlatformVM by activityViewModels()
 
+    //    @SuppressLint("MissingPermission")
+    override fun onGetLayout(): Int {
+        return R.layout.f_aphoto
+    }
 
     protected open fun onGetTextLabelFor(): String? = null
     open protected fun onGetTextForFailHint(): String?{
@@ -113,11 +117,6 @@ abstract class APhotoFragment(
     override fun onResume() {
         super.onResume()
         enableFlash()
-    }
-
-    //    @SuppressLint("MissingPermission")
-    override fun onGetLayout(): Int {
-        return R.layout.f_aphoto
     }
 
     //    @SuppressLint("MissingPermission")

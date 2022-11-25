@@ -13,7 +13,12 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 
 
-class SmartROllc(context: Context, attrs: AttributeSet?) : LinearLayoutCompat(context, attrs), ITooltip {
+open class SmartROllc @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttrs: Int = 0
+) : LinearLayoutCompat(context, attrs, defStyleAttrs), ITooltip {
+
     private var tooltipNext: String? = null
     private var tooltipType = Inull
 

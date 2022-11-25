@@ -171,6 +171,9 @@ open class WorkOrderEntity(
                     // isWorkOrderProgress
                     // isWorkOrderComplete
                     // pickupMedia
+
+                    needCleanup = it.cleanup,
+
                     /** volumeKGO = null,*/
                     /** volumeKGO = null,*/
                 )
@@ -483,6 +486,9 @@ open class PlatformEntity(
 
     @Expose
     var events: RealmList<AppEventEntity> = RealmList(),
+
+    @Expose
+    var needCleanup: Boolean = false,
 
     var isWorkOrderProgress: Boolean = false,
     var isWorkOrderComplete: Boolean = false,

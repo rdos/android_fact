@@ -702,6 +702,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
     }
     
     override fun onPlatformTap(pId: Int) {
+        LOG.debug("!!!!!!")
         val platformE = vm.database.getPlatformEntity(pId)
         vm.setPlatformEntity(platformE)
         navigateNext(R.id.MapPlatformClickedDtlF)
@@ -899,7 +900,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
             toast("В режиме выгрузка нельзя обслуживать КП")
             return
         }
-        navigateNext(R.id.WarnDF, item.platformId)
+        navigateNext(R.id.PMapWarnDF, item.platformId)
 
     }
 

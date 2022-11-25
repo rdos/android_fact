@@ -173,6 +173,9 @@ data class SynchroOidWidOutBodyDataWorkorderPlatform(
     var kgo_remaining: SynchroOidWidOutBodyDataWorkorderPlatformKGOEntity? = null,
     @Expose
     var kgo_served: SynchroOidWidOutBodyDataWorkorderPlatformKGOEntity? = null,
+    @SerializedName("cleanup")
+    @Expose
+    var cleanup: Boolean = false,
 ): NetObject()
 
 data class SynchroOidWidOutBodyDataWorkorderPlatformKGOEntity(

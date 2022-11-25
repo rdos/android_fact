@@ -52,7 +52,7 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
     private val platformIconConfigS: HashMap<Int, PlatformIconConfig> = hashMapOf()
     private val platformMapObjectS: HashMap<Int, MapObject> = hashMapOf()
 
-    private var lastActive: PlacemarkMapObject? = null
+    private var lastActivePlatformMapObject: PlacemarkMapObject? = null
 
     private var mapObjectCollection: MapObjectCollection? = null
 
@@ -90,14 +90,13 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
         val placemark = mapObject as PlacemarkMapObject
         val platformId = mapObject.userData as Int
 
-        if(lastActive != null) {
-            val lastActiveId = lastActive!!.userData as Int
-            if(lastActiveId == platformId)
-                return false
-
-            val inactiveIcon = getInactiveIcon(lastActiveId)
-            if(inactiveIcon != null) {
-                lastActive!!.setView(inactiveIcon)
+        if(lastActivePlatformMapObject != null) {
+            val lastActiveId = lastActivePlatformMapObject!!.userData as Int
+            if(lastActiveId != platformId) {
+                val inactiveIcon = getInactiveIcon(lastActiveId)
+                if(inactiveIcon != null) {
+                    lastActivePlatformMapObject!!.setView(inactiveIcon)
+                }
             }
         }
 
@@ -107,7 +106,7 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
             placemark.setView(newIcon)
         }
 
-        lastActive = placemark
+        lastActivePlatformMapObject = placemark
 
         listener.onPlatformTap(platformId)
 
@@ -229,8 +228,8 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
     }
 
     fun setPlatforms(platformS: List<PlatformEntity>) {
-        val lastActivePlatformId = lastActive?.userData
-        lastActive = null
+        val lastActivePlatformId = lastActivePlatformMapObject?.userData
+        lastActivePlatformMapObject = null
 
         mapObjectCollection?.clear()
         platformMapObjectS.clear()
@@ -259,17 +258,18 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
     fun setActivePlatform(platformId: Int) {
         val candidate = platformMapObjectS[platformId] as PlacemarkMapObject?
         if(candidate == null) {
+            LOG.debug("candidate == null")
             return
         }
 
-        if(lastActive != null) {
-            val lastActiveId = lastActive!!.userData as Int
+        if(lastActivePlatformMapObject != null) {
+            val lastActiveId = lastActivePlatformMapObject!!.userData as Int
             if(lastActiveId == platformId)
                 return
 
             val inactiveIcon = getInactiveIcon(lastActiveId)
             if(inactiveIcon != null) {
-                lastActive!!.setView(inactiveIcon)
+                lastActivePlatformMapObject!!.setView(inactiveIcon)
             }
         }
 
@@ -278,7 +278,7 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
             candidate.setView(newIcon)
         }
 
-        lastActive = candidate
+        lastActivePlatformMapObject = candidate
     }
 
     fun moveCameraTo(pont: PoinT) {
