@@ -32,6 +32,9 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     private var rv: RecyclerView? = null
     private var srlRefresh: SwipeRefreshLayout? = null
 
+    private var takeAll: AppCompatButton? = null
+    private var takeSelected: AppCompatButton? = null
+
     override fun onGetLayout(): Int = R.layout.f_start_workorder
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,24 +49,18 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
         srlRefresh = view.findViewById(R.id.srl__f_start_workorder__refresh)
         srlRefresh?.setOnRefreshListener(this)
 
-        val takeAll = view.findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_all).apply {
+        takeAll = view.findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_all).apply {
             visibility = View.GONE
             isEnabled = false
             setOnClickListener {
                 val workOrders = mSynchroOidWidOutBodyDataWorkorderS
                 if(workOrders != null) {
-                    // TODO::: Vlad
-                    showDialogAction(
-                        resources.getString(R.string.different_unload_points),
-                        onAccept = {
-                            goToNextStep(workOrders)
-                        }
-                    )
+                    navigateNext(R.id.DInfoPointsUploadF)
                 }
             }
         }
 
-        val takeSelected = view.findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_selected).apply {
+        takeSelected = view.findViewById<AppCompatButton>(R.id.acb__f_start_workorder__take_selected).apply {
             visibility = View.GONE
             setOnClickListener {
                 val selectedIndexes = viewModel.mSelectedWorkOrdersIndecies.value
@@ -170,10 +167,10 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
             if(it != null) {
                 if(it.isEmpty()) {
                     mWorkOrderAdapter?.clearSelections()
-                    takeSelected.visibility = View.GONE
+                    takeSelected?.visibility = View.GONE
                 } else {
                     mWorkOrderAdapter?.updateItemSelection(it, true)
-                    takeSelected.visibility = View.VISIBLE
+                    takeSelected?.visibility = View.VISIBLE
                 }
             }
         }
@@ -234,25 +231,22 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
             LOG.debug("safka${result}")
             (requireActivity() as XChecklistAct).hideProgressBar()
             if (result.isSent) {
-                val workOrderS = (result as SynchroOidWidRESTconnection).workOrderS
-                if (workOrderS?.size == 1) {
+                (requireActivity() as XChecklistAct).hideProgressBar()
+                val workOrderS = (result as SynchroOidWidRESTconnection).workOrderS ?: listOf()
+                if (workOrderS.size == 1) {
                     goToNextStep(workOrderS)
+                } else if(workOrderS.size > 1) {
+                    takeAll?.isEnabled = true
+                    takeAll?.visibility = View.VISIBLE
+                    mSynchroOidWidOutBodyDataWorkorderS = workOrderS
+                    mWorkOrderAdapter?.setItems(workOrderS)
                 } else {
-                    setSynchroOidWidOutBodyDataWorkorderS(workOrderS)
+                    toast("Нет данных. Перезагрузите страницу")
                 }
             }
         }
         App.oKRESTman().add(synchroOidWidRequest)
         App.oKRESTman().send()
-    }
-
-    private fun setSynchroOidWidOutBodyDataWorkorderS(workOrderS: List<SynchroOidWidOutBodyDataWorkorder>?) {
-        if (workOrderS == null) {
-            LOG.warn("if (workOrderS == null) {")
-            return
-        }
-        mSynchroOidWidOutBodyDataWorkorderS = workOrderS
-        mWorkOrderAdapter?.setItems(workOrderS)
     }
 
     class WorkOrderAdapter(): RecyclerView.Adapter<WorkOrderAdapter.WorkOrderViewHolder>() {

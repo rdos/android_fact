@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.realm.Realm
 import ru.smartro.worknote.App
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.awORKOLDs.service.NetObject
 import ru.smartro.worknote.awORKOLDs.service.database.entity.problem.FailReasonEntity
 import ru.smartro.worknote.presentation.work.RealmRepository
@@ -30,6 +31,9 @@ class FailureReasonRequestGET: GETRequestA<FailureReasonBodyOut>() {
         }.map {
             FailReasonEntity(it.id, it.name)
         }
+
+        LOG.debug("TEST:::" + entities.joinToString { it.problem.toString() })
+
         db.insertFailReason(entities)
     }
 

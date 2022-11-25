@@ -109,7 +109,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
 
         val hasWorkOrdersInNotProgress = vm.database.hasWorkOrderInNotProgress()
-        if (hasWorkOrdersInNotProgress || vm.database.findAllBreakDownReasonS().isEmpty()) {
+        if (hasWorkOrdersInNotProgress || vm.database.findAllBreakDownReasonS().isEmpty() || vm.getFailReasonS().isEmpty()) {
             LOG.debug("::: hasWorkOrdersInNotProgress: ${hasWorkOrdersInNotProgress}, breakdown list size: ${vm.database.findAllBreakDownReasonS().size}")
             showingProgress()
             val extraPramId = getAct().getPutExtraParam_ID()

@@ -10,7 +10,6 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.awORKOLDs.RetrofitClient
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.util.THR
 import java.io.File
 import java.io.FileOutputStream

@@ -130,6 +130,21 @@ open class WorkOrderEntity(
         return result
     }
 
+    fun getCompleteBodyIn(): CompleteWayBodyIn {
+        var result = CompleteWayBodyIn(Lnull, Inull, Dnull)
+        if (this.finished_at == null) {
+            return result
+        }
+        if (this.unload_type == null) {
+            return result
+        }
+        if (this.unload_value == null) {
+            return result
+        }
+        result = CompleteWayBodyIn(this.finished_at!!, this.unload_type!!, this.unload_value!!)
+        return result
+    }
+
     companion object {
         
         fun mapMedia(data: List<String>): RealmList<ImageEntity> {

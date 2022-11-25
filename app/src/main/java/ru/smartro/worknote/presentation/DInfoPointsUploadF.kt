@@ -4,7 +4,7 @@ import ru.smartro.worknote.R
 
 class DInfoPointsUploadF : AFragmentInfoDialog() {
     override fun onGetContentText(): String? {
-        return  getString(R.string.warning_connection_lost)
+        return  getString(R.string.different_unload_points)
     }
 
     override fun onGetNavId(): Int {

@@ -12,6 +12,21 @@
             app:destination="@id/startVehicleF" />
     </fragment>
 
+
+    <dialog
+        android:id="@+id/DInfoPointsUploadF"
+        android:name="ru.smartro.worknote.presentation.DInfoPointsUploadF"
+        android:label="DInfoPointsUploadF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
     <fragment
         android:id="@+id/startVehicleF"
         android:name="ru.smartro.worknote.presentation.checklist.vehicle.StartVehicleF"

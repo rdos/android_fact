@@ -2,9 +2,7 @@ package ru.smartro.worknote.awORKOLDs.service.network
 
 import retrofit2.Response
 import retrofit2.http.*
-import ru.smartro.worknote.awORKOLDs.EarlyCompleteBodyOut
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
-import ru.smartro.worknote.awORKOLDs.service.network.body.complete.CompleteWayBody
 import ru.smartro.worknote.awORKOLDs.service.network.response.served.ServedResponse
 
 interface ApiService {

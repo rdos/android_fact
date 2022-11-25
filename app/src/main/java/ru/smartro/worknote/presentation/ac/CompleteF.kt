@@ -23,6 +23,7 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.AViewModel
+import ru.smartro.worknote.awORKOLDs.CompleteRequestPOST
 import ru.smartro.worknote.awORKOLDs.EarlyCompleteRequestPOST
 import ru.smartro.worknote.presentation.work.Status
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
@@ -326,6 +327,28 @@ class CompleteF : FragmentA() {
                     if (hold.tbTypeWeight.isChecked || hold.tbTypeVolume.isChecked) {
                         val totalValue = round(hold.tiedTotalVolume.text.toString().toDouble() * 100) / 100
                         val totalType = if (hold.tbTypeVolume.isChecked) 1 else 2
+
+                        workOrderEntity.finished_at = MyUtil.timeStampInSec()
+                        workOrderEntity.unload_type  = totalType
+                        workOrderEntity.unload_value = totalValue
+                        viewModel.database.setCompleteEarly(workOrderEntity)
+
+
+                        val completeRequestPOST = CompleteRequestPOST(workOrderEntity.id)
+                        completeRequestPOST.getLiveDate().observe(viewLifecycleOwner) { result ->
+                            LOG.debug("${result}")
+                            hideProgress()
+                            if (result.isSent) {
+                                // GOTO
+                                mDatabase.setCompleteWorkOrderData(workOrderEntity)
+                                setUseButtonStyleBackgroundGreen(it as AppCompatButton)
+                                hold.itemView.isEnabled = false
+                                hideProgress()
+                                listener.onSuccess()
+                            }
+                        }
+                        App.oKRESTman().add(completeRequestPOST)
+                        App.oKRESTman().send()
 //                        val body = CompleteWayBody(
 //                            finishedAt = MyUtil.timeStampInSec(),
 //                            unloadType = totalType, unloadValue = totalValue.toString()
@@ -335,11 +358,7 @@ class CompleteF : FragmentA() {
 //                            .observe(viewLifecycleOwner) { result ->
 //                                when (result.status) {
 //                                    Status.SUCCESS -> {
-//                                        mDatabase.setCompleteWorkOrderData(workOrderEntity)
-//                                        setUseButtonStyleBackgroundGreen(it as AppCompatButton)
-//                                        hold.itemView.isEnabled = false
-//                                        hideProgress()
-//                                        listener.onSuccess()
+//                                        // GOTO
 //                                    }
 //                                    Status.ERROR -> {
 //                                        hideProgress()
