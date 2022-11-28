@@ -106,6 +106,7 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
         val waybillS= viewModel.database.getWaybillS()
         mWayBillAdapter?.setItems(waybillS)
+        actvNoData?.visibility = View.GONE
         onRefresh()
     }
 
