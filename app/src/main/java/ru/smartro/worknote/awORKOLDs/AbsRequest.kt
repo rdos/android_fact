@@ -93,7 +93,7 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
 
 
 
-    override fun onFailure(call: Call, e: IOException) {
+    fun onFailure(call: Call, e: IOException) {
         LOG.error("onResponse", e)
 
     }
@@ -115,7 +115,7 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
     }
 
 
-    override fun onResponse(call: Call, response: Response) {
+    fun onResponse(call: Call, response: Response) {
         LOG.info("onResponse")
         if (isFindError(response)) {
 //            val charset = Charsets.UTF_8
@@ -150,17 +150,13 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
     }
 
     private fun isFindError(response: Response): Boolean {
-        val result = false
+        var result = false
         if (response.code == 200) {
             return result
         }
-        if (response.code == 401) {
-            val authRequest = AuthRequest()
-            App.oKRESTman().add(authRequest)
-            App.oKRESTman().send()
-            return result
-        }
         BadRequest(response)
+        LOG.error("isFindError")
+        result = true
         return result
     }
 

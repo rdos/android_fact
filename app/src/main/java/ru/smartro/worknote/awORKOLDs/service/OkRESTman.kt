@@ -1,22 +1,26 @@
 package ru.smartro.worknote.awORKOLDs.service
 
 import io.sentry.android.okhttp.SentryOkHttpInterceptor
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
+import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.TIME_OUT
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.awORKOLDs.AbsRequest
+import ru.smartro.worknote.awORKOLDs.AuthRequest
 import ru.smartro.worknote.awORKOLDs.RequestAI
+import java.io.IOException
 import java.util.PriorityQueue
 import java.util.concurrent.TimeUnit
 
 
 //class OkRESTman: AbsObject(), Queue<AbsRequest> {
-class OkRESTman: AbsObject() {
-//    private var mList: LinkedList<AbsRequest>? = null
+class OkRESTman: AbsObject(), Callback {
+    private var mCOunter: Int = 0
+    private var mLastARequest: AbsRequest<*, *>? = null
+
+    //    private var mList: LinkedList<AbsRequest>? = null
     private lateinit var mPriorityQueue: PriorityQueue<RequestAI>
     init {
 //        mList = LinkedList()
@@ -48,7 +52,7 @@ class OkRESTman: AbsObject() {
         }
     }
 
-    private val mOkHttpClient: OkHttpClient? = null
+    private var mOkHttpClient: OkHttpClient? = null
     private fun getClient(): OkHttpClient {
         if (mOkHttpClient == null) {
             val builder = OkHttpClient().newBuilder()
@@ -61,8 +65,8 @@ class OkRESTman: AbsObject() {
                 connectTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
                 readTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
                 writeTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
-                build()
             }
+            mOkHttpClient = builder.build()
 //            .authenticator(TokenAuthenticator(context))
 
         }
@@ -72,14 +76,19 @@ class OkRESTman: AbsObject() {
 
 
     fun add(request: RequestAI) {
+        LOG.debug("mPriorityQueue.size=${mPriorityQueue.size}")
         mPriorityQueue.add(request)
+        LOG.info("mPriorityQueue.size=${mPriorityQueue.size}")
     }
 
     fun send() {
+        if (mPriorityQueue.size <= 0 ) {
+            return
+        }
         val request = mPriorityQueue.remove()
-        val aRequest = (request as AbsRequest<*, *>)
-        aRequest.onBefore()
-        getClient().newCall(request.getOKHTTPRequest()).enqueue(request)
+        mLastARequest = (request as AbsRequest<*, *>)
+        mLastARequest?.onBefore()
+        getClient().newCall(request.getOKHTTPRequest()).enqueue(this)
         // TODO:  : r_dos!!!//        request.onAfterSend()
     }
 
@@ -114,5 +123,24 @@ class OkRESTman: AbsObject() {
             }
             return 0
         }
+    }
+
+    override fun onFailure(call: Call, e: IOException) {
+        mLastARequest?.onFailure(call, e)
+    }
+
+    override fun onResponse(call: Call, response: Response) {
+        if (response.code == 401) {
+            if (mCOunter <= 0) {
+                mCOunter++
+                val authRequest = AuthRequest()
+                App.oKRESTman().add(authRequest)
+                App.oKRESTman().add(mLastARequest!!)
+                App.oKRESTman().send()
+                return
+            }
+        }
+        mLastARequest?.onResponse(call, response)
+        this.send()
     }
 }
