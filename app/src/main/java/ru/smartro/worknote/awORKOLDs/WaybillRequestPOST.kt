@@ -41,7 +41,7 @@ class WaybillRequestPOST : AbsRequest<WaybillBodyIn, WaybillBodyOut>() {
         for(data in bodyOut.data) {
             val waybillEntity = WaybillEntity()
             waybillEntity.id = data.id
-            waybillEntity.number = data.number
+            waybillEntity.number = data.number?:"номер не указан"
             waybillEntity.organizationId = organisationId
             waybillEntity.vehicleId = vehicleId
             waybillEntityS.add(waybillEntity)
@@ -82,7 +82,7 @@ data class WaybillBodyOutData(
     val id: Int,
     @Expose
     @SerializedName("number")
-    val number: String,
+    val number: String?= null,
     @Expose
     @SerializedName("oid")
     val oid: Int

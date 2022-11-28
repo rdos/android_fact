@@ -56,7 +56,7 @@ data class VehicleBodyOutVehicle(
     val id: Int,
     @Expose
     @SerializedName("name")
-    val name: String,
+    val name: String? = null,
     @Expose
     @SerializedName("oid")
     val oid: Int
