@@ -116,7 +116,7 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
 
 
     fun onResponse(call: Call, response: Response) {
-        LOG.info("onResponse")
+        LOG.info("onResponse response.code=${response.code}")
         if (isFindError(response)) {
 //            val charset = Charsets.UTF_8
 //val byteArray = "Hello".toByteArray(charset)

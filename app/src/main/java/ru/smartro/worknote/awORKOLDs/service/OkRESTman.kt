@@ -10,6 +10,7 @@ import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.awORKOLDs.AbsRequest
 import ru.smartro.worknote.awORKOLDs.AuthRequest
 import ru.smartro.worknote.awORKOLDs.RequestAI
+import ru.smartro.worknote.todo
 import java.io.IOException
 import java.util.PriorityQueue
 import java.util.concurrent.TimeUnit
@@ -131,6 +132,7 @@ class OkRESTman: AbsObject(), Callback {
 
     override fun onResponse(call: Call, response: Response) {
         if (response.code == 401) {
+            LOG.todo("спустя_рукова-production")
             if (mCOunter <= 0) {
                 mCOunter++
                 val authRequest = AuthRequest()
