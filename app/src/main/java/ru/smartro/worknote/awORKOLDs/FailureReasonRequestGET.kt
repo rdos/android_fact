@@ -26,10 +26,13 @@ class FailureReasonRequestGET: GETRequestA<FailureReasonBodyOut>() {
     override fun onAfter(bodyOut: FailureReasonBodyOut) {
         val db = RealmRepository(Realm.getDefaultInstance())
         val organisationId = App.getAppParaMS().getOwnerId()
-        val entities = bodyOut.data.filter {
-            it.oid == organisationId
-        }.map {
-            FailReasonEntity(it.id, it.name)
+        val entities = mutableListOf<FailReasonEntity>()
+
+        if(bodyOut.data != null) {
+            bodyOut.data.forEach {
+                if(it.oid == organisationId)
+                    entities.add(FailReasonEntity(it.id, it.name))
+            }
         }
 
         LOG.debug("TEST:::" + entities.joinToString { it.problem.toString() })
@@ -45,7 +48,7 @@ class FailureReasonRequestGET: GETRequestA<FailureReasonBodyOut>() {
 data class FailureReasonBodyOut(
     @Expose
     @SerializedName("data")
-    val `data`: List<FailureReasonBodyOutData>,
+    val data: List<FailureReasonBodyOutData>? = null,
     @Expose
     @SerializedName("success")
     val success: Boolean

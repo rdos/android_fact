@@ -30,7 +30,7 @@ class StartAct : AAct() {
 //                                                    //            viewModelScope.coroutineContext
 //            val authRequest = AuthRequest()
 //            App.oKRESTman().add(authRequest)
-//            App.oKRESTman().send()
+//            
 ////            Test().main()
 //            val res = networkDat.auth(authModel)
 //            return res

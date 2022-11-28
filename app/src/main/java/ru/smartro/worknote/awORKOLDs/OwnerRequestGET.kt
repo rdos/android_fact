@@ -28,11 +28,13 @@ class OwnerRequestGET : GETRequestA<OwnerBodyOut>() {
     override fun onAfter(bodyOut: OwnerBodyOut) {
         val db = RealmRepository(Realm.getDefaultInstance())
         val organisationEntityS = RealmList<OrganisationEntity>()
-        for(organisation in bodyOut.data.organisations) {
-            val organisationEntity = OrganisationEntity()
-            organisationEntity.id = organisation.id
-            organisationEntity.name = organisation.name
-            organisationEntityS.add(organisationEntity)
+        if(bodyOut.data != null) {
+            for(organisation in bodyOut.data.organisations) {
+                val organisationEntity = OrganisationEntity()
+                organisationEntity.id = organisation.id
+                organisationEntity.name = organisation.name
+                organisationEntityS.add(organisationEntity)
+            }
         }
         db.setOrganisationEntity(organisationEntityS)
     }
@@ -49,7 +51,7 @@ class OwnerRequestGET : GETRequestA<OwnerBodyOut>() {
 data class OwnerBodyOut(
     @Expose
     @SerializedName("data")
-    val data: OwnerBodyOutData,
+    val data: OwnerBodyOutData? = null,
     @Expose
     @SerializedName("success")
     val success: Boolean

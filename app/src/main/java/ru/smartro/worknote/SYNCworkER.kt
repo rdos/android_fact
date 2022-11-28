@@ -123,7 +123,7 @@ class SYNCworkER(
 //            }
 //        }
 //        App.oKRESTman().add(rpcPing)
-//        App.oKRESTman().send()
+//        
                 ////        LOG.debug("PING STARTED ::::")
                 //        val pingResponse = mNetworkRepository.ping(PingBody("ping"))
                 //        when (pingResponse.status) {
@@ -150,8 +150,8 @@ class SYNCworkER(
 
         val synchroRequest = SynchroRequestPOST()
 
-        App.oKRESTman().add(synchroRequest)
-        App.oKRESTman().send()
+        App.oKRESTman().put(synchroRequest)
+        
 
 
 //        LOG.info("platforms.size=${platforms.size}")

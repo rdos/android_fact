@@ -149,7 +149,6 @@ class MapHelper(private val mapView: MapView, private val listener: MapListener)
 
         val candidate = mapIconViewProviderS.get(iconData)
         if(candidate != null) {
-            LOG.debug("TEST ::: VIEWPROVIDER ALREADY EXISTS")
             return candidate
         }
 

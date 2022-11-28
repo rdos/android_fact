@@ -22,11 +22,13 @@ class VehicleRequestGET: GETRequestA<VehicleBodyOut>() {
     override fun onAfter(bodyOut: VehicleBodyOut) {
         val db = RealmRepository(Realm.getDefaultInstance())
         val vehicleEntityS = RealmList<VehicleEntity>()
-        for(vehicle in bodyOut.vehicles) {
-            val vehicleEntity = VehicleEntity()
-            vehicleEntity.id = vehicle.id
-            vehicleEntity.name = vehicle.name?:"Имя не задано"
-            vehicleEntityS.add(vehicleEntity)
+        if(bodyOut.vehicles != null) {
+            for (vehicle in bodyOut.vehicles) {
+                val vehicleEntity = VehicleEntity()
+                vehicleEntity.id = vehicle.id
+                vehicleEntity.name = vehicle.name ?: "Имя не задано"
+                vehicleEntityS.add(vehicleEntity)
+            }
         }
 
         db.setVehicleEntity(vehicleEntityS)
@@ -44,7 +46,7 @@ class VehicleRequestGET: GETRequestA<VehicleBodyOut>() {
 data class VehicleBodyOut(
     @Expose
     @SerializedName("data")
-    val vehicles: List<VehicleBodyOutVehicle>,
+    val vehicles: List<VehicleBodyOutVehicle>? = null,
     @Expose
     @SerializedName("success")
     val success: Boolean

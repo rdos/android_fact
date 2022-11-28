@@ -10,6 +10,7 @@ import ru.smartro.worknote.presentation.work.net.CancelWayReasonEntity
 import kotlin.reflect.KClass
 
 class WorkOrderCancelationReasonRequestGET :GETRequestA<WorkOrderCancelationReasonBodyOut>() {
+
     override fun onGetSRVName(): String {
         return "work_order_cancelation_reason"
     }
@@ -25,10 +26,12 @@ class WorkOrderCancelationReasonRequestGET :GETRequestA<WorkOrderCancelationReas
     override fun onAfter(bodyOut: WorkOrderCancelationReasonBodyOut) {
         val db = RealmRepository(Realm.getDefaultInstance())
         val organisationId = App.getAppParaMS().getOwnerId()
-        val entities = bodyOut.data.filter {
-            it.attributes.organisationId == organisationId
-        }.map {
-            CancelWayReasonEntity(it.id, it.attributes.name)
+        val entities = mutableListOf<CancelWayReasonEntity>()
+        bodyOut?.data?.forEach {
+            if(it.attributes.organisationId == organisationId) {
+                val newCancelWayReasonEntity = CancelWayReasonEntity(it.id, it.attributes.name)
+                entities.add(newCancelWayReasonEntity)
+            }
         }
 
         db.insertCancelWayReason(entities)
@@ -42,7 +45,7 @@ class WorkOrderCancelationReasonRequestGET :GETRequestA<WorkOrderCancelationReas
 data class WorkOrderCancelationReasonBodyOut(
     @Expose
     @SerializedName("data")
-    val `data`: List<WorkOrderCancelationReasonBodyOutData>,
+    val `data`: List<WorkOrderCancelationReasonBodyOutData>? = null,
     @Expose
     @SerializedName("success")
     val success: Boolean

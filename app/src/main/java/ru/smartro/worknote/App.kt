@@ -11,10 +11,6 @@ import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.*
 import android.os.StrictMode.ThreadPolicy
 import android.widget.RemoteViews
@@ -23,7 +19,6 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.LiveData
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -60,7 +55,6 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.HashSet
 
 
 //INSTANCE
@@ -436,6 +430,12 @@ class App : AApp() {
         }
     }
 
+    fun sentryCaptureErrorMessage(message: String, messageShowForUser: String? = null) {
+        toast(messageShowForUser)
+        LOG.error(message)
+        Sentry.captureMessage(message)
+    }
+
     fun logSentry(text: String) {
         Sentry.addBreadcrumb("${TAG} : $text")
         LOG.debug("${text}")
@@ -735,7 +735,11 @@ fun Any.getDeviceDateTime(): Date {
 
 fun Any.toast(text: String? = "") {
     try {
-       Toast.makeText(App.getAppliCation().applicationContext, text, Toast.LENGTH_SHORT).show()
+        if(App.getAppliCation().getCurrentAct() != null) {
+            App.getAppliCation().getCurrentAct()?.supportFragmentManager?.fragments?.get(0)?.view?.post {
+                Toast.makeText(App.getAppliCation().applicationContext, text, Toast.LENGTH_SHORT).show()
+            }
+        }
     } catch (ex: Exception) {
         LOG.error("eXthr", ex)
     }

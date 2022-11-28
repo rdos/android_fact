@@ -38,13 +38,15 @@ class WaybillRequestPOST : AbsRequest<WaybillBodyIn, WaybillBodyOut>() {
         val organisationId = App.getAppParaMS().getOwnerId()
         val vehicleId = App.getAppParaMS().getVehicleId()
         val waybillEntityS = RealmList<WaybillEntity>()
-        for(data in bodyOut.data) {
-            val waybillEntity = WaybillEntity()
-            waybillEntity.id = data.id
-            waybillEntity.number = data.number?:"номер не указан"
-            waybillEntity.organizationId = organisationId
-            waybillEntity.vehicleId = vehicleId
-            waybillEntityS.add(waybillEntity)
+        if(bodyOut.data != null) {
+            for(data in bodyOut.data) {
+                val waybillEntity = WaybillEntity()
+                waybillEntity.id = data.id
+                waybillEntity.number = data.number?:"номер не указан"
+                waybillEntity.organizationId = organisationId
+                waybillEntity.vehicleId = vehicleId
+                waybillEntityS.add(waybillEntity)
+            }
         }
         db.setWaybillEntity(waybillEntityS)
     }
@@ -70,7 +72,7 @@ data class WaybillBodyIn(
 data class WaybillBodyOut(
     @Expose
     @SerializedName("data")
-    val data: List<WaybillBodyOutData>,
+    val data: List<WaybillBodyOutData>? = null,
     @Expose
     @SerializedName("success")
     val success: Boolean

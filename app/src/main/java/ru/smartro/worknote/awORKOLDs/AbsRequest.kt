@@ -2,8 +2,10 @@ package ru.smartro.worknote.awORKOLDs
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.load.engine.executor.GlideExecutor.UncaughtThrowableStrategy.LOG
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import io.sentry.Sentry
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,6 +16,7 @@ import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.awORKOLDs.service.NetObject
 import ru.smartro.worknote.awORKOLDs.util.BadRequest
 import ru.smartro.worknote.awORKOLDs.util.RESTconnection
+import ru.smartro.worknote.toast
 import java.io.IOException
 import kotlin.reflect.KClass
 
@@ -60,8 +63,6 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
         LOG.debug("before")
         var url = this.onGetURL() + this.onGetSRVName()
 
-
-
         onSetQueryParameter(mQueryParamMap)
         if (mQueryParamMap.size > 0) {
             val urlBuilder: HttpUrl.Builder = url.toHttpUrlOrNull()!!.newBuilder()
@@ -93,9 +94,10 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
 
 
 
-    fun onFailure(call: Call, e: IOException) {
+    fun onFailure(call: Call, e: IOException, messageShowForUser: String? = null) {
         LOG.error("onResponse", e)
-
+        val message = "onFailure HTTP EXCEPTION ::: ${this::class.java.simpleName} ::: ${e.message}"
+        App.getAppliCation().sentryCaptureErrorMessage(message, messageShowForUser)
     }
 
 
@@ -116,37 +118,28 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
 
 
     fun onResponse(call: Call, response: Response) {
-        LOG.info("onResponse response.code=${response.code}")
+        LOG.info("response.code=${response.code}")
         if (isFindError(response)) {
-//            val charset = Charsets.UTF_8
-//val byteArray = "Hello".toByteArray(charset)
-//println(byteArray.contentToString()) // [72, 101, 108, 108, 111]
-//println(byteArray.toString(charset)) // Hello
             return
         }
-//        TypeToken.get(onGetResponseClazz())
+
         val connectionREVERS = this.getRESTconnection()
         connectionREVERS.isSent = true
         mResponseString = response.body?.string()
+        LOG.info("mResponseString=${mResponseString}")
 
-        LOG.debug("TEST ::::: RESP BODY : ${mResponseString}")
-//        val test = getGson().fromJson(mResponseString, (NetObject() as TB)::class.java)
-
-        this::class.java.methods.forEach{
-            if (it.name == "onAfter"){
-                if (it.genericParameterTypes.size > 0) {
-                    LOG.debug("${it.name}")
-                }
-                val param: Class<*> = it.parameterTypes.get(0)
-
-                LOG.debug("${param::javaClass.name}")
-            }
-
-        }
 
         val responseObj = getGson().fromJson(mResponseString, this.onGetResponseClazz().java)
+        LOG.info("onAfter.before")
         this.onAfter(responseObj)
-        mRESTconnectionMutableLiveData?.postValue(connectionREVERS)
+        LOG.info("onAfter.after")
+
+
+        mRESTconnectionMutableLiveData?.let {
+            LOG.info("getLiveDate.before")
+            it.postValue(connectionREVERS)
+            LOG.info("getLiveDate.after")
+        }
     }
 
     private fun isFindError(response: Response): Boolean {
@@ -154,7 +147,11 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
         if (response.code < 300) {
             return result
         }
-        BadRequest(response)
+
+        val messageShowForUser = "Ошибка запроса: ${response.code} ::: ${this::class.java.simpleName}"
+        val message = "HTTP ${response.code} ::: ${this::class.java.simpleName}"
+        App.getAppliCation().sentryCaptureErrorMessage(message, messageShowForUser)
+
         LOG.error("isFindError")
         result = true
         return result

@@ -1,5 +1,6 @@
 package ru.smartro.worknote.awORKOLDs.service
 
+import android.widget.Toast
 import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit
 
 //class OkRESTman: AbsObject(), Queue<AbsRequest> {
 class OkRESTman: AbsObject(), Callback {
+    private var mRequestInProgress: Boolean = false
     private var mCOunter: Int = 0
     private var mLastARequest: AbsRequest<*, *>? = null
 
@@ -76,19 +78,29 @@ class OkRESTman: AbsObject(), Callback {
 
 
 
-    fun add(request: RequestAI) {
+    fun put(request: RequestAI) {
         LOG.debug("mPriorityQueue.size=${mPriorityQueue.size}")
         mPriorityQueue.add(request)
+        if(mRequestInProgress == true) {
+            return
+        }
+
+        this.send()
         LOG.info("mPriorityQueue.size=${mPriorityQueue.size}")
     }
 
-    fun send() {
+    private fun send() {
         if (mPriorityQueue.size <= 0 ) {
+            mRequestInProgress = false
             return
         }
+
+        mRequestInProgress = true
+
         val request = mPriorityQueue.remove()
         mLastARequest = (request as AbsRequest<*, *>)
         mLastARequest?.onBefore()
+
         getClient().newCall(request.getOKHTTPRequest()).enqueue(this)
         // TODO:  : r_dos!!!//        request.onAfterSend()
     }
@@ -127,7 +139,12 @@ class OkRESTman: AbsObject(), Callback {
     }
 
     override fun onFailure(call: Call, e: IOException) {
-        mLastARequest?.onFailure(call, e)
+        LOG.debug("before")
+        val messageShowForUser = "Похоже, отсутствует интернет..."
+        mLastARequest?.onFailure(call, e, messageShowForUser)
+
+        this.send()
+        LOG.debug("after")
     }
 
     override fun onResponse(call: Call, response: Response) {
@@ -136,13 +153,14 @@ class OkRESTman: AbsObject(), Callback {
             if (mCOunter <= 0) {
                 mCOunter++
                 val authRequest = AuthRequest()
-                App.oKRESTman().add(authRequest)
-                App.oKRESTman().add(mLastARequest!!)
-                App.oKRESTman().send()
+                App.oKRESTman().put(authRequest)
+                App.oKRESTman().put(mLastARequest!!)
+                
                 return
             }
         }
         mLastARequest?.onResponse(call, response)
+
         this.send()
     }
 }

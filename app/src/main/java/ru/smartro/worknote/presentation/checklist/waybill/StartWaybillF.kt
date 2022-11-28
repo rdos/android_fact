@@ -131,8 +131,7 @@ class StartWaybillF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
                 }
             }
         }
-        App.oKRESTman().add(waybillRequest)
-        App.oKRESTman().send()
+        App.oKRESTman().put(waybillRequest)
     }
 
     override fun onRefresh() {

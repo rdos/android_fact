@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.view.*
 import android.widget.Button
 import android.widget.FrameLayout
@@ -26,8 +25,6 @@ import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.mapview.MapView
 import net.cachapa.expandablelayout.ExpandableLayout
-import okhttp3.Call
-import okhttp3.Response
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.andPOintD.BaseAdapter
@@ -37,14 +34,12 @@ import ru.smartro.worknote.awORKOLDs.extensions.*
 import ru.smartro.worknote.awORKOLDs.service.network.body.ProgressBody
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.awORKOLDs.util.StatusEnum
-import ru.smartro.worknote.awORKOLDs.util.THR
 import ru.smartro.worknote.presentation.ac.MainAct
 import ru.smartro.worknote.presentation.work.ServePlatformVM
 import ru.smartro.worknote.presentation.work.*
 import ru.smartro.worknote.presentation.work.utils.MapHelper
 import ru.smartro.worknote.presentation.work.utils.MapListener
 import ru.smartro.worknote.presentation.work.utils.getActivityProperly
-import java.io.IOException
 
 class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListener {
 
@@ -109,13 +104,28 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         }
 
         val hasWorkOrdersInNotProgress = vm.database.hasWorkOrderInNotProgress()
-
-        if (hasWorkOrdersInNotProgress || vm.database.findAllBreakDownReasonS().isEmpty() || vm.database.findCancelWayReasonEntity().isEmpty()) {
+        if(hasWorkOrdersInNotProgress) {
             LOG.debug("::: hasWorkOrdersInNotProgress: ${hasWorkOrdersInNotProgress}, breakdown list size: ${vm.database.findAllBreakDownReasonS().size}")
             showingProgress()
             val extraPramId = getAct().getPutExtraParam_ID()
             val workOrderS = vm.database.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
+        } else {
+            val isEmptyBreakDownReasonS = vm.database.findAllBreakDownReasonS().isEmpty()
+            val isEmptyCancelWayReasonS = vm.database.findCancelWayReasonEntity().isEmpty()
+            val isEmptyFailReasonS = vm.database.findAllFailReason().isEmpty()
+
+            if(isEmptyBreakDownReasonS) {
+                saveBreakDownTypes()
+            }
+
+            if(isEmptyCancelWayReasonS) {
+                saveCancelWayReason()
+            }
+
+            if(isEmptyFailReasonS) {
+                saveFailReason()
+            }
         }
 
         mAcbInfo = sview.findViewById(R.id.acb_f_map__info)
@@ -330,7 +340,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
         saveFailReason()
         saveCancelWayReason()
         saveBreakDownTypes()
-        App.oKRESTman().send()
+        
 
 //                    val hand = Handler(Looper.getMainLooper())
         for (workOrder in workOrderS) {
@@ -348,7 +358,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 ////                gotoNextAct()
 //            }
 //        }
-        App.oKRESTman().add(breakDownTypeRequest)
+        App.oKRESTman().put(breakDownTypeRequest)
 //        vm.networkDat.getBreakDownTypes().observe(getAct()) { result ->
 //            when (result.status) {
 //                Status.SUCCESS -> {
@@ -374,7 +384,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 ////                gotoNextAct()
 //            }
 //        }
-        App.oKRESTman().add(failureReasonRequest)
+        App.oKRESTman().put(failureReasonRequest)
 //        vm.networkDat.getFailReason().observe(getAct()) { result ->
 //            when (result.status) {
 //                Status.SUCCESS -> {
@@ -397,7 +407,7 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
 ////                gotoNextAct()
 //            }
 //        }
-        App.oKRESTman().add(workOrderCancelationReasonRequest)
+        App.oKRESTman().put(workOrderCancelationReasonRequest)
 //        vm.networkDat.getCancelWayReason().observe(getAct()) { result ->
 //            when (result.status) {
 //                Status.SUCCESS -> {
@@ -482,12 +492,11 @@ class MapPlatformsF: FragmentA() , MapPlatformSBehaviorAdapter.PlatformClickList
                 LOG.debug("${result}")
                 hideProgress()
                 if (result.isSent) {
-                    TODO("WORK IN PROGRESS 0:)")
                     gotoSynchronize()
                 }
             }
-            App.oKRESTman().add(synchroRequest)
-            App.oKRESTman().send()
+            App.oKRESTman().put(synchroRequest)
+            
 
 //            getNextPlatformToSend() { nextSentPlatforms, timeBeforeInSec ->
 //                showingProgress("отправляются ${nextSentPlatforms.size} КП\n осталось ${lastPlatformsSize}", true)

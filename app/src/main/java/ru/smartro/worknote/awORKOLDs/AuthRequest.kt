@@ -28,7 +28,8 @@ class AuthRequest: AbsRequest<AuthBodyIn, AuthBodyOut>() {
 
     override fun onAfter(bodyOut: AuthBodyOut) {
         LOG.debug("after")
-        App.getAppParaMS().token = bodyOut.data.token
+        if(bodyOut.data != null)
+            App.getAppParaMS().token = bodyOut.data.token
     }
 
     override fun onGetSRVName(): String {
@@ -56,7 +57,7 @@ data class AuthBodyIn(
 data class AuthBodyOut(
     @Expose
     @SerializedName("data")
-    val data: AuthBodyOutData,
+    val data: AuthBodyOutData? = null,
     @Expose
     @SerializedName("success")
     val success: Boolean

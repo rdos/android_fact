@@ -9,16 +9,13 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.launch
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.AuthRequest
-import ru.smartro.worknote.awORKOLDs.RPCappStartup
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
 class StartF : FragmentA() {
@@ -75,7 +72,7 @@ class StartF : FragmentA() {
 //                }
 //            }
 //            App.oKRESTman().add(rpcAppStartup)
-//            App.oKRESTman().send()
+//            
                 //            vm.viewModelScope.launch {
                 //                App.getAppliCation().getNetwork().sendAppStartUp()
                 //            }
@@ -168,8 +165,8 @@ class StartF : FragmentA() {
                     gotoNextAct()
                 }
             }
-            App.oKRESTman().add(authRequest)
-            App.oKRESTman().send()
+            App.oKRESTman().put(authRequest)
+            
 //
 //            vm.auth()
 //                .observe(viewLifecycleOwner) { result ->

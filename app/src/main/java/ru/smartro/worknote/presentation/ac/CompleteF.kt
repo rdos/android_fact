@@ -25,7 +25,6 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.AViewModel
 import ru.smartro.worknote.awORKOLDs.CompleteRequestPOST
 import ru.smartro.worknote.awORKOLDs.EarlyCompleteRequestPOST
-import ru.smartro.worknote.presentation.work.Status
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.toast
 
@@ -252,8 +251,8 @@ class CompleteF : FragmentA() {
                                 listener.onSuccess()
                             }
                         }
-                        App.oKRESTman().add(earlyCompleteRequest)
-                        App.oKRESTman().send()
+                        App.oKRESTman().put(earlyCompleteRequest)
+                        
 
 //                        App.getAppliCation().getNetwork().earlyComplete(workOrderId, body)
 //                            .observe(viewLifecycleOwner) { result ->
@@ -347,8 +346,8 @@ class CompleteF : FragmentA() {
                                 listener.onSuccess()
                             }
                         }
-                        App.oKRESTman().add(completeRequestPOST)
-                        App.oKRESTman().send()
+                        App.oKRESTman().put(completeRequestPOST)
+                        
 //                        val body = CompleteWayBody(
 //                            finishedAt = MyUtil.timeStampInSec(),
 //                            unloadType = totalType, unloadValue = totalValue.toString()

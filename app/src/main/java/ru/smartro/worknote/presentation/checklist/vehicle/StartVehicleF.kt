@@ -162,8 +162,7 @@ class StartVehicleF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
                 }
             }
         }
-        App.oKRESTman().add(vehicleRequestGET)
-        App.oKRESTman().send()
+        App.oKRESTman().put(vehicleRequestGET)
     }
 
 

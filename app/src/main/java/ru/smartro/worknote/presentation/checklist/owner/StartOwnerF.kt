@@ -14,11 +14,9 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.awORKOLDs.OwnerBodyOutDataOrganisation
 import ru.smartro.worknote.awORKOLDs.OwnerRequestGET
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.presentation.work.OrganisationEntity
-import ru.smartro.worknote.presentation.work.Status
 
 class StartOwnerF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -91,8 +89,8 @@ class StartOwnerF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
                 }
             }
         }
-        App.oKRESTman().add(ownerRequest)
-        App.oKRESTman().send()
+        App.oKRESTman().put(ownerRequest)
+        
     }
 
 

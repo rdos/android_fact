@@ -19,7 +19,6 @@ import ru.smartro.worknote.abs.FragmentA
 import ru.smartro.worknote.awORKOLDs.SynchroOidWidOutBodyDataWorkorder
 import ru.smartro.worknote.awORKOLDs.SynchroOidWidRESTconnection
 import ru.smartro.worknote.awORKOLDs.SynchroOidWidRequestPOST
-import ru.smartro.worknote.awORKOLDs.extensions.showDialogAction
 import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.presentation.ac.XChecklistAct
 import ru.smartro.worknote.presentation.ac.MainAct
@@ -31,6 +30,9 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
     private var mWorkOrderAdapter: WorkOrderAdapter? = null
     private var rv: RecyclerView? = null
     private var srlRefresh: SwipeRefreshLayout? = null
+
+    private var diffUnloadPointsDialogWasShownAll = false
+    private var diffUnloadPointsDialogWasShownSelected = false
 
     private var takeAll: AppCompatButton? = null
     private var takeSelected: AppCompatButton? = null
@@ -55,7 +57,34 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
             setOnClickListener {
                 val workOrders = mSynchroOidWidOutBodyDataWorkorderS
                 if(workOrders != null) {
-                    navigateNext(R.id.DInfoPointsUploadF)
+
+                    if(diffUnloadPointsDialogWasShownAll) {
+                        goToNextStep(workOrders)
+                        return@setOnClickListener
+                    }
+
+                    var hasDifferentUnloadPoint = false
+
+                    val choosedWo = workOrders[0]
+                    val choosedWoCoordLat = choosedWo.uNLoaDknow1.coords[0]
+                    val choosedWoCoordLong = choosedWo.uNLoaDknow1.coords[1]
+
+                    workOrders.forEach {
+                        val selectedWoCoordLat = it.uNLoaDknow1.coords[0]
+                        val selectedWoCoordLong = it.uNLoaDknow1.coords[1]
+                        if(choosedWoCoordLat != selectedWoCoordLat ||
+                            choosedWoCoordLong != selectedWoCoordLong) {
+                            hasDifferentUnloadPoint = true
+                            return@forEach
+                        }
+                    }
+
+                    if(hasDifferentUnloadPoint) {
+                        diffUnloadPointsDialogWasShownAll = true
+                        navigateNext(R.id.DInfoPointsUploadF)
+                    } else {
+                        goToNextStep(workOrders)
+                    }
                 }
             }
         }
@@ -69,7 +98,34 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
                     if(workOrders != null) {
                         val selectedWorkOrders =
                             workOrders.filterIndexed { i, _  -> selectedIndexes.contains(i) }
-                        goToNextStep(selectedWorkOrders)
+
+                        if(diffUnloadPointsDialogWasShownSelected) {
+                            goToNextStep(selectedWorkOrders)
+                            return@setOnClickListener
+                        }
+
+                        var hasDifferentUnloadPoint = false
+
+                        val choosedWo = selectedWorkOrders[0]
+                        val choosedWoCoordLat = choosedWo.uNLoaDknow1.coords[0]
+                        val choosedWoCoordLong = choosedWo.uNLoaDknow1.coords[1]
+
+                        selectedWorkOrders.forEach {
+                            val selectedWoCoordLat = it.uNLoaDknow1.coords[0]
+                            val selectedWoCoordLong = it.uNLoaDknow1.coords[1]
+                            if(choosedWoCoordLat != selectedWoCoordLat ||
+                                choosedWoCoordLong != selectedWoCoordLong) {
+                                hasDifferentUnloadPoint = true
+                                return@forEach
+                            }
+                        }
+
+                        if(hasDifferentUnloadPoint) {
+                            diffUnloadPointsDialogWasShownSelected = true
+                            navigateNext(R.id.DInfoPointsUploadF)
+                        } else {
+                            goToNextStep(selectedWorkOrders)
+                        }
                     }
                 }
             }
@@ -85,29 +141,6 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
                     }
                     mWorkOrderAdapter?.updateItemSelection(listOf(woIndex), false)
                 } else {
-                    var hasDifferentUnloadPoint = false
-
-                    val workOrderS = mSynchroOidWidOutBodyDataWorkorderS!!
-
-                    val choosedWo = workOrderS[woIndex]
-                    val choosedWoCoordLat = choosedWo.uNLoaDknow1.coords[0]
-                    val choosedWoCoordLong = choosedWo.uNLoaDknow1.coords[1]
-
-                    viewModel.mSelectedWorkOrdersIndecies.value!!.forEach { selectedWoIndex ->
-                        val selectedWo = workOrderS[selectedWoIndex]
-                        val selectedWoCoordLat = selectedWo.uNLoaDknow1.coords[0]
-                        val selectedWoCoordLong = selectedWo.uNLoaDknow1.coords[1]
-                        if(choosedWoCoordLat != selectedWoCoordLat ||
-                                choosedWoCoordLong != selectedWoCoordLong) {
-                            hasDifferentUnloadPoint = true
-                            return@forEach
-                        }
-                    }
-
-                    if(hasDifferentUnloadPoint) {
-                        navigateNext(R.id.DInfoPointsUploadF)
-                    }
-
                     viewModel.mSelectedWorkOrdersIndecies.value.let {
                         viewModel.mSelectedWorkOrdersIndecies.postValue(it?.apply { add(woIndex) } ?: it)
                     }
@@ -245,8 +278,7 @@ class StartWorkOrderF: FragmentA(), SwipeRefreshLayout.OnRefreshListener {
                 }
             }
         }
-        App.oKRESTman().add(synchroOidWidRequest)
-        App.oKRESTman().send()
+        App.oKRESTman().put(synchroOidWidRequest)
     }
 
     class WorkOrderAdapter(): RecyclerView.Adapter<WorkOrderAdapter.WorkOrderViewHolder>() {
