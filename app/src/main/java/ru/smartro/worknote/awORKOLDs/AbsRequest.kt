@@ -151,7 +151,7 @@ abstract class AbsRequest<TA:NetObject, TB : NetObject>: AbsObject(), RequestAI 
 
     private fun isFindError(response: Response): Boolean {
         var result = false
-        if (response.code == 200) {
+        if (response.code < 300) {
             return result
         }
         BadRequest(response)
