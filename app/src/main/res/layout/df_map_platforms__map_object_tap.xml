@@ -104,21 +104,31 @@
             app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__order_time"
             />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_dialog_platform_clicked_dtl__platform_contact"
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsv__df_map_object_tap__scroll_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:autoLink="phone"
-            android:textColorLink="@color/colorPrimary"
-            tools:text="Для связи +79111124594 Вася"
-            android:layout_marginTop="8dp"
+            android:maxHeight="150dp"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt"
-            />
+            app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__containers_cnt">
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_dialog_platform_clicked_dtl__platform_contact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxHeight="150dp"
+                tools:height="150dp"
+                android:textColor="@color/black"
+                android:autoLink="phone"
+                android:textColorLink="@color/colorPrimary"
+                tools:text="Для связи +79111124594 Вася"
+                android:layout_marginTop="8dp"
+                />
+
+        </androidx.core.widget.NestedScrollView>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llc_button_wrapper"
@@ -134,7 +144,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__platform_contact"
+            app:layout_constraintTop_toBottomOf="@id/nsv__df_map_object_tap__scroll_wrapper"
             app:layout_constraintVertical_bias="0.0">
 
             <androidx.appcompat.widget.AppCompatImageButton
@@ -209,7 +219,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_dialog_platform_clicked_dtl__platform_contact"
+            app:layout_constraintTop_toBottomOf="@id/nsv__df_map_object_tap__scroll_wrapper"
             >
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
