@@ -4,11 +4,11 @@ import io.realm.RealmList
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.presentation.work.ContainerMediaEntity
-import ru.smartro.worknote.presentation.work.ImageEntity
+import ru.smartro.worknote.log.work.ContainerMediaEntity
+import ru.smartro.worknote.log.work.ImageEntity
 import java.io.File
 
-class PhotoBreakdownMediaContainerF : APhotoFragment() {
+class PhotoBreakdownMediaContainerF : APhotoF() {
     private var mBreakDownReasonS: List<String>? = null
     private val mContainerId: Int
         get() = getArgumentID()

@@ -3,7 +3,6 @@ package ru.smartro.worknote
 import android.content.Context
 import android.content.SharedPreferences
 import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.util.MyUtil
 
 private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE
@@ -205,7 +204,7 @@ class AppParaMS {
 
 
     var lastSynchroAttemptTimeInSec: Long
-        get() = sharedPref__env.getLong("lastSynchronizeAttemptTime", MyUtil.timeStampInSec())
+        get() = sharedPref__env.getLong("lastSynchronizeAttemptTime", App.getAppliCation().timeStampInSec())
         set(value) = sharedPref__env.edit {
             it.putLong("lastSynchronizeAttemptTime", value)
         }
@@ -307,7 +306,7 @@ class AppParaMS {
         wayBillId = Inull
         //TODO:r_Null!
         isModeSYNChrONize = false
-        lastSynchroAttemptTimeInSec = MyUtil.timeStampInSec()
+        lastSynchroAttemptTimeInSec = App.getAppliCation().timeStampInSec()
     }
 
 

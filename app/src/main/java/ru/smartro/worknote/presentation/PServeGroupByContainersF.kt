@@ -9,18 +9,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AbsFragment
+import ru.smartro.worknote.abs.AbsF
 import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.andPOintD.SmartROsc
 import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPServeWrapper
-import ru.smartro.worknote.presentation.work.ServePlatformVM
-import ru.smartro.worknote.presentation.work.ConfigName
-import ru.smartro.worknote.presentation.work.ContainerGROUPClientEntity
-import ru.smartro.worknote.presentation.work.ContainerGROUPClientTypeEntity
-import ru.smartro.worknote.presentation.work.PlatformEntity
+import ru.smartro.worknote.log.work.ConfigName
+import ru.smartro.worknote.log.work.ContainerGROUPClientEntity
+import ru.smartro.worknote.log.work.ContainerGROUPClientTypeEntity
+import ru.smartro.worknote.log.work.PlatformEntity
 
 
-class PServeGroupByContainersF : AbsFragment() {
+class PServeGroupByContainersF : AbsF() {
 
     private val _PlatformEntity: PlatformEntity
         get() = vm.getPlatformEntity()
@@ -32,7 +30,7 @@ class PServeGroupByContainersF : AbsFragment() {
     private var smartROPServeWrapper: SmartROviewPServeWrapper? = null
     private var rvMain: RecyclerView? = null
 
-    private val vm: ServePlatformVM by activityViewModels()
+    private val vm: VMPserve by activityViewModels()
 
     override fun onGetLayout(): Int {
         return R.layout.f_pserve_groupby

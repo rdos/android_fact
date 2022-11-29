@@ -20,13 +20,13 @@ set(value) { field = value }
 class AndRoid {
 
     companion object {
-        private var mInstance: AndRoid? = null
+        private var mInstance: ru.smartro.worknote.andPOintD.AndRoid? = null
         //todo: getService(id here)
         fun getService(): LocationManager {
-            if (mInstance == null) {
-                mInstance = AndRoid()
+            if (ru.smartro.worknote.andPOintD.AndRoid.Companion.mInstance == null) {
+                ru.smartro.worknote.andPOintD.AndRoid.Companion.mInstance = ru.smartro.worknote.andPOintD.AndRoid()
             }
-            return mInstance!!.getLocationService()
+            return ru.smartro.worknote.andPOintD.AndRoid.Companion.mInstance!!.getLocationService()
 
         }
 
@@ -42,11 +42,12 @@ class AndRoid {
         }
 
         fun getProviderName(): String {
-            return getService().getBestProvider(getCriterial(), true)?: LocationManager.NETWORK_PROVIDER
+            return ru.smartro.worknote.andPOintD.AndRoid.Companion.getService()
+                .getBestProvider(ru.smartro.worknote.andPOintD.AndRoid.Companion.getCriterial(), true)?: LocationManager.NETWORK_PROVIDER
         }
 
         fun getProviderNameS(): MutableList<String> {
-            return getService().allProviders
+            return ru.smartro.worknote.andPOintD.AndRoid.Companion.getService().allProviders
         }
 
     }

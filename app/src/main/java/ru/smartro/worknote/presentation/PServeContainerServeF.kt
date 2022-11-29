@@ -17,14 +17,13 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ARGUMENT_NAME___PARAM_ID
 import ru.smartro.worknote.abs.AbstractBottomSheetF
-import ru.smartro.worknote.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.presentation.work.ServePlatformVM
+import ru.smartro.worknote.log.awORKOLDs.extensions.hideDialog
 
 
 class PServeContainerServeF : AbstractBottomSheetF() {
 
     private var mContainerId: Int = Inull
-    private val vm: ServePlatformVM by activityViewModels()
+    private val vm: VMPserve by activityViewModels()
     private var volume: Double? = null
 
     private var rgPercents: RadioGroup? = null

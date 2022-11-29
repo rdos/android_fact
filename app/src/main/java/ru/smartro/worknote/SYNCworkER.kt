@@ -8,11 +8,11 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.realm.Realm
 import kotlinx.coroutines.delay
-import ru.smartro.worknote.awORKOLDs.SynchroRequestPOST
-import ru.smartro.worknote.presentation.ac.StartAct
-import ru.smartro.worknote.presentation.work.NetworkRepository
-import ru.smartro.worknote.presentation.work.RealmRepository
-import ru.smartro.worknote.presentation.work.utils.getActivityProperly
+import ru.smartro.worknote.presentation.RPOSTSynchro
+import ru.smartro.worknote.presentation.ActStart
+import ru.smartro.worknote.log.work.NetworkRepository
+import ru.smartro.worknote.log.work.RealmRepository
+import ru.smartro.worknote.log.work.utils.getActivityProperly
 import java.io.File
 import java.io.FileOutputStream
 
@@ -36,7 +36,7 @@ class SYNCworkER(
                                        contentText: String = "Не закрывайте приложение",
                                        titleText: String = "Служба отправки данных работает") {
 
-        val intent = Intent(applicationContext, StartAct::class.java)
+        val intent = Intent(applicationContext, ActStart::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pendingIntent = getActivityProperly(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         if (isForceMode) {
@@ -148,7 +148,7 @@ class SYNCworkER(
         LOG.debug("before")
         logSentry("SYNCworkER STARTED")
 
-        val synchroRequest = SynchroRequestPOST()
+        val synchroRequest = RPOSTSynchro()
 
         App.oKRESTman().put(synchroRequest)
         

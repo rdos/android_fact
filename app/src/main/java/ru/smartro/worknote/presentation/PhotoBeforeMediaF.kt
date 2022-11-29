@@ -2,13 +2,13 @@ package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
 import ru.smartro.worknote.*
-import ru.smartro.worknote.presentation.work.ConfigName
-import ru.smartro.worknote.presentation.work.ImageEntity
-import ru.smartro.worknote.presentation.work.PlatformEntity
-import ru.smartro.worknote.presentation.work.PlatformMediaEntity
+import ru.smartro.worknote.log.work.ConfigName
+import ru.smartro.worknote.log.work.ImageEntity
+import ru.smartro.worknote.log.work.PlatformEntity
+import ru.smartro.worknote.log.work.PlatformMediaEntity
 import java.io.File
 
-class PhotoBeforeMediaF : APhotoFragment() {
+class PhotoBeforeMediaF : APhotoF() {
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()
 //    override fun onGetTextLabelFor() = "фото до обслуживания КП"

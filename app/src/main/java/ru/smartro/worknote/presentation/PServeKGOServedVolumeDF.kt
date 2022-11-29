@@ -4,14 +4,13 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.AInformFD
+import ru.smartro.worknote.presentation.ac.AConfirmDF
 import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.presentation.work.PlatformEntity
-import ru.smartro.worknote.presentation.work.ServePlatformVM
+import ru.smartro.worknote.log.work.PlatformEntity
 
-class PServeKGOServedVolumeDF : AInformFD() {
+class PServeKGOServedVolumeDF : AConfirmDF() {
 
-    private val viewModel: ServePlatformVM by activityViewModels()
+    private val viewModel: VMPserve by activityViewModels()
 
     override fun onGetNextText(): String {
         return "Сохранить"

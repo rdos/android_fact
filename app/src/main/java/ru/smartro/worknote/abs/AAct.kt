@@ -9,7 +9,7 @@ import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
 
 
-import ru.smartro.worknote.presentation.ac.StartAct
+import ru.smartro.worknote.presentation.ActStart
 import java.lang.Exception
 
 //        try {
@@ -24,6 +24,7 @@ abstract class AAct : AppCompatActivity() {
 //    }
 
     protected fun AppliCation() : App {
+
         return App.getAppliCation()
     }
 
@@ -57,7 +58,7 @@ abstract class AAct : AppCompatActivity() {
     public fun onNewGPS() {
         LOG.debug("before")
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        (navHostFragment.childFragmentManager.fragments[0] as FragmentA).onNewGPS()
+        (navHostFragment.childFragmentManager.fragments[0] as AF).onNewGPS()
         LOG.debug("after")
     }
     // TODO: !r_dos feed(stuff)
@@ -145,14 +146,14 @@ abstract class AAct : AppCompatActivity() {
     }
 
     protected fun restartApp() {
-        val intent = Intent(this, StartAct::class.java)
+        val intent = Intent(this, ActStart::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         this.startActivity(intent)
     }
 
     fun logout() {
         App.getAppParaMS().setLogoutParams()
-        val intent = Intent(this, StartAct::class.java)
+        val intent = Intent(this, ActStart::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }

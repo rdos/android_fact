@@ -2,11 +2,11 @@ package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
-import ru.smartro.worknote.presentation.work.ImageEntity
-import ru.smartro.worknote.presentation.work.PlatformMediaEntity
+import ru.smartro.worknote.log.work.ImageEntity
+import ru.smartro.worknote.log.work.PlatformMediaEntity
 import java.io.File
 
-class PhotoKgoServedF : APhotoFragment() {
+class PhotoKgoServedF : APhotoF() {
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()
     override fun onGetTextLabelFor() = "КГО.забрал"

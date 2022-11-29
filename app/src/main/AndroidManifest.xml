@@ -33,7 +33,7 @@
         android:allowBackup="false"
         android:theme="@style/AppTheme">
         <activity  android:exported="false"
-            android:name="ru.smartro.worknote.presentation.ac.MainAct"
+            android:name="ru.smartro.worknote.presentation.ActMain"
             android:screenOrientation="portrait" />
 
         <!--
@@ -41,7 +41,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         -->
         <activity  android:exported="true"
-            android:name="ru.smartro.worknote.presentation.ac.StartAct"
+            android:name="ru.smartro.worknote.presentation.ActStart"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>
@@ -50,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity  android:exported="true"
-            android:name="ru.smartro.worknote.presentation.ac.XChecklistAct"
+            android:name="ru.smartro.worknote.presentation.XChecklistAct"
             android:screenOrientation="portrait"
             >
         </activity>
@@ -75,14 +75,14 @@
 
         <receiver android:exported="true"
             android:enabled="true"
-            android:name=".presentation.ac.BootBroadcastReceiver">
+            android:name=".presentation.andPOintD.BootBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <service
             android:directBootAware="true"
-            android:name=".presentation.ac.AirplanemodeIntentService"
+            android:name=".presentation.andPOintD.AirplanemodeIntentService"
             android:enabled="true" />
 
         <meta-data

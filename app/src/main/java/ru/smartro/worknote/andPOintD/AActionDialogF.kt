@@ -5,11 +5,10 @@ import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.FragmentDialogA
-import ru.smartro.worknote.abs.FragmentDialogAI
-import ru.smartro.worknote.andPOintD.SmartROllc
+import ru.smartro.worknote.abs.ADF
+import ru.smartro.worknote.abs.DFAI
 
-abstract class AActionDialogF: FragmentDialogA(), FragmentDialogAI {
+abstract class AActionDialogF: ADF(), DFAI {
 
     var actvTitle: AppCompatTextView? = null
     var actvContent: AppCompatTextView? = null
@@ -20,7 +19,7 @@ abstract class AActionDialogF: FragmentDialogA(), FragmentDialogAI {
         return R.layout.df_action
     }
 
-    override fun onInitLayoutView(sview: SmartROllc): Boolean {
+    override fun onInitLayoutView(sview: ru.smartro.worknote.andPOintD.SmartROllc): Boolean {
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
 

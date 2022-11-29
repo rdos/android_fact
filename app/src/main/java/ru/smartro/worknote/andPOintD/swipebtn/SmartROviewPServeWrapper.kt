@@ -14,7 +14,7 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.andPOintD.SmartROllc
 import ru.smartro.worknote.andPOintD.SmartROsc
-import ru.smartro.worknote.presentation.work.PlatformEntity
+import ru.smartro.worknote.log.work.PlatformEntity
 
 
 //todo: ::: https://github.com/ebanx/swipe-button.git

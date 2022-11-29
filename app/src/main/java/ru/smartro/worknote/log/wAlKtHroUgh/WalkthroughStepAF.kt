@@ -5,9 +5,9 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
-import ru.smartro.worknote.abs.FragmentA
+import ru.smartro.worknote.abs.AF
 
-class WalkthroughStepAF : FragmentA() {
+class WalkthroughStepAF : AF() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

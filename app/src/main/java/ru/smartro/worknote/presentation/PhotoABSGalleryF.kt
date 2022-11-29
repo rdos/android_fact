@@ -31,14 +31,14 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import ru.smartro.worknote.App
-import ru.smartro.worknote.abs.FragmentA
+import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.R
 import java.io.File
 
 
 val EXTENSION_WHITELIST = arrayOf("JPG")
 //class GalleryFragment(p_id: Int) internal constructor()
-class GalleryPhotoF : FragmentA() {
+class GalleryPhotoF : AF() {
 
     private lateinit var mediaList: MutableList<File>
 

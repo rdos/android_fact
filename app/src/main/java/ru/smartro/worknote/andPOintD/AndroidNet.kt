@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 
-class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : ConnectivityManager.NetworkCallback() {
+class AndroidNet(val p_cm: ConnectivityManager, val p_callback: ru.smartro.worknote.andPOintD.AndroidNet.CallBack) : ConnectivityManager.NetworkCallback() {
     private val validNetworks: MutableSet<Network> = HashSet()
     private var mOnLostInternetJob: Job? =  null
 

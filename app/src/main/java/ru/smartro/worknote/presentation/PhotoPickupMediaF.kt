@@ -3,11 +3,11 @@ package ru.smartro.worknote.presentation
 import io.realm.RealmList
 import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.R
-import ru.smartro.worknote.presentation.work.ImageEntity
-import ru.smartro.worknote.presentation.work.PlatformMediaEntity
+import ru.smartro.worknote.log.work.ImageEntity
+import ru.smartro.worknote.log.work.PlatformMediaEntity
 import java.io.File
 
-class PhotoPickupMediaF : APhotoFragment() {
+class PhotoPickupMediaF : APhotoF() {
     private var newVolume: Double = Dnull
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()

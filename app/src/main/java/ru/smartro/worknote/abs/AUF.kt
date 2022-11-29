@@ -13,7 +13,7 @@ import ru.smartro.worknote.andPOintD.SmartROllc
 //AbstractUtil(for)Fragment
 object AUF {
 
-    fun showNextFragment(frag: FragmentAI, navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
+    fun showNextFragment(frag: FAI, navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
         LOG.debug("frag.javaClass.name:${frag.javaClass.name}")
         val fm = frag.getAct().supportFragmentManager
         val navHostFragment = fm.findFragmentById(R.id.fcv_container) as NavHostFragment
@@ -30,7 +30,7 @@ object AUF {
         navController.navigate(navFragmentId, argSBundle)
     }
 
-    fun showFragment(frag: FragmentAI, navFragmentId: Int? = null) {
+    fun showFragment(frag: FAI, navFragmentId: Int? = null) {
         LOG.debug("frag.javaClass.name:${frag.javaClass.name}")
         val fm = frag.getAct().supportFragmentManager
         val navHostFragment = fm.findFragmentById(R.id.fcv_container) as NavHostFragment
@@ -45,7 +45,7 @@ object AUF {
         LOG.debug("::")
     }
 
-    fun onViewCreated(frag: FragmentAI, view: View, savedInstanceState: Bundle?) {
+    fun onViewCreated(frag: FAI, view: View, savedInstanceState: Bundle?) {
         LOG.warn("onInitLayoutView")
         if (view is SmartROllc) {
             val result = frag.onInitLayoutView(view) //ой пахнет savedInstanceState
@@ -62,7 +62,7 @@ object AUF {
         }
     }
 
-    fun onSetItemLayout(frag: FragmentAI, inflater: LayoutInflater, cont: ViewGroup?, sIS: Bundle?): View {
+    fun onSetItemLayout(frag: FAI, inflater: LayoutInflater, cont: ViewGroup?, sIS: Bundle?): View {
         LOG.warn("onGetLayout:before")
         val sview = inflater.inflate(frag.onGetLayout(), cont, false)
         LOG.warn("after:onGetLayout")

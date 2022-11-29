@@ -2,12 +2,12 @@ package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
-import ru.smartro.worknote.presentation.work.ImageEntity
+import ru.smartro.worknote.log.work.ImageEntity
 
-import ru.smartro.worknote.presentation.work.PlatformMediaEntity
+import ru.smartro.worknote.log.work.PlatformMediaEntity
 import java.io.File
 
-open class PhotoAfterMediaF : APhotoFragment() {
+open class PhotoAfterMediaF : APhotoF() {
 //    private var mPlatformEntity: PlatformEntity = TODO()
 //        get() =  vm.getPlatformEntity()
 //GHП!РИКОЛ!!

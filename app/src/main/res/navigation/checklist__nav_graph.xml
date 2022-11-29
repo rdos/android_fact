@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/startOwnerF"
-        android:name="ru.smartro.worknote.presentation.checklist.owner.StartOwnerF"
+        android:name="ru.smartro.worknote.presentation.FChecklistOwner"
         android:label="StartOwnerF" >
         <action
             android:id="@+id/action_startOwnerF_to_startVehicleF"
@@ -29,7 +29,7 @@
 
     <fragment
         android:id="@+id/startVehicleF"
-        android:name="ru.smartro.worknote.presentation.checklist.vehicle.StartVehicleF"
+        android:name="ru.smartro.worknote.presentation.FChecklistVehicle"
         android:label="StartVehicleF" >
         <action
             android:id="@+id/action_startVehicleF_to_startWaybillF"
@@ -38,7 +38,7 @@
 
     <fragment
         android:id="@+id/startWaybillF"
-        android:name="ru.smartro.worknote.presentation.checklist.waybill.StartWaybillF"
+        android:name="ru.smartro.worknote.presentation.FChecklistWaybill"
         android:label="StartWaybillF" >
         <action
             android:id="@+id/action_startWaybillF_to_startWorkOrderF"
@@ -47,12 +47,12 @@
 
     <fragment
         android:id="@+id/startWorkOrderF"
-        android:name="ru.smartro.worknote.presentation.checklist.workorder.StartWorkOrderF"
+        android:name="ru.smartro.worknote.presentation.FChecklistWorkOrder"
         android:label="StartWorkOrderF" />
 
     <dialog
         android:id="@+id/DInfoInternetOffF"
-        android:name="ru.smartro.worknote.presentation.DInfoInternetOffF"
+        android:name="ru.smartro.worknote.presentation.DFInfoInternetOff"
         android:label="DInfoInternetOffF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"

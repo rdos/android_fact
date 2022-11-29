@@ -7,18 +7,25 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.*
 import android.os.StrictMode.ThreadPolicy
+import android.util.Base64
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -30,6 +37,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.FileAppender
 import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.geometry.Point
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.sentry.Sentry
@@ -40,16 +48,14 @@ import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.andPOintD.*
-import ru.smartro.worknote.awORKOLDs.service.OkRESTman
-import ru.smartro.worknote.awORKOLDs.util.MyUtil
 import ru.smartro.worknote.log.AApp
-import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
-import ru.smartro.worknote.presentation.ac.MainAct
-import ru.smartro.worknote.presentation.ac.StartAct
-import ru.smartro.worknote.presentation.work.ConfigName
-import ru.smartro.worknote.presentation.work.NetworkRepository
-import ru.smartro.worknote.presentation.work.RealmRepository
-import ru.smartro.worknote.presentation.work.RegionEntity
+import ru.smartro.worknote.presentation.andPOintD.AirplanemodeIntentService
+import ru.smartro.worknote.presentation.ActMain
+import ru.smartro.worknote.presentation.ActStart
+import ru.smartro.worknote.log.work.ConfigName
+import ru.smartro.worknote.log.work.NetworkRepository
+import ru.smartro.worknote.log.work.RealmRepository
+import ru.smartro.worknote.log.work.RegionEntity
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -111,7 +117,7 @@ class App : AApp() {
     }
 
     fun restartApp() {
-        val mStartActivity = Intent(baseContext, StartAct::class.java)
+        val mStartActivity = Intent(baseContext, ActStart::class.java)
         val mPendingIntentId = BuildConfig.VERSION_CODE
         val mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
         val mgr = baseContext.getSystemService(ALARM_SERVICE) as AlarmManager
@@ -122,7 +128,7 @@ class App : AApp() {
     fun gps(): PoinT {
         var gps_enabled = false
         var network_enabled = false
-        val lm = AndRoid.getService()
+        val lm = ru.smartro.worknote.andPOintD.AndRoid.getService()
         gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
         network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
         var net_loc: Location? = null
@@ -140,8 +146,8 @@ class App : AApp() {
         }
 
         if (gps_loc == null && net_loc == null) {
-            if (this.mCurrentAct is MainAct) {
-                (this.mCurrentAct as MainAct).showNextFragment(R.id.DInfoGpsOffF)
+            if (this.mCurrentAct is ActMain) {
+                (this.mCurrentAct as ActMain).showNextFragment(R.id.DInfoGpsOffF)
             }
             return getAppParaMS().getSaveGPS()
         }
@@ -265,7 +271,7 @@ class App : AApp() {
         val fileAppender = FileAppender<ILoggingEvent>()
         fileAppender.context = lc
 
-        val file = getF(D__LOGS, "${MyUtil.currentTime()}.log")
+        val file = getF(D__LOGS, "${this.currentTime()}.log")
         fileAppender.file = file.absolutePath
         fileAppender.encoder = encoder1
         fileAppender.start()
@@ -342,7 +348,7 @@ class App : AApp() {
 //                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
                     getAppParaMS().saveLastGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY.LET)
                     try {
-                        if (mCurrentAct is MainAct) {
+                        if (mCurrentAct is ActMain) {
                             mCurrentAct?.onNewGPS()
                         }
                     } catch (ex: Exception) {
@@ -570,8 +576,8 @@ class App : AApp() {
 //        if (providerName.isNullOrEmpty()) {
 //
 //        }
-        AndRoid.getService().requestLocationUpdates(
-            AndRoid.getProviderName(),
+        ru.smartro.worknote.andPOintD.AndRoid.getService().requestLocationUpdates(
+            ru.smartro.worknote.andPOintD.AndRoid.getProviderName(),
             300,
             30F,
             // override fun onLocationChanged(location: Location) {
@@ -654,7 +660,7 @@ class App : AApp() {
         }
         sentryAddTag("user_name", getAppParaMS().userName);
         sentryAddTag("android_api", android.os.Build.VERSION.SDK_INT.toString())
-        sentryAddTag("device_name", MyUtil.getDeviceName()!!)
+        sentryAddTag("device_name", this.getDeviceName()!!)
     }
 
     fun isDevelMode(): Boolean {
@@ -682,6 +688,115 @@ class App : AApp() {
             }
         }
     }
+
+    private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
+
+    /** Convenience method used to check if all permissions required by this app are granted */
+    fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
+        ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun timeStampInSec(): Long {
+        return this.timeStampInMS() / 1000
+    }
+
+    fun timeStampInMS(): Long {
+        return System.currentTimeMillis()
+    }
+
+    fun currentTime(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", Locale.getDefault())
+        return sdf.format(Date())
+    }
+
+    // TODO: 26.10.2021 !!! см. MapActivity.getBitmapFromVectorDrawable
+    fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap? {
+        var drawable = ContextCompat.getDrawable(context, drawableId) ?: return null
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = DrawableCompat.wrap(drawable).mutate()
+        }
+
+        val bitmap = Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        ) ?: return null
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+
+        return bitmap
+    }
+
+    fun hasPermissions(context: Context, vararg permissions: Array<String>): Boolean =
+        permissions.all {
+            ActivityCompat.checkSelfPermission(context, it.toString()) == PackageManager.PERMISSION_GRANTED
+        }
+
+    fun hideKeyboard(activity: Activity) {
+        val imm: InputMethodManager =
+            activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        val view: View? = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+//            view = View(activity)
+            return
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+
+    fun base64ToImage(encodedImage: String?): Bitmap {
+        val decodedString: ByteArray =
+            Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
+
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+    }
+
+    fun getDeviceName(): String? {
+        fun capitalize(s: String?): String? {
+            if (s == null || s.isEmpty()) {
+                return ""
+            }
+            val first = s[0]
+            return if (Character.isUpperCase(first)) {
+                s
+            } else {
+                Character.toUpperCase(first).toString() + s.substring(1)
+            }
+        }
+
+        val manufacturer = Build.MANUFACTURER
+        val model = Build.MODEL
+        return if (model.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+            capitalize(model)
+        } else {
+            capitalize(manufacturer).toString() + " " + model
+        }
+    }
+
+    fun calculateDistance(
+        currentLocation: Point,
+        finishLocation: Point
+    ): Int {
+        val userLocation = Location(LocationManager.GPS_PROVIDER)
+        userLocation.latitude = currentLocation.latitude
+        userLocation.longitude = currentLocation.longitude
+
+        val checkPointLocation = Location(LocationManager.GPS_PROVIDER)
+        checkPointLocation.latitude = finishLocation.latitude
+        checkPointLocation.longitude = finishLocation.longitude
+        return userLocation.distanceTo(checkPointLocation).toInt()
+    }
+
+
+    fun currentDate(): String {
+        return SimpleDateFormat("yyyy-MM-dd").format(Date())
+    }
+    //        MyUtil(эх молодость)
+
 }
 
 const val TIME_OUT = 240000L
@@ -748,7 +863,7 @@ fun Any.toast(text: String? = "") {
     }
 }
 
-fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+fun ru.smartro.worknote.andPOintD.AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
     fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
         var dirPath = App.getAppliCation().dataDir.absolutePath
         if(containerUuid == null) {
@@ -790,6 +905,20 @@ fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
 //    }
 //
 //}
+
+fun CharSequence?.isNotNull(): Boolean {
+    return !this.isNullOrBlank()
+}
+
+fun Any?.toStr(s: String): String {
+    return if (this == null) {
+        ""
+    } else {
+        "$this $s"
+    }
+}
+
+fun Any?.toStr() = this?.toString() ?: ""
 
 /** Milliseconds used for UI animations */
 fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 1050L) {

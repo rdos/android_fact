@@ -1,15 +1,10 @@
 package ru.smartro.worknote.presentation
 
-import android.view.View
-import androidx.appcompat.widget.AppCompatButton
-import ru.smartro.worknote.Inull
-import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.AInformFD
-import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.presentation.work.PlatformEntity
+import ru.smartro.worknote.log.work.PlatformEntity
+import ru.smartro.worknote.presentation.abs.AConfirmYesNoDF
 
-class DYesNoRelogin : AFragmentYesNoDialog() {
+class DYesNoRelogin : AConfirmYesNoDF() {
     override fun onNextFragment(entity: PlatformEntity) {
         getAct().logout()
     }
