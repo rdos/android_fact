@@ -140,6 +140,9 @@ class App : AApp() {
         }
 
         if (gps_loc == null && net_loc == null) {
+            if (this.mCurrentAct is MainAct) {
+                (this.mCurrentAct as MainAct).showNextFragment(R.id.DInfoGpsOffF)
+            }
             return getAppParaMS().getSaveGPS()
         }
 

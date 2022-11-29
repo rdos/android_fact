@@ -82,6 +82,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        App.getAppliCation().setCurrentAct(this)
         LOG.debug("onCreate")
     }
 
@@ -122,7 +123,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        (applicationContext as App).setCurrentAct(this)
+        App.getAppliCation().setCurrentAct(this)
         LOG.debug("before")
     }
 

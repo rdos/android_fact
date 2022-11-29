@@ -90,7 +90,9 @@ class OkRESTman: AbsObject(), Callback {
     }
 
     private fun send() {
+        LOG.trace("before")
         if (mPriorityQueue.size <= 0 ) {
+            LOG.trace("if (mPriorityQueue.size <= 0 ) {")
             mRequestInProgress = false
             return
         }
@@ -99,10 +101,12 @@ class OkRESTman: AbsObject(), Callback {
 
         val request = mPriorityQueue.remove()
         mLastARequest = (request as AbsRequest<*, *>)
-        mLastARequest?.onBefore()
+        mLastARequest!!.onBefore()
+        LOG.trace("newCall ${mLastARequest!!::class.java}")
 
-        getClient().newCall(request.getOKHTTPRequest()).enqueue(this)
+        getClient().newCall(mLastARequest!!.getOKHTTPRequest()).enqueue(this)
         // TODO:  : r_dos!!!//        request.onAfterSend()
+        LOG.trace("after")
     }
 
     /**
