@@ -23,8 +23,7 @@
             tools:text="г. Москва, ул Пушкина д4"
 
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/ibtn_dialog_platform_clicked_dtl__close"
-            app:layout_constraintBottom_toBottomOf="@id/ibtn_dialog_platform_clicked_dtl__close"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ibtn_dialog_platform_clicked_dtl__close"
             />
 
