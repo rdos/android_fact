@@ -18,12 +18,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
-import ru.smartro.worknote.log.work.VehicleEntity
+import ru.smartro.worknote.log.todo.VehicleEntity
 
 class FChecklistVehicle: AF(), SwipeRefreshLayout.OnRefreshListener {
 
     private var mVehicleAdapter: VehicleAdapter? = null
-    private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
+    private val viewModel: AXChecklist.ChecklistViewModel by activityViewModels()
 
     private var etVehicleFilter: EditText? = null
 
@@ -37,7 +37,7 @@ class FChecklistVehicle: AF(), SwipeRefreshLayout.OnRefreshListener {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
 
-        (requireActivity() as XChecklistAct).apply {
+        (requireActivity() as AXChecklist).apply {
             // TODO::Vlad -- Можно поставить один раз тут и не трогать в последующих фрагах
             acibGoToBack?.visibility = View.VISIBLE
             acibGoToBack?.setOnClickListener {
@@ -138,14 +138,14 @@ class FChecklistVehicle: AF(), SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
         getVehicleList()
         srlRefresh?.isRefreshing = false
-        (requireActivity() as XChecklistAct).showProgressBar()
+        (requireActivity() as AXChecklist).showProgressBar()
     }
 
     private fun getVehicleList() {
         val vehicleRequestGET = RGETVehicle()
         vehicleRequestGET.getLiveDate().observe(viewLifecycleOwner) { result ->
             LOG.debug("${result}")
-            (requireActivity() as XChecklistAct).hideProgressBar()
+            (requireActivity() as AXChecklist).hideProgressBar()
             if (result.isSent) {
                 val vehicleS= viewModel.database.getVehicleS()
                 mVehicleAdapter?.setItems(vehicleS)

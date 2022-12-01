@@ -27,14 +27,14 @@ import com.yandex.mapkit.mapview.MapView
 import net.cachapa.expandablelayout.ExpandableLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
-import ru.smartro.worknote.andPOintD.BaseAdapter
-import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.log.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.log.awORKOLDs.service.network.body.ProgressBody
-import ru.smartro.worknote.log.work.*
-import ru.smartro.worknote.log.work.utils.MapHelper
-import ru.smartro.worknote.log.work.utils.MapListener
-import ru.smartro.worknote.log.work.utils.getActivityProperly
+import ru.smartro.worknote.ac.BaseAdapter
+import ru.smartro.worknote.ac.PoinT
+import ru.smartro.worknote.hideDialog
+import ru.smartro.worknote.log.todo.problem.network.body.ProgressBody
+import ru.smartro.worknote.log.todo.*
+import ru.smartro.worknote.MapHelper
+import ru.smartro.worknote.MapListener
+import ru.smartro.worknote.getActivityProperly
 
 class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListener {
 

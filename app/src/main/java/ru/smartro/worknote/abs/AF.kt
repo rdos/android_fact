@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.log.awORKOLDs.extensions.hideProgress
-import ru.smartro.worknote.log.awORKOLDs.extensions.showingProgress
+import ru.smartro.worknote.ac.SmartROllc
+import ru.smartro.worknote.hideProgress
+import ru.smartro.worknote.showingProgress
 import ru.smartro.worknote.presentation.ActMain
-import ru.smartro.worknote.log.work.PlatformEntity
+import ru.smartro.worknote.log.todo.PlatformEntity
 
 const val ARGUMENT_NAME___PARAM_ID = "ARGUMENT_NAME___PARAM_ID"
 const val ARGUMENT_NAME___PARAM_NAME = "ARGUMENT_NAME___PARAM_NAME"

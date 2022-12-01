@@ -9,8 +9,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.log.work.PlatformEntity
+import ru.smartro.worknote.ac.SmartROllc
+import ru.smartro.worknote.log.todo.PlatformEntity
 import ru.smartro.worknote.abs.ADF
 
 //AInForMatDF with LiveData 

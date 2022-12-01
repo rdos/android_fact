@@ -2,7 +2,7 @@ package ru.smartro.worknote.presentation
 
 import android.content.Intent
 import ru.smartro.worknote.R
-import ru.smartro.worknote.log.work.PlatformEntity
+import ru.smartro.worknote.log.todo.PlatformEntity
 import ru.smartro.worknote.presentation.abs.AConfirmYesNoDF
 
 class DFYesNoReAuthDialog : AConfirmYesNoDF() {

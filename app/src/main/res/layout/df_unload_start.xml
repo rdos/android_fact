@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ru.smartro.worknote.andPOintD.SmartROllc
+<ru.smartro.worknote.ac.SmartROllc
      xmlns:android="http://schemas.android.com/apk/res/android"
      xmlns:app="http://schemas.android.com/apk/res-auto"
      xmlns:whatever="http://schemas.android.com/apk/res-auto"
@@ -37,7 +37,7 @@
           android:layout_marginTop="8dp"
      />
 
-     <ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
+     <ru.smartro.worknote.ac.swipebtn.SmartROviewSwipeButton
           android:id="@+id/sv__f_unload_info__swipe_button"
           android:layout_marginTop="16dp"
           android:layout_width="match_parent"
@@ -45,4 +45,4 @@
           app:innerText="@string/swipe_right_to_start"
     />
 
-</ru.smartro.worknote.andPOintD.SmartROllc>
+</ru.smartro.worknote.ac.SmartROllc>

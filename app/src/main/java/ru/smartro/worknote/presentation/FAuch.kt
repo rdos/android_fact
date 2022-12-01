@@ -85,7 +85,7 @@ class FAuch : AF() {
             findNavController().navigate(R.id.ReAuthWarningDialogF)
         } else {
             LOG.debug("::: NOT HAVE TASK")
-            startActivity(Intent(requireActivity(), XChecklistAct::class.java))
+            startActivity(Intent(requireActivity(), AXChecklist::class.java))
             requireActivity().finish()
         }
 

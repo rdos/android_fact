@@ -12,7 +12,7 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.RequestAI
-import ru.smartro.worknote.log.awORKOLDs.util.RESTconnection
+import ru.smartro.worknote.log.RESTconnection
 import ru.smartro.worknote.presentation.ANoBodyGET
 import java.io.IOException
 import kotlin.reflect.KClass

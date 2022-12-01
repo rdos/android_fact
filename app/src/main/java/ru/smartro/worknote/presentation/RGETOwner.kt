@@ -6,8 +6,8 @@ import io.realm.Realm
 import io.realm.RealmList
 import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.log.work.OrganisationEntity
-import ru.smartro.worknote.log.work.RealmRepository
+import ru.smartro.worknote.log.todo.OrganisationEntity
+import ru.smartro.worknote.work.work.RealmRepository
 import ru.smartro.worknote.presentation.abs.AGETRequest
 import ru.smartro.worknote.presentation.ac.NetObject
 import kotlin.reflect.KClass

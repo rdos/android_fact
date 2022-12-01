@@ -3,7 +3,7 @@ package ru.smartro.worknote.presentation.ac
 import io.sentry.Sentry
 import retrofit2.Response
 import ru.smartro.worknote.App
-import ru.smartro.worknote.log.awORKOLDs.service.network.response.served.ServedResponse
+import ru.smartro.worknote.log.todo.problem.network.response.served.ServedResponse
 
 sealed class THR(code: Int) : Throwable(code.toString()) {
     //    abstract val message: String

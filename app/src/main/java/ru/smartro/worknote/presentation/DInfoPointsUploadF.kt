@@ -1,7 +1,7 @@
 package ru.smartro.worknote.presentation
 
 import ru.smartro.worknote.R
-import ru.smartro.worknote.log.work.PlatformEntity
+import ru.smartro.worknote.log.todo.PlatformEntity
 import ru.smartro.worknote.presentation.abs.AInformDF
 
 class DInfoPointsUploadF : AInformDF() {

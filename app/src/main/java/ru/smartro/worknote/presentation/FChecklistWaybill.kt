@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
-import ru.smartro.worknote.log.work.WaybillEntity
+import ru.smartro.worknote.log.todo.WaybillEntity
 
 class FChecklistWaybill: AF(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -22,7 +22,7 @@ class FChecklistWaybill: AF(), SwipeRefreshLayout.OnRefreshListener {
     private var srlRefresh: SwipeRefreshLayout? = null
     private var actvNoData: AppCompatTextView? = null
 
-    private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
+    private val viewModel: AXChecklist.ChecklistViewModel by activityViewModels()
 
     override fun onGetLayout(): Int = R.layout.f_start_waybill
 
@@ -32,7 +32,7 @@ class FChecklistWaybill: AF(), SwipeRefreshLayout.OnRefreshListener {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
 
-        (requireActivity() as XChecklistAct).setBarTitle("Путевой Лист")
+        (requireActivity() as AXChecklist).setBarTitle("Путевой Лист")
 
         actvNoData = view.findViewById(R.id.actv__f_start_waybill__no_data)
 
@@ -116,7 +116,7 @@ class FChecklistWaybill: AF(), SwipeRefreshLayout.OnRefreshListener {
         val waybillRequest = RPOSTWaybill()
         waybillRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
             LOG.debug("${result}")
-            (requireActivity() as XChecklistAct).hideProgressBar()
+            (requireActivity() as AXChecklist).hideProgressBar()
             if (result.isSent) {
                 val waybillS = viewModel.database.getWaybillS()
                 if (waybillS.size == 1) {
@@ -135,18 +135,18 @@ class FChecklistWaybill: AF(), SwipeRefreshLayout.OnRefreshListener {
         actvNoData?.visibility = View.GONE
         getWayBillList()
         srlRefresh?.isRefreshing = false
-        (requireActivity() as XChecklistAct).showProgressBar()
+        (requireActivity() as AXChecklist).showProgressBar()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         LOG.debug("${this::class.java.simpleName} :: ON DESTROY VIEW")
 //        viewModel.mWayBillList.removeObservers(viewLifecycleOwner)
-        viewModel.mWayBillsViewState.postValue(XChecklistAct.ViewState.IDLE())
+        viewModel.mWayBillsViewState.postValue(AXChecklist.ViewState.IDLE())
     }
 
     private fun goToNextStep(wayBillId: Int, wayBillNumber: String) {
-        viewModel.mWayBillsViewState.postValue(XChecklistAct.ViewState.IDLE())
+        viewModel.mWayBillsViewState.postValue(AXChecklist.ViewState.IDLE())
         paramS().wayBillId = wayBillId
         paramS().wayBillNumber = wayBillNumber
         navigateMainChecklist(R.id.startWorkOrderF, wayBillId, wayBillNumber)

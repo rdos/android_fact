@@ -22,12 +22,12 @@ import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.log.work.CancelWayReasonEntity
+import ru.smartro.worknote.log.todo.CancelWayReasonEntity
 
 import ru.smartro.worknote.toast
 
-import ru.smartro.worknote.log.work.RealmRepository
-import ru.smartro.worknote.log.work.WorkOrderEntity
+import ru.smartro.worknote.work.work.RealmRepository
+import ru.smartro.worknote.log.todo.WorkOrderEntity
 import kotlin.math.round
 
 
@@ -374,7 +374,7 @@ class FComplete : AF() {
         }
     }
 
-    open class CompleteViewModel(app: Application) : ru.smartro.worknote.andPOintD.AViewModel(app) {
+    open class CompleteViewModel(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
 
         private val _servedCounter: MutableLiveData<Int> = MutableLiveData(0)
         val mServedCounter: LiveData<Int>

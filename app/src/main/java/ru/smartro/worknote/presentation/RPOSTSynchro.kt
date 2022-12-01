@@ -6,8 +6,8 @@ import io.realm.Realm
 import ru.smartro.worknote.App
 import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.log.work.PlatformEntity
-import ru.smartro.worknote.log.work.RealmRepository
+import ru.smartro.worknote.log.todo.PlatformEntity
+import ru.smartro.worknote.work.work.RealmRepository
 import ru.smartro.worknote.presentation.ac.AbsRequest
 import ru.smartro.worknote.presentation.ac.NetObject
 import ru.smartro.worknote.todo

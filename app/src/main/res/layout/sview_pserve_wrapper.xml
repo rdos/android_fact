@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ru.smartro.worknote.andPOintD.SmartROllc
+<ru.smartro.worknote.ac.SmartROllc
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -55,7 +55,7 @@
             android:textColor="@color/white"
             android:textSize="16sp"/>
 
-        <ru.smartro.worknote.andPOintD.SmartROsc
+        <ru.smartro.worknote.ac.SmartROsc
             android:id="@+id/srosc__sview_pserve_wrapper__screen_mode"
             android:layout_height="wrap_content" android:layout_width="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
@@ -113,7 +113,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ru.smartro.worknote.andPOintD.SmartROllc
+    <ru.smartro.worknote.ac.SmartROllc
         android:id="@+id/srollc__sview_pserve_wrapper__complete_button"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_min"
@@ -142,6 +142,6 @@
             android:layout_marginEnd="14dp"
             />
 
-    </ru.smartro.worknote.andPOintD.SmartROllc>
+    </ru.smartro.worknote.ac.SmartROllc>
 
-</ru.smartro.worknote.andPOintD.SmartROllc>
+</ru.smartro.worknote.ac.SmartROllc>

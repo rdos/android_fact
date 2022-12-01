@@ -21,10 +21,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.ADF
-import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.log.work.ConfigName
-import ru.smartro.worknote.log.work.PlatformEntity
-import ru.smartro.worknote.log.work.StatusEnum
+import ru.smartro.worknote.ac.SmartROllc
+import ru.smartro.worknote.log.todo.ConfigName
+import ru.smartro.worknote.log.todo.PlatformEntity
+import ru.smartro.worknote.log.todo.StatusEnum
 import kotlin.math.min
 
 //todo: MapPlatformsDF MapPlatformsDF MapPlatformsDF???ИЛИ MapPlatforms(on)MapObjectTap(DF)=

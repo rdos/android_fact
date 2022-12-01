@@ -13,7 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.log.work.OrganisationEntity
+import ru.smartro.worknote.log.todo.OrganisationEntity
 
 class FChecklistOwner: AF(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -22,7 +22,7 @@ class FChecklistOwner: AF(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onGetLayout(): Int = R.layout.f_start_owner
 
-    private val viewModel: XChecklistAct.ChecklistViewModel by activityViewModels()
+    private val viewModel: AXChecklist.ChecklistViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,7 +31,7 @@ class FChecklistOwner: AF(), SwipeRefreshLayout.OnRefreshListener {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
 
-        (requireActivity() as XChecklistAct).apply {
+        (requireActivity() as AXChecklist).apply {
             acibGoToBack?.visibility = View.GONE
             setBarTitle("Организация")
         }
@@ -68,14 +68,14 @@ class FChecklistOwner: AF(), SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
         getOwnersList()
         srlRefresh?.isRefreshing = false
-        (requireActivity() as XChecklistAct).showProgressBar()
+        (requireActivity() as AXChecklist).showProgressBar()
     }
 
     private fun getOwnersList() {
         val ownerRequest = RGETOwner()
         ownerRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
             LOG.debug("safka${result}")
-            (requireActivity() as XChecklistAct).hideProgressBar()
+            (requireActivity() as AXChecklist).hideProgressBar()
             if (result.isSent) {
 
                 val organisationS= viewModel.database.getOrganisationS()

@@ -3,10 +3,10 @@ package ru.smartro.worknote.presentation
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.realm.Realm
-import ru.smartro.worknote.log.work.RealmRepository
+import ru.smartro.worknote.work.work.RealmRepository
 import kotlin.reflect.KClass
 import ru.smartro.worknote.App
-import ru.smartro.worknote.log.awORKOLDs.service.database.entity.problem.BreakDownReasonEntity
+import ru.smartro.worknote.log.todo.BreakDownReasonEntity
 import ru.smartro.worknote.presentation.abs.AGETRequest
 import ru.smartro.worknote.presentation.ac.NetObject
 

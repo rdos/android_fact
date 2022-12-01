@@ -1,4 +1,4 @@
-package ru.smartro.worknote.log.work
+package ru.smartro.worknote.log.todo
 
 
 import android.content.Context
@@ -12,6 +12,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.*
 import ru.smartro.worknote.presentation.*
+import ru.smartro.worknote.work.work.RealmRepository
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
@@ -1438,6 +1439,17 @@ open class ImageEntity(
 }
 
 open class CancelWayReasonEntity(
+    @PrimaryKey
+    var id: Int = 0,
+    var problem: String? = null
+) : RealmObject()
+
+open class FailReasonEntity(
+    @PrimaryKey
+    var id: Int = 0,
+    var problem: String? = null
+) : RealmObject()
+open class BreakDownReasonEntity(
     @PrimaryKey
     var id: Int = 0,
     var problem: String? = null

@@ -2,7 +2,7 @@ package ru.smartro.worknote
 
 import android.content.Context
 import android.content.SharedPreferences
-import ru.smartro.worknote.andPOintD.PoinT
+import ru.smartro.worknote.ac.PoinT
 
 private const val NAME = "AppParaMS"
 private const val MODE = Context.MODE_PRIVATE

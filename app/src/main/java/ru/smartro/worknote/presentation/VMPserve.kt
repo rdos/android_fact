@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.Inull
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.log.work.*
+import ru.smartro.worknote.log.todo.*
 
-class VMPserve(app: Application) : ru.smartro.worknote.andPOintD.AViewModel(app) {
+class VMPserve(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
 //   dIPlatformId
     private var mPlatformId: Int = Inull
 

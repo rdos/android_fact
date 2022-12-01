@@ -1,7 +1,7 @@
 package ru.smartro.worknote.abs
 
 import android.os.Bundle
-import ru.smartro.worknote.andPOintD.SmartROllc
+import ru.smartro.worknote.ac.SmartROllc
 
 interface FAI {
     fun onGetLayout(): Int

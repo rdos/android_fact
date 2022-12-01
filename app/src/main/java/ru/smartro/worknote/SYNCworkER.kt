@@ -10,9 +10,8 @@ import io.realm.Realm
 import kotlinx.coroutines.delay
 import ru.smartro.worknote.presentation.RPOSTSynchro
 import ru.smartro.worknote.presentation.ActStart
-import ru.smartro.worknote.log.work.NetworkRepository
-import ru.smartro.worknote.log.work.RealmRepository
-import ru.smartro.worknote.log.work.utils.getActivityProperly
+import ru.smartro.worknote.log.todo.NetworkRepository
+import ru.smartro.worknote.work.work.RealmRepository
 import java.io.File
 import java.io.FileOutputStream
 

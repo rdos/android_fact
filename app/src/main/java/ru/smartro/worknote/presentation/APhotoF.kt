@@ -7,11 +7,13 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Size
 import android.view.*
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.*
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
@@ -20,7 +22,11 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.fragment.app.activityViewModels
+import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -29,9 +35,9 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.abs.AbsObject
-import ru.smartro.worknote.log.awORKOLDs.extensions.hideProgress
-import ru.smartro.worknote.log.work.ImageEntity
-import ru.smartro.worknote.log.work.MD5
+import ru.smartro.worknote.hideProgress
+import ru.smartro.worknote.log.todo.ImageEntity
+import ru.smartro.worknote.MD5
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
@@ -596,68 +602,179 @@ APhotoF(
     }
 }
 
-/**
- *    val orientationEventListener = object : OrientationEventListener(context) {
-override fun onOrientationChanged(orientation: Int) {
-// Monitors orientation values to determine the target rotation valueLoG.info( "onOrientationChanged.before.mRotation=${mRotation} orientation=${orientation}")
-when (orientation) {
-in 45..134 -> {
-mRotation = Surface.ROTATION_270
-rotationDegrees = 270F
-}
-in 135..224 -> {
-mRotation = Surface.ROTATION_180
-rotationDegrees = 180F
-}
-in 225..314 -> {
-mRotation = Surface.ROTATION_90
-rotationDegrees = 90F
-}
-else -> {
-mRotation = Surface.ROTATION_0
-rotationDegrees = 0F
-}
-}LoG.info( "onOrientationChanged.after.mRotation=${mRotation}")
-mImageCapture?.targetRotation = mRotation
-imageAnalyzer?.targetRotation = mRotation
-}
-}
 
-orientationEventListener.enable()
- */
+val EXTENSION_WHITELIST = arrayOf("JPG")
+//class GalleryFragment(p_id: Int) internal constructor()
+class GalleryPhotoF : AF() {
 
-//    private class LuminosityAnalyzer:ImageAnalysis.Analyzer{
-//        private var lastAnalyzedTimestamp = 0L
-//        /**
-//         * Helper extension function used to extract a byte array from an
-//         * image plane buffer
-//         */
-//        private fun ByteBuffer.toByteArray():ByteArray{
-//            rewind() //Rewind buffer to zero
-//            val data=ByteArray(remaining())
-//            get(data)  // Copy buffer into byte array
-//            return data // Return byte array
-//        }
+    private lateinit var mediaList: MutableList<File>
+
+    /** Adapter class used to present a fragment containing one photo or video as a page */
+    inner class MediaAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        override fun getCount(): Int = mediaList.size
+        override fun getItem(position: Int): Fragment {
+            val textNumOfCount = "${position+1} из $count"
+            return MediaAdapterFragment(mediaList[position], textNumOfCount)
+        }
+        override fun getItemPosition(obj: Any): Int = POSITION_NONE
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Mark this as a retain fragment, so the lifecycle does not get restarted on config change
+        retainInstance = true
+
+        // Walk through all files in the root directory
+        // We reverse the order of the list to present the last photos first
+        mediaList = AppliCation().getDFileList(C_PHOTO_D).sortedDescending().toMutableList()
+    }
+
+
+
+    override fun onGetLayout(): Int {
+        return R.layout.f_gallery_photo
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val apibDelete =  view.findViewById<AppCompatImageButton>(R.id.apib_f_gallery_photo__delete)
+
+        val viewPager = view.findViewById<ViewPager>(R.id.vp_f_gallery_photo)
+
+        val apibBack = view.findViewById<AppCompatImageButton>(R.id.apib_f_gallery_photo__back)
+        apibBack.setOnClickListener {
+            navigateBack()
+        }
+
+        //Checking media files list
+        if (mediaList.isEmpty()) {
+            apibDelete.isEnabled = false
+//            fragmentGalleryBinding.shareButton.isEnabled = false
+        }
+
+        // Populate the ViewPager and implement a cache of two media items
+        viewPager.apply {
+            offscreenPageLimit = 2
+            adapter = MediaAdapter(childFragmentManager)
+        }
+
+        // Make sure that the cutout "safe area" avoids the screen notch if any
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // Use extension method to pad "inside" view containing UI using display cutout's bounds
+//            fragmentGalleryBinding.cutoutSafeArea.padWithDisplayCutout()
+        }
+
+        // Handle back button press
+
+
+        // Handle share button press
+//        fragmentGalleryBinding.shareButton.setOnClickListener {
 //
-//        override fun analyze(image: ImageProxy) {
-//            val currentTimestamp =System.currentTimeMillis()
-//            // Calculate the average luma no more often than every second
-//            if(currentTimestamp-lastAnalyzedTimestamp>=java.util.concurrent.TimeUnit.SECONDS.toMillis(1)){
-//                // Since format in ImageAnalysis is YUV, image.planes[0]
-//                // contains the Y (luminance) plane
-//                val buffer = image.planes[0].buffer
-//                // Extract image data from callback object
-//                val data = buffer.toByteArray()
-//                // Convert the data into an array of pixel values
-//                val pixels = data.map { it.toInt() and 0xFF }
-//                // Compute average luminance for the image
-//                val luma = pixels.average()
-//                // Log the new luma value
-//                LOG.debug("Average luminosity: $luma")
-//                // Update timestamp of last analyzed frame
-//                lastAnalyzedTimestamp = currentTimestamp
+//            mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)?.let { mediaFile ->
+//
+//                // Create a sharing intent
+//                val intent = Intent().apply {
+//                    // Infer media type from file extension
+//                    val mediaType = MimeTypeMap.getSingleton()
+//                            .getMimeTypeFromExtension(mediaFile.extension)
+//                    // Get URI from our FileProvider implementation
+//                    val uri = FileProvider.getUriForFile(
+//                            view.context, BuildConfig.APPLICATION_ID + ".provider", mediaFile)
+//                    // Set the appropriate intent extra, type, action and flags
+//                    putExtra(Intent.EXTRA_STREAM, uri)
+//                    type = mediaType
+//                    action = Intent.ACTION_SEND
+//                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+//                }
+//
+//                // Launch the intent letting the user choose which app to share with
+//                startActivity(Intent.createChooser(intent, getString(R.string.share_hint)))
 //            }
 //        }
-//
-//
-//    }
+
+        // Handle delete button press
+        apibDelete.setOnClickListener {
+
+            mediaList.getOrNull(viewPager.currentItem)?.let { imageEntity ->
+                AlertDialog.Builder(view.context, android.R.style.Theme_Material_Dialog)
+                    .setTitle("Подтвердите")
+                    .setMessage(getString(R.string.warning_detele))
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes) { _, _ ->
+//                        viewModel.removeImageEntity(p_platformId, p_containerId, photoFor , imageEntity.md5)
+                        mediaList.remove(imageEntity)
+                        imageEntity.delete()
+                        createCOSTFile()
+                        viewPager.adapter?.notifyDataSetChanged()
+                        if (mediaList.size <= 0) {
+                            navigateBack()
+                        }
+                    }
+                    .setNegativeButton(android.R.string.no, null)
+                    .create().show()
+            }
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateBack()
+    }
+
+    companion object {
+        private const val COST___EXTENSION = "cost."
+        private const val FILE_NAME_KEY = "no_restorePhotoFileS"
+        private const val NUM_OF_COUNT = "num_of_count"
+
+        private fun createCOSTFile() {
+            val outD = App.getAppliCation().getD(C_PHOTO_D)
+            createFile(outD, getCOSTFileName())
+        }
+        private fun createFile(baseFolder: File, fileName: String) {
+            val costFL = File(baseFolder, fileName)
+            val outputStream = costFL.outputStream()
+            outputStream.use { it ->
+                it.write(Int.MAX_VALUE)
+            }
+        }
+        fun getCOSTFileName(): String {
+            return COST___EXTENSION + FILE_NAME_KEY
+        }
+
+
+        fun isCostFileNotExist(outD: File): Boolean {
+            val costFL = File(outD, getCOSTFileName())
+            return !costFL.exists()
+        }
+//        fun create(image: ImageEntity, numOfCount: String) = MediaAdapterFragment().apply {
+//            arguments = Bundle().apply {
+//                putString(FILE_NAME_KEY, image.absolutePath)
+//                putString(NUM_OF_COUNT, numOfCount)
+//            }
+//        }
+    }
+    class MediaAdapterFragment(val image: File, val numOfCount: String) : Fragment() {
+
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                                  savedInstanceState: Bundle?): View {
+            val view = inflater.inflate(R.layout.media_fragment, container, false)
+            return view
+        }
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+//        val args = arguments ?: return
+            val aptvNumOfCount = view.findViewById<AppCompatTextView>(R.id.aptv_media_fragment__num_of_count)
+            aptvNumOfCount.text = numOfCount
+            val imageView = view.findViewById<AppCompatImageView>(R.id.apiv_media_fragment)
+//        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
+//        val bmp = image?.let { BitmapFactory.decodeByteArray(image, 0, it.size) }
+//        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
+            Glide.with(view).load(image).into(imageView)
+        }
+
+
+    }
+}

@@ -47,15 +47,14 @@ import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.andPOintD.*
-import ru.smartro.worknote.log.AApp
+import ru.smartro.worknote.ac.*
 import ru.smartro.worknote.presentation.andPOintD.AirplanemodeIntentService
 import ru.smartro.worknote.presentation.ActMain
 import ru.smartro.worknote.presentation.ActStart
-import ru.smartro.worknote.log.work.ConfigName
-import ru.smartro.worknote.log.work.NetworkRepository
-import ru.smartro.worknote.log.work.RealmRepository
-import ru.smartro.worknote.log.work.RegionEntity
+import ru.smartro.worknote.log.todo.ConfigName
+import ru.smartro.worknote.log.todo.NetworkRepository
+import ru.smartro.worknote.work.work.RealmRepository
+import ru.smartro.worknote.log.todo.RegionEntity
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -75,7 +74,7 @@ const val D__FILES = "files"
 
 
 
-class App : AApp() {
+class App : AA() {
 
     private var mCurrentAct: AAct? = null
     private lateinit var connectionLiveData: ConnectionLostLiveData
@@ -128,7 +127,7 @@ class App : AApp() {
     fun gps(): PoinT {
         var gps_enabled = false
         var network_enabled = false
-        val lm = ru.smartro.worknote.andPOintD.AndRoid.getService()
+        val lm = ru.smartro.worknote.ac.AndRoid.getService()
         gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
         network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
         var net_loc: Location? = null
@@ -576,8 +575,8 @@ class App : AApp() {
 //        if (providerName.isNullOrEmpty()) {
 //
 //        }
-        ru.smartro.worknote.andPOintD.AndRoid.getService().requestLocationUpdates(
-            ru.smartro.worknote.andPOintD.AndRoid.getProviderName(),
+        ru.smartro.worknote.ac.AndRoid.getService().requestLocationUpdates(
+            ru.smartro.worknote.ac.AndRoid.getProviderName(),
             300,
             30F,
             // override fun onLocationChanged(location: Location) {
@@ -863,7 +862,7 @@ fun Any.toast(text: String? = "") {
     }
 }
 
-fun ru.smartro.worknote.andPOintD.AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+fun ru.smartro.worknote.ac.AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
     fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
         var dirPath = App.getAppliCation().dataDir.absolutePath
         if(containerUuid == null) {

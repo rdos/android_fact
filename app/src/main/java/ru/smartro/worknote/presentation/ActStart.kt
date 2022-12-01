@@ -23,7 +23,7 @@ class ActStart : AAct() {
         supportActionBar?.hide()
     }
 
-    open class AuthViewModel(app: Application) : ru.smartro.worknote.andPOintD.AViewModel(app) {
+    open class AuthViewModel(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
 // TODO: R_dos!!!
 //        fun auth(): LiveData<Resource<AuthResponse>> {
 //                                                    //            viewModelScope.coroutineContext

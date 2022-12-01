@@ -7,8 +7,8 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.ac.AConfirmDF
-import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.log.work.PlatformEntity
+import ru.smartro.worknote.ac.SmartROllc
+import ru.smartro.worknote.log.todo.PlatformEntity
 
 class DFConfirmReAuth : AConfirmDF() {
 
@@ -56,7 +56,7 @@ class DFConfirmReAuth : AConfirmDF() {
 
         // TODO :::
 //            findNavController().navigate(R.id.CheckListF)
-        startActivity(Intent(requireActivity(), XChecklistAct::class.java))
+        startActivity(Intent(requireActivity(), AXChecklist::class.java))
 
         requireActivity().finish()
     }

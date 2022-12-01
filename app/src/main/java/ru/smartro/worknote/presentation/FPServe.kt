@@ -19,12 +19,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import ru.smartro.worknote.*
-import ru.smartro.worknote.abs.AbsF
-import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPServeWrapper
-import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewPlayer
-import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewVoiceWhatsUp
-import ru.smartro.worknote.log.work.*
+import ru.smartro.worknote.ac.AbsF
+import ru.smartro.worknote.ac.SmartROllc
+import ru.smartro.worknote.ac.swipebtn.SmartROviewPServeWrapper
+import ru.smartro.worknote.ac.swipebtn.SmartROviewPlayer
+import ru.smartro.worknote.ac.swipebtn.SmartROviewVoiceWhatsUp
+import ru.smartro.worknote.log.todo.*
+import ru.smartro.worknote.presentation.andPOintD.Audio.VoiceComment
 import java.io.File
 import java.nio.file.Files
 

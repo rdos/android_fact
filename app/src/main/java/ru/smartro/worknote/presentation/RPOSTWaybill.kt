@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName
 import io.realm.Realm
 import io.realm.RealmList
 import ru.smartro.worknote.App
-import ru.smartro.worknote.log.work.RealmRepository
-import ru.smartro.worknote.log.work.WaybillEntity
+import ru.smartro.worknote.work.work.RealmRepository
+import ru.smartro.worknote.log.todo.WaybillEntity
 import ru.smartro.worknote.presentation.ac.AbsRequest
 import ru.smartro.worknote.presentation.ac.NetObject
 import kotlin.reflect.KClass

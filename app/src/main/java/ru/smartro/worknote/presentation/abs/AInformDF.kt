@@ -3,8 +3,8 @@ package ru.smartro.worknote.presentation.abs
 import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.log.work.PlatformEntity
+import ru.smartro.worknote.ac.SmartROllc
+import ru.smartro.worknote.log.todo.PlatformEntity
 import ru.smartro.worknote.presentation.ac.AConfirmDF
 
 //todo: FYI: AbstractInfoDF=BaseInfoDF

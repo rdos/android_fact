@@ -17,9 +17,9 @@ import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.Snull
 import ru.smartro.worknote.abs.AF
-import ru.smartro.worknote.andPOintD.BaseAdapter
-import ru.smartro.worknote.log.work.PlatformEntity
-import ru.smartro.worknote.log.work.StatusEnum
+import ru.smartro.worknote.ac.BaseAdapter
+import ru.smartro.worknote.log.todo.PlatformEntity
+import ru.smartro.worknote.log.todo.StatusEnum
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -209,7 +209,7 @@ class FJornalChatWorkLog : AF() {
         findNavController().popBackStack()
     }
 
-    class JournalChatViewModel(app: Application) : ru.smartro.worknote.andPOintD.AViewModel(app) {
+    class JournalChatViewModel(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
 
         fun findPlatformsIsServed(): List<PlatformEntity> {
             return database.findPlatformsIsServed()

@@ -6,8 +6,8 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.os.UserManagerCompat
 import io.realm.Realm
-import ru.smartro.worknote.log.work.ConfigName
-import ru.smartro.worknote.log.work.RealmRepository
+import ru.smartro.worknote.log.todo.ConfigName
+import ru.smartro.worknote.work.work.RealmRepository
 
 class BootBroadcastReceiver : BroadcastReceiver() {
 

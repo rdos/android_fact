@@ -42,7 +42,7 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
 
-        (requireActivity() as XChecklistAct).setBarTitle("Сменное Задание")
+        (requireActivity() as AXChecklist).setBarTitle("Сменное Задание")
 
         srlRefresh = view.findViewById(R.id.srl__f_start_workorder__refresh)
         srlRefresh?.setOnRefreshListener(this)
@@ -250,7 +250,7 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
         getWorkOrderList()
         srlRefresh?.isRefreshing = false
-        (requireActivity() as XChecklistAct).showProgressBar()
+        (requireActivity() as AXChecklist).showProgressBar()
     }
 
 
@@ -258,9 +258,9 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
         val synchroOidWidRequest = RPOSTSynchroOidWid()
         synchroOidWidRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
             LOG.debug("safka${result}")
-            (requireActivity() as XChecklistAct).hideProgressBar()
+            (requireActivity() as AXChecklist).hideProgressBar()
             if (result.isSent) {
-                (requireActivity() as XChecklistAct).hideProgressBar()
+                (requireActivity() as AXChecklist).hideProgressBar()
                 val workOrderS = (result as SynchroOidWidRESTconnection).workOrderS ?: listOf()
                 if (workOrderS.size == 1) {
                     goToNextStep(workOrderS)
@@ -370,7 +370,7 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
-    class StartWorkOrderViewModel(app: Application) : ru.smartro.worknote.andPOintD.AViewModel(app) {
+    class StartWorkOrderViewModel(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
 
 //    // WORKORDERS
 //    private val _workOrderList: MutableLiveData<Resource<SynchroOidWidOutBodyDataWorkorder>> = MutableLiveData(null)

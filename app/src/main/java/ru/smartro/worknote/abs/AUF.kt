@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.SmartROllc
+import ru.smartro.worknote.ac.SmartROllc
 
 //AbstractUtil(for)Fragment
 object AUF {

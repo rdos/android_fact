@@ -1,4 +1,4 @@
-package ru.smartro.worknote.log.awORKOLDs
+package ru.smartro.worknote.log.todo
 
 import com.google.gson.annotations.Expose
 import ru.smartro.worknote.App

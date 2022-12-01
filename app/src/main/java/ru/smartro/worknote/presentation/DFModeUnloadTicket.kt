@@ -7,10 +7,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ADF
-import ru.smartro.worknote.andPOintD.SmartROllc
-import ru.smartro.worknote.andPOintD.swipebtn.SmartROviewSwipeButton
+import ru.smartro.worknote.ac.SmartROllc
+import ru.smartro.worknote.ac.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.log.work.ConfigName
+import ru.smartro.worknote.log.todo.ConfigName
 
 //todo: смотри прикол, VT !!!UnloadInfo++ploadTicket
 class DFModeUnloadTicket: ADF() {

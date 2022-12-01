@@ -30,9 +30,9 @@ import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.offline_cache.*
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
-import ru.smartro.worknote.log.awORKOLDs.extensions.showDialogAction
-import ru.smartro.worknote.log.work.RegionEntity
-import ru.smartro.worknote.log.work.utils.ZipManager
+import ru.smartro.worknote.showDialogAction
+import ru.smartro.worknote.log.todo.RegionEntity
+import ru.smartro.worknote.ZipManager
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -349,7 +349,7 @@ class DebugF : AF(), MediaScannerConnection.OnScanCompletedListener, RegionListe
         findNavController().popBackStack()
     }
 
-    open class DebugViewModel(app: Application) : ru.smartro.worknote.andPOintD.AViewModel(app) {
+    open class DebugViewModel(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
 
         private val mRegionsList: MutableLiveData<List<RegionEntity>> = MutableLiveData(listOf())
         val regionsList: LiveData<List<RegionEntity>>

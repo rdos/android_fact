@@ -3,7 +3,7 @@ package ru.smartro.worknote.presentation
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import ru.smartro.worknote.App
-import ru.smartro.worknote.log.awORKOLDs.util.RESTconnection
+import ru.smartro.worknote.log.RESTconnection
 import ru.smartro.worknote.presentation.ac.AbsRequest
 import ru.smartro.worknote.presentation.ac.NetObject
 import kotlin.reflect.KClass

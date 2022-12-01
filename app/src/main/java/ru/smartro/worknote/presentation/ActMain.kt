@@ -23,10 +23,10 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.FAI
-import ru.smartro.worknote.andPOintD.IActTooltip
-import ru.smartro.worknote.andPOintD.ITooltip
-import ru.smartro.worknote.log.awORKOLDs.extensions.hideDialog
-import ru.smartro.worknote.log.work.ConfigName
+import ru.smartro.worknote.ac.IActTooltip
+import ru.smartro.worknote.ac.ITooltip
+import ru.smartro.worknote.hideDialog
+import ru.smartro.worknote.log.todo.ConfigName
 
 //todo: INDEterminate)
 class ActMain :
