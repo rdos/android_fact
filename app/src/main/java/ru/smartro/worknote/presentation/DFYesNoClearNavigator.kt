@@ -4,7 +4,7 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.log.todo.PlatformEntity
 import ru.smartro.worknote.presentation.abs.AConfirmYesNoDF
 
-class DYesNoClearNavigator : AConfirmYesNoDF() {
+class DFYesNoClearNavigator : AConfirmYesNoDF() {
     override fun onNextFragment(entity: PlatformEntity) {
 //        getAct().logout()
 //        buildNavigator(checkPoint)

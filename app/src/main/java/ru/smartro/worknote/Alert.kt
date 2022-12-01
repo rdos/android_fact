@@ -36,21 +36,21 @@ private fun hideCustomDialog() {
         mCustomDialog?.dismiss()
     } catch (ex: Exception) {
         // TODO: 02.11.2021
-        ru.smartro.worknote.log.error("hideCustomDialog", ex)
+       log.error("hideCustomDialog", ex)
     }
 }
 
 fun showCustomDialog(builder: AlertDialog.Builder) {
-    ru.smartro.worknote.log.info( "before")
+    log.info( "before")
     try {
         mCustomDialog = builder.create()
         mCustomDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         mCustomDialog?.show()
     }  catch (e: Exception) {
         // TODO: 02.11.2021
-        ru.smartro.worknote.log.error("showCustomDialog", e)
+        log.error("showCustomDialog", e)
     }
-    ru.smartro.worknote.log.info("after")
+    log.info("after")
 }
 
 fun AF.showDialogAction(description: String, onAccept: () -> Unit, onDecline: (() -> Unit)? = null) {
@@ -87,16 +87,16 @@ fun AAct.showDlgLogout(): View {
 
 
 private fun showLoadingDialog(builder: AlertDialog.Builder) {
-    ru.smartro.worknote.log.info( "before")
+    log.info( "before")
     try {
         loadingDialog = builder.create()
         loadingDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         loadingDialog?.show()
     }  catch (e: Exception) {
         // TODO: 02.11.2021
-        ru.smartro.worknote.log.error("showLoadingDialog", e)
+        log.error("showLoadingDialog", e)
     }
-    ru.smartro.worknote.log.info("after")
+    log.info("after")
 }
 
 

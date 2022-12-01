@@ -55,12 +55,14 @@ import ru.smartro.worknote.log.todo.ConfigName
 import ru.smartro.worknote.log.todo.NetworkRepository
 import ru.smartro.worknote.work.work.RealmRepository
 import ru.smartro.worknote.log.todo.RegionEntity
+import ru.terrakok.cicerone.Cicerone
+import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Router
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-
 
 //INSTANCE
 // TODO: service locator паттерн альтернатива DI
@@ -146,7 +148,9 @@ class App : AA() {
 
         if (gps_loc == null && net_loc == null) {
             if (this.mCurrentAct is ActMain) {
-                (this.mCurrentAct as ActMain).showNextFragment(R.id.DInfoGpsOffF)
+                App.getAppliCation().getCurrentAct()?.supportFragmentManager?.fragments?.get(0)?.view?.post {
+                    (this.mCurrentAct as ActMain).showNextFragment(R.id.DInfoGpsOffF)
+                }
             }
             return getAppParaMS().getSaveGPS()
         }
@@ -232,6 +236,22 @@ class App : AA() {
     private fun manInit() {
         mRESTman = OkRESTman()
     }
+
+    private var mCicerone: Cicerone<Router>? = null
+    private fun getCicerone(): Cicerone<Router> {
+        if (mCicerone == null) {
+            mCicerone = Cicerone.create()
+        }
+        return mCicerone!!
+    }
+    fun getNavigatorHolder(): NavigatorHolder {
+        return getCicerone().navigatorHolder
+    }
+
+    fun getRouter(): Router {
+        return getCicerone().router
+    }
+
 
 
     private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){

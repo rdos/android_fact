@@ -15,7 +15,7 @@
 
     <dialog
         android:id="@+id/DInfoPointsUploadF"
-        android:name="ru.smartro.worknote.presentation.DInfoPointsUploadF"
+        android:name="ru.smartro.worknote.presentation.DFInfoPointsUpload"
         android:label="DInfoPointsUploadF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"

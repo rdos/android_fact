@@ -105,6 +105,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
             val extraPramId = getAct().getPutExtraParam_ID()
             val workOrderS = vm.database.findWorkOrders_Old(extraPramId)
             getNetDataSetDatabase(workOrderS)
+//            navigateNext(R.id.DFConfirmYesPhotoVechicle)
         } else {
             val isEmptyBreakDownReasonS = vm.database.findAllBreakDownReasonS().isEmpty()
             val isEmptyCancelWayReasonS = vm.database.findCancelWayReasonEntity().isEmpty()

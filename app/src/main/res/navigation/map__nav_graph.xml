@@ -512,8 +512,22 @@
 
     <dialog
         android:id="@+id/DYesNoClearNavigator"
-        android:name="ru.smartro.worknote.presentation.DYesNoClearNavigator"
+        android:name="ru.smartro.worknote.presentation.DFYesNoClearNavigator"
         android:label="DYesNoClearNavigator">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DFConfirmYesPhotoVechicle"
+        android:name="ru.smartro.worknote.presentation.DFConfirmYesVechicle"
+        android:label="DFConfirmYesVechicle">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"

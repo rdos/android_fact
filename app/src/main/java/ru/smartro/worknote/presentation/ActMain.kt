@@ -15,17 +15,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
-import ru.smartro.worknote.AppParaMS
-import ru.smartro.worknote.LOG
-import ru.smartro.worknote.R
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.FAI
 import ru.smartro.worknote.ac.IActTooltip
 import ru.smartro.worknote.ac.ITooltip
-import ru.smartro.worknote.hideDialog
 import ru.smartro.worknote.log.todo.ConfigName
 
 //todo: INDEterminate)
@@ -87,24 +85,47 @@ class ActMain :
         return vgRootAct
     }
 
+    override fun onResume() {
+        super.onResume()
+        val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
+        filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
+        registerReceiver(mGpsStateReceiver, filter)
+
+//        App.getAppliCation().getNavigatorHolder().setNavigator(mNavigator)
+    }
+
+//    private  val mNavigator = object : SupportFragmentNavigator(supportFragmentManager, R.id.fragment_container) {
+//        override fun createFragment(screenKey: String?, data: Any?): Fragment {
+//            mTEMPscreenKeyVAL = screenKey
+//            when(screenKey) {
+//                SCREEN_EARLY_COMPLETE -> {
+//                    val res = FPMap.newInstance(data)
+//                    return res
+//                }
+//                SCREEN_SUCCESS_COMPLETE -> {
+//                    val res = FinishCompleteF.newInstance(data)
+//                    return res
+//                }
+////                case default_LIST_SCREEN:
+////                return DetailsFragment.getNewInstance(data);
+//                else -> return CompleteF.newInstance(data)
+////                throw new default     RuntimeException(“Unknown СИКРЕТ key!”);
+//            }
+//        }
 
     override fun onPause() {
         super.onPause()
         unregisterReceiver(mGpsStateReceiver)
         LOG.info("SWIPE")
         vm.database.setConfigCntPlusOne(ConfigName.SWIPE_CNT)
+        App.getAppliCation().getNavigatorHolder().removeNavigator()
     }
 
     override fun onRestart() {
         super.onRestart()
     }
 
-    override fun onResume() {
-        super.onResume()
-        val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
-        filter.addAction(Intent.ACTION_PROVIDER_CHANGED)
-        registerReceiver(mGpsStateReceiver, filter)
-    }
+
 
     //todo:::
     override fun onDestroy() {
