@@ -203,15 +203,18 @@ class DFPMap : ADF(), View.OnClickListener {
             holder.clParent.setOnClickListener{
                 var toastText = ""
                 if (!_platform.name.isNullOrEmpty()) {
-                    toastText += "Имя = ${_platform.name} \n"
+                    toastText += "Площадка = ${_platform.name} \n"
                 }
                 toastText += "${container?.typeName} \n"
+                if (!container?.number.isNullOrEmpty()) {
+                    toastText += "Номер = ${container?.number} \n"
+                }
                 toastText += "Объем = ${container?.constructiveVolume} \n"
                 if (!container?.client.isNullOrEmpty()) {
                     toastText += "Клиент = ${container?.client} \n"
                 }
-                if (!container?.client.isNullOrEmpty()) {
-                    toastText += "Контакт = ${container?.contacts} \n"
+                if (!container?.contacts.isNullOrEmpty()) {
+                    toastText += "Контакт = ${container?.contacts}"
                 }
                 toast(toastText)
             }
