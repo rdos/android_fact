@@ -12,8 +12,11 @@ import ru.smartro.worknote.BuildConfig
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.RequestAI
+import ru.smartro.worknote.isNotNull
 import ru.smartro.worknote.log.RESTconnection
 import ru.smartro.worknote.presentation.ANoBodyGET
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.reflect.KClass
 
@@ -125,6 +128,9 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
         mResponseString = response.body?.string()
         LOG.info("mResponseString=${mResponseString}")
 
+        if (mResponseString.isNotNull()) {
+            saveJSON(mResponseString!!, TAGObj)
+        }
 
         val responseObj = getGson().fromJson(mResponseString, this.onGetResponseClazz().java)
         LOG.info("onAfter.before")
@@ -154,4 +160,41 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
         return result
     }
 
+    private fun saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+        fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
+            var dirPath = App.getAppliCation().dataDir.absolutePath
+            if(containerUuid == null) {
+                dirPath = dirPath + File.separator + platformUuid
+            } else {
+                dirPath = dirPath + File.separator + platformUuid + File.separator + containerUuid
+            }
+
+            val file = File(dirPath)
+            if (!file.exists()) file.mkdirs()
+            return file
+        }
+        val file: File = File(getOutputDirectory("saveJSON", null), "${p_jsonName}.json")
+        try {
+            file.delete()
+        } catch (ex: Exception) {
+            LOG.error("file.delete()", ex)
+        }
+
+        //This point and below is responsible for the write operation
+
+        //This point and below is responsible for the write operation
+        var outputStream: FileOutputStream? = null
+        try {
+
+            file.createNewFile()
+            //second argument of FileOutputStream constructor indicates whether
+            //to append or create new file if one exists
+            outputStream = FileOutputStream(file, true)
+            outputStream.write(bodyInStringFormat.toByteArray())
+            outputStream.flush()
+            outputStream.close()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
 }
