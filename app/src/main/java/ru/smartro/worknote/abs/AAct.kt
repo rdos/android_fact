@@ -4,11 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+
 import androidx.navigation.fragment.NavHostFragment
 import ru.smartro.worknote.*
-import ru.smartro.worknote.andPOintD.ANOFragment
 
-import ru.smartro.worknote.presentation.ac.StartAct
+
+import ru.smartro.worknote.presentation.ActStart
 import java.lang.Exception
 
 //        try {
@@ -23,6 +24,7 @@ abstract class AAct : AppCompatActivity() {
 //    }
 
     protected fun AppliCation() : App {
+
         return App.getAppliCation()
     }
 
@@ -56,7 +58,7 @@ abstract class AAct : AppCompatActivity() {
     public fun onNewGPS() {
         LOG.debug("before")
         val navHostFragment = (supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-        (navHostFragment.childFragmentManager.fragments[0] as ANOFragment).onNewGPS()
+        (navHostFragment.childFragmentManager.fragments[0] as AF).onNewGPS()
         LOG.debug("after")
     }
     // TODO: !r_dos feed(stuff)
@@ -81,6 +83,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        App.getAppliCation().setCurrentAct(this)
         LOG.debug("onCreate")
     }
 
@@ -121,7 +124,7 @@ abstract class AAct : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        (applicationContext as App).setCurrentAct(this)
+        App.getAppliCation().setCurrentAct(this)
         LOG.debug("before")
     }
 
@@ -143,15 +146,42 @@ abstract class AAct : AppCompatActivity() {
     }
 
     protected fun restartApp() {
-        val intent = Intent(this, StartAct::class.java)
+        val intent = Intent(this, ActStart::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         this.startActivity(intent)
     }
 
     fun logout() {
         App.getAppParaMS().setLogoutParams()
-        val intent = Intent(this, StartAct::class.java)
+        val intent = Intent(this, ActStart::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
+    }
+
+    fun showNextFragment(navFragmentId: Int, argumentId: Int? = null, argumentName: String?=null) {
+        LOG.debug("before")
+        val fm = this.supportFragmentManager
+        val navHostFragment = fm.findFragmentById(R.id.fcv_container) as NavHostFragment
+        val navController = navHostFragment.navController
+        //        val navOptions = NavOptions.Builder().setPopUpTo(navFragmentId, true).build()
+        if (argumentId == null) {
+            // TODO: !~r_dos
+            //            navController.popBackStack(navFragmentId, true)
+            navController.navigate(navFragmentId, null)
+            return
+        }
+        val argSBundle = this.getArgSBundle(argumentId, argumentName)
+
+        navController.navigate(navFragmentId, argSBundle)
+    }
+
+    fun getArgSBundle(argumentId: Int, argumentName: String?=null): Bundle {
+        val bundle = Bundle(2)
+        bundle.putInt(ARGUMENT_NAME___PARAM_ID, argumentId)
+        // TODO: 10.12.2021 let на всякий П???
+        argumentName?.let {
+            bundle.putString(ARGUMENT_NAME___PARAM_NAME, argumentName)
+        }
+        return bundle
     }
 }

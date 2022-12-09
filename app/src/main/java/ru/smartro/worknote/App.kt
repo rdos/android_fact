@@ -7,23 +7,25 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.*
 import android.os.StrictMode.ThreadPolicy
+import android.util.Base64
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.LiveData
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -35,6 +37,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.FileAppender
 import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.geometry.Point
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.sentry.Sentry
@@ -44,28 +47,22 @@ import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
-import ru.smartro.worknote.andPOintD.AViewModel
-import ru.smartro.worknote.andPOintD.AndRoid
-import ru.smartro.worknote.andPOintD.FloatCool
-import ru.smartro.worknote.andPOintD.PoinT
-import ru.smartro.worknote.awORKOLDs.extensions.WarningType
-import ru.smartro.worknote.awORKOLDs.extensions.showDlgWarning
-import ru.smartro.worknote.awORKOLDs.util.MyUtil
-import ru.smartro.worknote.log.AApp
-import ru.smartro.worknote.presentation.ac.AirplanemodeIntentService
-import ru.smartro.worknote.presentation.ac.MainAct
-import ru.smartro.worknote.presentation.ac.StartAct
-import ru.smartro.worknote.work.ConfigName
-import ru.smartro.worknote.work.NetworkRepository
-import ru.smartro.worknote.work.RealmRepository
-import ru.smartro.worknote.work.RegionEntity
+import ru.smartro.worknote.ac.*
+import ru.smartro.worknote.presentation.andPOintD.AirplanemodeIntentService
+import ru.smartro.worknote.presentation.ActMain
+import ru.smartro.worknote.presentation.ActStart
+import ru.smartro.worknote.log.todo.ConfigName
+import ru.smartro.worknote.log.todo.NetworkRepository
+import ru.smartro.worknote.work.work.RealmRepository
+import ru.smartro.worknote.log.todo.RegionEntity
+import ru.terrakok.cicerone.Cicerone
+import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Router
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.HashSet
-
 
 //INSTANCE
 // TODO: service locator паттерн альтернатива DI
@@ -76,96 +73,10 @@ const val D__LOGS = "logs"
 const val D__R_DOS = "r_dos"
 const val D__FILES = "files"
 
-class ConnectionLostLiveData(context: Context) : LiveData<Boolean>(), AndroidNet.CallBack {
-    private var mNetworkCallback: ConnectivityManager.NetworkCallback? = null
-    private val cm = context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
-
-    override fun onActive() {
-        LOG.debug("before")
-        mNetworkCallback = AndroidNet(cm, this)
-
-        val networkRequest = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-            .build()
-
-        if(mNetworkCallback == null) {
-            LOG.warn(" if(mNetworkCallback == null) {")
-            return
-        }
-        cm.registerNetworkCallback(networkRequest, mNetworkCallback!!)
-    }
-
-    override fun onInactive() {
-        LOG.debug("before")
-        if(mNetworkCallback != null) {
-            LOG.info("if(mNetworkCallback != null)")
-            cm.unregisterNetworkCallback(mNetworkCallback!!)
-        }
-    }
-
-    override fun onLostInternet() {
-        LOG.debug("before")
-        postValue(true)
-    }
-
-}
-
-class AndroidNet(val p_cm: ConnectivityManager, val p_callback: CallBack) : ConnectivityManager.NetworkCallback() {
-    private val validNetworks: MutableSet<Network> = HashSet()
-    private var mOnLostInternetJob: Job? =  null
-
-    override fun onAvailable(network: Network) {
-        LOG.debug("before: network=${network}, validNetworks size=${validNetworks.size}")
-        val networkCapabilities = p_cm.getNetworkCapabilities(network)
-        val isInternet = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        if(isInternet == true) {
-            LOG.info("if(isInternet == true)")
-            validNetworks.add(network)
-            blockOnLostInternet()
-        }
-        checkValidNetworks()
-    }
-
-    override fun onLost(network: Network) {
-        super.onLost(network)
-        LOG.debug("before::: validNetworks size=${validNetworks.size}")
-        validNetworks.remove(network)
-        checkValidNetworks()
-    }
-
-    private fun checkValidNetworks() {
-        LOG.debug("before::: validNetworks size=${validNetworks.size}")
-        if (validNetworks.size <= 0) {
-            LOG.trace("if (validNetworks.size <= 0) {")
-            runOnLostInternet()
-        }
-    }
-
-    private fun runOnLostInternet() {
-        blockOnLostInternet()
-        mOnLostInternetJob = App.getAppliCation().applicationScope.launch(Dispatchers.Main) {
-            delay(3000L)
-            LOG.info("onLostInternet")
-            p_callback.onLostInternet()
-            LOG.debug("onLostInternet")
-        }
-    }
-
-    private fun blockOnLostInternet() {
-        if (mOnLostInternetJob != null) {
-            mOnLostInternetJob?.cancel()
-        }
-    }
-    interface  CallBack {
-        fun onLostInternet()
-    }
 
 
-}
 
-class App : AApp() {
+class App : AA() {
 
     private var mCurrentAct: AAct? = null
     private lateinit var connectionLiveData: ConnectionLostLiveData
@@ -182,7 +93,7 @@ class App : AApp() {
 //        internal lateinit var INSTANCE: App
 //            private set
         fun getAppliCation(): App = INSTANCE!!
-
+        fun oKRESTman(): OkRESTman = getAppliCation().mRESTman!!
         fun getAppParaMS(): AppParaMS = getAppliCation().aPPParamS
         fun getMethodMan(): String? {
             return "MethodMan"
@@ -196,7 +107,10 @@ class App : AApp() {
     private var mNetworkDat: NetworkRepository? = null
     private var mDB: RealmRepository? = null
 
+
+    private var mRESTman: OkRESTman? = null
     val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
 
     override fun onLowMemory() {
         super.onLowMemory()
@@ -204,7 +118,7 @@ class App : AApp() {
     }
 
     fun restartApp() {
-        val mStartActivity = Intent(baseContext, StartAct::class.java)
+        val mStartActivity = Intent(baseContext, ActStart::class.java)
         val mPendingIntentId = BuildConfig.VERSION_CODE
         val mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
         val mgr = baseContext.getSystemService(ALARM_SERVICE) as AlarmManager
@@ -215,7 +129,7 @@ class App : AApp() {
     fun gps(): PoinT {
         var gps_enabled = false
         var network_enabled = false
-        val lm = AndRoid.getService()
+        val lm = ru.smartro.worknote.ac.AndRoid.getService()
         gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
         network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
         var net_loc: Location? = null
@@ -233,6 +147,11 @@ class App : AApp() {
         }
 
         if (gps_loc == null && net_loc == null) {
+            if (this.mCurrentAct is ActMain) {
+                App.getAppliCation().getCurrentAct()?.supportFragmentManager?.fragments?.get(0)?.view?.post {
+                    (this.mCurrentAct as ActMain).showNextFragment(R.id.DInfoGpsOffF)
+                }
+            }
             return getAppParaMS().getSaveGPS()
         }
 
@@ -273,7 +192,7 @@ class App : AApp() {
         connectionLiveData.observeForever { isConnectionLost ->
 
             if(isConnectionLost == true) {
-                mCurrentAct?.showDlgWarning(WarningType.CONNECTION_LOST)
+                mCurrentAct?.showNextFragment(R.id.DInfoInternetOffF)
             }
         }
 
@@ -294,10 +213,10 @@ class App : AApp() {
         MapKitFactory.setApiKey(getString(R.string.yandex_map_key))
         MapKitFactory.initialize(this)
 //        MapKitFactory.getInstance().createLocationManager()
-
         LOG.info("on App created App.onCreate onAppCreate")
         sentryInit()
         realmInit()
+        manInit()
 //        try {    // Add a breadcrumb that will be sent with the next event(s)//            throw Exception("This is a devel.")//        } catch (e: Exception) {
 //            Sentry.captureException(e) //        }                                             //        val objectAnimator: ObjectAnimator = ObjectAnimator.ofFloat( //            mLlcMap, "alpha", 0f
 //        ) //        objectAnimator.setDuration(4000);
@@ -307,14 +226,33 @@ class App : AApp() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
-        val configEntity = getDB().loadConfig(ConfigName.RUNAPP_CNT)
-        configEntity.cntPlusOne()
-        getDB().saveConfig(configEntity)
+        getDB().setConfigCntPlusOne(ConfigName.RUNAPP_CNT)
 
         LOG.info("DEBUG::: Current Realm Schema Version : ${Realm.getDefaultInstance().version}")
 
         registerReceiver(mAirplaneModeStateReceiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
     }
+
+    private fun manInit() {
+        mRESTman = OkRESTman()
+    }
+
+    private var mCicerone: Cicerone<Router>? = null
+    private fun getCicerone(): Cicerone<Router> {
+        if (mCicerone == null) {
+            mCicerone = Cicerone.create()
+        }
+        return mCicerone!!
+    }
+    fun getNavigatorHolder(): NavigatorHolder {
+        return getCicerone().navigatorHolder
+    }
+
+    fun getRouter(): Router {
+        return getCicerone().router
+    }
+
+
 
     private fun clearLogbackDirectory(maxHistoryFileCount: Int = 5){
         val logsFilesArray = this.getD(D__LOGS).listFiles()
@@ -352,7 +290,7 @@ class App : AApp() {
         val fileAppender = FileAppender<ILoggingEvent>()
         fileAppender.context = lc
 
-        val file = getF(D__LOGS, "${MyUtil.currentTime()}.log")
+        val file = getF(D__LOGS, "${this.currentTime()}.log")
         fileAppender.file = file.absolutePath
         fileAppender.encoder = encoder1
         fileAppender.start()
@@ -429,11 +367,11 @@ class App : AApp() {
 //                if (getAppParaMS().isOldGPSbaseDate(LocationTIME)) {
                     getAppParaMS().saveLastGPS(LocationLAT, LocationLONG, LocationTIME, LocationACCURACY.LET)
                     try {
-                        if (mCurrentAct is MainAct) {
+                        if (mCurrentAct is ActMain) {
                             mCurrentAct?.onNewGPS()
                         }
                     } catch (ex: Exception) {
-                        logSentry("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
+                        sentryLog("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
                         LOG.debug("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
                     }
 //                }
@@ -520,8 +458,22 @@ class App : AApp() {
         }
     }
 
-    fun logSentry(text: String) {
-        Sentry.addBreadcrumb("${TAG} : $text")
+    // TODO: VT add safe block
+    fun sentryCaptureException(thr: Throwable) {
+        LOG.error(thr.message, thr)
+        Sentry.captureException(thr)
+    }
+
+    fun sentryCaptureErrorMessage(message: String, messageShowForUser: String? = null) {
+        if (messageShowForUser.isNotNull()) {
+            toast(messageShowForUser)
+        }
+        LOG.error(message)
+        Sentry.captureMessage(message)
+    }
+
+    fun sentryLog(text: String) {
+        Sentry.addBreadcrumb("${TAG} : ${text}")
         LOG.debug("${text}")
     }
 
@@ -651,8 +603,8 @@ class App : AApp() {
 //        if (providerName.isNullOrEmpty()) {
 //
 //        }
-        AndRoid.getService().requestLocationUpdates(
-            AndRoid.getProviderName(),
+        ru.smartro.worknote.ac.AndRoid.getService().requestLocationUpdates(
+            ru.smartro.worknote.ac.AndRoid.getProviderName(),
             300,
             30F,
             // override fun onLocationChanged(location: Location) {
@@ -703,7 +655,7 @@ class App : AApp() {
         if (isDevelMode()) {
             res = "${res}_isDevelMode"
         }
-        logSentry(res)
+        sentryLog(res)
         return res
     }
 
@@ -735,7 +687,7 @@ class App : AApp() {
         }
         sentryAddTag("user_name", getAppParaMS().userName);
         sentryAddTag("android_api", android.os.Build.VERSION.SDK_INT.toString())
-        sentryAddTag("device_name", MyUtil.getDeviceName()!!)
+        sentryAddTag("device_name", this.getDeviceName()!!)
     }
 
     fun isDevelMode(): Boolean {
@@ -757,12 +709,121 @@ class App : AApp() {
                     context.startService(serviceIntent)
 
                     if (isAirplaneModeEnabled) {
-                        mCurrentAct?.showDlgWarning(WarningType.AIRPLANE_MODE)
+                        mCurrentAct?.showNextFragment(R.id.InfoAirplaneModeOnDF)
                     }
                 }
             }
         }
     }
+
+    private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
+
+    /** Convenience method used to check if all permissions required by this app are granted */
+    fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
+        ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun timeStampInSec(): Long {
+        return this.timeStampInMS() / 1000
+    }
+
+    fun timeStampInMS(): Long {
+        return System.currentTimeMillis()
+    }
+
+    fun currentTime(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", Locale.getDefault())
+        return sdf.format(Date())
+    }
+
+    // TODO: 26.10.2021 !!! см. MapActivity.getBitmapFromVectorDrawable
+    fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap? {
+        var drawable = ContextCompat.getDrawable(context, drawableId) ?: return null
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = DrawableCompat.wrap(drawable).mutate()
+        }
+
+        val bitmap = Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        ) ?: return null
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+
+        return bitmap
+    }
+
+    fun hasPermissions(context: Context, vararg permissions: Array<String>): Boolean =
+        permissions.all {
+            ActivityCompat.checkSelfPermission(context, it.toString()) == PackageManager.PERMISSION_GRANTED
+        }
+
+    fun hideKeyboard(activity: Activity) {
+        val imm: InputMethodManager =
+            activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        val view: View? = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+//            view = View(activity)
+            return
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+
+    fun base64ToImage(encodedImage: String?): Bitmap {
+        val decodedString: ByteArray =
+            Base64.decode(encodedImage?.replace("data:image/png;base64,", ""), Base64.DEFAULT)
+
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+    }
+
+    fun getDeviceName(): String? {
+        fun capitalize(s: String?): String? {
+            if (s == null || s.isEmpty()) {
+                return ""
+            }
+            val first = s[0]
+            return if (Character.isUpperCase(first)) {
+                s
+            } else {
+                Character.toUpperCase(first).toString() + s.substring(1)
+            }
+        }
+
+        val manufacturer = Build.MANUFACTURER
+        val model = Build.MODEL
+        return if (model.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+            capitalize(model)
+        } else {
+            capitalize(manufacturer).toString() + " " + model
+        }
+    }
+
+    fun calculateDistance(
+        currentLocation: Point,
+        finishLocation: Point
+    ): Int {
+        val userLocation = Location(LocationManager.GPS_PROVIDER)
+        userLocation.latitude = currentLocation.latitude
+        userLocation.longitude = currentLocation.longitude
+
+        val checkPointLocation = Location(LocationManager.GPS_PROVIDER)
+        checkPointLocation.latitude = finishLocation.latitude
+        checkPointLocation.longitude = finishLocation.longitude
+        return userLocation.distanceTo(checkPointLocation).toInt()
+    }
+
+
+    fun currentDate(): String {
+        return SimpleDateFormat("yyyy-MM-dd").format(Date())
+    }
+    //        MyUtil(эх молодость)
+
 }
 
 const val TIME_OUT = 240000L
@@ -819,13 +880,17 @@ fun Any.getDeviceDateTime(): Date {
 
 fun Any.toast(text: String? = "") {
     try {
-       Toast.makeText(App.getAppliCation().applicationContext, text, Toast.LENGTH_SHORT).show()
+        if(App.getAppliCation().getCurrentAct() != null) {
+            App.getAppliCation().getCurrentAct()?.supportFragmentManager?.fragments?.get(0)?.view?.post {
+                Toast.makeText(App.getAppliCation().applicationContext, text, Toast.LENGTH_SHORT).show()
+            }
+        }
     } catch (ex: Exception) {
         LOG.error("eXthr", ex)
     }
 }
 
-fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
+fun ru.smartro.worknote.ac.AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
     fun getOutputDirectory(platformUuid: String, containerUuid: String?): File {
         var dirPath = App.getAppliCation().dataDir.absolutePath
         if(containerUuid == null) {
@@ -867,6 +932,20 @@ fun AViewModel.saveJSON(bodyInStringFormat: String, p_jsonName: String) {
 //    }
 //
 //}
+
+fun CharSequence?.isNotNull(): Boolean {
+    return !this.isNullOrBlank()
+}
+
+fun Any?.toStr(s: String): String {
+    return if (this == null) {
+        ""
+    } else {
+        "$this $s"
+    }
+}
+
+fun Any?.toStr() = this?.toString() ?: ""
 
 /** Milliseconds used for UI animations */
 fun AppCompatButton.simulateClick(delayBefore: Long = 1000L, delayAfter: Long = 1050L) {
@@ -927,4 +1006,15 @@ fun  Any.LOGINcyclEStop() {
 //            return@INcyclEStop
 //        }
     LOG.debug(".************-_(:;)")
+}
+
+fun Any.tryCatch(showForUserText: String? = null, next: ( )->Any) {
+    try {
+        next()
+    } catch (eXthr: Exception) {
+        if (showForUserText.isNotNull()) {
+            App.getAppliCation().toast(showForUserText)
+        }
+        App.getAppliCation().sentryCaptureException(eXthr)
+    }
 }

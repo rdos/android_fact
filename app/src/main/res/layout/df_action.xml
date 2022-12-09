@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ru.smartro.worknote.ac.SmartROllc xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@drawable/bg_button_red__default">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actv__df_action__title"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        tools:text="Оповещение"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp"
+        android:layout_gravity="center"
+        />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actv__df_action__content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="12dp"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:layout_gravity="center"
+        tools:text="Вы точно хотите выйти?"
+        />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginVertical="12dp"
+        android:paddingHorizontal="12dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb__df_action__accept"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_button"
+            android:foreground="?attr/selectableItemBackground"
+            tools:text="Подтвердить"
+            android:textColor="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acb__df_action__decline"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_button_green__default"
+            android:foreground="?attr/selectableItemBackground"
+            tools:text="Отмена"
+            android:textColor="@color/black" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</ru.smartro.worknote.ac.SmartROllc>

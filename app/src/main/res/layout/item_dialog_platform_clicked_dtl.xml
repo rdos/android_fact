@@ -10,8 +10,8 @@
     app:layout_constraintTop_toTopOf="parent"
     android:paddingBottom="@dimen/margin_default">
 
-    <ImageView
-        android:id="@+id/ib_item_dialog_platform_clicked_dtl__platform"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ib_item_dialog_platform_clicked_dtl__container"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:src="@drawable/ic_bunker_red"
@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_item_dialog_platform_clicked_dtl__status"
         android:layout_width="12dp"
         android:layout_height="12dp"
@@ -28,7 +28,7 @@
         android:layout_marginTop="@dimen/margin_min"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ib_item_dialog_platform_clicked_dtl__platform"
+        app:layout_constraintTop_toBottomOf="@id/ib_item_dialog_platform_clicked_dtl__container"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

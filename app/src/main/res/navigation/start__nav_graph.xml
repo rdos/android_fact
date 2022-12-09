@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/start__nav_graph"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/StartF">
+
+    <fragment
+        android:id="@+id/StartF"
+        android:name="ru.smartro.worknote.presentation.FAuch"
+        tools:layout="@layout/f_start"
+        android:label="StartF" />
+
+    <dialog
+        android:id="@+id/DInfoInternetOffF"
+        android:name="ru.smartro.worknote.presentation.DFInfoInternetOff"
+        android:label="DInfoInternetOffF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/ReAuthWarningDialogF"
+        android:name="ru.smartro.worknote.presentation.DFYesNoReAuthDialog"
+        tools:layout="@layout/df_action"
+        android:label="ReAuthWarningDialogF" />
+
+    <dialog
+        android:id="@+id/ReAuthConfirmationDialogF"
+        android:name="ru.smartro.worknote.presentation.DFConfirmReAuth"
+        tools:layout="@layout/df_action"
+        android:label="ReAuthConfirmationDialogF" />
+
+</navigation>
