@@ -15,6 +15,7 @@ import ru.smartro.worknote.abs.RequestAI
 import ru.smartro.worknote.isNotNull
 import ru.smartro.worknote.log.RESTconnection
 import ru.smartro.worknote.presentation.ANoBodyGET
+import ru.smartro.worknote.presentation.RPOSTSynchro
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -86,7 +87,13 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
         }
 
         val bodyInStringFormat = getGson().toJson(netObject)
-        LOG.debug("bodyInStringFormat=${bodyInStringFormat}")
+        if (this !is RPOSTSynchro) {
+            LOG.debug("bodyInStringFormat=${bodyInStringFormat}")
+        }
+
+        if (bodyInStringFormat.isNotNull()) {
+            saveJSON(bodyInStringFormat!!, "req-${TAGObj}")
+        }
         val body: RequestBody = RequestBody.create(mMediaType, bodyInStringFormat)
         requestBuilder.post(body)
         return requestBuilder.build()
@@ -129,7 +136,7 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
         LOG.info("mResponseString=${mResponseString}")
 
         if (mResponseString.isNotNull()) {
-            saveJSON(mResponseString!!, TAGObj)
+            saveJSON(mResponseString!!, "resp-${TAGObj}")
         }
 
         val responseObj = getGson().fromJson(mResponseString, this.onGetResponseClazz().java)
