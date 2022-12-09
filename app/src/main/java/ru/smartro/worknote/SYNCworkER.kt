@@ -229,7 +229,7 @@ class SYNCworkER(
     }
 
     protected fun logSentry(text: String) {
-        App.getAppliCation().logSentry(text)
+        App.getAppliCation().sentryLog(text)
     }
 }
 /**   //SYNCworkER

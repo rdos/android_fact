@@ -85,7 +85,7 @@ class RPOSTSynchro: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
         }
         val alertMsg = bodyOut.alert
         if (!alertMsg.isNullOrEmpty()) {
-            App.getAppliCation().logSentry("ValertMsgalertMsgalertMsgalertMsgalertMsg!!!!!!!")
+            App.getAppliCation().sentryLog("ValertMsgalertMsgalertMsgalertMsgalertMsg!!!!!!!")
         }
     }
 

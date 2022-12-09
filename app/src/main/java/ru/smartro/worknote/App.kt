@@ -371,7 +371,7 @@ class App : AA() {
                             mCurrentAct?.onNewGPS()
                         }
                     } catch (ex: Exception) {
-                        logSentry("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
+                        sentryLog("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
                         LOG.debug("Exception!!! mCurrentAct?.onNEWfromGPSSrv()")
                     }
 //                }
@@ -458,14 +458,22 @@ class App : AA() {
         }
     }
 
+    // TODO: VT add safe block
+    fun sentryCaptureException(thr: Throwable) {
+        LOG.error(thr.message, thr)
+        Sentry.captureException(thr)
+    }
+
     fun sentryCaptureErrorMessage(message: String, messageShowForUser: String? = null) {
-        toast(messageShowForUser)
+        if (messageShowForUser.isNotNull()) {
+            toast(messageShowForUser)
+        }
         LOG.error(message)
         Sentry.captureMessage(message)
     }
 
-    fun logSentry(text: String) {
-        Sentry.addBreadcrumb("${TAG} : $text")
+    fun sentryLog(text: String) {
+        Sentry.addBreadcrumb("${TAG} : ${text}")
         LOG.debug("${text}")
     }
 
@@ -647,7 +655,7 @@ class App : AA() {
         if (isDevelMode()) {
             res = "${res}_isDevelMode"
         }
-        logSentry(res)
+        sentryLog(res)
         return res
     }
 
@@ -998,4 +1006,15 @@ fun  Any.LOGINcyclEStop() {
 //            return@INcyclEStop
 //        }
     LOG.debug(".************-_(:;)")
+}
+
+fun Any.tryCatch(showForUserText: String? = null, next: ( )->Any) {
+    try {
+        next()
+    } catch (eXthr: Exception) {
+        if (showForUserText.isNotNull()) {
+            App.getAppliCation().toast(showForUserText)
+        }
+        App.getAppliCation().sentryCaptureException(eXthr)
+    }
 }

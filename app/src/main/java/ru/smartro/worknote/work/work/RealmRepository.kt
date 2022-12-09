@@ -1197,10 +1197,13 @@ class RealmRepository(private val p_realm: Realm) {
         }
     }
 
-    fun setConfigCntPlusOne(name: ConfigName){
-        val configEntity = loadConfig(name)
-        configEntity.cntPlusOne()
-        saveConfig(configEntity)
+    fun setConfigCntPlusOne(name: ConfigName) {
+        tryCatch(){
+            val configEntity = loadConfig(name)
+            configEntity.cntPlusOne()
+            saveConfig(configEntity)
+        }
+
     }
     fun setConfig(name: ConfigName, value: String) {
         val configEntity = loadConfig(name)
@@ -1261,7 +1264,9 @@ class RealmRepository(private val p_realm: Realm) {
     }
 
     fun close() {
-        p_realm.close()
+        tryCatch(){
+            p_realm.close()
+        }
     }
 
 

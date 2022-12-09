@@ -49,7 +49,7 @@ abstract class AF : Fragment(), FAI {
     }
 
     protected fun logSentry(text: String) {
-        AppliCation().logSentry(text)
+        AppliCation().sentryLog(text)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
