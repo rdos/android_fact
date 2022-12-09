@@ -59,6 +59,7 @@ const val C_PHOTO_D = "photo"
 abstract class
 APhotoF(
 ) : AF(), OnImageSavedCallback {
+    private var mIsSavePhotoMode: Boolean = false
     private var acetComment: AppCompatEditText? = null
     protected var mAcactvFail: AppCompatAutoCompleteTextView? = null
     private var mMediaPlayer: MediaPlayer? = null
@@ -175,6 +176,7 @@ APhotoF(
             ibTakePhoto?.isEnabled = true
             return
         }
+        mIsSavePhotoMode = true
         onTakePhoto()
         val photoFL = createFile(getOutputD(), App.getAppliCation().timeStampInSec().toString())
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFL).build()
@@ -214,7 +216,6 @@ APhotoF(
 
         LOG.debug("Photo capture succeeded: $imageUri path: ${imageUri.path}")
         LOG.error( "Current thread: ${Thread.currentThread().id}")
-        setImageCounter()
         setGalleryThumbnail(imageUri)
 
         try {
@@ -244,17 +245,19 @@ APhotoF(
             }
             LOG.warn( Thread.currentThread().name)
 
-
             onSavePhoto()
         } catch (ex: Exception) {
             LOG.error("onImageSaved", ex)
             toast(TOAST_TEXT)
+        } finally {
+            setImageCounter()
         }
     }
 
     override fun onError(exception: ImageCaptureException) {
         toast(TOAST_TEXT)
         LOG.error("onError", exception)
+        setImageCounter()
     }
 
 
@@ -299,7 +302,7 @@ APhotoF(
     }
 
     private fun setImageCounter() {
-            val mediaSize = getMediaCount()
+        val mediaSize = getMediaCount()
         mImageCounter?.post{
             mImageCounter?.text = "$mediaSize"
             try {
@@ -331,7 +334,7 @@ APhotoF(
                     viewModel.updatePlatformEntity()
                 }
                 ibTakePhoto?.isEnabled = true
-
+                mIsSavePhotoMode = false
             } catch (ex: Exception) {
                 logSentry("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
                 LOG.info("setImageCounter.mBtnAcceptPhoto?.apply и try{}catch")
@@ -411,6 +414,10 @@ APhotoF(
 
         acbGotoNext = view.findViewById(R.id.acb_f_aphoto__goto_next)
         acbGotoNext?.setOnClickListener {
+            if (mIsSavePhotoMode) {
+                toast("фото медленно сохраняется :(")
+                return@setOnClickListener
+            }
             val mediaSize = getMediaCount()
             if (mediaSize == 0) {
                 toast("Сделайте фото")
@@ -455,6 +462,7 @@ APhotoF(
                         toast("Извините, произошла ошибка \n повторите, пожалуйста, попытку")
                         LOG.error("ibTakePhoto?.setOnClickListener", ex)
                         ibTakePhoto?.isEnabled = true
+                        mIsSavePhotoMode = false
                     }
 
                 }
