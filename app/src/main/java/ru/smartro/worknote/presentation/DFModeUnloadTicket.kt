@@ -1,9 +1,12 @@
 package ru.smartro.worknote.presentation
 
 import android.content.DialogInterface
+import android.view.WindowManager
+import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ADF
@@ -11,6 +14,7 @@ import ru.smartro.worknote.ac.SmartROllc
 import ru.smartro.worknote.ac.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.log.todo.ConfigName
+import ru.smartro.worknote.tryCatch
 
 //todo: смотри прикол, VT !!!UnloadInfo++ploadTicket
 class DFModeUnloadTicket: ADF() {
@@ -42,7 +46,12 @@ class DFModeUnloadTicket: ADF() {
         acbFinish?.onSwipe = {
             toast("выключился режим Выгрузки")
             vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, false)
-            findNavController().previousBackStackEntry?.savedStateHandle?.set("buildNavigatorPlatformUnload", false)
+            tryCatch {
+                val navHostFragment = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
+                val fragmentPMap = (navHostFragment.childFragmentManager.fragments[0] as FPMap)
+                fragmentPMap.clearNavigator()
+                fragmentPMap.toggleUnloadButton(false)
+            }
             navigate(R.id.MapPlatformsF)
         }
 
@@ -87,5 +96,16 @@ class DFModeUnloadTicket: ADF() {
 
         if(platformUnloadEntity != null)
             vm.database.setPlatformUnloadEntity(platformUnloadEntity)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //todo:r_dos:: сделать прозрачными
+        val params: WindowManager.LayoutParams? = dialog?.window?.attributes
+        params?.height = FrameLayout.LayoutParams.WRAP_CONTENT
+        params?.width = FrameLayout.LayoutParams.MATCH_PARENT
+        params?.horizontalMargin = 81f
+//        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.attributes = params
     }
 }

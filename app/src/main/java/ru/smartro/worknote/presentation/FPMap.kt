@@ -195,17 +195,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 
         //TODO: сюда изменения вностиьб!
         if (vm.isUnloadMode()) {
-            navigateNext(R.id.ModeUnloadTicketFD)
-            getStateHandle("buildNavigatorPlatformUnload") { result ->
-                LOG.debug("TEST:::!!!")
-                if(result) {
-                    buildNavigatorPlatformUnload()
-                    toggleUnloadButton(true)
-                } else {
-                    clearNavigator()
-                    toggleUnloadButton(false)
-                }
-            }
+            navigateNext(R.id.DFModeUnloadTicket)
             toggleUnloadButton(true)
         } else {
             toggleUnloadButton(false)
@@ -216,20 +206,8 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
             if (platformID == Inull) {
                 return@setOnClickListener
             }
-            getStateHandle("buildNavigatorPlatformUnload") { result ->
-                //TODO: сюда изменения вностиьб! 
-                LOG.debug("TEST:::!!!")
-                if(result) {
-                    buildNavigatorPlatformUnload()
-                    toggleUnloadButton(true)
-                } else {
-                    clearNavigator()
-                    toggleUnloadButton(false)
-                }
-            }
-
             if (vm.isUnloadMode()) {
-                navigateNext(R.id.ModeUnloadTicketFD)
+                navigateNext(R.id.DFModeUnloadTicket)
             } else {
                 navigateNext(R.id.UnloadInfoF)
             }
@@ -238,15 +216,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         MAP?.moveCameraTo(userPoint)
     }
 
-    fun getStateHandle(keyString: String, next: (result: Boolean) -> Any) {
-        findNavController().currentBackStackEntry?.savedStateHandle?.clearSavedStateProvider(keyString)
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>(keyString)?.observe(viewLifecycleOwner)
-        { result ->
-            next(result)
-        }
-    }
-
-    private fun toggleUnloadButton(isActive: Boolean) {
+    fun toggleUnloadButton(isActive: Boolean) {
         val backgroundResource = if(isActive) R.drawable.bg_button__with_caution else R.drawable.bg_button__inactive
         val iconResource = if(isActive) R.drawable.ic_unload_truck__active else R.drawable.ic_unload_truck__inactive
 
@@ -257,7 +227,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         acbUnload?.setImageDrawable(iconDrawable)
     }
 
-    private fun clearNavigator() {
+    fun clearNavigator() {
         drivingModeState = false
         acibNavigatorToggle?.isVisible = drivingModeState
         MAP?.clearMapObjectsDrive()
@@ -648,7 +618,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 //        }
     }
 
-    private fun buildNavigatorPlatformUnload(){
+    fun buildNavigatorPlatformUnload(){
         val workOrders = getActualWorkOrderS()
 
         val coordLat = workOrders.get(0).unload?.coords?.get(0)

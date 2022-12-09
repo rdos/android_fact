@@ -288,7 +288,7 @@
             />
     </dialog>
     <dialog
-        android:id="@+id/ModeUnloadTicketFD"
+        android:id="@+id/DFModeUnloadTicket"
         android:name="ru.smartro.worknote.presentation.DFModeUnloadTicket"
         android:label="ModeUnloadTicketFD">
         <argument
