@@ -140,11 +140,11 @@ class FAuch : AF() {
 
     override fun onResume() {
         super.onResume()
-        val isHasToken = paramS().token.isShowForUser()
-        LOG.debug("isHasToken=${isHasToken}")
-        if (isHasToken) {
-            gotoNextAct(isHasToken = true)
-        }
+//        val isHasToken = paramS().token.isShowForUser()
+//        LOG.debug("isHasToken=${isHasToken}")
+//        if (isHasToken) {
+//            gotoNextAct(isHasToken = true)
+//        }
     }
 
     private fun isDevelMode() = (requireActivity() as AAct).isDevelMode()
