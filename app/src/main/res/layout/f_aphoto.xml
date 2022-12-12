@@ -135,7 +135,7 @@
             app:layout_constraintTop_toBottomOf="@+id/label_for"
             tools:hint="выберите причину невывоза" />
 
-        <ru.smartro.worknote.andPOintD.SmartROacb
+        <ru.smartro.worknote.ac.SmartROacb
             android:id="@+id/acb_f_aphoto__goto_next"
             android:layout_width="110dp"
             android:layout_height="39dp"

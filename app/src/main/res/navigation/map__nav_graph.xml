@@ -6,7 +6,7 @@
     app:startDestination="@id/MapPlatformsF">
     <fragment
         android:id="@+id/MapPlatformsF"
-        android:name="ru.smartro.worknote.presentation.MapPlatformsF"
+        android:name="ru.smartro.worknote.presentation.FPMap"
         tools:layout="@layout/f_map"
         android:label="MapPlatformsF" >
         <argument
@@ -20,9 +20,9 @@
     </fragment>
     <!--Directions-->
     <dialog
-        android:id="@+id/MapActPlatformClickedDtlDialog"
-        android:name="ru.smartro.worknote.presentation.MapPlatformClickedDtlF"
-        android:label="MapActPlatformClickedDtlDialog">
+        android:id="@+id/MapPlatformClickedDtlF"
+        android:name="ru.smartro.worknote.presentation.DFPMap"
+        android:label="MapPlatformClickedDtlF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -34,7 +34,7 @@
     </dialog>
     <fragment
         android:id="@+id/PhotoBeforeMediaF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaF"
+        android:name="ru.smartro.worknote.presentation.FPhotoBeforeMedia"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaF" >
         <argument
@@ -48,7 +48,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoKgoServedF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoKgoServedF"
+        android:name="ru.smartro.worknote.presentation.FPhotoKgoServed"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoKgoServedF" >
         <argument
@@ -62,7 +62,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoKgoRemainingF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoKgoRemainingF"
+        android:name="ru.smartro.worknote.presentation.FPhotoKgoRemaining"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoKgoRemainingF" >
         <argument
@@ -76,7 +76,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoPickupMediaF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoPickupMediaF"
+        android:name="ru.smartro.worknote.presentation.FPhotoPickupMedia"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoPickupMediaF" >
         <argument
@@ -90,7 +90,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoFailureMediaF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoFailureMediaF"
+        android:name="ru.smartro.worknote.presentation.FPhotoFailureMedia"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoFailureMediaF" >
         <argument
@@ -104,7 +104,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoBreakdownMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBreakdownMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.FPhotoBreakdownMediaContainer"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBreakdownMediaContainerF" >
         <argument
@@ -118,7 +118,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoFailureMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoFailureMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.FPhotoFailureMediaContainer"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoFailureMediaContainerF" >
         <argument
@@ -132,7 +132,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoAfterMediaF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoAfterMediaF"
+        android:name="ru.smartro.worknote.presentation.FPhotoAfterMedia"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoAfterMediaF" >
         <argument
@@ -146,7 +146,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoBeforeMediaContainerF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerF"
+        android:name="ru.smartro.worknote.presentation.FPhotoBeforeMediaContainer"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerF" >
         <argument
@@ -160,7 +160,7 @@
     </fragment>
     <fragment
         android:id="@+id/PhotoBeforeMediaContainerSimplifyF"
-        android:name="ru.smartro.worknote.presentation.came.PhotoBeforeMediaContainerByTypesF"
+        android:name="ru.smartro.worknote.presentation.FPhotoBeforeMediaContainerByTypes"
         tools:layout="@layout/f_aphoto"
         android:label="PhotoBeforeMediaContainerSimplifyF" >
         <argument
@@ -174,7 +174,7 @@
     </fragment>
     <fragment
         android:id="@+id/GalleryPhotoF"
-        android:name="ru.smartro.worknote.presentation.came.GalleryPhotoF"
+        android:name="ru.smartro.worknote.presentation.GalleryPhotoF"
         tools:layout="@layout/media_fragment"
         android:label="GalleryPhotoF" >
         <argument
@@ -201,7 +201,7 @@
     </fragment>
     <fragment
         android:id="@+id/JournalChatFragment"
-        android:name="ru.smartro.worknote.presentation.JournalChatF"
+        android:name="ru.smartro.worknote.presentation.FJornalChatWorkLog"
         android:label="JournalChatFragment" >
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
@@ -215,24 +215,9 @@
 
     <fragment
         android:id="@+id/CompleteF"
-        android:name="ru.smartro.worknote.presentation.terminate.CompleteF"
-        tools:layout="@layout/f_complete___map_act"
-        android:label="CompleteF">
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_ID"
-            app:argType="integer"
-            />
-        <argument
-            android:name="ARGUMENT_NAME___PARAM_NAME"
-            app:argType="string"
-            />
-    </fragment>
-
-    <fragment
-        android:id="@+id/FinishCompleteF"
-        tools:layout="@layout/f_finish_complete"
-        android:name="ru.smartro.worknote.presentation.terminate.FinishCompleteF"
-        android:label="FinishCompleteF">
+        android:label="CompleteF"
+        android:name="ru.smartro.worknote.presentation.FComplete"
+        tools:layout="@layout/f_complete___map_act">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -245,9 +230,9 @@
 
     <fragment
         android:id="@+id/PServeF"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeF"
+        android:name="ru.smartro.worknote.presentation.FPServe"
         tools:layout="@layout/f_pserve"
-        android:label="CompleteF">
+        android:label="PServeF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -260,9 +245,9 @@
 
     <fragment
         android:id="@+id/PServeGroupByContainersF"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeGroupByContainersF"
+        android:name="ru.smartro.worknote.presentation.FPServeGroupByContainers"
         tools:layout="@layout/f_pserve_groupby"
-        android:label="CompleteF">
+        android:label="PServeGroupByContainersF">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -276,12 +261,276 @@
     <dialog
         android:id="@+id/ContainerServeBottomDialog"
         tools:layout="@layout/fragment_container_serve"
-        android:name="ru.smartro.worknote.presentation.platform_serve.PServeContainerServeF"
+        android:name="ru.smartro.worknote.presentation.FPServeContainerServe"
         android:label="ContainerServeBottomDialog">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
             android:defaultValue="-1"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/UnloadInfoF"
+        android:name="ru.smartro.worknote.presentation.DFModeUnloadStart"
+        android:label="UnloadInfoF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+    <dialog
+        android:id="@+id/DFModeUnloadTicket"
+        android:name="ru.smartro.worknote.presentation.DFModeUnloadTicket"
+        android:label="ModeUnloadTicketFD">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <fragment
+        android:id="@+id/UnloadPhotoBeforeMediaF"
+        android:name="ru.smartro.worknote.presentation.DFModeUnloadPhotoBeforeMedia"
+        tools:layout="@layout/f_aphoto"
+        android:label="UnloadPhotoBeforeMediaF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/UnloadPhotoAfterMediaF"
+        android:name="ru.smartro.worknote.presentation.FModeUnloadPhotoAfterMedia"
+        tools:layout="@layout/f_aphoto"
+        android:label="UnloadPhotoAfterMediaF" >
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </fragment>
+
+    <dialog
+        android:id="@+id/LockedCarInfoDF"
+        android:name="ru.smartro.worknote.presentation.DFInfoLockedCar"
+        android:label="LockedCarInfoDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DInfoLockedGasF"
+        android:name="ru.smartro.worknote.presentation.DFInfoLockedGas"
+        android:label="DInfoLockedGasF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DInfoLockedPhotoF"
+        android:name="ru.smartro.worknote.presentation.DFInfoLockedPhoto"
+        android:label="DInfoLockedPhotoF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/PMapWarnDF"
+        android:name="ru.smartro.worknote.presentation.DFPMapWarn"
+        android:label="PMapWarnDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/PMapNeedCleanupDF"
+        android:name="ru.smartro.worknote.presentation.DFPMapNeedCleanup"
+        android:label="PMapNeedCleanupDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/PServeCleanupDF"
+        android:name="ru.smartro.worknote.presentation.DFPServeCleanup"
+        android:label="PServeCleanupDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/InfoAirplaneModeOnDF"
+        android:name="ru.smartro.worknote.presentation.DFInfoAirplaneModeOn"
+        android:label="InfoAirplaneModeOnDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DInfoInternetOffF"
+        android:name="ru.smartro.worknote.presentation.DFInfoInternetOff"
+        android:label="DInfoInternetOffF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DInfoGpsOffF"
+        android:name="ru.smartro.worknote.presentation.DFInfoGpsOff"
+        android:label="DInfoGpsOffF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DYesNoRelogin"
+        android:name="ru.smartro.worknote.presentation.DYesNoRelogin"
+        android:label="DYesNoRelogin">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+    <dialog
+        android:id="@+id/PickupDF"
+        android:name="ru.smartro.worknote.presentation.DFPickup"
+        android:label="PickupDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+    <dialog
+        android:id="@+id/PServeKGOServedVolumeDF"
+        android:name="ru.smartro.worknote.presentation.DFPServeKGOServedVolume"
+        android:label="PServeKGOServedVolumeDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+    <dialog
+        android:id="@+id/PServeKGORemainingVolumeDF"
+        android:name="ru.smartro.worknote.presentation.DFPServeKGORemainingVolume"
+        android:label="PServeKGOServedVolumeDF">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DYesNoClearNavigator"
+        android:name="ru.smartro.worknote.presentation.DFYesNoClearNavigator"
+        android:label="DYesNoClearNavigator">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
+    <dialog
+        android:id="@+id/DFConfirmYesPhotoVechicle"
+        android:name="ru.smartro.worknote.presentation.DFConfirmYesVechicle"
+        android:label="DFConfirmYesVechicle">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
             />
         <argument
             android:name="ARGUMENT_NAME___PARAM_NAME"

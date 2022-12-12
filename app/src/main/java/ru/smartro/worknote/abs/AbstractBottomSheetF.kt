@@ -7,9 +7,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.sentry.Sentry
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
-import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_ID
-import ru.smartro.worknote.andPOintD.ARGUMENT_NAME___PARAM_NAME
-import ru.smartro.worknote.LOG
 
 abstract class AbstractBottomSheetF : BottomSheetDialogFragment() {
     
@@ -30,7 +27,7 @@ abstract class AbstractBottomSheetF : BottomSheetDialogFragment() {
 
     }
 
-    protected fun navigateMain(navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
+    protected fun navigateNext(navFragmentId: Int, argumentId: Int?, argumentName: String?=null) {
         val navHost = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
         val navController = navHost.navController
 

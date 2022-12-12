@@ -10,7 +10,8 @@
     <color name="black">#000</color>
     <color name="dark_red">#ff0000</color>
     <color name="red_cool">#fff0f5</color>
-    <color name="dark_orange">#ff851e</color>
+    <color name="orange">#ff851e</color>
+    <color name="dark_orange">#975A26</color>
     <color name="orange_cool">#ffedcc</color>
 
     <color name="icFocused">#DDFFFFFF</color>
