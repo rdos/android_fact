@@ -729,6 +729,7 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
+            platformEntity?.unloadEntity?.beforeMedia = mEmptyImageEntityList
             platformEntity?.unloadEntity?.beforeMedia?.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
@@ -739,6 +740,7 @@ class RealmRepository(private val p_realm: Realm) {
             val platformEntity = getQueryPlatform()
                 .equalTo("platformId", platformId)
                 .findFirst()
+            platformEntity?.unloadEntity?.afterMedia = mEmptyImageEntityList
             platformEntity?.unloadEntity?.afterMedia?.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
