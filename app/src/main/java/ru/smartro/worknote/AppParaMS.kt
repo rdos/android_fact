@@ -177,6 +177,13 @@ class AppParaMS {
             it.putBoolean("isTorchEnabled", value)
         }
 
+    // TODO ::: BIG TIME
+    var isAcceptedClear: Boolean
+        get() = sharedPref__env.getBoolean("isAcceptedClear", false)
+        set(value) = sharedPref__env.edit {
+            it.putBoolean("isAcceptedClear", value)
+        }
+
     fun getOwnerId(): Int {
         return ownerId?: Inull
     }
@@ -298,6 +305,7 @@ class AppParaMS {
     fun setLogoutParams() {
         token = null
         isModeSYNChrONize = false
+        isAcceptedClear = false
     }
 
     fun setAppRestartParams() {

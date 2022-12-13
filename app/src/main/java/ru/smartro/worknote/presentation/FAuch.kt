@@ -70,7 +70,7 @@ class FAuch : AF() {
 //                }
 //            }
 //            App.oKRESTman().add(rpcAppStartup)
-//            
+//
                 //            vm.viewModelScope.launch {
                 //                App.getAppliCation().getNetwork().sendAppStartUp()
                 //            }
@@ -140,11 +140,12 @@ class FAuch : AF() {
 
     override fun onResume() {
         super.onResume()
-//        val isHasToken = paramS().token.isShowForUser()
-//        LOG.debug("isHasToken=${isHasToken}")
-//        if (isHasToken) {
-//            gotoNextAct(isHasToken = true)
-//        }
+        val isHasToken = paramS().token.isShowForUser()
+        val isAcceptedClear = paramS().isAcceptedClear
+        LOG.debug("isHasToken=${isHasToken}")
+        if (isHasToken && isAcceptedClear) {
+            gotoNextAct(isHasToken = true)
+        }
     }
 
     private fun isDevelMode() = (requireActivity() as AAct).isDevelMode()
