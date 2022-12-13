@@ -135,7 +135,7 @@ class FChecklistWaybill: AF(), SwipeRefreshLayout.OnRefreshListener {
         actvNoData?.visibility = View.GONE
         getWayBillList()
         srlRefresh?.isRefreshing = false
-        (requireActivity() as AXChecklist).showProgressBar()
+        (requireActivity() as AXChecklist).showProgressBar("список Путевых Листов\nавтомобиля ${paramS().vehicleName}")
     }
 
     override fun onDestroyView() {

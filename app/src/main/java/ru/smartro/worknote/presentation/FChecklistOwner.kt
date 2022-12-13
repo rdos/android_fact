@@ -68,7 +68,7 @@ class FChecklistOwner: AF(), SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
         getOwnersList()
         srlRefresh?.isRefreshing = false
-        (requireActivity() as AXChecklist).showProgressBar()
+        (requireActivity() as AXChecklist).showProgressBar("список организаций")
     }
 
     private fun getOwnersList() {
