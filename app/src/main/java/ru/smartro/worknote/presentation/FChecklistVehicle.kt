@@ -43,7 +43,7 @@ class FChecklistVehicle: AF(), SwipeRefreshLayout.OnRefreshListener {
             acibGoToBack?.setOnClickListener {
                 navigateBack()
             }
-            setBarTitle("Автомобиль")
+            setBarTitle("Автомобили")
         }
 
         srlRefresh = view.findViewById(R.id.srl__f_start_vehicle__refresh)

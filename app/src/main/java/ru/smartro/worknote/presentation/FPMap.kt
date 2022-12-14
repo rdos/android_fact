@@ -38,6 +38,7 @@ import ru.smartro.worknote.getActivityProperly
 
 class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListener {
 
+    private var mPlatformToServeId: Int? = null
     private var mTimeBeforeInSec: Long = Lnull
 
     private var mMapMyYandex: MapView? = null
@@ -242,7 +243,10 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
             LOG.trace("getActualPlatformS.init")
         val platformS = getActualPlatformS(true)
             LOG.trace("getActualPlatformS.end")
-        
+
+        if(platformS.isNotEmpty())
+            mPlatformToServeId = platformS[0].platformId
+
             LOG.trace("onRefreshBottomBehavior.init")
         val platformSWithQueryText = onRefreshBottomBehavior(platformS)
             LOG.trace("onRefreshBottomBehavior.end")
@@ -286,11 +290,8 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
             workOrderS.forEach {
                 newPlatformS.addAll(it.platforms)
             }
-            // TODO: R_dos!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            /**@kotlin.internal.InlineOnly
-            public inline fun <T> compareByDescending(crossinline selector: (T) -> Comparable<*>?): Comparator<T> =
-            Comparator { a, b -> compareValuesBy(b, a, selector) }*/
-            newPlatformS.sortBy { it.updateAt }
+
+            newPlatformS.sortBy { it.beginnedAt }
 
             mPlatformS = newPlatformS
 //            mPlatformS = vs.baseDat.findPlatforms(getWorkOrderSFilter())
@@ -550,6 +551,11 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         mInfoDialog?.show()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        hideInfoDiaLOG()
+    }
+
     private fun hideInfoDiaLOG() {
         try {
             mInfoDialog?.dismiss()
@@ -678,9 +684,13 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
     
     override fun onPlatformTap(pId: Int) {
         LOG.debug("!!!!!!")
-        val platformE = vm.database.getPlatformEntity(pId)
-        vm.setPlatformEntity(platformE)
-        navigateNext(R.id.MapPlatformClickedDtlF)
+        if(pId == mPlatformToServeId) {
+            val platformE = vm.database.getPlatformEntity(pId)
+            vm.setPlatformEntity(platformE)
+            navigateNext(R.id.MapPlatformClickedDtlF)
+        } else {
+            navigateNext(R.id.DFPMapWrongServingOrder, pId)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

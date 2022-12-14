@@ -42,7 +42,7 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
 
-        (requireActivity() as AXChecklist).setBarTitle("Сменное Задание")
+        (requireActivity() as AXChecklist).setBarTitle("Сменные Задания")
 
         srlRefresh = view.findViewById(R.id.srl__f_start_workorder__refresh)
         srlRefresh?.setOnRefreshListener(this)

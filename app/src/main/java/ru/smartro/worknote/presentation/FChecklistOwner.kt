@@ -33,7 +33,7 @@ class FChecklistOwner: AF(), SwipeRefreshLayout.OnRefreshListener {
 
         (requireActivity() as AXChecklist).apply {
             acibGoToBack?.visibility = View.GONE
-            setBarTitle("Организация")
+            setBarTitle("Организации")
         }
 
         srlRefresh = view.findViewById(R.id.srl__f_start_owner__refresh)

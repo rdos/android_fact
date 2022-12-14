@@ -32,7 +32,7 @@ class FChecklistWaybill: AF(), SwipeRefreshLayout.OnRefreshListener {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, 1)
         }
 
-        (requireActivity() as AXChecklist).setBarTitle("Путевой Лист")
+        (requireActivity() as AXChecklist).setBarTitle("Путевые Листы")
 
         actvNoData = view.findViewById(R.id.actv__f_start_waybill__no_data)
 
