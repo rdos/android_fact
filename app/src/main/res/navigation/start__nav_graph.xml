@@ -32,9 +32,9 @@
         android:label="ReAuthWarningDialogF" />
 
     <dialog
-        android:id="@+id/ReAuthConfirmationDialogF"
+        android:id="@+id/DFConfirmReAuth"
         android:name="ru.smartro.worknote.presentation.DFConfirmReAuth"
         tools:layout="@layout/df_action"
-        android:label="ReAuthConfirmationDialogF" />
+        android:label="DFConfirmReAuth" />
 
 </navigation>

@@ -18,7 +18,7 @@ class DFYesNoReAuthDialog : AConfirmYesNoDF() {
     }
 
     override fun onBackFragment(entity: PlatformEntity) {
-        navigateNext(R.id.ReAuthConfirmationDialogF)
+        navigateNext(R.id.DFConfirmReAuth)
     }
 
     override fun onGetBackText(): String {

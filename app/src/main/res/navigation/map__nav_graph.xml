@@ -46,6 +46,20 @@
             app:argType="string"
             />
     </dialog>
+    <dialog
+        android:id="@+id/DFPMapWrongServingOrderBottom"
+        android:name="ru.smartro.worknote.presentation.DFPMapWrongServingOrderBottom"
+        android:label="DFPMapWrongServingOrderBottom">
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_ID"
+            app:argType="integer"
+            />
+        <argument
+            android:name="ARGUMENT_NAME___PARAM_NAME"
+            app:argType="string"
+            />
+    </dialog>
+
 
     <fragment
         android:id="@+id/PhotoBeforeMediaF"

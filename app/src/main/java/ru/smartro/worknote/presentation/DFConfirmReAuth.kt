@@ -15,6 +15,10 @@ class DFConfirmReAuth : AConfirmDF() {
     private val viewModel: VMPserve by activityViewModels()
     private var platforms: List<PlatformEntity>? = null
 
+    override fun onGetNavId(): Int {
+        return R.id.DFConfirmReAuth
+    }
+    
     override fun onGetEntity(): PlatformEntity? {
         LOG.warn("DON'T_USE")   //not use
         return null
@@ -83,9 +87,5 @@ class DFConfirmReAuth : AConfirmDF() {
         dialogString += "Вы уверены, что хотите выйти из задания?"
 
         return dialogString
-    }
-
-    override fun onGetNavId(): Int {
-        return R.id.ReAuthConfirmationDialogF
     }
 }

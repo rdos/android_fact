@@ -10,9 +10,9 @@ import ru.smartro.worknote.presentation.ac.AConfirmDF
 import ru.smartro.worknote.ac.SmartROllc
 import ru.smartro.worknote.log.todo.PlatformEntity
 
-class DFPMapWrongServingOrder : AConfirmDF() {
+open class DFPMapWrongServingOrder : AConfirmDF() {
 
-    private val viewModel: VMPserve by activityViewModels()
+    val viewModel: VMPserve by activityViewModels()
 
     override fun onGetEntity(): PlatformEntity? {
         LOG.warn("DON'T_USE")   //not use
