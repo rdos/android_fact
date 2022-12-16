@@ -4,16 +4,17 @@ import android.content.DialogInterface
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.ADF
+import ru.smartro.worknote.ac.SmartROacb
 import ru.smartro.worknote.ac.SmartROllc
 import ru.smartro.worknote.ac.swipebtn.SmartROviewSwipeButton
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.log.todo.ConfigName
+import ru.smartro.worknote.toStr
 import ru.smartro.worknote.tryCatch
 
 //todo: смотри прикол, VT !!!UnloadInfo++ploadTicket
@@ -28,19 +29,24 @@ class DFModeUnloadTicket: ADF() {
     override fun onGetLayout(): Int {
         return R.layout.f_unload_ticket
     }
-    
+
     override fun onInitLayoutView(sview: SmartROllc): Boolean {
         val platformUnloadEntity = vm.getPlatformEntity().unloadEntity
 
-        val acibPhotoBefore = sview.findViewById<AppCompatImageButton>(R.id.acib__f_unload_ticket__photo_before)
-        acibPhotoBefore.setOnClickListener {
+        val acbPhotoBefore = sview.findViewById<SmartROacb>(R.id.acb__f_unload_ticket__photo_before)
+        acbPhotoBefore.setOnClickListener {
             navigateNext(R.id.UnloadPhotoBeforeMediaF)
         }
+        val actvPhotoBeforeCount = sview.findViewById<AppCompatTextView>(R.id.actv__f_unload_ticket__photo_before_count)
+        actvPhotoBeforeCount.setText(platformUnloadEntity?.beforeMedia?.size.toStr())
 
-        val acibPhotoAfter = sview.findViewById<AppCompatImageButton>(R.id.acib__f_unload_ticket__photo_after)
-        acibPhotoAfter.setOnClickListener {
+
+        val acbPhotoAfter = sview.findViewById<SmartROacb>(R.id.acb__f_unload_ticket__photo_after)
+        acbPhotoAfter.setOnClickListener {
             navigateNext(R.id.UnloadPhotoAfterMediaF)
         }
+        val actvPhotoAfterCount = sview.findViewById<AppCompatTextView>(R.id.actv__f_unload_ticket__photo_after_count)
+        actvPhotoAfterCount.setText(platformUnloadEntity?.afterMedia?.size.toStr())
 
         val acbFinish: SmartROviewSwipeButton? = sview.findViewById(R.id.acb_f_unload_ticket__finish)
         acbFinish?.onSwipe = {
