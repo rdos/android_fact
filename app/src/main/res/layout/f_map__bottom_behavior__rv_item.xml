@@ -101,7 +101,7 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/aciv_baseline_arrow_drop_down_24"
-                android:layout_width="wrap_content" android:layout_height="15dp"
+                android:layout_width="24dp" android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_baseline_arrow_drop_down_24"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
