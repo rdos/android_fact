@@ -169,12 +169,13 @@ dependencies {
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
 
     // CameraX core library
-    implementation "androidx.camera:camera-core:1.2.0-alpha04"
-    implementation "androidx.camera:camera-camera2:1.2.0-alpha04"
-    implementation "androidx.camera:camera-lifecycle:1.2.0-alpha04"
-    implementation 'androidx.camera:camera-view:1.2.0-alpha04'
 
-    implementation 'androidx.camera:camera-extensions:1.2.0-beta02'
+    implementation 'androidx.camera:camera-core:1.2.0-alpha04'
+    implementation 'androidx.camera:camera-camera2:1.2.0-alpha04'
+    implementation 'androidx.camera:camera-lifecycle:1.2.0-alpha04'
+    implementation 'androidx.camera:camera-view:1.2.0-alpha04'
+    implementation 'androidx.camera:camera-extensions:1.2.0-alpha04'
+
 // https://mvnrepository.com/artifact/com.yandex.android/speechkit
 //    implementation("com.yandex.android:speechkit:3.12.2")
 
