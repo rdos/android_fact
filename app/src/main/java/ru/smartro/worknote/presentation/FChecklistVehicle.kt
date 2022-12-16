@@ -111,7 +111,7 @@ class FChecklistVehicle: AF(), SwipeRefreshLayout.OnRefreshListener {
         LOG.debug("viewModel.mLastOwnerId=${viewModel.mLastOwnerId}")
         LOG.debug("getArgumentID(mLastOwnerId)=${getArgumentID()}")
 
-        val vehicleS= viewModel.database.getVehicleS()
+        val vehicleS = viewModel.database.getVehicleS()
         mVehicleAdapter?.setItems(vehicleS)
         onRefresh()
     }
@@ -134,11 +134,10 @@ class FChecklistVehicle: AF(), SwipeRefreshLayout.OnRefreshListener {
 //        }
     }
 
-
     override fun onRefresh() {
         getVehicleList()
         srlRefresh?.isRefreshing = false
-        (requireActivity() as AXChecklist).showProgressBar()
+        (requireActivity() as AXChecklist).showProgressBar("список автомобилей\nорганизации ${paramS().ownerName}")
     }
 
     private fun getVehicleList() {

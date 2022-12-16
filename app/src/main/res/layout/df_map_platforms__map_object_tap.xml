@@ -10,7 +10,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_dialog_platform_clicked_dtl__address"

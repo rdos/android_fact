@@ -7,12 +7,9 @@ import com.google.gson.GsonBuilder
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
-import ru.smartro.worknote.App
-import ru.smartro.worknote.BuildConfig
-import ru.smartro.worknote.LOG
+import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.RequestAI
-import ru.smartro.worknote.isNotNull
 import ru.smartro.worknote.log.RESTconnection
 import ru.smartro.worknote.presentation.ANoBodyGET
 import ru.smartro.worknote.presentation.RPOSTSynchro
@@ -105,6 +102,13 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
         LOG.error("onResponse", e)
         val message = "onFailure HTTP EXCEPTION ::: ${this::class.java.simpleName} ::: ${e.message}"
         App.getAppliCation().sentryCaptureErrorMessage(message, messageShowForUser)
+        val connectionREVERS = this.getRESTconnection()
+        connectionREVERS.isSent = false
+        mRESTconnectionMutableLiveData?.let {
+            LOG.todo("getLiveDate.before")
+            it.postValue(connectionREVERS)
+            LOG.info("getLiveDate.after")
+        }
     }
 
 

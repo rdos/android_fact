@@ -147,9 +147,9 @@ class App : AA() {
         }
 
         if (gps_loc == null && net_loc == null) {
-            if (this.mCurrentAct is ActMain) {
-                App.getAppliCation().getCurrentAct()?.supportFragmentManager?.fragments?.get(0)?.view?.post {
-                    (this.mCurrentAct as ActMain).showNextFragment(R.id.DInfoGpsOffF)
+            getCurrentAct()?.supportFragmentManager?.fragments?.get(0)?.view?.post {
+                if(this.mCurrentAct != null && this.mCurrentAct is ActMain) {
+                    this.mCurrentAct?.showNextFragment(R.id.DInfoGpsOffF)
                 }
             }
             return getAppParaMS().getSaveGPS()

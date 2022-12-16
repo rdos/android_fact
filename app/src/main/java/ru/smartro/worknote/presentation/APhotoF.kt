@@ -76,6 +76,9 @@ APhotoF(
     private var acbGotoNext: AppCompatButton? = null
     private lateinit var mPreviewView: PreviewView
 
+    private var orientationEventListener: OrientationEventListener? = null
+    private var rotation = -1
+
     private val PERMISSIONS_REQUEST_CODE = 10
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
@@ -134,16 +137,28 @@ APhotoF(
         mPreviewView = view.findViewById(R.id.view_finder)
         //todo: mCameraController в App???
         mCameraController = LifecycleCameraController(requireContext())
+
         val outputSize = CameraController.OutputSize(Size(768, 1021))
         mCameraController.previewTargetSize = outputSize
         mCameraController.imageCaptureTargetSize = outputSize
+
         mCameraController.bindToLifecycle(viewLifecycleOwner)
         mCameraController.isTapToFocusEnabled = true
-//        CameraXConfig()
-//        val ins = ProcessCameraProvider.getInstance(App.getAppliCation())
-//        ProcessCameraProvider.configureInstance()
+
+        orientationEventListener = object : OrientationEventListener(requireContext()) {
+            override fun onOrientationChanged(orientation : Int) {
+                rotation = when (orientation) {
+                    in 45..134 -> Surface.ROTATION_270
+                    in 135..224 -> Surface.ROTATION_180
+                    in 225..314 -> Surface.ROTATION_90
+                    else -> Surface.ROTATION_0
+                }
+            }
+        }
+
+        orientationEventListener?.enable()
+
         initViews(view)
-//        mCameraController.setZoomRatio(.5000F)
 
         mPreviewView.controller = mCameraController
 
@@ -176,11 +191,15 @@ APhotoF(
             ibTakePhoto?.isEnabled = true
             return
         }
-        mIsSavePhotoMode = true
-        onTakePhoto()
-        val photoFL = createFile(getOutputD(), App.getAppliCation().timeStampInSec().toString())
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFL).build()
 
+        mIsSavePhotoMode = true
+
+        onTakePhoto()
+
+        val photoFL = createFile(getOutputD(), App.getAppliCation().timeStampInSec().toString())
+        val outputOptions = OutputFileOptions.Builder(photoFL).build()
+
+        orientationEventListener?.disable()
         mCameraController.takePicture(outputOptions, mCameraExecutor, this)
 
         if (paramS().isCameraSoundEnabled) {
@@ -204,6 +223,12 @@ APhotoF(
         LOG.info( "onDestroy")
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        orientationEventListener?.disable()
+        orientationEventListener = null
+    }
+
     fun getOutputD(): File {
         val basePhotoD = AppliCation().getD(C_PHOTO_D)
         return basePhotoD
@@ -222,22 +247,23 @@ APhotoF(
             val imageFile = File(imageUri.path!!)
             val imageStream: InputStream = imageFile.inputStream()
             val baos = ByteArrayOutputStream()
-            var bitmap: Bitmap? = null
             imageStream.use {
-                val resource = BitmapFactory.decodeStream(imageStream)
+                var resource = BitmapFactory.decodeStream(imageStream)
 
-                if(resource.width > resource.height) {
+                if(rotation != Surface.ROTATION_90) {
                     val matrix = Matrix()
-                    matrix.postRotate(90f)
+                    when(rotation) {
+                        Surface.ROTATION_0 -> matrix.postRotate(90f)
+                        Surface.ROTATION_180 -> matrix.postRotate(-90f)
+                        Surface.ROTATION_270 -> matrix.postRotate(180f)
+                    }
                     val scaledBitmap = Bitmap.createScaledBitmap(resource, resource.width, resource.height, true)
 
-                    bitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
-                } else {
-                    bitmap = resource
+                    resource = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
                 }
 
+                resource.compress(Bitmap.CompressFormat.WEBP, 90, baos)
             }
-            bitmap!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
             val byteArray = baos.toByteArray()
             val outputStream = imageFile.outputStream()
             outputStream.use { it ->
@@ -245,6 +271,7 @@ APhotoF(
             }
             LOG.warn( Thread.currentThread().name)
 
+            orientationEventListener?.enable()
             onSavePhoto()
         } catch (ex: Exception) {
             LOG.error("onImageSaved", ex)
@@ -570,12 +597,12 @@ APhotoF(
             return true
         }
 
-        private fun imageToBase64(imageFile: File, rotationDegrees: Float = Fnull): ImageEntity {
+        private fun imageToBase64(imageFile: File): ImageEntity {
             val imageStream: InputStream = imageFile.inputStream()
             val baos = ByteArrayOutputStream()
             imageStream.use {
                 val resource = BitmapFactory.decodeStream(imageStream)
-                resource.compress(Bitmap.CompressFormat.WEBP, 90, baos)
+                resource.compress(Bitmap.CompressFormat.WEBP, 100, baos)
             }
             val b: ByteArray = baos.toByteArray()
             LOG.warn( "b.size=${b.size}")
