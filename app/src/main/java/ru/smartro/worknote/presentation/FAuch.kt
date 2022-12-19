@@ -70,7 +70,7 @@ class FAuch : AF() {
 //                }
 //            }
 //            App.oKRESTman().add(rpcAppStartup)
-//            
+//
                 //            vm.viewModelScope.launch {
                 //                App.getAppliCation().getNetwork().sendAppStartUp()
                 //            }
@@ -81,6 +81,7 @@ class FAuch : AF() {
 
         if (isHasTask) {
             LOG.debug("::: HAS TASK")
+            paramS().showClearCurrentTasks = true
             App.getAppliCation().hideKeyboard(requireActivity())
             findNavController().navigate(R.id.ReAuthWarningDialogF)
         } else {
@@ -141,8 +142,9 @@ class FAuch : AF() {
     override fun onResume() {
         super.onResume()
         val isHasToken = paramS().token.isShowForUser()
+        val showClearCurrentTasks = paramS().showClearCurrentTasks
         LOG.debug("isHasToken=${isHasToken}")
-        if (isHasToken) {
+        if (isHasToken && showClearCurrentTasks == false) {
             gotoNextAct(isHasToken = true)
         }
     }

@@ -195,6 +195,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 
         //TODO: сюда изменения вностиьб!
         if (vm.isUnloadMode()) {
+            buildNavigatorPlatformUnload()
             navigateNext(R.id.DFModeUnloadTicket)
             toggleUnloadButton(true)
         } else {
@@ -1034,15 +1035,12 @@ class MapPlatformSBehaviorAdapter(
             //nothing
         }
 
-        holder.acivArrowDropDown.visibility = View.GONE
-
         val currentStatus = item.getStatusPlatform()
         if(currentStatus == StatusEnum.NEW || currentStatus == StatusEnum.UNFINISHED) {
-            holder.acivArrowDropDown.visibility = View.VISIBLE
             holder.itemView.apply {
                 setOnClickListener {
                     if (!findViewById<ExpandableLayout>(R.id.map_behavior_expl).isExpanded) {
-                        holder.acivArrowDropDown.visibility = View.GONE
+                        holder.acivArrowDropDown.rotation = 180f
                         findViewById<ExpandableLayout>(R.id.map_behavior_expl).expand()
 
                         findViewById<Button>(R.id.map_behavior_start_service).setOnClickListener {
@@ -1059,12 +1057,13 @@ class MapPlatformSBehaviorAdapter(
                         lastHolder = holder
                         lastHolder?.platformId = item.platformId
                     } else {
-                        holder.acivArrowDropDown.visibility = View.VISIBLE
+                        holder.acivArrowDropDown.rotation = 0f
                         findViewById<ExpandableLayout>(R.id.map_behavior_expl).collapse(true)
                     }
                 }
             }
         } else {
+            holder.acivArrowDropDown.visibility = View.GONE
             holder.itemView.setOnClickListener(null)
         }
 
@@ -1094,11 +1093,12 @@ class MapPlatformSBehaviorAdapter(
         val acivArrowDropDown: AppCompatImageView by lazy {
             itemView.findViewById(R.id.aciv_baseline_arrow_drop_down_24)
         }
+
         fun collapseOld() {
             if (platformId == null) {
                 return
             }
-            acivArrowDropDown.visibility = View.GONE
+            acivArrowDropDown.rotation = 0f
             itemView.findViewById<ExpandableLayout>(R.id.map_behavior_expl)?.collapse()
             platformId = null
         }

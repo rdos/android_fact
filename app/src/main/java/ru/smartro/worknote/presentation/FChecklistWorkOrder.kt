@@ -250,7 +250,7 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
         getWorkOrderList()
         srlRefresh?.isRefreshing = false
-        (requireActivity() as AXChecklist).showProgressBar()
+        (requireActivity() as AXChecklist).showProgressBar("список Сменных Заданий\nПутевого Листа ${paramS().wayBillNumber}")
     }
 
 

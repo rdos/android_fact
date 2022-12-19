@@ -42,6 +42,7 @@ class DFConfirmReAuth : AConfirmDF() {
     }
 
     override fun onNextFragment(entity: PlatformEntity) {
+        App.getAppParaMS().showClearCurrentTasks = false
         startActivity(Intent(requireActivity(), ActMain::class.java))
         requireActivity().finish()
     }

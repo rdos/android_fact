@@ -35,13 +35,10 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.abs.AbsObject
-import ru.smartro.worknote.hideProgress
 import ru.smartro.worknote.log.todo.ImageEntity
-import ru.smartro.worknote.MD5
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.InputStream
+import java.io.*
 import java.util.concurrent.Executors
+
 
 //todo:AbsViewGroup
 /**
@@ -222,7 +219,8 @@ APhotoF(
             val imageFile = File(imageUri.path!!)
             val imageStream: InputStream = imageFile.inputStream()
             val baos = ByteArrayOutputStream()
-            var bitmap: Bitmap? = null
+            var bitmap: Bitmap? = BitmapFactory.decodeStream(imageStream)
+
             imageStream.use {
                 val resource = BitmapFactory.decodeStream(imageStream)
 
@@ -237,10 +235,11 @@ APhotoF(
                 }
 
             }
-            bitmap!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
+            
+            bitmap!!.compress(Bitmap.CompressFormat.WEBP, 90, baos)
             val byteArray = baos.toByteArray()
             val outputStream = imageFile.outputStream()
-            outputStream.use { it ->
+            outputStream.use {
                 it.write(byteArray)
             }
             LOG.warn( Thread.currentThread().name)
@@ -490,7 +489,6 @@ APhotoF(
             paramS().isCameraSoundEnabled = actbSound.isChecked
         }
 
-        // Listener for button used to view the most recent photo
         mThumbNail = view.findViewById(R.id.photo_view_button)
         //todo: !!!
         mThumbNail?.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
@@ -504,17 +502,14 @@ APhotoF(
     }
 
 
-
-    //todo:???
-    //    private fun hasFrontCamera(): Boolean {
-//        return cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
-//    }
     private fun hasBackCamera(): Boolean {
         return mCameraController.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
     }
+
     private fun hasFlashUnit(): Boolean {
         return mCameraController.cameraInfo?.hasFlashUnit() ?: false
     }
+
 
     companion object {
         private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
@@ -525,6 +520,7 @@ APhotoF(
             File(baseFolder, fileName + PHOTO_EXTENSION)
 
     }
+
     private fun restorePhotoFileS(imageS: RealmList<ImageEntity>) {
         LOG.debug("restorePhotoFileS(imageS.size=${imageS.size}) before")
         for (imageEntity in imageS) {
@@ -570,15 +566,22 @@ APhotoF(
             return true
         }
 
-        private fun imageToBase64(imageFile: File, rotationDegrees: Float = Fnull): ImageEntity {
-            val imageStream: InputStream = imageFile.inputStream()
-            val baos = ByteArrayOutputStream()
-            imageStream.use {
-                val resource = BitmapFactory.decodeStream(imageStream)
-                resource.compress(Bitmap.CompressFormat.WEBP, 90, baos)
+        private fun imageToBase64(imageFile: File): ImageEntity {
+            val size = imageFile.length().toInt()
+            val b = ByteArray(size)
+            try {
+                val buf = BufferedInputStream(FileInputStream(imageFile))
+                buf.read(b, 0, b.size)
+                buf.close()
+            } catch (e: FileNotFoundException) {
+                AppliCation().sentryCaptureException(e)
+                LOG.error(e.stackTraceToString())
+            } catch (e: IOException) {
+                AppliCation().sentryCaptureException(e)
+                LOG.error(e.stackTraceToString())
             }
-            val b: ByteArray = baos.toByteArray()
-            LOG.warn( "b.size=${b.size}")
+
+            LOG.warn( "b.size=${size}")
             val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
             LOG.warn( "imageBase64=${imageBase64.length}")
             val gps = App.getAppliCation().gps()

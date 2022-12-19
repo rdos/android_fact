@@ -177,6 +177,13 @@ class AppParaMS {
             it.putBoolean("isTorchEnabled", value)
         }
 
+    // TODO ::: BIG TIME
+    var showClearCurrentTasks: Boolean
+        get() = sharedPref__env.getBoolean("showClearCurrentTasks", false)
+        set(value) = sharedPref__env.edit {
+            it.putBoolean("showClearCurrentTasks", value)
+        }
+
     fun getOwnerId(): Int {
         return ownerId?: Inull
     }
@@ -307,6 +314,7 @@ class AppParaMS {
         //TODO:r_Null!
         isModeSYNChrONize = false
         lastSynchroAttemptTimeInSec = App.getAppliCation().timeStampInSec()
+        showClearCurrentTasks = false
     }
 
 
