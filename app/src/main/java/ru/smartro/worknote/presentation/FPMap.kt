@@ -195,6 +195,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 
         //TODO: сюда изменения вностиьб!
         if (vm.isUnloadMode()) {
+            buildNavigatorPlatformUnload()
             navigateNext(R.id.DFModeUnloadTicket)
             toggleUnloadButton(true)
         } else {
