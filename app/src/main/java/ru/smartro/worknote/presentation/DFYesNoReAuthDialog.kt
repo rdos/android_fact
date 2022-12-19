@@ -8,7 +8,7 @@ import ru.smartro.worknote.presentation.abs.AConfirmYesNoDF
 
 class DFYesNoReAuthDialog : AConfirmYesNoDF() {
     override fun onNextFragment(entity: PlatformEntity) {
-        App.getAppParaMS().isAcceptedClear = true
+        App.getAppParaMS().showClearCurrentTasks = false
         startActivity(Intent(requireActivity(), ActMain::class.java))
         requireActivity().finish()
     }

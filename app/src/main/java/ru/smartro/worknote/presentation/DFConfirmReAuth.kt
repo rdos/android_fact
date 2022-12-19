@@ -46,7 +46,7 @@ class DFConfirmReAuth : AConfirmDF() {
     }
 
     override fun onNextFragment(entity: PlatformEntity) {
-        App.getAppParaMS().isAcceptedClear = true
+        App.getAppParaMS().showClearCurrentTasks = false
         startActivity(Intent(requireActivity(), ActMain::class.java))
         requireActivity().finish()
     }
@@ -56,7 +56,6 @@ class DFConfirmReAuth : AConfirmDF() {
     }
 
     override fun onBackFragment(entity: PlatformEntity) {
-        App.getAppParaMS().isAcceptedClear = true
         App.getAppParaMS().setAppRestartParams()
         viewModel.database.clearDataBase()
 
