@@ -178,10 +178,10 @@ class AppParaMS {
         }
 
     // TODO ::: BIG TIME
-    var isAcceptedClear: Boolean
-        get() = sharedPref__env.getBoolean("isAcceptedClear", false)
+    var showClearCurrentTasks: Boolean
+        get() = sharedPref__env.getBoolean("showClearCurrentTasks", false)
         set(value) = sharedPref__env.edit {
-            it.putBoolean("isAcceptedClear", value)
+            it.putBoolean("showClearCurrentTasks", value)
         }
 
     fun getOwnerId(): Int {
@@ -305,7 +305,6 @@ class AppParaMS {
     fun setLogoutParams() {
         token = null
         isModeSYNChrONize = false
-        isAcceptedClear = false
     }
 
     fun setAppRestartParams() {
@@ -315,6 +314,7 @@ class AppParaMS {
         //TODO:r_Null!
         isModeSYNChrONize = false
         lastSynchroAttemptTimeInSec = App.getAppliCation().timeStampInSec()
+        showClearCurrentTasks = false
     }
 
 
