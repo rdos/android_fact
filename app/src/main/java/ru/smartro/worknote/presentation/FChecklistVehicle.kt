@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
+import ru.smartro.worknote.log.RestConnectionResource
 import ru.smartro.worknote.log.todo.VehicleEntity
 
 class FChecklistVehicle: AF(), SwipeRefreshLayout.OnRefreshListener {
@@ -145,7 +146,7 @@ class FChecklistVehicle: AF(), SwipeRefreshLayout.OnRefreshListener {
         vehicleRequestGET.getLiveDate().observe(viewLifecycleOwner) { result ->
             LOG.debug("${result}")
             (requireActivity() as AXChecklist).hideProgressBar()
-            if (result.isSent) {
+            if (result is RestConnectionResource.SuccessData) {
                 val vehicleS= viewModel.database.getVehicleS()
                 mVehicleAdapter?.setItems(vehicleS)
                 if (getAct().isDevelMode()) {

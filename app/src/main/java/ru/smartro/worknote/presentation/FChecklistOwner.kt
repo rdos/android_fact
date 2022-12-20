@@ -13,6 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.LOG
+import ru.smartro.worknote.log.RestConnectionResource
 import ru.smartro.worknote.log.todo.OrganisationEntity
 
 class FChecklistOwner: AF(), SwipeRefreshLayout.OnRefreshListener {
@@ -76,9 +77,8 @@ class FChecklistOwner: AF(), SwipeRefreshLayout.OnRefreshListener {
         ownerRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
             LOG.debug("safka${result}")
             (requireActivity() as AXChecklist).hideProgressBar()
-            if (result.isSent) {
-
-                val organisationS= viewModel.database.getOrganisationS()
+            if (result is RestConnectionResource.SuccessData) {
+                val organisationS = viewModel.database.getOrganisationS()
                 if (organisationS.size == 1) {
                     goToNextStep(organisationS[0].id, organisationS[0].name)
                 } else {

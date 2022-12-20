@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
+import ru.smartro.worknote.log.RestConnectionResource
 
 class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -253,9 +254,9 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
         synchroOidWidRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
             LOG.debug("safka${result}")
             (requireActivity() as AXChecklist).hideProgressBar()
-            if (result.isSent) {
+            if (result is RestConnectionResource.SuccessData<SynchroOidWidOutBody>) {
                 (requireActivity() as AXChecklist).hideProgressBar()
-                val workOrderS = (result as SynchroOidWidRESTconnection).workOrderS ?: listOf()
+                val workOrderS = result.data.data.workOrderS
                 if (workOrderS.size == 1) {
                     goToNextStep(workOrderS)
                 } else if(workOrderS.size > 1) {

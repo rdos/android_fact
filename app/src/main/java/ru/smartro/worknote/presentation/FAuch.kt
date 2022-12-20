@@ -12,9 +12,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.GsonBuilder
+import com.google.gson.annotations.Expose
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.abs.AF
+import ru.smartro.worknote.log.RestConnectionResource
+import ru.smartro.worknote.presentation.ac.NetObject
 
 class FAuch : AF() {
     
@@ -25,6 +29,7 @@ class FAuch : AF() {
     private var authAppVersion: TextView? = null
     private var authRootView: ConstraintLayout? = null
     private var authEnter: AppCompatButton? = null
+    private var userBlocked: AppCompatTextView? = null
     private var authLoginOut: TextInputLayout? = null
     private var authPasswordOut: TextInputLayout? = null
     private var authDebugInfo: AppCompatTextView? = null
@@ -38,11 +43,10 @@ class FAuch : AF() {
 
         authLoginEditText = view.findViewById(R.id.auth_login)
         authPasswordEditText = view.findViewById(R.id.auth_password)
-        authLoginEditText = view.findViewById(R.id.auth_login)
-        authPasswordEditText = view.findViewById(R.id.auth_password)
         authAppVersion = view.findViewById(R.id.actv_act_start__appversion)
         authRootView = view.findViewById(R.id.cl_act_start)
         authEnter = view.findViewById(R.id.acb_login)
+        userBlocked = view.findViewById(R.id.user_blocked)
         authLoginOut = view.findViewById(R.id.login_login_out)
         authPasswordOut = view.findViewById(R.id.auth_password_out)
         authDebugInfo = view.findViewById(R.id.actv_activity_auth__it_test_version)
@@ -93,9 +97,16 @@ class FAuch : AF() {
     }
 
     private fun viewInit() {
-        authEnter?.setOnClickListener {
-            clickAuthEnter()
-        }
+//        if(paramS().incorrectAttemptS < 20) {
+            userBlocked?.visibility = View.GONE
+            authEnter?.isEnabled = true
+            authEnter?.setOnClickListener {
+                clickAuthEnter()
+            }
+//        } else {
+//            userBlocked?.visibility = View.VISIBLE
+//            authEnter?.isEnabled = false
+//        }
 
         authDebugInfo?.isVisible = false
         if (BuildConfig.BUILD_TYPE != "debugProd" && BuildConfig.BUILD_TYPE != "release") {
@@ -160,9 +171,52 @@ class FAuch : AF() {
             val authRequest = RPOSTAuth()
             authRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
                 LOG.debug("${result}")
-                hideProgress()
-                if (result.isSent) {
-                    gotoNextAct()
+                getAct().hideProgress()
+                when(result) {
+                    is RestConnectionResource.SuccessData -> gotoNextAct()
+                    is RestConnectionResource.Error -> {
+                        val code = result.codeMessage.first
+                        when(code) {
+                            422 -> {
+                                try {
+//                                    val newAttempts = paramS().incorrectAttemptS + 1
+//                                    paramS().incorrectAttemptS = newAttempts
+//                                    if(newAttempts > 4) {
+//                                        authEnter?.isEnabled = false
+//                                        userBlocked?.visibility = View.VISIBLE
+//                                    }
+
+                                    val builder = GsonBuilder()
+                                    builder.excludeFieldsWithoutExposeAnnotation()
+                                    val gson = builder.create()
+                                    val responseObj = gson.fromJson(result.codeMessage.second, HttpErrorBody::class.java)
+
+                                    getAct().hideProgress()
+                                    toast(responseObj.message)
+                                } catch (e: Exception) {
+                                    val message = e.stackTraceToString()
+                                    val messageShowForUser = "Произошла ошибка преобразования данных.\nПожалуйста, перезагрузите приложение"
+                                    AppliCation().sentryCaptureErrorMessage(message, messageShowForUser)
+                                }
+                            }
+
+                            401 -> {
+                                try {
+                                    val builder = GsonBuilder()
+                                    builder.excludeFieldsWithoutExposeAnnotation()
+                                    val gson = builder.create()
+                                    val responseObj = gson.fromJson(result.codeMessage.second, HttpErrorBody::class.java)
+
+                                    getAct().hideProgress()
+                                    toast(responseObj.message)
+                                } catch (e: Exception) {
+                                    val message = e.stackTraceToString()
+                                    val messageShowForUser = "Произошла ошибка преобразования данных.\nПожалуйста, перезагрузите приложение"
+                                    AppliCation().sentryCaptureErrorMessage(message, messageShowForUser)
+                                }
+                            }
+                        }
+                    }
                 }
             }
             App.oKRESTman().put(authRequest)
@@ -198,3 +252,10 @@ class FAuch : AF() {
 
 
 }
+
+data class HttpErrorBody (
+    @Expose
+    val message: String? = null,
+    @Expose
+    val success: Boolean? = null
+) : NetObject()

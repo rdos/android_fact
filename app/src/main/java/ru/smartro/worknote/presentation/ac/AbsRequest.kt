@@ -10,7 +10,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AbsObject
 import ru.smartro.worknote.abs.RequestAI
-import ru.smartro.worknote.log.RESTconnection
+import ru.smartro.worknote.log.RestConnectionResource
 import ru.smartro.worknote.presentation.ANoBodyGET
 import ru.smartro.worknote.presentation.RPOSTSynchro
 import java.io.File
@@ -21,9 +21,9 @@ import kotlin.reflect.KClass
 
 //Tin Toup
 abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI {
-    private var mRESTconnectionMutableLiveData: MutableLiveData<RESTconnection>? = null
-    private var mRESTconnection: RESTconnection? = null
 
+    private var mRESTconnectionMutableLiveData: MutableLiveData<RestConnectionResource<TB>>? = null
+    open var isHandledError: Boolean = false
 
     final override fun getTAGObject(): String {
     //        TODO("Not yet implemented")
@@ -99,45 +99,51 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
 
 
     fun onFailure(call: Call, e: IOException, messageShowForUser: String? = null) {
-        LOG.error("onResponse", e)
+        LOG.error("onFailure", e)
         val message = "onFailure HTTP EXCEPTION ::: ${this::class.java.simpleName} ::: ${e.message}"
-        App.getAppliCation().sentryCaptureErrorMessage(message, messageShowForUser)
-        val connectionREVERS = this.getRESTconnection()
-        connectionREVERS.isSent = false
-        mRESTconnectionMutableLiveData?.let {
-            LOG.todo("getLiveDate.before")
-            it.postValue(connectionREVERS)
-            LOG.info("getLiveDate.after")
+        val mMessageShowForUser = messageShowForUser ?: "Произошла ошибка запроса, повторите снова"
+        if(isHandledError) {
+            App.getAppliCation().sentryCaptureErrorMessage(message)
+
+            mRESTconnectionMutableLiveData?.let {
+                LOG.todo("getLiveDate.before")
+                it.postValue(RestConnectionResource.Error(Pair(-1, mMessageShowForUser)))
+                LOG.info("getLiveDate.after")
+            }
+        } else {
+            App.getAppliCation().sentryCaptureErrorMessage(message, mMessageShowForUser)
         }
     }
 
-
-    protected open fun getRESTconnection(): RESTconnection {
-        LOG.warn("DON'T_USE")
-        if (mRESTconnection == null) {
-            mRESTconnection = RESTconnection()
-        }
-        return mRESTconnection!!
-    }
-
-    fun getLiveDate() : LiveData<RESTconnection> {
+    fun getLiveDate() : LiveData<RestConnectionResource<TB>> {
         if (mRESTconnectionMutableLiveData == null) {
             mRESTconnectionMutableLiveData = MutableLiveData()
         }
         return mRESTconnectionMutableLiveData!!
     }
 
-
     fun onResponse(call: Call, response: Response) {
-        LOG.info("response.code=${response.code}")
+        val responseCode = response.code
+        mResponseString = response.body?.string()
+
+        LOG.info("response.code=${responseCode}")
+        LOG.info("mResponseString=${mResponseString}")
+
         if (isFindError(response)) {
+            val message = "isFindError ::: code: ${responseCode}, body: ${mResponseString}"
+            val messageShowForUser = mResponseString ?: "Ошибка запроса: ${responseCode} ${response.message}"
+            if(isHandledError) {
+                App.getAppliCation().sentryCaptureErrorMessage(message)
+                mRESTconnectionMutableLiveData?.let {
+                    LOG.info("getLiveDate.before")
+                    it.postValue(RestConnectionResource.Error(Pair(responseCode, messageShowForUser)))
+                    LOG.info("getLiveDate.after")
+                }
+            } else {
+                App.getAppliCation().sentryCaptureErrorMessage(message, messageShowForUser)
+            }
             return
         }
-
-        val connectionREVERS = this.getRESTconnection()
-        connectionREVERS.isSent = true
-        mResponseString = response.body?.string()
-        LOG.info("mResponseString=${mResponseString}")
 
         if (mResponseString.isNotNull()) {
             saveJSON(mResponseString!!, "resp-${TAGObj}")
@@ -148,10 +154,9 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
         this.onAfter(responseObj)
         LOG.info("onAfter.after")
 
-
         mRESTconnectionMutableLiveData?.let {
             LOG.info("getLiveDate.before")
-            it.postValue(connectionREVERS)
+            it.postValue(RestConnectionResource.SuccessData<TB>(responseObj))
             LOG.info("getLiveDate.after")
         }
     }
@@ -162,11 +167,6 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
             return result
         }
 
-        val messageShowForUser = "Ошибка запроса: ${response.code} ::: ${this::class.java.simpleName}"
-        val message = "HTTP ${response.code} ::: ${this::class.java.simpleName}"
-        App.getAppliCation().sentryCaptureErrorMessage(message, messageShowForUser)
-
-        LOG.error("isFindError")
         result = true
         return result
     }

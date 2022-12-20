@@ -184,6 +184,12 @@ class AppParaMS {
             it.putBoolean("showClearCurrentTasks", value)
         }
 
+    var incorrectAttemptS: Int
+        get() = sharedPref__env.getInt("incorrectAttemptS", 0)
+        set(value) = sharedPref__env.edit {
+            it.putInt("incorrectAttemptS", value)
+        }
+
     fun getOwnerId(): Int {
         return ownerId?: Inull
     }

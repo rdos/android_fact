@@ -35,6 +35,7 @@ import ru.smartro.worknote.log.todo.*
 import ru.smartro.worknote.MapHelper
 import ru.smartro.worknote.MapListener
 import ru.smartro.worknote.getActivityProperly
+import ru.smartro.worknote.log.RestConnectionResource
 
 class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListener {
 
@@ -416,7 +417,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
             synchroRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
                 LOG.debug("${result}")
                 hideProgress()
-                if (result.isSent) {
+                if (result is RestConnectionResource.SuccessData) {
                     gotoSynchronize()
                 }
             }

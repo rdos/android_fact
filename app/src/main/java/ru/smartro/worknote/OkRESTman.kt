@@ -147,8 +147,13 @@ class OkRESTman: AbsObject(), Callback {
     }
 
     override fun onResponse(call: Call, response: Response) {
-        if (response.code == 401) {
+        LOG.debug("onResponse")
+        if(
+            response.code == 401 &&
+            response.request.url.toString() != "https://auth.stage.ru/api/login"
+        ) {
             LOG.todo("спустя_рукова-production")
+
             if (mCOunter <= 0) {
                 mCOunter++
                 val rauth = RPOSTAuth()

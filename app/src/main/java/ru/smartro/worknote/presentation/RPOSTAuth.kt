@@ -12,6 +12,8 @@ import kotlin.reflect.KClass
 //запрос + бизнесс
 class RPOSTAuth: AbsRequest<AuthBodyIn, AuthBodyOut>() {
 
+    override var isHandledError: Boolean = true
+
     override fun onGetURL(): String {
         return BuildConfig.URL__AUTH
     }

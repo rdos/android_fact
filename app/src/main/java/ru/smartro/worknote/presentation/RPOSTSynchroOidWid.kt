@@ -3,14 +3,13 @@ package ru.smartro.worknote.presentation
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import ru.smartro.worknote.App
-import ru.smartro.worknote.log.RESTconnection
+import ru.smartro.worknote.log.RestConnectionResource
 import ru.smartro.worknote.presentation.ac.AbsRequest
 import ru.smartro.worknote.presentation.ac.NetObject
 import kotlin.reflect.KClass
 
 //find _know1 _know100 POSTRequestA <TA, TB>()
 class RPOSTSynchroOidWid : AbsRequest<ANoBodyPOST, SynchroOidWidOutBody>() {
-    var mSynchroOidWidRESTconnection: SynchroOidWidRESTconnection? = null
 
     override fun onGetSRVName(): String {
         val organisationId = App.getAppParaMS().getOwnerId()
@@ -32,27 +31,14 @@ class RPOSTSynchroOidWid : AbsRequest<ANoBodyPOST, SynchroOidWidOutBody>() {
     }
 
     override fun onAfter(bodyOut: SynchroOidWidOutBody) {
-        getRESTconnection().workOrderS = bodyOut.data.workOrderS
+
     }
 
     override fun onGetResponseClazz(): KClass<SynchroOidWidOutBody> {
         return SynchroOidWidOutBody::class
     }
-
-
-    override fun getRESTconnection(): SynchroOidWidRESTconnection {
-        if (mSynchroOidWidRESTconnection == null) {
-            mSynchroOidWidRESTconnection =  SynchroOidWidRESTconnection()
-        }
-        return mSynchroOidWidRESTconnection!!
-    }
-
-
 }
 
-class SynchroOidWidRESTconnection : RESTconnection() {
-    var workOrderS: List<SynchroOidWidOutBodyDataWorkorder>? = null
-}
 data class SynchroOidWidOutBody(
     @Expose
     @SerializedName("data")

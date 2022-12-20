@@ -22,6 +22,7 @@ import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
+import ru.smartro.worknote.log.RestConnectionResource
 import ru.smartro.worknote.log.todo.CancelWayReasonEntity
 
 import ru.smartro.worknote.toast
@@ -238,7 +239,7 @@ class FComplete : AF() {
                         earlyCompleteRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
                             LOG.debug("${result}")
                             hideProgress()
-                            if (result.isSent) {
+                            if (result is RestConnectionResource.SuccessData) {
                                 // GOTO
                                 mDatabase.setCompleteWorkOrderData(workOrder)
                                 setUseButtonStyleBackgroundRed(acbAccept)
@@ -334,7 +335,7 @@ class FComplete : AF() {
                         completeRequestPOST.getLiveDate().observe(viewLifecycleOwner) { result ->
                             LOG.debug("${result}")
                             hideProgress()
-                            if (result.isSent) {
+                            if (result is RestConnectionResource.SuccessData) {
                                 // GOTO
                                 mDatabase.setCompleteWorkOrderData(workOrderEntity)
                                 setUseButtonStyleBackgroundGreen(it as AppCompatButton)

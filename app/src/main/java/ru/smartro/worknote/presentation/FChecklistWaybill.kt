@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
+import ru.smartro.worknote.log.RestConnectionResource
 import ru.smartro.worknote.log.todo.WaybillEntity
 
 class FChecklistWaybill: AF(), SwipeRefreshLayout.OnRefreshListener {
@@ -117,7 +118,7 @@ class FChecklistWaybill: AF(), SwipeRefreshLayout.OnRefreshListener {
         waybillRequest.getLiveDate().observe(viewLifecycleOwner) { result ->
             LOG.debug("${result}")
             (requireActivity() as AXChecklist).hideProgressBar()
-            if (result.isSent) {
+            if (result is RestConnectionResource.SuccessData) {
                 val waybillS = viewModel.database.getWaybillS()
                 if (waybillS.size == 1) {
                     goToNextStep(waybillS[0].id, waybillS[0].number)

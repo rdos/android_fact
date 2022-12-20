@@ -100,10 +100,23 @@
         android:textSize="15sp"
         android:layout_marginBottom="8dp"
         android:textColor="@color/dark_red"
+        tools:text="TEST"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/acb_login"
+        app:layout_constraintBottom_toTopOf="@id/user_blocked"
         />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/user_blocked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Пользователь заблокирован\nОбратитесь к Диспетчеру"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/dark_orange"
+        app:layout_constraintBottom_toTopOf="@id/acb_login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/acb_login"
