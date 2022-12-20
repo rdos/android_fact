@@ -48,18 +48,7 @@ class DFModeUnloadTicket: ADF() {
         val actvPhotoAfterCount = sview.findViewById<AppCompatTextView>(R.id.actv__f_unload_ticket__photo_after_count)
         actvPhotoAfterCount.setText(platformUnloadEntity?.afterMedia?.size.toStr())
 
-        val acbFinish: SmartROviewSwipeButton? = sview.findViewById(R.id.acb_f_unload_ticket__finish)
-        acbFinish?.onSwipe = {
-            toast("выключился режим Выгрузки")
-            vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, false)
-            tryCatch {
-                val navHostFragment = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
-                val fragmentPMap = (navHostFragment.childFragmentManager.fragments[0] as FPMap)
-                fragmentPMap.clearNavigator()
-                fragmentPMap.toggleUnloadButton(false)
-            }
-            navigate(R.id.MapPlatformsF)
-        }
+
 
 
         acetWeightBefore = sview.findViewById(R.id.acet__f_unload_ticket__value_before)
@@ -77,7 +66,57 @@ class DFModeUnloadTicket: ADF() {
             acetTalonValue?.setText(platformUnloadEntity?.ticketValue.toString())
         }
 
+        val acbFinish: SmartROviewSwipeButton? = sview.findViewById(R.id.acb_f_unload_ticket__finish)
+        acbFinish?.onSwipe = {
+            val weightBefore = acetWeightBefore?.text.toString().toFloatOrNull()?:0f
+            val weightAfter = acetWeightAfter?.text.toString().toFloatOrNull()?:0f
+            if (weightAfter > weightBefore) {
+                toast("Показания с весов \"После\" не должны превышать \"До\"")
+            } else {
+                if (isNotAllFieldFill()) {
+                    toast("Заполните все поля в карточке")
+                } else {
+                    vm.database.setConfig(ConfigName.AAPP__IS_MODE__UNLOAD, false)
+                    tryCatch {
+                        val navHostFragment = (getAct().supportFragmentManager.findFragmentById(R.id.fcv_container) as NavHostFragment)
+                        val fragmentPMap = (navHostFragment.childFragmentManager.fragments[0] as FPMap)
+                        fragmentPMap.clearNavigator()
+                        fragmentPMap.toggleUnloadButton(false)
+                    }
+                    navigate(R.id.MapPlatformsF)
+                    toast("выключился режим Выгрузки")
+                }
+            }
+        }
+
         return true
+    }
+
+    private fun isNotAllFieldFill(): Boolean {
+        // TODO: бред!!!
+        val result = true
+        val platformUnloadEntity = vm.getPlatformEntity().unloadEntity
+        val photoBeforeSize = platformUnloadEntity!!.beforeMedia.size
+        if (photoBeforeSize <= 0) {
+            return result
+        }
+        val weightBefore = acetWeightBefore?.text.toString().toFloatOrNull()
+        if (weightBefore == null) {
+            return result
+        }
+        val photoAfterSize = platformUnloadEntity!!.afterMedia.size
+        if (photoAfterSize <= 0) {
+            return result
+        }
+        val weightAfter = acetWeightAfter?.text.toString().toFloatOrNull()
+        if (weightAfter == null) {
+            return result
+        }
+        val talonValue = acetTalonValue?.text.toString().toFloatOrNull()
+        if (talonValue == null) {
+            return result
+        }
+        return false
     }
 
     override fun onLiveData() {
