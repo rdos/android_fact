@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.smartro.worknote">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--todo:https://developer.android.com/training/monitoring-device-state/connectivity-status-type-->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
