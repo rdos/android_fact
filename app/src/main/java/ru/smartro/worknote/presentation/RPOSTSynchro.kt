@@ -48,6 +48,7 @@ class RPOSTSynchro: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
         val gps = App.getAppliCation().gps()
         val synchronizeBodyIn = SynchroBodyIn(
             wb_id = App.getAppParaMS().wayBillId,
+            hardware_ts = App.getAppliCation().timeStampInMS(),
             coords = gps.PointTOBaseData(),
             device = AppParaMS().deviceId, // val deviceId = Settings.Secure.getString(getAct().contentResolver, Settings.Secure.ANDROID_ID)
             lastKnownLocationTime = gps.PointTimeToLastKnowTime_SRV(),
@@ -98,6 +99,8 @@ class RPOSTSynchro: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
 class SynchroBodyIn(
     @Expose
     val wb_id: Int,
+    @Expose
+    val hardware_ts: Long,
     @Expose
     val coords: List<Double>,
     @Expose

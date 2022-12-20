@@ -98,30 +98,20 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
             // Do something with the result.
         }
 
-        val hasWorkOrdersInNotProgress = vm.database.hasWorkOrderInNotProgress()
-        if(hasWorkOrdersInNotProgress) {
-            LOG.debug("::: hasWorkOrdersInNotProgress: ${hasWorkOrdersInNotProgress}, breakdown list size: ${vm.database.findAllBreakDownReasonS().size}")
-            showingProgress()
-            val extraPramId = getAct().getPutExtraParam_ID()
-            val workOrderS = vm.database.findWorkOrders_Old(extraPramId)
-            getNetDataSetDatabase(workOrderS)
-//            navigateNext(R.id.DFConfirmYesPhotoVechicle)
-        } else {
-            val isEmptyBreakDownReasonS = vm.database.findAllBreakDownReasonS().isEmpty()
-            val isEmptyCancelWayReasonS = vm.database.findCancelWayReasonEntity().isEmpty()
-            val isEmptyFailReasonS = vm.database.findAllFailReason().isEmpty()
+        val isEmptyBreakDownReasonS = vm.database.findAllBreakDownReasonS().isEmpty()
+        val isEmptyCancelWayReasonS = vm.database.findCancelWayReasonEntity().isEmpty()
+        val isEmptyFailReasonS = vm.database.findAllFailReason().isEmpty()
 
-            if(isEmptyBreakDownReasonS) {
-                saveBreakDownTypes()
-            }
+        if(isEmptyBreakDownReasonS) {
+            saveBreakDownTypes()
+        }
 
-            if(isEmptyCancelWayReasonS) {
-                saveCancelWayReason()
-            }
+        if(isEmptyCancelWayReasonS) {
+            saveCancelWayReason()
+        }
 
-            if(isEmptyFailReasonS) {
-                saveFailReason()
-            }
+        if(isEmptyFailReasonS) {
+            saveFailReason()
         }
 
         mAcbInfo = sview.findViewById(R.id.acb_f_map__info)

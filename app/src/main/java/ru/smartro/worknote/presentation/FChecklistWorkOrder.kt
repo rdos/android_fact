@@ -230,13 +230,7 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
         val intent = Intent(requireActivity(), ActMain::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
 
-        if(workOrders.size == 1) {
-            val workOrder = workOrders[0]
-            intent.putExtra(getAct().PUT_EXTRA_PARAM_ID, workOrder.id)
-            viewModel.insertWorkOrders(listOf(workOrder))
-        } else {
-            viewModel.insertWorkOrders(workOrders)
-        }
+        viewModel.insertWorkOrders(workOrders)
         startActivity(intent)
         getAct().finish()
     }
