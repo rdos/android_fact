@@ -219,7 +219,7 @@ APhotoF(
             val imageFile = File(imageUri.path!!)
             val imageStream: InputStream = imageFile.inputStream()
             val baos = ByteArrayOutputStream()
-            var bitmap: Bitmap? = BitmapFactory.decodeStream(imageStream)
+            var bitmap: Bitmap? = null
 
             imageStream.use {
                 val resource = BitmapFactory.decodeStream(imageStream)
