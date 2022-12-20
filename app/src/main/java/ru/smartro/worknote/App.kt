@@ -52,7 +52,6 @@ import ru.smartro.worknote.presentation.andPOintD.AirplanemodeIntentService
 import ru.smartro.worknote.presentation.ActMain
 import ru.smartro.worknote.presentation.ActStart
 import ru.smartro.worknote.log.todo.ConfigName
-import ru.smartro.worknote.log.todo.NetworkRepository
 import ru.smartro.worknote.work.work.RealmRepository
 import ru.smartro.worknote.log.todo.RegionEntity
 import ru.terrakok.cicerone.Cicerone
@@ -104,7 +103,6 @@ class App : AA() {
 //    }
     }
 
-    private var mNetworkDat: NetworkRepository? = null
     private var mDB: RealmRepository? = null
 
 
@@ -394,12 +392,7 @@ class App : AA() {
       return mDB!!
     }
     //getNetWork
-    public fun getNetwork(): NetworkRepository {
-        if(mNetworkDat == null) {
-            mNetworkDat = NetworkRepository(this)
-        }
-        return mNetworkDat!!
-    }
+//
 
 
     private fun realmInit() {

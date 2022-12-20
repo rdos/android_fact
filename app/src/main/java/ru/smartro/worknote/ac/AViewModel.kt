@@ -9,11 +9,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import ru.smartro.worknote.App
 import ru.smartro.worknote.work.work.RealmRepository
-import ru.smartro.worknote.log.todo.NetworkRepository
 import kotlin.coroutines.CoroutineContext
 
 abstract class AViewModel(application: Application) : AndroidViewModel(application), CoroutineScope {
-    val networkDat = NetworkRepository(application)
     val database = RealmRepository(Realm.getDefaultInstance())
     open val params = App.getAppParaMS()
 

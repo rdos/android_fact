@@ -87,6 +87,9 @@ class DebugF : AF(), MediaScannerConnection.OnScanCompletedListener, RegionListe
                             LOG.debug("::: Region FOR 1 ${region.id} State: ${_state}")
                             ++downloadedCounter
                         }
+                        else -> {
+
+                        }
                     }
                     mappedRegionS.add(RegionDto(region.id, region.showForUser(), region.size, _state))
                 }
@@ -400,6 +403,9 @@ class DebugF : AF(), MediaScannerConnection.OnScanCompletedListener, RegionListe
                     RegionState.COMPLETED, RegionState.NEED_UPDATE, RegionState.OUTDATED -> {
                         LOG.debug("::: Region FOR 2 ${region.id} State: ${_state}")
                         ++downloadedCounter
+                    }
+                    else -> {
+
                     }
                 }
             }

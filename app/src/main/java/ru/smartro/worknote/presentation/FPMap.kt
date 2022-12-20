@@ -60,7 +60,6 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
     private var mPlatformS: List<PlatformEntity>? = null
     private var drivingModeState = false
 
-    private val resultStatusList = mutableListOf<Status>()
     val mNotifyMap = mutableMapOf<Int, Long>()
 
     private var MAP: MapHelper? = null
@@ -308,13 +307,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         saveFailReason()
         saveCancelWayReason()
         saveBreakDownTypes()
-        
 
-//                    val hand = Handler(Looper.getMainLooper())
-        for (workOrder in workOrderS) {
-            logSentry(workOrder.id.toString())
-            progressNetData(workOrder, workOrderS.size)
-        }
     }
 
     private fun saveBreakDownTypes() {
@@ -392,32 +385,6 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 //        }
     }
 
-    private fun progressNetData(workOrder: WorkOrderEntity, workOrderSize: Int) {
-        LOG.debug("acceptProgress.before")
-        vm.networkDat.progress(workOrder.id, ProgressBody(App.getAppliCation().timeStampInSec()))
-            .observe(getAct()) { result ->
-                resultStatusList.add(result.status)
-                getAct().modeSyNChrON_off(false)
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        logSentry("acceptProgress Status.SUCCESS ")
-                        vm.database.setProgressData(workOrder)
-                        getAct().modeSyNChrON_off(false)
-                        hideProgress()
-                    }
-                    else -> {
-                        logSentry("acceptProgress Status.ERROR")
-                        toast(result.msg)
-                        vm.database.setNextProcessDate(workOrder)
-                    }
-                }
-                if (workOrderSize == resultStatusList.size) {
-                    onRefreshData()
-                    hideProgress()
-                }
-            }
-
-    }
 
     private fun gotoComplete() {
         gotoSynchronize()
