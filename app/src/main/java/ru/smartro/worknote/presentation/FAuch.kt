@@ -29,7 +29,7 @@ class FAuch : AF() {
     private var authAppVersion: TextView? = null
     private var authRootView: ConstraintLayout? = null
     private var authEnter: AppCompatButton? = null
-    private var userBlocked: AppCompatTextView? = null
+    private var loginAttempts: AppCompatTextView? = null
     private var authLoginOut: TextInputLayout? = null
     private var authPasswordOut: TextInputLayout? = null
     private var authDebugInfo: AppCompatTextView? = null
@@ -46,7 +46,7 @@ class FAuch : AF() {
         authAppVersion = view.findViewById(R.id.actv_act_start__appversion)
         authRootView = view.findViewById(R.id.cl_act_start)
         authEnter = view.findViewById(R.id.acb_login)
-        userBlocked = view.findViewById(R.id.user_blocked)
+        loginAttempts = view.findViewById(R.id.login_attempts)
         authLoginOut = view.findViewById(R.id.login_login_out)
         authPasswordOut = view.findViewById(R.id.auth_password_out)
         authDebugInfo = view.findViewById(R.id.actv_activity_auth__it_test_version)
@@ -102,10 +102,18 @@ class FAuch : AF() {
             clickAuthEnter()
         }
 
-        if(paramS().incorrectAttemptS < 5) {
-            userBlocked?.visibility = View.GONE
-        } else {
-            userBlocked?.visibility = View.VISIBLE
+        val attempts = paramS().incorrectAttemptS
+
+        when (attempts) {
+            0 -> {
+                loginAttempts?.visibility = View.GONE
+            }
+            in 1..4 -> {
+                loginAttempts?.text = "Осталось попыток входа: ${5 - attempts}"
+            }
+            else -> {
+                loginAttempts?.text = getString(R.string.user_is_blocked)
+            }
         }
 
         authDebugInfo?.isVisible = false
@@ -184,8 +192,19 @@ class FAuch : AF() {
                                 try {
                                     val newAttempts = paramS().incorrectAttemptS + 1
                                     paramS().incorrectAttemptS = newAttempts
-                                    if(newAttempts > 5) {
-                                        userBlocked?.visibility = View.VISIBLE
+
+                                    when (newAttempts) {
+                                        0 -> {
+                                            loginAttempts?.visibility = View.GONE
+                                        }
+                                        in 1..4 -> {
+                                            loginAttempts?.visibility = View.VISIBLE
+                                            loginAttempts?.text = "Осталось попыток входа: ${5 - newAttempts}"
+                                        }
+                                        else -> {
+                                            loginAttempts?.visibility = View.VISIBLE
+                                            loginAttempts?.text = getString(R.string.user_is_blocked)
+                                        }
                                     }
 
                                     val builder = GsonBuilder()
