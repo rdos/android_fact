@@ -97,16 +97,16 @@ class FAuch : AF() {
     }
 
     private fun viewInit() {
-//        if(paramS().incorrectAttemptS < 20) {
+
+        authEnter?.setOnClickListener {
+            clickAuthEnter()
+        }
+
+        if(paramS().incorrectAttemptS < 5) {
             userBlocked?.visibility = View.GONE
-            authEnter?.isEnabled = true
-            authEnter?.setOnClickListener {
-                clickAuthEnter()
-            }
-//        } else {
-//            userBlocked?.visibility = View.VISIBLE
-//            authEnter?.isEnabled = false
-//        }
+        } else {
+            userBlocked?.visibility = View.VISIBLE
+        }
 
         authDebugInfo?.isVisible = false
         if (BuildConfig.BUILD_TYPE != "debugProd" && BuildConfig.BUILD_TYPE != "release") {
@@ -173,18 +173,20 @@ class FAuch : AF() {
                 LOG.debug("${result}")
                 getAct().hideProgress()
                 when(result) {
-                    is RestConnectionResource.SuccessData -> gotoNextAct()
+                    is RestConnectionResource.SuccessData -> {
+                        paramS().incorrectAttemptS = 0
+                        gotoNextAct()
+                    }
                     is RestConnectionResource.Error -> {
                         val code = result.codeMessage.first
                         when(code) {
                             422 -> {
                                 try {
-//                                    val newAttempts = paramS().incorrectAttemptS + 1
-//                                    paramS().incorrectAttemptS = newAttempts
-//                                    if(newAttempts > 4) {
-//                                        authEnter?.isEnabled = false
-//                                        userBlocked?.visibility = View.VISIBLE
-//                                    }
+                                    val newAttempts = paramS().incorrectAttemptS + 1
+                                    paramS().incorrectAttemptS = newAttempts
+                                    if(newAttempts > 5) {
+                                        userBlocked?.visibility = View.VISIBLE
+                                    }
 
                                     val builder = GsonBuilder()
                                     builder.excludeFieldsWithoutExposeAnnotation()
@@ -217,6 +219,7 @@ class FAuch : AF() {
                             }
                         }
                     }
+                    else ->{}
                 }
             }
             App.oKRESTman().put(authRequest)
