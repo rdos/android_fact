@@ -11,13 +11,12 @@
     >
     <!--       android:background="@drawable/bg_button_green__default"-->
     <androidx.appcompat.widget.AppCompatCheckBox
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/act_map__workorder_info__checkbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:button="@null"
-
-        android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+        android:background="@null"
+        android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
         android:text="id/act_map_layout__checkbox"
         />
 
