@@ -14,11 +14,8 @@ import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ProgressBar
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.*
+import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,12 +24,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.offline_cache.*
+import com.yandex.mapkit.offline_cache.RegionListUpdatesListener
+import com.yandex.mapkit.offline_cache.RegionListener
+import com.yandex.mapkit.offline_cache.RegionState
 import ru.smartro.worknote.*
 import ru.smartro.worknote.abs.AF
-import ru.smartro.worknote.showDialogAction
 import ru.smartro.worknote.log.todo.RegionEntity
-import ru.smartro.worknote.ZipManager
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -340,9 +337,10 @@ class DebugF : AF(), MediaScannerConnection.OnScanCompletedListener, RegionListe
             .getMimeTypeFromExtension(zipFile.extension)
 
         MediaScannerConnection.scanFile(
-            requireView().context,
+            requireContext(),
             arrayOf(zipFile.absolutePath),
-            arrayOf(mediaType), this@DebugF
+            arrayOf(mediaType),
+            this@DebugF
         )
 
     }
@@ -366,27 +364,36 @@ class DebugF : AF(), MediaScannerConnection.OnScanCompletedListener, RegionListe
 
     override fun onScanCompleted(path: String?, uri: Uri?) {
         LOG.debug("onScanCompleted.path=${path}")
-        LOG.debug("onScanCompleted.uri=${uri}")
+        var newUri = uri
+        LOG.debug("onScanCompleted.uri=${newUri}")
         val mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("zip")
 
+        if(uri == null) {
+            newUri = FileProvider.getUriForFile(requireActivity(), requireContext().packageName + ".provider", File(path!!))
+            LOG.debug("onScanCompleted.uri=${newUri}")
+        }
+
         val intent = Intent()
-//
 
 //        val uri = FileProvider.getUriForFile(
 //            requireView().context, BuildConfig.APPLICATION_ID + ".provider", zipFile
 //        )
 
             //Setando actions e flags para compartilhamento
-        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        intent.putExtra(Intent.EXTRA_STREAM, newUri)
         intent.type = mediaType
         intent.action = Intent.ACTION_SEND
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
 
 
         //Abrindo modal de opções de compartilhamento
+        getAct().runOnUiThread {
+            acbSendLogs?.run {
+                isEnabled = true
+            }
+        }
 
         startActivity(Intent.createChooser(intent, "Помогите нам стать лучше"))
-        acbSendLogs?.isEnabled = true
         AppliCation().startWorkER()
     }
 
