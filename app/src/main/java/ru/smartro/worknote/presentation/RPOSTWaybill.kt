@@ -18,7 +18,6 @@ class RPOSTWaybill : AbsRequest<WaybillBodyIn, WaybillBodyOut>() {
 
     override fun onGetRequestBodyIn(): WaybillBodyIn {
         val result = WaybillBodyIn(
-            date = App.getAppliCation().currentDate(),
             organisationId = App.getAppParaMS().getOwnerId(),
             vehicleId = App.getAppParaMS().getVehicleId()
         )
@@ -58,9 +57,6 @@ class RPOSTWaybill : AbsRequest<WaybillBodyIn, WaybillBodyOut>() {
 
 
 data class WaybillBodyIn(
-    @Expose
-    @SerializedName("date")
-    val date: String,
     @Expose
     @SerializedName("oid")
     val organisationId: Int,
