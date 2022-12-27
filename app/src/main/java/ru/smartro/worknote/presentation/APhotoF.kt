@@ -35,7 +35,7 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.abs.AbsObject
-import ru.smartro.worknote.log.todo.ImageEntity
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 import java.io.*
 import java.util.concurrent.Executors
 
@@ -89,12 +89,12 @@ APhotoF(
         // TODO: name  onGetTextForFailHint = onGetTextForBlablabla)))!R_dos
         return null
     }
-    protected abstract fun onGetMediaRealmList(): RealmList<ImageEntity>
+    protected abstract fun onGetMediaRealmList(): RealmList<ImageInfoEntity>
 
     protected abstract fun onGetDirName(): String
     protected abstract fun onBeforeUSE()
     abstract fun onGotoNext(): Boolean
-    protected abstract fun onAfterUSE(imageS: List<ImageEntity>)
+    protected abstract fun onAfterUSE(imageS: List<ImageInfoEntity>)
     protected abstract fun onSavePhoto()
     protected abstract fun onGetIsVisibleBtnCancel(): Boolean
     protected abstract fun onClickBtnCancel()
@@ -428,7 +428,7 @@ APhotoF(
             try {
 //                showingProgress("Сохраняем фото")
                 val photoFileScanner = PhotoFileScanner(C_PHOTO_D)
-                val imageS = mutableListOf<ImageEntity>()
+                val imageS = mutableListOf<ImageInfoEntity>()
                 while (photoFileScanner.scan()) {
                     val imageEntity = photoFileScanner.getImageEntity()
                     imageS.add(imageEntity)
@@ -521,7 +521,7 @@ APhotoF(
 
     }
 
-    private fun restorePhotoFileS(imageS: RealmList<ImageEntity>) {
+    private fun restorePhotoFileS(imageS: RealmList<ImageInfoEntity>) {
         LOG.debug("restorePhotoFileS(imageS.size=${imageS.size}) before")
         for (imageEntity in imageS) {
             LOG.debug("restorePhotoFileS(/):for(imageEntity in imageS).imageEntityID=${imageEntity.date}")
@@ -566,7 +566,7 @@ APhotoF(
             return true
         }
 
-        private fun imageToBase64(imageFile: File): ImageEntity {
+        private fun imageToBase64(imageFile: File): ImageInfoEntity {
             val size = imageFile.length().toInt()
             val b = ByteArray(size)
             try {
@@ -594,7 +594,7 @@ APhotoF(
             return imageEntity
         }
 
-        fun getImageEntity(): ImageEntity {
+        fun getImageEntity(): ImageInfoEntity {
             val imageFile = mFileS!![mIdx]
             val imageEntity = imageToBase64(imageFile)
             mIdx++

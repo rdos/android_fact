@@ -144,11 +144,11 @@ open class WorkOrderEntity(
 
     companion object {
         
-        fun mapMedia(data: List<String>): RealmList<ImageEntity> {
+        fun mapMedia(data: List<String>): RealmList<ImageInfoEntity> {
             var idx = 0L
             return data.mapTo(RealmList()) {
                 idx++
-                ImageEntity(
+                ImageInfoEntity(
                     image = it, date = idx,
                     coords = RealmList()
                 )
@@ -293,7 +293,7 @@ open class KGOEntity(
     @Expose
     var volume: Double? = null,
     @Expose
-    var media: RealmList<ImageEntity> = RealmList()
+    var media: RealmList<ImageInfoEntity> = RealmList()
     ): Serializable, RealmObject() {
         fun isEmpty(): Boolean {
             val result = volume == null
@@ -337,12 +337,12 @@ open class PlatformVoiceCommentEntity(
 open class PlatformMediaEntity(
     @PrimaryKey
     var platformId: Int = Inull,
-    var beforeMedia: RealmList<ImageEntity> = RealmList(),
-    var kgoServedMedia: RealmList<ImageEntity> = RealmList(),
-    var kgoRemainingMedia: RealmList<ImageEntity> = RealmList(),
-    var pickupMedia: RealmList<ImageEntity> = RealmList(),
-    var failureMedia: RealmList<ImageEntity> = RealmList(),
-    var afterMedia: RealmList<ImageEntity> = RealmList(),
+    var beforeMedia: RealmList<ImageInfoEntity> = RealmList(),
+    var kgoServedMedia: RealmList<ImageInfoEntity> = RealmList(),
+    var kgoRemainingMedia: RealmList<ImageInfoEntity> = RealmList(),
+    var pickupMedia: RealmList<ImageInfoEntity> = RealmList(),
+    var failureMedia: RealmList<ImageInfoEntity> = RealmList(),
+    var afterMedia: RealmList<ImageInfoEntity> = RealmList(),
     var workOrderId: Int = Inull,
     var dev_info: String? = null
 ): Serializable, RealmObject() {
@@ -519,16 +519,16 @@ open class PlatformEntity(
 
     @Expose
     @SerializedName("after_media")
-    var afterMedia: RealmList<ImageEntity> = RealmList(),
+    var afterMedia: RealmList<ImageInfoEntity> = RealmList(),
     @Expose
     @SerializedName("before_media")
-    var beforeMedia: RealmList<ImageEntity> = RealmList(),
+    var beforeMedia: RealmList<ImageInfoEntity> = RealmList(),
     @Expose
     @SerializedName("pickup_media")
-    var pickupMedia: RealmList<ImageEntity> = RealmList(),
+    var pickupMedia: RealmList<ImageInfoEntity> = RealmList(),
     @Expose
     @SerializedName("failure_media")
-    var failureMedia: RealmList<ImageEntity>? = RealmList(),
+    var failureMedia: RealmList<ImageInfoEntity>? = RealmList(),
     @Expose
     @SerializedName("kgo_remaining")
     var kgoRemaining: KGOEntity? = null,
@@ -805,22 +805,22 @@ open class PlatformEntity(
         return getRemainingKGOMediaSize() > 0
     }
 
-    fun addServerKGOMedia(imageS: List<ImageEntity>) {
+    fun addServerKGOMedia(imageS: List<ImageInfoEntity>) {
         initServedKGOEntity()
 
         this.kgoServed?.media = RealmList()
         for(image in imageS) {
-            val imageEntity = ImageEntity.createEmpty(image)
-            this.kgoServed?.media?.add(imageEntity)
+            val imageInfo = ImageInfoEntity.createEmpty(image)
+            this.kgoServed?.media?.add(imageInfo)
         }
     }
 
-    fun addRemainingKGOMedia(imageS: List<ImageEntity>) {
+    fun addRemainingKGOMedia(imageS: List<ImageInfoEntity>) {
         initRemainingKGOEntity()
         this.kgoRemaining?.media = RealmList()
         for(image in imageS) {
-            val imageEntity = ImageEntity.createEmpty(image)
-            this.kgoRemaining?.media?.add(imageEntity)
+            val imageInfo = ImageInfoEntity.createEmpty(image)
+            this.kgoRemaining?.media?.add(imageInfo)
         }
     }
 
@@ -870,35 +870,35 @@ open class PlatformEntity(
         return null
     }
 
-    fun addBeforeMedia(imageS: List<ImageEntity>) {
+    fun addBeforeMedia(imageS: List<ImageInfoEntity>) {
         this.beforeMedia = RealmList()
         for(image in imageS) {
-            val imageEntity = ImageEntity.createEmpty(image)
-            this.beforeMedia.add(imageEntity)
+            val imageInfo = ImageInfoEntity.createEmpty(image)
+            this.beforeMedia.add(imageInfo)
         }
     }
 
-    fun addPickupMedia(imageS: List<ImageEntity>) {
+    fun addPickupMedia(imageS: List<ImageInfoEntity>) {
         this.pickupMedia = RealmList()
         for(image in imageS) {
-            val imageEntity = ImageEntity.createEmpty(image)
-            this.pickupMedia.add(imageEntity)
+            val imageInfo = ImageInfoEntity.createEmpty(image)
+            this.pickupMedia.add(imageInfo)
         }
     }
 
-    fun addAfterMedia(imageS: List<ImageEntity>) {
+    fun addAfterMedia(imageS: List<ImageInfoEntity>) {
         this.afterMedia = RealmList()
         for(image in imageS) {
-            val imageEntity = ImageEntity.createEmpty(image)
-            this.afterMedia.add(imageEntity)
+            val imageInfo = ImageInfoEntity.createEmpty(image)
+            this.afterMedia.add(imageInfo)
         }
     }
 
-    fun addFailureMedia(imageS: List<ImageEntity>) {
+    fun addFailureMedia(imageS: List<ImageInfoEntity>) {
         this.failureMedia = RealmList()
         for(image in imageS) {
-            val imageEntity = ImageEntity.createEmpty(image)
-            this.failureMedia?.add(imageEntity)
+            val imageInfo = ImageInfoEntity.createEmpty(image)
+            this.failureMedia?.add(imageInfo)
         }
     }
 
@@ -1046,10 +1046,10 @@ open class PlatformUnloadEntity(
     var platformId: Int = Inull,
     @SerializedName("before_media")
     @Expose
-    var beforeMedia: RealmList<ImageEntity> = RealmList(),
+    var beforeMedia: RealmList<ImageInfoEntity> = RealmList(),
     @SerializedName("after_media")
     @Expose
-    var afterMedia: RealmList<ImageEntity> = RealmList(),
+    var afterMedia: RealmList<ImageInfoEntity> = RealmList(),
     @SerializedName("before_value")
     @Expose
     var beforeValue: Float? = null,
@@ -1126,8 +1126,8 @@ open class ContainerMediaEntity(
     @PrimaryKey
     var containerId: Int = Inull,
     var platformId: Int = Inull,
-    var breakdownMedia: RealmList<ImageEntity> = RealmList(),
-    var failureMedia: RealmList<ImageEntity> = RealmList(),
+    var breakdownMedia: RealmList<ImageInfoEntity> = RealmList(),
+    var failureMedia: RealmList<ImageInfoEntity> = RealmList(),
     var workOrderId: Int = Inull,
     var dev_info: String? = null
 ): Serializable, RealmObject() {
@@ -1198,10 +1198,10 @@ open class ContainerEntity(
     var comment: String? = null,
     @Expose
     @SerializedName("failure_media")
-    var failureMedia: RealmList<ImageEntity>? = RealmList(),
+    var failureMedia: RealmList<ImageInfoEntity>? = RealmList(),
     @Expose
     @SerializedName("breakdown_media")
-    var breakdownMedia: RealmList<ImageEntity>? = RealmList(),
+    var breakdownMedia: RealmList<ImageInfoEntity>? = RealmList(),
     @Expose
     @SerializedName("breakdown_comment")
     var breakdownComment: String? = null,
@@ -1278,27 +1278,27 @@ open class ContainerEntity(
         return getBreakdownMediaSize() > 0
     }
 
-    fun addFailureMedia(imageS: List<ImageEntity>) {
+    fun addFailureMedia(imageS: List<ImageInfoEntity>) {
         this.failureMedia = RealmList()
         for(image in imageS) {
-            val imageEntity = ImageEntity.createEmpty(image)
-            this.failureMedia?.add(imageEntity)
+            val imageInfo = ImageInfoEntity.createEmpty(image)
+            this.failureMedia?.add(imageInfo)
         }
     }
 
-    fun addBreakdownMedia(imageS: List<ImageEntity>) {
+    fun addBreakdownMedia(imageS: List<ImageInfoEntity>) {
         this.breakdownMedia = RealmList()
         for(image in imageS) {
-            val imageEntity = ImageEntity.createEmpty(image)
-            this.breakdownMedia?.add(imageEntity)
+            val imageInfo = ImageInfoEntity.createEmpty(image)
+            this.breakdownMedia?.add(imageInfo)
         }
     }
 
-    fun addBreakdown(imageS: List<ImageEntity>) {
+    fun addBreakdown(imageS: List<ImageInfoEntity>) {
         this.breakdownMedia = RealmList()
         for(image in imageS) {
-            val imageEntity = ImageEntity.createEmpty(image)
-            this.breakdownMedia?.add(imageEntity)
+            val imageInfo = ImageInfoEntity.createEmpty(image)
+            this.breakdownMedia?.add(imageInfo)
         }
     }
 
@@ -1406,9 +1406,14 @@ open class ContainerGROUPClientTypeEntity(
 }
 
 
-open class ImageEntity(
+open class ImageInfoEntity(
     @Expose
     var image: String? = null,
+    @Expose
+    var md5: String = Snull,
+    @Expose
+    @SerializedName("updated_at")
+    var updateAt: Long = 0,
     @Expose
     var date: Long? = null,
     @Expose
@@ -1416,23 +1421,22 @@ open class ImageEntity(
     @Expose
     var accuracy: String? = null,
     @Expose
-    var lastKnownLocationTime: Long? =null,
-    @Expose
-    var md5: String = Snull
+    var lastKnownLocationTime: Long? = null
+
 ) : Serializable, RealmObject() {
 
     companion object {
         // TODO: !!!
-        fun createEmpty(imageEntity: ImageEntity? = null): ImageEntity {
-            val result = ImageEntity()
-            if (imageEntity == null) {
+        fun createEmpty(imageInfo: ImageInfoEntity? = null): ImageInfoEntity {
+            val result = ImageInfoEntity()
+            if (imageInfo == null) {
                 return result
             }
-            result.coords = imageEntity.coords
-            result.md5 = imageEntity.md5
-            result.date = imageEntity.date
-            result.accuracy = imageEntity.accuracy
-            result.lastKnownLocationTime = imageEntity.lastKnownLocationTime
+            result.coords = imageInfo.coords
+            result.md5 = imageInfo.md5
+            result.date = imageInfo.date
+            result.accuracy = imageInfo.accuracy
+            result.lastKnownLocationTime = imageInfo.lastKnownLocationTime
             return result
         }
     }

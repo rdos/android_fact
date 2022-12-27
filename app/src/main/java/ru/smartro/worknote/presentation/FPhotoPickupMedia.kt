@@ -3,7 +3,7 @@ package ru.smartro.worknote.presentation
 import io.realm.RealmList
 import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.R
-import ru.smartro.worknote.log.todo.ImageEntity
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformMediaEntity
 import java.io.File
 
@@ -12,7 +12,7 @@ class FPhotoPickupMedia : APhotoF() {
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()
     override fun onGetTextLabelFor() = "фото подбора"
-    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+    override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
         return mPlatformMediaEntity.pickupMedia
     }
 
@@ -29,7 +29,7 @@ class FPhotoPickupMedia : APhotoF() {
         return true
     }
 
-    override fun onAfterUSE(imageS: List<ImageEntity>) {
+    override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
 
         viewModel.database.addPlatformPickupMedia(viewModel.getPlatformId(), imageS)
         viewModel.updateVolumePickup(newVolume)

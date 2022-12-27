@@ -4,7 +4,7 @@ import android.location.Location
 import com.yandex.mapkit.geometry.Point
 import io.realm.RealmList
 import ru.smartro.worknote.*
-import ru.smartro.worknote.log.todo.ImageEntity
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 
 class PoinT(latitude: Double, longitude: Double,
     // TODO:!!pointAccuracy: Float?
@@ -44,10 +44,10 @@ class PoinT(latitude: Double, longitude: Double,
         return res
     }
 
-    fun inImageEntity(imageBase64: String): ImageEntity {
-        val imageEntity = ImageEntity(imageBase64, App.getAppliCation().timeStampInSec(),
+    fun inImageEntity(imageBase64: String): ImageInfoEntity {
+        val imageInfo = ImageInfoEntity(imageBase64, App.getAppliCation().timeStampInSec(),
             PointTOBaseData(), PoinAccuracyTO_SRV(), PointTimeToLastKnowTime_SRV())
-        return imageEntity
+        return imageInfo
     }
 
     //isAddParamS

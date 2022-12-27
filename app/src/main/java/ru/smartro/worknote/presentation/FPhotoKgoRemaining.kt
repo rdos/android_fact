@@ -2,7 +2,7 @@ package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
-import ru.smartro.worknote.log.todo.ImageEntity
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformMediaEntity
 import java.io.File
 
@@ -10,7 +10,7 @@ class FPhotoKgoRemaining : APhotoF() {
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()
     override fun onGetTextLabelFor() = "КГО.заказать борт"
-    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+    override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
         return mPlatformMediaEntity.kgoRemainingMedia
     }
 
@@ -26,7 +26,7 @@ class FPhotoKgoRemaining : APhotoF() {
         return true
     }
 
-    override fun onAfterUSE(imageS: List<ImageEntity>) {
+    override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         val remainingKGOVolumeText = getArgumentName()!!
         viewModel.database.addPlatformKgoRemaining(viewModel.getPlatformId(), imageS)
         viewModel.updatePlatformKGO(remainingKGOVolumeText, isServedKGO = false)

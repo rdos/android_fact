@@ -5,7 +5,7 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.log.todo.ContainerMediaEntity
-import ru.smartro.worknote.log.todo.ImageEntity
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 import java.io.File
 
 class FPhotoBreakdownMediaContainer : APhotoF() {
@@ -25,7 +25,7 @@ class FPhotoBreakdownMediaContainer : APhotoF() {
         }
         return mBreakDownReasonS!!
     }
-    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+    override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
         return mContainerMediaEntity.breakdownMedia
     }
 
@@ -57,7 +57,7 @@ class FPhotoBreakdownMediaContainer : APhotoF() {
         return result
     }
 
-    override fun onAfterUSE(imageS: List<ImageEntity>) {
+    override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         val platformId = getArgumentName()?.toInt()!!
 //        navigateClose(R.id.PServeF, mPlatformEntity?.platformId)
         //        val problemComment = problem_comment.text.toString()

@@ -5,7 +5,7 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.log.todo.ContainerMediaEntity
-import ru.smartro.worknote.log.todo.ImageEntity
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 import java.io.File
 
 class FPhotoFailureMediaContainer : APhotoF() {
@@ -28,7 +28,7 @@ class FPhotoFailureMediaContainer : APhotoF() {
 
     override fun onGetIsVisibleComment(): Boolean = true
 
-    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+    override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
         return mContainerMediaEntity.failureMedia
     }
 
@@ -58,7 +58,7 @@ class FPhotoFailureMediaContainer : APhotoF() {
         return result
     }
 
-    override fun onAfterUSE(imageS: List<ImageEntity>) {
+    override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.addFailureMediaContainer(mContainerId, imageS)
         viewModel.updateContainerFailure(mContainerId, failText!!, getCommentText())
         navigateNext(R.id.PServeF, viewModel.getPlatformId())

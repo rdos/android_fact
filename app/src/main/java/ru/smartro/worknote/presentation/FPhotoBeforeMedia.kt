@@ -3,7 +3,7 @@ package ru.smartro.worknote.presentation
 import io.realm.RealmList
 import ru.smartro.worknote.*
 import ru.smartro.worknote.log.todo.ConfigName
-import ru.smartro.worknote.log.todo.ImageEntity
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformEntity
 import ru.smartro.worknote.log.todo.PlatformMediaEntity
 import java.io.File
@@ -12,7 +12,7 @@ class FPhotoBeforeMedia : APhotoF() {
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()
 //    override fun onGetTextLabelFor() = "фото до обслуживания КП"
-    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+    override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
         return mPlatformMediaEntity.beforeMedia
     }
 
@@ -29,7 +29,7 @@ class FPhotoBeforeMedia : APhotoF() {
     }
 
     //TODO: r_dos!!!
-    override fun onAfterUSE(imageS: List<ImageEntity>) {
+    override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.addBeforeMedia(imageS)
         val platformEntity = viewModel.getPlatformEntity()
         val platformServeMode = platformEntity.getServeMode()

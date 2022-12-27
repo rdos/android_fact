@@ -2,7 +2,7 @@ package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
 import ru.smartro.worknote.R
-import ru.smartro.worknote.log.todo.ImageEntity
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformEntity
 import java.io.File
 
@@ -10,7 +10,7 @@ class DFModeUnloadPhotoBeforeMedia : APhotoF() {
     private val mPlatformEntity: PlatformEntity
         get() =  viewModel.getPlatformEntity()
 //    override fun onGetTextLabelFor() = "фото до обслуживания КП"
-    override fun onGetMediaRealmList(): RealmList<ImageEntity> {
+    override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
         return mPlatformEntity.unloadEntity!!.beforeMedia
     }
 
@@ -26,7 +26,7 @@ class DFModeUnloadPhotoBeforeMedia : APhotoF() {
         return true
     }
 
-    override fun onAfterUSE(imageS: List<ImageEntity>) {
+    override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.addBeforeMediaUnload(imageS)
         navigateNext(R.id.MapPlatformsF)
     }

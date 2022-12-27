@@ -276,39 +276,39 @@ class VMPserve(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
         set_PlatformLiveData()
     }
 
-    fun addBeforeMedia(imageS: List<ImageEntity>) {
+    fun addBeforeMedia(imageS: List<ImageInfoEntity>) {
         database.addBeforeMedia(this.getPlatformId(), imageS)
         set_PlatformLiveData()
     }
 
-    fun addBeforeMediaUnload(imageS: List<ImageEntity>) {
+    fun addBeforeMediaUnload(imageS: List<ImageInfoEntity>) {
         database.addBeforeMediaUnload(this.getPlatformId(), imageS)
         set_PlatformLiveData()
     }
 
-    fun addAfterMediaUnload(imageS: List<ImageEntity>) {
+    fun addAfterMediaUnload(imageS: List<ImageInfoEntity>) {
         database.addAfterMediaUnload(this.getPlatformId(), imageS)
         set_PlatformLiveData()
     }
 
-    fun addAfterMedia(imageS: List<ImageEntity>) {
+    fun addAfterMedia(imageS: List<ImageInfoEntity>) {
         LOG.debug("before.imageS=${imageS.size}")
         database.addAfterMedia(this.getPlatformId(), imageS)
         set_PlatformLiveData()
         LOG.debug("after.imageS=${imageS.size}")
     }
 
-    fun addBeforeMediaComntainerByTypes(imageS: List<ImageEntity>) {
+    fun addBeforeMediaComntainerByTypes(imageS: List<ImageInfoEntity>) {
         database.addBeforeMediaComntainerByTypes(this.getPlatformId(), imageS)
         set_PlatformLiveData()
     }
 
-    fun addFailureMediaContainer(containerId: Int, imageS: List<ImageEntity>) {
+    fun addFailureMediaContainer(containerId: Int, imageS: List<ImageInfoEntity>) {
         database.addFailureMediaContainer(this.getPlatformId(), containerId, imageS)
         set_PlatformLiveData()
     }
 
-    fun addBreakdownMediaContainer(containerId: Int, imageS: List<ImageEntity>) {
+    fun addBreakdownMediaContainer(containerId: Int, imageS: List<ImageInfoEntity>) {
         database.addBreakdownMediaContainer(this.getPlatformId(), containerId, imageS)
         set_PlatformLiveData()
     }
