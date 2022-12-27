@@ -228,26 +228,26 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 
 
     private fun onRefreshData() {
-            LOG.warn("before")
+        LOG.warn("before")
 //        mWorkOrderS = getActualWorkOrderS(true)
 //        mPlatformS = getActualPlatformS(true)
-            LOG.trace("getActualPlatformS.init")
+        LOG.trace("getActualPlatformS.init")
         val platformS = getActualPlatformS(true)
-            LOG.trace("getActualPlatformS.end")
+        LOG.trace("getActualPlatformS.end")
 
         if(platformS.isNotEmpty())
             mPlatformToServeId = platformS[0].platformId
 
-            LOG.trace("onRefreshBottomBehavior.init")
+        LOG.trace("onRefreshBottomBehavior.init")
         val platformSWithQueryText = onRefreshBottomBehavior(platformS)
-            LOG.trace("onRefreshBottomBehavior.end")
+        LOG.trace("onRefreshBottomBehavior.end")
         
-            LOG.trace("onRefreshMap.init")
+        LOG.trace("onRefreshMap.init")
         MAP?.setPlatforms(platformSWithQueryText)
-            LOG.trace("onRefreshMap.end")
+        LOG.trace("onRefreshMap.end")
         
         setInfoData()
-            LOG.warn("after")
+        LOG.warn("after")
     }
 
     private fun setInfoData() {
