@@ -88,6 +88,11 @@ abstract class BaseAdapter<T,D : RecyclerView.ViewHolder>(private var mItems: Li
 
     final override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         bind(mItems[position], holder as D)
+        bindWithPos(mItems[position], holder as D, position)
+    }
+
+    open fun bindWithPos(item: T, holder: D, position: Int) {
+
     }
 
     final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

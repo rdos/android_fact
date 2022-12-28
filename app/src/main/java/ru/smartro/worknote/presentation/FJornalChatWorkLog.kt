@@ -11,6 +11,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.smartro.worknote.App
@@ -52,7 +53,10 @@ class FJornalChatWorkLog : AF() {
 
         mAdapter = JournalChatAdapter(platformSIsServed)
 //        svFilterAddress.setOnQueryTextListener(this)
+        val llm = LinearLayoutManager(requireContext())
+        llm.stackFromEnd = true
         val rvJournalAct = view.findViewById<RecyclerView>(R.id.rv_act_journal)
+        rvJournalAct.layoutManager = llm
         rvJournalAct.adapter = mAdapter
     }
 

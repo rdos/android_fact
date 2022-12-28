@@ -30,7 +30,6 @@ import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.ac.BaseAdapter
 import ru.smartro.worknote.ac.PoinT
 import ru.smartro.worknote.hideDialog
-import ru.smartro.worknote.log.todo.problem.network.body.ProgressBody
 import ru.smartro.worknote.log.todo.*
 import ru.smartro.worknote.MapHelper
 import ru.smartro.worknote.MapListener
@@ -542,7 +541,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         bottomSheetBehavior.expandedOffset = 100
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         val rvBehavior = view.findViewById<RecyclerView>(R.id.map_behavior_rv)
-        mAdapterBottomBehavior = MapPlatformSBehaviorAdapter(this, platforms, mWorkOrderFilteredIds)
+        mAdapterBottomBehavior = MapPlatformSBehaviorAdapter(this, platforms, mWorkOrderFilteredIds, rvBehavior) //todo: не заметил линию(;)!!?
         rvBehavior.adapter = mAdapterBottomBehavior
 //        rvBehavior.adapter.notifyDataSetChanged()
         val llcBottomHavior = view.findViewById<LinearLayoutCompat>(R.id.act_map__bottom_behavior__header)
@@ -868,7 +867,8 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 class MapPlatformSBehaviorAdapter(
     private val listener: PlatformClickListener,
     mItemS: List<PlatformEntity>,
-    private val mFilteredWayTaskIds: MutableList<Int>
+    private val mFilteredWayTaskIds: MutableList<Int>,
+    private val rvBehavior: RecyclerView
 ) : BaseAdapter<PlatformEntity, MapPlatformSBehaviorAdapter.PlatformViewHolder>(mItemS) {
     private var mOldQueryText: String? = null
     private var lastHolder: PlatformViewHolder? = null
@@ -983,7 +983,7 @@ class MapPlatformSBehaviorAdapter(
             StatusEnum.ERROR -> "Завершено: невывоз"
             else -> null
         }
-        if(status != null)
+        if (status != null)
             tvCurrentStatus.text =status
 
 
@@ -1014,7 +1014,10 @@ class MapPlatformSBehaviorAdapter(
                 setOnClickListener {
                     if (!findViewById<ExpandableLayout>(R.id.map_behavior_expl).isExpanded) {
                         holder.acivArrowDropDown.rotation = 180f
-                        findViewById<ExpandableLayout>(R.id.map_behavior_expl).expand()
+                        findViewById<ExpandableLayout>(R.id.map_behavior_expl).expand(true)
+                        rvBehavior.postDelayed({
+                            rvBehavior.smoothScrollToPosition(holder.adapterPosition)
+                        }, 500L)
 
                         findViewById<Button>(R.id.map_behavior_start_service).setOnClickListener {
                             listener.startPlatformBeforeMedia(item)
@@ -1072,7 +1075,7 @@ class MapPlatformSBehaviorAdapter(
                 return
             }
             acivArrowDropDown.rotation = 0f
-            itemView.findViewById<ExpandableLayout>(R.id.map_behavior_expl)?.collapse()
+            itemView.findViewById<ExpandableLayout>(R.id.map_behavior_expl)?.collapse(true)
             platformId = null
         }
 

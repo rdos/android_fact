@@ -56,5 +56,5 @@
         tools:listitem="@layout/fact_messager__rv_item"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        />
 </androidx.appcompat.widget.LinearLayoutCompat>
