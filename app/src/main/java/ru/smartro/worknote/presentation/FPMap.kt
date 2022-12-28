@@ -1008,6 +1008,7 @@ class MapPlatformSBehaviorAdapter(
             //nothing
         }
 
+        holder.acivArrowDropDown.visibility = View.VISIBLE
         val currentStatus = item.getStatusPlatform()
         if(currentStatus == StatusEnum.NEW || currentStatus == StatusEnum.UNFINISHED) {
             holder.itemView.apply {
