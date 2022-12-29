@@ -47,7 +47,7 @@ class FPhotoKgoRemaining : APhotoF() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        super.dropOutputD()
+        
         navigateBack()
     }
     companion object {

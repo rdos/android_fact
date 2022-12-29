@@ -5,11 +5,10 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.media.ExifInterface
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.util.Base64
 import android.util.Size
 import android.view.*
 import android.widget.*
@@ -50,6 +49,46 @@ format(Bitmap.CompressFormat.PNG)
 destination(photoFile)
 }
  */
+
+
+class ExifDictionary(private val exif: ExifInterface) {
+
+    companion object {
+        const val ORIENTATION = "Orientation"
+
+        data class ExifOrientationDictionary(
+            val orientation: Int
+        ) {
+            val NONE = -1
+            val ORIENTATION_VERTICAL = 8
+            val ORIENTATION_VERTICAL_CW = 6
+            val ORIENTATION_HORIZONTAL = 1
+
+            fun isVertical() : Boolean {
+                if(orientation == ORIENTATION_VERTICAL || orientation == ORIENTATION_VERTICAL_CW)
+                    return true
+                return false
+            }
+
+            fun isHorizontal(): Boolean {
+                if(orientation == ORIENTATION_HORIZONTAL)
+                    return true
+                return false
+            }
+        }
+    }
+
+    fun getOrientation(): ExifOrientationDictionary {
+        val result: Int
+        val attribute = exif.getAttribute(ORIENTATION)
+        LOG.debug("ORIENTATION RESULT: ${attribute}")
+        if(attribute == null)
+            result = -1
+        else
+            result = attribute.toInt()
+        return ExifOrientationDictionary(result)
+    }
+}
 
 //mask
 const val C_PHOTO_D = "photo"
@@ -145,15 +184,10 @@ APhotoF(
         mPreviewView.controller = mCameraController
 
         onBeforeUSE()
-
-        if (GalleryPhotoF.isCostFileNotExist(getOutputD())) {
-            //        getArgSBundle() !!! no_restorePhotoFileS
-            restorePhotoFileS(onGetMediaRealmList())
-        }
     }
 
     private fun getMediaCount(): Int {
-        val files = AppliCation().getDFileList(C_PHOTO_D)
+        val files = AppliCation().getDFileList(getDirectory())
         var result = 0
         files?.let { itS ->
             result = itS.size
@@ -176,19 +210,13 @@ APhotoF(
         mIsSavePhotoMode = true
         onTakePhoto()
         val photoFL = createFile(getOutputD(), App.getAppliCation().timeStampInSec().toString())
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFL).build()
+        val outputOptions = OutputFileOptions.Builder(photoFL).build()
 
         mCameraController.takePicture(outputOptions, mCameraExecutor, this)
 
         if (paramS().isCameraSoundEnabled) {
             mMediaPlayer?.start()
         }
-    }
-
-    protected fun dropOutputD() {
-        val basePhotoD = AppliCation().getDPath(C_PHOTO_D)
-        val file = File(basePhotoD)
-        file.deleteRecursively()
     }
 
     override fun onDetach() {
@@ -202,48 +230,62 @@ APhotoF(
     }
 
     fun getOutputD(): File {
-        val basePhotoD = AppliCation().getD(C_PHOTO_D)
+        val basePhotoD = AppliCation().getD(getDirectory())
         return basePhotoD
     }
 
+    fun getDirectory(): String {
+        return C_PHOTO_D + File.separator + onGetDirName()
+    }
 
     private val TOAST_TEXT: String = "Извините, произошла ошибка во время сохранения фото. \n повторите, пожалуйста, попытку"
     override fun onImageSaved(outputFileResults: OutputFileResults) {
         val imageUri = outputFileResults.savedUri!!
 
         LOG.debug("Photo capture succeeded: $imageUri path: ${imageUri.path}")
-        LOG.error( "Current thread: ${Thread.currentThread().id}")
+        LOG.error("Current thread: ${Thread.currentThread().id}")
         setGalleryThumbnail(imageUri)
 
         try {
             val imageFile = File(imageUri.path!!)
-            val imageStream: InputStream = imageFile.inputStream()
+            val imageStream = BufferedInputStream(imageFile.inputStream())
+            LOG.debug("IS ::: ${imageStream}")
+            val exifDic = ExifDictionary(ExifInterface(imageStream))
+            val orientation = exifDic.getOrientation()
             val baos = ByteArrayOutputStream()
-            var bitmap: Bitmap? = null
+            var bitmap: Bitmap?
 
-            imageStream.use {
-                val resource = BitmapFactory.decodeStream(imageStream)
+            val resource = BitmapFactory.decodeFile(imageUri.path)
+            LOG.debug("RESPURCE ::: ${resource}")
+            if(orientation.isVertical()) {
+                val matrix = Matrix()
+                matrix.postRotate(90f)
+                val scaledBitmap = Bitmap.createScaledBitmap(
+                    resource,
+                    resource.width,
+                    resource.height,
+                    true
+                )
 
-                if(resource.width > resource.height) {
-                    val matrix = Matrix()
-                    matrix.postRotate(90f)
-                    val scaledBitmap = Bitmap.createScaledBitmap(resource, resource.width, resource.height, true)
-
-                    bitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
-                } else {
-                    bitmap = resource
-                }
-
+                bitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
+            } else {
+                bitmap = resource
             }
             
             bitmap!!.compress(Bitmap.CompressFormat.WEBP, 90, baos)
             val byteArray = baos.toByteArray()
+
             val outputStream = imageFile.outputStream()
             outputStream.use {
                 it.write(byteArray)
+                it.close()
+                imageStream.close()
             }
-            LOG.warn( Thread.currentThread().name)
 
+            val md5 = MD5.calculateMD5(imageFile)
+            imageFile.renameTo(File(getOutputD(), md5 + PHOTO_EXTENSION_WEBP))
+
+            LOG.warn(Thread.currentThread().name)
             onSavePhoto()
         } catch (ex: Exception) {
             LOG.error("onImageSaved", ex)
@@ -403,13 +445,7 @@ APhotoF(
             mAcactvFail?.setOnClickListener {
                 mAcactvFail?.showDropDown()
             }
-//            acactv.setOnFocusChangeListener { _, _ ->
-//                acactv.showDropDown()
-//            }
         }
-
-        
-//        onInitViewS(mRootView)
 
         acbGotoNext = view.findViewById(R.id.acb_f_aphoto__goto_next)
         acbGotoNext?.setOnClickListener {
@@ -427,17 +463,19 @@ APhotoF(
             }
             try {
 //                showingProgress("Сохраняем фото")
-                val photoFileScanner = PhotoFileScanner(C_PHOTO_D)
+                val photoFileScanner = PhotoFileScanner(getDirectory())
                 val imageS = mutableListOf<ImageInfoEntity>()
                 while (photoFileScanner.scan()) {
                     val imageEntity = photoFileScanner.getImageEntity()
-                    imageS.add(imageEntity)
+                    if(imageEntity == null)
+                        continue
+                    else
+                        imageS.add(imageEntity)
                 }
-                LOG.debug("onAfterUSE")
+                LOG.debug("onAfterUSE ::: IMAGES SIZE ${imageS.size}")
                 onAfterUSE(imageS)
                 viewModel.updatePlatformEntity()
                 LOG.info("onAfterUSE.after")
-                dropOutputD()
             } finally {
 //                hideProgress()
             }
@@ -445,7 +483,7 @@ APhotoF(
 
 
         ibTakePhoto = view.findViewById(R.id.ib_f_aphoto__takephoto)
-        mActbPhotoFlash = view.findViewById<AppCompatToggleButton>(R.id.photo_flash)
+        mActbPhotoFlash = view.findViewById(R.id.photo_flash)
         mCameraController.initializationFuture.addListener({
             LOG.debug("initializationFuture")
             if (hasBackCamera()) {
@@ -497,7 +535,7 @@ APhotoF(
             if (mediaSize <= 0) {
                 return@setOnClickListener
             }
-            navigateNext(R.id.GalleryPhotoF, getArgumentID(), onGetDirName())
+            navigateNext(GalleryPhotoF.navId, getArgumentID(), getDirectory())
         }
     }
 
@@ -513,28 +551,13 @@ APhotoF(
 
     companion object {
         private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private const val PHOTO_EXTENSION = ".jpg"
+        private const val PHOTO_EXTENSION_JPG = ".jpg"
+        private const val PHOTO_EXTENSION_WEBP = ".webp"
         private const val MANUAL_FOCUS_DURATION__MS = 8000L
         private const val ANIMATION_MANUAL_FOCUS_DURATION__MS = MANUAL_FOCUS_DURATION__MS / 2
         private fun createFile(baseFolder: File, fileName: String) =
-            File(baseFolder, fileName + PHOTO_EXTENSION)
+            File(baseFolder, fileName + PHOTO_EXTENSION_JPG)
 
-    }
-
-    private fun restorePhotoFileS(imageS: RealmList<ImageInfoEntity>) {
-        LOG.debug("restorePhotoFileS(imageS.size=${imageS.size}) before")
-        for (imageEntity in imageS) {
-            LOG.debug("restorePhotoFileS(/):for(imageEntity in imageS).imageEntityID=${imageEntity.date}")
-            val imageInBase64 = imageEntity.image!!.replace("data:image/png;base64,", "")
-            val byteArray: ByteArray =
-                Base64.decode(imageInBase64, Base64.DEFAULT)
-            val photoFL = createFile(getOutputD(), imageEntity.date.toString())
-            val outputStream = photoFL.outputStream()
-            outputStream.use { it ->
-                it.write(byteArray)
-            }
-        }
-        LOG.debug("restorePhotoFileS()after")
     }
 
     inner class PhotoFileScanner(val Dname: String) : AbsObject("PhotoFileScanner") {
@@ -566,7 +589,7 @@ APhotoF(
             return true
         }
 
-        private fun imageToBase64(imageFile: File): ImageInfoEntity {
+        private fun imageToEntity(imageFile: File): ImageInfoEntity? {
             val size = imageFile.length().toInt()
             val b = ByteArray(size)
             try {
@@ -580,23 +603,18 @@ APhotoF(
                 AppliCation().sentryCaptureException(e)
                 LOG.error(e.stackTraceToString())
             }
-
-            LOG.warn( "b.size=${size}")
-            val imageBase64 = "data:image/png;base64,${Base64.encodeToString(b, Base64.DEFAULT)}"
-            LOG.warn( "imageBase64=${imageBase64.length}")
+            LOG.warn("b.size=${size}")
             val gps = App.getAppliCation().gps()
-            val imageEntity = gps.inImageEntity(imageBase64)
-
-            imageEntity.date = imageFile.name.substring(0, imageFile.name.length - 4).toLong()
-//        imageEntity.isNoLimitPhoto = true
-//        onGetImage
+            val imageEntity = gps.getImageEntity()
+            if(imageFile.name.toLongOrNull() != null)
+                imageEntity.date = imageFile.nameWithoutExtension.toLong()
             imageEntity.md5 = MD5.calculateMD5(imageFile)!!
             return imageEntity
         }
 
-        fun getImageEntity(): ImageInfoEntity {
+        fun getImageEntity(): ImageInfoEntity? {
             val imageFile = mFileS!![mIdx]
-            val imageEntity = imageToBase64(imageFile)
+            val imageEntity = imageToEntity(imageFile)
             mIdx++
             return imageEntity
         }
@@ -614,7 +632,7 @@ APhotoF(
 }
 
 
-val EXTENSION_WHITELIST = arrayOf("JPG")
+val EXTENSION_WHITELIST = arrayOf("JPG", "WEBP")
 //class GalleryFragment(p_id: Int) internal constructor()
 class GalleryPhotoF : AF() {
 
@@ -633,13 +651,9 @@ class GalleryPhotoF : AF() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Mark this as a retain fragment, so the lifecycle does not get restarted on config change
         retainInstance = true
-
-        // Walk through all files in the root directory
-        // We reverse the order of the list to present the last photos first
-        mediaList = AppliCation().getDFileList(C_PHOTO_D).sortedDescending().toMutableList()
+        val directory = getArgumentName()
+        mediaList = AppliCation().getDFileList(directory!!).sortedDescending().toMutableList()
     }
 
 
@@ -659,53 +673,16 @@ class GalleryPhotoF : AF() {
             navigateBack()
         }
 
-        //Checking media files list
         if (mediaList.isEmpty()) {
             apibDelete.isEnabled = false
 //            fragmentGalleryBinding.shareButton.isEnabled = false
         }
 
-        // Populate the ViewPager and implement a cache of two media items
         viewPager.apply {
             offscreenPageLimit = 2
             adapter = MediaAdapter(childFragmentManager)
         }
 
-        // Make sure that the cutout "safe area" avoids the screen notch if any
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // Use extension method to pad "inside" view containing UI using display cutout's bounds
-//            fragmentGalleryBinding.cutoutSafeArea.padWithDisplayCutout()
-        }
-
-        // Handle back button press
-
-
-        // Handle share button press
-//        fragmentGalleryBinding.shareButton.setOnClickListener {
-//
-//            mediaList.getOrNull(fragmentGalleryBinding.photoViewPager.currentItem)?.let { mediaFile ->
-//
-//                // Create a sharing intent
-//                val intent = Intent().apply {
-//                    // Infer media type from file extension
-//                    val mediaType = MimeTypeMap.getSingleton()
-//                            .getMimeTypeFromExtension(mediaFile.extension)
-//                    // Get URI from our FileProvider implementation
-//                    val uri = FileProvider.getUriForFile(
-//                            view.context, BuildConfig.APPLICATION_ID + ".provider", mediaFile)
-//                    // Set the appropriate intent extra, type, action and flags
-//                    putExtra(Intent.EXTRA_STREAM, uri)
-//                    type = mediaType
-//                    action = Intent.ACTION_SEND
-//                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-//                }
-//
-//                // Launch the intent letting the user choose which app to share with
-//                startActivity(Intent.createChooser(intent, getString(R.string.share_hint)))
-//            }
-//        }
-
-        // Handle delete button press
         apibDelete.setOnClickListener {
 
             mediaList.getOrNull(viewPager.currentItem)?.let { imageEntity ->
@@ -714,10 +691,8 @@ class GalleryPhotoF : AF() {
                     .setMessage(getString(R.string.warning_detele))
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes) { _, _ ->
-//                        viewModel.removeImageEntity(p_platformId, p_containerId, photoFor , imageEntity.md5)
                         mediaList.remove(imageEntity)
                         imageEntity.delete()
-                        createCOSTFile()
                         viewPager.adapter?.notifyDataSetChanged()
                         if (mediaList.size <= 0) {
                             navigateBack()
@@ -735,37 +710,9 @@ class GalleryPhotoF : AF() {
     }
 
     companion object {
-        private const val COST___EXTENSION = "cost."
-        private const val FILE_NAME_KEY = "no_restorePhotoFileS"
-        private const val NUM_OF_COUNT = "num_of_count"
-
-        private fun createCOSTFile() {
-            val outD = App.getAppliCation().getD(C_PHOTO_D)
-            createFile(outD, getCOSTFileName())
-        }
-        private fun createFile(baseFolder: File, fileName: String) {
-            val costFL = File(baseFolder, fileName)
-            val outputStream = costFL.outputStream()
-            outputStream.use { it ->
-                it.write(Int.MAX_VALUE)
-            }
-        }
-        fun getCOSTFileName(): String {
-            return COST___EXTENSION + FILE_NAME_KEY
-        }
-
-
-        fun isCostFileNotExist(outD: File): Boolean {
-            val costFL = File(outD, getCOSTFileName())
-            return !costFL.exists()
-        }
-//        fun create(image: ImageEntity, numOfCount: String) = MediaAdapterFragment().apply {
-//            arguments = Bundle().apply {
-//                putString(FILE_NAME_KEY, image.absolutePath)
-//                putString(NUM_OF_COUNT, numOfCount)
-//            }
-//        }
+        const val navId = R.id.GalleryPhotoF
     }
+
     class MediaAdapterFragment(val image: File, val numOfCount: String) : Fragment() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

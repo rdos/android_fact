@@ -21,6 +21,7 @@ import ru.smartro.worknote.abs.AF
 import ru.smartro.worknote.ac.BaseAdapter
 import ru.smartro.worknote.log.todo.PlatformEntity
 import ru.smartro.worknote.log.todo.StatusEnum
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -77,7 +78,7 @@ class FJornalChatWorkLog : AF() {
             val imgBefore = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_before)
             if (item.getBeforeMediaSize() > 0) {
                 Glide.with(imgBefore)
-                    .load(App.getAppliCation().base64ToImage(platformMediaEntity.beforeMedia[0]?.image))
+                    .load(App.getAppliCation().getF(C_PHOTO_D, item.beforeMedia[0]!!.md5 + ".webp"))
                     .into(imgBefore)
                 holder.tv_act_messager__media_before.text = "Фото до:"
             } else {
@@ -87,7 +88,7 @@ class FJornalChatWorkLog : AF() {
             if (item.getAfterMediaSize() > 0) {
                 val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
                 Glide.with(imgAfter)
-                    .load(App.getAppliCation().base64ToImage(platformMediaEntity.afterMedia[0]?.image))
+                    .load(App.getAppliCation().getF(C_PHOTO_D, platformMediaEntity.afterMedia[0]!!.md5 + ".webp"))
                     .into(imgAfter)
                 holder.tv_act_messager__media_after.text = "Фото после:"
             } else {
@@ -98,7 +99,7 @@ class FJornalChatWorkLog : AF() {
             if (item.getFailureMediaSize() > 0) {
                 val textBefore = holder.tv_act_messager__media_before
                 Glide.with(imgBefore)
-                    .load(App.getAppliCation().base64ToImage(platformMediaEntity.failureMedia[0]?.image))
+                    .load(App.getAppliCation().getF(C_PHOTO_D, platformMediaEntity.failureMedia[0]!!.md5 + ".webp"))
                     .into(imgBefore)
                 textBefore.text = "Фото невывоза:"
                 textBefore.visibility = View.VISIBLE

@@ -44,7 +44,7 @@ class DFVehiclePhotoBeforeMedia : APhotoF() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        super.dropOutputD()
+        
         navigateNext(R.id.MapPlatformsF)
 
     }

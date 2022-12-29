@@ -810,8 +810,7 @@ open class PlatformEntity(
 
         this.kgoServed?.media = RealmList()
         for(image in imageS) {
-            val imageInfo = ImageInfoEntity.createEmpty(image)
-            this.kgoServed?.media?.add(imageInfo)
+            this.kgoServed?.media?.add(image)
         }
     }
 
@@ -819,8 +818,7 @@ open class PlatformEntity(
         initRemainingKGOEntity()
         this.kgoRemaining?.media = RealmList()
         for(image in imageS) {
-            val imageInfo = ImageInfoEntity.createEmpty(image)
-            this.kgoRemaining?.media?.add(imageInfo)
+            this.kgoRemaining?.media?.add(image)
         }
     }
 
@@ -873,32 +871,28 @@ open class PlatformEntity(
     fun addBeforeMedia(imageS: List<ImageInfoEntity>) {
         this.beforeMedia = RealmList()
         for(image in imageS) {
-            val imageInfo = ImageInfoEntity.createEmpty(image)
-            this.beforeMedia.add(imageInfo)
+            this.beforeMedia.add(image)
         }
     }
 
     fun addPickupMedia(imageS: List<ImageInfoEntity>) {
         this.pickupMedia = RealmList()
         for(image in imageS) {
-            val imageInfo = ImageInfoEntity.createEmpty(image)
-            this.pickupMedia.add(imageInfo)
+            this.pickupMedia.add(image)
         }
     }
 
     fun addAfterMedia(imageS: List<ImageInfoEntity>) {
         this.afterMedia = RealmList()
         for(image in imageS) {
-            val imageInfo = ImageInfoEntity.createEmpty(image)
-            this.afterMedia.add(imageInfo)
+            this.afterMedia.add(image)
         }
     }
 
     fun addFailureMedia(imageS: List<ImageInfoEntity>) {
         this.failureMedia = RealmList()
         for(image in imageS) {
-            val imageInfo = ImageInfoEntity.createEmpty(image)
-            this.failureMedia?.add(imageInfo)
+            this.failureMedia?.add(image)
         }
     }
 
@@ -1281,24 +1275,21 @@ open class ContainerEntity(
     fun addFailureMedia(imageS: List<ImageInfoEntity>) {
         this.failureMedia = RealmList()
         for(image in imageS) {
-            val imageInfo = ImageInfoEntity.createEmpty(image)
-            this.failureMedia?.add(imageInfo)
+            this.failureMedia?.add(image)
         }
     }
 
     fun addBreakdownMedia(imageS: List<ImageInfoEntity>) {
         this.breakdownMedia = RealmList()
         for(image in imageS) {
-            val imageInfo = ImageInfoEntity.createEmpty(image)
-            this.breakdownMedia?.add(imageInfo)
+            this.breakdownMedia?.add(image)
         }
     }
 
     fun addBreakdown(imageS: List<ImageInfoEntity>) {
         this.breakdownMedia = RealmList()
         for(image in imageS) {
-            val imageInfo = ImageInfoEntity.createEmpty(image)
-            this.breakdownMedia?.add(imageInfo)
+            this.breakdownMedia?.add(image)
         }
     }
 
@@ -1422,23 +1413,26 @@ open class ImageInfoEntity(
     var accuracy: String? = null,
     @Expose
     var lastKnownLocationTime: Long? = null
-
 ) : Serializable, RealmObject() {
 
+    init {
+        LOG.debug("CREATED:::: ${image} ${md5} ${updateAt} ${date} ${coords} ${accuracy} ${lastKnownLocationTime}")
+    }
+
     companion object {
-        // TODO: !!!
-        fun createEmpty(imageInfo: ImageInfoEntity? = null): ImageInfoEntity {
-            val result = ImageInfoEntity()
-            if (imageInfo == null) {
-                return result
-            }
-            result.coords = imageInfo.coords
-            result.md5 = imageInfo.md5
-            result.date = imageInfo.date
-            result.accuracy = imageInfo.accuracy
-            result.lastKnownLocationTime = imageInfo.lastKnownLocationTime
-            return result
-        }
+//        // TODO: !!!
+//        fun createEmpty(imageInfo: ImageInfoEntity? = null): ImageInfoEntity {
+//            val result = ImageInfoEntity()
+//            if (imageInfo == null) {
+//                return result
+//            }
+//            result.coords = imageInfo.coords
+//            result.md5 = imageInfo.md5
+//            result.date = imageInfo.date
+//            result.accuracy = imageInfo.accuracy
+//            result.lastKnownLocationTime = imageInfo.lastKnownLocationTime
+//            return result
+//        }
     }
 }
 

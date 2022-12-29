@@ -74,7 +74,7 @@ class FPhotoBreakdownMediaContainer : APhotoF() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        super.dropOutputD()
+        
         navigateBack()
     }
 }

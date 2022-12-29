@@ -44,7 +44,7 @@ class DFModeUnloadPhotoBeforeMedia : APhotoF() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        super.dropOutputD()
+        
         navigateNext(R.id.MapPlatformsF)
 
     }

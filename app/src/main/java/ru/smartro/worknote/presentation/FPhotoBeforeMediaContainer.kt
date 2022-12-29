@@ -42,7 +42,7 @@ class FPhotoBeforeMediaContainer : APhotoF() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        super.dropOutputD()
+        
         navigateBack()
     }
 }

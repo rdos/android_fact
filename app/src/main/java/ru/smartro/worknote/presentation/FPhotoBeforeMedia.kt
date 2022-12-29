@@ -82,7 +82,6 @@ class FPhotoBeforeMedia : APhotoF() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        super.dropOutputD()
         navigateBack(R.id.MapPlatformsF)
 
     }

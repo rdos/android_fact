@@ -81,7 +81,7 @@ open class FPhotoFailureMedia : APhotoF() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        super.dropOutputD()
+        
         navigateBack()
     }
 }
