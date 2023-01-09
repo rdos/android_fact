@@ -19,6 +19,11 @@ import ru.smartro.worknote.tryCatch
 
 //todo: смотри прикол, VT !!!UnloadInfo++ploadTicket
 class DFModeUnloadTicket: ADF() {
+
+    companion object {
+        const val NAV_ID = R.id.DFModeUnloadTicket
+    }
+
     private var acetTalonValue: AppCompatEditText? = null
     private var acetWeightAfter: AppCompatEditText? = null
     private var acetWeightBefore: AppCompatEditText? = null
@@ -35,7 +40,7 @@ class DFModeUnloadTicket: ADF() {
 
         val acbPhotoBefore = sview.findViewById<SmartROacb>(R.id.acb__f_unload_ticket__photo_before)
         acbPhotoBefore.setOnClickListener {
-            navigateNext(R.id.UnloadPhotoBeforeMediaF)
+            navigateNext(DFModeUnloadPhotoBeforeMedia.NAV_ID)
         }
         val actvPhotoBeforeCount = sview.findViewById<AppCompatTextView>(R.id.actv__f_unload_ticket__photo_before_count)
         actvPhotoBeforeCount.setText(platformUnloadEntity?.beforeMedia?.size.toStr())
@@ -43,7 +48,7 @@ class DFModeUnloadTicket: ADF() {
 
         val acbPhotoAfter = sview.findViewById<SmartROacb>(R.id.acb__f_unload_ticket__photo_after)
         acbPhotoAfter.setOnClickListener {
-            navigateNext(R.id.UnloadPhotoAfterMediaF)
+            navigateNext(FModeUnloadPhotoAfterMedia.NAV_ID)
         }
         val actvPhotoAfterCount = sview.findViewById<AppCompatTextView>(R.id.actv__f_unload_ticket__photo_after_count)
         actvPhotoAfterCount.setText(platformUnloadEntity?.afterMedia?.size.toStr())
@@ -83,7 +88,7 @@ class DFModeUnloadTicket: ADF() {
                         fragmentPMap.clearNavigator()
                         fragmentPMap.toggleUnloadButton(false)
                     }
-                    navigate(R.id.MapPlatformsF)
+                    navigate(FPMap.NAV_ID)
                     toast("выключился режим Выгрузки")
                 }
             }

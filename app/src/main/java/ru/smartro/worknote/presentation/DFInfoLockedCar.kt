@@ -4,13 +4,13 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.abs.AInformDF
 
 class DFInfoLockedCar: AInformDF() {
-    override fun onGetNavId(): Int {
-        return R.id.LockedCarInfoDF
+
+    companion object {
+        const val NAV_ID = R.id.DFInfoLockedCar
     }
 
     override fun onGetContentText(): String {
-        return getString(R.string.photo_locked)
+        return getString(R.string.car_locked)
     }
-
 
 }

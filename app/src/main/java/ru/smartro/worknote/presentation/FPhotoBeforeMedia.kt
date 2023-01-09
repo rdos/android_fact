@@ -38,35 +38,35 @@ class FPhotoBeforeMedia : APhotoF() {
 //            // TODO: FYI: влад, "!!!"= значит точно знаю КАК PlatformEntity.Companion.ServeMode.PServeF
 ////            if mPLatformEntity.isServeModeFixPServeF
 //            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeF) {
-//                navigateNext(R.id.PServeF, mPlatformEntity.platformId)
+//                navigateNext(PServeF.NAV_ID, mPlatformEntity.platformId)
 //                return
 //            }
 //                             //todo: линию не заметил)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 ////            //            if mPLatformEntity.isModeFixPServeGroupByContainersF
 //            if (mPlatformEntity.serveModeFixCODENAME == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-//                navigateNext(R.id.PServeByTypesF, mPlatformEntity.platformId)
+//                navigateNext(PServeByTypesF.NAV_ID, mPlatformEntity.platformId)
 //                return
 //            }
             if(platformServeMode == PlatformEntity.Companion.ServeMode.PServeF) {
-                navigateNext(R.id.PServeF, viewModel.getPlatformId())
+                navigateNext(FPServe.NAV_ID, viewModel.getPlatformId())
                 return
             } else {
-                navigateNext(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
+                navigateNext(FPServeGroupByContainers.NAV_ID, viewModel.getPlatformId())
                 return
             }
         }
 
         val configVal = viewModel.database.getConfigString(ConfigName.USER_WORK_SERVE_MODE_CODENAME)
         if (configVal == PlatformEntity.Companion.ServeMode.PServeF) {
-            navigateNext(R.id.PServeF, viewModel.getPlatformId())
+            navigateNext(FPServe.NAV_ID, viewModel.getPlatformId())
             return
         }
         if (configVal == PlatformEntity.Companion.ServeMode.PServeGroupByContainersF) {
-            navigateNext(R.id.PServeGroupByContainersF, viewModel.getPlatformId())
+            navigateNext(FPServeGroupByContainers.NAV_ID, viewModel.getPlatformId())
             return
         }
 
-        navigateNext(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(FPServe.NAV_ID, viewModel.getPlatformId())
     }
 
     override fun onSavePhoto() {
@@ -82,9 +82,10 @@ class FPhotoBeforeMedia : APhotoF() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        navigateBack(R.id.MapPlatformsF)
+        navigateBack(FPMap.NAV_ID)
 
     }
     companion object {
+        const val NAV_ID = R.id.FPhotoBeforeMedia
     }
 }

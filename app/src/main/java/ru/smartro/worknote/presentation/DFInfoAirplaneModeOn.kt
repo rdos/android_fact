@@ -4,12 +4,13 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.abs.AInformDF
 
 class DFInfoAirplaneModeOn : AInformDF() {
-    override fun onGetContentText(): String {
-        return  getString(R.string.warning_airplane_mode)
+
+    companion object {
+        const val NAV_ID = R.id.DFInfoAirplaneModeOn
     }
 
-    override fun onGetNavId(): Int {
-        return R.id.InfoAirplaneModeOnDF
+    override fun onGetContentText(): String {
+        return  getString(R.string.warning_airplane_mode)
     }
 
 }

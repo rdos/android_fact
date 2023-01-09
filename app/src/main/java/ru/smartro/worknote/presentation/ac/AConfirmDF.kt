@@ -145,7 +145,6 @@ abstract class AConfirmDF: ADF() {
     }
     
     abstract fun onGetContentText(): String?
-    abstract fun onGetNavId(): Int
     abstract fun onGetEntity(): PlatformEntity?
 
 }

@@ -14,9 +14,9 @@
 
 
     <dialog
-        android:id="@+id/DInfoPointsUploadF"
+        android:id="@+id/DFInfoPointsUpload"
         android:name="ru.smartro.worknote.presentation.DFInfoPointsUpload"
-        android:label="DInfoPointsUploadF">
+        android:label="DFInfoPointsUpload">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -51,7 +51,7 @@
         android:label="StartWorkOrderF" />
 
     <dialog
-        android:id="@+id/DInfoInternetOffF"
+        android:id="@+id/DFInfoInternetOff"
         android:name="ru.smartro.worknote.presentation.DFInfoInternetOff"
         android:label="DInfoInternetOffF">
         <argument

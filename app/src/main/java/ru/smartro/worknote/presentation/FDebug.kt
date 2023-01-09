@@ -37,6 +37,10 @@ import java.io.InputStream
 
 class DebugF : AF(), MediaScannerConnection.OnScanCompletedListener, RegionListener, RegionListUpdatesListener {
 
+    companion object {
+        const val NAV_ID = R.id.DebugF
+    }
+
     private var acbSendLogs: AppCompatButton? = null
     private val vm: DebugViewModel by viewModels()
 

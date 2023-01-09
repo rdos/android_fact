@@ -9,6 +9,11 @@ import ru.smartro.worknote.log.todo.PlatformEntity
 import ru.smartro.worknote.presentation.abs.AInformDF
 
 class DFPServeCleanup: AInformDF() {
+
+    companion object {
+        const val NAV_ID = R.id.DFPServeCleanup
+    }
+
     private val viewModel: VMPserve by activityViewModels()
 
     override fun onGetEntity(): PlatformEntity {
@@ -21,15 +26,11 @@ class DFPServeCleanup: AInformDF() {
         return entity
     }
 
-    override fun onGetNavId(): Int {
-        return R.id.PServeCleanupDF
-    }
-
     override fun onGetContentText(): String {
         return getString(R.string.need_cleanup)
     }
 
     override fun onNextFragment(entity: PlatformEntity) {
-        navigateNext(R.id.PhotoAfterMediaF, entity.platformId)
+        navigateNext(FPhotoAfterMedia.NAV_ID, entity.platformId)
     }
 }

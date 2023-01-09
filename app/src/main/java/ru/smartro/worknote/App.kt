@@ -49,11 +49,10 @@ import org.slf4j.LoggerFactory
 import ru.smartro.worknote.abs.AAct
 import ru.smartro.worknote.ac.*
 import ru.smartro.worknote.presentation.andPOintD.AirplanemodeIntentService
-import ru.smartro.worknote.presentation.ActMain
-import ru.smartro.worknote.presentation.ActStart
 import ru.smartro.worknote.log.todo.ConfigName
 import ru.smartro.worknote.work.work.RealmRepository
 import ru.smartro.worknote.log.todo.RegionEntity
+import ru.smartro.worknote.presentation.*
 import ru.terrakok.cicerone.Cicerone
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.Router
@@ -147,7 +146,7 @@ class App : AA() {
         if (gps_loc == null && net_loc == null) {
             getCurrentAct()?.supportFragmentManager?.fragments?.get(0)?.view?.post {
                 if(this.mCurrentAct != null && this.mCurrentAct is ActMain) {
-                    this.mCurrentAct?.showNextFragment(R.id.DInfoGpsOffF)
+                    this.mCurrentAct?.showNextFragment(DFInfoGpsOff.NAV_ID)
                 }
             }
             return getAppParaMS().getSaveGPS()
@@ -190,7 +189,7 @@ class App : AA() {
         connectionLiveData.observeForever { isConnectionLost ->
 
             if(isConnectionLost == true) {
-                mCurrentAct?.showNextFragment(R.id.DInfoInternetOffF)
+                mCurrentAct?.showNextFragment(DFInfoInternetOff.NAV_ID)
             }
         }
 
@@ -702,7 +701,7 @@ class App : AA() {
                     context.startService(serviceIntent)
 
                     if (isAirplaneModeEnabled) {
-                        mCurrentAct?.showNextFragment(R.id.InfoAirplaneModeOnDF)
+                        mCurrentAct?.showNextFragment(DFInfoAirplaneModeOn.NAV_ID)
                     }
                 }
             }

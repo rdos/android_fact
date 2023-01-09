@@ -29,6 +29,11 @@ import kotlin.math.min
 
 //todo: MapPlatformsDF MapPlatformsDF MapPlatformsDF???ИЛИ MapPlatforms(on)MapObjectTap(DF)=
 class DFPMap : ADF(), View.OnClickListener {
+
+    companion object {
+        const val NAV_ID = R.id.DFPMap
+    }
+
     private lateinit var platformTODO: PlatformEntity
     private val vm: VMPserve by activityViewModels()
     private val mOnClickListener = this as View.OnClickListener
@@ -50,10 +55,10 @@ class DFPMap : ADF(), View.OnClickListener {
                 }
 
                 if(platformTODO.needCleanup == true) {
-                    navigateNext(R.id.PMapNeedCleanupDF, platformTODO.platformId)
+                    navigateNext(DFPMapNeedCleanup.NAV_ID, platformTODO.platformId)
                 } else {
                     // TODO ::: CHECK NEEDED !!!
-                    navigateNext(R.id.PMapWarnDF, platformTODO.platformId, getString(R.string.warning_gps_exception))
+                    navigateNext(DFPMapWarn.NAV_ID, platformTODO.platformId, getString(R.string.warning_gps_exception))
                 }
             }
 
@@ -63,13 +68,13 @@ class DFPMap : ADF(), View.OnClickListener {
                     return
                 }
                 vm.setPlatformEntity(platformTODO)
-                navigateNext(R.id.PhotoFailureMediaF, platformTODO.platformId)}
+                navigateNext(FPhotoFailureMedia.NAV_ID, platformTODO.platformId)}
             R.id.ibtn_dialog_platform_clicked_dtl__close -> {
-                navigate(R.id.MapPlatformsF)
+                navigate(FPMap.NAV_ID)
             }
             R.id.platform_location -> {
                 findNavController().previousBackStackEntry?.savedStateHandle?.set("navigatePlatform", true)
-                navigate(R.id.MapPlatformsF)
+                navigate(FPMap.NAV_ID)
             }
         }
 

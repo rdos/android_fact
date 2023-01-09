@@ -15,6 +15,10 @@ import ru.smartro.worknote.log.todo.PlatformEntity
 
 class DFPMapWarn: AConfirmDF() {
 
+    companion object {
+        const val NAV_ID = R.id.DFPMapWarn
+    }
+
     private val viewModel: VMPserve by activityViewModels()
 
     override fun onGetEntity(): PlatformEntity {
@@ -29,7 +33,7 @@ class DFPMapWarn: AConfirmDF() {
 
     override fun onNextFragment(tbIbYO__item: PlatformEntity) {
         viewModel.setPlatformEntity(tbIbYO__item)
-        navigateNext(R.id.PhotoBeforeMediaF, tbIbYO__item.platformId)
+        navigateNext(FPhotoBeforeMedia.NAV_ID, tbIbYO__item.platformId)
     }
 
     override fun onGetNextText(): String {
@@ -49,18 +53,13 @@ class DFPMapWarn: AConfirmDF() {
         if (App.getAppliCation().gps().isThisPoint(tbIbYO__item.coordLat, tbIbYO__item.coordLong)) {
             viewModel.setPlatformEntity(tbIbYO__item)
             dismissAllowingStateLoss()
-            navigateNext(R.id.PhotoBeforeMediaF, tbIbYO__item.platformId)
+            navigateNext(FPhotoBeforeMedia.NAV_ID, tbIbYO__item.platformId)
         }
     }
 
     override fun onStyle(sview: SmartROllc, acbGotoBack: AppCompatButton) {
         setUseButtonStyleBackgroundRed(sview)
         acbGotoBack.visibility = View.GONE
-    }
-
-
-    override fun onGetNavId(): Int {
-        return R.id.PMapWarnDF
     }
 
     override fun onGetContentText(): String {

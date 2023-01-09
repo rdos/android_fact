@@ -27,6 +27,10 @@ import java.util.*
 
 class FJornalChatWorkLog : AF() {
 
+    companion object {
+        const val NAV_ID = R.id.FJornalChatWorkLog
+    }
+
     private var mAdapter: JournalChatAdapter? = null
     private val viewModel: JournalChatViewModel by viewModels()
 

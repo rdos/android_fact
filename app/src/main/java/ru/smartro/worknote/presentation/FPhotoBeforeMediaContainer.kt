@@ -8,6 +8,10 @@ import java.io.File
 
 class FPhotoBeforeMediaContainer : APhotoF() {
 
+    companion object {
+        const val NAV_ID = R.id.FPhotoBeforeMediaContainer
+    }
+
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() = viewModel.getPlatformMediaEntity()
 
@@ -30,7 +34,7 @@ class FPhotoBeforeMediaContainer : APhotoF() {
 
     override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.addBeforeMediaComntainerByTypes(imageS)
-        navigateNext(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(FPServe.NAV_ID, viewModel.getPlatformId())
     }
 
     override fun onGetIsVisibleBtnCancel() = false

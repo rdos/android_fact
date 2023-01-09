@@ -26,8 +26,4 @@ class DFConfirmYesVechicle : AConfirmYesNoDF() {
     override fun onGetContentText(): String {
         return "сделайте фото мусоровоза"
     }
-
-    override fun onGetNavId(): Int {
-        return R.id.ReAuthWarningDialogF
-    }
 }

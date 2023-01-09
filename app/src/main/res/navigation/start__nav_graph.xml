@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/start__nav_graph"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/StartF">
+    app:startDestination="@id/FAuch">
 
     <fragment
-        android:id="@+id/StartF"
+        android:id="@+id/FAuch"
         android:name="ru.smartro.worknote.presentation.FAuch"
         tools:layout="@layout/f_start"
-        android:label="StartF" />
+        android:label="FAuch" />
 
     <dialog
-        android:id="@+id/DInfoInternetOffF"
+        android:id="@+id/DFInfoInternetOff"
         android:name="ru.smartro.worknote.presentation.DFInfoInternetOff"
-        android:label="DInfoInternetOffF">
+        android:label="DFInfoInternetOff">
         <argument
             android:name="ARGUMENT_NAME___PARAM_ID"
             app:argType="integer"
@@ -26,10 +26,10 @@
     </dialog>
 
     <dialog
-        android:id="@+id/ReAuthWarningDialogF"
+        android:id="@+id/DFYesNoReAuthDialog"
         android:name="ru.smartro.worknote.presentation.DFYesNoReAuthDialog"
         tools:layout="@layout/df_action"
-        android:label="ReAuthWarningDialogF" />
+        android:label="DFYesNoReAuthDialog" />
 
     <dialog
         android:id="@+id/DFConfirmReAuth"

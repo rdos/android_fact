@@ -28,7 +28,7 @@ class FModeUnloadPhotoAfterMedia : APhotoF() {
 
     override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.addAfterMediaUnload(imageS)
-        navigateNext(R.id.MapPlatformsF)
+        navigateNext(FPMap.NAV_ID)
     }
 
     override fun onSavePhoto() {
@@ -45,9 +45,10 @@ class FModeUnloadPhotoAfterMedia : APhotoF() {
     override fun onBackPressed() {
         super.onBackPressed()
         
-        navigateNext(R.id.MapPlatformsF)
+        navigateNext(FPMap.NAV_ID)
 
     }
     companion object {
+        const val NAV_ID = R.id.FModeUnloadPhotoAfterMedia
     }
 }

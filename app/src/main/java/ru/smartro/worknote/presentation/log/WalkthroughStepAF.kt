@@ -19,7 +19,7 @@ class WalkthroughStepAF : AF() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        findNavController().popBackStack(R.id.PServeF, false)
+        findNavController().popBackStack(R.id.FPServe, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -28,11 +28,11 @@ class WalkthroughStepAF : AF() {
 //
 
         view.findViewById<AppCompatButton>(R.id.acb_f_pserve_walkthrough_step_a__dismiss).setOnClickListener {
-            findNavController().popBackStack(R.id.PServeF, false)
+            findNavController().popBackStack(R.id.FPServe, false)
         }
 
         view.findViewById<AppCompatButton>(R.id.acb_f_pserve_walkthrough_step_a__next).setOnClickListener {
-//            findNavController().navigate(R.id.WalkthroughStepBF)
+//            findNavController().navigate(WalkthroughStepBF.NAV_ID)
         }
     }
 }

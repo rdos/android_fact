@@ -7,6 +7,11 @@ import ru.smartro.worknote.log.todo.PlatformMediaEntity
 import java.io.File
 
 class FPhotoKgoServed : APhotoF() {
+
+    companion object {
+        const val NAV_ID = R.id.FPhotoKgoServed
+    }
+
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()
     override fun onGetTextLabelFor() = "КГО.забрал"
@@ -31,7 +36,7 @@ class FPhotoKgoServed : APhotoF() {
         val servedKGOVolumeText = getArgumentName()!!
         viewModel.database.addKgoServed(viewModel.getPlatformId(), imageS)
         viewModel.updatePlatformKGO(servedKGOVolumeText, isServedKGO = true)
-        navigateNext(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(FPServe.NAV_ID, viewModel.getPlatformId())
 //        findNavController().navigatorProvider.navigators.forEach { t, u ->  println("TAGSS${t}")}
     }
 
@@ -52,6 +57,4 @@ class FPhotoKgoServed : APhotoF() {
         navigateBack()
     }
 
-    companion object {
-    }
 }

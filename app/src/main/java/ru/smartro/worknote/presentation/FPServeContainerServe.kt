@@ -22,6 +22,10 @@ import ru.smartro.worknote.hideDialog
 
 class FPServeContainerServe : AbstractBottomSheetF() {
 
+    companion object {
+        const val NAV_ID = R.id.FPServeContainerServe
+    }
+
     private var mContainerId: Int = Inull
     private val vm: VMPserve by activityViewModels()
     private var volume: Double? = null
@@ -30,8 +34,6 @@ class FPServeContainerServe : AbstractBottomSheetF() {
     private var apbFailure: AppCompatButton? = null
     private var apbBreakdown: AppCompatButton? = null
     private var apbBeforeMedia: AppCompatButton? = null
-
-    private var p_id: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +82,7 @@ class FPServeContainerServe : AbstractBottomSheetF() {
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val volume = toPercent(radioButton.text.toString())
             vm.updateContainerVolume(mContainerId, volume)
-            navigateNext(R.id.PhotoFailureMediaContainerF, mContainerId, vm.getPlatformId().toString())
+            navigateNext(FPhotoFailureMediaContainer.NAV_ID, mContainerId, vm.getPlatformId().toString())
         }
         if (containerEntity.isBreakdownNotEmpty()) {
             setUseButtonStyleBackgroundRed(apbBreakdown!!)
@@ -90,14 +92,14 @@ class FPServeContainerServe : AbstractBottomSheetF() {
             val radioButton = view.findViewById<RadioButton>(checkedId)
             val volume = toPercent(radioButton.text.toString())
             vm.updateContainerVolume(mContainerId, volume)
-            navigateNext(R.id.PhotoBreakdownMediaContainerF, mContainerId, vm.getPlatformId().toString())
+            navigateNext(FPhotoBreakdownMediaContainer.NAV_ID, mContainerId, vm.getPlatformId().toString())
         }
 
 //        if (containerEntity.isBreakdownNotEmpty()) {
 //            setUseButtonStyleBackgroundRed(apbBreakdown)
 //        }
         apbBeforeMedia?.setOnClickListener {
-            navigateNext(R.id.PhotoBeforeMediaContainerF, vm.getPlatformId())
+            navigateNext(FPhotoBeforeMediaContainer.NAV_ID, vm.getPlatformId())
             hideDialog()
         }
 

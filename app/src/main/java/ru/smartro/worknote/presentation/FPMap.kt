@@ -38,6 +38,10 @@ import ru.smartro.worknote.log.RestConnectionResource
 
 class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListener {
 
+    companion object {
+        const val NAV_ID = R.id.FPMap
+    }
+
     private var mPlatformToServeId: Int? = null
     private var mTimeBeforeInSec: Long = Lnull
 
@@ -123,15 +127,15 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         acbUnload = sview.findViewById(R.id.acb__f_map__unload)
         val carFullStatusButton = sview.findViewById<FrameLayout>(R.id.fl__f_map__car)
         carFullStatusButton.setOnClickListener {
-            navigateNext(R.id.LockedCarInfoDF)
+            navigateNext(DFInfoLockedCar.NAV_ID)
         }
         val fuelStatusButton = sview.findViewById<FrameLayout>(R.id.fl__f_map__gas)
         fuelStatusButton.setOnClickListener {
-            navigateNext(R.id.DInfoLockedGasF)
+            navigateNext(DFInfoLockedGas.NAV_ID)
         }
         val photoStatusButton = sview.findViewById<FrameLayout>(R.id.fl__f_map__photo)
         photoStatusButton.setOnClickListener {
-            navigateNext(R.id.DInfoLockedPhotoF)
+            navigateNext(DFInfoLockedPhoto.NAV_ID)
         }
 
         initBottomBehavior(sview)
@@ -153,7 +157,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         }
         val acibGotoLogActMapAPIB = sview.findViewById<AppCompatImageButton>(R.id.goto_log__f_map__apib)
         acibGotoLogActMapAPIB.setOnClickListener {
-            navigateNext(R.id.JournalChatFragment, null)
+            navigateNext(FJornalChatWorkLog.NAV_ID, null)
         }
 
         //todo:  R_dos!!! modeSyNChrON_off(false)
@@ -186,7 +190,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         //TODO: сюда изменения вностиьб!
         if (vm.isUnloadMode()) {
             buildNavigatorPlatformUnload()
-            navigateNext(R.id.DFModeUnloadTicket)
+            navigateNext(DFModeUnloadTicket.NAV_ID)
             toggleUnloadButton(true)
         } else {
             toggleUnloadButton(false)
@@ -198,9 +202,9 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
                 return@setOnClickListener
             }
             if (vm.isUnloadMode()) {
-                navigateNext(R.id.DFModeUnloadTicket)
+                navigateNext(DFModeUnloadTicket.NAV_ID)
             } else {
-                navigateNext(R.id.UnloadInfoF)
+                navigateNext(DFModeUnloadStart.NAV_ID)
             }
         }
         val userPoint = App.getAppliCation().gps()
@@ -447,7 +451,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 
     private fun completeWorkOrders() {
         hideInfoDiaLOG()
-        navigateNext(R.id.CompleteF)
+        navigateNext(FComplete.NAV_ID)
     }
 
     private fun showInfoDialog() {
@@ -464,12 +468,12 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 
         val logoutButton = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__workorder_info__logout)
         logoutButton.setOnClickListener {
-            navigateNext(R.id.DYesNoRelogin)
+            navigateNext(DYesNoRelogin.NAV_ID)
         }
 
         val debugButton = view.findViewById<AppCompatImageButton>(R.id.acib__f_map__workorder_info__debug)
         debugButton.setOnClickListener {
-            navigateNext(R.id.DebugFragment, null)
+            navigateNext(DebugF.NAV_ID, null)
             result.dismiss()
         }
 
@@ -645,9 +649,9 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         if(pId == mPlatformToServeId) {
             val platformE = vm.database.getPlatformEntity(pId)
             vm.setPlatformEntity(platformE)
-            navigateNext(R.id.MapPlatformClickedDtlF)
+            navigateNext(DFPMap.NAV_ID)
         } else {
-            navigateNext(R.id.DFPMapWrongServingOrder, pId)
+            navigateNext(DFPMapWrongServingOrder.NAV_ID, pId)
         }
     }
 
@@ -664,7 +668,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
             return
         }
 //        if (drivingModeState) {
-//            navigateNext(R.id.DYesNoClearNavigator)
+//            navigateNext(DYesNoClearNavigator.NAV_ID)
 ////            navigateNext(DYesNoClearNavigator::class.javaClass)
 //        } else {
         buildNavigator(checkPoint)
@@ -674,7 +678,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
 
     override fun openFailureFire(item: PlatformEntity) {
         vm.setPlatformEntity(item)
-        navigateNext(R.id.PhotoFailureMediaF, item.platformId)
+        navigateNext(FPhotoFailureMedia.NAV_ID, item.platformId)
     }
 
 
@@ -846,9 +850,9 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
         if(item.platformId == mPlatformToServeId) {
             val platformE = vm.database.getPlatformEntity(item.platformId)
             vm.setPlatformEntity(platformE)
-            navigateNext(R.id.PMapWarnDF, item.platformId)
+            navigateNext(DFPMapWarn.NAV_ID, item.platformId)
         } else {
-            navigateNext(R.id.DFPMapWrongServingOrderBottom, item.platformId)
+            navigateNext(DFPMapWrongServingOrderBottom.NAV_ID, item.platformId)
         }
     }
 
@@ -859,7 +863,7 @@ class FPMap: AF() , MapPlatformSBehaviorAdapter.PlatformClickListener, MapListen
             return
         }
         vm.setPlatformEntity(item)
-        navigateNext(R.id.PhotoFailureMediaF, item.platformId)
+        navigateNext(FPhotoFailureMedia.NAV_ID, item.platformId)
     }
 
 }

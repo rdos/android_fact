@@ -15,7 +15,4 @@ class DFYesNoClearNavigator : AConfirmYesNoDF() {
         return getString(R.string.way_is_exist)
     }
 
-    override fun onGetNavId(): Int {
-      return R.id.DYesNoClearNavigator
-    }
 }

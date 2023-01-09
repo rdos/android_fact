@@ -8,6 +8,11 @@ import ru.smartro.worknote.log.todo.PlatformMediaEntity
 import java.io.File
 
 class FPhotoPickupMedia : APhotoF() {
+
+    companion object {
+        const val NAV_ID = R.id.FPhotoPickupMedia
+    }
+
     private var newVolume: Double = Dnull
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()
@@ -33,7 +38,7 @@ class FPhotoPickupMedia : APhotoF() {
 
         viewModel.database.addPlatformPickupMedia(viewModel.getPlatformId(), imageS)
         viewModel.updateVolumePickup(newVolume)
-        navigateNext(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(FPServe.NAV_ID, viewModel.getPlatformId())
     }
 
     override fun onSavePhoto() {
@@ -45,7 +50,7 @@ class FPhotoPickupMedia : APhotoF() {
 
     override fun onClickBtnCancel() {
         viewModel.updateVolumePickup(newVolume)
-        navigateNext(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(FPServe.NAV_ID, viewModel.getPlatformId())
     }
     
     override fun onBackPressed() {

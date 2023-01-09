@@ -31,6 +31,10 @@ import java.nio.file.Files
 
 class FPServe : AbsF(), VoiceComment.IVoiceComment {
 
+    companion object {
+        const val NAV_ID = R.id.FPServe
+    }
+
     private val THUMB_INACTIVE = "Inactive"
     private val THUMB_ACTIVE = "Active"
 
@@ -104,24 +108,24 @@ class FPServe : AbsF(), VoiceComment.IVoiceComment {
 
         smartROPServeWrapper?.setOnSwitchMode {
             vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeGroupByContainersF)
-            navigateNext(R.id.PServeGroupByContainersF, vm.getPlatformId())
+            navigateNext(FPServeGroupByContainers.NAV_ID, vm.getPlatformId())
         }
 
         smartROPServeWrapper?.setOnCompleteServeListener {
             LOG.debug("AUUUUUUUUUUUUUUUUUUUU")
             if(_PlatformEntity.needCleanup) {
-                navigateNext(R.id.PServeCleanupDF, _PlatformEntity.platformId)
+                navigateNext(DFPServeCleanup.NAV_ID, _PlatformEntity.platformId)
             } else {
-                navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
+                navigateNext(FPhotoAfterMedia.NAV_ID, _PlatformEntity.platformId)
             }
         }
 
         mAcbKGOServed?.setOnClickListener {
-            navigateNext(R.id.PServeKGOServedVolumeDF)
+            navigateNext(DFPServeKGOServedVolume.NAV_ID)
         }
 
         acbKGORemaining?.setOnClickListener {
-            navigateNext(R.id.PServeKGORemainingVolumeDF)
+            navigateNext(DFPServeKGORemainingVolume.NAV_ID)
         }
 
 //        changeColors()
@@ -149,7 +153,7 @@ class FPServe : AbsF(), VoiceComment.IVoiceComment {
             acbProblem?.let { setUseButtonStyleBackgroundRed(it) }
         }
         acbProblem?.setOnClickListener {
-            navigateNext(R.id.PhotoFailureMediaF, _PlatformEntity.platformId)
+            navigateNext(FPhotoFailureMedia.NAV_ID, _PlatformEntity.platformId)
         }
         if (_PlatformEntity.isServedKGONotEmpty()) {
             mAcbKGOServed?.let { setUseButtonStyleBackgroundGreen(it) }
@@ -241,14 +245,14 @@ class FPServe : AbsF(), VoiceComment.IVoiceComment {
     private fun onClickPickup(acsbVolumePickup: SeekBar) {
         acsbVolumePickup.isEnabled = false
         try {
-            navigateNext(R.id.PickupDF)
+            navigateNext(DFPickup.NAV_ID)
         } finally {
             acsbVolumePickup.isEnabled = true
         }
     }
 
     private fun gotoMakePhotoForPickup(newVolume: Double) {
-        navigateNext(R.id.PhotoPickupMediaF, vm.getPlatformId(), newVolume.toString())
+        navigateNext(FPhotoPickupMedia.NAV_ID, vm.getPlatformId(), newVolume.toString())
     }
 
     private fun tvVolumePickuptext(progressDouble: Double?) {
@@ -297,7 +301,7 @@ class FPServe : AbsF(), VoiceComment.IVoiceComment {
         mBackPressedCnt--
         if (mBackPressedCnt <= 0) {
             vm.updatePlatformStatusUnfinished()
-            navigateBack(R.id.MapPlatformsF)
+            navigateBack(FPMap.NAV_ID)
             toast("Вы не завершили обслуживание КП.")
         } else {
             toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
@@ -325,10 +329,10 @@ class FPServe : AbsF(), VoiceComment.IVoiceComment {
 
             holder.itemView.setOnClickListener {
                 if(container.isActiveToday || container.volume != null) {
-                    navigateNext(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
+                    navigateNext(FPServeContainerServe.NAV_ID, container.containerId, vm.getPlatformId().toString())
                 } else {
                     showTakeInactiveContainerAlert(getAct()) {
-                        navigateNext(R.id.ContainerServeBottomDialog, container.containerId, vm.getPlatformId().toString())
+                        navigateNext(FPServeContainerServe.NAV_ID, container.containerId, vm.getPlatformId().toString())
                     }
                 }
             }

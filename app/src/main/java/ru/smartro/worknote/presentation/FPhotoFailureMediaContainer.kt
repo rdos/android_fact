@@ -9,6 +9,11 @@ import ru.smartro.worknote.log.todo.ImageInfoEntity
 import java.io.File
 
 class FPhotoFailureMediaContainer : APhotoF() {
+
+    companion object {
+        const val NAV_ID = R.id.FPhotoFailureMediaContainer
+    }
+
     private var mFailReasonS: List<String>? = null
     private val mContainerId: Int
         get() = getArgumentID()
@@ -61,7 +66,7 @@ class FPhotoFailureMediaContainer : APhotoF() {
     override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.addFailureMediaContainer(mContainerId, imageS)
         viewModel.updateContainerFailure(mContainerId, failText!!, getCommentText())
-        navigateNext(R.id.PServeF, viewModel.getPlatformId())
+        navigateNext(FPServe.NAV_ID, viewModel.getPlatformId())
     }
 
     override fun onGetIsVisibleBtnCancel() = false

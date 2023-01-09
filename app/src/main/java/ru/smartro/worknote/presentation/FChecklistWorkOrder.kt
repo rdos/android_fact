@@ -78,7 +78,7 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
 
                     if(hasDifferentUnloadPoint) {
                         diffUnloadPointsDialogWasShownAll = true
-                        navigateNext(R.id.DInfoPointsUploadF)
+                        navigateNext(DFInfoPointsUpload.NAV_ID)
                     } else {
                         goToNextStep(workOrders)
                     }
@@ -119,7 +119,7 @@ class FChecklistWorkOrder: AF(), SwipeRefreshLayout.OnRefreshListener {
 
                         if(hasDifferentUnloadPoint) {
                             diffUnloadPointsDialogWasShownSelected = true
-                            navigateNext(R.id.DInfoPointsUploadF)
+                            navigateNext(DFInfoPointsUpload.NAV_ID)
                         } else {
                             goToNextStep(selectedWorkOrders)
                         }

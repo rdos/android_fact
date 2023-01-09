@@ -20,6 +20,10 @@ import ru.smartro.worknote.log.todo.PlatformEntity
 
 class FPServeGroupByContainers : AbsF() {
 
+    companion object {
+        const val NAV_ID = R.id.FPServeGroupByContainers
+    }
+
     private val _PlatformEntity: PlatformEntity
         get() = vm.getPlatformEntity()
 
@@ -48,14 +52,14 @@ class FPServeGroupByContainers : AbsF() {
 
         smartROPServeWrapper?.setOnSwitchMode {
             vm.database.setConfig(ConfigName.USER_WORK_SERVE_MODE_CODENAME, PlatformEntity.Companion.ServeMode.PServeF)
-            navigateNext(R.id.PServeF, vm.getPlatformId())
+            navigateNext(FPServe.NAV_ID, vm.getPlatformId())
         }
 
         smartROPServeWrapper?.setOnCompleteServeListener {
             if(_PlatformEntity.needCleanup) {
-                navigateNext(R.id.PServeCleanupDF, _PlatformEntity.platformId)
+                navigateNext(DFPMapNeedCleanup.NAV_ID, _PlatformEntity.platformId)
             } else {
-                navigateNext(R.id.PhotoAfterMediaF, _PlatformEntity.platformId)
+                navigateNext(FPhotoAfterMedia.NAV_ID, _PlatformEntity.platformId)
             }
         }
 
@@ -95,7 +99,7 @@ class FPServeGroupByContainers : AbsF() {
         mBackPressedCnt -= 1
         if (mBackPressedCnt <= 0) {
             vm.updatePlatformStatusUnfinished()
-            navigateBack(R.id.MapPlatformsF)
+            navigateBack(FPMap.NAV_ID)
         } else {
             toast("Вы не завершили обслуживание КП. Нажмите ещё раз, чтобы выйти")
         }
@@ -187,7 +191,7 @@ class FPServeGroupByContainers : AbsF() {
                     }
 
                     bAddPhoto.setOnClickListener {
-                       navigateNext(R.id.PhotoBeforeMediaContainerSimplifyF, containerGROUPClientTypeEntity.typeId, containerGROUPClientTypeEntity.client)
+                       navigateNext(FPhotoBeforeMediaContainerByTypes.NAV_ID, containerGROUPClientTypeEntity.typeId, containerGROUPClientTypeEntity.client)
                     }
                 }
             }

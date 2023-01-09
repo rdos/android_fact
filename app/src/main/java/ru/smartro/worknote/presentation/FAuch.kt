@@ -87,7 +87,7 @@ class FAuch : AF() {
             LOG.debug("::: HAS TASK")
             paramS().showClearCurrentTasks = true
             App.getAppliCation().hideKeyboard(requireActivity())
-            findNavController().navigate(R.id.ReAuthWarningDialogF)
+            findNavController().navigate(DFYesNoReAuthDialog.NAV_ID)
         } else {
             LOG.debug("::: NOT HAVE TASK")
             startActivity(Intent(requireActivity(), AXChecklist::class.java))

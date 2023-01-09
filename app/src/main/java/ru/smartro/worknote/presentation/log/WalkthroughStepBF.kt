@@ -26,7 +26,7 @@ class WalkthroughStepBF : AF() {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<AppCompatButton>(R.id.acb_f_pserve_walkthrough_step_b__done).setOnClickListener {
-            findNavController().popBackStack(R.id.PServeF, false)
+            findNavController().popBackStack(R.id.FPServe, false)
         }
     }
 }

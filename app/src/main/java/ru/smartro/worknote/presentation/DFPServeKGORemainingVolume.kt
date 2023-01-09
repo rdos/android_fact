@@ -10,6 +10,10 @@ import ru.smartro.worknote.log.todo.PlatformEntity
 
 class DFPServeKGORemainingVolume : AConfirmDF() {
 
+    companion object {
+        const val NAV_ID = R.id.DFPServeKGORemainingVolume
+    }
+
     private val viewModel: VMPserve by activityViewModels()
 
     override fun onGetNextText(): String {
@@ -36,7 +40,7 @@ class DFPServeKGORemainingVolume : AConfirmDF() {
         if (newVolume.isNullOrBlank()) {
 //            acsbVolumePickup.progress = 0
         } else {
-            navigateNext(R.id.PhotoKgoRemainingF, viewModel.getPlatformId(), newVolume)
+            navigateNext(FPhotoKgoRemaining.NAV_ID, viewModel.getPlatformId(), newVolume)
         }
 
     }
@@ -47,10 +51,6 @@ class DFPServeKGORemainingVolume : AConfirmDF() {
 
     override fun onGetContentText(): String? {
         return "Объём подбора в м³"
-    }
-
-    override fun onGetNavId(): Int {
-        return R.id.PServeKGORemainingVolumeDF
     }
 
     override fun onGetEntity(): PlatformEntity? {

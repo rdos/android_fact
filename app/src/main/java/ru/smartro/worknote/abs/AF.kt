@@ -92,7 +92,7 @@ abstract class AF : Fragment(), FAI {
     }
 
     protected fun navigateSMallDeep(navFragmentId: Int, method: (PlatformEntity) -> Unit, argumentId: Int?=null, argumentName: String?=null) {
-//        navigateNext(R.id.MapPlatformClickedDtlF, ::this.startPlatformService)
+//        navigateNext(MapPlatformClickedDtlF.NAV_ID, ::this.startPlatformService)
 //        method.invoke()
     }
 

@@ -48,7 +48,7 @@ class ActMain :
                     val dialogShouldShow = (isGpsEnabled || isNetworkEnabled) == false
 
                     if(dialogShouldShow && mIsDlgShown != dialogShouldShow) {
-                        showNextFragment(R.id.DInfoGpsOffF)
+                        showNextFragment(DFInfoGpsOff.NAV_ID)
                     }
 
                     mIsDlgShown = dialogShouldShow
@@ -225,7 +225,7 @@ class ActMain :
 
         fun setStartId(viewIdAsText: String, paramS: AppParaMS) {
             if(paramS.isShowTooltipInNextTime) {
-//            navigateNext(R.id.WalkthroughStepAF, 1)
+//            navigateNext(WalkthroughStepAF.NAV_ID, 1)
                 setNextId(viewIdAsText)
                 paramS.isShowTooltipInNextTime = false
             }

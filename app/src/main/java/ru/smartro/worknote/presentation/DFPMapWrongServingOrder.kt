@@ -12,6 +12,10 @@ import ru.smartro.worknote.log.todo.PlatformEntity
 
 open class DFPMapWrongServingOrder : AConfirmDF() {
 
+    companion object {
+        const val NAV_ID = R.id.DFPMapWrongServingOrder
+    }
+
     val viewModel: VMPserve by activityViewModels()
 
     override fun onGetEntity(): PlatformEntity? {
@@ -43,7 +47,7 @@ open class DFPMapWrongServingOrder : AConfirmDF() {
         val platformE = viewModel.database.getPlatformEntity(platformId)
         viewModel.setPlatformEntity(platformE)
         navigateBack()
-        navigateNext(R.id.MapPlatformClickedDtlF)
+        navigateNext(DFPMap.NAV_ID)
     }
 
     override fun onGetBackText(): String {
@@ -55,7 +59,4 @@ open class DFPMapWrongServingOrder : AConfirmDF() {
         return dialogString
     }
 
-    override fun onGetNavId(): Int {
-        return R.id.DFPMapWrongServingOrder
-    }
 }

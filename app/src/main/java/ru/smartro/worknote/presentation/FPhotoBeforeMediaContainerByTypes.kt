@@ -9,6 +9,10 @@ import java.io.File
 
 class FPhotoBeforeMediaContainerByTypes : APhotoF() {
 
+    companion object {
+        const val NAV_ID = R.id.FPhotoBeforeMediaContainerByTypes
+    }
+
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()
     override fun onGetTextLabelFor() = "фото контейнера до"
@@ -35,7 +39,7 @@ class FPhotoBeforeMediaContainerByTypes : APhotoF() {
         val groupByContainerTypeClientEntity = viewModel.database.loadContainerGROUPClientTypeEntity(platformId, typeId, client)
         viewModel.incGroupByContainerTypeClientS(groupByContainerTypeClientEntity)
         viewModel.addBeforeMediaComntainerByTypes(imageS)
-        navigateNext(R.id.PServeGroupByContainersF, platformId)
+        navigateNext(FPServeGroupByContainers.NAV_ID, platformId)
     }
 
     override fun onSavePhoto() {
@@ -52,9 +56,5 @@ class FPhotoBeforeMediaContainerByTypes : APhotoF() {
         super.onBackPressed()
         
         navigateBack()
-    }
-
-    companion object {
-
     }
 }

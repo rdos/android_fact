@@ -28,7 +28,7 @@ class DFVehiclePhotoBeforeMedia : APhotoF() {
 
     override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.addBeforeMediaUnload(imageS)
-        navigateNext(R.id.MapPlatformsF)
+        navigateNext(FPMap.NAV_ID)
     }
 
     override fun onSavePhoto() {
@@ -45,7 +45,7 @@ class DFVehiclePhotoBeforeMedia : APhotoF() {
     override fun onBackPressed() {
         super.onBackPressed()
         
-        navigateNext(R.id.MapPlatformsF)
+        navigateNext(FPMap.NAV_ID)
 
     }
     companion object {

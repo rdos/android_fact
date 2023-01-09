@@ -9,6 +9,11 @@ import ru.smartro.worknote.log.todo.ImageInfoEntity
 import java.io.File
 
 class FPhotoBreakdownMediaContainer : APhotoF() {
+
+    companion object {
+        const val NAV_ID = R.id.FPhotoBreakdownMediaContainer
+    }
+
     private var mBreakDownReasonS: List<String>? = null
     private val mContainerId: Int
         get() = getArgumentID()
@@ -63,7 +68,7 @@ class FPhotoBreakdownMediaContainer : APhotoF() {
         //        val problemComment = problem_comment.text.toString()
         viewModel.addBreakdownMediaContainer(mContainerId, imageS)
         viewModel.updateContainerBreakDown(mContainerId, breakdownText!!, getCommentText())
-        navigateNext(R.id.PServeF, platformId)
+        navigateNext(FPServe.NAV_ID, platformId)
     }
 
     override fun onGetIsVisibleBtnCancel() = false

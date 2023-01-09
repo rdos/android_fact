@@ -34,6 +34,10 @@ import kotlin.math.round
 
 class FComplete : AF() {
 
+    companion object {
+        const val NAV_ID = R.id.FComplete
+    }
+
     private lateinit var mReasonAdapter: ReasonAdapter
     private lateinit var mDatabase: RealmRepository
 
@@ -83,7 +87,7 @@ class FComplete : AF() {
                 if(mDatabase.hasWorkOrderInProgress() == false) {
                     finishTask_know()
                 } else {
-                    navigateBack(R.id.MapPlatformsF)
+                    navigateBack(FPMap.NAV_ID)
                 }
             }
         }

@@ -10,6 +10,10 @@ import java.io.File
 
 open class FPhotoFailureMedia : APhotoF() {
 
+    companion object {
+        const val NAV_ID = R.id.FPhotoFailureMedia
+    }
+
     private var mFailReasonS: List<String>? = null
     private val mPlatformMediaEntity: PlatformMediaEntity
         get() =  viewModel.getPlatformMediaEntity()
@@ -73,7 +77,7 @@ open class FPhotoFailureMedia : APhotoF() {
     override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.database.addFailureMediaPlatform(viewModel.getPlatformId(), imageS)
         viewModel.database.setStateFailureForPlatform(viewModel.getPlatformId(), failText!!, getCommentText())
-        navigateBack(R.id.MapPlatformsF)
+        navigateBack(FPMap.NAV_ID)
     }
 
 

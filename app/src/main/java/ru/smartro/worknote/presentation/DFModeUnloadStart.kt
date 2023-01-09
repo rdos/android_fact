@@ -15,6 +15,11 @@ import ru.smartro.worknote.log.todo.ConfigName
 import ru.smartro.worknote.tryCatch
 
 class DFModeUnloadStart: ADF() {
+
+    companion object {
+        const val NAV_ID = R.id.DFModeUnloadStart
+    }
+
     //    https://en.wikipedia.org/wiki/Virtual_machine :))))))
     private val vm: VMPserve by activityViewModels()
 
@@ -38,7 +43,7 @@ class DFModeUnloadStart: ADF() {
                 fragmentPMap.buildNavigatorPlatformUnload()
                 fragmentPMap.toggleUnloadButton(true)
             }
-            navigate(R.id.MapPlatformsF)
+            navigate(FPMap.NAV_ID)
         }
         return true
     }

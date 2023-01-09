@@ -7,6 +7,11 @@ import ru.smartro.worknote.log.todo.PlatformEntity
 import ru.smartro.worknote.presentation.abs.AConfirmYesNoDF
 
 class DFYesNoReAuthDialog : AConfirmYesNoDF() {
+
+    companion object {
+        const val NAV_ID = R.id.DFYesNoReAuthDialog
+    }
+
     override fun onNextFragment(entity: PlatformEntity) {
         App.getAppParaMS().showClearCurrentTasks = false
         startActivity(Intent(requireActivity(), ActMain::class.java))
@@ -18,7 +23,7 @@ class DFYesNoReAuthDialog : AConfirmYesNoDF() {
     }
 
     override fun onBackFragment(entity: PlatformEntity) {
-        navigateNext(R.id.DFConfirmReAuth)
+        navigateNext(DFConfirmReAuth.NAV_ID)
     }
 
     override fun onGetBackText(): String {
@@ -27,9 +32,5 @@ class DFYesNoReAuthDialog : AConfirmYesNoDF() {
 
     override fun onGetContentText(): String {
         return "У вас есть незавершенный маршрут.\nПродолжить?"
-    }
-
-    override fun onGetNavId(): Int {
-        return R.id.ReAuthWarningDialogF
     }
 }

@@ -4,12 +4,13 @@ import ru.smartro.worknote.R
 import ru.smartro.worknote.presentation.abs.AInformDF
 
 class DFInfoInternetOff : AInformDF() {
-    override fun onGetContentText(): String? {
-        return  getString(R.string.warning_connection_lost)
+
+    companion object {
+        const val NAV_ID = R.id.DFInfoInternetOff
     }
 
-    override fun onGetNavId(): Int {
-        return R.id.DInfoInternetOffF
+    override fun onGetContentText(): String? {
+        return  getString(R.string.warning_connection_lost)
     }
 
 }

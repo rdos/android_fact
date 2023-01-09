@@ -34,7 +34,7 @@ open class FPhotoAfterMedia : APhotoF() {
     override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.addAfterMedia(imageS)
         viewModel.updatePlatformStatusSuccess()
-        navigateBack(R.id.MapPlatformsF)
+        navigateBack(FPMap.NAV_ID)
     }
 
     override fun onSavePhoto() {
@@ -54,5 +54,6 @@ open class FPhotoAfterMedia : APhotoF() {
         navigateBack()
     }
     companion object {
+        const val NAV_ID = R.id.FPhotoAfterMedia
     }
 }

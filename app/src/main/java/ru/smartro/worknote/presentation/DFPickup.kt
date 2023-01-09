@@ -10,6 +10,10 @@ import ru.smartro.worknote.log.todo.PlatformEntity
 
 class DFPickup : AConfirmDF() {
 
+    companion object {
+        const val NAV_ID = R.id.DFPickup
+    }
+
     private val viewModel: VMPserve by activityViewModels()
 
     override fun onGetNextText(): String {
@@ -39,7 +43,7 @@ class DFPickup : AConfirmDF() {
         if (newVolume == null) {
 //            acsbVolumePickup.progress = 0
         } else {
-            navigateNext(R.id.PhotoPickupMediaF, viewModel.getPlatformId(), newVolume.toString())
+            navigateNext(FPhotoPickupMedia.NAV_ID, viewModel.getPlatformId(), newVolume.toString())
         }
     }
 
@@ -49,10 +53,6 @@ class DFPickup : AConfirmDF() {
 
     override fun onGetContentText(): String? {
         return "Объём подбора в м³"
-    }
-
-    override fun onGetNavId(): Int {
-        return R.id.PickupDF
     }
 
     override fun onGetEntity(): PlatformEntity? {

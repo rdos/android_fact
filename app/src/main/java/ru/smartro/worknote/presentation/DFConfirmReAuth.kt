@@ -12,12 +12,12 @@ import ru.smartro.worknote.log.todo.PlatformEntity
 
 class DFConfirmReAuth : AConfirmDF() {
 
+    companion object {
+        const val NAV_ID = R.id.DFConfirmReAuth
+    }
+
     private val viewModel: VMPserve by activityViewModels()
     private var platforms: List<PlatformEntity>? = null
-
-    override fun onGetNavId(): Int {
-        return R.id.DFConfirmReAuth
-    }
     
     override fun onGetEntity(): PlatformEntity? {
         LOG.warn("DON'T_USE")   //not use
@@ -60,7 +60,7 @@ class DFConfirmReAuth : AConfirmDF() {
         viewModel.database.clearDataBase()
 
         // TODO :::
-//            findNavController().navigate(R.id.CheckListF)
+//            findNavController().navigate(CheckListF.NAV_ID)
         startActivity(Intent(requireActivity(), AXChecklist::class.java))
 
         requireActivity().finish()
