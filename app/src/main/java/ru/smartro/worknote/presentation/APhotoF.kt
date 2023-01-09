@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.util.Size
 import android.view.*
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.*
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
@@ -21,11 +20,7 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.fragment.app.activityViewModels
-import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -535,7 +530,7 @@ APhotoF(
             if (mediaSize <= 0) {
                 return@setOnClickListener
             }
-            navigateNext(GalleryPhotoF.navId, getArgumentID(), getDirectory())
+            navigateNext(GalleryPhotoF.NAV_ID, getArgumentID(), getDirectory())
         }
     }
 
@@ -628,111 +623,5 @@ APhotoF(
         init {
             init()
         }
-    }
-}
-
-
-val EXTENSION_WHITELIST = arrayOf("JPG", "WEBP")
-//class GalleryFragment(p_id: Int) internal constructor()
-class GalleryPhotoF : AF() {
-
-    private lateinit var mediaList: MutableList<File>
-
-    /** Adapter class used to present a fragment containing one photo or video as a page */
-    inner class MediaAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-        override fun getCount(): Int = mediaList.size
-        override fun getItem(position: Int): Fragment {
-            val textNumOfCount = "${position+1} из $count"
-            return MediaAdapterFragment(mediaList[position], textNumOfCount)
-        }
-        override fun getItemPosition(obj: Any): Int = POSITION_NONE
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-        val directory = getArgumentName()
-        mediaList = AppliCation().getDFileList(directory!!).sortedDescending().toMutableList()
-    }
-
-
-
-    override fun onGetLayout(): Int {
-        return R.layout.f_gallery_photo
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val apibDelete =  view.findViewById<AppCompatImageButton>(R.id.apib_f_gallery_photo__delete)
-
-        val viewPager = view.findViewById<ViewPager>(R.id.vp_f_gallery_photo)
-
-        val apibBack = view.findViewById<AppCompatImageButton>(R.id.apib_f_gallery_photo__back)
-        apibBack.setOnClickListener {
-            navigateBack()
-        }
-
-        if (mediaList.isEmpty()) {
-            apibDelete.isEnabled = false
-//            fragmentGalleryBinding.shareButton.isEnabled = false
-        }
-
-        viewPager.apply {
-            offscreenPageLimit = 2
-            adapter = MediaAdapter(childFragmentManager)
-        }
-
-        apibDelete.setOnClickListener {
-
-            mediaList.getOrNull(viewPager.currentItem)?.let { imageEntity ->
-                AlertDialog.Builder(view.context, android.R.style.Theme_Material_Dialog)
-                    .setTitle("Подтвердите")
-                    .setMessage(getString(R.string.warning_detele))
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.yes) { _, _ ->
-                        mediaList.remove(imageEntity)
-                        imageEntity.delete()
-                        viewPager.adapter?.notifyDataSetChanged()
-                        if (mediaList.size <= 0) {
-                            navigateBack()
-                        }
-                    }
-                    .setNegativeButton(android.R.string.no, null)
-                    .create().show()
-            }
-        }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        navigateBack()
-    }
-
-    companion object {
-        const val navId = R.id.GalleryPhotoF
-    }
-
-    class MediaAdapterFragment(val image: File, val numOfCount: String) : Fragment() {
-
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
-            val view = inflater.inflate(R.layout.media_fragment, container, false)
-            return view
-        }
-
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-//        val args = arguments ?: return
-            val aptvNumOfCount = view.findViewById<AppCompatTextView>(R.id.aptv_media_fragment__num_of_count)
-            aptvNumOfCount.text = numOfCount
-            val imageView = view.findViewById<AppCompatImageView>(R.id.apiv_media_fragment)
-//        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
-//        val bmp = image?.let { BitmapFactory.decodeByteArray(image, 0, it.size) }
-//        val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
-            Glide.with(view).load(image).into(imageView)
-        }
-
-
     }
 }

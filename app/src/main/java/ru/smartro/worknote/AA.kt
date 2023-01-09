@@ -2,9 +2,10 @@ package ru.smartro.worknote
 
 import android.app.Application
 import android.provider.Settings
-import ru.smartro.worknote.presentation.EXTENSION_WHITELIST
 import java.io.File
 import java.util.*
+
+val EXTENSION_WHITELIST = arrayOf("JPG", "WEBP")
 
 abstract class AA : Application() {
     protected val aPPParamS: AppParaMS by lazy {
