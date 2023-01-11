@@ -5,7 +5,7 @@ import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
 import ru.smartro.worknote.log.todo.ImageInfoEntity
-import ru.smartro.worknote.log.todo.PlatformMediaEntity
+import ru.smartro.worknote.log.todo.PlatformEntity
 import java.io.File
 
 open class FPhotoFailureMedia : APhotoF() {
@@ -15,8 +15,8 @@ open class FPhotoFailureMedia : APhotoF() {
     }
 
     private var mFailReasonS: List<String>? = null
-    private val mPlatformMediaEntity: PlatformMediaEntity
-        get() =  viewModel.getPlatformMediaEntity()
+    private val mPlatformEntity: PlatformEntity
+        get() =  viewModel.getPlatformEntity()
 
     override fun onGetTextForFailHint() = "Причина невывоза КП"
     override fun onGetStringList(): List<String>? {
@@ -31,7 +31,7 @@ open class FPhotoFailureMedia : APhotoF() {
     override fun onGetIsVisibleComment(): Boolean = true
 
     override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
-        return mPlatformMediaEntity.failureMedia
+        return mPlatformEntity.failureMedia
     }
 
     override fun onSavePhoto() {

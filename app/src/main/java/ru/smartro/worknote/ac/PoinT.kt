@@ -47,7 +47,6 @@ class PoinT(latitude: Double, longitude: Double,
     fun getImageEntity(): ImageInfoEntity {
         val timeStamp = App.getAppliCation().timeStampInSec()
         val imageInfo = ImageInfoEntity(
-            image = null,
             date = timeStamp,
             updateAt = timeStamp,
             coords = PointTOBaseData(),

@@ -668,9 +668,6 @@ class RealmRepository(private val p_realm: Realm) {
                 platformEntity?.beginnedAt = App.getAppliCation().currentTime()
             }
             platformEntity?.addBeforeMedia(imageS)
-            val platformMediaEntity = loadPlatformMediaEntity(platformEntity!!)
-            platformMediaEntity.beforeMedia = mEmptyImageInfoList
-            platformMediaEntity.beforeMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -727,23 +724,6 @@ class RealmRepository(private val p_realm: Realm) {
         return regions
     }
 
-    fun getPlatformMediaEntity(platformEntity: PlatformEntity): PlatformMediaEntity {
-        var result: PlatformMediaEntity = PlatformMediaEntity.createEmpty()
-        p_realm.executeTransaction { realm ->
-            val platformMediaEntity = loadPlatformMediaEntity(platformEntity)
-            result = realm.copyFromRealm(platformMediaEntity)
-        }
-
-        return result
-    }
-    fun loadPlatformMediaEntity(platformEntity: PlatformEntity): PlatformMediaEntity {
-        var result = getQueryPlatformMedia(platformEntity).findFirst()
-        if (result == null) {
-            result = p_realm.createObject(PlatformMediaEntity::class.java,  platformEntity.platformId)
-            result.workOrderId = platformEntity.workOrderId
-        }
-        return result!!
-    }
 
     /** private*/fun loadPlatformUnloadEntity(platformEntity: PlatformEntity): PlatformUnloadEntity {
         var result = getQueryPlatformUnload(platformEntity).findFirst()
@@ -754,31 +734,6 @@ class RealmRepository(private val p_realm: Realm) {
         return result!!
     }
 
-    fun getContainerMediaEntity(containerEntity: ContainerEntity): ContainerMediaEntity {
-        var result: ContainerMediaEntity = ContainerMediaEntity.createEmpty()
-        p_realm.executeTransaction { realm ->
-            val containerMediaEntity = loadContainerMediaEntity(containerEntity)
-            result = realm.copyFromRealm(containerMediaEntity)
-        }
-
-        return result
-    }
-    fun loadContainerMediaEntity(containerEntity: ContainerEntity): ContainerMediaEntity {
-        var result = getQueryContainerMedia(containerEntity).findFirst()
-        if (result == null) {
-            result = p_realm.createObject(ContainerMediaEntity::class.java, containerEntity.containerId)
-//            val platform = getQueryPlatform()
-//                .equalTo("platformId", platformEntity.platformId)
-//                .findFirst()
-//            result!!.platformEntity = platform
-//            val container = getQueryContainer()
-//                .equalTo("containerId", containerEntity.containerId)
-//                .findFirst()
-            result.platformId = containerEntity.platformId
-            result.workOrderId = containerEntity.workOrderId
-        }
-        return result!!
-    }
 
     fun addKgoServed(platformId: Int, imageS: List<ImageInfoEntity>) {
         p_realm.executeTransaction { realm ->
@@ -787,9 +742,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .findFirst()
 
             platformEntity!!.addServerKGOMedia(imageS)
-            val platformMediaEntity = loadPlatformMediaEntity(platformEntity)
-            platformMediaEntity.kgoServedMedia = mEmptyImageInfoList
-            platformMediaEntity.kgoServedMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -800,9 +752,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()
             platformEntity!!.addRemainingKGOMedia(imageS)
-            val platformMediaEntity = loadPlatformMediaEntity(platformEntity)
-            platformMediaEntity.kgoRemainingMedia = mEmptyImageInfoList
-            platformMediaEntity.kgoRemainingMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -813,9 +762,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()
             platformEntity?.addPickupMedia(imageS)
-            val platformMediaEntity = loadPlatformMediaEntity(platformEntity!!)
-            platformMediaEntity.pickupMedia = mEmptyImageInfoList
-            platformMediaEntity.pickupMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -857,9 +803,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()
             platformEntity?.addAfterMedia(imageS)
-            val platformMediaEntity = loadPlatformMediaEntity(platformEntity!!)
-            platformMediaEntity.afterMedia = mEmptyImageInfoList
-            platformMediaEntity.afterMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -881,9 +824,6 @@ class RealmRepository(private val p_realm: Realm) {
                 platformEntity?.beginnedAt = App.getAppliCation().currentTime()
             }
             platformEntity?.addFailureMedia(imageS)
-            val platformMediaEntity = loadPlatformMediaEntity(platformEntity!!)
-            platformMediaEntity.failureMedia = mEmptyImageInfoList
-            platformMediaEntity.failureMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -913,10 +853,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .findFirst()!!
             containerEntity.addFailureMedia(imageS)
 
-            val containerMediaEntity = loadContainerMediaEntity(containerEntity)
-            containerMediaEntity.failureMedia = mEmptyImageInfoList
-            containerMediaEntity.failureMedia.addAll(imageS)
-
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -930,9 +866,6 @@ class RealmRepository(private val p_realm: Realm) {
                 .equalTo("platformId", platformId)
                 .findFirst()!!
             containerEntity.addBreakdown(imageS)
-            val containerMediaEntity = loadContainerMediaEntity(containerEntity)
-            containerMediaEntity.breakdownMedia = mEmptyImageInfoList
-            containerMediaEntity.breakdownMedia.addAll(imageS)
             setEntityUpdateAt(platformEntity)
         }
     }
@@ -1048,21 +981,12 @@ class RealmRepository(private val p_realm: Realm) {
         return p_realm.where(WaybillEntity::class.java)
     }
 
-
-    private fun getQueryPlatformMedia(platformEntity: PlatformEntity): RealmQuery<PlatformMediaEntity> {
-        return p_realm.where(PlatformMediaEntity::class.java).equalTo("platformId", platformEntity.platformId)
-    }
-
     private fun getQueryPlatformUnload(platformEntity: PlatformEntity): RealmQuery<PlatformUnloadEntity> {
         return p_realm.where(PlatformUnloadEntity::class.java).equalTo("platformId", platformEntity.platformId)
     }
 
     private fun getQueryPlatformVoiceComment(platformEntity: PlatformEntity): RealmQuery<PlatformVoiceCommentEntity> {
         return p_realm.where(PlatformVoiceCommentEntity::class.java).equalTo("platformId", platformEntity.platformId)
-    }
-
-    private fun getQueryContainerMedia(containerEntity: ContainerEntity): RealmQuery<ContainerMediaEntity> {
-        return p_realm.where(ContainerMediaEntity::class.java).equalTo("containerId", containerEntity.containerId)
     }
 
     private fun getQueryPlatform(isForceMode: Boolean = false, platformId: Int? = null): RealmQuery<PlatformEntity> {

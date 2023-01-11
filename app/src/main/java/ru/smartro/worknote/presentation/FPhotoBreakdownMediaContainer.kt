@@ -3,8 +3,8 @@ package ru.smartro.worknote.presentation
 import io.realm.RealmList
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
+import ru.smartro.worknote.log.todo.ContainerEntity
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.log.todo.ContainerMediaEntity
 import ru.smartro.worknote.log.todo.ImageInfoEntity
 import java.io.File
 
@@ -17,9 +17,9 @@ class FPhotoBreakdownMediaContainer : APhotoF() {
     private var mBreakDownReasonS: List<String>? = null
     private val mContainerId: Int
         get() = getArgumentID()
-    private val mContainerMediaEntity: ContainerMediaEntity
+    private val mContainerEntity: ContainerEntity
         get() {
-            return viewModel.getContainerMediaEntity(mContainerId)
+            return viewModel.getContainer(mContainerId)
         }
     override fun onGetTextForFailHint() = "Причина поломки контейнера"
     override fun onGetStringList(): List<String> {
@@ -31,7 +31,7 @@ class FPhotoBreakdownMediaContainer : APhotoF() {
         return mBreakDownReasonS!!
     }
     override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
-        return mContainerMediaEntity.breakdownMedia
+        return mContainerEntity.breakdownMedia
     }
 
     override fun onGetIsVisibleComment(): Boolean = true

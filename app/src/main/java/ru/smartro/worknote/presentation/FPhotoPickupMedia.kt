@@ -4,7 +4,7 @@ import io.realm.RealmList
 import ru.smartro.worknote.Dnull
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log.todo.ImageInfoEntity
-import ru.smartro.worknote.log.todo.PlatformMediaEntity
+import ru.smartro.worknote.log.todo.PlatformEntity
 import java.io.File
 
 class FPhotoPickupMedia : APhotoF() {
@@ -14,11 +14,11 @@ class FPhotoPickupMedia : APhotoF() {
     }
 
     private var newVolume: Double = Dnull
-    private val mPlatformMediaEntity: PlatformMediaEntity
-        get() =  viewModel.getPlatformMediaEntity()
+    private val mPlatformEntity: PlatformEntity
+        get() =  viewModel.getPlatformEntity()
     override fun onGetTextLabelFor() = "фото подбора"
     override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
-        return mPlatformMediaEntity.pickupMedia
+        return mPlatformEntity.pickupMedia
     }
 
     override fun onGetDirName(): String {

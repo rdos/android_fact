@@ -75,7 +75,6 @@ class FJornalChatWorkLog : AF() {
         }
 
         override fun bind(item: PlatformEntity, holder: JournalChatHolder) {
-            val platformMediaEntity = viewModel.database.getPlatformMediaEntity(item)
             val date = Date(item.updateAt * 1000L)
             val dateFormat = SimpleDateFormat("HH:mm")
             val resultDate: String = dateFormat.format(date)
@@ -92,7 +91,7 @@ class FJornalChatWorkLog : AF() {
             if (item.getAfterMediaSize() > 0) {
                 val imgAfter = holder.itemView.findViewById<ImageView>(R.id.img_act_messager__media_after)
                 Glide.with(imgAfter)
-                    .load(App.getAppliCation().getF(C_PHOTO_D, platformMediaEntity.afterMedia[0]!!.md5 + ".webp"))
+                    .load(App.getAppliCation().getF(C_PHOTO_D, item.afterMedia[0]!!.md5 + ".webp"))
                     .into(imgAfter)
                 holder.tv_act_messager__media_after.text = "Фото после:"
             } else {
@@ -103,7 +102,7 @@ class FJornalChatWorkLog : AF() {
             if (item.getFailureMediaSize() > 0) {
                 val textBefore = holder.tv_act_messager__media_before
                 Glide.with(imgBefore)
-                    .load(App.getAppliCation().getF(C_PHOTO_D, platformMediaEntity.failureMedia[0]!!.md5 + ".webp"))
+                    .load(App.getAppliCation().getF(C_PHOTO_D, item.failureMedia?.get(0)!!.md5 + ".webp"))
                     .into(imgBefore)
                 textBefore.text = "Фото невывоза:"
                 textBefore.visibility = View.VISIBLE

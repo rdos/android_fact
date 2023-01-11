@@ -3,7 +3,7 @@ package ru.smartro.worknote.presentation
 import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log.todo.ImageInfoEntity
-import ru.smartro.worknote.log.todo.PlatformMediaEntity
+import ru.smartro.worknote.log.todo.PlatformEntity
 import java.io.File
 
 class FPhotoKgoRemaining : APhotoF() {
@@ -12,11 +12,11 @@ class FPhotoKgoRemaining : APhotoF() {
         const val NAV_ID = R.id.FPhotoKgoRemaining
     }
 
-    private val mPlatformMediaEntity: PlatformMediaEntity
-        get() =  viewModel.getPlatformMediaEntity()
+    private val mPlatformEntity: PlatformEntity
+        get() =  viewModel.getPlatformEntity()
     override fun onGetTextLabelFor() = "КГО.заказать борт"
     override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
-        return mPlatformMediaEntity.kgoRemainingMedia
+        return mPlatformEntity.getRemainingKGOMedia()
     }
 
     override fun onGetDirName(): String {

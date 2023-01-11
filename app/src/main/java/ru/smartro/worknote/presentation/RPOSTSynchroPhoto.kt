@@ -13,7 +13,7 @@ import ru.smartro.worknote.presentation.ac.NetObject
 import ru.smartro.worknote.todo
 import kotlin.reflect.KClass
 
-class RPOSTSynchro: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
+class RPOSTSynchroPhoto: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
 
     private var mTimeBeforeRequest: Long = App.getAppliCation().timeStampInSec()
     // TODO ::: Разбить на два запроса!!!
@@ -52,7 +52,7 @@ class RPOSTSynchro: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
             coords = gps.PointTOBaseData(),
             device = AppParaMS().deviceId, // val deviceId = Settings.Secure.getString(getAct().contentResolver, Settings.Secure.ANDROID_ID)
             lastKnownLocationTime = gps.PointTimeToLastKnowTime_SRV(),
-            data = mPlatformS
+            data = null// PlatformEntity.toSRV(mPlatformS, db)
         )
         
         return synchronizeBodyIn
@@ -96,7 +96,7 @@ class RPOSTSynchro: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
 
 }
 
-class SynchroBodyIn(
+class SynchroPhotoBodyIn(
     @Expose
     val wb_id: Int,
     @Expose
@@ -111,7 +111,7 @@ class SynchroBodyIn(
     val data: List<PlatformEntity>?
 ): NetObject()
 
-class SynchroBodyOut(
+class SynchroPhotoBodyOut(
     @Expose
     val success: Boolean,
     @Expose

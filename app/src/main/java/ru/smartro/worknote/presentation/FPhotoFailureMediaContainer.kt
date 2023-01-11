@@ -4,7 +4,7 @@ import io.realm.RealmList
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
-import ru.smartro.worknote.log.todo.ContainerMediaEntity
+import ru.smartro.worknote.log.todo.ContainerEntity
 import ru.smartro.worknote.log.todo.ImageInfoEntity
 import java.io.File
 
@@ -17,9 +17,9 @@ class FPhotoFailureMediaContainer : APhotoF() {
     private var mFailReasonS: List<String>? = null
     private val mContainerId: Int
         get() = getArgumentID()
-    private val mContainerMediaEntity: ContainerMediaEntity
+    private val mContainerEntity: ContainerEntity
         get() {
-            return viewModel.getContainerMediaEntity(mContainerId)
+            return viewModel.getContainer(mContainerId)
         }
     override fun onGetTextForFailHint() = "Причина невывоза контейнера"
     override fun onGetStringList(): List<String>? {
@@ -34,7 +34,7 @@ class FPhotoFailureMediaContainer : APhotoF() {
     override fun onGetIsVisibleComment(): Boolean = true
 
     override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
-        return mContainerMediaEntity.failureMedia
+        return mContainerEntity.failureMedia
     }
 
     override fun onGetDirName(): String {

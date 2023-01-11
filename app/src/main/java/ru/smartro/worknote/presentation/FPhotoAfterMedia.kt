@@ -3,19 +3,19 @@ package ru.smartro.worknote.presentation
 import io.realm.RealmList
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log.todo.ImageInfoEntity
+import ru.smartro.worknote.log.todo.PlatformEntity
 
-import ru.smartro.worknote.log.todo.PlatformMediaEntity
 import java.io.File
 
 open class FPhotoAfterMedia : APhotoF() {
 //    private var mPlatformEntity: PlatformEntity = TODO()
 //        get() =  vm.getPlatformEntity()
 //GHП!РИКОЛ!!
-    private val mPlatformMediaEntity: PlatformMediaEntity
-        get() =  viewModel.getPlatformMediaEntity()
+    private val mPlatformEntity: PlatformEntity
+        get() =  viewModel.getPlatformEntity()
 //    override fun onGetTextLabelFor() = "фото после обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
-        return mPlatformMediaEntity.afterMedia
+        return mPlatformEntity.afterMedia
     }
 
     override fun onGetDirName(): String {

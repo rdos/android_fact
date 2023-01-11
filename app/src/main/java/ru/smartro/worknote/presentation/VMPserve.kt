@@ -13,7 +13,6 @@ class VMPserve(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
     private var mPlatformId: Int = Inull
 
     private var mPlatformEntity: PlatformEntity? = null
-    private var mPlatformMediaEntity: PlatformMediaEntity? = null
     private var mPlatformVoiceCommentEntity: PlatformVoiceCommentEntity? = null
 
     private val _PlatformLiveData: MutableLiveData<PlatformEntity> = MutableLiveData(PlatformEntity())
@@ -43,18 +42,9 @@ class VMPserve(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
         }
     }
 
-    fun getPlatformMediaEntity(): PlatformMediaEntity {
-        if (mPlatformMediaEntity == null) {
-            mPlatformMediaEntity = database.getPlatformMediaEntity(getPlatformEntity())
-            LOG.trace("result.getBeforeMediaSize=${mPlatformMediaEntity!!.getBeforeMediaSize()}")
-        }
-        return mPlatformMediaEntity!!
-    }
-
     fun getPlatformVoiceCommentEntity(): PlatformVoiceCommentEntity {
         if (mPlatformVoiceCommentEntity == null) {
             mPlatformVoiceCommentEntity = database.getPlatformVoiceCommentEntity(getPlatformEntity())
-            LOG.trace("result.getBeforeMediaSize=${mPlatformMediaEntity!!.getBeforeMediaSize()}")
         }
         return mPlatformVoiceCommentEntity!!
     }
@@ -94,7 +84,6 @@ class VMPserve(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
         mPlatformId = platformEntity.platformId
         database.setConfig(ConfigName.AAPP__LAST_PLATFORM_ID, mPlatformId)
         set_PlatformLiveData()
-        mPlatformMediaEntity = null
         mContainerGROUPClientEntity = null
         mContainerGROUPClientTypeEntity = null
         LOG.trace("after.mPlatformId=${mPlatformId}")
@@ -118,11 +107,6 @@ class VMPserve(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
         }
         LOG.trace("result.isFailureNotEmpty() = ${result.isFailureNotEmpty()}")
         LOG.debug("result = ${result.containerId}")
-        return result
-    }
-
-    fun getContainerMediaEntity(containerId: Int): ContainerMediaEntity {
-        val result = database.getContainerMediaEntity(getContainer(containerId))
         return result
     }
 
@@ -166,9 +150,6 @@ class VMPserve(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
     private fun set_PlatformLiveData() {
         mPlatformEntity = null
         mPlatformEntity = getPlatformEntity()
-
-        mPlatformMediaEntity = null
-        mPlatformMediaEntity = getPlatformMediaEntity()
 
         mPlatformVoiceCommentEntity = null
         getPlatformVoiceCommentEntity()

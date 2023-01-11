@@ -148,8 +148,9 @@ open class WorkOrderEntity(
             var idx = 0L
             return data.mapTo(RealmList()) {
                 idx++
+                // TODO: WTF???
                 ImageInfoEntity(
-                    image = it, date = idx,
+                    date = idx,
                     coords = RealmList()
                 )
             }
@@ -194,17 +195,13 @@ open class WorkOrderEntity(
                 )
                 platformEntity.containerS = platformEntity.mapContainers(it.coNTaiNeRKnow1s, database)
 
-                val platformMediaEntity = database.loadPlatformMediaEntity(platformEntity)
                 val afterMedia = mapMedia(it.afterMedia)
                 platformEntity.addAfterMedia(afterMedia)
-                platformMediaEntity.afterMedia.addAll(afterMedia)
                 val beforeMedia = mapMedia(it.beforeMedia)
                 platformEntity.addAfterMedia(beforeMedia)
-                platformMediaEntity.beforeMedia.addAll(beforeMedia)
                 if(it.failureMedia != null) {
                     val failureMedia = mapMedia(it.failureMedia)
                     platformEntity.addFailureMedia(failureMedia)
-                    platformMediaEntity.failureMedia.addAll(failureMedia)
                 }
 
                 it.kgo_served?.let {
@@ -214,7 +211,6 @@ open class WorkOrderEntity(
                     it.media?.let {
                         val kgoServedMedia = mapMedia(it)
                         platformEntity.addServerKGOMedia(kgoServedMedia)
-                        platformMediaEntity.kgoServedMedia.addAll(kgoServedMedia)
                     }
                 }
 
@@ -225,7 +221,6 @@ open class WorkOrderEntity(
                     it.media?.let {
                         val kgoRemainingMedia = mapMedia(it)
                         platformEntity.addRemainingKGOMedia(kgoRemainingMedia)
-                        platformMediaEntity.kgoRemainingMedia.addAll(kgoRemainingMedia)
                     }
                 }
 
@@ -334,32 +329,6 @@ open class PlatformVoiceCommentEntity(
     }
 }
 
-open class PlatformMediaEntity(
-    @PrimaryKey
-    var platformId: Int = Inull,
-    var beforeMedia: RealmList<ImageInfoEntity> = RealmList(),
-    var kgoServedMedia: RealmList<ImageInfoEntity> = RealmList(),
-    var kgoRemainingMedia: RealmList<ImageInfoEntity> = RealmList(),
-    var pickupMedia: RealmList<ImageInfoEntity> = RealmList(),
-    var failureMedia: RealmList<ImageInfoEntity> = RealmList(),
-    var afterMedia: RealmList<ImageInfoEntity> = RealmList(),
-    var workOrderId: Int = Inull,
-    var dev_info: String? = null
-): Serializable, RealmObject() {
-
-    fun getBeforeMediaSize(): Int {
-        return beforeMedia.size
-    }
-
-
-    companion object {
-        // TODO: !!!
-        fun createEmpty(): PlatformMediaEntity {
-            val result = PlatformMediaEntity(dev_info= THIS_IS_ERROR)
-            return result
-        }
-    }
-}
 
 open class RegionEntity(
     @Expose
@@ -528,7 +497,7 @@ open class PlatformEntity(
     var pickupMedia: RealmList<ImageInfoEntity> = RealmList(),
     @Expose
     @SerializedName("failure_media")
-    var failureMedia: RealmList<ImageInfoEntity>? = RealmList(),
+    var failureMedia: RealmList<ImageInfoEntity> = RealmList(),
     @Expose
     @SerializedName("kgo_remaining")
     var kgoRemaining: KGOEntity? = null,
@@ -542,22 +511,36 @@ open class PlatformEntity(
     fun getAfterMediaSize() = afterMedia.size
     fun getFailureMediaSize() = this.failureMedia?.size ?: 0
     fun getPickupMediaSize() = this.pickupMedia.size
+
     fun getRemainingKGOMediaSize(): Int {
-        var result = 0
-        if (this.kgoRemaining == null) {
-            LOG.trace("this.kgoRemaining == null, result=${result}")
-            return result
-        }
-        result = this.kgoRemaining!!.media.size
+        val result = this.getRemainingKGOMedia().size
         return result
     }
-    fun getServedKGOMediaSize(): Int {
-        var result = 0
-        if (this.kgoServed == null) {
-            LOG.trace("this.kgoRemaining == null, result=${result}")
+
+    fun getRemainingKGOMedia(): RealmList<ImageInfoEntity> {
+        var result = RealmList<ImageInfoEntity>()
+        if (this.kgoRemaining == null) {
+            LOG.trace("if (this.kgoServed == null) { result.size=${result}")
             return result
         }
-        result = this.kgoServed!!.media.size
+        result = this.kgoRemaining!!.media
+        LOG.trace("result.size=${result.size}")
+        return result
+    }
+
+    fun getServedKGOMediaSize(): Int {
+        val result = this.getServedKGOMedia().size
+        return result
+    }
+
+    fun getServedKGOMedia(): RealmList<ImageInfoEntity> {
+        var result = RealmList<ImageInfoEntity>()
+        if (this.kgoServed == null) {
+            LOG.trace("if (this.kgoServed == null) { result.size=${result}")
+            return result
+        }
+        result = this.kgoServed!!.media
+        LOG.trace("result.size=${result.size}")
         return result
     }
 
@@ -919,17 +902,14 @@ open class PlatformEntity(
 //                breakdownComment
                 workOrderId = this.workOrderId
             )
-            val containerMediaEntity = database.loadContainerMediaEntity(containerEntity)
             if(it.failureMedia != null) {
                 val failureMedia = WorkOrderEntity.mapMedia(it.failureMedia)
                 containerEntity.addFailureMedia(failureMedia)
-                containerMediaEntity.failureMedia.addAll(failureMedia)
             }
 
             if(it.breakdownMedia != null) {
                 val breakdownMedia = WorkOrderEntity.mapMedia(it.breakdownMedia)
                 containerEntity.addBreakdownMedia(breakdownMedia)
-                containerMediaEntity.failureMedia.addAll(breakdownMedia)
             }
 
             containerEntity
@@ -952,50 +932,6 @@ open class PlatformEntity(
         fun createEmpty(): PlatformEntity {
             val result = PlatformEntity(platformId = Inull, address = THIS_IS_ERROR)
             return result
-        }
-
-        fun toSRV(platforms: List<PlatformEntity>, db: RealmRepository): List<PlatformEntity> {
-            for(platform in platforms) {
-                LOG.debug("platform.platformId=${platform.platformId}")
-                val platformMediaEntity = db.getPlatformMediaEntity(platform)
-                platform.beforeMedia = platformMediaEntity.beforeMedia
-                platform.kgoServed?.let {
-                    it.media = platformMediaEntity.kgoServedMedia
-                }
-                platform.kgoRemaining?.let {
-                    it.media = platformMediaEntity.kgoRemainingMedia
-                }
-
-                if(platformMediaEntity.failureMedia.size > 0)
-                    platform.failureMedia = platformMediaEntity.failureMedia
-                else
-                    platform.failureMedia = null
-
-                platform.pickupMedia = platformMediaEntity.pickupMedia
-                platform.afterMedia = platformMediaEntity.afterMedia
-
-                if(platform.platformVoiceCommentEntity != null) {
-                    val baseSF = Base64.getEncoder().encodeToString(platform.platformVoiceCommentEntity!!.voiceByteArray)
-                    LOG.debug("TEST: bytearray to (${platform.platformVoiceCommentEntity!!.voiceByteArray!!.size}) BASE64 (${baseSF.toByteArray().size}): ${baseSF}")
-                    platform.voiceComment = baseSF
-                }
-
-                for (container in platform.containerS) {
-                    LOG.debug("container.containerId=${container.containerId}")
-                    val containerMediaEntity = db.getContainerMediaEntity(container)
-                    if(containerMediaEntity.failureMedia.size > 0)
-                        container.failureMedia = containerMediaEntity.failureMedia
-                    else
-                        container.failureMedia = null
-
-                    if(containerMediaEntity.breakdownMedia.size > 0)
-                        container.breakdownMedia = containerMediaEntity.breakdownMedia
-                    else
-                        container.breakdownMedia = null
-                }
-            }
-
-            return platforms
         }
 
         object ServeMode {
@@ -1114,39 +1050,6 @@ open class ConfigEntity(
         }
 }
 
-open class ContainerMediaEntity(
-//    var platformEntity: PlatformEntity? = null,
-//    var containerEntity: ContainerEntity? = null,
-    @PrimaryKey
-    var containerId: Int = Inull,
-    var platformId: Int = Inull,
-    var breakdownMedia: RealmList<ImageInfoEntity> = RealmList(),
-    var failureMedia: RealmList<ImageInfoEntity> = RealmList(),
-    var workOrderId: Int = Inull,
-    var dev_info: String? = null
-): Serializable, RealmObject() {
-
-    fun getBreakdownMediaSize(): Int {
-        return this.breakdownMedia.size
-    }
-
-    fun getFailureMediaSize(): Int {
-        return this.failureMedia.size
-    }
-
-//    fun getPlatform(): PlatformEntity {
-//        return this.platformEntity!!
-//    }
-
-    companion object {
-        // TODO: !!!
-        fun createEmpty(): ContainerMediaEntity {
-            val result = ContainerMediaEntity(dev_info= THIS_IS_ERROR)
-            return result
-        }
-    }
-}
-
 open class ContainerEntity(
     @Expose
     @SerializedName("id")
@@ -1192,10 +1095,10 @@ open class ContainerEntity(
     var comment: String? = null,
     @Expose
     @SerializedName("failure_media")
-    var failureMedia: RealmList<ImageInfoEntity>? = RealmList(),
+    var failureMedia: RealmList<ImageInfoEntity> = RealmList(),
     @Expose
     @SerializedName("breakdown_media")
-    var breakdownMedia: RealmList<ImageInfoEntity>? = RealmList(),
+    var breakdownMedia: RealmList<ImageInfoEntity> = RealmList(),
     @Expose
     @SerializedName("breakdown_comment")
     var breakdownComment: String? = null,
@@ -1399,8 +1302,6 @@ open class ContainerGROUPClientTypeEntity(
 
 open class ImageInfoEntity(
     @Expose
-    var image: String? = null,
-    @Expose
     var md5: String = Snull,
     @Expose
     @SerializedName("updated_at")
@@ -1416,7 +1317,7 @@ open class ImageInfoEntity(
 ) : Serializable, RealmObject() {
 
     init {
-        LOG.debug("CREATED:::: ${image} ${md5} ${updateAt} ${date} ${coords} ${accuracy} ${lastKnownLocationTime}")
+        LOG.debug("CREATED:::: ${md5} ${updateAt} ${date} ${coords} ${accuracy} ${lastKnownLocationTime}")
     }
 
     companion object {

@@ -5,15 +5,14 @@ import ru.smartro.worknote.*
 import ru.smartro.worknote.log.todo.ConfigName
 import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformEntity
-import ru.smartro.worknote.log.todo.PlatformMediaEntity
 import java.io.File
 
 class FPhotoBeforeMedia : APhotoF() {
-    private val mPlatformMediaEntity: PlatformMediaEntity
-        get() =  viewModel.getPlatformMediaEntity()
+    private val mPlatformEntity: PlatformEntity
+        get() =  viewModel.getPlatformEntity()
 //    override fun onGetTextLabelFor() = "фото до обслуживания КП"
     override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
-        return mPlatformMediaEntity.beforeMedia
+        return mPlatformEntity.beforeMedia
     }
 
     override fun onGetDirName(): String {

@@ -251,7 +251,7 @@ APhotoF(
             var bitmap: Bitmap?
 
             val resource = BitmapFactory.decodeFile(imageUri.path)
-            LOG.debug("RESPURCE ::: ${resource}")
+            LOG.debug("resource ::: ${resource}")
             if(orientation.isVertical()) {
                 val matrix = Matrix()
                 matrix.postRotate(90f)
@@ -548,8 +548,6 @@ APhotoF(
         private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val PHOTO_EXTENSION_JPG = ".jpg"
         private const val PHOTO_EXTENSION_WEBP = ".webp"
-        private const val MANUAL_FOCUS_DURATION__MS = 8000L
-        private const val ANIMATION_MANUAL_FOCUS_DURATION__MS = MANUAL_FOCUS_DURATION__MS / 2
         private fun createFile(baseFolder: File, fileName: String) =
             File(baseFolder, fileName + PHOTO_EXTENSION_JPG)
 
@@ -575,9 +573,7 @@ APhotoF(
                     LOG.debug("scan(false).mFileS!![mIdx].isDirectory) mIdx > mFileS!!.size")
                     return false
                 }
-                LOG.warn( "onAfterUSE")
-                LOG.error( "onAfterUSE")
-                LOG.debug("onAfterUSE")
+                LOG.todo("onAfterUSE")
             }
 
             LOG.debug("scan(true).after ")
@@ -600,6 +596,7 @@ APhotoF(
             }
             LOG.warn("b.size=${size}")
             val gps = App.getAppliCation().gps()
+            //todo:~!R_dos gps.getImageEntity() это косяк!
             val imageEntity = gps.getImageEntity()
             if(imageFile.name.toLongOrNull() != null)
                 imageEntity.date = imageFile.nameWithoutExtension.toLong()
