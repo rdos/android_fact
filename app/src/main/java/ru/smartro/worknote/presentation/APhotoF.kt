@@ -530,7 +530,7 @@ APhotoF(
             if (mediaSize <= 0) {
                 return@setOnClickListener
             }
-            navigateNext(GalleryPhotoF.NAV_ID, getArgumentID(), getDirectory())
+            navigateNext(APhotoGalleryF.NAV_ID, getArgumentID(), getDirectory())
         }
     }
 

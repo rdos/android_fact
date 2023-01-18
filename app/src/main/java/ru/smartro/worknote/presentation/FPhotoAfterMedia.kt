@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformEntity
@@ -19,7 +20,7 @@ open class FPhotoAfterMedia : APhotoF() {
     }
 
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "afterMedia"
+       return getArgumentID().toString() + File.separator + App.Companion.PhotoTypeMapping.AFTER_MEDIA
     }
 
     override fun onBeforeUSE() {
@@ -30,7 +31,6 @@ open class FPhotoAfterMedia : APhotoF() {
         return true
     }
 
-
     override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
         viewModel.addAfterMedia(imageS)
         viewModel.updatePlatformStatusSuccess()
@@ -40,7 +40,6 @@ open class FPhotoAfterMedia : APhotoF() {
     override fun onSavePhoto() {
 
     }
-
 
     override fun onGetIsVisibleBtnCancel() = false
 
@@ -53,6 +52,7 @@ open class FPhotoAfterMedia : APhotoF() {
         
         navigateBack()
     }
+
     companion object {
         const val NAV_ID = R.id.FPhotoAfterMedia
     }

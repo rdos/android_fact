@@ -316,4 +316,8 @@ class VMPserve(app: Application) : ru.smartro.worknote.ac.AViewModel(app) {
     fun isUnloadMode(): Boolean {
         return database.getConfigBool(ConfigName.AAPP__IS_MODE__UNLOAD)
     }
+
+    fun removeImageInfoEntityByHash(hash: String) {
+        database.removeImageInfoEntityByHash(hash)
+    }
 }

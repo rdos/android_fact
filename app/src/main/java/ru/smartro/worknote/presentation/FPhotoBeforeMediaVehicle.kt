@@ -1,21 +1,24 @@
 package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformEntity
 import java.io.File
 
-class FModeUnloadPhotoAfterMedia : APhotoF() {
+class FPhotoBeforeMediaVehicle : APhotoF() {
     private val mPlatformEntity: PlatformEntity
         get() =  viewModel.getPlatformEntity()
-//    override fun onGetTextLabelFor() = "фото до обслуживания КП"
+
+    override fun onGetTextLabelFor() = "фото мусоровоза"
+
     override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
-        return mPlatformEntity.unloadEntity!!.afterMedia
+        return mPlatformEntity.unloadEntity!!.beforeMedia
     }
 
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "afterMediaUnload"
+       return mPlatformEntity.platformId.toString() + File.separator + App.Companion.PhotoTypeMapping.VEHICLE_BEFORE_MEDIA
     }
 
     override fun onBeforeUSE() {
@@ -27,7 +30,7 @@ class FModeUnloadPhotoAfterMedia : APhotoF() {
     }
 
     override fun onAfterUSE(imageS: List<ImageInfoEntity>) {
-        viewModel.addAfterMediaUnload(imageS)
+        viewModel.addBeforeMediaUnload(imageS)
         navigateNext(FPMap.NAV_ID)
     }
 
@@ -49,6 +52,6 @@ class FModeUnloadPhotoAfterMedia : APhotoF() {
 
     }
     companion object {
-        const val NAV_ID = R.id.FModeUnloadPhotoAfterMedia
+//        const val NAV_ID = R.id.FPhotoBeforeMediaVehicle
     }
 }

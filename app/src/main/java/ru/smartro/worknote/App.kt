@@ -97,6 +97,21 @@ class App : AA() {
             return "MethodMan"
 //            return getAppliCation().mMethodName
         }
+
+        object PhotoTypeMapping {
+            const val CONTAINER_BEFORE_MEDIA = "beforeMediaContainer"
+            const val BEFORE_MEDIA = "beforeMedia"
+            const val AFTER_MEDIA = "afterMedia"
+            const val UNLOAD_BEFORE_MEDIA = "beforeMediaUnload"
+            const val UNLOAD_AFTER_MEDIA = "afterMediaUnload"
+            const val VEHICLE_BEFORE_MEDIA = "beforeMediaVehicle"
+            const val BREAKDOWN_MEDIA = "breakdownMedia"
+            const val FAILURE_MEDIA = "failureMedia"
+            const val KGO_REMAINING_MEDIA = "kgoRemainingMedia"
+            const val KGO_SERVED_MEDIA = "kgoServedMedia"
+            const val PICKUP_MEDIA = "pickupMedia"
+        }
+
 //    private fun getLocationMAN(): LocationManager {
 //        return getLocationService()!!
 //    }

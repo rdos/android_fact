@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
+import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
@@ -15,8 +16,10 @@ class FPhotoFailureMediaContainer : APhotoF() {
     }
 
     private var mFailReasonS: List<String>? = null
+
     private val mContainerId: Int
         get() = getArgumentID()
+
     private val mContainerEntity: ContainerEntity
         get() {
             return viewModel.getContainer(mContainerId)
@@ -40,7 +43,7 @@ class FPhotoFailureMediaContainer : APhotoF() {
     override fun onGetDirName(): String {
         val containerId = getArgumentID().toString()
         val platformId = getArgumentName()
-        return platformId + File.separator + containerId + File.separator + "failureMediaContainer"
+        return platformId + File.separator + containerId + File.separator + App.Companion.PhotoTypeMapping.FAILURE_MEDIA
     }
 
     override fun onBeforeUSE() {

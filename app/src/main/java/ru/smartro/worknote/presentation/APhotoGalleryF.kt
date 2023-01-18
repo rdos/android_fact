@@ -8,56 +8,50 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.*
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
+import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.abs.AF
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 import java.io.File
 
 //class GalleryFragment(p_id: Int) internal constructor()
-class GalleryPhotoF : AF() {
+class APhotoGalleryF : AF() {
 
-    private lateinit var mediaList: MutableList<File>
+    private lateinit var fileList: MutableList<File>
+    private lateinit var imageInfoList: MutableList<ImageInfoEntity>
 
-    /** Adapter class used to present a fragment containing one photo or video as a page */
-    inner class MediaAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-        override fun getCount(): Int = mediaList.size
-        override fun getItem(position: Int): Fragment {
-            val textNumOfCount = "${position+1} из $count"
-            return MediaAdapterFragment(mediaList[position], textNumOfCount)
-        }
-        override fun getItemPosition(obj: Any): Int = POSITION_NONE
+    private val viewModel: VMPserve by viewModels()
+
+    companion object {
+        const val NAV_ID = R.id.GalleryPhotoF
     }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-        val directory = getArgumentName()
-        mediaList = AppliCation().getDFileList(directory!!).sortedDescending().toMutableList()
-    }
-
-
 
     override fun onGetLayout(): Int {
         return R.layout.f_gallery_photo
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val directory = getArgumentName()
+        LOG.debug("DIRECTORY ::: ${directory}")
+        fileList = AppliCation().getDFileList(directory!!).sortedDescending().toMutableList()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val apibDelete =  view.findViewById<AppCompatImageButton>(R.id.apib_f_gallery_photo__delete)
-
         val viewPager = view.findViewById<ViewPager>(R.id.vp_f_gallery_photo)
-
         val apibBack = view.findViewById<AppCompatImageButton>(R.id.apib_f_gallery_photo__back)
+
         apibBack.setOnClickListener {
             navigateBack()
         }
 
-        if (mediaList.isEmpty()) {
+        if (fileList.isEmpty()) {
             apibDelete.isEnabled = false
 //            fragmentGalleryBinding.shareButton.isEnabled = false
         }
@@ -69,16 +63,17 @@ class GalleryPhotoF : AF() {
 
         apibDelete.setOnClickListener {
 
-            mediaList.getOrNull(viewPager.currentItem)?.let { imageEntity ->
+            fileList.getOrNull(viewPager.currentItem)?.let { imageEntity ->
                 AlertDialog.Builder(view.context, android.R.style.Theme_Material_Dialog)
                     .setTitle("Подтвердите")
                     .setMessage(getString(R.string.warning_detele))
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes) { _, _ ->
-                        mediaList.remove(imageEntity)
+                        fileList.remove(imageEntity)
+//                        viewModel.removeImageInfoEntityByHash(imageEntity.nameWithoutExtension)
                         imageEntity.delete()
                         viewPager.adapter?.notifyDataSetChanged()
-                        if (mediaList.size <= 0) {
+                        if (fileList.size <= 0) {
                             navigateBack()
                         }
                     }
@@ -93,8 +88,15 @@ class GalleryPhotoF : AF() {
         navigateBack()
     }
 
-    companion object {
-        const val NAV_ID = R.id.GalleryPhotoF
+
+    /** Adapter class used to present a fragment containing one photo or video as a page */
+    inner class MediaAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        override fun getCount(): Int = fileList.size
+        override fun getItem(position: Int): Fragment {
+            val textNumOfCount = "${position+1} из $count"
+            return MediaAdapterFragment(fileList[position], textNumOfCount)
+        }
+        override fun getItemPosition(obj: Any): Int = POSITION_NONE
     }
 
     class MediaAdapterFragment(val image: File, val numOfCount: String) : Fragment() {

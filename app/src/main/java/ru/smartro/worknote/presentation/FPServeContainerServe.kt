@@ -52,7 +52,6 @@ class FPServeContainerServe : AbstractBottomSheetF() {
 
         mContainerId = arguments?.getInt(ARGUMENT_NAME___PARAM_ID)!!
 
-
         rgPercents = view.findViewById(R.id.enter_info_percent_rg)
         apbFailure = view.findViewById(R.id.apb_fragment_container_serve_failure)
         apbBreakdown = view.findViewById(R.id.apb_fragment_container_serve_breakdown)

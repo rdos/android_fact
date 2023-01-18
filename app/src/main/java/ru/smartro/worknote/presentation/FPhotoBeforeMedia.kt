@@ -16,7 +16,7 @@ class FPhotoBeforeMedia : APhotoF() {
     }
 
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "beforeMedia"
+       return getArgumentID().toString() + File.separator + App.Companion.PhotoTypeMapping.BEFORE_MEDIA
     }
 
     override fun onBeforeUSE() {

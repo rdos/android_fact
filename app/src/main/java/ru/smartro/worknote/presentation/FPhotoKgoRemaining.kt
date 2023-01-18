@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformEntity
@@ -20,7 +21,7 @@ class FPhotoKgoRemaining : APhotoF() {
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "kgoRemaining"
+        return getArgumentID().toString() + File.separator + App.Companion.PhotoTypeMapping.KGO_REMAINING_MEDIA
     }
 
     override fun onBeforeUSE() {

@@ -2,6 +2,7 @@ package ru.smartro.worknote.presentation
 
 
 import io.realm.RealmList
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformEntity
@@ -15,13 +16,14 @@ class FPhotoBeforeMediaContainerByTypes : APhotoF() {
 
     private val mPlatformEntity: PlatformEntity
         get() =  viewModel.getPlatformEntity()
+
     override fun onGetTextLabelFor() = "фото контейнера до"
     override fun onGetMediaRealmList(): RealmList<ImageInfoEntity> {
         return mPlatformEntity.beforeMedia
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "beforeMediaContainer"
+        return viewModel.getPlatformId().toString() + File.separator + App.Companion.PhotoTypeMapping.CONTAINER_BEFORE_MEDIA
     }
 
     override fun onBeforeUSE() {

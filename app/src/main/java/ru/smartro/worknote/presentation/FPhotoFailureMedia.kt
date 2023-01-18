@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
+import ru.smartro.worknote.App
 import ru.smartro.worknote.LOG
 import ru.smartro.worknote.R
 import ru.smartro.worknote.toast
@@ -49,7 +50,7 @@ open class FPhotoFailureMedia : APhotoF() {
     }
 
     override fun onGetDirName(): String {
-        return getArgumentID().toString() + File.separator + "failureMedia"
+        return getArgumentID().toString() + File.separator + App.Companion.PhotoTypeMapping.FAILURE_MEDIA
     }
 
     override fun onBeforeUSE() {

@@ -586,35 +586,6 @@ class RealmRepository(private val p_realm: Realm) {
         return result
     }
 
-    //todo: private fun _getContainerEntity
-    fun _getContainerEntity_know0(containerId: Int): ContainerEntity {
-        val res = getQueryContainer()
-            .equalTo("containerId", containerId)
-            .findFirst()!!
-        return res
-    }
-
-    fun getContainerEntity(containerId: Int): ContainerEntity {
-        val result: ContainerEntity
-        val res = _getContainerEntity_know0(containerId)
-        result = p_realm.copyFromRealm(res)
-        return result
-    }
-
-//    fun findCountContainerIsServed(): List<Int> {
-//        val result = p_realm.copyFromRealm(p_realm.where(ContainerEntity::class.java).findAll())
-//        val servedContainersCount = result.filter { it.status != StatusEnum.NEW }.size
-//        val allCount = result.size
-//        return listOf(servedContainersCount, allCount)
-//    }
-
-//    fun findCountPlatformIsServed(): List<Int> {
-//        val result = p_realm.copyFromRealm(p_realm.where(PlatformEntity::class.java).findAll())
-//        val servedPlatformsCount = result.filter { it.status != StatusEnum.NEW }.size
-//        val allCount = result.size
-//        return listOf(servedPlatformsCount, allCount)
-//    }
-
     fun findPlatformsIsServed(): List<PlatformEntity> {
         val result = p_realm.copyFromRealm(
             p_realm.where(PlatformEntity::class.java).findAll().sort("updateAt")
@@ -1336,4 +1307,15 @@ class RealmRepository(private val p_realm: Realm) {
             }
         return res
     }
+
+    fun removeImageInfoEntityByHash(hash: String) {
+        p_realm.executeTransaction { realm ->
+            val imageInfoEntity = realm.where(ImageInfoEntity::class.java)
+                .equalTo("md5", hash)
+                .findFirst()
+
+            imageInfoEntity?.deleteFromRealm()
+        }
+    }
+
 }

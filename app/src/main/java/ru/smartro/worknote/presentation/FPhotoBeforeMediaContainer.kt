@@ -1,6 +1,7 @@
 package ru.smartro.worknote.presentation
 
 import io.realm.RealmList
+import ru.smartro.worknote.App
 import ru.smartro.worknote.R
 import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.log.todo.PlatformEntity
@@ -21,7 +22,7 @@ class FPhotoBeforeMediaContainer : APhotoF() {
     }
 
     override fun onGetDirName(): String {
-       return getArgumentID().toString() + File.separator + "beforeMediaContainer"
+       return getArgumentID().toString() + File.separator + App.Companion.PhotoTypeMapping.CONTAINER_BEFORE_MEDIA
     }
 
     override fun onBeforeUSE() {
