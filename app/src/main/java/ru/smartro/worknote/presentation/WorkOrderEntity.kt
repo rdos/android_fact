@@ -1303,6 +1303,7 @@ open class ContainerGROUPClientTypeEntity(
 open class ImageInfoEntity(
     @Expose
     var md5: String = Snull,
+    var url: String = Snull,
     @Expose
     @SerializedName("updated_at")
     var updateAt: Long = 0,

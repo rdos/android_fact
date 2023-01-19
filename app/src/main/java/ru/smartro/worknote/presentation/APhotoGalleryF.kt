@@ -21,9 +21,9 @@ import java.io.File
 class APhotoGalleryF : AF() {
 
     private lateinit var fileList: MutableList<File>
-    private lateinit var imageInfoList: MutableList<ImageInfoEntity>
 
-    private val viewModel: VMPserve by viewModels()
+    private val sharedViewModel: VMPserve by activityViewModels()
+    private val viewModel: VMGallery by viewModels()
 
     companion object {
         const val NAV_ID = R.id.GalleryPhotoF
@@ -51,14 +51,20 @@ class APhotoGalleryF : AF() {
             navigateBack()
         }
 
+        var mAdapter: MediaAdapter
+        viewPager.offscreenPageLimit = 2
+
+        val directory = getArgumentName()
+        viewModel.calculateFileList(directory!!, sharedViewModel.getPlatformEntity())
+
         if (fileList.isEmpty()) {
             apibDelete.isEnabled = false
 //            fragmentGalleryBinding.shareButton.isEnabled = false
         }
 
-        viewPager.apply {
-            offscreenPageLimit = 2
-            adapter = MediaAdapter(childFragmentManager)
+        viewModel.imageInfoList.observe(viewLifecycleOwner) { imageS ->
+            mAdapter = MediaAdapter(childFragmentManager)
+            viewPager.adapter = mAdapter
         }
 
         apibDelete.setOnClickListener {

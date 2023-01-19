@@ -45,6 +45,7 @@ class RPOSTSynchro: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
             LOG.debug("SYNCworkER LAST PLATFORMS")
         }
 
+
         val gps = App.getAppliCation().gps()
         val synchronizeBodyIn = SynchroBodyIn(
             wb_id = App.getAppParaMS().wayBillId,

@@ -114,6 +114,16 @@ class SYNCworkER(
 
     }
 
+    private fun synChrONizationMediaDATA() {
+        LOG.debug("before")
+        App.getAppliCation().sentryLog("SYNCworkER MEDIA STARTED")
+
+        val synchroRequest = RPOSTSynchro()
+
+        App.oKRESTman().put(synchroRequest)
+
+    }
+
 }
 /**   //SYNCworkER
 
