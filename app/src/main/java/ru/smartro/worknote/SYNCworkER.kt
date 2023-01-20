@@ -9,6 +9,7 @@ import io.realm.Realm
 import kotlinx.coroutines.delay
 import ru.smartro.worknote.presentation.RPOSTSynchro
 import ru.smartro.worknote.presentation.ActStart
+import ru.smartro.worknote.presentation.RPOSTSynchroPhoto
 import ru.smartro.worknote.work.work.RealmRepository
 
 //private var App.LocationLAT: Double
@@ -69,6 +70,7 @@ class SYNCworkER(
         params.isModeSYNChrONize_FoundError = false
 
         try {
+            var lastMediaSynchroTime = 0L
             val DELAY_MS: Long =  if (App.getAppParaMS().isModeDEVEL) 11_011 else 30_000
             while (true) {
                 LOGinCYCLEStart("while (true)")
@@ -79,6 +81,12 @@ class SYNCworkER(
                 isModeSyncOldVal = params.isModeSYNChrONize
                 if (params.isModeSYNChrONize) {
                     LOG.debug( "SYNCworkER RUN")
+                    val timestamp = System.currentTimeMillis()
+                    if(timestamp - lastMediaSynchroTime >= 2 * 60_000) {
+                        synChrONizationMediaDATA()
+                    } else {
+                        lastMediaSynchroTime = timestamp
+                    }
                     synChrONizationDATA()
 //                    ping()
                     if (isFirstRun) {
@@ -94,7 +102,8 @@ class SYNCworkER(
                 isFirstRun = false
                 LOGINcyclEStop()
                 delay(DELAY_MS)
-            } //todo: while (true) {
+            }
+            //todo: while (true) {
         } catch (eXthr: Throwable) {
             LOG.error("eXthr", eXthr)
 //            аккуратней::r_dos
@@ -117,10 +126,10 @@ class SYNCworkER(
     private fun synChrONizationMediaDATA() {
         LOG.debug("before")
         App.getAppliCation().sentryLog("SYNCworkER MEDIA STARTED")
-
-        val synchroRequest = RPOSTSynchro()
-
-        App.oKRESTman().put(synchroRequest)
+        db().getImagesToSynchro().forEach { image ->
+            val synchroRequest = RPOSTSynchroPhoto(image)
+            App.oKRESTman().put(synchroRequest)
+        }
 
     }
 

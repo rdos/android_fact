@@ -228,6 +228,19 @@ class AppParaMS {
             it.putString("lastSynchronizeTime", value)
         }
 
+
+//    var mediaLastSynchroAttemptInSec: Long
+//        get() = sharedPref__env.getLong("mediaLastSynchroAttempt", App.getAppliCation().timeStampInSec())
+//        set(value) = sharedPref__env.edit {
+//            it.putLong("mediaLastSynchroAttempt", value)
+//        }
+//
+//    var mediaLastSynchroTimeInSec: String
+//        get() = sharedPref__env.getString("mediaLastSynchroTime", "КОля дурак!")!!
+//        set(value) = sharedPref__env.edit {
+//            it.putString("mediaLastSynchroTime", value)
+//        }
+
     fun getVehicleId(): Int {
         return vehicleId?: Inull
     }

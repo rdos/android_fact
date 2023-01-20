@@ -48,7 +48,7 @@ class PoinT(latitude: Double, longitude: Double,
         val timeStamp = App.getAppliCation().timeStampInSec()
         val imageInfo = ImageInfoEntity(
             date = timeStamp,
-            updateAt = timeStamp,
+            createdAt = timeStamp,
             coords = PointTOBaseData(),
             accuracy = PoinAccuracyTO_SRV(),
             lastKnownLocationTime =  PointTimeToLastKnowTime_SRV()

@@ -39,6 +39,9 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
         return BuildConfig.URL__SMARTRO
     }
 
+    protected open fun onGetMultipartBody(): MultipartBody? = null
+    private fun isMultipartBody() = onGetMultipartBody() != null
+
     abstract fun onGetSRVName(): String
     abstract fun onGetRequestBodyIn(): TA
     abstract fun onSetQueryParameter(queryParamMap: HashMap<String, String>)
@@ -83,15 +86,20 @@ abstract class AbsRequest<TA: NetObject, TB : NetObject>: AbsObject(), RequestAI
             return requestBuilder.build()
         }
 
-        val bodyInStringFormat = getGson().toJson(netObject)
-        if (this !is RPOSTSynchro) {
-            LOG.debug("bodyInStringFormat=${bodyInStringFormat}")
-        }
+        val body: RequestBody
+        if(isMultipartBody()) {
+            body = onGetMultipartBody() as RequestBody
+        } else {
+            val bodyInStringFormat = getGson().toJson(netObject)
+            if (this !is RPOSTSynchro) {
+                LOG.debug("bodyInStringFormat=${bodyInStringFormat}")
+            }
 
-        if (bodyInStringFormat.isNotNull()) {
-            saveJSON(bodyInStringFormat!!, "req-${TAGObj}")
+            if (bodyInStringFormat.isNotNull()) {
+                saveJSON(bodyInStringFormat!!, "req-${TAGObj}")
+            }
+            body = RequestBody.create(mMediaType, bodyInStringFormat)
         }
-        val body: RequestBody = RequestBody.create(mMediaType, bodyInStringFormat)
         requestBuilder.post(body)
         return requestBuilder.build()
     }

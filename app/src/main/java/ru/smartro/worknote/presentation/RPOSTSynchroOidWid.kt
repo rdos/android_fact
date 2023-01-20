@@ -14,7 +14,7 @@ class RPOSTSynchroOidWid : AbsRequest<ANoBodyPOST, SynchroOidWidOutBody>() {
     override fun onGetSRVName(): String {
         val organisationId = App.getAppParaMS().getOwnerId()
         val wayBillId = App.getAppParaMS().wayBillId
-        val result = "synchro/${organisationId}/${wayBillId}"
+        val result = "synchro/${organisationId}/${wayBillId}?use_hash=1"
         return result
     }
 
@@ -110,10 +110,10 @@ data class SynchroOidWidOutBodyDataWorkorderPlatform(
     val icon : String,
     @Expose
     @SerializedName("after_media")
-    val afterMedia: List<String>,
+    val afterMedia: List<SynchroOidWidOutBodyDataWorkorderMedia>,
     @Expose
     @SerializedName("before_media")
-    val beforeMedia: List<String>,
+    val beforeMedia: List<SynchroOidWidOutBodyDataWorkorderMedia>,
     @Expose
     @SerializedName("beginned_at")
     val beginnedAt: String,
@@ -125,7 +125,7 @@ data class SynchroOidWidOutBodyDataWorkorderPlatform(
     val coords: List<Double>,
     @Expose
     @SerializedName("failure_media")
-    val failureMedia: List<String>? = null,
+    val failureMedia: List<SynchroOidWidOutBodyDataWorkorderMedia>? = null,
     @Expose
     @SerializedName("failure_reason_id")
     val failureReasonId: Int,
@@ -165,11 +165,18 @@ data class SynchroOidWidOutBodyDataWorkorderPlatform(
     var cleanup: Boolean = false,
 ): NetObject()
 
+data class SynchroOidWidOutBodyDataWorkorderMedia(
+    @Expose
+    var hash: String,
+    @Expose
+    var link: String?
+): NetObject()
+
 data class SynchroOidWidOutBodyDataWorkorderPlatformKGOEntity(
     @Expose
     var volume: Double?,
     @Expose
-    var media: List<String>?
+    var media: List<SynchroOidWidOutBodyDataWorkorderMedia>?
 ): NetObject()
 
 
@@ -189,13 +196,13 @@ data class SynchroOidWidOutBodyDataWorkorderPlatformContainer(
     val icon : String,
     @Expose
     @SerializedName("failure_media")
-    val failureMedia: List<String>? = null,
+    val failureMedia: List<SynchroOidWidOutBodyDataWorkorderMedia>? = null,
     @Expose
     @SerializedName("failure_reason_id")
     val failureReasonId: Int,
     @Expose
     @SerializedName("breakdown_media")
-    val breakdownMedia: List<String>? = null,
+    val breakdownMedia: List<SynchroOidWidOutBodyDataWorkorderMedia>? = null,
     @Expose
     @SerializedName("breakdown_reason_id")
     val breakdownReasonId: Int,

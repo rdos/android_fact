@@ -1,61 +1,66 @@
 package ru.smartro.worknote.presentation
 
-import com.google.gson.Gson
 import com.google.gson.annotations.Expose
 import io.realm.Realm
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import ru.smartro.worknote.App
-import ru.smartro.worknote.AppParaMS
 import ru.smartro.worknote.LOG
-import ru.smartro.worknote.log.todo.PlatformEntity
+import ru.smartro.worknote.log.todo.ImageInfoEntity
 import ru.smartro.worknote.work.work.RealmRepository
 import ru.smartro.worknote.presentation.ac.AbsRequest
 import ru.smartro.worknote.presentation.ac.NetObject
 import ru.smartro.worknote.todo
+import java.io.File
 import kotlin.reflect.KClass
 
-class RPOSTSynchroPhoto: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
-
-    private var mTimeBeforeRequest: Long = App.getAppliCation().timeStampInSec()
-    // TODO ::: Разбить на два запроса!!!
-    private var mPlatformS: List<PlatformEntity> = listOf()
-
+class RPOSTSynchroPhoto(
+    private val imageInfoEntity: ImageInfoEntity
+): AbsRequest<SynchroPhotoBodyIn, SynchroPhotoBodyOut>() {
 
     override fun onGetSRVName(): String {
-       return "synchro" 
+        return "synchro"
     }
 
-    override fun onGetRequestBodyIn(): SynchroBodyIn {
+    override fun onGetMultipartBody(): MultipartBody {
         LOG.todo("db.before")
         val db = RealmRepository(Realm.getDefaultInstance())
         LOG.todo("db.after")
 
-        val lastSynchroTimeInSec = App.getAppParaMS().lastSynchroAttemptTimeInSec
+        var dirPath = C_PHOTO_D + File.separator + imageInfoEntity.platformId
+        if(imageInfoEntity.isContainer())
+            dirPath += imageInfoEntity.containerId
+        dirPath += imageInfoEntity.mediaType
 
-        //проблема в секундах синхронизаций
-        val m30MinutesInSec = 30 * 60
+        val fileName = "${imageInfoEntity.md5}.webp"
+        val file = App.getAppliCation().getF(dirPath, fileName)
 
-        if (App.getAppliCation().timeStampInSec() - lastSynchroTimeInSec > m30MinutesInSec) {
-            mTimeBeforeRequest = lastSynchroTimeInSec + m30MinutesInSec
-            mPlatformS = db.findPlatforms30min()
-            LOG.debug( "SYNCworkER PLATFORMS IN LAST 30 min")
-        }
-        if (mPlatformS.isEmpty()) {
-            mTimeBeforeRequest = App.getAppliCation().timeStampInSec()
-            mPlatformS = db.findLastPlatforms()
-            LOG.debug("SYNCworkER LAST PLATFORMS")
-        }
+        val mediaType = "image/*".toMediaTypeOrNull()
 
-        val gps = App.getAppliCation().gps()
-        val synchronizeBodyIn = SynchroBodyIn(
-            wb_id = App.getAppParaMS().wayBillId,
-            hardware_ts = App.getAppliCation().timeStampInMS(),
-            coords = gps.PointTOBaseData(),
-            device = AppParaMS().deviceId, // val deviceId = Settings.Secure.getString(getAct().contentResolver, Settings.Secure.ANDROID_ID)
-            lastKnownLocationTime = gps.PointTimeToLastKnowTime_SRV(),
-            data = null// PlatformEntity.toSRV(mPlatformS, db)
-        )
-        
-        return synchronizeBodyIn
+        val body = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("organisation_id", imageInfoEntity.organisationId.toString())
+            .addFormDataPart("image_file", fileName, file.asRequestBody(mediaType))
+            .build()
+
+        db.updateImageInfoEntityAttempt(imageInfoEntity)
+
+        return body
+    }
+
+    override fun onAfter(bodyOut: SynchroPhotoBodyOut) {
+        LOG.todo("db.before")
+        val db = RealmRepository(Realm.getDefaultInstance())
+        LOG.todo("db.after")
+
+        db.updateImageInfoEntitySynchro(imageInfoEntity)
+    }
+
+
+    // todo::: ФИГНЯ
+    override fun onGetRequestBodyIn(): SynchroPhotoBodyIn {
+        return SynchroPhotoBodyIn(1, "")
     }
 
     override fun onSetQueryParameter(queryParamMap: HashMap<String, String>) {
@@ -66,56 +71,22 @@ class RPOSTSynchroPhoto: AbsRequest<SynchroBodyIn, SynchroBodyOut>() {
         
     }
 
-    override fun onAfter(bodyOut: SynchroBodyOut) {
-
-        LOG.todo("db.before")
-        val db = RealmRepository(Realm.getDefaultInstance())
-        LOG.todo("db.after")
-
-//                TODO :::  0:)
-//                db().setConfig(ConfigName.AAPP__LAST_SYNCHROTIME_IN_SEC, timeBeforeRequest)
-        App.getAppParaMS().lastSynchroAttemptTimeInSec = mTimeBeforeRequest
-
-        if (mPlatformS.isNotEmpty()) {
-            App.getAppParaMS().lastSynchroTimeInSec = mTimeBeforeRequest.toString()
-            LOG.error( Thread.currentThread().getId().toString())
-            db.updatePlatformNetworkStatus(mPlatformS)
-            LOG.info("SUCCESS: ${Gson().toJson(bodyOut)}")
-        } else {
-            LOG.info("SUCCESS: GPS SENT")
-        }
-        val alertMsg = bodyOut.alert
-        if (!alertMsg.isNullOrEmpty()) {
-            App.getAppliCation().sentryLog("ValertMsgalertMsgalertMsgalertMsgalertMsg!!!!!!!")
-        }
-    }
-
-    override fun onGetResponseClazz(): KClass<SynchroBodyOut> {
-        return SynchroBodyOut::class
+    override fun onGetResponseClazz(): KClass<SynchroPhotoBodyOut> {
+        return SynchroPhotoBodyOut::class
     }
 
 }
 
 class SynchroPhotoBodyIn(
     @Expose
-    val wb_id: Int,
+    val organisationId: Int,
     @Expose
-    val hardware_ts: Long,
-    @Expose
-    val coords: List<Double>,
-    @Expose
-    val device: String,
-    @Expose
-    val lastKnownLocationTime: Long,
-    @Expose
-    val data: List<PlatformEntity>?
+    val imagePath: String
 ): NetObject()
 
 class SynchroPhotoBodyOut(
     @Expose
     val success: Boolean,
     @Expose
-    val alert: String,
-    @Expose
-    val message: String
+    val hash: String
 ): NetObject()

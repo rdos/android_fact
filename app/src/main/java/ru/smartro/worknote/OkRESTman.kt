@@ -26,8 +26,6 @@ class OkRESTman: AbsObject(), Callback {
         mPriorityQueue = PriorityQueue(10, comparator)
     }
 
-
-
     private val authInterceptor = Interceptor { chain ->
         val newUrl = chain.request().url
             .newBuilder()

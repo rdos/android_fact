@@ -11,6 +11,13 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import ru.smartro.worknote.*
+import ru.smartro.worknote.App.Companion.PhotoTypeMapping.AFTER_MEDIA
+import ru.smartro.worknote.App.Companion.PhotoTypeMapping.BEFORE_MEDIA
+import ru.smartro.worknote.App.Companion.PhotoTypeMapping.BREAKDOWN_MEDIA
+import ru.smartro.worknote.App.Companion.PhotoTypeMapping.FAILURE_MEDIA
+import ru.smartro.worknote.App.Companion.PhotoTypeMapping.KGO_REMAINING_MEDIA
+import ru.smartro.worknote.App.Companion.PhotoTypeMapping.KGO_SERVED_MEDIA
+import ru.smartro.worknote.BuildConfig.URL__SMARTRO_PING
 import ru.smartro.worknote.presentation.*
 import ru.smartro.worknote.work.work.RealmRepository
 import java.io.Serializable
@@ -144,15 +151,31 @@ open class WorkOrderEntity(
 
     companion object {
         
-        fun mapMedia(data: List<String>): RealmList<ImageInfoEntity> {
+        fun mapMedia(
+            data: List<SynchroOidWidOutBodyDataWorkorderMedia>,
+            organisationId: Int? = null,
+            platformId: Int? = null,
+            mediaType: String? = null,
+            containerId: Int? = null,
+        ): RealmList<ImageInfoEntity> {
             var idx = 0L
             return data.mapTo(RealmList()) {
                 idx++
                 // TODO: WTF???
-                ImageInfoEntity(
+                val imageInfo = ImageInfoEntity(
                     date = idx,
-                    coords = RealmList()
+                    coords = RealmList(),
+                    url = URL__SMARTRO_PING + "file/" + it.link,
+                    md5 = it.hash,
+                    organisationId = organisationId,
+                    platformId = platformId,
+                    mediaType = mediaType
                 )
+
+                if(containerId != null)
+                    imageInfo.containerId = containerId
+
+                imageInfo
             }
         }
 
@@ -193,14 +216,21 @@ open class WorkOrderEntity(
                     /** volumeKGO = null,*/
                     /** volumeKGO = null,*/
                 )
-                platformEntity.containerS = platformEntity.mapContainers(it.coNTaiNeRKnow1s, database)
+                platformEntity.containerS = platformEntity.mapContainers(
+                    it.coNTaiNeRKnow1s,
+                    App.getAppParaMS().getOwnerId(),
+                    platformEntity.platformId
+                )
 
-                val afterMedia = mapMedia(it.afterMedia)
+                val organisationId = App.getAppParaMS().getOwnerId()
+                val platformId = it.id
+
+                val afterMedia = mapMedia(it.afterMedia, organisationId, platformId, AFTER_MEDIA)
                 platformEntity.addAfterMedia(afterMedia)
-                val beforeMedia = mapMedia(it.beforeMedia)
+                val beforeMedia = mapMedia(it.beforeMedia, organisationId, platformId, BEFORE_MEDIA)
                 platformEntity.addAfterMedia(beforeMedia)
                 if(it.failureMedia != null) {
-                    val failureMedia = mapMedia(it.failureMedia)
+                    val failureMedia = mapMedia(it.failureMedia, organisationId, platformId, FAILURE_MEDIA)
                     platformEntity.addFailureMedia(failureMedia)
                 }
 
@@ -209,7 +239,7 @@ open class WorkOrderEntity(
                         platformEntity.setServedKGOVolume(it.toStr())
                     }
                     it.media?.let {
-                        val kgoServedMedia = mapMedia(it)
+                        val kgoServedMedia = mapMedia(it, organisationId, platformId, KGO_SERVED_MEDIA)
                         platformEntity.addServerKGOMedia(kgoServedMedia)
                     }
                 }
@@ -219,7 +249,7 @@ open class WorkOrderEntity(
                         platformEntity.setRemainingKGOVolume(it.toStr())
                     }
                     it.media?.let {
-                        val kgoRemainingMedia = mapMedia(it)
+                        val kgoRemainingMedia = mapMedia(it, organisationId, platformId, KGO_REMAINING_MEDIA)
                         platformEntity.addRemainingKGOMedia(kgoRemainingMedia)
                     }
                 }
@@ -370,7 +400,7 @@ open class VehicleEntity(
     @PrimaryKey
     var id: Int = Inull,
     var name: String = Snull,
-    var organizationId: Int = Inull
+    var organisationId: Int = Inull
 ): RealmObject()
 
 
@@ -379,10 +409,10 @@ open class WaybillEntity(
     var id: Int = Inull,
     var number: String = Snull,
 
-    var organizationId: Int = Inull,
+    var organisationId: Int = Inull,
     var vehicleId: Int = Inull,
 
-): RealmObject()
+    ): RealmObject()
 
 object StatusEnum {
     const val NEW = "new"
@@ -880,7 +910,11 @@ open class PlatformEntity(
     }
 
     // TODO: 29.10.2021 ! it.volume = 0.0 ??Error возраст.
-    fun mapContainers(containerSRV: List<SynchroOidWidOutBodyDataWorkorderPlatformContainer>, database: RealmRepository): RealmList<ContainerEntity> {
+    fun mapContainers(
+        containerSRV: List<SynchroOidWidOutBodyDataWorkorderPlatformContainer>,
+        organisationId: Int,
+        platformId: Int
+    ): RealmList<ContainerEntity> {
         val result = containerSRV.mapTo(RealmList()) {
             LOG.trace("containerSRV.id=${it.id}")
             val containerEntity = ContainerEntity(
@@ -903,12 +937,12 @@ open class PlatformEntity(
                 workOrderId = this.workOrderId
             )
             if(it.failureMedia != null) {
-                val failureMedia = WorkOrderEntity.mapMedia(it.failureMedia)
+                val failureMedia = WorkOrderEntity.mapMedia(it.failureMedia, organisationId, platformId, FAILURE_MEDIA, it.id)
                 containerEntity.addFailureMedia(failureMedia)
             }
 
             if(it.breakdownMedia != null) {
-                val breakdownMedia = WorkOrderEntity.mapMedia(it.breakdownMedia)
+                val breakdownMedia = WorkOrderEntity.mapMedia(it.breakdownMedia, organisationId, platformId, BREAKDOWN_MEDIA, it.id)
                 containerEntity.addBreakdownMedia(breakdownMedia)
             }
 
@@ -1303,10 +1337,9 @@ open class ContainerGROUPClientTypeEntity(
 open class ImageInfoEntity(
     @Expose
     var md5: String = Snull,
-    var url: String = Snull,
     @Expose
     @SerializedName("updated_at")
-    var updateAt: Long = 0,
+    var createdAt: Long = 0,
     @Expose
     var date: Long? = null,
     @Expose
@@ -1314,11 +1347,22 @@ open class ImageInfoEntity(
     @Expose
     var accuracy: String? = null,
     @Expose
-    var lastKnownLocationTime: Long? = null
+    var lastKnownLocationTime: Long? = null,
+
+    var url: String? = null,
+    var organisationId: Int? = null,
+    var platformId: Int? = null,
+    var containerId: Int? = null,
+    var mediaType: String? = null,
+    var synchroAttempt: Long = Lnull,
+    var synchroTime: Long = Lnull
+
 ) : Serializable, RealmObject() {
 
+    fun isContainer() = this.containerId != null
+
     init {
-        LOG.debug("CREATED:::: ${md5} ${updateAt} ${date} ${coords} ${accuracy} ${lastKnownLocationTime}")
+        LOG.debug("CREATED:::: ${md5} ${createdAt} ${date} ${coords} ${accuracy} ${lastKnownLocationTime}")
     }
 
     companion object {

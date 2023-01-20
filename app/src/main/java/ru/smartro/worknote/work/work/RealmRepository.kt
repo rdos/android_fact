@@ -14,7 +14,6 @@ class RealmRepository(private val p_realm: Realm) {
 
     // TODO: ][3
     private val mEmptyImageInfoList = RealmList<ImageInfoEntity>()
-
     fun insUpdWorkOrderS(woRKoRDeRknow1List: List<SynchroOidWidOutBodyDataWorkorder>) {
         p_realm.executeTransaction { realm ->
             val workOrderS = WorkOrderEntity.map(woRKoRDeRknow1List, this)
@@ -59,6 +58,35 @@ class RealmRepository(private val p_realm: Realm) {
         return LiveRealmData(getQueryPlatform().sort("updateAt").findAllAsync())
     }
 
+    fun updateImageInfoEntityAttempt(imageInfoEntity: ImageInfoEntity){
+        p_realm.executeTransaction {
+            val imageInfo = it.where(ImageInfoEntity::class.java).equalTo("md5", imageInfoEntity.md5).findFirst()
+            val timestamp = System.currentTimeMillis()
+            imageInfo?.synchroAttempt = timestamp
+            if(imageInfo != null)
+                it.insertOrUpdate(imageInfo)
+        }
+    }
+
+    fun getImagesToSynchro(): List<ImageInfoEntity> {
+        var result: List<ImageInfoEntity> = listOf()
+        p_realm.executeTransaction {
+            var imageS = it.where(ImageInfoEntity::class.java).findAll()
+            result = imageS.filter { el -> el.synchroTime <= el.synchroAttempt }
+        }
+        return result
+    }
+
+    fun updateImageInfoEntitySynchro(imageInfoEntity: ImageInfoEntity){
+        p_realm.executeTransaction {
+            val imageInfo = it.where(ImageInfoEntity::class.java).equalTo("md5", imageInfoEntity.md5).findFirst()
+            val timestamp = System.currentTimeMillis()
+            imageInfo?.synchroAttempt = timestamp
+            imageInfo?.synchroTime = timestamp
+            if(imageInfo != null)
+                it.insertOrUpdate(imageInfo)
+        }
+    }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 //    fun findPlatforms(): List<PlatformEntity> {
 
     /** WORKORDER_ST ***WORKORDER_ART*** WORKORDER_ST ***WORKORDER_ART*** */

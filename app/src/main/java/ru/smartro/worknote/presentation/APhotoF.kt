@@ -277,8 +277,7 @@ APhotoF(
                 imageStream.close()
             }
 
-            val md5 = MD5.calculateMD5(imageFile)
-            imageFile.renameTo(File(getOutputD(), md5 + PHOTO_EXTENSION_WEBP))
+            imageFile.renameTo(File(getOutputD(), System.currentTimeMillis().toString() + PHOTO_EXTENSION_WEBP))
 
             LOG.warn(Thread.currentThread().name)
             onSavePhoto()
@@ -600,7 +599,10 @@ APhotoF(
             val imageEntity = gps.getImageEntity()
             if(imageFile.name.toLongOrNull() != null)
                 imageEntity.date = imageFile.nameWithoutExtension.toLong()
-            imageEntity.md5 = MD5.calculateMD5(imageFile)!!
+            val md5 = MD5.calculateMD5(imageFile)!!
+            imageEntity.md5 = md5
+
+            imageFile.renameTo(File(getOutputD(), md5 + PHOTO_EXTENSION_WEBP))
             return imageEntity
         }
 

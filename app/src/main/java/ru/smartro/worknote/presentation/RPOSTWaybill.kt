@@ -42,7 +42,7 @@ class RPOSTWaybill : AbsRequest<WaybillBodyIn, WaybillBodyOut>() {
                 val waybillEntity = WaybillEntity()
                 waybillEntity.id = data.id
                 waybillEntity.number = data.number?:"номер не указан"
-                waybillEntity.organizationId = organisationId
+                waybillEntity.organisationId = organisationId
                 waybillEntity.vehicleId = vehicleId
                 waybillEntityS.add(waybillEntity)
             }
