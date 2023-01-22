@@ -71,8 +71,9 @@ class RealmRepository(private val p_realm: Realm) {
     fun getImagesToSynchro(): List<ImageInfoEntity> {
         var result: List<ImageInfoEntity> = listOf()
         p_realm.executeTransaction {
-            var imageS = it.where(ImageInfoEntity::class.java).findAll()
-            result = imageS.filter { el -> el.synchroTime <= el.synchroAttempt }
+            val imageS = it.where(ImageInfoEntity::class.java).findAll()
+            result = it.copyFromRealm(imageS)
+            result = result.filter { el -> el.synchroTime <= el.synchroAttempt }
         }
         return result
     }

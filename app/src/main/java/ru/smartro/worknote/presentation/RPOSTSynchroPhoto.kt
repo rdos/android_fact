@@ -28,9 +28,9 @@ class RPOSTSynchroPhoto(
         val db = RealmRepository(Realm.getDefaultInstance())
         LOG.todo("db.after")
 
-        var dirPath = C_PHOTO_D + File.separator + imageInfoEntity.platformId
+        var dirPath = C_PHOTO_D + File.separator + imageInfoEntity.platformId + File.separator
         if(imageInfoEntity.isContainer())
-            dirPath += imageInfoEntity.containerId
+            dirPath += (imageInfoEntity.containerId.toString() + File.separator)
         dirPath += imageInfoEntity.mediaType
 
         val fileName = "${imageInfoEntity.md5}.webp"

@@ -44,14 +44,22 @@ class PoinT(latitude: Double, longitude: Double,
         return res
     }
 
-    fun getImageEntity(): ImageInfoEntity {
+    fun getImageEntity(
+        platformId: Int,
+        mediaType: String,
+        containerId: Int? = null
+    ): ImageInfoEntity {
         val timeStamp = App.getAppliCation().timeStampInSec()
         val imageInfo = ImageInfoEntity(
             date = timeStamp,
             createdAt = timeStamp,
             coords = PointTOBaseData(),
             accuracy = PoinAccuracyTO_SRV(),
-            lastKnownLocationTime =  PointTimeToLastKnowTime_SRV()
+            lastKnownLocationTime = PointTimeToLastKnowTime_SRV(),
+            organisationId = App.getAppParaMS().ownerId,
+            platformId = platformId,
+            mediaType = mediaType,
+            containerId = containerId
         )
         return imageInfo
     }

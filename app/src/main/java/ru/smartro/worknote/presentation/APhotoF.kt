@@ -118,6 +118,10 @@ APhotoF(
         return R.layout.f_aphoto
     }
 
+    private var mPlatformId: Int? = null
+    private var mMediaType: String? = null
+    private var containerId: Int? = null
+
     protected open fun onGetTextLabelFor(): String? = null
     open protected fun onGetTextForFailHint(): String?{
         // TODO: name  onGetTextForFailHint = onGetTextForBlablabla)))!R_dos
@@ -460,7 +464,24 @@ APhotoF(
                 val photoFileScanner = PhotoFileScanner(getDirectory())
                 val imageS = mutableListOf<ImageInfoEntity>()
                 while (photoFileScanner.scan()) {
+                    val parsedDir = onGetDirName().split("/")
+                    when(parsedDir.size) {
+                        2 -> {
+                            mPlatformId = parsedDir[0].toInt()
+                            mMediaType = parsedDir[1]
+                        }
+                        3 -> {
+                            mPlatformId = parsedDir[0].toInt()
+                            mMediaType = parsedDir[1]
+                            containerId = parsedDir[2].toInt()
+                        }
+                        else -> {
+                            throw Exception("parsedDir has too much arguments")
+                        }
+                    }
+
                     val imageEntity = photoFileScanner.getImageEntity()
+
                     if(imageEntity == null)
                         continue
                     else
@@ -596,7 +617,9 @@ APhotoF(
             LOG.warn("b.size=${size}")
             val gps = App.getAppliCation().gps()
             //todo:~!R_dos gps.getImageEntity() это косяк!
-            val imageEntity = gps.getImageEntity()
+            if(mPlatformId == null || mMediaType == null)
+                throw Exception("mPlatformId or mMediaTypeId is null")
+            val imageEntity = gps.getImageEntity(mPlatformId!!, mMediaType!!, containerId)
             if(imageFile.name.toLongOrNull() != null)
                 imageEntity.date = imageFile.nameWithoutExtension.toLong()
             val md5 = MD5.calculateMD5(imageFile)!!
